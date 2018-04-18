@@ -1,0 +1,115 @@
+{% extends "index.html" %}
+{% block content %}
+{% load bootstrap3 %}
+{% load humanize %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+// JQuery code to be added in here.
+$( function() {
+  $( "#id_inicio" ).datepicker({
+    changeMonth: true,
+    changeYear: true,
+    dateFormat:"dd/mm/yy"
+  });
+  $( "#id_fin" ).datepicker({
+    changeMonth: true,
+    changeYear: true,
+    dateFormat:"dd/mm/yy"
+  });
+  $("#btn_filtrar").click(function(){
+    actualizar_lista();
+    return false;
+  });
+  $( "#div_edit" ).dialog({
+    autoOpen: false,
+    width:400,
+    height:350
+  });
+  $( "#div_delete" ).dialog({
+    autoOpen: false,
+    width:400,
+    height:350
+  });
+});
+function actualizar_lista(){
+  $.ajax({
+    url: '/medicion/filter/',
+    data: $("#form_filter").serialize(),
+    type:'POST',
+    beforeSend: function () {
+      activar_espera();
+      $("#div_error").hide();
+    },
+    success: function (data) {
+      $("#div_informacion").html(data)
+      //$("#btn_procesar").removeAttr('disabled');
+      desactivar_espera();
+      //$("#div_mensaje").html("Datos Guardados")
+      $("#div_error").hide();
+    },
+    error: function () {
+      $("#div_informacion").hide();
+      $("#div_loading").hide();
+      $("#div_error").show();
+      //$("#btn_procesar").removeAttr('disabled');
+    }
+  });
+
+}
+function activar_espera(){
+  console.log('activar funcion')
+  $("#div_loading").show();
+  $("#div_informacion").hide();
+}
+function desactivar_espera(){
+  console.log('desactivar funcion')
+  $("#div_loading").hide();
+  $("#div_informacion").show();
+}
+
+</script>
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Validación Datos Crudos</h3>
+    </div>
+</div>
+
+<div class="row">
+    <form id="form_filter" class="form" method="post">
+        {% csrf_token %}
+        {% for field in form%}
+        {% bootstrap_field field form_group_class='col-lg-6' %}
+        {% endfor %}
+        <div class="form-group col-lg-4">
+            <label>&nbsp;</label><br>
+            <button id="btn_filtrar" type="button" class="btn btn-default btn-primary">
+                Buscar
+            </button>
+            <a class="btn btn-default"
+               href="{% url 'medicion:medicion_filter' %}">
+                Limpiar</a>
+        </div>
+    </form>
+</div>
+<br>
+<div id="div_informacion" class="row">
+
+</div>
+<div id="div_edit" title="Modificar Información">
+</div>
+<div id="div_delete" title="Eliminar Información">
+</div>
+<div id="div_loading" class="row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/media/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+<div id="div_error" class="row" style="display:none;">
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+{% block title %}Pagina Principal{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <span class=aria-hidden="true"></span><br>SISTEMA DE ESTANDARIZACION DE DATOS CRUDOS</a>
+            <div class="jumbotron">
+                <div class="row" align=middle>
+                    <a type="button" class="btn btn-default btn-lg text-center" title=""
+                       href="{% url 'datalogger:datalogger_index' %}">
+                        <span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> <br>Datalogger</a>
+                    <a type="button" class="btn btn-default btn-lg text-center" title=""
+                       href="{% url 'sensor:sensor_index' %}">
+                        <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> <br>Sensor</a>
+                    <a type="button" class="btn btn-default btn-lg text-center" title=""
+                       href="{% url 'estacion:estacion_index' %}">
+                        <span class="glyphicon glyphicon-home" aria-hidden="true"></span> <br>Estación</a>
+                    <a type="button" class="btn btn-default btn-lg text-center" title=""
+                       href="{% url 'variable:variable_index' %}">
+                        <span class="glyphicon glyphicon-tint" aria-hidden="true"></span> <br>Variable</a>
+                    <a type="button" class="btn btn-default btn-lg text-center" title=""
+                       href="{% url 'variable:control_index' %}">
+                        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <br>Instalaciones</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

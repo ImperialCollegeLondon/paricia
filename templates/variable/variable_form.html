@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+{% block content %}
+{% load bootstrap3 %}
+
+<div class="col-lg-8 col-md-8 col-sm-6">
+    <div class="panel panel-default">
+        <div class="panel-heading">{{title}} Variable</div>
+        <div class="panel-body">
+            <form method="post" class="form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        {% bootstrap_form form exclude='var_minimo, var_sos, var_err, var_min' %}
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        {% bootstrap_form form exclude='uni_id, var_codigo, var_nombre, var_maximo' %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-default btn-primary">
+                    Guardar
+                </button>
+                <a class="btn btn-default"
+                   href="{% url 'variable:variable_index' %}">
+                    Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

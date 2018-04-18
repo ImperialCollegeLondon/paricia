@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <h1>
+            <small>Detalle de estación</small>
+        </h1>
+        <br>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Código</th>
+                <td>{{estacion.est_codigo}}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{estacion.est_nombre}}</td>
+            </tr>
+            <tr>
+                <th>Tipo</th>
+                <td>{{estacion.est_tipo}}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{estacion.est_estado}}</td>
+            </tr>
+            <tr>
+                <th>Provincia</th>
+                <td>{{estacion.est_provincia}}</td>
+            </tr>
+            <tr>
+                <th>Latitud</th>
+                <td>{{estacion.est_latitud}}</td>
+            </tr>
+            <tr>
+                <th>Longitud</th>
+                <td>{{estacion.est_longitud}}</td>
+            </tr>
+            <tr>
+                <th>Altura</th>
+                <td>{{estacion.est_altura}}</td>
+            </tr>
+            <tr>
+                <th>Fichas</th>
+                <td><a target="_blank" href="{{ estacion.est_ficha.url }}">Descargar</a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <a class="btn btn-primary" href="{% url 'estacion:estacion_update' estacion.est_id %}">Modificar</a>
+        <a class="btn btn-warning" href="{% url 'estacion:estacion_delete' estacion.est_id%}">Borrar</a>
+        <a class="btn btn-default" href="{% url 'estacion:estacion_index' %}">Regresar</a>
+    </div>
+</div>
+
+{% endblock %}

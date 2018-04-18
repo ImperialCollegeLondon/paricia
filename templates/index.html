@@ -1,0 +1,149 @@
+<html>
+
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='all' %}
+<head>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+    {% load static %}
+    <script src="{% static 'functions.js' %}"></script>
+</head>
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">SEDC</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">Administración
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'datalogger:datalogger_index' %}">Dataloggers</a></li>
+                        <li><a href="{% url 'sensor:sensor_index' %}">Sensores</a></li>
+                        <li><a href="{% url 'marca:marca_index' %}">Marcas: Sensores y Datalogger</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'estacion:estacion_index' %}">Estaciones</a></li>
+                        <li><a href="{% url 'variable:variable_index' %}">Variables</a></li>
+                        <li><a href="{% url 'variable:unidad_index' %}">Unidades</a></li>
+                        <li><a href="{% url 'cruce:cruce_index' %}">Variables por Estación</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'formato:extension_index' %}">Extensiones</a></li>
+                        <li><a href="{% url 'formato:delimitador_index' %}">Delimitadores</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'variable:control_index' %}">Instalaciones Sensores</a></li>
+                        <li><a href="{% url 'instalacion:instalacion_index' %}">Instalaciones Dataloggers</a></li>
+                    </ul>
+                </li>
+                <!--<li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                  aria-haspopup="true" aria-expanded="false">Mantenimiento
+                  <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{% url 'variable:control_index' %}">Instalaciones Sensores</a></li>
+                    <li><a href="{% url 'instalacion:instalacion_index' %}">Instalaciones Dataloggers</a></li>
+                  </ul>
+                </li>-->
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">Datos
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'formato:formato_index' %}">Formatos de Importación</a></li>
+                        <li><a href="{% url 'formato:asociacion_index' %}">Formatos por Estación</a></li>
+                        <li><a href="{% url 'importacion:importacion_create'%}">Importar Archivo</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'vacios:vacios_index' %}">Vacios de Información</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'frecuencia:frecuencia_index' %}">Frecuencia de Registro</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'bitacora:bitacora_index' %}">Historial</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false">
+                        Validación<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'medicion:medicion_filter' %}">Datos Crudos</a></li>
+                        <!--<li><a href="{% url 'medicion:filter_delete' %}">Borrar Datos Crudos</a></li>-->
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false">
+                        Procesamiento<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'anuarios:anuarios_procesar' %}">Procesar Anuario</a></li>
+                        <li><a href="{% url 'validacion:procesar_validacion' %}">Frecuencia de Registro</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                       role="button" aria-haspopup="true" aria-expanded="false">
+                        Reportes<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+
+
+                        <li><a href="{% url 'reportes:anuario' %}">Anuario</a></li>
+
+                        <li><a href="{% url 'reportes:consultas_periodo' %}">Consultas por Periodo</a></li>
+                        <li><a href="{% url 'reportes:comparacion_reporte' %}">Comparar 3 estaciones</a></li>
+                        <li><a href="{% url 'reportes:comparacion_variable' %}">Comparar 2 variables</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">Metadata
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'registro:logmedicion_index' %}">Datos Crudos</a></li>
+                        <li><a href="{% url 'importacion:importacion_index' %}">Archivos Importados</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+
+                {% if user.is_authenticated %}
+                <li><a href="#">{{user.get_username}}</a></li>
+                <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+                {% else %}
+                <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+{% block javascript %}{% endblock %}
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+
+</body>
+</html>

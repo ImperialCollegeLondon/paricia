@@ -1,0 +1,57 @@
+{% if 2_matriz %}
+<div class="col-md-5">
+    <table style="font-size: 12px" class="table table-sm table-striped table-bordered table-condensed">
+
+        <thead>
+        <tr>
+            <th align="center" colspan='8'>Temperatura del Aire - Valores medios diarios, absolutos maximos y mimimos,
+                medios maximos y minimos
+            </th>
+        </tr>
+        <tr>
+            <th rowspan='3'>Mes</th>
+            <th colspan='7'>Temperatura del aire (C)</th>
+        </tr>
+        <tr>
+            <th colspan='4'>Absoluta</th>
+            <th colspan='3'>Media</th>
+        <tr>
+            <th>Max</th>
+            <th>Dia</th>
+            <th>Min</th>
+            <th>Dia</th>
+            <th>Max</th>
+            <th>Min</th>
+            <th>Mensual</th>
+        </tr>
+
+        </thead>
+        <tbody>
+
+        {% for item in 2_matriz %}
+
+        <tr>
+            <td>{{ item.tai_mes }}</td>
+            <td>{{ item.tai_maximo_abs|floatformat:2 }}</td>
+            <td>{{ item.tai_maximo_dia }}</td>
+            <td>{{ item.tai_minimo_abs|floatformat:2 }}</td>
+            <td>{{ item.tai_minimo_dia }}</td>
+            <td>{{ item.tai_maximo|floatformat:2 }}</td>
+            <td>{{ item.tai_minimo|floatformat:2 }}</td>
+            <td>{{ item.tai_promedio|floatformat:2 }}</td>
+        </tr>
+
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="col-md-6">
+    {% if 2_grafico %}
+    <div style="width:600;height:400">
+        {{ 2_grafico|safe }}
+    </div>
+    {% endif %}
+</div>

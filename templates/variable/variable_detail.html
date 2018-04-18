@@ -1,0 +1,59 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <h1>
+            <small>Detalle de variable</small>
+        </h1>
+        <br>
+        <table class="table table-striped table-bordered">
+
+            <tr>
+                <th>Código</th>
+                <td>{{variable.var_codigo}}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{variable.var_nombre}}</td>
+            </tr>
+            <tr>
+                <th>Unidad</th>
+                <td>{{variable.uni_id}}</td>
+            </tr>
+            <tr>
+                <th>Máximo</th>
+                <td>{{variable.var_maximo}}</td>
+            </tr>
+            <tr>
+                <th>Mínimo</th>
+                <td>{{variable.var_minimo}}</td>
+            </tr>
+            <tr>
+                <th>Sos</th>
+                <td>{{variable.var_sos}}</td>
+            </tr>
+            <tr>
+                <th>Error</th>
+                <td>{{variable.var_err}}</td>
+            </tr>
+            <tr>
+                <th>Error mínimo</th>
+                <td>{{variable.var_min}}</td>
+            </tr>
+
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <a class="btn btn-primary" href="{% url 'variable:variable_update' variable.var_id %}">Modificar</a>
+        <a class="btn btn-warning" href="{% url 'variable:variable_delete' variable.var_id%}">Borrar</a>
+        <a class="btn btn-default" href="{% url 'variable:variable_index' %}">Regresar</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="alert alert-success" role="alert">
+        {{mensaje}}
+    </div>
+    <a class="btn btn-primary" id="btn_confirmar"
+       href="{% url 'importacion:importacion_create' %}">
+        Importar</a>
+</div>

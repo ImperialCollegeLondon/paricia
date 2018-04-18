@@ -1,0 +1,40 @@
+<html>
+<head>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery=1 %}
+
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<body>
+<div class="row" style="margin-top:100px">
+    <div class="col-lg-4 col-md-2 col-sm-2">&nbsp;</div>
+    <div class="col-lg-4 col-md-8 col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Acceso al sistema</div>
+            <div class="panel-body">
+                <form method="post" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <button type="submit" class="btn btn-default btn-primary">
+                        Ingresar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-2 col-sm-2">&nbsp;</div>
+</div>
+
+{% block javascript %}{% endblock %}
+
+</body>
+</html>

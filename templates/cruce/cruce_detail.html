@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <h1>
+            <small>Cruce</small>
+        </h1>
+        <br>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Estación</th>
+                <td>{{cruce.est_id}}</td>
+            </tr>
+            <tr>
+                <th>Variable</th>
+                <td>{{cruce.var_id}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <a class="btn btn-primary" href="{% url 'cruce:cruce_update' cruce.cru_id %}">Modificar</a>
+        <a class="btn btn-warning" href="{% url 'cruce:cruce_delete' cruce.cru_id %}">Borrar</a>
+        <a class="btn btn-default" href="{% url 'cruce:cruce_index' %}">Regresar</a>
+    </div>
+</div>
+
+{% endblock %}

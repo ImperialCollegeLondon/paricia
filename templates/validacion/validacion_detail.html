@@ -1,0 +1,53 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <h1>
+            <small>Detalle de validación</small>
+        </h1>
+        <br>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Medición</th>
+                <td>{{validacion.med_id}}</td>
+            </tr>
+            <tr>
+                <th>Fecha</th>
+                <td>{{validacion.val_fecha|date:"d/m/Y"}}</td>
+            </tr>
+            <tr>
+                <th>Hora</th>
+                <td>{{validacion.val_hora|date:"H:i:s"}}</td>
+            </tr>
+            <tr>
+                <th>Valor</th>
+                <td>{{validacion.val_valor}}</td>
+            </tr>
+            <tr>
+                <th>Máximo</th>
+                <td>{{validacion.val_maximo}}</td>
+            </tr>
+            <tr>
+                <th>Mínimo</th>
+                <td>{{validacion.val_minimo}}</td>
+            </tr>
+            <tr>
+                <th>Mensaje</th>
+                <td>{{validacion.val_mensaje}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <a class="btn btn-primary" href="{% url 'medicion:validacion_update' validacion.val_id %}">Modificar</a>
+        <a class="btn btn-warning" href="{% url 'medicion:validacion_delete' validacion.val_id%}">Borrar</a>
+        <a class="btn btn-default" href="{% url 'medicion:validacion_index' %}">Regresar</a>
+    </div>
+</div>
+
+{% endblock %}

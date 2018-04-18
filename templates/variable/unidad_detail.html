@@ -1,0 +1,34 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <h1>
+            <small>Detalle de unidad</small>
+        </h1>
+        <br>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Nombre</th>
+                <td>{{unidad.uni_nombre}}</td>
+            </tr>
+            <tr>
+                <th>Sigla</th>
+                <td>{{unidad.uni_sigla}}</td>
+            </tr>
+
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <a class="btn btn-primary" href="{% url 'variable:unidad_update' unidad.uni_id %}">Modificar</a>
+        <a class="btn btn-warning" href="{% url 'variable:unidad_delete' unidad.uni_id%}">Borrar</a>
+        <a class="btn btn-default" href="{% url 'variable:unidad_index' %}">Regresar</a>
+    </div>
+</div>
+
+{% endblock %}

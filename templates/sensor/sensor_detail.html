@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <h1>
+            <small>Detalle de sensor</small>
+        </h1>
+        <br>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Nombre</th>
+                <td>{{sensor.sen_nombre}}</td>
+            </tr>
+            <tr>
+                <th>Marca</th>
+                <td>{{sensor.mar_id}}</td>
+            </tr>
+            <tr>
+                <th>Modelo</th>
+                <td>{{sensor.sen_modelo}}</td>
+            </tr>
+            <tr>
+                <th>Serial</th>
+                <td>{{sensor.sen_serial}}</td>
+            </tr>
+
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <a class="btn btn-primary" href="{% url 'sensor:sensor_update' sensor.sen_id %}">Modificar</a>
+        <a class="btn btn-warning" href="{% url 'sensor:sensor_delete' sensor.sen_id%}">Borrar</a>
+        <a class="btn btn-default" href="{% url 'sensor:sensor_index' %}">Regresar</a>
+    </div>
+</div>
+
+{% endblock %}

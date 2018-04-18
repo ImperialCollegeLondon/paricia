@@ -1,0 +1,57 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap3 %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <h1>
+            <small>Detalle de medición</small>
+        </h1>
+        <br>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Variable</th>
+                <td>{{medicion.var_id}}</td>
+            </tr>
+            <tr>
+                <th>Estación</th>
+                <td>{{medicion.est_id}}</td>
+            </tr>
+            <tr>
+                <th>Fecha</th>
+                <td>{{medicion.med_fecha|date:"d/m/Y"}}</td>
+            </tr>
+            <tr>
+                <th>Hora</th>
+                <td>{{medicion.med_hora|date:"H:i:s"}}</td>
+            </tr>
+            <tr>
+                <th>Valor</th>
+                <td>{{medicion.med_valor}}</td>
+            </tr>
+            <tr>
+                <th>Máximo</th>
+                <td>{{medicion.med_maximo}}</td>
+            </tr>
+            <tr>
+                <th>Mínimo</th>
+                <td>{{medicion.med_minimo}}</td>
+            </tr>
+            <tr>
+                <th>Validado</th>
+                <td>{{medicion.med_validado}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8">
+        <a class="btn btn-primary" href="{% url 'medicion:medicion_update' medicion.med_id %}">Modificar</a>
+        <a class="btn btn-warning" href="{% url 'medicion:medicion_delete' medicion.med_id%}">Borrar</a>
+        <a class="btn btn-default" href="{% url 'medicion:medicion_index' %}">Regresar</a>
+    </div>
+</div>
+
+{% endblock %}

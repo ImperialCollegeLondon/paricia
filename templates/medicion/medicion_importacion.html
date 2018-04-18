@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+{% block content %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% for fila in informacion %}
+<div class="row">
+    <h4>{{fila.nombre}}</h4>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-md-12 col-sm-12"
+         style="height:400px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Valor</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in fila.lista %}
+            <tr>
+                <td>{{ item.med_fecha|date:"d/m/Y"}}</td>
+                <td>{{ item.med_fecha|date:"H:i:s"}}</td>
+                <td>{{ item.med_valor}}</td>
+            </tr>
+            {% endfor%}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12"
+         style="height:400px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
+        {{fila.grafico|safe}}
+    </div>
+
+
+</div>
+
+{% endfor %}
+{% endblock %}
