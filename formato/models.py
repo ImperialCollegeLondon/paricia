@@ -15,7 +15,7 @@ class Extension(models.Model):
     ext_valor = models.CharField("Valor", max_length=5)
 
     def __str__(self):
-        return self.ext_valor.encode('utf-8')
+        return str(self.ext_valor)
 
     def get_absolute_url(self):
         return reverse('formato:extension_detail', kwargs={'pk': self.pk})
@@ -27,7 +27,7 @@ class Delimitador(models.Model):
     del_caracter = models.CharField("Caracter", max_length=5)
 
     def __str__(self):
-        return self.del_nombre.encode('utf-8')
+        return str(self.del_nombre)
 
     def get_absolute_url(self):
         return reverse('formato:delimitador_detail', kwargs={'pk': self.pk})
@@ -39,7 +39,7 @@ class Fecha(models.Model):
     fec_codigo = models.CharField("Código", max_length=20)
 
     def __str__(self):
-        return self.fec_formato
+        return str(self.fec_formato)
 
     class Meta:
         ordering = ('fec_id',)
@@ -51,7 +51,7 @@ class Hora(models.Model):
     hor_codigo = models.CharField("Código", max_length=20)
 
     def __str__(self):
-        return self.hor_formato
+        return str(self.hor_formato)
 
     class Meta:
         ordering = ('hor_id',)
@@ -107,7 +107,7 @@ class Formato(models.Model):
     for_estado = models.BooleanField("Estado", default=True)
 
     def __str__(self):
-        return (self.for_descripcion).encode('utf-8')
+        return str(self.for_descripcion)
 
     def get_absolute_url(self):
         return reverse('formato:formato_detail', kwargs={'pk': self.pk})

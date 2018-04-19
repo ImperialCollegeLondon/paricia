@@ -34,8 +34,8 @@ class Sensor(models.Model):
      )
 
     sen_id = models.AutoField("Id", primary_key=True)
-    sen_codigo = models.CharField("Codigo", max_length=20, null=True)
-    sen_nombre = models.CharField("Nombre", max_length=20, choices=TIPO_NOMBRE)
+    sen_codigo = models.CharField("Codigo", max_length=20, null=True, unique=True)
+    sen_nombre = models.CharField("Nombre", max_length=40, choices=TIPO_NOMBRE)
     mar_id = models.ForeignKey(
         Marca,
         models.SET_NULL,

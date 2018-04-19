@@ -140,12 +140,12 @@ def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
             if str(year) == year_ini:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
                 sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'and med_estado is not False and '
+                sql += 'med_estado is not False and '
                 sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' order by med_fecha'
             elif str(year) == year_fin:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
                 sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'and med_estado is not False and '
+                sql += 'med_estado is not False and '
                 sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59 \' order by med_fecha'
             else:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
@@ -785,10 +785,14 @@ def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
                     maximo.append(datos[item].get('maximo'))
                 elif datos[item].get('maximo2') is not None:
                     maximo.append(datos[item].get('maximo2'))
+                else:
+                    maximo.append(None)
                 if datos[item].get('minimo'):
                     minimo.append(datos[item].get('minimo'))
                 elif datos[item].get('minimo2'):
                     minimo.append(datos[item].get('minimo2'))
+                else:
+                    minimo.append(None)
                 # frecuencia.append(fecha_datos)
                 # fecha+=intervalo
                 item += 1

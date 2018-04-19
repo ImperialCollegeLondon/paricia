@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-# from sensor.models import Sensor
+from sensor.models import Sensor
 from estacion.models import Estacion
 from django.urls import reverse
 
@@ -14,7 +14,7 @@ class Unidad(models.Model):
     uni_sigla = models.CharField("Sigla", max_length=10)
 
     def __str__(self):
-        return self.uni_nombre.encode('utf-8')
+        return str(self.uni_nombre)
 
     def get_absolute_url(self):
         return reverse('variable:unidad_detail', kwargs={'pk': self.pk})
@@ -41,7 +41,7 @@ class Variable(models.Model):
     var_estado = models.BooleanField("Estado", default=True)
 
     def __str__(self):
-        return self.var_nombre.encode('utf-8')
+        return str(self.var_nombre)
 
     def get_absolute_url(self):
         return reverse('variable:variable_detail', kwargs={'pk': self.pk})
@@ -64,6 +64,12 @@ class Control(models.Model):
         blank=True,
         null=True,
         verbose_name="Estación")
+    sen_id = models.ForeignKey(
+        Sensor,
+        models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Sensor")
     con_fecha_ini = models.DateField("Fecha inicio")
     con_fecha_fin = models.DateField("Fecha fin", blank=True, null=True)
     con_estado = models.BooleanField("Activo", default=True)

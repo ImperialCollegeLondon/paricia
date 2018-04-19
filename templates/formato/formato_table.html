@@ -28,7 +28,7 @@ $(document).ready(function() {
         <td>{{ item.fec_id}}</td>
         <td>{{ item.hor_id}}</td>
         <td>
-            <a href="{% url 'formato:formato_detail' item.for_id %}">
+            <a href="{% url 'formato:formato_clasificacion' item.for_id %}">
                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
             </a>
             <a href="{% url 'formato:formato_update' item.for_id %}">
