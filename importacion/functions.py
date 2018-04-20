@@ -14,6 +14,7 @@ import time
 from importacion.models import Importacion
 from sedc.settings import BASE_DIR
 from numbers import Number
+import io
 
 
 # consultar formatos por datalogger y estacion
@@ -31,25 +32,23 @@ def guardar_datos(imp_id, form):
     formato = importacion.for_id
     estacion = importacion.est_id
     # archivo a guardar
-    print
-    'validar_fechas: ' + time.ctime()
+    print ('validar_fechas: ' + time.ctime())
     informacion, existe_vacio = validar_fechas(importacion)
-    archivo = open(str(BASE_DIR) + '/media/' + str(importacion.imp_archivo))
-    print
-    'checar sobreescribir y eliminar datos: ' + time.ctime()
+    #archivo = open(str(BASE_DIR) + '/media/' + str(importacion.imp_archivo))
+    ruta=str(BASE_DIR) + '/media/' + str(importacion.imp_archivo)
+    archivo=io.open(ruta, mode="r", encoding="utf-8")
+    print ('checar sobreescribir y eliminar datos: ' + time.ctime())
     for fila in informacion:
         if fila.get('existe'):
             eliminar_datos(fila, importacion)
         if fila.get('vacio') and form.is_valid:
             observacion = form.cleaned_data['imp_observacion']
             guardar_vacios(fila, estacion, observacion, importacion.imp_fecha_ini)
-    print
-    'construir_matriz: ' + time.ctime()
+    print ('construir_matriz: ' + time.ctime())
     datos = construir_matriz(archivo, formato, estacion)
     # print 'crear datos: '+time.ctime()
     Datos.objects.bulk_create(datos)
-    print
-    'eliminar tabla datos' + time.ctime()
+    print ('eliminar tabla datos' + time.ctime())
     Datos.objects.all().delete()
     importacion.imp_observacion = form.cleaned_data['imp_observacion']
     importacion.save()
@@ -73,7 +72,8 @@ def construir_matriz(archivo, formato, estacion):
         for_id=formato.for_id))
     i = 0
     datos = []
-    for linea in archivo.readlines():
+    lineas=archivo.readlines()
+    for linea in lineas:
         i += 1
         # controlar la fila de inicio
         if i >= formato.for_fil_ini:
@@ -335,9 +335,11 @@ def consulta_fecha(fec_ini, est_id, tabla):
 def get_fechas_archivo(archivo, formato, form):
     cambiar_fecha = validar_datalogger(formato.mar_id)
     datos = archivo.readlines()
-    linea_ini = datos[formato.for_fil_ini - 1]
-    linea_fin = datos[len(datos) - 1]
+    linea_ini = datos[formato.for_fil_ini - 1].decode("utf-8", "ignore")
+    linea_fin = datos[len(datos) - 1].decode("utf-8", "ignore")
+    print (type(linea_ini), type(formato.del_id.del_caracter))
     valores_ini = linea_ini.split(formato.del_id.del_caracter)
+    print (type(valores_ini))
     valores_fin = linea_fin.split(formato.del_id.del_caracter)
     form.instance.imp_fecha_ini = formato_fecha(formato, valores_ini, cambiar_fecha)
     form.instance.imp_fecha_fin = formato_fecha(formato, valores_fin, cambiar_fecha)

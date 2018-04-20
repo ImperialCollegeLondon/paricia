@@ -10,12 +10,10 @@
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-6">
-                        {% bootstrap_form form
-                        exclude='for_archivo,for_fil_ini,fec_id,for_col_fecha,hor_id,for_col_hora,for_tipo' %}
+                        {% bootstrap_form form exclude='for_archivo,for_fil_ini,fec_id,for_col_fecha,hor_id,for_col_hora,for_tipo' %}
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-6">
-                        {% bootstrap_form form exclude='ext_id,del_id,for_nombre,for_descripcion,for_ubicacion,
-                        mar_id'%}
+                        {% bootstrap_form form exclude='ext_id,del_id,for_nombre,for_descripcion,for_ubicacion,mar_id'%}
                     </div>
                 </div>
 
