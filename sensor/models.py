@@ -43,7 +43,7 @@ class Sensor(models.Model):
         null=True,
         verbose_name="Marca"
     )
-    sen_modelo = models.CharField("Modelo", max_length=20, null=True)
+    sen_modelo = models.CharField("Modelo", max_length=150, null=True)
     sen_serial = models.CharField("Serial", max_length=20, null=True)
     sen_estado = models.BooleanField("Estado", default=True)
 

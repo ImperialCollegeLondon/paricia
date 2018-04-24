@@ -36,7 +36,8 @@ def guardar_datos(imp_id, form):
     informacion, existe_vacio = validar_fechas(importacion)
     #archivo = open(str(BASE_DIR) + '/media/' + str(importacion.imp_archivo))
     ruta=str(BASE_DIR) + '/media/' + str(importacion.imp_archivo)
-    archivo=io.open(ruta, mode="r", encoding="utf-8")
+    enc = 'iso-8859-1'
+    archivo=io.open(ruta, mode="r", encoding=enc)
     print ('checar sobreescribir y eliminar datos: ' + time.ctime())
     for fila in informacion:
         if fila.get('existe'):
