@@ -25,7 +25,7 @@ SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 DEBUG = True
 
 #ALLOWED_HOSTS = ['192.168.19.3', '157.100.182.60', 'localhost', '127.0.0.1']
-ALLOWED_HOSTS = ['192.168.19.6', '157.100.182.62', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.19.6', '157.100.182.62', 'localhost', '127.0.0.1', 'infoagua-guayllabamba.ec','www.infoagua-guayllabamba.ec']
 
 # Application definition
 
