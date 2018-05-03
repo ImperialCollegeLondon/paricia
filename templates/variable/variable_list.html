@@ -7,7 +7,7 @@
     <div class="panel-heading">
         <div class="row">
             <div class="col-lg-9">
-                <h4>Lista de Variables</h4>
+                <h4>Lista de Variables de la Red Hidrometeorológica</h4>
             </div>
             <div class="col-lg-3">
                 <a style="float:right" class="btn btn-info"
@@ -24,11 +24,6 @@
                 <th>Código</th>
                 <th>Nombre</th>
                 <th>Unidad</th>
-                <th>Máximo</th>
-                <th>Mínimo</th>
-                <th>Valor sospechoso</th>
-                <th>Valor erroneo</th>
-                <th>Error mínimo (Variabilidad)</th>
             </tr>
             </thead>
             <tbody>
@@ -37,11 +32,6 @@
                 <td>{{ item.var_codigo}}</td>
                 <td>{{ item.var_nombre}}</td>
                 <td>{{ item.uni_id}}</td>
-                <td>{{ item.var_maximo}}</td>
-                <td>{{ item.var_minimo}}</td>
-                <td>{{ item.var_sos}}</td>
-                <td>{{ item.var_err}}</td>
-                <td>{{ item.var_min}}</td>
                 <td>
                     <a href="{% url 'variable:variable_detail' item.var_id %}">
                         <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>

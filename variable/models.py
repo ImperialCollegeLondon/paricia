@@ -14,7 +14,7 @@ class Unidad(models.Model):
     uni_sigla = models.CharField("Sigla", max_length=10)
 
     def __str__(self):
-        return str(self.uni_nombre)
+        return str(self.uni_sigla)
 
     def get_absolute_url(self):
         return reverse('variable:unidad_detail', kwargs={'pk': self.pk})

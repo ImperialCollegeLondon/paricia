@@ -1,24 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from django.forms import ModelForm
+from django import forms
 from frecuencia.models import Frecuencia
 from estacion.models import Estacion
 from formato.models import Variable
 
 
-class FrecuenciaSearchForm(ModelForm):
-    class Meta:
-        model = Frecuencia
-        fields = ['est_id', 'var_id']
-
+class FrecuenciaSearchForm(forms.Form):
+    variable = forms.ModelChoiceField(label="Variable",required=False,queryset=Variable.objects.order_by('var_id').all())
+    estacion = forms.ModelChoiceField(label="Estacion",required=False,queryset=Estacion.objects.order_by('est_id').all())
     lista = []
 
-    # Variable = forms.ChoiceField(required=False,choices=lista_variables())
-    # Estacion = forms.ChoiceField(required=False,choices=lista_estaciones())
-
     def filtrar(self, form):
-        var_id = form.cleaned_data['var_id']
-        est_id = form.cleaned_data['est_id']
+        var_id = form.cleaned_data['variable']
+        est_id = form.cleaned_data['estacion']
         if var_id and est_id:
             lista = Frecuencia.objects.filter(
                 var_id=var_id
@@ -36,15 +31,3 @@ class FrecuenciaSearchForm(ModelForm):
         else:
             lista = Frecuencia.objects.all()
         return lista
-
-    def cadena(self, form):
-        keys = form.cleaned_data.keys()
-        string = str("?")
-        i = 1
-        for item in keys:
-            if i < len(keys):
-                string += item + "=" + str(form.cleaned_data[item].encode('utf-8')) + "&"
-            else:
-                string += item + "=" + str(form.cleaned_data[item])
-            i += 1
-        return string
