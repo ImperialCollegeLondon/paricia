@@ -6,7 +6,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $(document).ready(function() {
-//consulta y guarda la información
+  //consulta y guarda la información
   $("#btn_procesar").click(function(){
     $(this).attr('disabled',true);
     $.ajax({
@@ -31,6 +31,25 @@ $(document).ready(function() {
         $("#div_loading").hide();
         $("#div_error").show();
         $("#btn_procesar").removeAttr('disabled');
+      }
+    });
+  });
+
+  $("#id_estacion").change(function () {
+    var estacion = $(this).val();
+    $("#id_variable").find('option').remove().end()
+    $.ajax({
+      url: '/anuarios/variables',
+      data: {
+        'estacion': estacion
+      },
+      dataType: 'json',
+      success: function (data) {
+        //datos=JSON.parse(data)
+        $.each(data, function(index, value) {
+          $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
+          //console.log(value)
+        });
       }
     });
   });

@@ -6,8 +6,7 @@ from django.views.generic import ListView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from anuarios.forms import AnuarioForm
 from anuarios import functions
-from anuarios.models import TemperaturaAire
-
+from django.http import JsonResponse
 
 # Create your views here.
 class ProcesarVariables(LoginRequiredMixin, FormView):
@@ -31,3 +30,10 @@ class ProcesarVariables(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super(ProcesarVariables, self).get_context_data(**kwargs)
         return context
+# lista de variables por estacion
+
+
+def lista_variables(request):
+    estacion = request.GET.get('estacion', None)
+    datos = functions.consultar_variables(estacion)
+    return JsonResponse(datos)

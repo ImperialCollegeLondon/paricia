@@ -98,9 +98,6 @@ def guardar_archivo(request, imp_id):
 def lista_formatos(request):
     mar_id = request.GET.get('datalogger', None)
     datos = consultar_formatos(mar_id)
-    data = {
-        'datos': datos,
-    }
     return JsonResponse(datos)
 
 

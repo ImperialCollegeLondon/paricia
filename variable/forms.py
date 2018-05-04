@@ -12,7 +12,7 @@ class ControlSearchForm(forms.Form):
     var_id = forms.ModelChoiceField(label="Variable", required=False,
                                     queryset=Variable.objects.all())
     est_id = forms.ModelChoiceField(label="Estacion", required=False,
-                                    queryset=Variable.objects.all())
+                                    queryset=Estacion.objects.all())
 
     def filtrar(self, form):
         var_id = form.cleaned_data['var_id']

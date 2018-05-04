@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-from medicion.models import Medicion
-from estacion.models import Estacion
+
+
 from anuarios import models
-from django.db.models.functions import TruncMonth
-from django.db.models import Max, Min, Avg, Count
-from django.db.models.functions import (
-    ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
 
 from anuarios.formatoI import matrizI
 from anuarios.formatoII import matrizII
@@ -13,6 +9,8 @@ from anuarios.formatoIII import matrizIII
 from anuarios.formatoIV import matrizIV
 from anuarios.formatoV import datos_viento, matrizV_mensual
 from anuarios.formatoVI import matrizVI, datos_radiacion_maxima, datos_radiacion_minimo
+
+from cruce.models import  Cruce
 
 
 def calcular(form):
@@ -67,75 +65,75 @@ def guardar_variable(datos, form):
 
 
 def borrar_datos(estacion, variable, periodo):
-    if variable.var_id == "1":
-        result = models.Precipitacion.objects.filter(est_id=estacion.est_id) \
+    if variable.var_id == 1:
+        models.Precipitacion.objects.filter(est_id=estacion.est_id) \
             .filter(pre_periodo=periodo).delete()
-    elif variable.var_id == "2":
+    elif variable.var_id == 2:
         result = models.TemperaturaAire.objects.filter(est_id=estacion.est_id) \
             .filter(tai_periodo=periodo).delete()
-    elif variable.var_id == "3":
+    elif variable.var_id == 3:
         result = models.HumedadAire.objects.filter(est_id=estacion.est_id) \
             .filter(hai_periodo=periodo).delete()
-    elif variable.var_id == "4" or variable.var_id == "5":
+    elif variable.var_id == 4 or variable.var_id == 5:
         result = models.Viento.objects.filter(est_id=estacion.est_id) \
             .filter(vie_periodo=periodo).delete()
-    elif variable.var_id == "6":
+    elif variable.var_id == 6:
         result = models.HumedadSuelo.objects.filter(est_id=estacion.est_id) \
             .filter(hsu_periodo=periodo).delete()
-    elif variable.var_id == "7":
+    elif variable.var_id == 7:
         result = models.RadiacionMaxima.objects.filter(est_id=estacion.est_id) \
             .filter(rad_periodo=periodo).delete()
         result = models.RadiacionMinima.objects.filter(est_id=estacion.est_id) \
             .filter(rad_periodo=periodo).delete()
-    elif variable.var_id == "8":
+    elif variable.var_id == 8:
         result = models.PresionAtmosferica.objects.filter(est_id=estacion.est_id) \
             .filter(pat_periodo=periodo).delete()
-    elif variable.var_id == "9":
+    elif variable.var_id == 9:
         result = models.TemperaturaAgua.objects.filter(est_id=estacion.est_id) \
             .filter(tag_periodo=periodo).delete()
-    elif variable.var_id == "10":
+    elif variable.var_id == 10:
         result = models.Caudal.objects.filter(est_id=estacion.est_id) \
             .filter(cau_periodo=periodo).delete()
-    elif variable.var_id == "11":
+    elif variable.var_id == 11:
         result = models.NivelAgua.objects.filter(est_id=estacion.est_id) \
             .filter(nag_periodo=periodo).delete()
 
 
 def verficar_anuario(estacion, variable, periodo):
     result = False
-    if variable.var_id == "1":
+    if variable.var_id == 1:
         result = models.Precipitacion.objects.filter(est_id=estacion.est_id) \
             .filter(pre_periodo=periodo).exists()
-    elif variable.var_id == "2":
+    elif variable.var_id == 2:
         result = models.TemperaturaAire.objects.filter(est_id=estacion.est_id) \
             .filter(tai_periodo=periodo).exists()
-    elif variable.var_id == "3":
+    elif variable.var_id == 3:
         result = models.HumedadAire.objects.filter(est_id=estacion.est_id) \
             .filter(hai_periodo=periodo).exists()
-    elif variable.var_id == "4":
+    elif variable.var_id == 4:
         result = models.Viento.objects.filter(est_id=estacion.est_id) \
             .filter(vie_periodo=periodo).exists()
-    elif variable.var_id == "5":
+    elif variable.var_id == 5:
         result = models.Viento.objects.filter(est_id=estacion.est_id) \
             .filter(vie_periodo=periodo).exists()
-    elif variable.var_id == "6":
+    elif variable.var_id == 6:
         result = models.HumedadSuelo.objects.filter(est_id=estacion.est_id) \
             .filter(hsu_periodo=periodo)
-    elif variable.var_id == "7":
+    elif variable.var_id == 7:
         result = models.RadiacionMaxima.objects.filter(est_id=estacion.est_id) \
             .filter(rad_periodo=periodo).exists()
         result = models.RadiacionMinima.objects.filter(est_id=estacion.est_id) \
             .filter(rad_periodo=periodo).exists()
-    elif variable.var_id == "8":
+    elif variable.var_id == 8:
         result = models.PresionAtmosferica.objects.filter(est_id=estacion.est_id) \
             .filter(pat_periodo=periodo).exists()
-    elif variable.var_id == "9":
+    elif variable.var_id == 9:
         result = models.TemperaturaAgua.objects.filter(est_id=estacion.est_id) \
             .filter(tag_periodo=periodo).exists()
-    elif variable.var_id == "10":
+    elif variable.var_id == 10:
         result = models.Caudal.objects.filter(est_id=estacion.est_id) \
             .filter(cau_periodo=periodo).exists()
-    elif variable.var_id == "11":
+    elif variable.var_id == 11:
         result = models.NivelAgua.objects.filter(est_id=estacion.est_id) \
             .filter(nag_periodo=periodo).exists()
     return result
@@ -166,3 +164,9 @@ def template(variable):
     elif variable.var_id == 11:
         template = 'anuarios/nag.html'
     return template
+def consultar_variables(estacion):
+    cruce = list(Cruce.objects.filter(est_id=estacion))
+    lista = {}
+    for item in cruce:
+        lista[item.var_id.var_id] = item.var_id.var_nombre
+    return lista

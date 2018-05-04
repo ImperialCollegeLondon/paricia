@@ -35,7 +35,7 @@ class Sensor(models.Model):
 
     sen_id = models.AutoField("Id", primary_key=True)
     sen_codigo = models.CharField("Codigo", max_length=20, null=True, unique=True)
-    sen_nombre = models.CharField("Nombre", max_length=40, choices=TIPO_NOMBRE)
+    sen_nombre = models.CharField("Tipo", max_length=40, choices=TIPO_NOMBRE)
     mar_id = models.ForeignKey(
         Marca,
         models.SET_NULL,
@@ -48,7 +48,7 @@ class Sensor(models.Model):
     sen_estado = models.BooleanField("Estado", default=True)
 
     def __str__(self):
-        return (self.sen_codigo + " " + self.sen_nombre + " " + self.sen_modelo + " " + self.sen_serial).encode('utf-8')
+        return str(self.sen_nombre)
 
     def get_absolute_url(self):
         return reverse('sensor:sensor_detail', kwargs={'pk': self.pk})

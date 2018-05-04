@@ -110,7 +110,7 @@ class Formato(models.Model):
         return str(self.for_descripcion)
 
     def get_absolute_url(self):
-        return reverse('formato:formato_detail', kwargs={'pk': self.pk})
+        return reverse('formato:formato_clasificacion', kwargs={'pk': self.pk})
 
     class Meta:
         ordering = ('for_id',)

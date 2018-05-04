@@ -4,7 +4,7 @@ from marca.models import Marca
 
 
 class SensorSearchForm(forms.Form):
-    sen_nombre = forms.CharField(label="Nombre", required=False)
+    sen_nombre = forms.CharField(label="Tipo", required=False)
     mar_id = forms.ModelChoiceField(label="Marca", required=False,
                                     queryset=Marca.objects.order_by('mar_id').all())
 
