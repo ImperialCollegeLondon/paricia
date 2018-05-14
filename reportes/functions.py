@@ -68,8 +68,7 @@ def filtrar(form):
             matriz = obj_typeV.matriz(form.cleaned_data['estacion'], item.get('var_id_id'), form.cleaned_data['anio'])
             context.update({str(item.get('var_id')) + '_matriz': matriz})
         elif item.get('var_id') in typeVI:
-            matriz = obj_typeVI.matriz(form.cleaned_data['estacion'], str(item.get('var_id')),
-                                       form.cleaned_data['anio'])
+            matriz = obj_typeVI.matriz(form.cleaned_data['estacion'], str(item.get('var_id')),form.cleaned_data['anio'])
             context.update({str(item.get('var_id')) + '_matriz': matriz})
     return context
 

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from importacion.models import Importacion
-from django.core.paginator import Paginator
+
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView

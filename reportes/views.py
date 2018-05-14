@@ -18,12 +18,19 @@ class ReportesAnuario(FormView):
     success_url = '/reportes/anuario/'
     lista = {}
 
-    def post(self, request, *args, **kwargs):
+    '''def post(self, request, *args, **kwargs):
         form = AnuarioForm(self.request.POST or None)
         if form.is_valid():
             self.lista = filtrar(form)
-        return self.render_to_response(self.get_context_data(form=form))
+        return self.render_to_response(self.get_context_data(form=form))'''
 
+    def post(self, request, *args, **kwargs):
+        form = AnuarioForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                self.lista = filtrar(form)
+                return render(request,'reportes/anuario/anuario.html',self.lista)
+        return self.render_to_response(self.get_context_data(form=form))
     def get_context_data(self, **kwargs):
         context = super(ReportesAnuario, self).get_context_data(**kwargs)
         context.update(self.lista)

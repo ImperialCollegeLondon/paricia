@@ -75,7 +75,6 @@ $(document).ready(function() {
 </div>
 <div class="row">
     <form id="form_consulta" class="form" method="post">
-        <input type="hidden" value="true" name="exportar"/>
         {% csrf_token %}
         {% for field in form%}
         {% bootstrap_field field form_group_class='col-lg-6' %}

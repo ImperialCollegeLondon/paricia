@@ -37,5 +37,4 @@ class TypeII(Titulos):
             title=str(self.titulo_grafico(variable)) + str(" (") + str(self.titulo_unidad(variable)) + str(")"))
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
-        print(div)
         return div
