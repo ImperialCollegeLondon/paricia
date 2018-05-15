@@ -1,0 +1,28 @@
+<h2>Errores en el formulario</h2>
+<p>Por favor corrija los siguientes errores e intente nuevamente</p>
+{% if form.errors %}
+    {% for field in form %}
+
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    {{ field.label_tag }} <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+
+        {% endif %}
+
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+{% if messages %}
+    {% for message in messages %}
+      <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">1{{ message|safe }}</div>
+    {% endfor %}
+{% endif %}

@@ -2,16 +2,16 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
+
 from .models import Vacios
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-from .forms import VaciosSearchForm
+from .forms import VaciosSearchForm, DiasVaciosForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
-
+from vacios.functions import consultar_dias,dias_sin_datos
 
 # Create your views here.
 # Vacios
@@ -74,3 +74,16 @@ class VaciosUpdate(LoginRequiredMixin, UpdateView):
 class VaciosDelete(LoginRequiredMixin, DeleteView):
     model = Vacios
     success_url = reverse_lazy('vacios:vacios_index')
+
+
+class DiasVacios(LoginRequiredMixin, FormView):
+    template_name = 'vacios/consulta_dias.html'
+    form_class = DiasVaciosForm
+
+    def post(self, request, *args, **kwargs):
+        form = DiasVaciosForm(self.request.POST or None)  # type: DiasVaciosForm
+        if form.is_valid():
+            datos = consultar_dias(form)
+            datos_sin_dias = dias_sin_datos(datos, form)
+            return render(request, 'vacios/tabla_dias.html', {'datos': datos, 'datos_sin': datos_sin_dias})
+        return render(request, 'home/form_error.html', {'form': form})

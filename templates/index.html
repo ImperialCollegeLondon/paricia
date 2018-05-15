@@ -12,6 +12,7 @@
     <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
     {% load static %}
     <script src="{% static 'functions.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
 </head>
 
 {# Display django.contrib.messages as Bootstrap alerts #}
@@ -77,6 +78,7 @@
 
                         <li role="separator" class="divider"></li>
                         <li><a href="{% url 'vacios:vacios_index' %}">Vacios de Información</a></li>
+                        <li><a href="{% url 'vacios:dias' %}">Registro de Vacios por días</a></li>
 
                     </ul>
                 </li>
