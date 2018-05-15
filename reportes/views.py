@@ -18,23 +18,13 @@ class ReportesAnuario(FormView):
     success_url = '/reportes/anuario/'
     lista = {}
 
-    '''def post(self, request, *args, **kwargs):
-        form = AnuarioForm(self.request.POST or None)
-        if form.is_valid():
-            self.lista = filtrar(form)
-        return self.render_to_response(self.get_context_data(form=form))'''
-
     def post(self, request, *args, **kwargs):
         form = AnuarioForm(self.request.POST or None)
         if form.is_valid():
             if self.request.is_ajax():
                 self.lista = filtrar(form)
                 return render(request,'reportes/anuario/anuario.html',self.lista)
-        return self.render_to_response(self.get_context_data(form=form))
-    def get_context_data(self, **kwargs):
-        context = super(ReportesAnuario, self).get_context_data(**kwargs)
-        context.update(self.lista)
-        return context
+        return render(request, 'home/form_error.html', {'form': form})
 
 
 # vista para comparar tres estaciones una sola variable
@@ -46,19 +36,13 @@ class ComparacionValores(FormView):
 
     def post(self, request, *args, **kwargs):
         form = ComparacionForm(self.request.POST or None)
-        if form.is_valid():
+        if form.is_valid() and self.request.is_ajax():
+            self.grafico = comparar(form)
+            plantilla = 'reportes/consultas/grafico.html'
+            diccionario = {'grafico': self.grafico}
+            return render(request, plantilla, diccionario)
 
-            if self.request.is_ajax():
-                self.grafico = comparar(form)
-                return render(request, 'reportes/consultas/grafico.html',
-                              {'grafico': self.grafico})
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(ComparacionValores, self).get_context_data(**kwargs)
-        context.update({'grafico': self.grafico})
-        return context
+        return render(request, 'home/form_error.html', {'form': form})
 
 
 # vista para comparar 2 estaciones y dos Variables
@@ -70,17 +54,12 @@ class ComparacionVariables(FormView):
 
     def post(self, request, *args, **kwargs):
         form = VariableForm(self.request.POST or None)
-        if form.is_valid():
-            if self.request.is_ajax():
-                self.grafico = comparar_variable(form)
-                return render(request, 'reportes/consultas/grafico.html',
-                              {'grafico': self.grafico})
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(ComparacionVariables, self).get_context_data(**kwargs)
-        context.update({'grafico': self.grafico})
-        return context
+        if form.is_valid() and self.request.is_ajax():
+            self.grafico = comparar_variable(form)
+            plantilla = 'reportes/consultas/grafico.html'
+            diccionario = {'grafico': self.grafico}
+            return render(request, plantilla, diccionario)
+        return render(request, 'home/form_error.html', {'form': form})
 
 
 # consultas por periodo y frecuencia horaria, diaria y mensual
@@ -103,7 +82,7 @@ class ConsultasPeriodo(FormView):
                               {'grafico': self.grafico, 'frecuencia': self.frecuencia})
             else:
                 return self.export_datos(self.frecuencia, form)
-        return self.render_to_response(self.get_context_data(form=form))
+        return render(request, 'home/form_error.html', {'form': form})
 
     def get_context_data(self, **kwargs):
         context = super(ConsultasPeriodo, self).get_context_data(**kwargs)

@@ -54,17 +54,12 @@ class ComparacionForm(forms.Form):
         ('3', 'Diario'),
         ('4', 'Mensual'),
     )
-    estacion01 = forms.ModelChoiceField(required=False,
-                                        queryset=Estacion.objects.order_by('est_id').all(), label='Primera Estación')
-    estacion02 = forms.ModelChoiceField(required=False,
-                                        queryset=Estacion.objects.order_by('est_id').all(), label='Segunda Estación')
-    estacion03 = forms.ModelChoiceField(required=False,
-                                        queryset=Estacion.objects.order_by('est_id').all(), label='Tercera Estación')
-    variable = forms.ModelChoiceField(required=False,
-                                      queryset=Variable.objects.order_by('var_id').all(), label='Variable')
+    estacion01 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Primera Estación')
+    estacion02 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Segunda Estación')
+    estacion03 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Tercera Estación')
+    variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable')
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
-    # tiempo=forms.IntegerField(max_value=60,min_value=5,label="Tiempo en Minutos",help_text="Valor entre 5 y 60")
     frecuencia = forms.ChoiceField(choices=FRECUENCIA)
 
 
@@ -75,15 +70,10 @@ class VariableForm(forms.Form):
         ('3', 'Diario'),
         ('4', 'Mensual'),
     )
-    estacion01 = forms.ModelChoiceField(required=False,
-                                        queryset=Estacion.objects.order_by('est_id').all(), label='Primera Estación')
-    variable01 = forms.ModelChoiceField(required=False,
-                                        queryset=Variable.objects.order_by('var_id').all(), label='Primera Variable')
-    estacion02 = forms.ModelChoiceField(required=False,
-                                        queryset=Estacion.objects.order_by('est_id').all(), label='Segunda Estación')
-    variable02 = forms.ModelChoiceField(required=False,
-                                        queryset=Variable.objects.order_by('var_id').all(), label='Segunda Variable')
+    estacion01 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Primera Estación')
+    variable01 = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable primera estación')
+    estacion02 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Segunda Estación')
+    variable02 = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable segunda estación')
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
-    # tiempo=forms.IntegerField(max_value=60,min_value=5,label="Tiempo en Minutos",help_text="Valor entre 5 y 60")
     frecuencia = forms.ChoiceField(choices=FRECUENCIA)
