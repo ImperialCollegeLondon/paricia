@@ -36,7 +36,7 @@ def consultar_dias(form):
                 sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
                 sql += 'group by fecha order by fecha'
             else:
-                sql = 'SELECT date_trunc(\'day\',med_fecha) from ' + tabla + ' '
+                sql = 'SELECT date_trunc(\'day\',med_fecha) as fecha from ' + tabla + ' '
                 sql += 'where est_id_id=' + str(estacion.est_id) + ' '
                 sql += 'group by fecha order by fecha'
             cursor.execute(sql)
