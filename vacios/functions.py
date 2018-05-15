@@ -28,7 +28,7 @@ def consultar_dias(form):
             if str(year) == year_ini:
                 sql = 'SELECT date_trunc(\'day\',med_fecha) as fecha from ' + tabla + ' '
                 sql += 'where est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_fecha>=\'' + str(fecha_ini) + '\' and '
+                sql += 'med_fecha>=\'' + str(fecha_ini) + '\' '
                 sql += 'group by fecha order by fecha'
             elif str(year) == year_fin:
                 sql = 'SELECT date_trunc(\'day\',med_fecha) as fecha from ' + tabla + ' '
@@ -37,7 +37,7 @@ def consultar_dias(form):
                 sql += 'group by fecha order by fecha'
             else:
                 sql = 'SELECT date_trunc(\'day\',med_fecha) from ' + tabla + ' '
-                sql += 'where est_id_id=' + str(estacion.est_id)
+                sql += 'where est_id_id=' + str(estacion.est_id) + ' '
                 sql += 'group by fecha order by fecha'
             cursor.execute(sql)
             datos.extend(dictfetchall(cursor))
@@ -53,8 +53,10 @@ def dias_sin_datos(datos, form):
     fecha = fecha_ini
     datos_sin = []
     for dia in range(int_dias):
+        print(item)
         if fecha == datos[item].get('fecha').date():
-            item += 1
+            if item < len(datos) - 1:
+                item += 1
         else:
             datos_sin.append({'fecha_sin': fecha})
         fecha += intervalo
