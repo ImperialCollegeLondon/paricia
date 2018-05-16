@@ -185,8 +185,8 @@ class ConsultasPeriodo(FormView):
             ws.cell(row=cont, column=3).value = maximo
             ws.cell(row=cont, column=4).value = minimo
             cont = cont + 1
-        #grafico
-        chart = LineChart()
+        # grafico
+        '''chart = LineChart()
         chart.title = variable.var_nombre
         chart.style = 12
         chart.x_axis.title = 'Tiempo'
@@ -212,7 +212,7 @@ class ConsultasPeriodo(FormView):
         dates = Reference(ws, min_col=1, min_row=10, max_row=final)
         chart.set_categories(dates)
 
-        ws.add_chart(chart, "F9")
+        ws.add_chart(chart, "F9")'''
         # Establecemos el nombre del archivo
         nombre_archivo = str('"')+str(estacion.est_codigo) + str("_") + str(variable.var_nombre)  + str('.xlsx"')
         # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
