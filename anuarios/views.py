@@ -7,11 +7,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from anuarios.forms import AnuarioForm
 from anuarios import functions
 from django.http import JsonResponse
-#Vista genérica para mostrar resultados
+# Vista genérica para mostrar resultados
 from django.views.generic.base import TemplateView
-#Workbook nos permite crear libros en excel
+# Workbook nos permite crear libros en excel
 from openpyxl import Workbook,load_workbook
-#Nos devuelve un objeto resultado, en este caso un archivo de excel
+# Nos devuelve un objeto resultado, en este caso un archivo de excel
 from django.http.response import HttpResponse
 
 from sedc.settings import BASE_DIR

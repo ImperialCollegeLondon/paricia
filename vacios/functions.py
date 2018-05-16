@@ -53,7 +53,6 @@ def dias_sin_datos(datos, form):
     fecha = fecha_ini
     datos_sin = []
     for dia in range(int_dias):
-        print(item)
         if fecha == datos[item].get('fecha').date():
             if item < len(datos) - 1:
                 item += 1
