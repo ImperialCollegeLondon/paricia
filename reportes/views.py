@@ -96,51 +96,22 @@ class ConsultasPeriodo(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
-        # context['lista']=self.lista
-        # context['frecuencia']=self.frecuencia
-        # context['valores']=self.valores
         context['grafico'] = self.grafico
         return context
 
-    def export_datos(self, frecuencia, form):
-        estacion = form.cleaned_data['estacion']
-        variable = form.cleaned_data['variable']
-        fecha_inicio = form.cleaned_data['inicio']
-        fecha_fin = form.cleaned_data['fin']
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="reporte.csv"'
-        writer = csv.writer(response)
-        if frecuencia == "0":
-            valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "1":
-            valores, maximos, minimos, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "2":
-            valores, maximos, minimos, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "3":
-            valores, maximos, minimos, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
-        else:
-            valores, maximos, minimos, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
-
-        writer.writerow(['fecha', 'valor', 'maximo', 'minimo'])
-        for valor, maximo, minimo, fecha in zip(valores, maximos, minimos, tiempo):
-            writer.writerow([fecha, valor, maximo, minimo])
-
-        return response
     def export_excel(self,frecuencia,form):
         estacion = form.cleaned_data['estacion']
         variable = form.cleaned_data['variable']
         fecha_inicio = form.cleaned_data['inicio']
         fecha_fin = form.cleaned_data['fin']
-        if frecuencia == "0":
-            valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "1":
-            valores, maximos, minimos, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
+        if frecuencia == "1":
+            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
         elif frecuencia == "2":
-            valores, maximos, minimos, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
+            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
         elif frecuencia == "3":
-            valores, maximos, minimos, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
+            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
         else:
-            valores, maximos, minimos, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
+            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
         # ruta de la imagen
         ruta = str(BASE_DIR) + '/media/logo_fonag.jpg'
         img = Image(ruta)
@@ -175,16 +146,32 @@ class ConsultasPeriodo(FormView):
         # Creamos los encabezados desde la celda B9 hasta la E9
         ws['A9'] = 'Fecha'
         ws['B9'] = 'Valor'
-        ws['C9'] = 'Max absoluto'
-        ws['D9'] = 'Min absoluto'
+
         cont = 10
         # Recorremos el conjunto de datos
-        for valor, maximo, minimo, fecha in zip(valores, maximos, minimos, tiempo):
-            ws.cell(row=cont, column=1).value = fecha
-            ws.cell(row=cont, column=2).value = valor
-            ws.cell(row=cont, column=3).value = maximo
-            ws.cell(row=cont, column=4).value = minimo
-            cont = cont + 1
+        if len(maximos_abs) != maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
+            ws['C9'] = 'Max absoluto'
+            ws['D9'] = 'Min absoluto'
+            ws['E9'] = 'Max promedio'
+            ws['F9'] = 'Min promedio'
+            for valor, maximo_abs, maximos_pro, minimo_abs, minimo_pro, fecha in zip(valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo):
+                ws.cell(row=cont, column=1).value = fecha
+                ws.cell(row=cont, column=2).value = valor
+                ws.cell(row=cont, column=3).value = maximo_abs
+                ws.cell(row=cont, column=4).value = minimo_abs
+                ws.cell(row=cont, column=5).value = maximos_pro
+                ws.cell(row=cont, column=6).value = minimo_pro
+                cont = cont + 1
+        else:
+            ws['C9'] = 'Max promedio'
+            ws['D9'] = 'Min promedio'
+            for valor, maximos_pro, minimo_pro, fecha in zip(valores, maximos_pro, minimos_pro, tiempo):
+                ws.cell(row=cont, column=1).value = fecha
+                ws.cell(row=cont, column=2).value = valor
+                ws.cell(row=cont, column=3).value = maximos_pro
+                ws.cell(row=cont, column=4).value = minimo_pro
+                cont = cont + 1
+
         # grafico
         chart = LineChart()
         chart.title = variable.var_nombre
@@ -211,7 +198,7 @@ class ConsultasPeriodo(FormView):
         dates = Reference(ws, min_col=1, min_row=10, max_row=final)
         chart.set_categories(dates)
         if frecuencia != "0":
-            ws.add_chart(chart, "F9")
+            ws.add_chart(chart, "H9")
         # Establecemos el nombre del archivo
         nombre_archivo = str('"')+str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.xlsx"')
         # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
