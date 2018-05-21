@@ -72,10 +72,50 @@ $(document).ready(function() {
 
     return date;
   }
+  $("#id_estacion01").change(function () {
+    var estacion = $(this).val();
+    $("#id_variable01").find('option').remove().end()
+    $.ajax({
+      url: '/anuarios/variables',
+      data: {
+        'estacion': estacion
+      },
+      dataType: 'json',
+      success: function (data) {
+        //datos=JSON.parse(data)
+        $.each(data, function(index, value) {
+          $("#id_variable01").append('<option value="' + index + '">' + value + '</option>');
+        });
+      }
+    });
+  });
+
+  $("#id_estacion02").change(function () {
+    var estacion = $(this).val();
+    $("#id_variable02").find('option').remove().end()
+    $.ajax({
+      url: '/anuarios/variables',
+      data: {
+        'estacion': estacion
+      },
+      dataType: 'json',
+      success: function (data) {
+        //datos=JSON.parse(data)
+        $.each(data, function(index, value) {
+          $("#id_variable02").append('<option value="' + index + '">' + value + '</option>');
+        });
+      }
+    });
+  });
 
 });
 
 </script>
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Comparar dos variables entre dos estaciones</h3>
+    </div>
+</div>
 <div class="row">
     <form id="form_consulta" class="form" method="post" action="{% url 'reportes:comparacion_variable' %}">
         {% csrf_token %}

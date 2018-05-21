@@ -210,10 +210,10 @@ class ConsultasPeriodo(FormView):
         s2.smooth = True
         dates = Reference(ws, min_col=1, min_row=10, max_row=final)
         chart.set_categories(dates)
-
-        ws.add_chart(chart, "F9")
+        if frecuencia != "0":
+            ws.add_chart(chart, "F9")
         # Establecemos el nombre del archivo
-        nombre_archivo = str('"')+str(estacion.est_codigo) + str("_") + str(variable.var_nombre)  + str('.xlsx"')
+        nombre_archivo = str('"')+str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.xlsx"')
         # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
         response = HttpResponse(content_type="application/ms-excel")
         contenido = "attachment; filename={0}".format(nombre_archivo)

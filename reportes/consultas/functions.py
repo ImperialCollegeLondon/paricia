@@ -1,18 +1,25 @@
 # -*- coding: utf-8 -*-
-from estacion.models import Estacion
-from variable.models import Variable, Unidad
+
 from medicion.models import Medicion
 from django.db.models import Max, Min, Avg, Count, Sum
 from django.db.models.functions import (
     ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
 import plotly.offline as opy
 import plotly.graph_objs as go
-import calendar
 from datetime import timedelta, datetime
 from django.db import connection
 from math import ceil
-import time
 
+
+suma = 'sum(med_valor) as valor '
+promedio = 'avg(med_valor) as valor '
+max_abs = 'max(med_maximo) as max_abs '
+max_pro = 'max(med_valor) as max_pro '
+min_abs = 'min(med_minimo) as min_abs  '
+min_pro = 'min(med_valor) as min_pro '
+coma = ', '
+group_order = 'GROUP BY fecha ORDER BY fecha'
+var_max_min = [2, 3, 4, 6, 8, 9, 10, 11]
 
 def grafico(form):
     estacion = form.cleaned_data['estacion']
@@ -23,76 +30,138 @@ def grafico(form):
     div = ""
     # frecuencia instantanea
     if (frecuencia == str(0)):
-        valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+        valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+        maximos_pro = []
+        minimos_pro = []
     # frecuencia 5 minutos
     elif (frecuencia == str(1)):
-        valores, maximos, minimos, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia horaria
     elif (frecuencia == str(2)):
-        valores, maximos, minimos, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia diaria
     elif (frecuencia == str(3)):
-        valores, maximos, minimos, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia mensual
     elif (frecuencia == str(4)):
-        valores, maximos, minimos, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
     else:
         valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
     if len(valores) > 0:
         if variable.var_id == 1:
-            trace = go.Bar(
+            tra_pro = go.Bar(
                 x=tiempo,
                 y=valores,
-                name='Precipitacion (mm)'
             )
-            data = go.Data([trace])
-        elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-            print(len(maximos))
-            trace0 = go.Scatter(
-                x=tiempo,
-                y=maximos,
-                name='Max',
-                mode='lines',
-                line=dict(
-                    color=('rgb(205, 12, 24)'),
-                )
-            )
-            trace1 = go.Scatter(
-                x=tiempo,
-                y=minimos,
-                name='Min',
-                mode='lines',
-                line=dict(
-                    color=('rgb(50, 205, 50)'),
-                )
-            )
-            trace2 = go.Scatter(
-                x=tiempo,
-                y=valores,
-                name='Media',
-                mode='lines',
-                line=dict(
-                    color=('rgb(22, 96, 167)'),
-                )
-            )
-            data = go.Data([trace0, trace1, trace2])
-        else:
-            trace = go.Scatter(
+            data = go.Data([tra_pro])
+        elif frecuencia == str(0):
+            tra_prom = go.Scatter(
                 x=tiempo,
                 y=valores,
                 name='Valor',
                 mode='lines',
                 line=dict(
-                    color=('rgb(205, 12, 24)'),
+                    color='#1660A7',
                 )
             )
-            data = go.Data([trace])
+            tra_max_abs = go.Scatter(
+                x=tiempo,
+                y=maximos_abs,
+                name='Máximo',
+                mode='lines',
+                line=dict(
+                    color='#32CD32',
+                )
+            )
+            tra_min_abs = go.Scatter(
+                x=tiempo,
+                y=minimos_abs,
+                name='Mínimo',
+                mode='lines',
+                line=dict(
+                    color='#CD0C18',
+                )
+            )
+            data = go.Data([tra_max_abs, tra_prom, tra_min_abs])
+        else:
+            tra_prom = go.Scatter(
+                x=tiempo,
+                y=valores,
+                name='Media',
+                mode='lines',
+                line=dict(
+                    color='#1660A7',
+                )
+            )
+            if len(maximos_abs) != maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
+                tra_max_abs = go.Scatter(
+                    x=tiempo,
+                    y=maximos_abs,
+                    name='Máximo Absoluto',
+                    mode='lines',
+                    line=dict(
+                        color='#32CD32',
+                    )
+                )
+                tra_max_pro = go.Scatter(
+                    x=tiempo,
+                    y=maximos_pro,
+                    name='Máximo del Promedio',
+                    mode='lines',
+                    visible="legendonly",
+                    line=dict(
+                        color='#90EE90',
+                    )
+                )
+            elif len(maximos_abs) == maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
+                tra_max_abs = []
+                tra_max_pro = go.Scatter(
+                    x=tiempo,
+                    y=maximos_pro,
+                    name='Máximo del Promedio',
+                    mode='lines',
+                    line=dict(
+                        color='#90EE90',
+                    )
+                )
+            if len(minimos_abs) != minimos_abs.count(None) and len(minimos_pro) != minimos_pro.count(None):
+                tra_min_abs = go.Scatter(
+                    x=tiempo,
+                    y=minimos_abs,
+                    name='Mínimo Absoluto',
+                    mode='lines',
+                    line=dict(
+                        color='#CD0C18',
+                    )
+                )
+                tra_min_pro = go.Scatter(
+                    x=tiempo,
+                    y=minimos_pro,
+                    name='Mínimo del  Promedio',
+                    mode='lines',
+                    visible="legendonly",
+                    line=dict(
+                        color='#FF8C00',
+                    )
+                )
+            elif len(minimos_abs) == minimos_abs.count(None) and len(minimos_pro) != minimos_pro.count(None):
+                tra_min_abs = []
+                tra_min_pro = go.Scatter(
+                    x=tiempo,
+                    y=minimos_pro,
+                    name='Mínimo del Promedio',
+                    mode='lines',
+                    line=dict(
+                        color='#FF8C00',
+                    )
+                )
+            if len(tra_max_abs) > 0 and len(tra_min_abs) > 0:
+                data = go.Data([tra_max_abs, tra_max_pro, tra_prom, tra_min_abs, tra_min_pro])
+            else:
+                data = go.Data([tra_max_pro, tra_prom, tra_min_pro])
         layout = go.Layout(
-            title=variable.var_nombre + \
-                  " " + str(titulo_frecuencia(frecuencia)) + \
-                  " " + estacion.est_codigo,
-            yaxis=dict(title=variable.var_nombre + \
-                             str(" (") + variable.uni_id.uni_sigla + str(")")),
+            title=variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo,
+            yaxis=dict(title=variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"),
             xaxis=dict(
                 rangeselector=dict(
                     buttons=list([
@@ -169,604 +238,87 @@ def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
             minimo.append(fila.med_minimo)
         else:
             minimo.append(None)
-        # frecuencia.append(datetime.combine(fila['med_fecha'],fila['med_hora']))
         frecuencia.append(fila.med_fecha)
     return valor, maximo, minimo, frecuencia
 
 
 def datos_5minutos(estacion, variable, fecha_inicio, fecha_fin):
-    year_ini = fecha_inicio.strftime('%Y')
-    year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    cursor = connection.cursor()
-    datos = []
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        if variable.var_id == 1:
-            sql = 'SELECT sum(med_valor) as valor, '
-            sql += 'to_timestamp(floor((extract(\'epoch\' '
-            sql += 'from med_fecha) / 300 )) * 300)'
-            sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY interval_alias '
-            sql += 'ORDER BY interval_alias'
-        elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-            sql = 'SELECT avg(med_valor) as valor, '
-            sql += 'max(med_maximo) as maximo, '
-            sql += 'min(med_minimo) as minimo, '
-            sql += 'to_timestamp(floor((extract(\'epoch\' '
-            sql += 'from med_fecha) / 300 )) * 300)'
-            sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY interval_alias '
-            sql += 'ORDER BY interval_alias'
-        else:
-            sql = 'SELECT avg(med_valor) as valor, '
-            sql += 'to_timestamp(floor((extract(\'epoch\' '
-            sql += 'from med_fecha) / 300 )) * 300)'
-            sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\'  '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY interval_alias '
-            sql += 'ORDER BY interval_alias'
-        cursor.execute(sql)
-        datos = dictfetchall(cursor)
-    else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        consulta = []
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                if variable.var_id == 1:
-                    sql = 'SELECT sum(med_valor) as valor, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-                    print(sql)
-                else:
-                    sql = 'SELECT avg(med_valor) as valor, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-            elif str(year) == year_fin:
-                if variable.var_id == 1:
-                    sql = 'SELECT sum(med_valor) as valor, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-                else:
-                    sql = 'SELECT avg(med_valor) as valor, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-            else:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' order by med_fecha'
-                if variable.var_id == 1:
-                    sql = 'SELECT sum(med_valor) as valor, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT avg(med_valor) as valor, '
-                    sql = 'max(med_maximo) as maximo, '
-                    sql = 'min(med_minimo) as minimo, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-                else:
-                    sql = 'SELECT avg(med_valor) as valor, '
-                    sql += 'to_timestamp(floor((extract(\'epoch\' '
-                    sql += 'from med_fecha) / 300 )) * 300)'
-                    sql += 'AT TIME ZONE \'UTC5\' as interval_alias '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY interval_alias '
-                    sql += 'ORDER BY interval_alias'
-            cursor.execute(sql)
-            datos.extend(dictfetchall(cursor))
-
+    datos = armar_consulta(estacion, variable, 1, fecha_inicio, fecha_fin)
     valor = []
-    maximo = []
-    minimo = []
+    maximo_abs = []
+    maximo_pro = []
+    minimo_abs = []
+    minimo_pro = []
     frecuencia = []
     intervalo = timedelta(minutes=5)
     fecha = datetime.combine(fecha_inicio, datetime.min.time())
-    int_dias = ((fecha_fin - fecha_inicio).days + 1) * 288
+    int_5minutos = ((fecha_fin - fecha_inicio).days + 1) * 288
     num_datos = len(datos)
     item = 0
-    for dia in range(int_dias):
+    for dia in range(int_5minutos):
         if item < num_datos:
-            fecha_datos = datos[item].get('interval_alias')
+            fecha_datos = datos[item].get('fecha')
             if fecha_datos == fecha:
                 valor.append(datos[item].get('valor'))
-                maximo.append(datos[item].get('maximo'))
-                minimo.append(datos[item].get('minimo'))
-                # frecuencia.append(fecha_datos)
-                # fecha+=intervalo
+                maximo_abs.append(datos[item].get('max_abs'))
+                maximo_pro.append(datos[item].get('max_pro'))
+                minimo_abs.append(datos[item].get('min_abs'))
+                minimo_pro.append(datos[item].get('min_pro'))
                 item += 1
             else:
                 valor.append(None)
-                maximo.append(None)
-                minimo.append(None)
+                maximo_abs.append(None)
+                maximo_pro.append(None)
+                minimo_abs.append(None)
+                minimo_pro.append(None)
             frecuencia.append(fecha)
             fecha += intervalo
-    cursor.close()
-    return valor, maximo, minimo, frecuencia
+
+    return valor, maximo_abs, maximo_pro, minimo_abs, minimo_pro, frecuencia
 
 
 def datos_horarios(estacion, variable, fecha_inicio, fecha_fin):
-    year_ini = fecha_inicio.strftime('%Y')
-    year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    cursor = connection.cursor()
-    datos = []
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        if variable.var_id == 1:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'date_part(\'day\',med_fecha) as dia, '
-            sql += 'date_part(\'hour\',med_fecha) as hora, '
-            sql += 'sum(med_valor) as valor '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\''
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes, dia, hora '
-            sql += 'ORDER BY anio, mes, dia, hora '
-        elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'date_part(\'day\',med_fecha) as dia, '
-            sql += 'date_part(\'hour\',med_fecha) as hora, '
-            sql += 'avg(med_valor) as valor, '
-            sql += 'max(med_maximo) as maximo, '
-            sql += 'min(med_minimo) as minimo '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\''
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes, dia, hora '
-            sql += 'ORDER BY anio, mes, dia, hora'
-            print(sql)
-        else:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'date_part(\'day\',med_fecha) as dia, '
-            sql += 'date_part(\'hour\',med_fecha) as hora, '
-            sql += 'avg(med_valor) as valor '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes, dia, hora '
-            sql += 'ORDER BY anio, mes, dia, hora'
-        cursor.execute(sql)
-        datos = dictfetchall(cursor)
-    else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'sum(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-                else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'avg(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-            elif str(year) == year_fin:
-                if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'sum(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-                else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'avg(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-            else:
-                if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'sum(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-                else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'date_part(\'hour\',med_fecha) as hora, '
-                    sql += 'avg(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia, hora '
-                    sql += 'ORDER BY anio, mes, dia, hora'
-            cursor.execute(sql)
-            datos.extend(dictfetchall(cursor))
+    datos = armar_consulta(estacion,variable,2,fecha_inicio,fecha_fin)
     valor = []
-    maximo = []
-    minimo = []
+    maximos_abs = []
+    maximos_pro = []
+    minimos_abs = []
+    minimos_pro = []
     frecuencia = []
     intervalo = timedelta(hours=1)
     fecha = datetime.combine(fecha_inicio, datetime.min.time())
-    int_dias = ((fecha_fin - fecha_inicio).days + 1) * 24
+    int_horas = ((fecha_fin - fecha_inicio).days + 1) * 24
     num_datos = len(datos)
     item = 0
-    for dia in range(int_dias):
+    for dia in range(int_horas):
         if item < num_datos:
-            fecha_str = (str(int(datos[item].get('anio'))) + "-" +
-                         str(int(datos[item].get('mes'))) + "-" +
-                         str(int(datos[item].get('dia'))) + " " +
-                         str(int(datos[item].get('hora'))))
-            fecha_datos = datetime.strptime(fecha_str, '%Y-%m-%d %H')
-            # fecha_datos=datetime.combine(fecha,hora)
+            fecha_datos = datos[item].get('fecha')
             if fecha_datos == fecha:
                 valor.append(datos[item].get('valor'))
-                maximo.append(datos[item].get('maximo'))
-                minimo.append(datos[item].get('minimo'))
-                # frecuencia.append(fecha_datos)
-                # fecha+=intervalo
+                maximos_abs.append(datos[item].get('max_abs'))
+                maximos_pro.append(datos[item].get('max_pro'))
+                minimos_abs.append(datos[item].get('min_abs'))
+                minimos_pro.append(datos[item].get('min_pro'))
                 item += 1
             else:
                 valor.append(None)
-                maximo.append(None)
-                minimo.append(None)
+                maximos_abs.append(None)
+                maximos_pro.append(None)
+                minimos_abs.append(None)
+                minimos_pro.append(None)
             frecuencia.append(fecha)
             fecha += intervalo
-    return valor, maximo, minimo, frecuencia
+    return valor, maximos_abs, maximos_pro, minimos_abs, minimos_pro, frecuencia
 
 
 def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
-    year_ini = fecha_inicio.strftime('%Y')
-    year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    cursor = connection.cursor()
-    datos = []
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        if variable.var_id == 1:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'date_part(\'day\',med_fecha) as dia, '
-            sql += 'sum(med_valor) as valor '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes, dia '
-            sql += 'ORDER BY anio, mes, dia'
-        elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'date_part(\'day\',med_fecha) as dia, '
-            sql += 'avg(med_valor) as valor, '
-            sql += 'max(med_maximo) as maximo, max(med_valor) as maximo2, '
-            sql += 'min(med_minimo) as minimo, min(med_valor) as minimo2 '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes, dia '
-            sql += 'ORDER BY anio, mes, dia'
-            print(sql)
-        else:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'date_part(\'day\',med_fecha) as dia, '
-            sql += 'avg(med_valor) as valor, '
-            sql += 'max(med_valor) as maximo, '
-            sql += 'min(med_valor) as minimo '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes, dia '
-            sql += 'ORDER BY anio, mes, dia'
-        cursor.execute(sql)
-        datos = dictfetchall(cursor)
-    else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'sum(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, max(med_valor) as maximo2, '
-                    sql += 'min(med_minimo) as minimo, min(med_valor) as minimo2 '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-                else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_valor) as maximo, '
-                    sql += 'min(med_valor) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-            elif str(year) == year_fin:
-                if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'sum(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, max(med_valor) as maximo2, '
-                    sql += 'min(med_minimo) as minimo, min(med_valor) as minimo2 '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-                else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_valor) as maximo, '
-                    sql += 'min(med_valor) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-            else:
-                if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'sum(med_valor) as valor '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, max(med_valor) as maximo2, '
-                    sql += 'min(med_minimo) as minimo, min(med_valor) as minimo2 '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-                else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'date_part(\'day\',med_fecha) as dia, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_valor) as maximo, '
-                    sql += 'min(med_valor) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes, dia '
-                    sql += 'ORDER BY anio, mes, dia'
-            cursor.execute(sql)
-            datos.extend(dictfetchall(cursor))
+    datos = armar_consulta(estacion,variable,3,fecha_inicio,fecha_fin)
     valor = []
-    maximo = []
-    minimo = []
+    # maximos absolutos
+    maximos_abs = []
+    maximos_pro = []
+    minimos_abs = []
+    minimos_pro = []
     frecuencia = []
     intervalo = timedelta(days=1)
     fecha = fecha_inicio
@@ -775,83 +327,96 @@ def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
     item = 0
     for dia in range(int_dias):
         if item < num_datos:
-            fecha_str = (str(int(datos[item].get('anio'))) + "-" +
-                         str(int(datos[item].get('mes'))) + "-" +
-                         str(int(datos[item].get('dia'))))
-            fecha_datos = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+            fecha_datos = datos[item].get('fecha').date()
             if fecha_datos == fecha:
                 valor.append(datos[item].get('valor'))
-                if datos[item].get('maximo') is not None:
-                    maximo.append(datos[item].get('maximo'))
-                elif datos[item].get('maximo2') is not None:
-                    maximo.append(datos[item].get('maximo2'))
-                else:
-                    maximo.append(None)
-                if datos[item].get('minimo'):
-                    minimo.append(datos[item].get('minimo'))
-                elif datos[item].get('minimo2'):
-                    minimo.append(datos[item].get('minimo2'))
-                else:
-                    minimo.append(None)
-                # frecuencia.append(fecha_datos)
-                # fecha+=intervalo
+                maximos_abs.append(datos[item].get('max_abs'))
+                maximos_pro.append(datos[item].get('max_pro'))
+                minimos_abs.append(datos[item].get('min_abs'))
+                minimos_pro.append(datos[item].get('min_pro'))
                 item += 1
             else:
                 valor.append(None)
-                maximo.append(None)
-                minimo.append(None)
+                maximos_abs.append(None)
+                maximos_pro.append(None)
+                minimos_abs.append(None)
+                minimos_pro.append(None)
             frecuencia.append(fecha)
             fecha += intervalo
-    return valor, maximo, minimo, frecuencia
+    return valor, maximos_abs,maximos_pro, minimos_abs, minimos_pro, frecuencia
 
 
 def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
+    datos = armar_consulta(estacion, variable, 4, fecha_inicio, fecha_fin)
+    valor = []
+    maximo_abs = []
+    maximo_pro = []
+    minimo_abs = []
+    minimo_pro = []
+    frecuencia = []
+    fecha = fecha_inicio.replace(day=1)
+    intervalo = timedelta(days=30)
+    dias = float((fecha_fin - fecha_inicio).days)
+    meses = int(ceil(dias / 30))
+    num_datos = len(datos)
+    item = 0
+    for mes in range(meses):
+        if item < num_datos:
+            fecha_datos = datos[item].get('fecha').date()
+            if fecha == fecha_datos:
+                valor.append(datos[item].get('valor'))
+                maximo_abs.append(datos[item].get('max_abs'))
+                maximo_pro.append(datos[item].get('max_pro'))
+                minimo_abs.append(datos[item].get('min_abs'))
+                minimo_pro.append(datos[item].get('min_pro'))
+                item += 1
+            else:
+                valor.append(None)
+                maximo_abs.append(None)
+                maximo_pro.append(None)
+                minimo_abs.append(None)
+                minimo_pro.append(None)
+            frecuencia.append(fecha)
+            intervalo = dias_mes(fecha.month, fecha.year)
+            fecha += timedelta(days=intervalo)
+
+    return valor, maximo_abs, maximo_pro, minimo_abs, minimo_pro, frecuencia
+
+
+def armar_consulta(estacion,variable,frecuencia,fecha_inicio,fecha_fin):
     year_ini = fecha_inicio.strftime('%Y')
     year_fin = fecha_fin.strftime('%Y')
     var_cod = variable.var_codigo
     cursor = connection.cursor()
     datos = []
+    filtro_completo = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
+    filtro_completo += 'med_fecha<=\'' + str(fecha_fin) + '\' and med_estado is not False '
+    filtro_mayor = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
+    filtro_mayor += 'med_estado is not False '
+    filtro_menor = 'est_id_id=' + str(estacion.est_id) + ' and '
+    filtro_menor += 'med_fecha<=\'' + str(fecha_fin) + '\' and med_estado is not False '
+    filtro_simple = 'est_id_id=' + str(estacion.est_id) + ' and med_estado is not False '
+    if frecuencia == 1:
+        fecha = 'to_timestamp(floor((extract(\'epoch\' '
+        fecha += 'from med_fecha) / 300 )) * 300)'
+        fecha += 'AT TIME ZONE \'UTC5\' as fecha, '
+    elif frecuencia == 2:
+        fecha = 'date_trunc(\'hour\',med_fecha) as fecha, '
+    elif frecuencia == 3:
+        fecha = 'date_trunc(\'day\',med_fecha) as fecha, '
+    elif frecuencia == 4:
+        fecha = 'date_trunc(\'month\',med_fecha) as fecha, '
     if year_ini == year_fin:
         tabla = var_cod + '.m' + year_ini
         if variable.var_id == 1:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'sum(med_valor) as valor '
+            sql = 'SELECT ' + fecha + suma
             sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes '
-            sql += 'ORDER BY anio, mes'
-        elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'avg(med_valor) as valor, '
-            sql += 'max(med_maximo) as maximo, '
-            sql += 'min(med_minimo) as minimo '
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes '
-            sql += 'ORDER BY anio, mes'
-            print(sql)
+            sql += filtro_completo + group_order
         else:
-            sql = 'SELECT '
-            sql += 'date_part(\'year\', med_fecha) as anio, '
-            sql += 'date_part(\'month\', med_fecha) as mes, '
-            sql += 'avg(med_valor) as valor '
+            sql = 'SELECT ' + fecha
+            sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
             sql += 'FROM ' + tabla + ' WHERE '
-            sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-            sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-            sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-            sql += 'and med_estado is not False '
-            sql += 'GROUP BY anio, mes '
-            sql += 'ORDER BY anio, mes'
+            sql += filtro_completo + group_order
         cursor.execute(sql)
         datos = dictfetchall(cursor)
     else:
@@ -860,143 +425,39 @@ def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
             tabla = var_cod + '.m' + str(year)
             if str(year) == year_ini:
                 if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'sum(med_valor) as valor '
+                    sql = 'SELECT ' + fecha + suma
                     sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
+                    sql += filtro_mayor + group_order
                 else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'avg(med_valor) as valor '
+                    sql = 'SELECT ' + fecha
+                    sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
                     sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
+                    sql += filtro_mayor + group_order
             elif str(year) == year_fin:
                 if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'sum(med_valor) as valor '
+                    sql = 'SELECT ' + fecha + suma
                     sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
+                    sql += filtro_menor + group_order
                 else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'avg(med_valor) as valor '
+                    sql = 'SELECT ' + fecha
+                    sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
                     sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                    sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
+                    sql += filtro_menor + group_order
             else:
                 if variable.var_id == 1:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'sum(med_valor) as valor '
+                    sql = 'SELECT ' + fecha + suma
                     sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
-                elif variable.var_id in [2, 3, 6, 8, 9, 10, 11]:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'avg(med_valor) as valor, '
-                    sql += 'max(med_maximo) as maximo, '
-                    sql += 'min(med_minimo) as minimo '
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
+                    sql += filtro_simple + group_order
                 else:
-                    sql = 'SELECT '
-                    sql += 'date_part(\'year\', med_fecha) as anio, '
-                    sql += 'date_part(\'month\', med_fecha) as mes, '
-                    sql += 'avg(med_valor) as valor '
+                    sql = 'SELECT ' + fecha
+                    sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
                     sql += 'FROM ' + tabla + ' WHERE '
-                    sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                    sql += 'and med_estado is not False '
-                    sql += 'GROUP BY anio, mes '
-                    sql += 'ORDER BY anio, mes'
+                    sql += filtro_simple + group_order
+            print(sql)
             cursor.execute(sql)
             datos.extend(dictfetchall(cursor))
-    valor = []
-    maximo = []
-    minimo = []
-    frecuencia = []
-    fecha = fecha_inicio.replace(day=1)
-    intervalo = timedelta(days=30)
-    dias = float((fecha_fin - fecha_inicio).days)
-    meses = int(ceil(dias / 30))
-    print(meses)
-    num_datos = len(datos)
-    item = 0
-    for mes in range(meses):
-        if item < num_datos:
-            fecha_str = (str(int(datos[item].get('anio'))) + "-" +
-                         str(int(datos[item].get('mes'))))
-            fecha_datos = datetime.strptime(fecha_str, '%Y-%m').date()
-            if fecha == fecha_datos:
-                valor.append(datos[item].get('valor'))
-                maximo.append(datos[item].get('maximo'))
-                minimo.append(datos[item].get('minimo'))
-                item += 1
-            else:
-                valor.append(None)
-                maximo.append(None)
-                minimo.append(None)
-            fecha_str = str(calendar.month_abbr[fecha.month]) + " " + str(fecha.year)
-            frecuencia.append(fecha)
-            intervalo = dias_mes(fecha.month, fecha.year)
-            fecha += timedelta(days=intervalo)
-
-    return valor, maximo, minimo, frecuencia
-    # fecha_str = str(calendar.month_abbr[fila.get('month')])+" "+str(fila.get('year'))
+    cursor.close()
+    return datos
 
 
 def dias_mes(month, year):
