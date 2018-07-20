@@ -34,7 +34,6 @@ def guardar_datos(imp_id, form):
     # archivo a guardar
     print ('validar_fechas: ' + time.ctime())
     informacion, existe_vacio = validar_fechas(importacion)
-    #archivo = open(str(BASE_DIR) + '/media/' + str(importacion.imp_archivo))
     ruta=str(BASE_DIR) + '/media/' + str(importacion.imp_archivo)
     enc = 'iso-8859-1'
     archivo=io.open(ruta, mode="r", encoding=enc)
@@ -47,7 +46,6 @@ def guardar_datos(imp_id, form):
             guardar_vacios(fila, estacion, observacion, importacion.imp_fecha_ini)
     print ('construir_matriz: ' + time.ctime())
     datos = construir_matriz(archivo, formato, estacion)
-    # print 'crear datos: '+time.ctime()
     Datos.objects.bulk_create(datos)
     print ('eliminar tabla datos' + time.ctime())
     Datos.objects.all().delete()
@@ -83,27 +81,23 @@ def construir_matriz(archivo, formato, estacion):
             j = 0
             for fila in clasificacion:
                 if fila.cla_valor is not None:
-                    # valor=float(valores[fila.cla_valor])
                     valor = valid_number(valores[fila.cla_valor])
-                    if valor != None:
-                        if acumulado and fila.var_id.var_id == 1:
-                            dblValor = valor
-                            if dblValor == 0:
-                                UltimoValor = 0
-                            ValorReal = dblValor - UltimoValor
-                            if ValorReal < 0:
-                                ValorReal = dblValor
-                            UltimoValor = dblValor
-                            valor = ValorReal
+                    if valor != None and acumulado and fila.var_id.var_id == 1:
+                        dblValor = valor
+                        if dblValor == 0:
+                            UltimoValor = 0
+                        ValorReal = dblValor - UltimoValor
+                        if ValorReal < 0:
+                            ValorReal = dblValor
+                        UltimoValor = dblValor
+                        valor = ValorReal
                 else:
                     valor = None
                 if fila.cla_maximo is not None:
-                    # maximo=float(valores[fila.cla_maximo])
                     maximo = valid_number(valores[fila.cla_maximo])
                 else:
                     maximo = None
                 if fila.cla_minimo is not None:
-                    # minimo=float(valores[fila.cla_minimo])
                     minimo = valid_number(valores[fila.cla_minimo])
                 else:
                     minimo = None
@@ -123,7 +117,6 @@ def construir_matriz(archivo, formato, estacion):
 def verificar_vacios(fecha_archivo, fecha_datos):
     estado = False
     vacios = []
-    # fecha_datos=list(medicion)[0].get('med_fecha').date()
     if isinstance(fecha_datos, str):
         estado = False
     else:
@@ -262,8 +255,6 @@ def cambiar_formato_hora(formato, hora_str):
 
 # verificar si existen los datos
 def validar_fechas(importacion):
-    print
-    "validar_fechas" + time.ctime()
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
     formato = importacion.for_id
@@ -295,8 +286,6 @@ def validar_fechas(importacion):
 
 
 def ultima_fecha(est_id, var_cod, year):
-    print
-    "ultima_fecha: " + time.ctime()
     # año base de la información
     year_int = 2007
     tabla = var_cod + '.m' + year
@@ -311,7 +300,7 @@ def ultima_fecha(est_id, var_cod, year):
         else:
             year_int = int(year)
             year_int -= 1
-            tabla = tabla = var_cod + '.m' + str(year_int)
+            tabla = var_cod + '.m' + str(year_int)
             year = str(year_int)
         if year_int < 2016:
             break
@@ -321,8 +310,6 @@ def ultima_fecha(est_id, var_cod, year):
 
 
 def consulta_fecha(fec_ini, est_id, tabla):
-    print
-    "consulta_fecha: " + time.ctime()
     sql = 'SELECT med_id FROM ' + tabla
     sql += ' WHERE med_fecha>= \'' + fec_ini + '\' '
     sql += 'and est_id_id=' + est_id + ' and med_estado is not False LIMIT 1'

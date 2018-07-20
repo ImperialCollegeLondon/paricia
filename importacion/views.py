@@ -43,7 +43,6 @@ class ImportacionList(LoginRequiredMixin, ListView, FormView):
 
 class ImportacionDetail(LoginRequiredMixin, DetailView, FormView):
     model = Importacion
-    # fields = ['imp_observacion']
     template_name = 'importacion/importacion_detail.html'
     form_class = ImportacionForm
     # parametros propios

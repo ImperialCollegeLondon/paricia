@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from bitacora.forms import BitacoraSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from home.functions import pagination
 
 
 # bitacora views
@@ -49,8 +50,6 @@ class BitacoraList(LoginRequiredMixin, ListView, FormView):
     def get_context_data(self, **kwargs):
         context = super(BitacoraList, self).get_context_data(**kwargs)
         page = self.request.GET.get('page')
-        print
-        kwargs
         context.update(pagination(self.object_list, page, 10))
         context["cadena"] = self.cadena
         return context
@@ -74,27 +73,3 @@ class BitacoraUpdate(LoginRequiredMixin, UpdateView):
 class BitacoraDelete(LoginRequiredMixin, DeleteView):
     model = Bitacora
     success_url = reverse_lazy('bitacora:bitacora_index')
-
-
-def pagination(lista, page, num_reg):
-    # lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    if page is None:
-        page = 1
-    else:
-        page = int(page)
-    if page == 1:
-        start = 1
-        last = start + 1
-    elif page == paginator.num_pages:
-        last = paginator.num_pages
-        start = last - 1
-    else:
-        start = page - 1
-        last = page + 1
-    context = {
-        'first': '1',
-        'last': paginator.num_pages,
-        'range': range(start, last + 1),
-    }
-    return context

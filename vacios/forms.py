@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# from django.forms import ModelForm
 from django import forms
 from vacios.models import Vacios
 from estacion.models import Estacion

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# from django import forms
 from django.forms import ModelForm
 from formato.models import Formato, Clasificacion, Asociacion
 from django import forms
@@ -62,8 +61,7 @@ class ClasificacionSearchForm(ModelForm):
             )
         elif var_id is None and for_id is None:
             lista = Clasificacion.objects.all()
-        else:
-            lista = Clasificacion.objects.all()
+
         return lista
 
 
@@ -98,8 +96,6 @@ class AsociacionSearchForm(ModelForm):
                 est_id=est_id
             )
         elif est_id is None and for_id is None:
-            lista = Asociacion.objects.all()
-        else:
             lista = Asociacion.objects.all()
         return lista
 

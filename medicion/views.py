@@ -9,8 +9,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
-from medicion.forms import MedicionSearchForm, FilterDeleteForm
-from medicion.functions import (filtrar, consultar, eliminar,
+from medicion.forms import MedicionSearchForm, FilterDeleteForm, MedicionConsultaForm
+from medicion.functions import (filtrar, datos_instantaneos, eliminar,
                                 consultar_objeto, modificar_medicion, eliminar_medicion,
                                 guardar_log, grafico)
 from django.db import connection
@@ -44,12 +44,11 @@ class MedicionFilter(LoginRequiredMixin, FormView):
 
     def post(self, request, *args, **kwargs):
         form = MedicionSearchForm(self.request.POST or None)
-        if form.is_valid():
-            if self.request.is_ajax():
-                self.lista = filtrar(form)
-                self.variable = form.cleaned_data['variable']
-                return render(request, 'medicion/medicion_list.html',
-                              {'lista': self.lista, 'variable': self.variable})
+        if form.is_valid() and self.request.is_ajax():
+            self.lista = filtrar(form)
+            self.variable = form.cleaned_data['variable']
+            return render(request, 'medicion/medicion_list.html',
+                          {'lista': self.lista, 'variable': self.variable})
         return self.render_to_response(self.get_context_data(form=form))
 
     def get_context_data(self, **kwargs):
@@ -128,7 +127,6 @@ class MedicionUpdate(LoginRequiredMixin, UpdateView):
     url = ""
 
     def get(self, request, *args, **kwargs):
-        # print kwargs.get('pk')
         med_id = kwargs.get('pk')
         med_fecha = kwargs.get('fecha')
         var_id = kwargs.get('var_id')
@@ -176,7 +174,7 @@ class MedicionDelete(LoginRequiredMixin, UpdateView):
         return context
 
 
-class MedicionImportacion(LoginRequiredMixin, FormView):
+'''class MedicionImportacion(LoginRequiredMixin, FormView):
     model = Medicion
     template_name = 'medicion/medicion_importacion.html'
     form_class = MedicionSearchForm
@@ -208,10 +206,22 @@ class MedicionImportacion(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(MedicionImportacion, self).get_context_data(**kwargs)
-        return context
+        return context'''
 
 
-class Informacion():
-    nombre = ""
-    lista = ""
-    grafico = ""
+class MedicionConsulta(LoginRequiredMixin,FormView):
+    template_name = 'medicion/consulta.html'
+    form_class = MedicionConsultaForm
+    success_url = '/medicion/consulta'
+    grafico = []
+
+    def post(self, request, *args, **kwargs):
+        form = MedicionConsultaForm(self.request.POST or None)
+        if form.is_valid() and self.request.is_ajax():
+            valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(form)
+            self.grafico = grafico(form, valores, maximos_abs, minimos_abs, tiempo)
+            return render(request, 'reportes/consultas/grafico.html',
+                          {'grafico': self.grafico})
+        # elif form.is_valid():
+            # return self.export_excel(self.frecuencia, form)
+        return render(request, 'home/form_error.html', {'form': form})

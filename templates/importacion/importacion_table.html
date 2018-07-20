@@ -55,7 +55,7 @@ $(document).ready(function() {
         <td>{{ item.imp_fecha_fin|date:"d/m/Y H:i:s"}}</td>
         <td>{{ item.imp_observacion }}</td>
         <td>
-            <a target="_blank" href="{% url 'medicion:medicion_importacion' item.imp_id %}">
+            <a target="_blank" href="{# url 'medicion:medicion_importacion' item.imp_id #}">
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
             </a>
         </td>

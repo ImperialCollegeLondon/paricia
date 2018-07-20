@@ -83,24 +83,24 @@ def comparar(form):
     frecuencia = form.cleaned_data['frecuencia']
     # frecuencia 5 minutos
     if (frecuencia == str(1)):
-        val01, max01, min01, time01 = datos_5minutos(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_5minutos(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, min03, time03 = datos_5minutos(estacion03, variable, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_5minutos(estacion01, variable, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_5minutos(estacion02, variable, fecha_inicio, fecha_fin)
+        val03, max03, max_pro03, min03, min_pro03, time03 = datos_5minutos(estacion03, variable, fecha_inicio, fecha_fin)
     # frecuencia horaria
     elif (frecuencia == str(2)):
-        val01, max01, min01, time01 = datos_horarios(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_horarios(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, min03, time03 = datos_horarios(estacion03, variable, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_horarios(estacion01, variable, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_horarios(estacion02, variable, fecha_inicio, fecha_fin)
+        val03, max03, max_pro03, min03, min_pro03, time03 = datos_horarios(estacion03, variable, fecha_inicio, fecha_fin)
     # frecuencia diaria
     elif (frecuencia == str(3)):
-        val01, max01, min01, time01 = datos_diarios(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_diarios(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, min03, time03 = datos_diarios(estacion03, variable, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_diarios(estacion01, variable, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_diarios(estacion02, variable, fecha_inicio, fecha_fin)
+        val03, max03, max_pro03, min03, min_pro03, time03 = datos_diarios(estacion03, variable, fecha_inicio, fecha_fin)
     # frecuencia mensual
     elif (frecuencia == str(4)):
-        val01, max01, min01, time01 = datos_mensuales(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_mensuales(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, min03, time03 = datos_mensuales(estacion03, variable, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_mensuales(estacion01, variable, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_mensuales(estacion02, variable, fecha_inicio, fecha_fin)
+        val03, max03, max_pro03, min03, min_pro03, time03 = datos_mensuales(estacion03, variable, fecha_inicio, fecha_fin)
     trace0 = trace_graph(variable, estacion01, time01, val01)
     trace1 = trace_graph(variable, estacion02, time02, val02)
     trace2 = trace_graph(variable, estacion03, time03, val03)
@@ -150,16 +150,16 @@ def comparar_variable(form):
     frecuencia = form.cleaned_data['frecuencia']
     # frecuencia 5 minutos
     if (frecuencia == str(1)):
-        val01, max01, min01, time01 = datos_5minutos(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_5minutos(estacion02, variable02, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_5minutos(estacion01, variable01, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_5minutos(estacion02, variable02, fecha_inicio, fecha_fin)
     # frecuencia horaria
     elif (frecuencia == str(2)):
-        val01, max01, min01, time01 = datos_horarios(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_horarios(estacion02, variable02, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_horarios(estacion01, variable01, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_horarios(estacion02, variable02, fecha_inicio, fecha_fin)
     # frecuencia diaria
     elif (frecuencia == str(3)):
-        val01, max01, min01, time01 = datos_diarios(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_diarios(estacion02, variable02, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_diarios(estacion01, variable01, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_diarios(estacion02, variable02, fecha_inicio, fecha_fin)
     # frecuencia mensual
     elif (frecuencia == str(4)):
         val01, max01, min01, time01 = datos_mensuales(estacion01, variable01, fecha_inicio, fecha_fin)

@@ -18,8 +18,6 @@ class ImportacionSearchForm(forms.Form):
     def filtrar(self, form):
         estacion = form.cleaned_data['estacion']
         fecha = form.cleaned_data['fecha']
-        print
-        fecha
         if estacion and fecha:
             lista = Importacion.objects.filter(est_id=estacion
                                                ).filter(imp_fecha__range=[fecha, fecha])

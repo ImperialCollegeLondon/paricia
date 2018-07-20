@@ -55,7 +55,7 @@ class MarcaDelete(LoginRequiredMixin, DeleteView):
 
 
 def pagination(lista, page, num_reg):
-    # lista=model.objects.all()
+
     paginator = Paginator(lista, num_reg)
     if page is None:
         page = 1

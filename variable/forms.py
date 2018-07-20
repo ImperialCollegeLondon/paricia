@@ -6,7 +6,7 @@ from estacion.models import Estacion
 from formato.models import Variable
 
 
-# from sensor.models import Sensor
+
 
 class ControlSearchForm(forms.Form):
     var_id = forms.ModelChoiceField(label="Variable", required=False,

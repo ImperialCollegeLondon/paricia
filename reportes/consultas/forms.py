@@ -13,10 +13,9 @@ import datetime, calendar
 from django.db import connection
 
 
-# cursor = connection.cursor()
 
 class MedicionSearchForm(forms.Form):
-    FRECUENCIA = (
+    lista_frecuencias = (
         ('0', 'Minima'),
         ('1', '5 Minutos'),
         ('2', 'Horario'),
@@ -30,11 +29,10 @@ class MedicionSearchForm(forms.Form):
 
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
-    frecuencia = forms.ChoiceField(choices=FRECUENCIA)
+    frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
     # saber si hay datos
     def exists(self, form):
-        # print self.estacion
         estacion = form.cleaned_data['estacion']
         variable = form.cleaned_data['variable']
         fecha_inicio = form.cleaned_data['inicio']
@@ -48,8 +46,8 @@ class MedicionSearchForm(forms.Form):
 
 
 class ComparacionForm(forms.Form):
-    FRECUENCIA = (
-        ('1', '5 Minutos'),
+    lista_frecuencias = (
+        # ('1', '5 Minutos'),
         ('2', 'Horario'),
         ('3', 'Diario'),
         ('4', 'Mensual'),
@@ -60,12 +58,12 @@ class ComparacionForm(forms.Form):
     variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable')
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
-    frecuencia = forms.ChoiceField(choices=FRECUENCIA)
+    frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
 
 class VariableForm(forms.Form):
-    FRECUENCIA = (
-        ('1', '5 Minutos'),
+    lista_frecuencias = (
+        # ('1', '5 Minutos'),
         ('2', 'Horario'),
         ('3', 'Diario'),
         ('4', 'Mensual'),
@@ -76,4 +74,4 @@ class VariableForm(forms.Form):
     variable02 = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable segunda estación')
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
-    frecuencia = forms.ChoiceField(choices=FRECUENCIA)
+    frecuencia = forms.ChoiceField(choices=lista_frecuencias)

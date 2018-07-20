@@ -110,15 +110,12 @@ def verficar_anuario(estacion, variable, periodo):
     elif variable.var_id == 3:
         result = models.HumedadAire.objects.filter(est_id=estacion.est_id) \
             .filter(hai_periodo=periodo).exists()
-    elif variable.var_id == 4:
-        result = models.Viento.objects.filter(est_id=estacion.est_id) \
-            .filter(vie_periodo=periodo).exists()
-    elif variable.var_id == 5:
+    elif variable.var_id == 4 or variable.var_id == 5:
         result = models.Viento.objects.filter(est_id=estacion.est_id) \
             .filter(vie_periodo=periodo).exists()
     elif variable.var_id == 6:
         result = models.HumedadSuelo.objects.filter(est_id=estacion.est_id) \
-            .filter(hsu_periodo=periodo)
+            .filter(hsu_periodo=periodo).exists()
     elif variable.var_id == 7:
         result = models.RadiacionMaxima.objects.filter(est_id=estacion.est_id) \
             .filter(rad_periodo=periodo).exists()

@@ -75,7 +75,7 @@
                         <li><a href="{% url 'formato:formato_index' %}">Formatos de Importación</a></li>
                         <li><a href="{% url 'formato:asociacion_index' %}">Formatos por Estación</a></li>
                         <li><a href="{% url 'importacion:importacion_create'%}">Importar Archivo</a></li>
-
+                        <li><a href="{% url 'medicion:medicion_consulta' %}">Gestión Datos Crudos</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="{% url 'vacios:vacios_index' %}">Vacios de Información</a></li>
                         <li><a href="{% url 'vacios:dias' %}">Registro de Vacios por días</a></li>
@@ -89,6 +89,7 @@
                         Validación<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'medicion:medicion_filter' %}">Datos Crudos</a></li>
+
                         <!--<li><a href="{% url 'medicion:filter_delete' %}">Borrar Datos Crudos</a></li>-->
                     </ul>
                 </li>

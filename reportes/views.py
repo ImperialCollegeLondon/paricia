@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from openpyxl.styles import Font
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image
-from openpyxl.chart.axis import DateAxis
+
 from openpyxl.chart import (
     LineChart,
     Reference,
@@ -30,10 +30,9 @@ class ReportesAnuario(FormView):
 
     def post(self, request, *args, **kwargs):
         form = AnuarioForm(self.request.POST or None)
-        if form.is_valid():
-            if self.request.is_ajax():
-                self.lista = filtrar(form)
-                return render(request,'reportes/anuario/anuario.html',self.lista)
+        if form.is_valid() and self.request.is_ajax():
+            self.lista = filtrar(form)
+            return render(request,'reportes/anuario/anuario.html',self.lista)
         return render(request, 'home/form_error.html', {'form': form})
 
 

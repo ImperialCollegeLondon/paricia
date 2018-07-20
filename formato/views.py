@@ -217,32 +217,6 @@ class ClasificacionCreate(LoginRequiredMixin, CreateView):
         return context
 
 
-'''class ClasificacionList(LoginRequiredMixin,ListView,FormView):
-    #parámetros ListView
-    model=Clasificacion
-    paginate_by=10
-    #parámetros FormView
-    template_name='formato/clasificacion_list.html'
-    form_class=ClasificacionSearchForm
-    #parametros propios
-    cadena=str("")
-    def post(self, request, *args, **kwargs):
-        form=ClasificacionSearchForm(self.request.POST or None)
-        page=kwargs.get('page')
-        if form.is_valid():
-            self.object_list=form.filtrar(form)
-        else:
-            self.object_list=Clasificacion.objects.all()
-        context = super(ClasificacionList, self).get_context_data(**kwargs)
-        context.update(pagination(self.object_list,page,10))
-        return render(request,'formato/clasificacion_table.html',context)
-    def get_context_data(self, **kwargs):
-        context = super(ClasificacionList, self).get_context_data(**kwargs)
-        page=self.request.GET.get('page')
-        context.update(pagination(self.object_list,page,10))
-        return context'''
-
-
 class ClasificacionList(LoginRequiredMixin, ListView):
     model = Clasificacion
 

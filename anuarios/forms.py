@@ -25,5 +25,4 @@ class AnuarioForm(forms.Form):
                                       queryset=Estacion.objects.order_by('est_id').all(), label='Estación')
     variable = forms.ModelChoiceField(required=False,
                                       queryset=Variable.objects.order_by('var_id').all(), label='Variable')
-    # variable = forms.ChoiceField(required=False,choices=lista_variables(),label='Variable')
     periodo = forms.ChoiceField(required=False, choices=YEAR, label='Año')

@@ -12,8 +12,6 @@ def matrizV_mensual(estacion, variable, periodo):
     tabla_velocidad = "vvi.m" + periodo
     tabla_direccion = "dvi.m" + periodo
     cursor = connection.cursor()
-    print
-    "Inicio de la Función mensual ", datetime.now()
     # velocidad media en m/s
     sql = "SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
@@ -35,15 +33,10 @@ def matrizV_mensual(estacion, variable, periodo):
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     calma = dictfetchall(cursor)
-
-    print
-    "Inicio del For que recorrre los meses", datetime.now()
     direcciones = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
     valores = [[] for y in range(12)]
     for item_obs, item_calma, item_velocidad in zip(num_obs, calma, vel_media):
         mes = int(item_obs.get('mes'))
-        print
-        "Inicio de la consulta por mes", datetime.now()
         # lista de datos de la dirección de viento
         sql = "SELECT med_valor, med_fecha "
         sql += "FROM " + tabla_direccion + " "
@@ -60,12 +53,8 @@ def matrizV_mensual(estacion, variable, periodo):
         sql += "ORDER BY med_fecha"
         cursor.execute(sql)
         dat_vvi = dictfetchall(cursor)
-        print
-        "Fin de la consulta por mes", datetime.now()
         vvi = [[0 for x in range(0)] for y in range(8)]
         vvi_max = [[0 for x in range(0)] for y in range(8)]
-        print
-        "Clasificar velocidades por direccion", datetime.now()
         for val_dvi, val_vvi in zip(dat_dvi, dat_vvi):
             # agrupa las velocidades por direccion
             if val_vvi.get('med_valor') is not None:
@@ -109,8 +98,6 @@ def matrizV_mensual(estacion, variable, periodo):
                     vvi_max[7].append(val_vvi.get('med_valor')
                                       if val_vvi.get('med_maximo') is None else
                                       val_vvi.get('med_maximo'))
-        print
-        "Fin de la clasificacion", datetime.now()
         maximos = []
         valores[mes - 1].append(mes)
         # recorro la matriz de datos en base al número de direcciones

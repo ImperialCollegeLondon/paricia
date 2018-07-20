@@ -96,11 +96,6 @@ def minimoshai(datos_diarios_min):
         if len(val_min_abs) > 0:
             min_abs.append(min(val_min_abs))
             mindia.append(val_mindia[val_min_abs.index(min(val_min_abs))])
-            if i == 9:
-                print
-                val_min_abs
-                print
-                min(val_min_abs)
         else:
             min_abs.append(0)
             mindia.append(0)

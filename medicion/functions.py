@@ -28,8 +28,6 @@ def filtrar(form):
         sql += 'med_fecha<=\'' + str(fin) + '\' and med_estado is not False '
         sql += 'and med_valor is not null '
         sql += 'order by med_fecha'
-        print
-        sql
         consulta = list(Medicion.objects.raw(sql))
     else:
         range_year = range(int(year_ini), int(year_fin) + 1)
@@ -54,8 +52,6 @@ def filtrar(form):
                 sql += 'est_id_id=' + str(estacion.est_id) + ' and med_estado is not False '
                 sql += 'and med_valor is not null '
                 sql += 'order by med_fecha'
-            print
-            sql
             consulta.extend(list(Medicion.objects.raw(sql)))
 
     # parametros para la resta consecutiva
@@ -76,8 +72,6 @@ def filtrar(form):
             valor = item.med_maximo
         elif tipo_variable == 'minimo':
             valor = item.med_minimo
-        else:
-            valor = item.med_valor
         valor_error = False
         resta = 0
         resta_error = False
@@ -156,8 +150,6 @@ def consultar_objeto(kwargs):
     sql = 'SELECT * FROM ' + tabla + ' WHERE '
     sql += 'med_id=' + str(med_id)
     consulta = list(Medicion.objects.raw(sql))
-    print
-    sql
     return consulta[0]
 
 
@@ -200,8 +192,6 @@ def eliminar_medicion(kwargs, data):
     tabla = var_cod + '.m' + year
     sql = "UPDATE " + tabla + " SET med_estado = false "
     sql += "WHERE med_id = " + str(med_id)
-    print
-    sql
     with connection.cursor() as cursor:
         cursor.execute(sql)
 
@@ -226,23 +216,21 @@ def guardar_log(accion, medicion, user):
     logmedicion.save()
 
 
-def consultar(form):
+
+def datos_instantaneos(form):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
-    inicio = form.cleaned_data['inicio']
-    fin = form.cleaned_data['fin']
-    year_ini = inicio.strftime('%Y')
-    year_fin = fin.strftime('%Y')
+    fecha_inicio = form.cleaned_data['inicio']
+    fecha_fin = form.cleaned_data['fin']
+    year_ini = fecha_inicio.strftime('%Y')
+    year_fin = fecha_fin.strftime('%Y')
     var_cod = variable.var_codigo
     if year_ini == year_fin:
         tabla = var_cod + '.m' + year_ini
         sql = 'SELECT * FROM ' + tabla + ' WHERE '
         sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-        sql += 'med_fecha>=\'' + str(inicio) + '\' and '
-        sql += 'med_fecha<=\'' + str(fin) + '\' and med_estado is not False '
-        sql += 'order by med_fecha'
-        print
-        sql
+        sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
+        sql += 'med_fecha<=\'' + str(fecha_fin) + '\' order by med_fecha'
         consulta = list(Medicion.objects.raw(sql))
     else:
         range_year = range(int(year_ini), int(year_fin) + 1)
@@ -252,23 +240,37 @@ def consultar(form):
             if str(year) == year_ini:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
                 sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_fecha>=\'' + str(inicio) + '\' med_estado is not False '
-                sql += 'order by med_fecha'
+                sql += 'med_estado is not False and '
+                sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' order by med_fecha'
             elif str(year) == year_fin:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
                 sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_fecha<=\'' + str(fin) + '\' med_estado is not False '
-                sql += 'order by med_fecha'
-
+                sql += 'med_estado is not False and '
+                sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59 \' order by med_fecha'
             else:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' med_estado is not False '
-                sql += 'order by med_fecha'
-            print
-            sql
+                sql += 'med_estado is not False and '
+                sql += 'est_id_id=' + str(estacion.est_id) + ' order by med_fecha'
             consulta.extend(list(Medicion.objects.raw(sql)))
-
-    return consulta
+    valor = []
+    maximo = []
+    minimo = []
+    frecuencia = []
+    for fila in consulta:
+        if fila.med_valor is not None:
+            valor.append(fila.med_valor)
+        else:
+            valor.append(None)
+        if fila.med_maximo is not None:
+            maximo.append(fila.med_maximo)
+        else:
+            maximo.append(None)
+        if fila.med_minimo is not None:
+            minimo.append(fila.med_minimo)
+        else:
+            minimo.append(None)
+        frecuencia.append(fila.med_fecha)
+    return valor, maximo, minimo, frecuencia
 
 
 def eliminar(form):
@@ -286,69 +288,53 @@ def eliminar(form):
     return "Proceso Realizado"
 
 
-def grafico(consulta, variable, estacion):
-    valor = []
-    maximo = []
-    minimo = []
-    frecuencia = []
-    for fila in consulta:
-        valor.append(fila.med_valor)
-        maximo.append(fila.med_maximo)
-        minimo.append(fila.med_minimo)
-        frecuencia.append(fila.med_fecha)
-    if variable.var_id == 1:
-        trace = go.Bar(
-            x=frecuencia,
-            y=valor,
-            name='Precipitacion (mm)'
-        )
-        data = go.Data([trace])
-    elif variable.var_id in [6, 8, 9, 10, 11]:
-        trace0 = go.Scatter(
-            x=frecuencia,
-            y=maximo,
-            name='Max',
-            mode='lines',
-            line=dict(
-                color=('rgb(205, 12, 24)'),
+def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
+    estacion = form.cleaned_data['estacion']
+    variable = form.cleaned_data['variable']
+    div = ""
+    if len(valores) > 0:
+        if variable.var_id == 1:
+            tra_pro = go.Bar(
+                x=tiempo,
+                y=valores,
             )
-        )
-        trace1 = go.Scatter(
-            x=frecuencia,
-            y=minimo,
-            name='Min',
-            mode='lines',
-            line=dict(
-                color=('rgb(50, 205, 50)'),
+            data = go.Data([tra_pro])
+        else:
+            tra_prom = go.Scatter(
+                x=tiempo,
+                y=valores,
+                name='Valor',
+                mode='lines',
+                line=dict(
+                    color='#1660A7',
+                )
             )
-        )
-        trace2 = go.Scatter(
-            x=frecuencia,
-            y=valor,
-            name='Media',
-            mode='lines',
-            line=dict(
-                color=('rgb(22, 96, 167)'),
+            tra_max_abs = go.Scatter(
+                x=tiempo,
+                y=maximos_abs,
+                name='Máximo',
+                mode='lines',
+                line=dict(
+                    color='#32CD32',
+                )
             )
-        )
-        data = go.Data([trace0, trace1, trace2])
-    else:
-        trace = go.Scatter(
-            x=frecuencia,
-            y=valor,
-            name='Valor',
-            mode='lines',
-            line=dict(
-                color=('rgb(205, 12, 24)'),
+            tra_min_abs = go.Scatter(
+                x=tiempo,
+                y=minimos_abs,
+                name='Mínimo',
+                mode='lines',
+                line=dict(
+                    color='#CD0C18',
+                )
             )
+            data = go.Data([tra_max_abs, tra_prom, tra_min_abs])
+
+        layout = go.Layout(
+            title=estacion.est_codigo + " " + estacion.est_nombre,
+            yaxis=dict(title=variable.var_nombre),
         )
-        data = go.Data([trace])
-    layout = go.Layout(
-        title=estacion.est_codigo + " " + estacion.est_nombre,
-        yaxis=dict(title=variable.var_nombre),
-    )
-    figure = go.Figure(data=data, layout=layout)
-    div = opy.plot(figure, auto_open=False, output_type='div')
+        figure = go.Figure(data=data, layout=layout)
+        div = opy.plot(figure, auto_open=False, output_type='div')
     return div
 
 

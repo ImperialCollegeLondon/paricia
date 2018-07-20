@@ -35,7 +35,6 @@ class LogMedicionList(LoginRequiredMixin, ListView, FormView):
                 return render(request, 'registro/logmedicion_table.html', context)
         else:
             self.object_list = LogMedicion.objects.all()
-        # self.object_list=Estacion.objects.all()
         return self.render_to_response(self.get_context_data(form=form))
 
     def get_context_data(self, **kwargs):
@@ -57,7 +56,6 @@ class LogMedicionDetail(LoginRequiredMixin, DetailView):
 
 
 def pagination(lista, page, num_reg):
-    # lista=model.objects.all()
     paginator = Paginator(lista, num_reg)
     if page is None:
         page = 1
@@ -81,14 +79,10 @@ def pagination(lista, page, num_reg):
 
 
 def consultar_medicion(logmedicion):
-    # fecha_split=med_fecha.split("-")
-    # variable=Variable.objects.get(var_id=var_id)
     year = logmedicion.med_fecha.strftime('%Y')
     var_cod = logmedicion.variable.var_codigo
     tabla = var_cod + '.m' + year
     sql = 'SELECT * FROM ' + tabla + ' WHERE '
     sql += 'med_id=' + str(logmedicion.medicion)
     consulta = list(Medicion.objects.raw(sql))
-    print
-    sql
     return consulta[0]

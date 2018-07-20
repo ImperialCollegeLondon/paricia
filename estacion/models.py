@@ -25,7 +25,6 @@ class Estacion(models.Model):
     est_ficha = models.FileField("Fichas", upload_to='documents/')
 
     def __str__(self):
-        #return self.est_codigo.encode('utf-8')
         return str(self.est_codigo)
 
     def get_absolute_url(self):

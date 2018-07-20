@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-# from uploads.core.models import Document
 from estacion.models import Estacion
 
 

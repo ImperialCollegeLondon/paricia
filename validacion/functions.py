@@ -20,9 +20,8 @@ def generar_validacion(form):
     else:
         frecuencia = Frecuencia.objects.filter(est_id=estacion) \
                          .filter(var_id=variable).order_by('fre_fecha_ini')[:1]
-        # print frecuencia[0].fre_fecha_ini
         fecha_ini = frecuencia[0].fre_fecha_ini
-    # fecha_ini=date(2017,1,1)
+
     mediciones = Medicion.objects.filter(est_id=estacion) \
                      .filter(var_id=variable).values('med_fecha').reverse()[:1]
     fecha_fin = mediciones[0].get('med_fecha')

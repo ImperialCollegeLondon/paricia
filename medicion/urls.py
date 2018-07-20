@@ -1,7 +1,6 @@
-from django.urls import re_path
+from django.urls import re_path,path
 from . import views
-from django.conf import settings
-from django.conf.urls.static import static
+
 from django.contrib.auth import views as auth_views
 
 app_name = 'medicion'
@@ -15,6 +14,7 @@ urlpatterns = [
          name='medicion_update'),
     re_path(r'medicion/delete/(?P<pk>[0-9]+)/(?P<fecha>[0-9-]+)/(?P<var_id>[0-9]+)/$', views.MedicionDelete.as_view(),
          name='medicion_delete'),
-    re_path(r'medicion/importacion/(?P<imp_id>[0-9]+)/$', views.MedicionImportacion.as_view(),
-         name='medicion_importacion'),
+    path('medicion/consulta/', views.MedicionConsulta.as_view(), name='medicion_consulta'),
+    # re_path(r'medicion/importacion/(?P<imp_id>[0-9]+)/$', views.MedicionImportacion.as_view(),
+    # name='medicion_importacion'),
 ]
