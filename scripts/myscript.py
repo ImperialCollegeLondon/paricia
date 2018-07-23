@@ -11,6 +11,9 @@ def iniciar_lectura():
     while True:
         try:
             formatos = list(Formato.objects.filter(for_tipo='automatico'))
+            registro = open('/tmp/sedc.txt', 'a')
+            registro.write('numero de formatos'+len(formatos) + '\n')
+            registro.close()
             for formato in formatos:
                 consulta = list(Asociacion.objects.filter(for_id=formato.for_id))
                 if len(consulta) > 0:
