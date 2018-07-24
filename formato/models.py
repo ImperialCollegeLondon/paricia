@@ -61,6 +61,7 @@ class Formato(models.Model):
     TIPO_FORMATO = (
         ('automatico', 'automático'),
         ('convencional', 'convencional'),
+        ('ftp', 'ftp'),
     )
     for_id = models.AutoField(primary_key=True)
     ext_id = models.ForeignKey(

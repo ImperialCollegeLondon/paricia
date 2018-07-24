@@ -5,24 +5,46 @@ from formato.models import Formato, Clasificacion, Asociacion
 from django import forms
 
 
-class FormatoSearchForm(ModelForm):
+class FormatoSearchForm(forms.Form):
     lista = []
+    TIPO_FORMATO = (
+        ('', 'Todos'),
+        ('automatico', 'automático'),
+        ('convencional', 'convencional'),
+        ('ftp', 'ftp'),
+    )
     for_descripcion = forms.CharField(
         max_length=200,
         required=False,
         help_text='Puede usar una o varias palabras',
         label='Descripción'
     )
+    for_tipo=forms.ChoiceField(required=False, choices=TIPO_FORMATO)
 
-    class Meta:
-        model = Formato
-        fields = ['for_descripcion']
-
-    def filtrar(self, form):
+    '''def filtrar(self, form):
         for_descripcion = form.cleaned_data['for_descripcion']
         if for_descripcion:
             lista = Formato.objects.filter(
                 for_descripcion__icontains=for_descripcion
+            )
+        else:
+            lista = Formato.objects.all()
+        return lista'''
+
+    def filtrar(self, form):
+        if form.cleaned_data['for_descripcion'] and form.cleaned_data['for_tipo']:
+            lista = Formato.objects.filter(
+                for_descripcion=form.cleaned_data['for_descripcion']
+            ).filter(
+                for_tipo=form.cleaned_data['for_tipo']
+            )
+        elif form.cleaned_data['for_tipo'] == "" and form.cleaned_data['for_descripcion'] != "":
+            lista = Formato.objects.filter(
+                for_descripcion__icontains=form.cleaned_data['for_descripcion']
+            )
+        elif form.cleaned_data['for_descripcion'] == "" and form.cleaned_data['for_tipo'] != "":
+            lista = Formato.objects.filter(
+                for_tipo=form.cleaned_data['for_tipo']
             )
         else:
             lista = Formato.objects.all()

@@ -23,3 +23,11 @@ function actualizar_lista(enlace){
     }
   });
 }
+
+$(document).ready(function() {
+
+  $("#form_consulta").submit(function(event){
+    //actualizar_lista($("#form_consulta").attr('action'));
+    event.preventDefault();
+  });
+});
