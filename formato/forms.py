@@ -21,16 +21,6 @@ class FormatoSearchForm(forms.Form):
     )
     for_tipo=forms.ChoiceField(required=False, choices=TIPO_FORMATO)
 
-    '''def filtrar(self, form):
-        for_descripcion = form.cleaned_data['for_descripcion']
-        if for_descripcion:
-            lista = Formato.objects.filter(
-                for_descripcion__icontains=for_descripcion
-            )
-        else:
-            lista = Formato.objects.all()
-        return lista'''
-
     def filtrar(self, form):
         if form.cleaned_data['for_descripcion'] and form.cleaned_data['for_tipo']:
             lista = Formato.objects.filter(
