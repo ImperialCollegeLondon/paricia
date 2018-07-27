@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from importacion import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -13,5 +13,6 @@ urlpatterns = [
     re_path(r'importacion/guardar/(?P<imp_id>[0-9]+)/$', views.guardar_archivo, name='importacion_guardar'),
     re_path(r'importacion/(?P<pk>[0-9]+)/delete/$', views.ImportacionDelete.as_view(), name='importacion_delete'),
     re_path(r'importacion/lectura/$', views.lectura_automatica, name='lectura'),
+    path('importacion/automatica', views.ListAutomatico.as_view(), name='importacion_automatica'),
     re_path(r'^ajax/formatos', views.lista_formatos, name='formatos')
 ]

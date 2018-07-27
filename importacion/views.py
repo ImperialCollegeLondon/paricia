@@ -27,7 +27,7 @@ class ImportacionList(LoginRequiredMixin, ListView, FormView):
         form = ImportacionSearchForm(self.request.POST or None)
         page = kwargs.get('page')
         if form.is_valid() and self.request.is_ajax():
-            self.object_list = form.filtrar(form)
+            self.object_list = form.filtrar(form,'c')
         else:
             self.object_list = Importacion.objects.filter(imp_tipo='c')
         context = super(ImportacionList, self).get_context_data(**kwargs)
@@ -36,6 +36,29 @@ class ImportacionList(LoginRequiredMixin, ListView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(ImportacionList, self).get_context_data(**kwargs)
+        page = self.request.GET.get('page')
+        context.update(pagination(self.object_list, page, 10))
+        return context
+
+class ListAutomatico(LoginRequiredMixin, ListView, FormView):
+    model = Importacion
+    form_class = ImportacionSearchForm
+    template_name = 'importacion/automatica_list.html'
+    paginate_by = 10
+
+    def post(self, request, *args, **kwargs):
+        form = ImportacionSearchForm(self.request.POST or None)
+        page = kwargs.get('page')
+        if form.is_valid() and self.request.is_ajax():
+            self.object_list = form.filtrar(form,'a')
+        else:
+            self.object_list = Importacion.objects.filter(imp_tipo='a')
+        context = super(ListAutomatico, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list, page, 10))
+        return render(request, 'importacion/automatica_table.html', context)
+
+    def get_context_data(self, **kwargs):
+        context = super(ListAutomatico, self).get_context_data(**kwargs)
         page = self.request.GET.get('page')
         context.update(pagination(self.object_list, page, 10))
         return context

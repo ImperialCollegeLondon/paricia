@@ -38,11 +38,10 @@ $(document).ready(function() {
     <thead>
     <tr>
         <th>Estación</th>
-        <th>Usuario</th>
         <th>Fecha de Importacion</th>
         <th>Fecha Inicial del Archivo</th>
         <th>Fecha Final del Archivo</th>
-        <th>Observaciones</th>
+        <th>Archivo</th>
 
     </tr>
     </thead>
@@ -50,12 +49,11 @@ $(document).ready(function() {
     {% for item in object_list %}
     <tr>
         <td>{{ item.est_id}}</td>
-        <td>{{ item.usuario}}</td>
         <td>{{ item.imp_fecha|date:"d/m/Y H:i:s"}}</td>
         <td>{{ item.imp_fecha_ini|date:"d/m/Y H:i:s"}}</td>
         <td>{{ item.imp_fecha_fin|date:"d/m/Y H:i:s"}}</td>
-        <td>{{ item.imp_observacion }}</td>
-        
+        <td>{{ item.imp_archivo }}</td>
+
     </tr>
 
     {% endfor%}

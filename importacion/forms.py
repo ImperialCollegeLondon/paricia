@@ -15,18 +15,16 @@ class ImportacionSearchForm(forms.Form):
     fecha = forms.DateField(required=False, label="Fecha de Importación(dd/mm/yyyy)", input_formats=['%d/%m/%Y'])
     lista = []
 
-    def filtrar(self, form):
+    def filtrar(self, form,tipo):
         estacion = form.cleaned_data['estacion']
-        print (estacion)
         fecha = form.cleaned_data['fecha']
-        print(fecha)
         if estacion and fecha:
             lista = Importacion.objects.filter(est_id=estacion
-                    ).filter(imp_fecha__date=fecha).filter(imp_tipo='c')
+                    ).filter(imp_fecha__date=fecha).filter(imp_tipo=tipo)
         elif estacion is None and fecha is not None:
-            lista = Importacion.objects.filter(imp_fecha__date=fecha).filter(imp_tipo='c')
+            lista = Importacion.objects.filter(imp_fecha__date=fecha).filter(imp_tipo=tipo)
         elif fecha is None and estacion is not None:
-            lista = Importacion.objects.filter(est_id=estacion).filter(imp_tipo='c')
+            lista = Importacion.objects.filter(est_id=estacion).filter(imp_tipo=tipo)
         else:
-            lista = Importacion.objects.filter(imp_tipo='c')
+            lista = Importacion.objects.filter(imp_tipo=tipo)
         return lista
