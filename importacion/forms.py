@@ -17,14 +17,16 @@ class ImportacionSearchForm(forms.Form):
 
     def filtrar(self, form):
         estacion = form.cleaned_data['estacion']
+        print (estacion)
         fecha = form.cleaned_data['fecha']
+        print(fecha)
         if estacion and fecha:
             lista = Importacion.objects.filter(est_id=estacion
-                                               ).filter(imp_fecha__range=[fecha, fecha])
-        elif estacion == "" and fecha != "":
-            lista = Importacion.objects.filter(imp_fecha__date=fecha)
-        elif fecha == "" and estacion != "":
-            lista = Importacion.objects.filter(est_id=estacion)
+                    ).filter(imp_fecha__date=fecha).filter(imp_tipo='c')
+        elif estacion is None and fecha is not None:
+            lista = Importacion.objects.filter(imp_fecha__date=fecha).filter(imp_tipo='c')
+        elif fecha is None and estacion is not None:
+            lista = Importacion.objects.filter(est_id=estacion).filter(imp_tipo='c')
         else:
-            lista = Importacion.objects.all()
+            lista = Importacion.objects.filter(imp_tipo='c')
         return lista
