@@ -15,35 +15,36 @@ from temporal.models import Datos
 frecuencias = ['mn1', 'min2']
 
 def run(*args):
-    #with daemon.DaemonContext():
-    print("llego")
-    iniciar_lectura()
+    with daemon.DaemonContext():
+        iniciar_lectura()
 
 def iniciar_lectura():
     formatos = list(Formato.objects.filter(for_tipo='ftp'))
-    #while True:
-    try:
-        for formato in formatos:
-            consulta = list(Asociacion.objects.filter(for_id=formato.for_id))
-            print("for formatos")
-            if len(consulta)>0:
-                estacion=consulta[0].est_id
-                registrar_log('Lectura Iniciada - Estacion:' + str(estacion.est_codigo) + ' Formato: ' + str(
-                    formato.for_descripcion))
-                root_dir = formato.for_ubicacion
-                leer_archivos(root_dir,formato,estacion)
-            else:
+    if len(formatos)==0:
+        registrar_log('No existen formatos FTP')
+    while True:
+        try:
+            for formato in formatos:
+                consulta = list(Asociacion.objects.filter(for_id=formato.for_id))
+                print("for formatos")
+                if len(consulta)>0:
+                    estacion=consulta[0].est_id
+                    registrar_log('Lectura Iniciada - Estacion:' + str(estacion.est_codigo) + ' Formato: ' + str(
+                        formato.for_descripcion))
+                    root_dir = formato.for_ubicacion
+                    leer_archivos(root_dir,formato,estacion)
+                else:
 
-                registrar_log('No existen formatos para iniciar la lectura')
+                    registrar_log('No existen formatos para iniciar la lectura')
 
-                break
+                    break
 
 
-    except IOError as e:
-        registrar_log('El archivo no existe')
-        print ("error")
-        pass
-        #time.sleep(1500)
+        except IOError as e:
+            registrar_log('El archivo no existe')
+            print ("error")
+            pass
+            time.sleep(1500)
 
 
 
