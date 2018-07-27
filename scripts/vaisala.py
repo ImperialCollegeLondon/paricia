@@ -48,13 +48,13 @@ def iniciar_lectura():
 
 
 def registrar_log(mensaje):
-    registro = open('/tmp/sedc.txt', 'a')
+    registro = open('/tmp/vaisala.txt', 'a')
     registro.write(time.ctime() + ': ' + mensaje + '\n')
     registro.close()
 
 def get_ruta_backup(root_dir):
     ruta=root_dir.split("/")
-    ruta_backup="/media/ftproot/respaldo/"+ruta[1]
+    ruta_backup="/media/ftproot/respaldo/"+ruta[2]
     return ruta_backup
 # función para leer archivos correspondientes al formato y la estación
 def leer_archivos(root_dir, formato, estacion):
