@@ -31,6 +31,7 @@ class Importacion(models.Model):
     imp_fecha_fin = models.DateTimeField("Fecha Final", default=timezone.now)
     imp_archivo = models.FileField("Archivo", upload_to='archivos/')
     imp_observacion = models.TextField("Observaciones/Anotaciones", blank=True, null=True, default="Carga de Datos")
+    imp_tipo = models.CharField("Tipo", max_length=1, default="c")
     usuario = models.ForeignKey(
         User,
         models.SET_NULL,

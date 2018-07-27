@@ -16,11 +16,11 @@ frecuencias = ['mn1', 'min2']
 
 def run(*args):
     #with daemon.DaemonContext():
+    print("llego")
     iniciar_lectura()
 
 def iniciar_lectura():
     formatos = list(Formato.objects.filter(for_tipo='ftp'))
-    root_dir = '/media/COTOPAXI/'
     #while True:
     try:
         for formato in formatos:
@@ -41,6 +41,7 @@ def iniciar_lectura():
 
     except IOError as e:
         registrar_log('El archivo no existe')
+        print ("error")
         pass
         #time.sleep(1500)
 
@@ -51,7 +52,10 @@ def registrar_log(mensaje):
     registro.write(time.ctime() + ': ' + mensaje + '\n')
     registro.close()
 
-
+def get_ruta_backup(root_dir):
+    ruta=root_dir.split("/")
+    ruta_backup="/media/ftproot/respaldo/"+ruta[1]
+    return ruta_backup
 # función para leer archivos correspondientes al formato y la estación
 def leer_archivos(root_dir, formato, estacion):
     backup_dir = '/media/respaldo/COTOPAXI'
@@ -73,7 +77,8 @@ def leer_archivos(root_dir, formato, estacion):
                                 estacion.est_codigo) + 'Formato:' + str(
                                 formato.for_descripcion))
                     obj_importacion.save()
-                    move(root_dir + file_name, backup_dir)
+                    move(root_dir + file_name, get_ruta_backup(root_dir))
+                    break
                 else:
                     registrar_log('No existe nueva informacion para el Formato: '
                                   + str(formato.for_descripcion))
@@ -108,6 +113,7 @@ def set_object_importacion(estacion, formato, fecha, archivo):
     importacion.imp_archivo=archivo
     importacion.imp_observacion = 'Carga de Datos Automatica'
     importacion.usuario = usuario
+    importacion.imp_tipo="a"
     return importacion
 
 
@@ -142,7 +148,7 @@ def procesar_archivo(archivo, formato, fecha, estacion):
                              med_fecha=fecha, mar_id=formato.mar_id.mar_id,
                              med_valor=valor, med_maximo=maximo, med_minimo=minimo,
                              med_estado=True)
-                #print ("fecha", dato.med_fecha, "valor", dato.med_valor, "variable", dato.var_id)
+                print ("fecha", dato.med_fecha, "valor", dato.med_valor, "variable", dato.var_id)
                 datos.append(dato)
 
             fecha += intervalo
@@ -182,6 +188,3 @@ def fecha_archivo(file_name, prefijo):
 
 def move(src, dest):
     shutil.move(src, dest)
-
-
-#run()
