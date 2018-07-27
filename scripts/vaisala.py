@@ -54,7 +54,8 @@ def registrar_log(mensaje):
 
 def get_ruta_backup(root_dir):
     ruta=root_dir.split("/")
-    ruta_backup="/media/ftproot/respaldo/"+ruta[2]
+    ruta_backup="/media/ftproot/respaldo/"+ruta[3]
+    print(ruta_backup)
     return ruta_backup
 # función para leer archivos correspondientes al formato y la estación
 def leer_archivos(root_dir, formato, estacion):
