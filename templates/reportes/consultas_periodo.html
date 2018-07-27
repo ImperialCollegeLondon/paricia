@@ -30,7 +30,7 @@ $(document).ready(function() {
     $(this).attr('disabled',true);
     $.ajax({
       url: '/reportes/consultas/',
-      data: $("#form_consulta").serialize(),
+      data: $("#form_busqueda").serialize(),
       type:'POST',
       beforeSend: function () {
         $("#div_informacion").hide();
@@ -92,7 +92,7 @@ $(document).ready(function() {
     </div>
 </div>
 <div class="row">
-    <form id="form_consulta" class="form" method="post">
+    <form id="form_busqueda" class="form" method="post">
         {% csrf_token %}
         {% for field in form%}
         {% bootstrap_field field form_group_class='col-lg-6' %}
