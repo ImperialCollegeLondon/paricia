@@ -40,11 +40,11 @@ def iniciar_lectura():
         time.sleep(1500)
 
 
-
 def registrar_log(mensaje):
     registro = open('/tmp/vaisala.txt', 'a')
     registro.write(time.ctime() + ': ' + mensaje + '\n')
     registro.close()
+
 
 def get_ruta_backup(root_dir):
     ruta = root_dir.split("/")
