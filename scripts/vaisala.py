@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-'''from formato.models import Formato,Asociacion
-from importacion.functions import (
-    procesar_archivo_automatico,guardar_datos_automatico)'''
 import os
 import shutil
 from datetime import datetime, timedelta
@@ -12,7 +9,7 @@ from home.models import Usuarios
 import time
 import daemon
 from temporal.models import Datos
-frecuencias = ['mn1', 'min2']
+
 
 def run(*args):
     with daemon.DaemonContext():
@@ -87,8 +84,6 @@ def guardar_datos(importacion, datos, estacion):
             registrar_log('Vacio de información')
             observacion = 'vacio datos automaticos'
             guardar_vacios(fila, estacion, observacion, importacion.imp_fecha_ini)
-        else:
-            registrar_log('No existe Vacio de información')
     Datos.objects.bulk_create(datos)
     Datos.objects.all().delete()
 
@@ -146,12 +141,9 @@ def procesar_archivo(archivo, formato, fecha, estacion):
                              med_fecha=fecha, mar_id=formato.mar_id.mar_id,
                              med_valor=valor, med_maximo=maximo, med_minimo=minimo,
                              med_estado=True)
-                print ("fecha", dato.med_fecha, "valor", dato.med_valor, "variable", dato.var_id)
                 datos.append(dato)
 
             fecha += intervalo
-        else:
-            print("linea vacia")
     return datos
 
 
