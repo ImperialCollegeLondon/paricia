@@ -120,7 +120,7 @@ def verificar_vacios(fecha_archivo, fecha_datos):
     if isinstance(fecha_datos, str):
         estado = False
     else:
-        intervalo = timedelta(days=1)
+        intervalo = timedelta(hours=1)
         fecha_datos += intervalo
         if fecha_datos >= fecha_archivo:
             estado = False

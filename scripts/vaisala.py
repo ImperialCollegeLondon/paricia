@@ -6,7 +6,7 @@ import os
 import shutil
 from datetime import datetime, timedelta
 from formato.models import Clasificacion, Formato, Asociacion
-from importacion.functions import valid_number, validar_fechas, eliminar_datos
+from importacion.functions import valid_number, validar_fechas, eliminar_datos, guardar_vacios
 from importacion.models import Importacion
 from home.models import Usuarios
 import time
@@ -18,33 +18,26 @@ def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()
 
+
 def iniciar_lectura():
     formatos = list(Formato.objects.filter(for_tipo='ftp'))
-    if len(formatos)==0:
+    if len(formatos) == 0:
         registrar_log('No existen formatos FTP')
     while True:
         try:
             for formato in formatos:
                 consulta = list(Asociacion.objects.filter(for_id=formato.for_id))
-                print("for formatos")
-                if len(consulta)>0:
-                    estacion=consulta[0].est_id
-                    registrar_log('Lectura Iniciada - Estacion:' + str(estacion.est_codigo) + ' Formato: ' + str(
-                        formato.for_descripcion))
+                if len(consulta) > 0:
+                    estacion = consulta[0].est_id
                     root_dir = formato.for_ubicacion
-                    leer_archivos(root_dir,formato,estacion)
+                    leer_archivos(root_dir, formato, estacion)
                 else:
-
                     registrar_log('No existen formatos para iniciar la lectura')
-
                     break
-
-
         except IOError as e:
-            registrar_log('El archivo no existe')
-            print ("error")
+            registrar_log('Error: ' + e.errno + ' ' + e.strerror)
             pass
-            time.sleep(1500)
+        time.sleep(1500)
 
 
 
@@ -54,45 +47,48 @@ def registrar_log(mensaje):
     registro.close()
 
 def get_ruta_backup(root_dir):
-    ruta=root_dir.split("/")
-    ruta_backup="/media/ftproot/respaldo/"+ruta[3]
-    print(ruta_backup)
+    ruta = root_dir.split("/")
+    ruta_backup = "/media/ftproot/respaldo/"+ruta[3]
+    # ruta_backup = "/media/respaldo/COTOPAXI/"
     return ruta_backup
+
+
 # función para leer archivos correspondientes al formato y la estación
 def leer_archivos(root_dir, formato, estacion):
-    backup_dir = '/media/respaldo/COTOPAXI'
     for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
-        print('Found directory: %s' % dir_name)
         for file_name in file_list:
-
             if buscar_archivo(file_name, formato.for_archivo):
-                print('%s' % file_name)
                 archivo = open(root_dir + file_name)
                 fecha = fecha_archivo(file_name, formato.for_archivo)
                 obj_importacion = set_object_importacion(estacion, formato, fecha, file_name)
-
+                registrar_log('Lectura Iniciada Estacion:' + str(
+                    estacion.est_codigo) + 'Formato:' + str(
+                    formato.for_descripcion))
                 datos = procesar_archivo(archivo, formato, fecha, estacion)
-                if len(datos)>0:
-
-                    guardar_datos(obj_importacion, datos)
+                if len(datos) > 0:
+                    guardar_datos(obj_importacion, datos, estacion)
                     registrar_log('Información guardada Estacion:' + str(
                                 estacion.est_codigo) + 'Formato:' + str(
                                 formato.for_descripcion))
                     obj_importacion.save()
                     move(root_dir + file_name, get_ruta_backup(root_dir))
-                    break
                 else:
                     registrar_log('No existe nueva informacion para el Formato: '
                                   + str(formato.for_descripcion))
     return file_name
 
-def guardar_datos(importacion, datos):
+
+def guardar_datos(importacion, datos, estacion):
     informacion, existe_vacio = validar_fechas(importacion)
     for fila in informacion:
         if fila.get('existe'):
-            print("eliminar información")
             eliminar_datos(fila, importacion)
-    print("crear datos")
+        if fila.get('vacio'):
+            registrar_log('Vacio de información')
+            observacion = 'vacio datos automaticos'
+            guardar_vacios(fila, estacion, observacion, importacion.imp_fecha_ini)
+        else:
+            registrar_log('No existe Vacio de información')
     Datos.objects.bulk_create(datos)
     Datos.objects.all().delete()
 
