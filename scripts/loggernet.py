@@ -10,6 +10,9 @@ import time
 import daemon
 from temporal.models import Datos
 
+def run(*args):
+    with daemon.DaemonContext():
+        iniciar_lectura()
 
 def iniciar_lectura():
 
@@ -26,7 +29,7 @@ def iniciar_lectura():
                 else:
                     registrar_log('No existen estaciones y formatos asociados')
         except IOError as e:
-            registrar_log('Error: ' + e.errno + ' ' + e.strerror)
+            registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
             pass
         time.sleep(1500)
 
@@ -44,7 +47,7 @@ def leer_archivos(formato, estacion):
         formato.for_descripcion))
     archivo = open(formato.for_ubicacion + formato.for_archivo)
     datos = procesar_archivo_automatico(archivo, formato, estacion)
-    print (len(datos))
+    # print (len(datos))
     archivo.close()
     fecha_ini, fecha_fin = get_fechas_datos(datos)
     obj_importacion = set_object_importacion(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
@@ -73,10 +76,10 @@ def guardar_datos(importacion, datos, estacion):
 
 
 def get_fechas_datos(datos):
-    num_datos=len(datos) - 1
+    num_datos = len(datos) - 1
     fecha_ini = datos[0].med_fecha
     fecha_fin = datos[num_datos].med_fecha
-    print (fecha_ini, fecha_fin)
+    # print (fecha_ini, fecha_fin)
     return fecha_ini, fecha_fin
 
 
@@ -162,5 +165,3 @@ def fecha_archivo(file_name, prefijo):
 
 def move(src, dest):
     shutil.move(src, dest)
-
-iniciar_lectura()
