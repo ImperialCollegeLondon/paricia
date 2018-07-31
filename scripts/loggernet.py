@@ -14,6 +14,7 @@ def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()
 
+
 def iniciar_lectura():
 
     while True:
@@ -49,9 +50,10 @@ def leer_archivos(formato, estacion):
     datos = procesar_archivo_automatico(archivo, formato, estacion)
     # print (len(datos))
     archivo.close()
-    fecha_ini, fecha_fin = get_fechas_datos(datos)
-    obj_importacion = set_object_importacion(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
+
     if len(datos) > 0:
+        fecha_ini, fecha_fin = get_fechas_datos(datos)
+        obj_importacion = set_object_importacion(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
         guardar_datos(obj_importacion, datos, estacion)
         registrar_log('Información guardada Estacion:' + str(
                     estacion.est_codigo) + 'Formato:' + str(
