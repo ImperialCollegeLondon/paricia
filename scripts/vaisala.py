@@ -32,7 +32,7 @@ def iniciar_lectura():
                 else:
                     registrar_log('No existen formatos para iniciar la lectura')
         except IOError as e:
-            registrar_log('Error: ' + e.errno + ' ' + e.strerror)
+            registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
             pass
         time.sleep(1500)
 

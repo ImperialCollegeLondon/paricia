@@ -337,7 +337,9 @@ def get_fechas_archivo(archivo, formato, form):
 def valid_number(val_str):
     val_num = None
     try:
-        if isinstance(val_str, Number):
+        if len(val_str) >= 10:
+            val_num = None
+        elif isinstance(val_str, Number):
             val_num = float(val_str)
         elif val_str == "":
             val_num = None

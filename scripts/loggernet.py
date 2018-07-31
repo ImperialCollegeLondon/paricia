@@ -10,6 +10,7 @@ import time
 import daemon
 from temporal.models import Datos
 
+
 def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()
