@@ -1,41 +1,45 @@
 # -*- coding: utf-8 -*-
-from medicion.models import Medicion
-from estacion.models import Estacion
+
 from anuarios.models import Precipitacion
-from django.db.models.functions import TruncMonth
-from django.db.models import Sum
-from django.db.models.functions import (
-    ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
+from django.db import connection
+from home.functions import dictfetchall
 
 
 def matrizII(estacion, variable, periodo):
+    tabla = "pre.m" + periodo
+    cursor = connection.cursor()
     datos = []
-    obj_estacion = Estacion.objects.get(est_id=estacion.est_id)
-    consulta = (Medicion.objects.filter(est_id=estacion.est_id)
-                .filter(var_id=variable).filter(med_fecha__year=periodo)
-                .annotate(month=TruncMonth('med_fecha')).values('month'))
     # valores de precipitación mensual
-    med_mensual = list(consulta.annotate(suma=Sum('med_valor')).
-                       values('suma', 'month').order_by('month'))
-    datos_diarios = list(Medicion.objects
-                         .filter(est_id=estacion.est_id)
-                         .filter(var_id=variable)
-                         .filter(med_fecha__year=periodo)
-                         .annotate(month=ExtractMonth('med_fecha'), day=ExtractDay('med_fecha'))
-                         .values('month', 'day')
-                         .annotate(valor=Sum('med_valor'))
-                         .values('valor', 'month', 'day').order_by('month', 'day'))
-    max24H, maxdia, totdias = maximospre(datos_diarios)
+    sql = "SELECT sum(med_valor) as suma, date_part('month',med_fecha) as mes "
+    sql += "FROM " + tabla + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "GROUP BY mes ORDER BY mes"
+    cursor.execute(sql)
+    med_mensual = dictfetchall(cursor)
+    # datos diarios
+    sql = "SELECT sum(med_valor) as valor, date_part('month',med_fecha) as mes, "
+    sql += "date_part('day',med_fecha) as dia "
+    sql += "FROM " + tabla + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "GROUP BY mes,dia ORDER BY mes,dia"
+    cursor.execute(sql)
+    datos_diarios = dictfetchall(cursor)
+    max24h, maxdia, totdias = maximospre(datos_diarios)
     for item in med_mensual:
+        mes = int(item.get('mes'))
         obj_precipitacion = Precipitacion()
-        obj_precipitacion.est_id = obj_estacion
+        obj_precipitacion.est_id = estacion
         obj_precipitacion.pre_periodo = periodo
-        obj_precipitacion.pre_mes = item.get('month').month
-        obj_precipitacion.pre_suma = item.get('suma')
-        obj_precipitacion.pre_maximo = max24H[item.get('month').month - 1]
-        obj_precipitacion.pre_maximo_dia = maxdia[item.get('month').month - 1]
-        obj_precipitacion.pre_dias = totdias[item.get('month').month - 1]
+        obj_precipitacion.pre_mes = mes
+        if item.get('suma') is not None:
+            obj_precipitacion.pre_suma = item.get('suma')
+        else:
+            obj_precipitacion.pre_suma = 0
+        obj_precipitacion.pre_maximo = max24h[mes - 1]
+        obj_precipitacion.pre_maximo_dia = maxdia[mes - 1]
+        obj_precipitacion.pre_dias = totdias[mes - 1]
         datos.append(obj_precipitacion)
+    cursor.close()
     return datos
 
 
@@ -48,15 +52,16 @@ def maximospre(datos_diarios):
     for i in range(1, 13):
         val_max24h = []
         val_maxdia = []
-        val_totdias = []
+        # val_totdias = []
         for fila in datos_diarios:
-            if fila.get('month') == i:
-                val_max24h.append(fila.get('valor'))
-                val_maxdia.append(fila.get('day'))
+            mes = int(fila.get('mes'))
+            if mes == i:
+                val_max24h.append(get_valor(fila))
+                val_maxdia.append(int(fila.get('dia')))
         # contar dias con lluvia en la variable count
         count = 0
         for j in val_max24h:
-            if (j > 0):
+            if j > 0:
                 count += 1
         if len(val_max24h) > 0:
             max24H.append(max(val_max24h))
@@ -67,5 +72,10 @@ def maximospre(datos_diarios):
         totdias.append(count)
     return max24H, maxdia, totdias
 
+
+def get_valor(fila):
+    if fila.get('valor') is None:
+        return 0
+    return fila.get('valor')
 
 

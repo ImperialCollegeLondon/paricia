@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-from medicion.models import Medicion
-from estacion.models import Estacion
+
 from anuarios.models import Viento
-from django.db.models.functions import TruncMonth
-from django.db.models import Max, Min, Avg, Count
 from django.db import connection
 from datetime import datetime
 
@@ -11,14 +8,17 @@ from datetime import datetime
 def matrizV_mensual(estacion, variable, periodo):
     tabla_velocidad = "vvi.m" + periodo
     tabla_direccion = "dvi.m" + periodo
+
     cursor = connection.cursor()
     # velocidad media en m/s
     sql = "SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     sql += "GROUP BY mes ORDER BY mes"
+
     cursor.execute(sql)
     vel_media = dictfetchall(cursor)
+
     # numero de registros por mes en velocidad
     sql = "SELECT count(med_valor) as obs, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
@@ -29,19 +29,28 @@ def matrizV_mensual(estacion, variable, periodo):
     # numero de registros menores a 0.5 en velocidad
     sql = "SELECT count(med_valor) as calma, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.5"
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.5 "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     calma = dictfetchall(cursor)
+    if len(calma)==0:
+        # numero de registros menores o igual a 0.5 en velocidad
+        sql = "SELECT count(med_valor) as calma, date_part('month',med_fecha) as mes "
+        sql += "FROM " + tabla_velocidad + " "
+        sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.6 "
+        sql += "GROUP BY mes ORDER BY mes"
+        cursor.execute(sql)
+        calma = dictfetchall(cursor)
     direcciones = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
     valores = [[] for y in range(12)]
+
     for item_obs, item_calma, item_velocidad in zip(num_obs, calma, vel_media):
         mes = int(item_obs.get('mes'))
         # lista de datos de la dirección de viento
         sql = "SELECT med_valor, med_fecha "
         sql += "FROM " + tabla_direccion + " "
         sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-        sql += "AND date_part('month',med_fecha)=" + str(mes)
+        sql += "AND date_part('month',med_fecha)=" + str(mes)+" "
         sql += "ORDER BY med_fecha"
         cursor.execute(sql)
         dat_dvi = dictfetchall(cursor)
@@ -49,7 +58,7 @@ def matrizV_mensual(estacion, variable, periodo):
         sql = "SELECT med_valor,med_maximo, med_fecha "
         sql += "FROM " + tabla_velocidad + " "
         sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-        sql += "AND date_part('month',med_fecha)=" + str(mes)
+        sql += "AND date_part('month',med_fecha)=" + str(mes)+" "
         sql += "ORDER BY med_fecha"
         cursor.execute(sql)
         dat_vvi = dictfetchall(cursor)
@@ -57,7 +66,7 @@ def matrizV_mensual(estacion, variable, periodo):
         vvi_max = [[0 for x in range(0)] for y in range(8)]
         for val_dvi, val_vvi in zip(dat_dvi, dat_vvi):
             # agrupa las velocidades por direccion
-            if val_vvi.get('med_valor') is not None:
+            if val_vvi.get('med_valor') is not None and val_dvi.get('med_valor') is not None:
                 if val_dvi.get('med_valor') < 22.5 or val_dvi.get('med_valor') > 337.5:
                     vvi[0].append(val_vvi.get('med_valor'))
                     vvi_max[0].append(val_vvi.get('med_valor')
