@@ -1,47 +1,49 @@
 # -*- coding: utf-8 -*-
 from medicion.models import Medicion
-from estacion.models import Estacion
+
 from anuarios.models import HumedadAire
 from django.db.models.functions import TruncMonth
 from django.db.models import Max, Min, Avg, Count
 from django.db.models.functions import (
     ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
+from django.db import connection
+from home.functions import dictfetchall
 
 
 def matrizIV(estacion, variable, periodo):
     datos = []
-    consulta = Medicion.objects.filter(est_id=estacion.est_id) \
-        .filter(var_id=variable.var_id).filter(med_fecha__year=periodo) \
-        .annotate(month=TruncMonth('med_fecha')).values('month')
-    consulta_max = (Medicion.objects.filter(est_id=estacion.est_id)
-                    .filter(var_id=variable.var_id)
-                    .filter(med_fecha__year=periodo).values('med_maximo').exists())
+    tabla = "hai.m" + periodo
+    cursor = connection.cursor()
+    # promedio mensual
+    sql = "SELECT avg(med_valor) as media, date_part('month',med_fecha) as mes "
+    sql += "FROM " + tabla + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "GROUP BY mes ORDER BY mes"
+    cursor.execute(sql)
+    med_avg = dictfetchall(cursor)
+    # datos diarios máximos
+    sql = "SELECT max(med_maximo) as maximo,  max(med_valor) as valor, "
+    sql += "date_part('month',med_fecha) as mes, "
+    sql += "date_part('day',med_fecha) as dia "
+    sql += "FROM " + tabla + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "GROUP BY mes,dia ORDER BY mes,dia"
+    cursor.execute(sql)
+    datos_diarios_max = dictfetchall(cursor)
+    # mínimos absolutos
+    sql = "SELECT min(med_maximo) as minimo,  min(med_valor) as valor, "
+    sql += "date_part('month',med_fecha) as mes, "
+    sql += "date_part('day',med_fecha) as dia "
+    sql += "FROM " + tabla + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "GROUP BY mes,dia ORDER BY mes,dia"
+    cursor.execute(sql)
+    datos_diarios_min = dictfetchall(cursor)
 
-    datos_diarios_max = list(Medicion.objects
-                             .filter(est_id=estacion.est_id)
-                             .filter(var_id=variable.var_id)
-                             .filter(med_fecha__year=periodo)
-                             .exclude(med_valor=0)
-                             .annotate(month=ExtractMonth('med_fecha'), day=ExtractDay('med_fecha'))
-                             .values('month', 'day')
-                             .annotate(maximo=Max('med_maximo'), valor=Max('med_valor'))
-                             .values('maximo', 'valor', 'month', 'day').order_by('month', 'day'))
-    datos_diarios_min = list(Medicion.objects
-                             .filter(est_id=estacion.est_id)
-                             .filter(var_id=variable.var_id)
-                             .filter(med_fecha__year=periodo)
-                             .exclude(med_valor=0)
-                             .annotate(month=ExtractMonth('med_fecha'), day=ExtractDay('med_fecha'))
-                             .values('month', 'day')
-                             .annotate(minimo=Min('med_minimo'), valor=Min('med_valor'))
-                             .values('minimo', 'valor', 'month', 'day').order_by('month', 'day'))
-
-    med_avg = list(consulta.exclude(med_valor=0).
-                   annotate(media=Avg('med_valor')).values('media', 'month').order_by('month'))
     maximo, maximo_dia = maximoshai(datos_diarios_max)
     minimo, minimo_dia = minimoshai(datos_diarios_min)
     for item in med_avg:
-        mes = item.get('month').month
+        mes = int(item.get('mes'))
         obj_hai = HumedadAire()
         obj_hai.est_id = estacion
         obj_hai.hai_periodo = periodo
@@ -52,6 +54,7 @@ def matrizIV(estacion, variable, periodo):
         obj_hai.hai_minimo_dia = minimo_dia[mes - 1]
         obj_hai.hai_promedio = item.get('media')
         datos.append(obj_hai)
+    cursor.close()
     return datos
 
 
@@ -63,12 +66,12 @@ def maximoshai(datos_diarios_max):
         val_max_abs = []
         val_maxdia = []
         for fila in datos_diarios_max:
-            if fila.get('month') == i:
-                if fila.get('maximo') is not None:
-                    val_max_abs.append(fila.get('maximo'))
-                elif fila.get('valor') is not None:
-                    val_max_abs.append(fila.get('valor'))
-                val_maxdia.append(fila.get('day'))
+            mes = int(fila.get('mes'))
+            dia = int(fila.get('dia'))
+            if mes == i:
+                val_max_abs.append(get_maximo(fila))
+                val_maxdia.append(dia)
+
         if len(val_max_abs) > 0:
             max_abs.append(max(val_max_abs))
             maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
@@ -86,12 +89,11 @@ def minimoshai(datos_diarios_min):
         val_min_abs = []
         val_mindia = []
         for fila in datos_diarios_min:
-            if fila.get('month') == i:
-                if fila.get('minimo') is not None:
-                    val_min_abs.append(fila.get('minimo'))
-                elif fila.get('valor') is not None:
-                    val_min_abs.append(fila.get('valor'))
-                val_mindia.append(fila.get('day'))
+            mes = int(fila.get('mes'))
+            dia = int(fila.get('dia'))
+            if mes == i:
+                val_min_abs.append(get_minimo(fila))
+                val_mindia.append(dia)
 
         if len(val_min_abs) > 0:
             min_abs.append(min(val_min_abs))
@@ -100,3 +102,19 @@ def minimoshai(datos_diarios_min):
             min_abs.append(0)
             mindia.append(0)
     return min_abs, mindia
+
+
+def get_maximo(fila):
+    if fila.get('maximo') is None:
+        if fila.get('valor') is None:
+            return 0
+        return fila.get('valor')
+    return fila.get('maximo')
+
+
+def get_minimo(fila):
+    if fila.get('minimo') is None:
+        if fila.get('valor') is None:
+            return 100
+        return fila.get('valor')
+    return fila.get('minimo')

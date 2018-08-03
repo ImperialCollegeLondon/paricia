@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-from medicion.models import Medicion
+
 from anuarios.models import TemperaturaAire
-from django.db.models.functions import TruncMonth
-from django.db.models import Max, Min, Avg, Count
-from django.db.models.functions import (
-    ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
 from django.db import connection
 from home.functions import dictfetchall
 
@@ -14,10 +10,6 @@ def matrizIII(estacion, variable, periodo):
     tabla = "tai.m" + periodo
     cursor = connection.cursor()
     # promedio mensual
-    '''med_avg = list(Medicion.objects.filter(est_id=estacion.est_id)
-                   .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
-                   .annotate(month=TruncMonth('med_fecha')).values('month')
-                   .annotate(media=Avg('med_valor')).values('media', 'month').order_by('month'))'''
     sql = "SELECT avg(med_valor) as media, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
@@ -33,24 +25,6 @@ def matrizIII(estacion, variable, periodo):
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios_max = dictfetchall(cursor)
-    '''consulta_max = (Medicion.objects.filter(est_id=estacion.est_id)
-                    .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
-                    .exclude(med_maximo=None).exists())
-    if consulta_max:
-        datos_diarios_max = list(Medicion.objects.filter(est_id=estacion.est_id)
-                                 .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
-                                 .exclude(med_maximo=None).annotate(
-            month=ExtractMonth('med_fecha'), day=ExtractDay('med_fecha'))
-                                 .values('month', 'day').annotate(valor=Max('med_maximo'))
-                                 .values('valor', 'month', 'day').order_by('month', 'day'))
-    else:
-        datos_diarios_max = list(Medicion.objects.filter(est_id=estacion.est_id)
-                                 .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
-                                 .annotate(month=ExtractMonth('med_fecha'),
-                                           day=ExtractDay('med_fecha'))
-                                 .values('month', 'day').annotate(valor=Max('med_valor'))
-                                 .values('valor', 'month', 'day').order_by('month', 'day'))'''
-
     # mínimos absolutos
     sql = "SELECT min(med_maximo) as minimo,  min(med_valor) as valor, "
     sql += "date_part('month',med_fecha) as mes, "
@@ -60,24 +34,6 @@ def matrizIII(estacion, variable, periodo):
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios_min = dictfetchall(cursor)
-    '''consulta_min = (Medicion.objects.filter(est_id=estacion.est_id)
-                    .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
-                    .exclude(med_minimo=None).exists())
-    if consulta_min:
-        datos_diarios_min = list(Medicion.objects.filter(est_id=estacion.est_id)
-                                 .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
-                                 .exclude(med_minimo=None).annotate(
-            month=ExtractMonth('med_fecha'), day=ExtractDay('med_fecha'))
-                                 .values('month', 'day').annotate(valor=Min('med_minimo'))
-                                 .values('valor', 'month', 'day').order_by('month', 'day'))
-    else:
-        datos_diarios_min = list(Medicion.objects.filter(est_id=estacion.est_id)
-                                 .filter(var_id=variable.var_id).filter(med_fecha__year=periodo)
-                                 .exclude(med_valor=None)
-                                 .annotate(month=ExtractMonth('med_fecha'),
-                                           day=ExtractDay('med_fecha'))
-                                 .values('month', 'day').annotate(valor=Min('med_valor'))
-                                 .values('valor', 'month', 'day').order_by('month', 'day'))'''
     max_abs, max_dia, maximo = maximostai(datos_diarios_max)
     min_abs, min_dia, minimo = minimostai(datos_diarios_min)
     for item in med_avg:
@@ -94,6 +50,7 @@ def matrizIII(estacion, variable, periodo):
         obj_tai.tai_promedio = item.get('media')
         obj_tai.tai_mes = mes
         datos.append(obj_tai)
+    cursor.close()
     return datos
 
 

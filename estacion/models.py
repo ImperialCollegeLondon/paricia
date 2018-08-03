@@ -7,6 +7,20 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 # Create your models here.
+class Provincia(models.Model):
+    pro_nombre = models.CharField(max_length=40)
+
+    def __str__(self):
+        return str(self.pro_nombre)
+
+
+class Tipo(models.Model):
+    tip_nombre = models.CharField(max_length=40)
+
+    def __str__(self):
+        return str(self.tip_nombre)
+
+
 class Estacion(models.Model):
     TIPO_ESTACION = (
         ('M', 'Meteorológica'),
@@ -23,6 +37,8 @@ class Estacion(models.Model):
     est_longitud = models.DecimalField("Longitud", max_digits=10, decimal_places=2, null=True)
     est_altura = models.IntegerField("Altura", null=True, validators=[MaxValueValidator(6000), MinValueValidator(0)])
     est_ficha = models.FileField("Fichas", upload_to='documents/')
+    #provincia = models.ForeignKey(Provincia,  on_delete=models.CASCADE, verbose_name="Provincia" )
+    #tipo = models.ForeignKey(Tipo,  on_delete=models.CASCADE, verbose_name="Tipo" )
 
     def __str__(self):
         return str(self.est_codigo)

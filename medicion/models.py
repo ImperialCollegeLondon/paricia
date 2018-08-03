@@ -30,7 +30,7 @@ class Medicion(models.Model):
         null=True,
         verbose_name="Marca Datalogger"
     )
-    med_fecha = models.DateTimeField("Fecha")
+    med_fecha = models.DateTimeField("Fecha", db_index=True)
     med_valor = models.DecimalField("Valor", max_digits=14, decimal_places=6, blank=True, null=True)
     med_maximo = models.DecimalField("Máximo", max_digits=14, decimal_places=6, blank=True, null=True)
     med_minimo = models.DecimalField("Mínimo", max_digits=14, decimal_places=6, blank=True, null=True)

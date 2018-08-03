@@ -29,12 +29,23 @@ def iniciar_lectura():
                     estacion = consulta[0].est_id
                     root_dir = formato.for_ubicacion
                     leer_archivos(root_dir, formato, estacion)
+                    respaldar_archivos(root_dir)
                 else:
                     registrar_log('No existen formatos para iniciar la lectura')
+
         except IOError as e:
             registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
             pass
         time.sleep(1500)
+
+def respaldar_archivos(root_dir):
+    for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
+        for file_name in file_list:
+            mn5 = buscar_archivo(file_name, 'mn5')
+            hor = buscar_archivo(file_name, 'hor')
+            dia = buscar_archivo(file_name, 'hor')
+            if mn5 or hor or dia:
+                move(root_dir + file_name, get_ruta_backup(root_dir))
 
 
 def registrar_log(mensaje):
