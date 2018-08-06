@@ -388,7 +388,6 @@ def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
     var_cod = variable.var_codigo
     cursor = connection.cursor()
     datos = []
-    print(str(fecha_inicio))
     filtro_completo = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
     filtro_completo += 'med_fecha<=\'' + str(fecha_fin) + '\' and med_estado is not False '
     filtro_mayor = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
@@ -417,7 +416,6 @@ def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
             sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
             sql += 'FROM ' + tabla + ' WHERE '
             sql += filtro_completo + group_order
-        print(sql)
         cursor.execute(sql)
         datos = dictfetchall(cursor)
     else:
@@ -454,7 +452,6 @@ def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
                     sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
                     sql += 'FROM ' + tabla + ' WHERE '
                     sql += filtro_simple + group_order
-            print(sql)
             cursor.execute(sql)
             datos.extend(dictfetchall(cursor))
     cursor.close()
@@ -506,36 +503,16 @@ def dictfetchall(cursor):
 
 
 def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
-    '''consulta = (Medicion.objects.filter(est_id=est_id)
-                .filter(var_id=var_id).filter(med_fecha__range=[fec_ini, fec_fin]))
-    consulta = consulta.annotate(year=ExtractYear('med_fecha'),
-                                 month=ExtractMonth('med_fecha'),
-                                 day=ExtractDay('med_fecha'),
-                                 hour=ExtractHour('med_fecha')
-                                 ).values('year', 'month', 'day', 'hour')
-    if (var_id == 1):
-        consulta = list(consulta.annotate(valor=Sum('med_valor')).
-                        values('valor', 'year', 'month', 'day', 'hour').
-                        order_by('year', 'month', 'day', 'hour'))
-    else:
-        consulta = list(consulta.annotate(valor=Avg('med_valor'),
-                                          maximo=Max('med_maximo'), minimo=Min('med_minimo')).
-                        values('valor', 'maximo', 'minimo', 'year', 'month', 'day', 'hour').
-                        order_by('year', 'month', 'day', 'hour'))
-    '''
     fecha_ini = datetime.strptime(fec_ini, '%Y-%m-%d %H:%M:%S')
     fecha_fin = datetime.strptime(fec_fin, '%Y-%m-%d %H:%M:%S')
     datos = []
     estacion = Estacion.objects.get(est_id=est_id)
     variable = Variable.objects.get(var_id=var_id)
-    val, max_abs, max_pro, min_abs, min_pro, time = datos_horarios(estacion, variable, fecha_ini, fecha_fin)
+    val, max_abs, max_pro, min_abs, min_pro, time = \
+        datos_horarios(estacion, variable, fecha_ini, fecha_fin)
     if len(val) > 0:
-        for item_val,item_max_abs, item_max_pro, item_min_abs, item_min_pro, item_time in zip(val, max_abs, max_pro, min_abs, min_pro, time):
-            '''fecha_str = (str(fila.get('year')) + ":" +
-                         str(fila.get('month')) + ":" + str(fila.get('day')))
-            fecha = datetime.strptime(fecha_str, '%Y:%m:%d').date()
-            hora = datetime.time(fila.get('hour'))
-            fecha_hora = datetime.combine(fecha, hora)'''
+        for item_val, item_max_abs, item_max_pro, item_min_abs, item_min_pro, item_time \
+                in zip(val, max_abs, max_pro, min_abs, min_pro, time):
             if item_time>=fecha_ini and item_time<=fecha_fin:
                 dato = {
                     'fecha': item_time,
