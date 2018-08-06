@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from medicion.models import Medicion
-from django.db.models import Max, Min, Avg, Count, Sum
-from django.db.models.functions import (
-    ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
+from estacion.models import Estacion
+from variable.models import Variable
 import plotly.offline as opy
 import plotly.graph_objs as go
 from datetime import timedelta, datetime
@@ -383,12 +382,13 @@ def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
     return valor, maximo_abs, maximo_pro, minimo_abs, minimo_pro, frecuencia
 
 
-def armar_consulta(estacion,variable,frecuencia,fecha_inicio,fecha_fin):
+def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
     year_ini = fecha_inicio.strftime('%Y')
     year_fin = fecha_fin.strftime('%Y')
     var_cod = variable.var_codigo
     cursor = connection.cursor()
     datos = []
+    print(str(fecha_inicio))
     filtro_completo = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
     filtro_completo += 'med_fecha<=\'' + str(fecha_fin) + '\' and med_estado is not False '
     filtro_mayor = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
@@ -417,6 +417,7 @@ def armar_consulta(estacion,variable,frecuencia,fecha_inicio,fecha_fin):
             sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
             sql += 'FROM ' + tabla + ' WHERE '
             sql += filtro_completo + group_order
+        print(sql)
         cursor.execute(sql)
         datos = dictfetchall(cursor)
     else:
@@ -505,7 +506,7 @@ def dictfetchall(cursor):
 
 
 def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
-    consulta = (Medicion.objects.filter(est_id=est_id)
+    '''consulta = (Medicion.objects.filter(est_id=est_id)
                 .filter(var_id=var_id).filter(med_fecha__range=[fec_ini, fec_fin]))
     consulta = consulta.annotate(year=ExtractYear('med_fecha'),
                                  month=ExtractMonth('med_fecha'),
@@ -521,21 +522,30 @@ def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
                                           maximo=Max('med_maximo'), minimo=Min('med_minimo')).
                         values('valor', 'maximo', 'minimo', 'year', 'month', 'day', 'hour').
                         order_by('year', 'month', 'day', 'hour'))
+    '''
+    fecha_ini = datetime.strptime(fec_ini, '%Y-%m-%d %H:%M:%S')
+    fecha_fin = datetime.strptime(fec_fin, '%Y-%m-%d %H:%M:%S')
     datos = []
-    if len(consulta) > 0:
-        for fila in consulta:
-            fecha_str = (str(fila.get('year')) + ":" +
+    estacion = Estacion.objects.get(est_id=est_id)
+    variable = Variable.objects.get(var_id=var_id)
+    val, max_abs, max_pro, min_abs, min_pro, time = datos_horarios(estacion, variable, fecha_ini, fecha_fin)
+    if len(val) > 0:
+        for item_val,item_max_abs, item_max_pro, item_min_abs, item_min_pro, item_time in zip(val, max_abs, max_pro, min_abs, min_pro, time):
+            '''fecha_str = (str(fila.get('year')) + ":" +
                          str(fila.get('month')) + ":" + str(fila.get('day')))
             fecha = datetime.strptime(fecha_str, '%Y:%m:%d').date()
             hora = datetime.time(fila.get('hour'))
-            fecha_hora = datetime.combine(fecha, hora)
-            dato = {
-                'fecha': fecha_hora,
-                'valor': fila.get('valor'),
-                'maximo': fila.get('maximo'),
-                'minimo': fila.get('minimo'),
-            }
-            datos.append(dato)
+            fecha_hora = datetime.combine(fecha, hora)'''
+            if item_time>=fecha_ini and item_time<=fecha_fin:
+                dato = {
+                    'fecha': item_time,
+                    'valor': item_val,
+                    'maximo_absoluto': item_max_abs,
+                    'minimo_absolulo': item_min_abs,
+                    'maximo_promedio': item_max_pro,
+                    'minimo_promedio': item_min_pro,
+                }
+                datos.append(dato)
     else:
         datos = {
             'mensaje': 'no hay datos'
