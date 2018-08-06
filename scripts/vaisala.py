@@ -46,6 +46,8 @@ def respaldar_archivos(root_dir):
             dia = buscar_archivo(file_name, 'hor')
             if mn5 or hor or dia:
                 move(root_dir + file_name, get_ruta_backup(root_dir))
+            else:
+                registrar_log('No existen archivos nuevos')
 
 
 def registrar_log(mensaje):
@@ -81,9 +83,11 @@ def leer_archivos(root_dir, formato, estacion):
                     obj_importacion.save()
                     move(root_dir + file_name, get_ruta_backup(root_dir))
                 else:
-                    registrar_log('No existe nueva informacion para el Formato: '
-                                  + str(formato.for_descripcion))
-    return file_name
+                    registrar_log('No existe información en el archivo: '
+                                  + str(file_name))
+            else:
+                registrar_log('No hay nueva información en el directorio FTP. Formato: '+str(
+                                formato.for_descripcion))
 
 
 def guardar_datos(importacion, datos, estacion):
