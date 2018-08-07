@@ -9,7 +9,7 @@ from home.models import Usuarios
 import time
 import daemon
 from temporal.models import Datos
-
+import sys
 
 def run(*args):
     with daemon.DaemonContext():
@@ -192,4 +192,8 @@ def fecha_archivo(file_name, prefijo):
 
 
 def move(src, dest):
-    shutil.move(src, dest)
+    try:
+        shutil.move(src, dest)
+    except:
+        registrar_log('Error de copia al respaldo', sys.exc_info()[0])
+        pass
