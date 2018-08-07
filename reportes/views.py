@@ -85,18 +85,37 @@ class ConsultasPeriodo(FormView):
         if form.is_valid():
             self.frecuencia = form.cleaned_data["frecuencia"]
             if self.request.is_ajax():
-                # if form.exists(form):
                 self.grafico = grafico(form)
                 return render(request, 'reportes/consultas/grafico.html',
                               {'grafico': self.grafico, 'frecuencia': self.frecuencia})
             else:
-                return self.export_excel(self.frecuencia, form)
+                if self.frecuencia == "0":
+                    return self.export_csv(form)
+                else:
+                    return self.export_excel(self.frecuencia, form)
         return render(request, 'home/form_error.html', {'form': form})
 
     def get_context_data(self, **kwargs):
         context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
         context['grafico'] = self.grafico
         return context
+
+    def export_csv(self, form):
+        estacion = form.cleaned_data['estacion']
+        variable = form.cleaned_data['variable']
+        fecha_inicio = form.cleaned_data['inicio']
+        fecha_fin = form.cleaned_data['fin']
+        valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable,fecha_inicio, fecha_fin)
+        # Establecemos el nombre del archivo
+        nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.csv"')
+        contenido = "attachment; filename={0}".format(nombre_archivo)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = contenido
+        writer = csv.writer(response)
+        writer.writerow(['fecha', 'valor', 'maximo', 'minimo'])
+        for valor, maximo, minimo, fecha in zip(valores, maximos, minimos, tiempo):
+            writer.writerow([fecha, valor, maximo, minimo])
+        return response
 
     def export_excel(self,frecuencia,form):
         estacion = form.cleaned_data['estacion']
