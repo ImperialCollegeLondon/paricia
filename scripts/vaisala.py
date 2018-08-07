@@ -11,8 +11,8 @@ import daemon
 from temporal.models import Datos
 
 def run(*args):
-    #with daemon.DaemonContext():
-    iniciar_lectura()
+    with daemon.DaemonContext():
+        iniciar_lectura()
 
 
 def iniciar_lectura():
