@@ -12,8 +12,8 @@ from temporal.models import Datos
 
 
 def run(*args):
-    with daemon.DaemonContext():
-        iniciar_lectura()
+    #with daemon.DaemonContext():
+    iniciar_lectura()
 
 
 def iniciar_lectura():
@@ -47,10 +47,14 @@ def leer_archivos(formato, estacion):
     registrar_log('Lectura Iniciada Estacion:' + str(
         estacion.est_codigo) + 'Formato:' + str(
         formato.for_descripcion))
-    archivo = open(formato.for_ubicacion + formato.for_archivo)
-    datos = procesar_archivo_automatico(archivo, formato, estacion)
-    # print (len(datos))
-    archivo.close()
+    try:
+        archivo = open(formato.for_ubicacion + formato.for_archivo)
+        datos = procesar_archivo_automatico(archivo, formato, estacion)
+        # print (len(datos))
+        archivo.close()
+    except Exception  as e:
+        registrar_log("Error Inesperado "+ str(e.errno) + ' '+e.strerror)
+        pass
 
     if len(datos) > 0:
         fecha_ini, fecha_fin = get_fechas_datos(datos)
