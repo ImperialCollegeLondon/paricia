@@ -5,7 +5,7 @@ $(document).ready(function() {
     e.preventDefault();
     actualizar_lista($(this).attr('href'));
   });
-  function actualizar_lista(enlace){
+  /*function actualizar_lista(enlace){
     $("#btn_filtrar").attr('disabled',true);
     $.ajax({
       url: enlace,
@@ -29,7 +29,7 @@ $(document).ready(function() {
         $("#btn_filtrar").removeAttr('disabled');
       }
     });
-  }
+  }*/
 });
 
 </script>
@@ -41,8 +41,8 @@ $(document).ready(function() {
         <th>Nombre</th>
         <th>Tipo</th>
         <th>Provincia</th>
-        <th>Latitud</th>
-        <th>Longitud</th>
+        <th>Y UTM (WGS 84 17S)</th>
+        <th>X UTM (WGS 84 17S)</th>
         <th>Altura</th>
         <th>Acciones</th>
     </tr>
@@ -52,8 +52,8 @@ $(document).ready(function() {
     <tr>
         <td>{{ item.est_codigo}}</td>
         <td>{{ item.est_nombre}}</td>
-        <td>{{ item.est_tipo}}</td>
-        <td>{{ item.est_provincia}}</td>
+        <td>{{ item.tipo}}</td>
+        <td>{{ item.provincia}}</td>
         <td>{{ item.est_latitud}}</td>
         <td>{{ item.est_longitud}}</td>
         <td>{{ item.est_altura}}</td>

@@ -16,8 +16,8 @@ from home.functions import pagination
 # Create your views here.
 class EstacionCreate(LoginRequiredMixin, CreateView):
     model = Estacion
-    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_tipo', 'est_provincia', 'est_estado', 'est_latitud',
-              'est_longitud', 'est_altura', 'est_ficha']
+    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_latitud',
+              'est_longitud', 'est_altura', 'est_fecha_inicio', 'est_ficha', 'tipo', 'provincia']
 
     def form_valid(self, form):
         return super(EstacionCreate, self).form_valid(form)
@@ -27,10 +27,9 @@ class EstacionCreate(LoginRequiredMixin, CreateView):
         context = super(EstacionCreate, self).get_context_data(**kwargs)
         # Add in a QuerySet of all the books
         context['title'] = "Crear"
-        print("context")
         return context
 
-    def model_form_upload(request):
+    '''def model_form_upload(request):
         if request.method == 'POST':
             form = DocumentForm(request.POST, request.FILES)
             if form.is_valid():
@@ -40,7 +39,7 @@ class EstacionCreate(LoginRequiredMixin, CreateView):
             form = DocumentForm()
         return render(request, 'core/model_form_upload.html', {
             'form': form
-        })
+        })'''
 
 
 class EstacionList(LoginRequiredMixin, ListView, FormView):
@@ -75,8 +74,8 @@ class EstacionDetail(LoginRequiredMixin, DetailView):
 
 class EstacionUpdate(LoginRequiredMixin, UpdateView):
     model = Estacion
-    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_tipo', 'est_provincia', 'est_estado', 'est_latitud',
-              'est_longitud', 'est_altura', 'est_ficha']
+    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_latitud', 'est_longitud', 'est_altura',
+              'est_fecha_inicio', 'est_ficha', 'tipo', 'provincia', 'est_estado']
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context

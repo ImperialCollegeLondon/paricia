@@ -33,12 +33,13 @@ class Estacion(models.Model):
     est_tipo = models.CharField("Tipo", max_length=25, choices=TIPO_ESTACION)
     est_estado = models.BooleanField("Activo", default=True)
     est_provincia = models.CharField("Provincia", max_length=50, null=True)
-    est_latitud = models.DecimalField("Latitud", max_digits=10, decimal_places=2, null=True)
-    est_longitud = models.DecimalField("Longitud", max_digits=10, decimal_places=2, null=True)
+    est_latitud = models.DecimalField("Y UTM", max_digits=10, decimal_places=2, null=True)
+    est_longitud = models.DecimalField("X UTM", max_digits=10, decimal_places=2, null=True)
     est_altura = models.IntegerField("Altura", null=True, validators=[MaxValueValidator(6000), MinValueValidator(0)])
     est_ficha = models.FileField("Fichas", upload_to='documents/')
-    #provincia = models.ForeignKey(Provincia,  on_delete=models.CASCADE, verbose_name="Provincia" )
-    #tipo = models.ForeignKey(Tipo,  on_delete=models.CASCADE, verbose_name="Tipo" )
+    est_fecha_inicio = models.DateField("Fecha Inicio Operaciones", null=True)
+    provincia = models.ForeignKey(Provincia,  on_delete=models.CASCADE, verbose_name="Provincia", null=True, blank=True)
+    tipo = models.ForeignKey(Tipo,  on_delete=models.CASCADE, verbose_name="Tipo", null=True, blank=True)
 
     def __str__(self):
         return str(self.est_codigo)

@@ -2,7 +2,7 @@ from estacion.models import Tipo
 
 tipo = (
     'Pluviométrica',
-    'Climatológica',
+    'Meteorológica',
     'Hidrológica',
 )
 
