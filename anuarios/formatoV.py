@@ -126,12 +126,14 @@ def matrizV_mensual(estacion, variable, periodo):
                 maximos.append(max(vvi_max[j]))
             else:
                 maximos.append(float(0))
+        # velocidad media en km/h
+        vel_media = item_velocidad.get('valor')*36/10
         valor_calma = round(float(item_calma.get('calma')) / item_obs.get('obs') * 100, 2)
         valores[mes - 1].append(valor_calma)
         valores[mes - 1].append(item_obs.get('obs'))
         valores[mes - 1].append(round(max(maximos), 2))
         valores[mes - 1].append(direcciones[maximos.index(max(maximos))])
-        valores[mes - 1].append(round(item_velocidad.get('valor'), 2))
+        valores[mes - 1].append(round(vel_media, 2))
     cursor.close()
     return valores
 
