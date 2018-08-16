@@ -106,11 +106,18 @@ def minimostai(datos_diarios_min):
 
 def get_maximo(fila):
     if fila.get('maximo') is None:
-        return fila.get('valor')
+        if fila.get('valor') is None:
+            return 0
+        else:
+            return fila.get('valor')
+
     return fila.get('maximo')
 
 
 def get_minimo(fila):
     if fila.get('minimo') is None:
-        return fila.get('valor')
+        if fila.get('valor') is None:
+            return 0
+        else:
+            return fila.get('valor')
     return fila.get('minimo')
