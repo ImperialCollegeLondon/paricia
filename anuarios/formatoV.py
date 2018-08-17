@@ -118,7 +118,7 @@ def matrizV_mensual(estacion, variable, periodo):
                 maximos.append(float(0))
         # velocidad media en km/h
         vel_media = item_velocidad.get('valor')*36/10
-        valor_calma = round(float(item_calma.get('calma')) / num_total_obs * 100, 2)
+        valor_calma = round(float(item_calma.get('calma')) / item_obs.get('obs') * 100, 2)
         valores[mes - 1].append(valor_calma)
         valores[mes - 1].append(item_obs.get('obs'))
         valores[mes - 1].append(round(max(maximos), 2))
@@ -146,7 +146,7 @@ def get_total_obs(num_obs):
 def agrupar_viento(dat_dvi, dat_vvi):
     len_dvi = len(dat_dvi)
     len_vvi = len(dat_vvi)
-    print(len_dvi, len_vvi)
+
     if len_dvi == len_vvi:
         longitud =len_dvi
     else:
