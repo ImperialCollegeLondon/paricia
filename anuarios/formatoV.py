@@ -5,6 +5,11 @@ from django.db import connection
 from datetime import datetime
 
 
+class VelocidaDireccion():
+    velocidad = 0
+    velocidad_max = 0
+    direccion = 0
+
 def matrizV_mensual(estacion, variable, periodo):
     tabla_velocidad = "vvi.m" + periodo
     tabla_direccion = "dvi.m" + periodo
@@ -33,17 +38,17 @@ def matrizV_mensual(estacion, variable, periodo):
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     calma = dictfetchall(cursor)
-    if len(calma)==0:
+    if len(calma) == 0:
         # numero de registros menores o igual a 0.5 en velocidad
         sql = "SELECT count(med_valor) as calma, date_part('month',med_fecha) as mes "
         sql += "FROM " + tabla_velocidad + " "
-        sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.6 "
+        sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.6"
         sql += "GROUP BY mes ORDER BY mes"
         cursor.execute(sql)
         calma = dictfetchall(cursor)
     direcciones = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
     valores = [[] for y in range(12)]
-
+    num_total_obs=get_total_obs(num_obs)
     for item_obs, item_calma, item_velocidad in zip(num_obs, calma, vel_media):
         mes = int(item_obs.get('mes'))
         # lista de datos de la dirección de viento
@@ -51,6 +56,7 @@ def matrizV_mensual(estacion, variable, periodo):
         sql += "FROM " + tabla_direccion + " "
         sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',med_fecha)=" + str(mes)+" "
+        sql += "AND med_valor is not null "
         sql += "ORDER BY med_fecha"
         cursor.execute(sql)
         dat_dvi = dictfetchall(cursor)
@@ -59,54 +65,38 @@ def matrizV_mensual(estacion, variable, periodo):
         sql += "FROM " + tabla_velocidad + " "
         sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',med_fecha)=" + str(mes)+" "
+        sql += "AND med_valor is not null "
         sql += "ORDER BY med_fecha"
         cursor.execute(sql)
         dat_vvi = dictfetchall(cursor)
         vvi = [[0 for x in range(0)] for y in range(8)]
         vvi_max = [[0 for x in range(0)] for y in range(8)]
-        for val_dvi, val_vvi in zip(dat_dvi, dat_vvi):
-            # agrupa las velocidades por direccion
-            if val_vvi.get('med_valor') is not None and val_dvi.get('med_valor') is not None:
-                if val_dvi.get('med_valor') < 22.5 or val_dvi.get('med_valor') > 337.5:
-                    vvi[0].append(val_vvi.get('med_valor'))
-                    vvi_max[0].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
-                elif val_dvi.get('med_valor') < 67.5:
-                    vvi[1].append(val_vvi.get('med_valor'))
-                    vvi_max[1].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
-                elif val_dvi.get('med_valor') < 112.5:
-                    vvi[2].append(val_vvi.get('med_valor'))
-                    vvi_max[2].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
-                elif val_dvi.get('med_valor') < 157.5:
-                    vvi[3].append(val_vvi.get('med_valor'))
-                    vvi_max[3].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
-                elif val_dvi.get('med_valor') < 202.5:
-                    vvi[4].append(val_vvi.get('med_valor'))
-                    vvi_max[4].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
-                elif val_dvi.get('med_valor') < 247.5:
-                    vvi[5].append(val_vvi.get('med_valor'))
-                    vvi_max[5].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
-                elif val_dvi.get('med_valor') < 292.5:
-                    vvi[6].append(val_vvi.get('med_valor'))
-                    vvi_max[6].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
-                elif val_dvi.get('med_valor') < 337.5:
-                    vvi[7].append(val_vvi.get('med_valor'))
-                    vvi_max[7].append(val_vvi.get('med_valor')
-                                      if val_vvi.get('med_maximo') is None else
-                                      val_vvi.get('med_maximo'))
+        datos = agrupar_viento(dat_dvi, dat_vvi)
+        for item in datos:
+            if item.direccion < 22.5 or item.direccion > 337.5:
+                vvi[0].append(item.velocidad)
+                vvi_max[0].append(item.velocidad_max)
+            elif item.direccion < 67.5:
+                vvi[1].append(item.velocidad)
+                vvi_max[1].append(item.velocidad_max)
+            elif item.direccion < 112.5:
+                vvi[2].append(item.velocidad)
+                vvi_max[2].append(item.velocidad_max)
+            elif item.direccion < 157.5:
+                vvi[3].append(item.velocidad)
+                vvi_max[3].append(item.velocidad_max)
+            elif item.direccion < 202.5:
+                vvi[4].append(item.velocidad)
+                vvi_max[4].append(item.velocidad_max)
+            elif item.direccion < 247.5:
+                vvi[5].append(item.velocidad)
+                vvi_max[5].append(item.velocidad_max)
+            elif item.direccion < 292.5:
+                vvi[6].append(item.velocidad)
+                vvi_max[6].append(item.velocidad_max)
+            elif item.direccion < 337.5:
+                vvi[7].append(item.velocidad)
+                vvi_max[7].append(item.velocidad_max)
         maximos = []
         valores[mes - 1].append(mes)
         # recorro la matriz de datos en base al número de direcciones
@@ -128,7 +118,7 @@ def matrizV_mensual(estacion, variable, periodo):
                 maximos.append(float(0))
         # velocidad media en km/h
         vel_media = item_velocidad.get('valor')*36/10
-        valor_calma = round(float(item_calma.get('calma')) / item_obs.get('obs') * 100, 2)
+        valor_calma = round(float(item_calma.get('calma')) / num_total_obs * 100, 2)
         valores[mes - 1].append(valor_calma)
         valores[mes - 1].append(item_obs.get('obs'))
         valores[mes - 1].append(round(max(maximos), 2))
@@ -136,6 +126,55 @@ def matrizV_mensual(estacion, variable, periodo):
         valores[mes - 1].append(round(vel_media, 2))
     cursor.close()
     return valores
+
+
+def get_maximo(fila):
+    if fila.get('med_maximo') is None:
+        if fila.get('med_valor') is None:
+            return 0
+        else:
+            return fila.get('med_valor')
+    return fila.get('med_maximo')
+
+def get_total_obs(num_obs):
+    suma=0
+    for item_obs in num_obs:
+        suma += item_obs.get('obs')
+    return suma
+
+
+def agrupar_viento(dat_dvi, dat_vvi):
+    len_dvi = len(dat_dvi)
+    len_vvi = len(dat_vvi)
+    print(len_dvi, len_vvi)
+    if len_dvi == len_vvi:
+        longitud =len_dvi
+    else:
+        if len_vvi > len_dvi:
+            vvi = True
+            longitud =len_vvi
+        else:
+            vvi = False
+            longitud = len_dvi
+    datos = []
+    i = 0  # velocidad
+    j = 0  # direccion
+    for item in range(longitud):
+        obj_viento = VelocidaDireccion()
+        if dat_vvi[i].get('med_fecha') == dat_dvi[j].get('med_fecha'):
+            obj_viento.velocidad = dat_vvi[i].get('med_valor')
+            obj_viento.velocidad_max = get_maximo(dat_vvi[i])
+            obj_viento.direccion = dat_dvi[j].get('med_valor')
+            datos.append(obj_viento)
+            i += 1
+            j += 1
+        else:
+            if vvi:
+                i += 1
+            else:
+                j += 1
+    return datos
+
 
 
 def datos_viento(datos, estacion, periodo):
