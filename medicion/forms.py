@@ -14,7 +14,7 @@ class MedicionSearchForm(forms.Form):
     estacion = forms.ModelChoiceField(
         queryset=Estacion.objects.order_by('est_id').all())
     variable = forms.ModelChoiceField(
-        queryset=Variable.objects.filter(var_id__in=[1, 2, 3, 6, 8, 9]).order_by('var_id').all())
+        queryset=Variable.objects.order_by('var_id').all())
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
     valor = forms.ChoiceField(choices=TIPO_VARIABLE)

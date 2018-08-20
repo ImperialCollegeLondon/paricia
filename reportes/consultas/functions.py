@@ -198,7 +198,9 @@ def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
         sql = 'SELECT * FROM ' + tabla + ' WHERE '
         sql += 'est_id_id=' + str(estacion.est_id) + ' and '
         sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-        sql += 'med_fecha<=\'' + str(fecha_fin) + '\' order by med_fecha'
+        sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
+        sql += 'med_estado is not False '
+        sql += 'order by med_fecha'
         consulta = list(Medicion.objects.raw(sql))
     else:
         range_year = range(int(year_ini), int(year_fin) + 1)
@@ -209,16 +211,22 @@ def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
                 sql += 'est_id_id=' + str(estacion.est_id) + ' and '
                 sql += 'med_estado is not False and '
-                sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' order by med_fecha'
+                sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
+                sql += 'med_estado is not False '
+                sql += 'order by med_fecha'
             elif str(year) == year_fin:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
                 sql += 'est_id_id=' + str(estacion.est_id) + ' and '
                 sql += 'med_estado is not False and '
-                sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59 \' order by med_fecha'
+                sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59 \' '
+                sql += 'med_estado is not False '
+                sql += 'order by med_fecha'
             else:
                 sql = 'SELECT * FROM ' + tabla + ' WHERE '
                 sql += 'med_estado is not False and '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' order by med_fecha'
+                sql += 'est_id_id=' + str(estacion.est_id) + ' '
+                sql += 'med_estado is not False '
+                sql += 'order by med_fecha'
             consulta.extend(list(Medicion.objects.raw(sql)))
     valor = []
     maximo = []
