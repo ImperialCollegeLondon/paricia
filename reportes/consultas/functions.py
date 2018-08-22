@@ -8,6 +8,7 @@ import plotly.graph_objs as go
 from datetime import timedelta, datetime
 from django.db import connection
 from math import ceil
+from cruce.models import Cruce
 
 
 suma = 'sum(med_valor) as valor '
@@ -247,6 +248,60 @@ def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
             minimo.append(None)
         frecuencia.append(fila.med_fecha)
     return valor, maximo, minimo, frecuencia
+
+
+def datos_estacion(estacion, fecha_inicio, fecha_fin):
+    cruce = list(Cruce.objects.filter(est_id=estacion))
+    i = 0
+    i_fecha = 0
+    num_variables=len(cruce)
+    valores = [[0 for x in range(0)] for y in range(num_variables+1)]
+    for fila in cruce:
+        valor, maximo, minimo, frecuencia = datos_instantaneos(estacion, fila.var_id, fecha_inicio, fecha_fin)
+        # llenar la frecuencia de tiempo
+        if i == 0:
+            valores[i].append("Fecha+hora")
+            for item_frecuencia in frecuencia:
+                valores[i].append(item_frecuencia)
+        # comprobar si hay otras frecuecnas de tiempo ej: el viento se registra cada 2 min
+        elif len(frecuencia) < (len(valores[i_fecha])-1):
+            i+=1
+            valores[i].append("Fecha+hora")
+            print(len(frecuencia))
+            for item_frecuencia in frecuencia:
+                valores[i].append(item_frecuencia)
+            i_fecha = i
+            valores.append([0 for x in range(0)])
+        # agregar el valor de cada variable
+        valores[i+1].append(fila.var_id.var_nombre)
+        for item_valor in valor:
+            valores[i + 1].append(item_valor)
+        # verificar si hay maximos y minimos
+        if contar_vacios(maximo) > 0:
+            valores.append([0 for x in range(0)])
+            valores[i+2].append(fila.var_id.var_nombre)
+            print("llego max ", len((valores)))
+        if contar_vacios(minimo)>0:
+            valores.append([0 for x in range(0)])
+            valores[i + 3].append(fila.var_id.var_nombre)
+            print("llego min", len((valores)))
+
+        for item_maximo, item_minimo in zip(maximo, minimo):
+            if item_maximo is not None:
+                valores[i + 2].append(item_maximo)
+            if item_minimo is not None:
+                valores[i + 3].append(item_minimo)
+        i += 1
+    num_fil = len(valores[0])
+    matriz = [[0 for x in range(0)] for y in range(0)]
+    for i in range(len(valores)):
+        #print(len(valores[i]),num_fil)
+        if len(valores[i]) == num_fil:
+            matriz.append(valores[i])
+    for i in range(len(valores)):
+        if len(valores[i]) < num_fil:
+            matriz.append(valores[i])
+    return matriz
 
 
 def datos_5minutos(estacion, variable, fecha_inicio, fecha_fin):
@@ -536,3 +591,11 @@ def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
             'mensaje': 'no hay datos'
         }
     return datos
+
+
+def contar_vacios(valores):
+    num_vacios=0
+    for item in valores:
+        if item is not None:
+            num_vacios += 1
+    return num_vacios

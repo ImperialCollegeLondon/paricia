@@ -10,7 +10,7 @@ from anuarios.formatoIV import matrizIV
 from anuarios.formatoV import datos_viento, matrizV_mensual
 from anuarios.formatoVI import matrizVI, datos_radiacion_maxima, datos_radiacion_minimo
 
-from cruce.models import  Cruce
+from cruce.models import Cruce
 
 
 def calcular(form):

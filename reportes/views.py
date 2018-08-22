@@ -1,12 +1,12 @@
 from django.views.generic.base import TemplateView
 from django.views.generic import FormView
 from reportes.forms import AnuarioForm
-from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, VariableForm
+from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, VariableForm, EstacionVariableSearchForm
 import csv
 from django.http import HttpResponse
 # from django.template import loader, Context
 from reportes.consultas.functions import (grafico, datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
-                                          datos_instantaneos, datos_mensuales)
+                                          datos_instantaneos, datos_mensuales, datos_estacion)
 from reportes.functions import filtrar, comparar, comparar_variable
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -224,6 +224,48 @@ class ConsultasPeriodo(FormView):
         contenido = "attachment; filename={0}".format(nombre_archivo)
         response["Content-Disposition"] = contenido
         wb.save(response)
+        return response
+
+# consultas por periodo de todas las variables
+class ConsultasEstacionVariable(FormView):
+    template_name = 'reportes/consultas_estacion.html'
+    form_class = EstacionVariableSearchForm
+    success_url = '/reportes/estacionvariable'
+    valores = []
+
+    def post(self, request, *args, **kwargs):
+        form = EstacionVariableSearchForm(self.request.POST or None)
+        if form.is_valid():
+            return self.export_csv(form)
+        return render(request, 'home/form_error.html', {'form': form})
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsultasEstacionVariable, self).get_context_data(**kwargs)
+        return context
+
+    def export_csv(self, form):
+        estacion = form.cleaned_data['estacion']
+        fecha_inicio = form.cleaned_data['inicio']
+        fecha_fin = form.cleaned_data['fin']
+        valores = datos_estacion(estacion, fecha_inicio, fecha_fin)
+        # Establecemos el nombre del archivo
+        nombre_archivo = str('"') + str(estacion.est_codigo) + str('.csv"')
+        contenido = "attachment; filename={0}".format(nombre_archivo)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = contenido
+        writer = csv.writer(response)
+
+        num_col = len(valores)
+        num_fil = len(valores[0])
+
+        for i in range(num_fil):
+            fila=[]
+            for j in range(num_col):
+                if i < len(valores[j]):
+                    fila.append(valores[j][i])
+                else:
+                    fila.append('')
+            writer.writerow(fila)
         return response
 
 

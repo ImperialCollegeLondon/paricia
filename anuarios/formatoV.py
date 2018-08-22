@@ -19,18 +19,11 @@ def matrizV_mensual(estacion, variable, periodo):
     sql = "SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    # sql += "AND date_part('month',med_fecha)=9 "
     sql += "GROUP BY mes ORDER BY mes"
-
     cursor.execute(sql)
     vel_media = dictfetchall(cursor)
 
-    # numero de registros por mes en velocidad
-    sql = "SELECT count(med_valor) as obs, date_part('month',med_fecha) as mes "
-    sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-    sql += "GROUP BY mes ORDER BY mes"
-    cursor.execute(sql)
-    num_obs = dictfetchall(cursor)
     # numero de registros menores a 0.5 en velocidad
     sql = "SELECT count(med_valor) as calma, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
@@ -48,15 +41,16 @@ def matrizV_mensual(estacion, variable, periodo):
         calma = dictfetchall(cursor)
     direcciones = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
     valores = [[] for y in range(12)]
-    num_total_obs=get_total_obs(num_obs)
-    for item_obs, item_calma, item_velocidad in zip(num_obs, calma, vel_media):
-        mes = int(item_obs.get('mes'))
+
+    for item_calma, item_velocidad in zip(calma, vel_media):
+        mes = int(item_velocidad.get('mes'))
         # lista de datos de la dirección de viento
         sql = "SELECT med_valor, med_fecha "
         sql += "FROM " + tabla_direccion + " "
         sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',med_fecha)=" + str(mes)+" "
-        sql += "AND med_valor is not null "
+        sql += "AND med_valor is not null AND med_valor<=360 "
+        sql += "AND med_valor >=0 "
         sql += "ORDER BY med_fecha"
         cursor.execute(sql)
         dat_dvi = dictfetchall(cursor)
@@ -103,7 +97,7 @@ def matrizV_mensual(estacion, variable, periodo):
         for j in range(8):
             if len(vvi[j]) > 0:
                 vel_med = float(sum(vvi[j]) / len(vvi[j]))
-                por_med = float(len(vvi[j])) / item_obs.get('obs') * 100
+                por_med = float(len(vvi[j])) / len(datos) * 100
             else:
                 vel_med = 0.0
                 por_med = 0.0
@@ -118,11 +112,16 @@ def matrizV_mensual(estacion, variable, periodo):
                 maximos.append(float(0))
         # velocidad media en km/h
         vel_media = item_velocidad.get('valor')*36/10
-        valor_calma = round(float(item_calma.get('calma')) / item_obs.get('obs') * 100, 2)
+        # porcentaje de calma
+        valor_calma = round(float(item_calma.get('calma')) / len(datos) * 100, 2)
         valores[mes - 1].append(valor_calma)
-        valores[mes - 1].append(item_obs.get('obs'))
+        # numero de observaciones
+        valores[mes - 1].append(len(datos))
+        # velocida maxima
         valores[mes - 1].append(round(max(maximos), 2))
+        # dirección de la velocidad máxima
         valores[mes - 1].append(direcciones[maximos.index(max(maximos))])
+        # velocidad media mensual
         valores[mes - 1].append(round(vel_media, 2))
     cursor.close()
     return valores
@@ -136,45 +135,29 @@ def get_maximo(fila):
             return fila.get('med_valor')
     return fila.get('med_maximo')
 
-def get_total_obs(num_obs):
-    suma=0
-    for item_obs in num_obs:
-        suma += item_obs.get('obs')
-    return suma
-
-
 def agrupar_viento(dat_dvi, dat_vvi):
-    len_dvi = len(dat_dvi)
-    len_vvi = len(dat_vvi)
-
-    if len_dvi == len_vvi:
-        longitud =len_dvi
-    else:
-        if len_vvi > len_dvi:
-            vvi = True
-            longitud =len_vvi
-        else:
-            vvi = False
-            longitud = len_dvi
-    datos = []
-    i = 0  # velocidad
-    j = 0  # direccion
-    for item in range(longitud):
+    dvi_fecha = convertir_lista(dat_dvi, 'med_fecha')
+    dvi_valor = convertir_lista(dat_dvi, 'med_valor')
+    vvi_fecha = convertir_lista(dat_vvi, 'med_fecha')
+    vvi_valor = convertir_lista(dat_vvi, 'med_valor')
+    print(len(dvi_fecha), len(vvi_fecha))
+    datos=[]
+    for item_fecha_vvi, item_valor_vvi in zip(vvi_fecha,vvi_valor):
         obj_viento = VelocidaDireccion()
-        if dat_vvi[i].get('med_fecha') == dat_dvi[j].get('med_fecha'):
-            obj_viento.velocidad = dat_vvi[i].get('med_valor')
-            obj_viento.velocidad_max = get_maximo(dat_vvi[i])
-            obj_viento.direccion = dat_dvi[j].get('med_valor')
+        if item_fecha_vvi in dvi_fecha:
+            item_fecha_dvi = dvi_fecha.index(item_fecha_vvi)
+            obj_viento.velocidad = item_valor_vvi
+            obj_viento.velocidad_max = item_valor_vvi
+            obj_viento.direccion = dvi_valor[item_fecha_dvi]
             datos.append(obj_viento)
-            i += 1
-            j += 1
-        else:
-            if vvi:
-                i += 1
-            else:
-                j += 1
+    print(len(datos))
     return datos
 
+def convertir_lista(datos, indice):
+    lista=[]
+    for item in datos:
+        lista.append(item.get(indice))
+    return lista
 
 
 def datos_viento(datos, estacion, periodo):

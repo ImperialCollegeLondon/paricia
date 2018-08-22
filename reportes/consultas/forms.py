@@ -75,3 +75,10 @@ class VariableForm(forms.Form):
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
     frecuencia = forms.ChoiceField(choices=lista_frecuencias)
+
+
+class EstacionVariableSearchForm(forms.Form):
+    estacion = forms.ModelChoiceField(
+        queryset=Estacion.objects.order_by('est_id').all())
+    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
+    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
