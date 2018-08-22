@@ -29,6 +29,7 @@ def matrizV_mensual(estacion, variable, periodo):
     sql += "FROM " + tabla_velocidad + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.5 "
     sql += "GROUP BY mes ORDER BY mes"
+    print(sql)
     cursor.execute(sql)
     calma = dictfetchall(cursor)
     if len(calma) == 0:
@@ -37,6 +38,7 @@ def matrizV_mensual(estacion, variable, periodo):
         sql += "FROM " + tabla_velocidad + " "
         sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.6"
         sql += "GROUP BY mes ORDER BY mes"
+
         cursor.execute(sql)
         calma = dictfetchall(cursor)
     direcciones = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"]
