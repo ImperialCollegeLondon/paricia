@@ -81,7 +81,7 @@ def construir_matriz(archivo, formato, estacion):
             j = 0
             for fila in clasificacion:
                 if fila.cla_valor is not None:
-                    valor = valid_number(valores[fila.cla_valor])
+                    valor = valid_number(valores[fila.cla_valor], fila.var_id.var_id)
                     if valor != None and acumulado and fila.var_id.var_id == 1:
                         dblValor = valor
                         if dblValor == 0:
@@ -94,11 +94,11 @@ def construir_matriz(archivo, formato, estacion):
                 else:
                     valor = None
                 if fila.cla_maximo is not None:
-                    maximo = valid_number(valores[fila.cla_maximo])
+                    maximo = valid_number(valores[fila.cla_maximo], fila.var_id.var_id)
                 else:
                     maximo = None
                 if fila.cla_minimo is not None:
-                    minimo = valid_number(valores[fila.cla_minimo])
+                    minimo = valid_number(valores[fila.cla_minimo], fila.var_id.var_id)
                 else:
                     minimo = None
                 dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
@@ -334,18 +334,23 @@ def get_fechas_archivo(archivo, formato, form):
     return form
 
 
-def valid_number(val_str):
+def valid_number(val_str, var_id):
     val_num = None
     try:
         if len(val_str) >= 10:
             val_num = None
         elif isinstance(val_str, Number):
             val_num = float(val_str)
+            val_num= round(val_num,3)
         elif val_str == "":
             val_num = None
         else:
             val_str.replace(",", ".")
             val_num = float(val_str)
+            val_num = round(val_num, 3)
+        if val_num  is not None:
+            if var_id==7 and val_num>1400:
+                val_num=1400
     except:
         val_num = None
     return val_num
