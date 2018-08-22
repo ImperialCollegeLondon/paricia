@@ -279,11 +279,11 @@ def datos_estacion(estacion, fecha_inicio, fecha_fin):
         # verificar si hay maximos y minimos
         if contar_vacios(maximo) > 0:
             valores.append([0 for x in range(0)])
-            valores[i+2].append(fila.var_id.var_nombre)
+            valores[i+2].append(fila.var_id.var_nombre+ " Máxima")
             print("llego max ", len((valores)))
         if contar_vacios(minimo)>0:
             valores.append([0 for x in range(0)])
-            valores[i + 3].append(fila.var_id.var_nombre)
+            valores[i + 3].append(fila.var_id.var_nombre+ " Mínima")
             print("llego min", len((valores)))
 
         for item_maximo, item_minimo in zip(maximo, minimo):
