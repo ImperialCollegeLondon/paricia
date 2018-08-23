@@ -16,6 +16,8 @@ def matrizI(estacion, variable, periodo):
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     if variable.var_id == 8:
         sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    elif variable.var_id == 6:
+        sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_max = dictfetchall(cursor)
@@ -26,6 +28,8 @@ def matrizI(estacion, variable, periodo):
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     if variable.var_id == 8:
         sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    elif variable.var_id == 6:
+        sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_min = dictfetchall(cursor)
@@ -35,6 +39,8 @@ def matrizI(estacion, variable, periodo):
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     if variable.var_id == 8:
         sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    elif variable.var_id == 6:
+        sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_avg = dictfetchall(cursor)
