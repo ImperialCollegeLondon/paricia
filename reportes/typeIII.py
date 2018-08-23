@@ -25,14 +25,14 @@ class TypeIII(Titulos):
         avg_simple = []
         for item in datos:
             meses.append(item.tai_mes)
-            max_simple.append(item.tai_maximo)
-            min_simple.append(item.tai_minimo)
+            max_simple.append(item.tai_maximo_abs)
+            min_simple.append(item.tai_minimo_abs)
             avg_simple.append(item.tai_promedio)
 
         trace0 = go.Scatter(
             x=meses,
             y=max_simple,
-            name='Max',
+            name='Máx. Abs.',
             line=dict(
                 color=('rgb(22, 96, 167)'),
                 width=4)
@@ -40,7 +40,7 @@ class TypeIII(Titulos):
         trace1 = go.Scatter(
             x=meses,
             y=min_simple,
-            name='Min',
+            name='Mín. Abs',
             line=dict(
                 color=('rgb(205, 12, 24)'),
                 width=4, )

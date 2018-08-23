@@ -20,7 +20,7 @@ def matrizI(estacion, variable, periodo):
     cursor.execute(sql)
     med_max = dictfetchall(cursor)
     # mínimos absolutos y mínimos promedio
-    sql = "SELECT min(med_maximo) as minimo,  max(med_valor) as valor, "
+    sql = "SELECT min(med_maximo) as minimo,  min(med_valor) as valor, "
     sql += "date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "

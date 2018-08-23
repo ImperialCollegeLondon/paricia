@@ -115,7 +115,10 @@ def matrizV_mensual(estacion, variable, periodo):
         # velocidad media en km/h
         vel_media = item_velocidad.get('valor')*36/10
         # porcentaje de calma
-        valor_calma = round(float(item_calma.get('calma')) / len(datos) * 100, 2)
+        if len(datos)>0:
+            valor_calma = round(float(item_calma.get('calma')) / len(datos) * 100, 2)
+        else:
+            valor_calma = 0
         valores[mes - 1].append(valor_calma)
         # numero de observaciones
         valores[mes - 1].append(len(datos))
