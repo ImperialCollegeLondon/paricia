@@ -48,11 +48,11 @@ def rad_max(estacion, variable, periodo):
     obj_rad_max = RadiacionMaxima()
     for fila in datos:
         mes = int(fila.get('mes')) - 1
-        radiacion[mes][0] = mes + 1
         radiacion[mes].append(round(fila.get('valor'), 2))
     for item in range(12):
         radiacion[item].append(max(radiacion[item]))
         radiacion[item].append(radiacion[item].index(max(radiacion[item])) + 4)
+        radiacion[item][0] = item + 1
     cursor.close()
     return radiacion
 
@@ -73,7 +73,6 @@ def rad_min(estacion, variable, periodo):
         mes = int(fila.get('mes')) - 1
         radiacion[mes][0] = mes + 1
         radiacion[mes].append(round(fila.get('valor'), 2))
-
     for item in range(12):
         radiacion[item].append(min(radiacion[item]))
         radiacion[item].append(radiacion[item].index(min(radiacion[item])) + 4)
