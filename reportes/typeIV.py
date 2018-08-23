@@ -4,7 +4,7 @@ from anuarios.models import HumedadAire
 import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
-
+import calendar
 
 # clase para anuario de la variable HAI
 class TypeIV(Titulos):
@@ -25,7 +25,7 @@ class TypeIV(Titulos):
         min_simple = []
         avg_simple = []
         for item in datos:
-            meses.append(item.hai_mes)
+            meses.append(str(calendar.month_abbr[item.hai_mes]))
             max_simple.append(item.hai_maximo)
             min_simple.append(item.hai_minimo)
             avg_simple.append(item.hai_promedio)

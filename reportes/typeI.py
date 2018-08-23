@@ -7,7 +7,7 @@ from anuarios.models import NivelAgua
 import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
-
+import calendar
 
 # clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
 class TypeI(Titulos):
@@ -36,27 +36,27 @@ class TypeI(Titulos):
         avg_simple = []
         for item in datos:
             if variable == 6:
-                meses.append(item.hsu_mes)
+                meses.append(str(calendar.month_abbr[item.hsu_mes]))
                 max_simple.append(item.hsu_maximo)
                 min_simple.append(item.hsu_minimo)
                 avg_simple.append(item.hsu_promedio)
             elif variable == 8:
-                meses.append(item.pat_mes)
+                meses.append(str(calendar.month_abbr[item.pat_mes]))
                 max_simple.append(item.pat_maximo)
                 min_simple.append(item.pat_minimo)
                 avg_simple.append(item.pat_promedio)
             elif variable == 9:
-                meses.append(item.tag_mes)
+                meses.append(str(calendar.month_abbr[item.tag_mes]))
                 max_simple.append(item.tag_maximo)
                 min_simple.append(item.tag_minimo)
                 avg_simple.append(item.tag_promedio)
             elif variable == 10:
-                meses.append(item.cau_mes)
+                meses.append(str(calendar.month_abbr[item.cau_mes]))
                 max_simple.append(item.cau_maximo)
                 min_simple.append(item.cau_minimo)
                 avg_simple.append(item.cau_promedio)
             elif variable == 11:
-                meses.append(item.nag_mes)
+                meses.append(str(calendar.month_abbr[item.nag_mes]))
                 max_simple.append(item.nag_maximo)
                 min_simple.append(item.nag_minimo)
                 avg_simple.append(item.nag_promedio)

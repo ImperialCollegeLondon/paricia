@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 from reportes.titulos import Titulos
 from anuarios.models import Precipitacion
 
-import datetime, calendar
+import calendar
 
 
 # clase para anuario de la variable PRE
@@ -24,7 +24,6 @@ class TypeII(Titulos):
         meses = []
         mensual_simple = []
         for item in datos:
-            # meses.append(item.pre_mes)
             meses.append(str(calendar.month_abbr[item.pre_mes]))
             mensual_simple.append(item.pre_suma)
         trace1 = go.Bar(

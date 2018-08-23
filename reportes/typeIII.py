@@ -3,6 +3,7 @@ import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
 from anuarios.models import TemperaturaAire
+import calendar
 
 
 # clase para anuario de la variable TAI
@@ -24,7 +25,7 @@ class TypeIII(Titulos):
         min_simple = []
         avg_simple = []
         for item in datos:
-            meses.append(item.tai_mes)
+            meses.append(str(calendar.month_abbr[item.tai_mes]))
             max_simple.append(item.tai_maximo_abs)
             min_simple.append(item.tai_minimo_abs)
             avg_simple.append(item.tai_promedio)
