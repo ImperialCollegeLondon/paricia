@@ -12,7 +12,7 @@ import datetime, calendar
 class TypeII(Titulos):
     def consulta(self, estacion, periodo):
         # annotate agrupa los valores en base a un campo y a una operacion
-        informacion = list(Precipitacion.objects.filter(est_id=estacion).filter(pre_periodo=periodo))
+        informacion = list(Precipitacion.objects.filter(est_id=estacion).filter(pre_periodo=periodo).order_by('pre_id'))
         return informacion
 
     def matriz(self, estacion, variable, periodo):
