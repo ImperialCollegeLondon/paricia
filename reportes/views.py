@@ -254,10 +254,8 @@ class ConsultasEstacionVariable(FormView):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = contenido
         writer = csv.writer(response)
-
         num_col = len(valores)
         num_fil = len(valores[0])
-
         for i in range(num_fil):
             fila=[]
             for j in range(num_col):

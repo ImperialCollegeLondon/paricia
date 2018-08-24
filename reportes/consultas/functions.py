@@ -260,42 +260,35 @@ def datos_estacion(estacion, fecha_inicio, fecha_fin):
         valor, maximo, minimo, frecuencia = datos_instantaneos(estacion, fila.var_id, fecha_inicio, fecha_fin)
         # llenar la frecuencia de tiempo
         if i == 0:
-            valores[i].append("Fecha+hora")
-            for item_frecuencia in frecuencia:
-                valores[i].append(item_frecuencia)
+            valores[i] = set_valores(frecuencia)
+            valores[i].insert(0, "Fecha hora")
+            i += 1
         # comprobar si hay otras frecuecnas de tiempo ej: el viento se registra cada 2 min
         elif len(frecuencia) < (len(valores[i_fecha])-1):
-            i+=1
-            valores[i].append("Fecha+hora")
-            print(len(frecuencia))
-            for item_frecuencia in frecuencia:
-                valores[i].append(item_frecuencia)
+            valores[i] = set_valores(frecuencia)
+            valores[i].insert(0, "Fecha hora")
             i_fecha = i
             valores.append([0 for x in range(0)])
+            i += 1
         # agregar el valor de cada variable
-        valores[i+1].append(fila.var_id.var_nombre)
-        for item_valor in valor:
-            valores[i + 1].append(item_valor)
-        # verificar si hay maximos y minimos
+        valores[i] = set_valores(valor)
+        valores[i].insert(0, fila.var_id.var_nombre)
+        # verificar si hay maximos
         if contar_vacios(maximo) > 0:
+            i += 1
             valores.append([0 for x in range(0)])
-            valores[i+2].append(fila.var_id.var_nombre+ " Máxima")
-            print("llego max ", len((valores)))
+            valores[i] = set_valores(maximo)
+            valores[i].insert(0, fila.var_id.var_nombre+ " Máxima")
+        # verificar si hay mínimos
         if contar_vacios(minimo)>0:
+            i += 1
             valores.append([0 for x in range(0)])
-            valores[i + 3].append(fila.var_id.var_nombre+ " Mínima")
-            print("llego min", len((valores)))
-
-        for item_maximo, item_minimo in zip(maximo, minimo):
-            if item_maximo is not None:
-                valores[i + 2].append(item_maximo)
-            if item_minimo is not None:
-                valores[i + 3].append(item_minimo)
+            valores[i] = set_valores(minimo)
+            valores[i].insert(0, fila.var_id.var_nombre + " Mínima")
         i += 1
     num_fil = len(valores[0])
     matriz = [[0 for x in range(0)] for y in range(0)]
     for i in range(len(valores)):
-        #print(len(valores[i]),num_fil)
         if len(valores[i]) == num_fil:
             matriz.append(valores[i])
     for i in range(len(valores)):
@@ -599,3 +592,13 @@ def contar_vacios(valores):
         if item is not None:
             num_vacios += 1
     return num_vacios
+
+
+def set_valores(valores):
+    datos=[]
+    for item in valores:
+        if item is not None:
+            datos.append(item)
+        else:
+            datos.append('')
+    return datos
