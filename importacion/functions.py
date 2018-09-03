@@ -32,22 +32,22 @@ def guardar_datos(imp_id, form):
     formato = importacion.for_id
     estacion = importacion.est_id
     # archivo a guardar
-    print ('validar_fechas: ' + time.ctime())
+    # print ('validar_fechas: ' + time.ctime())
     informacion, existe_vacio = validar_fechas(importacion)
     ruta = str(BASE_DIR) + '/media/' + str(importacion.imp_archivo)
     enc = 'iso-8859-1'
     archivo = io.open(ruta, mode="r", encoding=enc)
-    print ('checar sobreescribir y eliminar datos: ' + time.ctime())
+    # print ('checar sobreescribir y eliminar datos: ' + time.ctime())
     for fila in informacion:
         if fila.get('existe'):
             eliminar_datos(fila, importacion)
         if fila.get('vacio') and form.is_valid:
             observacion = form.cleaned_data['imp_observacion']
             guardar_vacios(fila, estacion, observacion, importacion.imp_fecha_ini)
-    print ('construir_matriz: ' + time.ctime())
+    # print ('construir_matriz: ' + time.ctime())
     datos = construir_matriz(archivo, formato, estacion)
     Datos.objects.bulk_create(datos)
-    print ('eliminar tabla datos' + time.ctime())
+    # print ('eliminar tabla datos' + time.ctime())
     Datos.objects.all().delete()
     importacion.imp_observacion = form.cleaned_data['imp_observacion']
     importacion.save()
@@ -325,9 +325,7 @@ def get_fechas_archivo(archivo, formato, form):
     datos = archivo.readlines()
     linea_ini = datos[formato.for_fil_ini - 1].decode("utf-8", "ignore")
     linea_fin = datos[len(datos) - 1].decode("utf-8", "ignore")
-    print (type(linea_ini), type(formato.del_id.del_caracter))
     valores_ini = linea_ini.split(formato.del_id.del_caracter)
-    print (type(valores_ini))
     valores_fin = linea_fin.split(formato.del_id.del_caracter)
     form.instance.imp_fecha_ini = formato_fecha(formato, valores_ini, cambiar_fecha)
     form.instance.imp_fecha_fin = formato_fecha(formato, valores_fin, cambiar_fecha)

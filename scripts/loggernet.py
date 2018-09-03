@@ -50,9 +50,8 @@ def leer_archivos(formato, estacion):
     try:
         archivo = open(formato.for_ubicacion + formato.for_archivo)
         datos = procesar_archivo_automatico(archivo, formato, estacion)
-        # print (len(datos))
         archivo.close()
-    except Exception  as e:
+    except Exception as e:
         registrar_log("Error Inesperado "+ str(e.errno) + ' '+e.strerror)
         pass
 
@@ -86,7 +85,6 @@ def get_fechas_datos(datos):
     num_datos = len(datos) - 1
     fecha_ini = datos[0].med_fecha
     fecha_fin = datos[num_datos].med_fecha
-    # print (fecha_ini, fecha_fin)
     return fecha_ini, fecha_fin
 
 
