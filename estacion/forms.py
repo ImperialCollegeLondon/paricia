@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from estacion.models import Estacion
+from estacion.models import Estacion, Tipo
 
 
 class DocumentForm(forms.ModelForm):
@@ -19,23 +19,24 @@ class EstacionSearchForm(forms.Form):
     )
 
     lista = []
-    Tipo = forms.ChoiceField(required=False, choices=TIPO_ESTACION)
+    Tipo = forms.ModelChoiceField(required=False, queryset=Tipo.objects.order_by('id').all())
     Codigo = forms.CharField(required=False, max_length=10)
 
     def filtrar(self, form):
-        if form.cleaned_data['Tipo'] and form.cleaned_data['Codigo']:
+        print(form.cleaned_data['Tipo'], form.cleaned_data['Codigo'])
+        if form.cleaned_data['Tipo'] and form.cleaned_data['Codigo'] !="":
             lista = Estacion.objects.filter(
-                est_tipo=form.cleaned_data['Tipo']
+                tipo=form.cleaned_data['Tipo']
             ).filter(
                 est_codigo=form.cleaned_data['Codigo']
             )
-        elif form.cleaned_data['Tipo'] == "" and form.cleaned_data['Codigo'] != "":
+        elif form.cleaned_data['Tipo'] is None and form.cleaned_data['Codigo'] != "":
             lista = Estacion.objects.filter(
                 est_codigo__icontains=form.cleaned_data['Codigo']
             )
-        elif form.cleaned_data['Codigo'] == "" and form.cleaned_data['Tipo'] != "":
+        elif form.cleaned_data['Codigo'] == "" and form.cleaned_data['Tipo']:
             lista = Estacion.objects.filter(
-                est_tipo=form.cleaned_data['Tipo']
+                tipo=form.cleaned_data['Tipo']
             )
         else:
             lista = Estacion.objects.all()
