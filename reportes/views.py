@@ -105,6 +105,8 @@ class ConsultasPeriodo(FormView):
         variable = form.cleaned_data['variable']
         fecha_inicio = form.cleaned_data['inicio']
         fecha_fin = form.cleaned_data['fin']
+        if fecha_inicio is None:
+            fecha_inicio = estacion.est_fecha_inicio
         valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable,fecha_inicio, fecha_fin)
         # Establecemos el nombre del archivo
         nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.csv"')
@@ -122,6 +124,8 @@ class ConsultasPeriodo(FormView):
         variable = form.cleaned_data['variable']
         fecha_inicio = form.cleaned_data['inicio']
         fecha_fin = form.cleaned_data['fin']
+        if fecha_inicio is None:
+            fecha_inicio = estacion.est_fecha_inicio
         if frecuencia == "1":
             valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
         elif frecuencia == "2":

@@ -27,8 +27,9 @@ class MedicionSearchForm(forms.Form):
     variable = forms.ModelChoiceField(
         queryset=Variable.objects.order_by('var_id').all())
 
-    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
-    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
+    # inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)",required=False)
+    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio", required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
+    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin", required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
     frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
     # saber si hay datos

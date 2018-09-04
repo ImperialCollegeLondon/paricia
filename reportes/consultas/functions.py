@@ -5,7 +5,7 @@ from estacion.models import Estacion
 from variable.models import Variable
 import plotly.offline as opy
 import plotly.graph_objs as go
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from django.db import connection
 from math import ceil
 from cruce.models import Cruce
@@ -27,6 +27,10 @@ def grafico(form):
     fecha_inicio = form.cleaned_data['inicio']
     fecha_fin = form.cleaned_data['fin']
     frecuencia = form.cleaned_data['frecuencia']
+    if fecha_inicio is None:
+        fecha_inicio = estacion.est_fecha_inicio
+    if fecha_fin is None:
+        fecha_fin = date.today()
     div = ""
     # frecuencia instantanea
     if (frecuencia == str(0)):
@@ -410,7 +414,7 @@ def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
     minimo_pro = []
     frecuencia = []
     fecha = fecha_inicio.replace(day=1)
-    intervalo = timedelta(days=30)
+    # intervalo = timedelta(days=30)
     dias = float((fecha_fin - fecha_inicio).days)
     meses = int(ceil(dias / 30))
     num_datos = len(datos)
@@ -439,6 +443,7 @@ def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
 
 
 def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
+
     year_ini = fecha_inicio.strftime('%Y')
     year_fin = fecha_fin.strftime('%Y')
     var_cod = variable.var_codigo

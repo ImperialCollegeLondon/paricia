@@ -92,6 +92,11 @@ $(document).ready(function() {
     </div>
 </div>
 <div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Esta consulta le permite obtener información de una variable asociada a una estación en un periodo de fechas determinado.</p>
+    </div>
+</div>
+<div class="row">
     <form id="form_busqueda" class="form" method="post">
         {% csrf_token %}
         {% for field in form%}
@@ -111,7 +116,14 @@ $(document).ready(function() {
     </form>
 
 </div>
-<br>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Nota: </strong>
+            Si no selecciona/ingresa la <strong>Fecha de Inicio</strong>, la consulta se hará desde la fecha de inicio de operación de las estación seleccionada.<br>
+            Si no selecciona/ingresa la <strong>Fecha de Fin</strong>, la consulta se hará hasta la fecha actual.
+        </p>
+    </div>
+</div>
 <div id="div_informacion" class="row">
 
 </div>
