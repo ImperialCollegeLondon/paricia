@@ -162,3 +162,4 @@ class Asociacion(models.Model):
 
     class Meta:
         ordering = ('aso_id',)
+        unique_together = ('est_id', 'for_id',)

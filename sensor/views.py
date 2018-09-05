@@ -16,7 +16,7 @@ from home.functions import pagination
 # Create your views here.
 class SensorCreate(LoginRequiredMixin, CreateView):
     model = Sensor
-    fields = [ 'sen_codigo', 'sen_nombre', 'mar_id', 'sen_modelo', 'sen_serial']
+    fields = [ 'sen_codigo', 'tipo', 'mar_id', 'sen_modelo', 'sen_serial']
 
     def form_valid(self, form):
         return super(SensorCreate, self).form_valid(form)
@@ -61,7 +61,7 @@ class SensorDetail(LoginRequiredMixin, DetailView):
 
 class SensorUpdate(LoginRequiredMixin, UpdateView):
     model = Sensor
-    fields = [ 'sen_codigo', 'sen_nombre', 'mar_id', 'sen_modelo', 'sen_serial']
+    fields = [ 'sen_codigo', 'tipo', 'mar_id', 'sen_modelo', 'sen_serial']
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context

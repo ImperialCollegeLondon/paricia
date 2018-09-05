@@ -1,4 +1,4 @@
-from django.urls import re_path, include
+from django.urls import re_path, path
 
 from cruce import views
 from django.conf import settings

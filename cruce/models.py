@@ -31,3 +31,4 @@ class Cruce(models.Model):
 
     class Meta:
         ordering = ('cru_id', 'est_id', 'var_id',)
+        unique_together = ('est_id', 'var_id',)

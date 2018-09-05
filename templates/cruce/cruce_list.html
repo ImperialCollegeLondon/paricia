@@ -1,6 +1,8 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap3 %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $(document).ready(function() {
   actualizar_lista($("#form_consulta").attr('action'));
@@ -13,6 +15,26 @@ $(document).ready(function() {
     //var enlace=$(this).attr('href')
     actualizar_lista($(this).attr('href'));
   });
+  $( "#div_create" ).dialog({
+    autoOpen: false,
+    width:400,
+    height:300
+  });
+  $( "#div_edit" ).dialog({
+    autoOpen: false,
+    width:400,
+    height:250
+  });
+  $( "#div_delete" ).dialog({
+    autoOpen: false,
+    width:400,
+    height:250
+  });
+  $("#link_create").click(function(){
+    abrir_cuadro_dialogo("div_create",$(this).attr('href'));
+    return false;
+  });
+
 });
 
 </script>
@@ -25,7 +47,7 @@ $(document).ready(function() {
                 <h4>Lista Variables por Estación</h4>
             </div>
             <div class="col-lg-3">
-                <a style="float:right" class="btn btn-info"
+                <a id="link_create" style="float:right" class="btn btn-info"
                    href="{% url 'cruce:cruce_create' %}">
                     Agregar</a>
             </div>
@@ -51,7 +73,12 @@ $(document).ready(function() {
     <div id="div_informacion">
 
     </div><!-- end div id="div_informacion"-->
-
+    <div id="div_create" title="Crear Registro">
+    </div>
+    <div id="div_edit" title="Modificar Información">
+    </div>
+    <div id="div_delete" title="Eliminar Información">
+    </div>
     <div id="div_loading" style="display:none;" class="panel-body">
         <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
         <div class="col-lg-4 col-md-4 col-sm-4">
@@ -60,7 +87,7 @@ $(document).ready(function() {
         <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
     </div><!-- end div id="div_loading"-->
     <div id="div_error" style="display:none;" class="panel-body">
-        <div class="alert alert-danger alert-dismissible" role="alert">
+        <div id="div_message_error" class="alert alert-danger alert-dismissible" role="alert">
             Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
         </div>
     </div><!-- end div id="div_loading"-->
