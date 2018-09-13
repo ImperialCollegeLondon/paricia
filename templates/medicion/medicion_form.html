@@ -1,4 +1,4 @@
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <script>
   // JQuery code to be added in here.
   $( function() {
@@ -36,10 +36,10 @@
     <form id="form_update" method="post" class="form" action="{{ url }}">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <button id="btn_guardar" type="button" class="btn btn-default btn-primary">
+        <button id="btn_guardar" type="button" class="btn btn-primary">
             Guardar
         </button>
-        <button id="btn_cancelar_update" type="button" class="btn btn-default btn-default">
+        <button id="btn_cancelar_update" type="button" class="btn btn-light btn-light">
             Cancelar
         </button>
     </form>

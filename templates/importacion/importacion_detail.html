@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $(document).ready(function() {
@@ -143,9 +143,9 @@ $(document).ready(function() {
 
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-8">
-            <div class="panel panel-default">
-                <div class="panel-heading">Registro de Carga de Información</div>
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-header">Registro de Carga de Información</div>
+                <div class="card-body">
                     <form id="form_confirm" method="post" class="form"
                           action="{% url 'importacion:importacion_detail' importacion.imp_id %}">
                         {% csrf_token %}
@@ -153,10 +153,10 @@ $(document).ready(function() {
                         {% if existe_vacio%}
                         <div class="help-block">*Por favor registre el motivo del vacio de información</div>
                         {% endif%}
-                        <button id="btn_confirmar" type="button" class="btn btn-default btn-primary">
+                        <button id="btn_confirmar" type="button" class="btn btn-primary">
                             Confirmar
                         </button>
-                        <a class="btn btn-default" id="btn_cancelar"
+                        <a class="btn btn-light" id="btn_cancelar"
                            href="{% url 'importacion:importacion_delete' importacion.imp_id %}">
                             Cancelar</a>
                     </form>
@@ -171,7 +171,7 @@ $(document).ready(function() {
         <a class="btn btn-primary" id="btn_confirmar"
         href="{% url 'importacion:importacion_guardar' importacion.imp_id %}">
         Confirmar</a>
-        <a class="btn btn-default" id="btn_cancelar"
+        <a class="btn btn-light" id="btn_cancelar"
         href="{% url 'importacion:importacion_delete' importacion.imp_id %}">
         Cancelar</a>
       </div>

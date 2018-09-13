@@ -28,7 +28,7 @@ $(document).ready(function() {
 });
 
 </script>
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <div class="row">
     <div class="col-lg-12">
         <br>
@@ -57,8 +57,8 @@ $(document).ready(function() {
         <form id="form_delete" method="post" class="form"
               action="{% url 'formato:clasificacion_delete' clasificacion.cla_id %}">
             {% csrf_token %}
-            <button id="btn_eliminar" type="button" class="btn btn-default btn-warning">Confirmar</button>
-            <button id="btn_cancelar_eliminar" type="button" class="btn btn-default btn-default">Confirmar</button>
+            <button id="btn_eliminar" type="button" class="btn btn-warning">Confirmar</button>
+            <button id="btn_cancelar_eliminar" type="button" class="btn btn-light btn-light">Confirmar</button>
         </form>
     </div>
 </div>

@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
@@ -52,7 +52,7 @@
     <div class="col-lg-8">
         <a class="btn btn-primary" href="{% url 'estacion:estacion_update' estacion.est_id %}">Modificar</a>
         <a class="btn btn-warning" href="{% url 'estacion:estacion_delete' estacion.est_id%}">Borrar</a>
-        <a class="btn btn-default" href="{% url 'estacion:estacion_index' %}">Regresar</a>
+        <a class="btn btn-light" href="{% url 'estacion:estacion_index' %}">Regresar</a>
     </div>
 </div>
 

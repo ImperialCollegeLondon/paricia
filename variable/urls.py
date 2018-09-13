@@ -1,21 +1,20 @@
-from django.urls import re_path
+from django.urls import re_path,path
 from . import views
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib.auth import views as auth_views
 
 app_name = 'variable'
 urlpatterns = [
     re_path(r'^variable/$', views.VariableList.as_view(), name='variable_index'),
+    path('variable/<int:page>/', views.VariableList.as_view(), name='variable_index'),
     re_path(r'variable/create/$', views.VariableCreate.as_view(), name='variable_create'),
     re_path(r'variable/detail/(?P<pk>[0-9]+)/$', views.VariableDetail.as_view(), name='variable_detail'),
-    re_path(r'variable/(?P<pk>[0-9]+)/$', views.VariableUpdate.as_view(), name='variable_update'),
+    path('variable/edit/<int:pk>/', views.VariableUpdate.as_view(), name='variable_update'),
     re_path(r'variable/(?P<pk>[0-9]+)/delete/$', views.VariableDelete.as_view(), name='variable_delete'),
 
-    re_path(r'^unidad/$', views.UnidadList.as_view(), name='unidad_index'),
+    path('unidad/', views.UnidadList.as_view(), name='unidad_index'),
+    path('unidad/<int:page>/', views.UnidadList.as_view(), name='unidad_index'),
     re_path(r'unidad/create/$', views.UnidadCreate.as_view(), name='unidad_create'),
-    re_path(r'unidad/detail/(?P<pk>[0-9]+)/$', views.UnidadDetail.as_view(), name='unidad_detail'),
-    re_path(r'unidad/(?P<pk>[0-9]+)/$', views.UnidadUpdate.as_view(), name='unidad_update'),
+    path('unidad/detail/<int:pk>/', views.UnidadDetail.as_view(), name='unidad_detail'),
+    path('unidad/edit/<int:pk>/', views.UnidadUpdate.as_view(), name='unidad_update'),
     re_path(r'unidad/(?P<pk>[0-9]+)/delete/$', views.UnidadDelete.as_view(), name='unidad_delete'),
 
     re_path(r'control/$', views.ControlList.as_view(), name='control_index'),

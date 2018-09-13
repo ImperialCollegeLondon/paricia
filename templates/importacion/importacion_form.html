@@ -27,23 +27,23 @@ $( function() {
 </script>
 {% endblock %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
-<div class="col-lg-8 col-md-8">
+<div class="col-lg-8 col-md-10 col-sm-12">
     {%if message%}
     <div class="alert alert-danger" role="alert">{{message}}</div>
     {%endif%}
-    <div class="panel panel-default">
-        <div class="panel-heading">Cargar Archivos</div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header">Cargar Archivos</div>
+        <div class="card-body">
             <form id="form_upload" action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% bootstrap_form form %}
 
-                <button id="btn_procesar" type="submit" class="btn btn-default btn-primary">
+                <button id="btn_procesar" type="submit" class="btn btn-primary">
                     Procesar
                 </button>
-                <a class="btn btn-default"
+                <a class="btn btn-light"
                    href="{% url 'importacion:importacion_index' %}">
                     Cancelar</a>
             </form>

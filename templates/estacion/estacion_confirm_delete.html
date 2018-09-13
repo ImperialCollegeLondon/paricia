@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
         <h1>
@@ -21,22 +21,22 @@
             </tr>
             <tr>
                 <th>Tipo</th>
-                <td>{{estacion.est_tipo}}</td>
+                <td>{{estacion.tipo}}</td>
                 <th>Altura</th>
                 <td>{{estacion.est_altura}}</td>
             </tr>
             <tr>
                 <th>Provincia</th>
-                <td>{{estacion.est_provincia}}</td>
+                <td>{{estacion.provincia}}</td>
                 <th>Fecha de inicio de Operaciones</th>
                 <td>{{estacion.est_fecha_inicio}}</td>
             </tr>
             <tr>
                 <th>Estado</th>
                 {% if estacion.est_estado %}
-                <td>Activo</td>
+                <td>Operativa</td>
                 {% else %}
-                <td>Inactivo</td>
+                <td>No operativa</td>
                 {% endif %}
                 <th>Fichas</th>
                 <td><a target="_blank" href="{{ estacion.est_ficha.url }}">Descargar</a></td>
@@ -49,8 +49,8 @@
     <div class="col-lg-8">
         <form method="post" class="form">
             {% csrf_token %}
-            <input type="submit" class="btn btn-default btn-warning" value="Confirmar"/>
-            <a class="btn btn-default" href="{% url 'estacion:estacion_index' %}">Cancelar</a>
+            <input type="submit" class="btn btn-warning" value="Confirmar"/>
+            <a class="btn btn-light" href="{% url 'estacion:estacion_index' %}">Cancelar</a>
         </form>
     </div>
 </div>

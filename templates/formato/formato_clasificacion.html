@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $(document).ready(function() {
@@ -98,9 +98,9 @@ function actualizar_informacion(){
 }
 
 </script>
-<div class="panel panel-default">
+<div class="card">
     <!-- Default panel contents -->
-    <div class="panel-heading">
+    <div class="card-header">
         <div class="row">
             <div class="col-lg-9">
                 <h5>Formato de Importación: {{formato.for_nombre}}</h5>
@@ -112,7 +112,7 @@ function actualizar_informacion(){
             </div>
         </div>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <div class="row">
             <div class="col-lg-12">
                 <table class="table table-striped table-bordered">
@@ -157,10 +157,10 @@ function actualizar_informacion(){
                 </table>
             </div>
         </div>
-    </div><!-- end div class="panel-body"-->
+    </div><!-- end div class="card-body"-->
     {% if object_list%}
-    <div class="panel-body" id="div_informacion">
-        <table class="table table-striped table-bordered table-condensed">
+    <div class="card-body" id="div_informacion">
+        <table class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
                 <th>Variable</th>
@@ -178,7 +178,7 @@ function actualizar_informacion(){
                 <td>{{ item.cla_minimo }}</td>
                 <td>
                     <a class="link_delete" href="{% url 'formato:clasificacion_delete' item.cla_id %}">
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        <span class="far fa-trash-alt" aria-hidden="true"></span>
                     </a>
                 </td>
             </tr>
@@ -188,27 +188,27 @@ function actualizar_informacion(){
 
     </div><!-- end div id="div_informacion"-->
     {% else %}
-    <div id="div_informacion" class="panel-body">
+    <div id="div_informacion" class="card-body">
         <div class="alert alert-warning" role="alert">
             No existe variables asociados al formato de importación
         </div>
     </div>
     {% endif %}
-    <div id="div_loading" style="display:none;" class="panel-body">
+    <div id="div_loading" style="display:none;" class="card-body">
         <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
         <div class="col-lg-4 col-md-4 col-sm-4">
             <img src="/media/loading6.gif"/>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
     </div><!-- end div id="div_loading"-->
-    <div id="div_error" style="display:none;" class="panel-body">
+    <div id="div_error" style="display:none;" class="card-body">
         <div class="alert alert-danger alert-dismissible" role="alert">
             Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
         </div>
     </div><!-- end div id="div_loading"-->
 
 
-</div><!--end div class="panel panel-default"-->
+</div><!--end div class="card"-->
 
 <a id="link_consulta" href="{% url 'formato:clasificacion_index' formato.for_id %}">
 </a>
@@ -217,10 +217,10 @@ function actualizar_informacion(){
         {% csrf_token %}
         {% bootstrap_form form %}
         <div class="col-lg-12">
-            <button id="btn_guardar" type="button" class="btn btn-default btn-primary">
+            <button id="btn_guardar" type="button" class="btn btn-primary">
                 Guardar
             </button>
-            <a class="btn btn-default" href="#">Cancelar</a>
+            <a class="btn btn-light" href="#">Cancelar</a>
         </div>
     </form>
 </div>

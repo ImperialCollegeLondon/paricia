@@ -1,5 +1,5 @@
 
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <script>
   $( function() {
     $("#btn_delete").click(function(){
@@ -24,8 +24,8 @@
     </table>
     <form id="form_delete" method="post" class="form" action="{% url 'cruce:cruce_delete' object.cru_id %}">
         {% csrf_token %}
-        <button id="btn_delete" type="button" class="btn btn-default btn-warning">Confirmar</button>
-        <button id="btn_cancelar_delete" type="button" class="btn btn-default btn-default">
+        <button id="btn_delete" type="button" class="btn btn-warning">Confirmar</button>
+        <button id="btn_cancelar_delete" type="button" class="btn btn-light btn-light">
         Cancelar
     </button>
     </form>

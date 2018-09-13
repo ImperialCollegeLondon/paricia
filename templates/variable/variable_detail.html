@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 <div class="row">
     <div class="col-lg-4">
@@ -52,7 +52,7 @@
     <div class="col-lg-8">
         <a class="btn btn-primary" href="{% url 'variable:variable_update' variable.var_id %}">Modificar</a>
         <a class="btn btn-warning" href="{% url 'variable:variable_delete' variable.var_id%}">Borrar</a>
-        <a class="btn btn-default" href="{% url 'variable:variable_index' %}">Regresar</a>
+        <a class="btn btn-light" href="{% url 'variable:variable_index' %}">Regresar</a>
     </div>
 </div>
 

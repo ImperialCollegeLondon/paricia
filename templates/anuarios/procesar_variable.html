@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 {% load humanize %}
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -58,32 +58,34 @@ $(document).ready(function() {
 
 </script>
 
-<div class="row">
-    <div class="panel panel-default">
-        <div class="panel-heading">Procesar Variables del Anuario</div>
-        <div class="panel-body">
-            <div id="div_mensaje" class="alert alert-info alert-dismissible" role="alert">
-                Si la información del anuario ya existe, al procesarlo nuevamente los datos se sobreescribiran
-            </div>
-            <form id="form_validacion" class="form" method="post">
-                {% csrf_token %}
+
+<div class="card">
+    <div class="card-header">Procesar Variables del Anuario</div>
+    <div class="card-body">
+        <div id="div_mensaje" class="alert alert-info alert-dismissible" role="alert">
+            Si la información del anuario ya existe, al procesarlo nuevamente los datos se sobreescribiran
+        </div>
+        <form id="form_validacion" class="form" method="post">
+            {% csrf_token %}
+
+            <div class="row">
                 {% for field in form%}
                 {% bootstrap_field field form_group_class='col-lg-6' %}
                 {% endfor %}
                 <div class="form-group col-lg-4">
                     <label>&nbsp;</label><br>
-                    <button id="btn_procesar" type="button" class="btn btn-default btn-primary">
+                    <button id="btn_procesar" type="button" class="btn btn-primary">
                         Procesar
                     </button>
-                    <a class="btn btn-default"
+                    <a class="btn btn-light"
                        href="{% url 'anuarios:anuarios_procesar' %}">
                         Limpiar</a>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-
 </div>
+
 <br>
 <div id="div_informacion" class="row">
 

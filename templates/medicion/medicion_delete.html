@@ -1,4 +1,4 @@
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <script>
   // JQuery code to be added in here.
   $( function() {
@@ -54,10 +54,10 @@
     </table>
     <form id="form_delete" method="post" class="form" action="{{ url }}">
         {% csrf_token %}
-        <button id="btn_delete" type="button" class="btn btn-default btn-primary">
+        <button id="btn_delete" type="button" class="btn btn-primary">
             Eliminar
         </button>
-        <button id="btn_cancelar_delete" type="button" class="btn btn-default btn-default">
+        <button id="btn_cancelar_delete" type="button" class="btn btn-light btn-light">
             Cancelar
         </button>
     </form>

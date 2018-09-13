@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <style type="text/css">
 table>thead>tr>th{
   text-align: center;vertical-align: middle;
@@ -81,25 +81,27 @@ $(document).ready(function() {
         <h3>Comparar tres estaciones con una misma variable</h3>
     </div>
 </div>
-<div class="row">
-    <form id="form_consulta" class="form" method="post">
+
+<form id="form_consulta" class="form" method="post">
+    <div class="row">
         {% csrf_token %}
         {% for field in form%}
-        {% bootstrap_field field form_group_class='col-lg-4' %}
+        {% bootstrap_field field form_group_class='col-lg-4 col-md-6' %}
         {% endfor %}
 
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-md-6">
             <label>&nbsp;</label><br>
-            <button id="btn_graficar" type="button" class="btn btn-default btn-primary">
+            <button id="btn_graficar" type="button" class="btn btn-primary">
                 Buscar
             </button>
-            <a class="btn btn-default" href="{% url 'reportes:comparacion_reporte' %}">Limpiar</a>
+            <a class="btn btn-light" href="{% url 'reportes:comparacion_reporte' %}">Limpiar</a>
         </div>
-    </form>
-    <br>
+    </div>
+</form>
 
-</div>
-<div id="div_informacion" class="row">
+
+
+<div id="div_informacion">
 
 </div>
 <div id="div_loading" class="row" style="display:none;">

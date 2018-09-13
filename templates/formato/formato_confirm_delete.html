@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <h1>
     <small>Borrar formato</small>
 </h1>
@@ -33,16 +33,12 @@
                 <td>{{formato.for_archivo}}</td>
             </tr>
             <tr>
-                <th>Número de columnas</th>
-                <td>{{formato.for_num_col}}</td>
-            </tr>
-            <tr>
                 <th>Fila de inicio</th>
                 <td>{{formato.for_fil_ini}}</td>
             </tr>
             <tr>
                 <th>Formato de fecha</th>
-                <td>{{formato.for_fecha}}</td>
+                <td>{{formato.fec_id}}</td>
             </tr>
             <tr>
                 <th>Columna fecha</th>
@@ -50,7 +46,7 @@
             </tr>
             <tr>
                 <th>Formato de hora</th>
-                <td>{{formato.for_hora}}</td>
+                <td>{{formato.hor_id}}</td>
             </tr>
             <tr>
                 <th>Columna de hora</th>
@@ -63,8 +59,8 @@
     <div class="col-lg-8">
         <form method="post" class="form">
             {% csrf_token %}
-            <button type="submit" class="btn btn-default btn-warning">Confirmar</button>
-            <a class="btn btn-default" href="{% url 'formato:formato_index' %}">Cancelar</a>
+            <button type="submit" class="btn btn-warning">Confirmar</button>
+            <a class="btn btn-light" href="{% url 'formato:formato_index' %}">Cancelar</a>
         </form>
     </div>
 </div>

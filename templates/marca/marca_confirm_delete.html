@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 <h1>
     <small>Borrar Marca</small>
 </h1>
@@ -10,7 +10,7 @@
         <table class="table table-striped table-bordered">
             <tr>
                 <th>Marca</th>
-                <td>{{marca.mar_codigo}}</td>
+                <td>{{marca.mar_nombre}}</td>
             </tr>
         </table>
     </div>
@@ -19,8 +19,8 @@
     <div class="col-lg-8">
         <form method="post" class="form">
             {% csrf_token %}
-            <button type="submit" class="btn btn-default btn-warning">Confirmar</button>
-            <a class="btn btn-default" href="{% url 'marca:marca_index' %}">Cancelar</a>
+            <button type="submit" class="btn btn-warning">Confirmar</button>
+            <a class="btn btn-light" href="{% url 'marca:marca_index' %}">Cancelar</a>
         </form>
     </div>
 </div>

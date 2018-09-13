@@ -1,18 +1,18 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 <div class="col-lg-4 col-md-4">
-    <div class="panel panel-default">
-        <div class="panel-heading">{{title}} Delimitador</div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header">{{title}} Delimitador</div>
+        <div class="card-body">
             <form method="post" class="form">
                 {% csrf_token %}
                 {% bootstrap_form form %}
-                <button type="submit" class="btn btn-default btn-primary">
+                <button type="submit" class="btn btn-primary">
                     Guardar
                 </button>
-                <a class="btn btn-default"
+                <a class="btn btn-light"
                    href="{% url 'formato:delimitador_index' %}">
                     Cancelar</a>
             </form>

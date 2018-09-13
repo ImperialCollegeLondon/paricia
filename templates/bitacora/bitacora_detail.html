@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 <div class="row">
     <div class="col-lg-4">
@@ -36,7 +36,7 @@
     <div class="col-lg-8">
         <a class="btn btn-primary" href="{% url 'bitacora:bitacora_update' bitacora.bit_id %}">Modificar</a>
         <a class="btn btn-warning" href="{% url 'bitacora:bitacora_delete' bitacora.bit_id %}">Borrar</a>
-        <a class="btn btn-default" href="{% url 'bitacora:bitacora_index' %}">Regresar</a>
+        <a class="btn btn-light" href="{% url 'bitacora:bitacora_index' %}">Regresar</a>
     </div>
 </div>
 

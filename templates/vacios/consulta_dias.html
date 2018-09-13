@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 {% load humanize %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
@@ -73,24 +73,23 @@ $(document).ready(function() {
         <h3>Consultas de días sin registro de información por estación y variable</h3>
     </div>
 </div>
-<div class="row">
-    <form id="form_consulta" class="form" method="post" action="{% url 'vacios:dias' %}">
+
+<form id="form_consulta" class="form" method="post" action="{% url 'vacios:dias' %}">
+    <div class="row">
         {% csrf_token %}
         {% for field in form%}
-        {% bootstrap_field field form_group_class='col-lg-6' %}
+        {% bootstrap_field field form_group_class='col-lg-6 col-md-6' %}
         {% endfor %}
-        <div class="form-group col-lg-6">
+        <div class="form-group col-lg-6 col-md-6">
             <label>&nbsp;</label><br>
-            <button id="btn_graficar" type="button" class="btn btn-default btn-primary">
+            <button id="btn_graficar" type="button" class="btn btn-primary">
                 Consultar
             </button>
-            <a class="btn btn-default" href="{% url 'vacios:dias' %}">Limpiar</a>
+            <a class="btn btn-light" href="{% url 'vacios:dias' %}">Limpiar</a>
         </div>
+    </div>
+</form>
 
-    </form>
-
-</div>
-<br>
 <div id="div_informacion" class="row">
 
 </div>

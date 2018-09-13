@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 <div class="row">
     <div class="col-lg-4">
@@ -39,7 +39,7 @@
     <div class="col-lg-8">
         <a class="btn btn-primary" href="{% url 'sensor:sensor_update' sensor.sen_id %}">Modificar</a>
         <a class="btn btn-warning" href="{% url 'sensor:sensor_delete' sensor.sen_id%}">Borrar</a>
-        <a class="btn btn-default" href="{% url 'sensor:sensor_index' %}">Regresar</a>
+        <a class="btn btn-light" href="{% url 'sensor:sensor_index' %}">Regresar</a>
     </div>
 </div>
 

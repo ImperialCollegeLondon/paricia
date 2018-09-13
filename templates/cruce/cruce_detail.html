@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 
 <div class="row">
     <div class="col-lg-4">
@@ -26,7 +26,7 @@
     <div class="col-lg-8">
         <a class="btn btn-primary" href="{% url 'cruce:cruce_update' cruce.cru_id %}">Modificar</a>
         <a class="btn btn-warning" href="{% url 'cruce:cruce_delete' cruce.cru_id %}">Borrar</a>
-        <a class="btn btn-default" href="{% url 'cruce:cruce_index' %}">Regresar</a>
+        <a class="btn btn-light" href="{% url 'cruce:cruce_index' %}">Regresar</a>
     </div>
 </div>
 
