@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends base_template %}
 {% block content %}
 {% load bootstrap4 %}
 <style type="text/css">
@@ -113,7 +113,12 @@ $(document).ready(function() {
 </script>
 <div class="row">
     <div class="col-lg-10 col-sm-10">
-        <h3>Comparar dos variables entre dos estaciones</h3>
+        <h3>Comparar entre variables</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Esta consulta permmite comparar la información entre múltiples variables hidroclimáticas registras por distintas estaciones</p>
     </div>
 </div>
 

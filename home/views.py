@@ -13,3 +13,6 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
         return context
+
+class ConsultasView(TemplateView):
+    template_name = "consultas_usuario.html"

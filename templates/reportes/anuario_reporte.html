@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends base_template %}
 {% block content %}
 {% load bootstrap4 %}
 {% load humanize %}
@@ -43,7 +43,16 @@ $(document).ready(function() {
 });
 
 </script>
-
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Anuario Hidroclimático</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Esta consulta muestra un resumen estadístico anual de las variables climáticas e hidrológicas organizadas por estación y año</p>
+    </div>
+</div>
 <form id="form_consulta" class="form" method="post" action="{% url 'reportes:anuario' %}">
     <div class="row">
         {% csrf_token %}

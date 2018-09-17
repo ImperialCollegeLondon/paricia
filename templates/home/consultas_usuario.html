@@ -1,0 +1,123 @@
+{% extends "index_invitado.html" %}
+
+{% block title %}Pagina Principal{% endblock %}
+
+{% block content %}
+<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center" style="max-width:700px">
+    <h1 class="display-4 text-primary">SEDC</h1>
+    <h4 class="text-secondary">Sistema de Estandarización de Datos Hidroclimáticos Crudos</h4>
+    <p class="lead">Nuestra intención es compartir la información generada por la red de monitoreo hidrometeorológico FONAG</p>
+</div>
+<div class="container d-none d-lg-block d-xl-block d-md-none">
+    <div class="card-deck mb-3 text-center">
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Anuario Hidroclimático</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:anuario' %}" method="get">
+                    <p class="lead">Revisa nuestro resumen estadistico anual de las variables climáticas e hidrológicas.</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary mt-5">Acceder</button>
+                </form>
+            </div>
+        </div>
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Consultas por periodo</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:consultas_periodo' %}" method="get">
+                    <p class="lead" style="font-size:1.15rem">Revisa y descarga información climática e hidrológica para las frecuencias: cinco minutos, horaria, diaria o mensual.</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary" style="margin-top:2rem">Acceder</button>
+                </form>
+            </div>
+        </div>
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Comparar entre Estaciones</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:comparacion_reporte' %}" method="get">
+                    <p class="lead">Compara la información de una misma variable hidroclimática registrada por distintas estaciones</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Acceder</button>
+                </form>
+
+            </div>
+        </div>
+        <div class="card mb-3 shadow-md">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Comparar entre Variables</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:comparacion_variable' %}" method="get">
+                    <p class="lead">Compara la información entre múltiples variables hidroclimáticas registras por distintas estaciones</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Acceder</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="container d-none d-lg-none d-xl-none d-md-block">
+    <div class="card-deck mb-3 text-center">
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Anuario Hidroclimático</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:anuario' %}" method="get">
+                    <p class="lead">Revisa nuestro resumen estadistico anual de las variables climáticas e hidrológicas.</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Acceder</button>
+                </form>
+            </div>
+        </div>
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Consultas por periodo</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:consultas_periodo' %}" method="get">
+                    <p class="lead">Revisa y descarga información climática e hidrológica para las frecuencias: cinco minutos, horaria, diaria o mensual.</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Acceder</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-deck mb-3 text-center">
+
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Comparar entre Estaciones</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:comparacion_reporte' %}" method="get">
+                    <p class="lead">Compara la información de una misma variable hidroclimática registrada por distintas estaciones</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Acceder</button>
+                </form>
+
+            </div>
+        </div>
+        <div class="card mb-3 shadow-md">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Comparar entre Variables &nbsp;&nbsp;</h4>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'reportes:comparacion_variable' %}" method="get">
+                    <p class="lead">Compara la información entre múltiples variables hidroclimáticas registras por distintas estaciones</p>
+                    <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Acceder</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+{% endblock %}
