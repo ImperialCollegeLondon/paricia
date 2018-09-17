@@ -28,6 +28,14 @@ class ReportesAnuario(FormView):
     success_url = '/reportes/anuario/'
     lista = {}
 
+    def get_context_data(self, **kwargs):
+        context = super(ReportesAnuario, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['base_template'] = "index.html"
+        else:
+            context['base_template'] = "index_invitado.html"
+        return context
+
     def post(self, request, *args, **kwargs):
         form = AnuarioForm(self.request.POST or None)
         if form.is_valid() and self.request.is_ajax():
@@ -42,6 +50,14 @@ class ComparacionValores(FormView):
     form_class = ComparacionForm
     success_url = '/reportes/comparacion/'
     grafico = []
+
+    def get_context_data(self, **kwargs):
+        context = super(ComparacionValores, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['base_template'] = "index.html"
+        else:
+            context['base_template'] = "index_invitado.html"
+        return context
 
     def post(self, request, *args, **kwargs):
         form = ComparacionForm(self.request.POST or None)
@@ -60,6 +76,14 @@ class ComparacionVariables(FormView):
     form_class = VariableForm
     success_url = '/reportes/compararvariable/'
     grafico = []
+
+    def get_context_data(self, **kwargs):
+        context = super(ComparacionVariables, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['base_template'] = "index.html"
+        else:
+            context['base_template'] = "index_invitado.html"
+        return context
 
     def post(self, request, *args, **kwargs):
         form = VariableForm(self.request.POST or None)
@@ -97,6 +121,10 @@ class ConsultasPeriodo(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['base_template'] = "index.html"
+        else:
+            context['base_template'] = "index_invitado.html"
         context['grafico'] = self.grafico
         return context
 

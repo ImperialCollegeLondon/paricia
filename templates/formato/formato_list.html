@@ -29,9 +29,9 @@ $(document).ready(function() {
             <div class="row">
                 {% csrf_token %}
                 {% for field in form%}
-                {% bootstrap_field field form_group_class='col-lg-6 col-md-6' %}
+                {% bootstrap_field field form_group_class='col-lg-4 col-md-6' %}
                 {% endfor %}
-                <div class="col-lg-4">
+                <div class="form-group col-lg-4 col-md-6">
                     <label>&nbsp;</label><br>
                     <button id="btn_filtrar" type="button" class="btn btn-primary">
                         Buscar
