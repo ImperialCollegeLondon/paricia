@@ -57,8 +57,8 @@ class ComparacionForm(forms.Form):
     estacion02 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Segunda Estación')
     estacion03 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Tercera Estación')
     variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable')
-    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
-    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
+    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
+    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
     frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
 
@@ -73,13 +73,13 @@ class VariableForm(forms.Form):
     variable01 = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable primera estación')
     estacion02 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Segunda Estación')
     variable02 = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable segunda estación')
-    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
-    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
+    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
+    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
     frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
 
 class EstacionVariableSearchForm(forms.Form):
     estacion = forms.ModelChoiceField(
         queryset=Estacion.objects.order_by('est_id').all())
-    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
-    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
+    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
+    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
