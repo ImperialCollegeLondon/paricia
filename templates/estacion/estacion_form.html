@@ -8,6 +8,7 @@
     <div class="card-body">
         <form method="post" class="form" enctype="multipart/form-data">
             {% csrf_token %}
+            {% bootstrap_form_errors form %}
             <div class="row">
                 {% for field in form%}
                 {% bootstrap_field field form_group_class='col-lg-6 col-md-6' %}

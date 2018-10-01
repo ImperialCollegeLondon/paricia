@@ -282,6 +282,16 @@ def validar_fechas(importacion):
             'vacio': verificar_vacios(fecha_ini, fecha_datos)
         }
         result.append(resumen)
+        if fila.var_id.var_id == 11:
+            resumen_caudal ={
+                'var_id': 10,
+                'var_cod': 'CAU',
+                'var_nombre': 'Caudal',
+                'ultima_fecha': fecha_datos,
+                'existe': consulta_fecha(fec_ini, est_id, 'CAU.m'+year),
+                'vacio': verificar_vacios(fecha_ini, fecha_datos)
+            }
+            result.append(resumen_caudal)
     return result, existe_vacio
 
 

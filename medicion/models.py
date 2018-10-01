@@ -44,3 +44,19 @@ class Medicion(models.Model):
 
     class Meta:
         ordering = ('med_fecha',)
+
+class CurvaDescarga(models.Model):
+    id = models.AutoField("Id", primary_key=True)
+    estacion = models.ForeignKey(Estacion, on_delete=models.SET_NULL, null=True, verbose_name="Estación")
+    fecha = models.DateTimeField("Fecha")
+    funcion = models.CharField("Funcion", max_length=80)
+
+    def __str__(self):
+        return self.id
+
+    def get_absolute_url(self):
+        return reverse('medicion:curvadescarga_detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        ordering = ('id',)
+        unique_together = ('estacion', 'fecha')

@@ -161,6 +161,13 @@ def template(variable):
     elif variable.var_id == 11:
         template = 'anuarios/nag.html'
     return template
+
+def grafico_anuario(form):
+    estacion = form.cleaned_data['estacion']
+    variable = form.cleaned_data['variable']
+    periodo = form.cleaned_data['periodo']
+
+
 def consultar_variables(estacion):
     cruce = list(Cruce.objects.filter(est_id=estacion))
     lista = {}

@@ -13,6 +13,7 @@ def matrizIII(estacion, variable, periodo):
     sql = "SELECT avg(med_valor) as media, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += 'AND med_estado is not False '
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_avg = dictfetchall(cursor)
@@ -22,6 +23,7 @@ def matrizIII(estacion, variable, periodo):
     sql += "date_part('day',med_fecha) as dia "
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += 'AND med_estado is not False '
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios_max = dictfetchall(cursor)
@@ -31,6 +33,7 @@ def matrizIII(estacion, variable, periodo):
     sql += "date_part('day',med_fecha) as dia "
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += 'AND med_estado is not False '
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios_min = dictfetchall(cursor)

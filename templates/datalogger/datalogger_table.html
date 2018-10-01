@@ -60,8 +60,8 @@ $(document).ready(function() {
         <li class="page-item"><a class="page-link" href="{% url 'datalogger:datalogger_index' page_obj.previous_page_number %}">&lt;</a>
         </li>
         {% else %}
-        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">&lt;</a></li>
-        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">&lt;&lt;</a></li>
+        <li class="disabled"><a class="page-link" href="#" tabindex="-1">&lt;</a></li>
+        <li class="disabled"><a class="page-link" href="#" tabindex="-1">&lt;&lt;</a></li>
         {% endif %}
 
         {% for i in range %}
@@ -76,8 +76,8 @@ $(document).ready(function() {
         <li class="page-item"><a class="page-link" href="{% url 'datalogger:datalogger_index' page_obj.next_page_number %}">&gt;</a></li>
         <li class="page-item"><a class="page-link" href="{% url 'datalogger:datalogger_index' last %}">&gt;&gt;</a></li>
         {% else %}
-        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">&gt;</a></li>
-        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">&gt;&gt;</a></li>
+        <li class="disabled"><a class="page-link" href="#" tabindex="-1">&gt;</a></li>
+        <li class="disabled"><a class="page-link" href="#" tabindex="-1">&gt;&gt;</a></li>
         {% endif %}
     </ul>
 </nav>

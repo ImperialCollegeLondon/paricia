@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import render
-from medicion.models import Medicion
+from medicion.models import Medicion, CurvaDescarga
 from formato.models import Clasificacion
 from importacion.models import Importacion
 from django.views.generic import ListView, FormView
@@ -9,13 +9,14 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
-from medicion.forms import MedicionSearchForm, FilterDeleteForm, MedicionConsultaForm
+from medicion.forms import (MedicionSearchForm, FilterDeleteForm,
+                            MedicionConsultaForm, CurvaDescargaSearchForm)
 from medicion.functions import (filtrar, datos_instantaneos, eliminar,
                                 consultar_objeto, modificar_medicion, eliminar_medicion,
                                 guardar_log, grafico)
 from django.db import connection
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from home.functions import pagination
 
 # Medicion views
 class MedicionCreate(LoginRequiredMixin, CreateView):
@@ -91,7 +92,7 @@ class ListDelete(LoginRequiredMixin, FormView, ListView):
     def post(self, request, *args, **kwargs):
         form = FilterDeleteForm(self.request.POST or None)
         if form.is_valid():
-            self.lista = consultar(form)
+            self.lista = filtrar(form)
         return self.render_to_response(self.get_context_data(form=form))
 
     def get_context_data(self, **kwargs):
@@ -225,3 +226,64 @@ class MedicionConsulta(LoginRequiredMixin,FormView):
         # elif form.is_valid():
             # return self.export_excel(self.frecuencia, form)
         return render(request, 'home/form_error.html', {'form': form})
+
+
+class CurvaDescargaList(LoginRequiredMixin, ListView, FormView):
+    # parámetros ListView
+    model = CurvaDescarga
+    paginate_by = 10
+    # parámetros FormView
+    template_name = 'medicion/curvadescarga_list.html'
+    form_class = CurvaDescargaSearchForm
+
+    def post(self, request, *args, **kwargs):
+        form = CurvaDescargaSearchForm(self.request.POST or None)
+        page = kwargs.get('page')
+        if form.is_valid() and self.request.is_ajax:
+            self.object_list = form.filtrar(form)
+        else:
+            self.object_list = CurvaDescarga.objects.all()
+        context = super(CurvaDescargaList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list, page, 10))
+        return render(request, 'medicion/curvadescarga_table.html', context)
+
+    def get_context_data(self, **kwargs):
+        context = super(CurvaDescargaList, self).get_context_data(**kwargs)
+        page = self.request.GET.get('page')
+        context.update(pagination(self.object_list, page, 10))
+        return context
+
+
+class CurvaDescargaCreate(LoginRequiredMixin, CreateView):
+    model = CurvaDescarga
+    fields = ['estacion', 'fecha', 'funcion']
+
+    def form_valid(self, form):
+        return super(CurvaDescargaCreate, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(CurvaDescargaCreate, self).get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['title'] = "Crear"
+        return context
+
+
+class CurvaDescargaDetail(LoginRequiredMixin, DetailView):
+    model = CurvaDescarga
+
+
+class CurvaDescargaUpdate(LoginRequiredMixin, UpdateView):
+    model = CurvaDescarga
+    fields = ['estacion', 'fecha', 'funcion']
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(CurvaDescargaUpdate, self).get_context_data(**kwargs)
+        context['title'] = "Modificar"
+        return context
+
+
+class CurvaDescargaDelete(LoginRequiredMixin, DeleteView):
+    model = CurvaDescarga
+    success_url = reverse_lazy('medicion:curvadescarga_index')

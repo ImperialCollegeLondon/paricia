@@ -2,7 +2,7 @@
 from django import forms
 from estacion.models import Estacion
 from variable.models import Variable
-from medicion.models import Medicion
+from medicion.models import CurvaDescarga
 
 
 class MedicionSearchForm(forms.Form):
@@ -37,3 +37,15 @@ class MedicionConsultaForm(forms.Form):
         queryset=Variable.objects.order_by('var_id').all())
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(dd/mm/yyyy)")
+
+
+class CurvaDescargaSearchForm(forms.Form):
+    lista = []
+    estacion = forms.ModelChoiceField(required=False, queryset=Estacion.objects.order_by('est_codigo').all())
+
+    def filtrar(self, form):
+        if form.cleaned_data['estacion']:
+            lista = CurvaDescarga.objects.filter(estacion=form.cleaned_data['estacion'])
+        else:
+            lista = CurvaDescarga.objects.all()
+        return lista
