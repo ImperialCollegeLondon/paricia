@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from reportes.consultas.functions import (grafico, datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
                                           datos_instantaneos, datos_mensuales, datos_estacion)
 from reportes.functions import filtrar, comparar, comparar_variable
+from datetime import date
 from django.shortcuts import render
 from django.http import JsonResponse
 from openpyxl.styles import Font
@@ -154,6 +155,8 @@ class ConsultasPeriodo(FormView):
         fecha_fin = form.cleaned_data['fin']
         if fecha_inicio is None:
             fecha_inicio = estacion.est_fecha_inicio
+        if fecha_fin is None:
+            fecha_fin = date.today()
         if frecuencia == "1":
             valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
         elif frecuencia == "2":

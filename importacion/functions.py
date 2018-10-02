@@ -287,7 +287,7 @@ def validar_fechas(importacion):
                 'var_id': 10,
                 'var_cod': 'CAU',
                 'var_nombre': 'Caudal',
-                'ultima_fecha': fecha_datos,
+                'ultima_fecha': ultima_fecha(est_id, 'CAU', year_fin),
                 'existe': consulta_fecha(fec_ini, est_id, 'CAU.m'+year),
                 'vacio': verificar_vacios(fecha_ini, fecha_datos)
             }
