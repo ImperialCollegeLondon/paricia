@@ -118,15 +118,15 @@ def procesar_archivo(archivo, formato, fecha, estacion):
 
             for fila in clasificacion:
                 if fila.cla_valor is not None:
-                    valor = valid_number(val_lim[fila.cla_valor])
+                    valor = valid_number(val_lim[fila.cla_valor], fila.var_id.var_id)
                 else:
                     valor = None
                 if fila.cla_maximo is not None:
-                    maximo = valid_number(val_lim[fila.cla_maximo])
+                    maximo = valid_number(val_lim[fila.cla_maximo], fila.var_id.var_id)
                 else:
                     maximo = None
                 if fila.cla_minimo is not None:
-                    minimo = valid_number(val_lim[fila.cla_minimo])
+                    minimo = valid_number(val_lim[fila.cla_minimo], fila.var_id.var_id)
                 else:
                     minimo = None
                 dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
