@@ -83,7 +83,6 @@ def leer_archivos(root_dir, formato, estacion):
                 datos = procesar_archivo(archivo, formato, fecha, estacion)
                 archivo.close()
                 if len(datos) > 0:
-                    registrar_log("Guardar datos")
                     guardar_datos(obj_importacion, datos, estacion)
                     registrar_log('Información guardada Estacion:' + str(
                                 estacion.est_codigo) + 'Formato:' + str(
@@ -137,43 +136,38 @@ def set_object_importacion(estacion, formato, fecha, archivo):
 
 #construir la matriz de datos
 def procesar_archivo(archivo, formato, fecha, estacion):
-    try:
+    intervalo = timedelta(minutes=get_frecuencia(formato.for_archivo))
+    lineas = archivo.readlines()
+    clasificacion = list(Clasificacion.objects.filter(
+        for_id=formato.for_id))
+    datos = []
+    registrar_log("Inicio For")
+    for linea in lineas:
+        valores = linea.split(',')
+        if len(valores) > 1:
+            val_lim = list(map(lambda item: item.strip(), valores))
 
-        intervalo = timedelta(minutes=get_frecuencia(formato.for_archivo))
-        registrar_log("Procesar archivo"+intervalo)
-        lineas = archivo.readlines()
-        clasificacion = list(Clasificacion.objects.filter(
-            for_id=formato.for_id))
-        datos = []
-        registrar_log("Inicio For")
-        for linea in lineas:
-            valores = linea.split(',')
-            if len(valores) > 1:
-                val_lim = list(map(lambda item: item.strip(), valores))
+            for fila in clasificacion:
+                if fila.cla_valor is not None:
+                    valor = valid_number(val_lim[fila.cla_valor])
+                else:
+                    valor = None
+                if fila.cla_maximo is not None:
+                    maximo = valid_number(val_lim[fila.cla_maximo])
+                else:
+                    maximo = None
+                if fila.cla_minimo is not None:
+                    minimo = valid_number(val_lim[fila.cla_minimo])
+                else:
+                    minimo = None
+                dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
+                             med_fecha=fecha, mar_id=formato.mar_id.mar_id,
+                             med_valor=valor, med_maximo=maximo, med_minimo=minimo,
+                             med_estado=True)
+                datos.append(dato)
 
-                for fila in clasificacion:
-                    if fila.cla_valor is not None:
-                        valor = valid_number(val_lim[fila.cla_valor])
-                    else:
-                        valor = None
-                    if fila.cla_maximo is not None:
-                        maximo = valid_number(val_lim[fila.cla_maximo])
-                    else:
-                        maximo = None
-                    if fila.cla_minimo is not None:
-                        minimo = valid_number(val_lim[fila.cla_minimo])
-                    else:
-                        minimo = None
-                    dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
-                                 med_fecha=fecha, mar_id=formato.mar_id.mar_id,
-                                 med_valor=valor, med_maximo=maximo, med_minimo=minimo,
-                                 med_estado=True)
-                    datos.append(dato)
-
-                fecha += intervalo
-        return datos
-    except:
-        registrar_log("Error al procesar el archivo")
+            fecha += intervalo
+    return datos
 
 
 def get_frecuencia(prefijo):
