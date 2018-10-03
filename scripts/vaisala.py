@@ -11,8 +11,8 @@ import daemon
 from temporal.models import Datos
 
 def run(*args):
-    with daemon.DaemonContext():
-        iniciar_lectura()
+    #with daemon.DaemonContext():
+    iniciar_lectura()
 
 
 def iniciar_lectura():
@@ -140,12 +140,14 @@ def set_object_importacion(estacion, formato, fecha, archivo):
 #construir la matriz de datos
 def procesar_archivo(archivo, formato, fecha, estacion):
     try:
-        registrar_log("Procesar archivo")
+
         intervalo = timedelta(minutes=get_frecuencia(formato.for_archivo))
+        registrar_log("Procesar archivo"+intervalo)
         lineas = archivo.readlines()
         clasificacion = list(Clasificacion.objects.filter(
             for_id=formato.for_id))
         datos = []
+        registrar_log("Inicio For")
         for linea in lineas:
             valores = linea.split(',')
             if len(valores) > 1:
