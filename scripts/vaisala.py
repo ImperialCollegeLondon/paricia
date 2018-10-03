@@ -38,6 +38,7 @@ def iniciar_lectura():
             pass
         except Exception as inst:
             registrar_log(inst.args)
+            pass
         time.sleep(1500)
 
 def respaldar_archivos(root_dir):
@@ -84,6 +85,7 @@ def leer_archivos(root_dir, formato, estacion):
                 datos = procesar_archivo(archivo, formato, fecha, estacion)
                 archivo.close()
                 if len(datos) > 0:
+                    registrar_log("Guardar datos")
                     guardar_datos(obj_importacion, datos, estacion)
                     registrar_log('Información guardada Estacion:' + str(
                                 estacion.est_codigo) + 'Formato:' + str(
@@ -137,6 +139,7 @@ def set_object_importacion(estacion, formato, fecha, archivo):
 
 #construir la matriz de datos
 def procesar_archivo(archivo, formato, fecha, estacion):
+    registrar_log("Procesar archivo")
     intervalo = timedelta(minutes=get_frecuencia(formato.for_archivo))
     lineas = archivo.readlines()
     clasificacion = list(Clasificacion.objects.filter(
