@@ -44,7 +44,7 @@ def respaldar_archivos(root_dir):
         for file_name in file_list:
             mn5 = buscar_archivo(file_name, 'mn5')
             hor = buscar_archivo(file_name, 'hor')
-            dia = buscar_archivo(file_name, 'hor')
+            dia = buscar_archivo(file_name, 'dia')
             if mn5 or hor or dia:
                 move(root_dir + file_name, get_ruta_backup(root_dir))
             else:
@@ -68,18 +68,18 @@ def get_ruta_backup(root_dir):
 def leer_archivos(root_dir, formato, estacion):
     for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
         for file_name in file_list:
-            print(time.ctime() + "buscar archivos")
+            #print(time.ctime() + "buscar archivos")
             if buscar_archivo(file_name, formato.for_archivo):
-                print(time.ctime() + "abrir arhivo")
+                #print(time.ctime() + "abrir arhivo")
                 archivo = open(root_dir + file_name)
-                print(time.ctime() + "fecha arhivo")
+                #print(time.ctime() + "fecha arhivo")
                 fecha = fecha_archivo(file_name, formato.for_archivo)
-                print(time.ctime() + "obj importacion")
+                #print(time.ctime() + "obj importacion")
                 obj_importacion = set_object_importacion(estacion, formato, fecha, file_name)
                 registrar_log('Lectura Iniciada Estacion:' + str(
                     estacion.est_codigo) + 'Formato:' + str(
                     formato.for_descripcion))
-                print(time.ctime() + "procesar")
+                #print(time.ctime() + "procesar")
                 datos = procesar_archivo(archivo, formato, fecha, estacion)
                 archivo.close()
                 if len(datos) > 0:
