@@ -27,8 +27,7 @@ def iniciar_lectura():
                 if len(consulta) > 0:
                     estacion = consulta[0].est_id
                     root_dir = formato.for_ubicacion
-                    print(root_dir)
-                    print(time.ctime()+"leer archivos")
+                    #print(time.ctime()+"leer archivos")
                     leer_archivos(root_dir, formato, estacion)
                     respaldar_archivos(root_dir)
                 else:
@@ -66,35 +65,38 @@ def get_ruta_backup(root_dir):
 
 # función para leer archivos correspondientes al formato y la estación
 def leer_archivos(root_dir, formato, estacion):
-    for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
-        for file_name in file_list:
-            #print(time.ctime() + "buscar archivos")
-            if buscar_archivo(file_name, formato.for_archivo):
-                #print(time.ctime() + "abrir arhivo")
-                archivo = open(root_dir + file_name)
-                #print(time.ctime() + "fecha arhivo")
-                fecha = fecha_archivo(file_name, formato.for_archivo)
-                #print(time.ctime() + "obj importacion")
-                obj_importacion = set_object_importacion(estacion, formato, fecha, file_name)
-                registrar_log('Lectura Iniciada Estacion:' + str(
-                    estacion.est_codigo) + 'Formato:' + str(
-                    formato.for_descripcion))
-                #print(time.ctime() + "procesar")
-                datos = procesar_archivo(archivo, formato, fecha, estacion)
-                archivo.close()
-                if len(datos) > 0:
-                    guardar_datos(obj_importacion, datos, estacion)
-                    registrar_log('Información guardada Estacion:' + str(
-                                estacion.est_codigo) + 'Formato:' + str(
-                                formato.for_descripcion))
-                    obj_importacion.save()
-                    move(root_dir + file_name, get_ruta_backup(root_dir))
+    try:
+        for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
+            for file_name in file_list:
+                #print(time.ctime() + "buscar archivos")
+                if buscar_archivo(file_name, formato.for_archivo):
+                    #print(time.ctime() + "abrir arhivo")
+                    archivo = open(root_dir + file_name)
+                    #print(time.ctime() + "fecha arhivo")
+                    fecha = fecha_archivo(file_name, formato.for_archivo)
+                    #print(time.ctime() + "obj importacion")
+                    obj_importacion = set_object_importacion(estacion, formato, fecha, file_name)
+                    registrar_log('Lectura Iniciada Estacion:' + str(
+                        estacion.est_codigo) + 'Formato:' + str(
+                        formato.for_descripcion))
+                    #print(time.ctime() + "procesar")
+                    datos = procesar_archivo(archivo, formato, fecha, estacion)
+                    archivo.close()
+                    if len(datos) > 0:
+                        guardar_datos(obj_importacion, datos, estacion)
+                        registrar_log('Información guardada Estacion:' + str(
+                                    estacion.est_codigo) + 'Formato:' + str(
+                                    formato.for_descripcion))
+                        obj_importacion.save()
+                        move(root_dir + file_name, get_ruta_backup(root_dir))
+                    else:
+                        registrar_log('No existe información en el archivo: '
+                                      + str(file_name))
                 else:
-                    registrar_log('No existe información en el archivo: '
-                                  + str(file_name))
-            else:
-                registrar_log('No hay nueva información en el directorio FTP. Formato: '+str(
-                                formato.for_descripcion))
+                    registrar_log('No hay nueva información en el directorio FTP. Formato: '+str(
+                                    formato.for_descripcion))
+    except IOError as e:
+        registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
 
 
 def guardar_datos(importacion, datos, estacion):
