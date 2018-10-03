@@ -36,9 +36,9 @@ def iniciar_lectura():
         except IOError as e:
             registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
             pass
-        #except Exception as inst:
-            #registrar_log(inst)
-            #pass
+        except Exception as inst:
+            registrar_log(inst)
+            pass
         time.sleep(1500)
 
 def respaldar_archivos(root_dir):
@@ -175,7 +175,7 @@ def procesar_archivo(archivo, formato, fecha, estacion):
                 fecha += intervalo
         return datos
     except Exception as inst:
-        registrar_log(inst.args)
+        registrar_log(inst)
 
 
 def get_frecuencia(prefijo):
