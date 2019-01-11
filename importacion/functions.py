@@ -211,6 +211,7 @@ def formato_fecha(formato, valores, cambiar_fecha):
         hora_str = valores[formato.for_col_hora]
     fecha_str = fecha_str.strip('\"')
     hora_str = hora_str.strip('\"')
+    print(fecha_str,formato.fec_id.fec_codigo);
     try:
         fecha = datetime.strptime(fecha_str, formato.fec_id.fec_codigo)
     except ValueError:

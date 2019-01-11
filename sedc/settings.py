@@ -24,7 +24,7 @@ SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'infoagua-guayllabamba.ec','www.infoagua-guayllabamba.ec','157.100.182.61']
+ALLOWED_HOSTS = ['localhost', 'infoagua-guayllabamba.ec','www.infoagua-guayllabamba.ec','157.100.182.61','sedc.fonag.org.ec','www.sedc.fonag.org.ec']
 
 # Application definition
 

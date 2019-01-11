@@ -19,6 +19,7 @@ def matrizI(estacion, variable, periodo):
     elif variable.var_id == 6:
         sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
+    print(sql)
     cursor.execute(sql)
     med_max = dictfetchall(cursor)
     # mínimos absolutos y mínimos promedio
@@ -31,6 +32,7 @@ def matrizI(estacion, variable, periodo):
     elif variable.var_id == 6:
         sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
+    print(sql)
     cursor.execute(sql)
     med_min = dictfetchall(cursor)
     # valores promedio mensuales
@@ -43,6 +45,7 @@ def matrizI(estacion, variable, periodo):
         sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
+    print(sql)
     med_avg = dictfetchall(cursor)
 
     for item_max, item_min, item_avg in zip(med_max, med_min, med_avg):
