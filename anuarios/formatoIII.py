@@ -28,7 +28,7 @@ def matrizIII(estacion, variable, periodo):
     cursor.execute(sql)
     datos_diarios_max = dictfetchall(cursor)
     # mínimos absolutos
-    sql = "SELECT min(med_maximo) as minimo,  min(med_valor) as valor, "
+    sql = "SELECT min(med_minimo) as minimo,  min(med_valor) as valor, "
     sql += "date_part('month',med_fecha) as mes, "
     sql += "date_part('day',med_fecha) as dia "
     sql += "FROM " + tabla + " "
