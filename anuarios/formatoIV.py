@@ -19,6 +19,7 @@ def matrizIV(estacion, variable, periodo):
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     sql += "GROUP BY mes ORDER BY mes"
+    print(sql)
     cursor.execute(sql)
     med_avg = dictfetchall(cursor)
     # datos diarios máximos
@@ -28,15 +29,17 @@ def matrizIV(estacion, variable, periodo):
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
+    print(sql)
     cursor.execute(sql)
     datos_diarios_max = dictfetchall(cursor)
     # mínimos absolutos
-    sql = "SELECT min(med_maximo) as minimo,  min(med_valor) as valor, "
+    sql = "SELECT min(med_minimo) as minimo,  min(med_valor) as valor, "
     sql += "date_part('month',med_fecha) as mes, "
     sql += "date_part('day',med_fecha) as dia "
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
+    print(sql)
     cursor.execute(sql)
     datos_diarios_min = dictfetchall(cursor)
 
