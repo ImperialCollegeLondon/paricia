@@ -14,6 +14,7 @@ def matrizII(estacion, variable, periodo):
     sql += "FROM " + tabla + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
     sql += "GROUP BY mes ORDER BY mes"
+    print(sql)
     cursor.execute(sql)
     med_mensual = dictfetchall(cursor)
     # datos diarios
