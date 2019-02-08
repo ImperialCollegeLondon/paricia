@@ -51,11 +51,16 @@ def matrizIV(estacion, variable, periodo):
         obj_hai.est_id = estacion
         obj_hai.hai_periodo = periodo
         obj_hai.hai_mes = mes
+        if maximo[mes-1] > 100:
+            maximo[mes-1] = 100
         obj_hai.hai_maximo = maximo[mes - 1]
         obj_hai.hai_maximo_dia = maximo_dia[mes - 1]
         obj_hai.hai_minimo = minimo[mes - 1]
         obj_hai.hai_minimo_dia = minimo_dia[mes - 1]
-        obj_hai.hai_promedio = item.get('media')
+        if item.get('media')>100:
+            obj_hai.hai_promedio = 100
+        else:
+            obj_hai.hai_promedio = item.get('media')
         datos.append(obj_hai)
     cursor.close()
     return datos

@@ -27,6 +27,12 @@ class Precipitacion(models.Model):
     pre_maximo_dia = models.IntegerField("Día")
     pre_dias = models.IntegerField("Total de días con precipitacion")
 
+    class Meta:
+        ordering = ('pre_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'pre_periodo']),
+        ]
+
 
 class TemperaturaAire(models.Model):
     tai_id = models.AutoField(primary_key=True)
@@ -49,6 +55,9 @@ class TemperaturaAire(models.Model):
 
     class Meta:
         ordering = ('tai_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'tai_periodo']),
+        ]
 
 
 class HumedadAire(models.Model):
@@ -70,6 +79,9 @@ class HumedadAire(models.Model):
 
     class Meta:
         ordering = ('hai_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'hai_periodo']),
+        ]
 
 
 class Viento(models.Model):
@@ -105,6 +117,12 @@ class Viento(models.Model):
     vie_vel_dir = models.CharField("Dirección Velocidad Mayor", max_length=2)
     vie_vel_med = models.DecimalField("Velocidad Media Km/h", max_digits=7, decimal_places=2)
 
+    class Meta:
+        ordering = ('vie_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'vie_periodo']),
+        ]
+
 
 class HumedadSuelo(models.Model):
     hsu_id = models.AutoField(primary_key=True)
@@ -123,6 +141,9 @@ class HumedadSuelo(models.Model):
 
     class Meta:
         ordering = ('hsu_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'hsu_periodo']),
+        ]
 
 
 class RadiacionSolar(models.Model):
@@ -169,6 +190,12 @@ class RadiacionMaxima(models.Model):
     rad_max = models.DecimalField("Máximo", max_digits=7, decimal_places=2)
     rad_hora = models.DecimalField("Hora", max_digits=7, decimal_places=2)
 
+    class Meta:
+        ordering = ('rad_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'rad_periodo']),
+        ]
+
 
 class RadiacionMinima(models.Model):
     rad_id = models.AutoField(primary_key=True)
@@ -197,6 +224,11 @@ class RadiacionMinima(models.Model):
     rad_18 = models.DecimalField("18", max_digits=7, decimal_places=2)
     rad_max = models.DecimalField("Mínima", max_digits=7, decimal_places=2)
     rad_hora = models.DecimalField("Hora", max_digits=7, decimal_places=2)
+    class Meta:
+        ordering = ('rad_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'rad_periodo']),
+        ]
 
 
 class PresionAtmosferica(models.Model):
@@ -216,6 +248,9 @@ class PresionAtmosferica(models.Model):
 
     class Meta:
         ordering = ('pat_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'pat_periodo']),
+        ]
 
 
 class TemperaturaAgua(models.Model):
@@ -235,6 +270,9 @@ class TemperaturaAgua(models.Model):
 
     class Meta:
         ordering = ('tag_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'tag_periodo']),
+        ]
 
 
 class Caudal(models.Model):
@@ -254,6 +292,9 @@ class Caudal(models.Model):
 
     class Meta:
         ordering = ('cau_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'cau_periodo']),
+        ]
 
 
 class NivelAgua(models.Model):
@@ -273,3 +314,6 @@ class NivelAgua(models.Model):
 
     class Meta:
         ordering = ('nag_mes',)
+        indexes = [
+            models.Index(fields=['est_id', 'nag_periodo']),
+        ]
