@@ -17,7 +17,7 @@ def matrizIV(estacion, variable, periodo):
     # promedio mensual
     sql = "SELECT avg(med_valor) as media, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)
@@ -27,7 +27,7 @@ def matrizIV(estacion, variable, periodo):
     sql += "date_part('month',med_fecha) as mes, "
     sql += "date_part('day',med_fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
     cursor.execute(sql)
@@ -37,7 +37,7 @@ def matrizIV(estacion, variable, periodo):
     sql += "date_part('month',med_fecha) as mes, "
     sql += "date_part('day',med_fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
     cursor.execute(sql)
@@ -79,7 +79,7 @@ def maximoshai(datos_diarios_max):
             if mes == i:
                 val_max_abs.append(get_maximo(fila))
                 val_maxdia.append(dia)
-
+        print(val_max_abs)
         if len(val_max_abs) > 0:
             max_abs.append(max(val_max_abs))
             maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
