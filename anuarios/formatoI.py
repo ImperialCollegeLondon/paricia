@@ -13,10 +13,10 @@ def matrizI(estacion, variable, periodo):
     sql = "SELECT max(med_maximo) as maximo,  max(med_valor) as valor, "
     sql += "date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-    if variable.var_id == 8:
-        sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
-    elif variable.var_id == 6:
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
+    #if variable.var_id == 8:
+        #sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    if variable.var_id == 6 or variable.var_id == 8:
         sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
@@ -26,10 +26,10 @@ def matrizI(estacion, variable, periodo):
     sql = "SELECT min(med_minimo) as minimo,  min(med_valor) as valor, "
     sql += "date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-    if variable.var_id == 8:
-        sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
-    elif variable.var_id == 6:
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
+    #if variable.var_id == 8:
+        #sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    if variable.var_id == 6 or variable.var_id == 8:
         sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
@@ -38,10 +38,10 @@ def matrizI(estacion, variable, periodo):
     # valores promedio mensuales
     sql = "SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-    if variable.var_id == 8:
-        sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
-    elif variable.var_id == 6:
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
+    # if variable.var_id == 8:
+        # sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    if variable.var_id == 6 and variable.var_id == 8:
         sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
