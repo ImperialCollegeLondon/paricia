@@ -88,6 +88,7 @@ class Formato(models.Model):
     for_archivo = models.CharField("Archivo", max_length=100, blank=True, null=True,
                                    help_text="Solo aplica para transmisión automática")
     for_fil_ini = models.IntegerField("Fila de inicio")
+    for_fil_cola = models.SmallIntegerField("Número de filas de cola", blank=True, null=True)
     fec_id = models.ForeignKey(
         Fecha,
         models.SET_NULL,
@@ -130,6 +131,16 @@ class Clasificacion(models.Model):
     cla_valor = models.IntegerField("Columna valor")
     cla_maximo = models.IntegerField("Columna valor máximo", blank=True, null=True)
     cla_minimo = models.IntegerField("Columna valor mínimo", blank=True, null=True)
+    col_validador_valor = models.SmallIntegerField("Columna validador Valor", blank=True, null=True)
+    txt_validador_valor = models.CharField("Texto validador Valor", max_length=10, blank=True, null=True)
+    col_validador_maximo = models.SmallIntegerField("Columna validador Máximo", blank=True, null=True)
+    txt_validador_maximo = models.CharField("Texto validador Máximo", max_length=10, blank=True, null=True)
+    col_validador_minimo = models.SmallIntegerField("Columna validador Mínimo", blank=True, null=True)
+    txt_validador_minimo = models.CharField("Texto validador Mínimo", max_length=10, blank=True, null=True)
+    acumular = models.BooleanField("¿Acumular a 5 minutos?", default=False)
+    incremental = models.BooleanField("¿Es contador incremental?", default=False)
+    resolucion = models.DecimalField("Resolución", max_digits=4, decimal_places=2, blank=True, null=True)
+    coma_decimal = models.BooleanField("COMA: separador decimal", default=False)
 
     def __str__(self):
         return str(self.cla_id)
