@@ -18,7 +18,7 @@ def matrizV_mensual(estacion, variable, periodo):
     # velocidad media en m/s
     sql = "SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
     # sql += "AND date_part('month',med_fecha)=9 "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
@@ -29,7 +29,6 @@ def matrizV_mensual(estacion, variable, periodo):
     sql += "FROM " + tabla_velocidad + " "
     sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.5 "
     sql += "GROUP BY mes ORDER BY mes"
-    print(sql)
     cursor.execute(sql)
     calma = dictfetchall(cursor)
     if len(calma) == 0:
@@ -140,23 +139,24 @@ def get_maximo(fila):
             return fila.get('med_valor')
     return fila.get('med_maximo')
 
+
 def agrupar_viento(dat_dvi, dat_vvi):
     dvi_fecha = convertir_lista(dat_dvi, 'med_fecha')
     dvi_valor = convertir_lista(dat_dvi, 'med_valor')
     vvi_fecha = convertir_lista(dat_vvi, 'med_fecha')
     vvi_valor = convertir_lista(dat_vvi, 'med_valor')
-    print(len(dvi_fecha), len(vvi_fecha))
-    datos=[]
-    for item_fecha_vvi, item_valor_vvi in zip(vvi_fecha,vvi_valor):
+    vvi_maximo = convertir_lista(dat_vvi, 'med_maximo')
+    datos = []
+    for item_fecha_vvi, item_valor_vvi, item_maximo_vvi in zip(vvi_fecha, vvi_valor, vvi_maximo):
         obj_viento = VelocidaDireccion()
         if item_fecha_vvi in dvi_fecha:
             item_fecha_dvi = dvi_fecha.index(item_fecha_vvi)
             obj_viento.velocidad = item_valor_vvi
-            obj_viento.velocidad_max = item_valor_vvi
+            obj_viento.velocidad_max = item_maximo_vvi
             obj_viento.direccion = dvi_valor[item_fecha_dvi]
             datos.append(obj_viento)
-    print(len(datos))
     return datos
+
 
 def convertir_lista(datos, indice):
     lista=[]
