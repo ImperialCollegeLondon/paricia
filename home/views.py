@@ -7,12 +7,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class HomePageView(LoginRequiredMixin, TemplateView):
-    template_name = "home.html"
+class HomePageView(TemplateView):
+    template_name = "home/consultas_usuario.html"
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['base_template'] = "index.html"
+        else:
+            context['base_template'] = "index_invitado.html"
         return context
+
 
 class ConsultasView(TemplateView):
     template_name = "consultas_usuario.html"
