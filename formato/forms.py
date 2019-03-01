@@ -80,7 +80,7 @@ class ClasificacionSearchForm(ModelForm):
 class ClasificacionForm(ModelForm):
     class Meta:
         model = Clasificacion
-        fields = ['var_id', 'cla_valor', 'cla_maximo', 'cla_minimo']
+        fields = ['var_id', 'cla_valor', 'cla_maximo', 'cla_minimo', 'acumular', 'incremental','resolucion']
 
 
 class AsociacionSearchForm(ModelForm):

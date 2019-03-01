@@ -6,7 +6,6 @@ from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
-from django.core.paginator import Paginator
 from .forms import FormatoSearchForm, ClasificacionSearchForm, AsociacionSearchForm, ClasificacionForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
@@ -198,7 +197,7 @@ class DelimitadorDelete(LoginRequiredMixin, DeleteView):
 # Clasificacion
 class ClasificacionCreate(LoginRequiredMixin, CreateView):
     model = Clasificacion
-    fields = ['var_id', 'cla_valor', 'cla_maximo', 'cla_minimo']
+    fields = ['var_id', 'cla_valor', 'cla_maximo', 'cla_minimo', 'acumular', 'incremental']
 
     def post(self, request, *args, **kwargs):
         form = ClasificacionForm(self.request.POST or None)
@@ -234,13 +233,17 @@ class ClasificacionDetail(LoginRequiredMixin, DetailView):
 
 class ClasificacionUpdate(LoginRequiredMixin, UpdateView):
     model = Clasificacion
-    fields = ['var_id', 'cla_valor', 'cla_maximo', 'cla_minimo']
+    fields = ['var_id', 'cla_valor', 'cla_maximo', 'cla_minimo', 'acumular', 'incremental','resolucion']
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ClasificacionUpdate, self).get_context_data(**kwargs)
         context['title'] = "Modificar"
         return context
+
+    def form_valid(self, form):
+        instance = form.save()
+        return HttpResponseRedirect(reverse('formato:clasificacion_index', kwargs={'for_id': instance.for_id.for_id}))
 
 
 class ClasificacionDelete(LoginRequiredMixin, DeleteView):

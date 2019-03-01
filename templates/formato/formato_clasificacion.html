@@ -1,103 +1,10 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap4 %}
+{% load static %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script>
-$(document).ready(function() {
-  $( "#div_new" ).dialog({
-    autoOpen: false,
-    width:400,
-    height:400
-  });
-  $( "#div_delete" ).dialog({
-    autoOpen: false,
-    width:400,
-    height:400
-  });
-  $("#link_new").click(function(){
-      $("#div_new").dialog("open");
-      return false;
-  });
-  $("#btn_guardar").click(function(){
-    $.ajax({
-      url: $("#form_new").attr('action'),
-      data: $("#form_new").serialize(),
-      type:'POST',
-      beforeSend: function () {
-        $("#div_informacion").hide();
-        $("#div_loading").show();
-        $("#div_error").hide();
-      },
-      success: function (data) {
-        $("#div_informacion").show();
-        $("#div_informacion").html(data)
-        $("#div_loading").hide();
-        $("#div_error").hide();
-        $("#div_new").dialog("close");
-      },
-      error: function () {
-        $("#div_loading").hide();
-        $("#div_error").show();
-        $("#btn_filtrar").removeAttr('disabled');
-        $("#div_new").dialog("close");
-      }
-    });
-    return false;
-  });
-  //eliminar un registro
-  $(".link_delete").click(function(){
-    $.ajax({
-      url: $(".link_delete").attr('href'),
-      type:'GET',
-      beforeSend: function () {
-        $("#div_informacion").hide();
-        $("#div_loading").show();
-        $("#div_error").hide();
-      },
-      success: function (data) {
-        $("#div_informacion").show();
-        $("#div_delete").html(data)
-        $("#div_loading").hide();
-        $("#div_error").hide();
-        $("#div_delete").dialog("open");
-      },
-      error: function () {
-        $("#div_loading").hide();
-        $("#div_error").show();
-        $("#div_delete").dialog("open");
-      }
-    });
-    return false;
-  });
+<script src="{% static 'js_ajax.js' %}"></script>
 
-
-});
-function actualizar_informacion(){
-  $.ajax({
-    url: $("#link_consulta").attr('href'),
-    type:'GET',
-    beforeSend: function () {
-      $("#div_informacion").hide();
-      $("#div_loading").show();
-      $("#div_error").hide();
-    },
-    success: function (data) {
-      $("#div_informacion").show();
-      $("#div_informacion").html(data)
-      $("#div_loading").hide();
-      $("#div_error").hide();
-
-    },
-    error: function () {
-      $("#div_loading").hide();
-      $("#div_error").show();
-      $("#div_delete").dialog("open");
-    }
-  });
-
-}
-
-</script>
 <div class="card">
     <!-- Default panel contents -->
     <div class="card-header">
@@ -165,8 +72,11 @@ function actualizar_informacion(){
             <tr>
                 <th>Variable</th>
                 <th>Columna valor</th>
-                <th>Columna máximo valor</th>
-                <th>Columna mínimo valor</th>
+                <th>Columna máximo</th>
+                <th>Columna mínimo</th>
+                <th>¿Acumular a 5 minutos?</th>
+                <th>¿Es contador incremental?</th>
+                <th>Resolución</th>
             </tr>
             </thead>
             <tbody>
@@ -177,6 +87,25 @@ function actualizar_informacion(){
                 <td>{{ item.cla_maximo }}</td>
                 <td>{{ item.cla_minimo }}</td>
                 <td>
+                    {% if item.acumular%}
+                    Si
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.incremental %}
+                    Si
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+                <td>{{ item.resolucion }}</td>
+                <td>
+                    <a class="link_update" href="{% url 'formato:clasificacion_update' item.cla_id %}">
+                        <span class="far fa-edit" aria-hidden="true"></span>
+                    </a>
                     <a class="link_delete" href="{% url 'formato:clasificacion_delete' item.cla_id %}">
                         <span class="far fa-trash-alt" aria-hidden="true"></span>
                     </a>
@@ -212,7 +141,7 @@ function actualizar_informacion(){
 
 <a id="link_consulta" href="{% url 'formato:clasificacion_index' formato.for_id %}">
 </a>
-<div id="div_new" title="Agregar nuevo registro">
+<div id="div_new" title="Agregar nueva variable">
     <form id="form_new" class="form" method="post" action="{% url 'formato:clasificacion_create' for_id %}">
         {% csrf_token %}
         {% bootstrap_form form %}
@@ -223,6 +152,8 @@ function actualizar_informacion(){
             <a class="btn btn-light" href="#">Cancelar</a>
         </div>
     </form>
+</div>
+<div id="div_update" title="Modificar Registro">
 </div>
 <div id="div_delete" title="Borrar Registro">
 </div>

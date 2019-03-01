@@ -1,22 +1,45 @@
-{% extends "index.html" %}
-{% block content %}
+<script>
+$(document).ready(function() {
+  $("#btn_modificar").click(function(){
+    $.ajax({
+      url: $("#form_update").attr('action'),
+      data: $("#form_update").serialize(),
+      type:'POST',
+      beforeSend: function () {
+        $("#div_informacion").hide();
+        $("#div_loading").show();
+        $("#div_error").hide();
+      },
+      success: function (data) {
+        $("#div_informacion").show();
+        $("#div_informacion").html(data)
+        $("#div_loading").hide();
+        $("#div_error").hide();
+        $("#div_update").dialog("close");
+      },
+      error: function () {
+        $("#div_loading").hide();
+        $("#div_error").show();
+        $("#div_update").dialog("close");
+      }
+    });
+    return false;
+  });
+  $("#btn_cancelar_modificar").click(function(){
+    $("#div_update").dialog("close");
+  });
+});
+</script>
 {% load bootstrap4 %}
 
-<div class="col-lg-4 col-md-4">
-    <div class="card">
-        <div class="card-header">{{title}} Clasificación</div>
-        <div class="card-body">
-            <form method="post" class="form">
-                {% csrf_token %}
-                {% bootstrap_form form %}
-                <button type="submit" class="btn btn-primary">
-                    Guardar
-                </button>
-                <a class="btn btn-light"
-                   href="{% url 'formato:clasificacion_index' %}">
-                    Cancelar</a>
-            </form>
-        </div>
+<div class="row">
+    <div class="col-lg-12">
+
+        <form id="form_update" method="post" class="form" action="{% url 'formato:clasificacion_update' clasificacion.cla_id %}" >
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button id="btn_modificar" type="button" class="btn btn-warning">Modificar</button>
+            <button id="btn_cancelar_modificar" type="button" class="btn btn-light btn-light">Cancelar</button>
+        </form>
     </div>
 </div>
-{% endblock %}
