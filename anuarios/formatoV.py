@@ -70,28 +70,28 @@ def matrizV_mensual(estacion, variable, periodo):
         for item in datos:
             if item.direccion < 22.5 or item.direccion > 337.5:
                 vvi[0].append(item.velocidad)
-                vvi_max[0].append(item.velocidad_max)
+                vvi_max[0].append(get_maximo(item))
             elif item.direccion < 67.5:
                 vvi[1].append(item.velocidad)
-                vvi_max[1].append(item.velocidad_max)
+                vvi_max[1].append(get_maximo(item))
             elif item.direccion < 112.5:
                 vvi[2].append(item.velocidad)
-                vvi_max[2].append(item.velocidad_max)
+                vvi_max[2].append(get_maximo(item))
             elif item.direccion < 157.5:
                 vvi[3].append(item.velocidad)
-                vvi_max[3].append(item.velocidad_max)
+                vvi_max[3].append(get_maximo(item))
             elif item.direccion < 202.5:
                 vvi[4].append(item.velocidad)
-                vvi_max[4].append(item.velocidad_max)
+                vvi_max[4].append(get_maximo(item))
             elif item.direccion < 247.5:
                 vvi[5].append(item.velocidad)
-                vvi_max[5].append(item.velocidad_max)
+                vvi_max[5].append(get_maximo(item))
             elif item.direccion < 292.5:
                 vvi[6].append(item.velocidad)
-                vvi_max[6].append(item.velocidad_max)
+                vvi_max[6].append(get_maximo(item))
             elif item.direccion < 337.5:
                 vvi[7].append(item.velocidad)
-                vvi_max[7].append(item.velocidad_max)
+                vvi_max[7].append(get_maximo(item))
         maximos = []
         valores[mes - 1].append(mes)
         # recorro la matriz de datos en base al número de direcciones
@@ -131,13 +131,13 @@ def matrizV_mensual(estacion, variable, periodo):
     return valores
 
 
-def get_maximo(fila):
-    if fila.get('med_maximo') is None:
-        if fila.get('med_valor') is None:
+def get_maximo(item):
+    if item.velocidad_max is None:
+        if item.velocidad is None:
             return 0
         else:
-            return fila.get('med_valor')
-    return fila.get('med_maximo')
+            return item.velocidad
+    return item.velocidad_max
 
 
 def agrupar_viento(dat_dvi, dat_vvi):
