@@ -11,8 +11,9 @@ class VelocidaDireccion():
     direccion = 0
 
 def matrizV_mensual(estacion, variable, periodo):
-    tabla_velocidad = "vvi.m" + periodo
-    tabla_direccion = "dvi.m" + periodo
+    
+    tabla_velocidad = "medicion_velocidadviento" + periodo
+    tabla_direccion = "medicin_direccionviento" + periodo
 
     cursor = connection.cursor()
     # velocidad media en m/s

@@ -33,6 +33,7 @@ class Variable(models.Model):
         verbose_name="Unidad")
     var_codigo = models.CharField("Codigo", max_length=6)
     var_nombre = models.CharField("Nombre", max_length=50)
+    var_modelo = models.CharField("Modelo",max_length=50, blank=True, null=True)
     var_maximo = models.DecimalField("Maximo", max_digits=7, decimal_places=2)
     var_minimo = models.DecimalField("Minimo", max_digits=7, decimal_places=2)
     var_sos = models.DecimalField("Sospechoso", max_digits=7, decimal_places=2, null=True, blank=True)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from estacion.models import Estacion
-from variable.models import Variable
+from variable.models import Variable, Unidad
 from medicion.models import Medicion
 from registro.models import LogMedicion
 from datetime import datetime, timedelta, date

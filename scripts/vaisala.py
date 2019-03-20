@@ -3,12 +3,18 @@ import os
 import shutil
 from datetime import datetime, timedelta
 from formato.models import Clasificacion, Formato, Asociacion
-from importacion.functions import valid_number, validar_fechas, eliminar_datos, guardar_vacios
+from importacion.functions import (validar_fechas, eliminar_datos, guardar_vacios,
+                                   get_modelo, ultima_fecha, verificar_vacios)
 from importacion.models import Importacion
 from home.models import Usuarios
 import time
 import daemon
-from temporal.models import Datos
+from medicion.models import Precipitacion, TemperaturaAire, HumedadAire, VelocidadViento
+from medicion.models import DireccionViento, HumedadSuelo, RadiacionSolar, PresionAtmosferica
+from medicion.models import TemperaturaAgua, Caudal, NivelAgua
+
+from numbers import Number
+
 
 def run(*args):
     with daemon.DaemonContext():
@@ -27,7 +33,6 @@ def iniciar_lectura():
                 if len(consulta) > 0:
                     estacion = consulta[0].est_id
                     root_dir = formato.for_ubicacion
-                    #print(time.ctime()+"leer archivos")
                     leer_archivos(root_dir, formato, estacion)
                     respaldar_archivos(root_dir)
                 else:
@@ -39,13 +44,14 @@ def iniciar_lectura():
 
         time.sleep(1500)
 
+
 def respaldar_archivos(root_dir):
     for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
         for file_name in file_list:
-            mn5 = buscar_archivo(file_name, 'mn5')
+            # mn5 = buscar_archivo(file_name, 'mn5')
             hor = buscar_archivo(file_name, 'hor')
             dia = buscar_archivo(file_name, 'dia')
-            if mn5 or hor or dia:
+            if hor or dia:
                 move(root_dir + file_name, get_ruta_backup(root_dir))
             else:
                 registrar_log('No existen archivos nuevos')
@@ -68,18 +74,13 @@ def get_ruta_backup(root_dir):
 def leer_archivos(root_dir, formato, estacion):
     for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
         for file_name in file_list:
-            #print(time.ctime() + "buscar archivos")
             if buscar_archivo(file_name, formato.for_archivo):
-                #print(time.ctime() + "abrir arhivo")
                 archivo = open(root_dir + file_name)
-                #print(time.ctime() + "fecha arhivo")
                 fecha = fecha_archivo(file_name, formato.for_archivo)
-                #print(time.ctime() + "obj importacion")
-                obj_importacion = set_object_importacion(estacion, formato, fecha, file_name)
+                obj_importacion = set_object_importacion(estacion, formato, fecha, file_name, formato.for_archivo)
                 registrar_log('Lectura Iniciada Estacion:' + str(
                     estacion.est_codigo) + 'Formato:' + str(
                     formato.for_descripcion))
-                #print(time.ctime() + "procesar")
                 datos = procesar_archivo(archivo, formato, fecha, estacion)
                 archivo.close()
                 if len(datos) > 0:
@@ -98,16 +99,16 @@ def leer_archivos(root_dir, formato, estacion):
 
 
 def guardar_datos(importacion, datos, estacion):
-    informacion, existe_vacio = validar_fechas(importacion)
-    for fila in informacion:
-        if fila.get('existe'):
-            eliminar_datos(fila, importacion)
-        if fila.get('vacio'):
+    observacion = 'vacio datos automaticos'
+    for var_id, tabla in datos.items():
+        modelo = get_modelo(var_id)
+        fecha_datos = ultima_fecha(modelo, estacion.est_id)
+        if verificar_vacios(importacion.imp_fecha_ini, fecha_datos):
             registrar_log('Vacio de información')
-            observacion = 'vacio datos automaticos'
-            guardar_vacios(fila, estacion, observacion, importacion.imp_fecha_ini)
-    Datos.objects.bulk_create(datos)
-    Datos.objects.all().delete()
+            guardar_vacios(var_id, fecha_datos, estacion, observacion, importacion.imp_fecha_ini)
+        eliminar_datos(modelo, importacion, estacion.est_id)
+
+        modelo.objects.bulk_create(tabla)
 
 
 def buscar_archivo(file_name, frecuencia):
@@ -117,8 +118,12 @@ def buscar_archivo(file_name, frecuencia):
     return False
 
 
-def set_object_importacion(estacion, formato, fecha, archivo):
-    intervalo = timedelta(minutes=15)
+def set_object_importacion(estacion, formato, fecha, archivo, prefijo):
+    frecuencia = get_frecuencia(prefijo)
+    if frecuencia == 2:
+        intervalo = timedelta(minutes=12)
+    else:
+        intervalo = timedelta(minutes=14)
     usuario=Usuarios.objects.get(username='admin')
     importacion = Importacion()
     importacion.est_id = estacion
@@ -132,22 +137,24 @@ def set_object_importacion(estacion, formato, fecha, archivo):
     return importacion
 
 
-
-
-#construir la matriz de datos
+# construir la matriz de datos
 def procesar_archivo(archivo, formato, fecha, estacion):
     intervalo = timedelta(minutes=get_frecuencia(formato.for_archivo))
     lineas = archivo.readlines()
     clasificacion = list(Clasificacion.objects.filter(
         for_id=formato.for_id))
-    datos = []
-    registrar_log("Inicio For")
-    for linea in lineas:
-        valores = linea.split(',')
-        if len(valores) > 1:
-            val_lim = list(map(lambda item: item.strip(), valores))
 
-            for fila in clasificacion:
+    datos_variables = {}
+    for fila in clasificacion:
+        fecha_datos = fecha
+        modelo = get_modelo(fila.var_id.var_id)
+        datos = []
+        for linea in lineas:
+            valores = linea.split(',')
+            if len(valores) > 1:
+                # quitar los espacios de los valores del archivo
+                val_lim = list(map(lambda item: item.strip(), valores))
+
                 if fila.cla_valor is not None:
                     valor = valid_number(val_lim[fila.cla_valor], fila.var_id.var_id)
                 else:
@@ -156,18 +163,22 @@ def procesar_archivo(archivo, formato, fecha, estacion):
                     maximo = valid_number(val_lim[fila.cla_maximo], fila.var_id.var_id)
                 else:
                     maximo = None
+
                 if fila.cla_minimo is not None:
                     minimo = valid_number(val_lim[fila.cla_minimo], fila.var_id.var_id)
                 else:
                     minimo = None
-                dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
-                             med_fecha=fecha, mar_id=formato.mar_id.mar_id,
-                             med_valor=valor, med_maximo=maximo, med_minimo=minimo,
-                             med_estado=True)
+                if fila.var_id.var_id==1:
+                    dato = modelo(estacion=estacion.est_id, fecha=fecha_datos,valor=valor)
+                else:
+                    dato = modelo(estacion=estacion.est_id, fecha=fecha_datos, valor=valor,
+                              maximo=maximo, minimo=minimo)
                 datos.append(dato)
 
-            fecha += intervalo
-    return datos
+            fecha_datos += intervalo
+        datos_variables[fila.var_id.var_id] = datos
+
+    return datos_variables
 
 
 def get_frecuencia(prefijo):
@@ -194,9 +205,29 @@ def fecha_archivo(file_name, prefijo):
         intervalo = timedelta(hours=5, minutes=15)
     fecha -= intervalo
 
-
-
     return fecha
+
+
+def valid_number(val_str, var_id):
+    val_num = None
+    try:
+        if len(val_str) >= 10:
+            val_num = None
+        elif isinstance(val_str, Number):
+            val_num = float(val_str)
+            val_num= round(val_num,3)
+        elif val_str == "":
+            val_num = None
+        else:
+            val_str.replace(",", ".")
+            val_num = float(val_str)
+            val_num = round(val_num, 3)
+        if val_num  is not None:
+            if var_id==7 and val_num>1400:
+                val_num=1400
+    except:
+        val_num = None
+    return val_num
 
 
 def move(src, dest):

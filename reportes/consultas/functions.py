@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from medicion.models import Medicion
 from estacion.models import Estacion
 from variable.models import Variable
 import plotly.offline as opy
@@ -9,18 +8,18 @@ from datetime import timedelta, datetime, date
 from django.db import connection
 from math import ceil
 from cruce.models import Cruce
+from importacion.functions import get_modelo
 
-
-suma = 'sum(med_valor) as valor '
-promedio = 'avg(med_valor) as valor '
-max_abs = 'max(med_maximo) as max_abs '
-max_pro = 'max(med_valor) as max_pro '
-min_abs = 'min(med_minimo) as min_abs  '
-min_pro = 'min(med_valor) as min_pro '
+suma = 'sum(valor) as valor '
+promedio = 'avg(valor) as valor'
+max_abs = 'max(maximo) as max_abs'
+max_pro = 'max(valor) as max_pro'
+min_abs = 'min(minimo) as min_abs'
+min_pro = 'min(valor) as min_pro'
 coma = ', '
-group_order = 'GROUP BY fecha ORDER BY fecha'
-var_max_min = [2, 3, 4, 6, 8, 9, 10, 11]
+group_order = 'GROUP BY 1 ORDER BY 1'
 
+'''
 def grafico(form):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
@@ -33,24 +32,29 @@ def grafico(form):
         fecha_fin = date.today()
     div = ""
     # frecuencia instantanea
-    if (frecuencia == str(0)):
+    if frecuencia == str(0):
         valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
         maximos_pro = []
         minimos_pro = []
     # frecuencia 5 minutos
-    elif (frecuencia == str(1)):
+    elif frecuencia == str(1):
         valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia horaria
-    elif (frecuencia == str(2)):
+    elif frecuencia == str(2):
         valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia diaria
-    elif (frecuencia == str(3)):
+    elif frecuencia == str(3):
         valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia mensual
-    elif (frecuencia == str(4)):
+    elif frecuencia == str(4):
         valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
     else:
         valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+    tra_pro = []
+    tra_max_abs = []
+    tra_min_abs = []
+    tra_max_pro = []
+    tra_min_pro = []
     if len(valores) > 0:
         if variable.var_id == 1:
             tra_pro = go.Bar(
@@ -58,6 +62,7 @@ def grafico(form):
                 y=valores,
             )
             data = go.Data([tra_pro])
+
         elif frecuencia == str(0):
             tra_prom = go.Scatter(
                 x=tiempo,
@@ -97,6 +102,7 @@ def grafico(form):
                     color='#1660A7',
                 )
             )
+            print("maximos absolutos", maximos_abs.count(None), maximos_pro.count(None))
             if len(maximos_abs) != maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
                 tra_max_abs = go.Scatter(
                     x=tiempo,
@@ -118,7 +124,7 @@ def grafico(form):
                     )
                 )
             elif len(maximos_abs) == maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
-                tra_max_abs = []
+
                 tra_max_pro = go.Scatter(
                     x=tiempo,
                     y=maximos_pro,
@@ -149,7 +155,7 @@ def grafico(form):
                     )
                 )
             elif len(minimos_abs) == minimos_abs.count(None) and len(minimos_pro) != minimos_pro.count(None):
-                tra_min_abs = []
+
                 tra_min_pro = go.Scatter(
                     x=tiempo,
                     y=minimos_pro,
@@ -160,7 +166,7 @@ def grafico(form):
                     )
                 )
             if len(tra_max_abs) > 0 and len(tra_min_abs) > 0:
-                data = go.Data([tra_max_abs, tra_max_pro, tra_prom, tra_min_abs, tra_min_pro])
+                data = go.Data([tra_max_abs, tra_prom, tra_min_abs])
             else:
                 data = go.Data([tra_max_pro, tra_prom, tra_min_pro])
         layout = go.Layout(
@@ -192,65 +198,42 @@ def grafico(form):
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
     return div
+'''
 
 
 def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
-    year_ini = fecha_inicio.strftime('%Y')
-    year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        sql = 'SELECT * FROM ' + tabla + ' WHERE '
-        sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-        sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-        sql += 'med_fecha<=\'' + str(fecha_fin) + '\' '
-        sql += 'and med_estado is not False '
-        sql += 'order by med_fecha'
-        consulta = list(Medicion.objects.raw(sql))
-    else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        consulta = []
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_estado is not False and '
-                sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' '
-                sql += 'and med_estado is not False '
-                sql += 'order by med_fecha'
-            elif str(year) == year_fin:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_estado is not False and '
-                sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59 \' '
-                sql += 'and med_estado is not False '
-                sql += 'order by med_fecha'
-            else:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'med_estado is not False and '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' '
-                sql += 'and med_estado is not False '
-                sql += 'order by med_fecha'
-            consulta.extend(list(Medicion.objects.raw(sql)))
+
+    modelo = get_modelo(variable.var_id)
+    fecha_inicio = datetime(fecha_inicio.year, fecha_inicio.month, fecha_inicio.day, 0, 0, 0)
+    fecha_fin = datetime(fecha_fin.year, fecha_fin.month, fecha_fin.day, 23, 59, 59, 999999)
+    tabla = 'medicion_' + str(variable.var_modelo)
+    sql = 'SELECT * FROM ' + tabla + ' WHERE estacion =' + str(estacion.est_id)
+    # if fecha_inicio:
+    sql = sql + ' AND fecha>=\'' + str(fecha_inicio) + '\''
+    # if fecha_fin:
+    sql = sql + ' AND fecha<=\'' + str(fecha_fin) + '\''
+    sql = sql + ' order by fecha ASC;'
+    consulta = list(modelo.objects.raw(sql))
     valor = []
     maximo = []
     minimo = []
     frecuencia = []
     for fila in consulta:
-        if fila.med_valor is not None:
-            valor.append(fila.med_valor)
+        if fila.valor is not None:
+            valor.append(fila.valor)
         else:
             valor.append(None)
-        if fila.med_maximo is not None:
-            maximo.append(fila.med_maximo)
-        else:
-            maximo.append(None)
-        if fila.med_minimo is not None:
-            minimo.append(fila.med_minimo)
-        else:
-            minimo.append(None)
-        frecuencia.append(fila.med_fecha)
+        if variable.var_id != 1:
+            if fila.maximo is not None:
+                maximo.append(fila.maximo)
+            else:
+                maximo.append(None)
+            if fila.minimo is not None:
+                minimo.append(fila.minimo)
+            else:
+                minimo.append(None)
+        # frecuencia.append(fila.fecha)
+        frecuencia.append(fila.fecha.strftime("%Y-%m-%d %H:%M:%S"))
     return valor, maximo, minimo, frecuencia
 
 
@@ -265,12 +248,12 @@ def datos_estacion(estacion, fecha_inicio, fecha_fin):
         # llenar la frecuencia de tiempo
         if i == 0:
             valores[i] = set_valores(frecuencia)
-            valores[i].insert(0, "Fecha hora")
+            valores[i].insert(0, str("Fecha hora"))
             i += 1
         # comprobar si hay otras frecuecnas de tiempo ej: el viento se registra cada 2 min
         elif len(frecuencia) < (len(valores[i_fecha])-1):
             valores[i] = set_valores(frecuencia)
-            valores[i].insert(0, "Fecha hora")
+            valores[i].insert(0, str("Fecha hora"))
             i_fecha = i
             valores.append([0 for x in range(0)])
             i += 1
@@ -282,7 +265,7 @@ def datos_estacion(estacion, fecha_inicio, fecha_fin):
             i += 1
             valores.append([0 for x in range(0)])
             valores[i] = set_valores(maximo)
-            valores[i].insert(0, fila.var_id.var_nombre+ " Máxima")
+            valores[i].insert(0, fila.var_id.var_nombre + " Máxima")
         # verificar si hay mínimos
         if contar_vacios(minimo)>0:
             i += 1
@@ -330,14 +313,15 @@ def datos_5minutos(estacion, variable, fecha_inicio, fecha_fin):
                 maximo_pro.append(None)
                 minimo_abs.append(None)
                 minimo_pro.append(None)
-            frecuencia.append(fecha)
+            #frecuencia.append(fecha)
+            frecuencia.append(fecha.strftime("%Y-%m-%d %H:%M:%S"))
             fecha += intervalo
 
     return valor, maximo_abs, maximo_pro, minimo_abs, minimo_pro, frecuencia
 
 
 def datos_horarios(estacion, variable, fecha_inicio, fecha_fin):
-    datos = armar_consulta(estacion,variable,2,fecha_inicio,fecha_fin)
+    datos = armar_consulta(estacion, variable, 2, fecha_inicio, fecha_fin)
     valor = []
     maximos_abs = []
     maximos_pro = []
@@ -365,13 +349,14 @@ def datos_horarios(estacion, variable, fecha_inicio, fecha_fin):
                 maximos_pro.append(None)
                 minimos_abs.append(None)
                 minimos_pro.append(None)
-            frecuencia.append(fecha)
+            # frecuencia.append(fecha)
+            frecuencia.append(fecha.strftime("%Y-%m-%d %H:%M:%S"))
             fecha += intervalo
     return valor, maximos_abs, maximos_pro, minimos_abs, minimos_pro, frecuencia
 
 
 def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
-    datos = armar_consulta(estacion,variable,3,fecha_inicio,fecha_fin)
+    datos = armar_consulta(estacion, variable, 3, fecha_inicio, fecha_fin)
     valor = []
     # maximos absolutos
     maximos_abs = []
@@ -380,6 +365,7 @@ def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
     minimos_pro = []
     frecuencia = []
     intervalo = timedelta(days=1)
+
     fecha = fecha_inicio
     int_dias = (fecha_fin - fecha_inicio).days + 1
     num_datos = len(datos)
@@ -388,6 +374,7 @@ def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
         if item < num_datos:
             fecha_datos = datos[item].get('fecha').date()
             if fecha_datos == fecha:
+
                 valor.append(datos[item].get('valor'))
                 maximos_abs.append(datos[item].get('max_abs'))
                 maximos_pro.append(datos[item].get('max_pro'))
@@ -402,7 +389,7 @@ def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
                 minimos_pro.append(None)
             frecuencia.append(fecha)
             fecha += intervalo
-    return valor, maximos_abs,maximos_pro, minimos_abs, minimos_pro, frecuencia
+    return valor, maximos_abs, maximos_pro, minimos_abs, minimos_pro, frecuencia
 
 
 def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
@@ -444,77 +431,40 @@ def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
 
 def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
 
-    year_ini = fecha_inicio.strftime('%Y')
-    year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
     cursor = connection.cursor()
-    datos = []
-    filtro_completo = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
-    filtro_completo += 'med_fecha<=\'' + str(fecha_fin) + '\' and med_estado is not False '
-    filtro_mayor = 'est_id_id=' + str(estacion.est_id) + ' and med_fecha>=\'' + str(fecha_inicio) + '\' and '
-    filtro_mayor += 'med_estado is not False '
-    filtro_menor = 'est_id_id=' + str(estacion.est_id) + ' and '
-    filtro_menor += 'med_fecha<=\'' + str(fecha_fin) + '\' and med_estado is not False '
-    filtro_simple = 'est_id_id=' + str(estacion.est_id) + ' and med_estado is not False '
+    # datos = []
+    fecha_inicio = datetime(fecha_inicio.year, fecha_inicio.month, fecha_inicio.day, 0, 0, 0)
+    fecha_fin = datetime(fecha_fin.year, fecha_fin.month, fecha_fin.day, 23, 59, 59, 999999)
+    fecha = ""
     if frecuencia == 1:
         fecha = 'to_timestamp(floor((extract(\'epoch\' '
-        fecha += 'from med_fecha) / 300 )) * 300)'
+        fecha += 'from fecha) / 300 )) * 300)'
         fecha += 'AT TIME ZONE \'UTC5\' as fecha, '
     elif frecuencia == 2:
-        fecha = 'date_trunc(\'hour\',med_fecha) as fecha, '
+        fecha = 'date_trunc(\'hour\',fecha) as fecha, '
     elif frecuencia == 3:
-        fecha = 'date_trunc(\'day\',med_fecha) as fecha, '
+        fecha = 'date_trunc(\'day\',fecha) as fecha, '
     elif frecuencia == 4:
-        fecha = 'date_trunc(\'month\',med_fecha) as fecha, '
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        if variable.var_id == 1:
-            sql = 'SELECT ' + fecha + suma
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += filtro_completo + group_order
-        else:
-            sql = 'SELECT ' + fecha
-            sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
-            sql += 'FROM ' + tabla + ' WHERE '
-            sql += filtro_completo + group_order
-        cursor.execute(sql)
-        datos = dictfetchall(cursor)
+        fecha = 'date_trunc(\'month\',fecha) as fecha, '
+    tabla = 'medicion_' + str(variable.var_modelo)
+    filtro = 'estacion=' + str(estacion.est_id) + ' and valor !=\'NaN\'::numeric '
+    if fecha_inicio:
+        filtro += ' and fecha>=\'' + str(fecha_inicio) + '\''
+    if fecha_fin:
+        filtro += ' and fecha<=\'' + str(fecha_fin) + '\' '
+
+    if variable.var_id == 1:
+        sql = 'SELECT ' + fecha + suma
+        sql += ' FROM ' + tabla + ' WHERE '
+        sql += filtro + group_order
     else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                if variable.var_id == 1:
-                    sql = 'SELECT ' + fecha + suma
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += filtro_mayor + group_order
-                else:
-                    sql = 'SELECT ' + fecha
-                    sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += filtro_mayor + group_order
-            elif str(year) == year_fin:
-                if variable.var_id == 1:
-                    sql = 'SELECT ' + fecha + suma
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += filtro_menor + group_order
-                else:
-                    sql = 'SELECT ' + fecha
-                    sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += filtro_menor + group_order
-            else:
-                if variable.var_id == 1:
-                    sql = 'SELECT ' + fecha + suma
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += filtro_simple + group_order
-                else:
-                    sql = 'SELECT ' + fecha
-                    sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
-                    sql += 'FROM ' + tabla + ' WHERE '
-                    sql += filtro_simple + group_order
-            cursor.execute(sql)
-            datos.extend(dictfetchall(cursor))
+        sql = 'SELECT ' + fecha
+        sql += promedio + coma + max_abs + coma + max_pro + coma + min_abs + coma + min_pro
+        sql += ' FROM ' + tabla + ' WHERE '
+        sql += filtro + group_order
+    cursor.execute(sql)
+    print(sql)
+    datos = dictfetchall(cursor)
     cursor.close()
     return datos
 
@@ -574,7 +524,7 @@ def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
     if len(val) > 0:
         for item_val, item_max_abs, item_max_pro, item_min_abs, item_min_pro, item_time \
                 in zip(val, max_abs, max_pro, min_abs, min_pro, time):
-            if item_time>=fecha_ini and item_time<=fecha_fin:
+            if fecha_ini <= item_time <= fecha_fin:
                 dato = {
                     'fecha': item_time,
                     'valor': item_val,
@@ -592,7 +542,7 @@ def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
 
 
 def contar_vacios(valores):
-    num_vacios=0
+    num_vacios = 0
     for item in valores:
         if item is not None:
             num_vacios += 1
@@ -600,7 +550,7 @@ def contar_vacios(valores):
 
 
 def set_valores(valores):
-    datos=[]
+    datos = []
     for item in valores:
         if item is not None:
             datos.append(item)

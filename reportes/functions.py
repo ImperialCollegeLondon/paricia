@@ -7,15 +7,128 @@ from reportes.typeIV import TypeIV
 from reportes.typeV import TypeV
 from reportes.typeVI import TypeVI
 from cruce.models import Cruce
-from estacion.models import Estacion
-from medicion.models import Medicion
-import datetime
+from reportes.consultas.functions import datos_instantaneos
+
+from datetime import timedelta, datetime, date
 import plotly.offline as opy
 import plotly.graph_objs as go
+import json
 
-from django.db import connection
 
 from .consultas.functions import (datos_diarios, datos_5minutos, datos_horarios, datos_mensuales)
+
+
+def consultar_datos(form):
+    estacion = form.cleaned_data['estacion']
+    variable = form.cleaned_data['variable']
+    fecha_inicio = form.cleaned_data['inicio']
+    fecha_fin = form.cleaned_data['fin']
+    frecuencia = form.cleaned_data['frecuencia']
+    if fecha_inicio is None:
+        fecha_inicio = estacion.est_fecha_inicio
+    if fecha_fin is None:
+        fecha_fin = date.today()
+    if frecuencia == str(0):
+        valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+        maximos_pro = []
+        minimos_pro = []
+    elif frecuencia == str(1):
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
+    # frecuencia horaria
+    elif frecuencia == str(2):
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
+    # frecuencia diaria
+    elif frecuencia == str(3):
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
+        # frecuencia mensual
+    elif frecuencia == str(4):
+        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
+    type_graph ='scatter'
+    if variable.var_id == 1:
+        type_graph = 'bar'
+    data_valor = get_elemento_data(type_graph, tiempo, valores, 'Promedio', '#1660A7')
+    if frecuencia == str(0):
+        data_maximo = get_elemento_data(type_graph, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
+        data_minimo = get_elemento_data(type_graph, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
+    else:
+
+        if maximos_abs.count(None) <= maximos_pro.count(None):
+            data_maximo = get_elemento_data(type_graph, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
+        else:
+            data_maximo = get_elemento_data(type_graph, tiempo, maximos_pro, 'Maximo Promedio', '#90EE90')
+        if minimos_abs.count(None) <= minimos_pro.count(None):
+            data_minimo = get_elemento_data(type_graph, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
+        else:
+            data_minimo = get_elemento_data(type_graph, tiempo, minimos_pro, 'Minimo Promedio', '#FF8C00')
+    boton_dia = dict(count=1,
+                     label='1dia',
+                     step='day',
+                     stepmode='backward')
+    boton_mes = dict(count=1,
+                     label='1mes',
+                     step='month',
+                     stepmode='backward')
+    boton_6meses = dict(count=6,
+                        label='6meses',
+                        step='month',
+                        stepmode='backward')
+    boton_all = dict(step='all')
+    botones = list()
+    if frecuencia == str(0) or frecuencia == str(1) or frecuencia == str(2):
+        botones.append(boton_dia)
+    botones.append(boton_mes)
+    if frecuencia == str(3) or frecuencia == str(4):
+        botones.append(boton_6meses)
+    botones.append(boton_all)
+
+    titulo_grafico = variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo
+    layout = {
+        'title': titulo_grafico,
+        'yaxis': dict(title=variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"),
+        'xaxis': dict(
+
+            range=list([fecha_inicio, fecha_fin]),
+            rangeselector=dict(
+                buttons=botones
+            ),
+            rangeslider={'range': [fecha_inicio, fecha_fin]},
+            type='date',
+
+        )
+
+    }
+    if variable.var_id != 1:
+        grafico = {
+            'data': [
+                data_valor,
+                data_maximo,
+                data_minimo
+            ],
+            'layout': layout
+
+        }
+    else:
+        grafico = {
+            'data': [
+                data_valor
+            ],
+            'layout': layout
+        }
+
+    return grafico
+
+
+def get_elemento_data(tipo,tiempo,valor, nombre, color):
+    elemento = {
+        'type': tipo,
+        'x': tiempo,
+        'y': valor,
+        'name': nombre,
+        'line': {
+            'color': color,
+        },
+    }
+    return elemento
 
 
 def filtrar(form):
@@ -232,3 +345,20 @@ def trace_graph(variable, estacion, tiempo, valor):
             yaxis='y2'
         )
     return trace
+
+
+def titulo_frecuencia(frecuencia):
+    nombre = []
+    if frecuencia == '0':
+        nombre = 'Instantanea'
+    if frecuencia == '1':
+        nombre = '5 Minutos'
+    elif frecuencia == '2':
+        nombre = 'Horaria'
+    elif frecuencia == '3':
+        nombre = 'Diaria'
+    elif frecuencia == '4':
+        nombre = 'Mensual'
+    return nombre
+
+

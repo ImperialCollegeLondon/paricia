@@ -6,7 +6,7 @@ from importacion.models import Importacion
 
 class ImportacionForm(forms.Form):
     imp_observacion = forms.CharField(required=True, widget=forms.Textarea(attrs={'rows': '3'}),
-                                      initial="Carga de Datos")
+                                      initial="Carga de Datos", label="Observaciones/Anotaciones")
 
 
 class ImportacionSearchForm(forms.Form):

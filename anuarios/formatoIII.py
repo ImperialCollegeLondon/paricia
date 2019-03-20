@@ -7,7 +7,8 @@ from home.functions import dictfetchall
 
 def matrizIII(estacion, variable, periodo):
     datos = []
-    tabla = "tai.m" + periodo
+    # tabla = "tai.m" + periodo
+    tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     # promedio mensual
     sql = "SELECT avg(med_valor) as media, date_part('month',med_fecha) as mes "

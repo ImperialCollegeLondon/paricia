@@ -2,7 +2,10 @@
 {% block content %}
 {% load bootstrap4 %}
 {% load humanize %}
+{% load static %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{% static 'js_ajax.js' %}"></script>
 <script>
 $(document).ready(function() {
 
@@ -26,34 +29,7 @@ $(document).ready(function() {
   });
 
 
-  $("#btn_graficar").click(function(){
-    $(this).attr('disabled',true);
-    $.ajax({
-      url: '/reportes/consultas/',
-      data: $("#form_busqueda").serialize(),
-      type:'POST',
-      beforeSend: function () {
-        $("#div_informacion").hide();
-        $("#div_loading").show();
-        $("#div_error").hide();
-      },
-      success: function (data) {
-        $("#div_informacion").show();
-        $("#div_informacion").html(data)
-        $("#btn_graficar").removeAttr('disabled');
 
-        $("#div_loading").hide();
-
-        $("#div_error").hide();
-      },
-      error: function () {
-        //$("#div_informacion").hide();
-        $("#div_loading").hide();
-        $("#div_error").show();
-        $("#btn_graficar").removeAttr('disabled');
-      }
-    });
-  });
   function getDate( element ) {
     var date;
     try {

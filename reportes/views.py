@@ -5,9 +5,9 @@ from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, Variab
 import csv
 from django.http import HttpResponse
 # from django.template import loader, Context
-from reportes.consultas.functions import (grafico, datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
+from reportes.consultas.functions import (datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
                                           datos_instantaneos, datos_mensuales, datos_estacion)
-from reportes.functions import filtrar, comparar, comparar_variable
+from reportes.functions import filtrar, comparar, comparar_variable, consultar_datos
 from datetime import date
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -110,9 +110,11 @@ class ConsultasPeriodo(FormView):
         if form.is_valid():
             self.frecuencia = form.cleaned_data["frecuencia"]
             if self.request.is_ajax():
-                self.grafico = grafico(form)
+                '''self.grafico = grafico(form)
                 return render(request, 'reportes/consultas/grafico.html',
-                              {'grafico': self.grafico, 'frecuencia': self.frecuencia})
+                              {'grafico': self.grafico, 'frecuencia': self.frecuencia})'''
+                datos = consultar_datos(form)
+                return JsonResponse(datos, safe=False)
             else:
                 if self.frecuencia == "0":
                     return self.export_csv(form)
@@ -262,6 +264,7 @@ class ConsultasPeriodo(FormView):
         response["Content-Disposition"] = contenido
         wb.save(response)
         return response
+
 
 # consultas por periodo de todas las variables
 class ConsultasEstacionVariable(FormView):

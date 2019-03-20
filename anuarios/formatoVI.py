@@ -28,7 +28,8 @@ def matrizVI(estacion, variable, periodo):
 # consulta de radiacion maxima
 def rad_max(estacion, variable, periodo):
     # consulta de maximos agrupados por hora y por mes
-    tabla = variable.var_codigo + ".m" + periodo
+    #tabla = variable.var_codigo + ".m" + periodo
+    tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     # select max(med_valor) as valor, date_part('month',med_fecha) as mes, date_part('hour',med_fecha) as hora
     # from rad.m2016 where est_id_id=12

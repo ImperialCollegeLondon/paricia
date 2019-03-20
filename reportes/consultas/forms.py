@@ -2,22 +2,13 @@
 from django import forms
 from estacion.models import Estacion
 from variable.models import Variable, Unidad
-from medicion.models import Medicion
-from django.db.models import Max, Min, Avg, Count, Sum
-from django.db.models.functions import (
-    ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
-import plotly.offline as opy
-import plotly.graph_objs as go
-import datetime, calendar
-
-from django.db import connection
 
 
 
 class MedicionSearchForm(forms.Form):
     lista_frecuencias = (
         ('0', 'Minima'),
-        ('1', '5 Minutos'),
+        #('1', '5 Minutos'),
         ('2', 'Horario'),
         ('3', 'Diario'),
         ('4', 'Mensual'),
@@ -33,7 +24,7 @@ class MedicionSearchForm(forms.Form):
     frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
     # saber si hay datos
-    def exists(self, form):
+    '''def exists(self, form):
         estacion = form.cleaned_data['estacion']
         variable = form.cleaned_data['variable']
         fecha_inicio = form.cleaned_data['inicio']
@@ -43,7 +34,7 @@ class MedicionSearchForm(forms.Form):
         consulta = (Medicion.objects.filter(est_id=estacion)
                     .filter(var_id=variable)
                     .filter(med_fecha__range=[fecha_inicio, fecha_fin]).exists())
-        return consulta
+        return consulta'''
 
 
 class ComparacionForm(forms.Form):

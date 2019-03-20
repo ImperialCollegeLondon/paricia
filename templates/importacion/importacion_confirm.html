@@ -1,10 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "index.html" %}
+
+{% block content %}
+
+{% load bootstrap4 %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+$(document).ready(function() {
+  $("#btn_confirmar").click(function(){
+    $('input[name=accion]').val('confirmar');
+    $(this).attr('disabled',true);
+    $.ajax({
+      url: $("#form_confirm").attr('action'),
+      type:'POST',
+      data:$("#form_confirm").serialize(),
+      beforeSend: function () {
+        $("#div_informacion").hide();
+        $("#div_loading").show();
+        $("#div_error").hide();
+      },
+      success: function (data) {
+        $("#div_informacion").show();
+        $("#div_informacion").html(data)
+        $("#btn_confirmar").removeAttr('disabled');
+        $("#div_loading").hide();
+        $("#div_error").hide();
+      },
+      error: function () {
+        $("#div_loading").hide();
+        $("#div_error").show();
+        $("#btn_confirmar").removeAttr('disabled');
+      }
+    });
+    return false;
+  });
+
+  $("#btn_cancelar").click(function(){
+        window.location.href = $('#btn_cancelar').attr("href");
+
+    });
+
+
+});
+
+</script>
+<div id="div_informacion">
+    <div class="row">
+        <h1>
+            <small>Detalle de subida de información</small>
+        </h1>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <table class="table table-striped table-bordered">
+                <tr class="table-primary">
+                    <th colspan="2">Información del archivo</th>
+                </tr>
+                <tr>
+                    <th>Archivo</th>
+                    <td>{{nombre_archivo_solo}}</td>
+                </tr>
+                <tr>
+                    <th>Código de la Estación</th>
+                    <td>{{importaciontemp.est_id}}</td>
+                </tr>
+                <tr>
+                    <th>Formato de Importación</th>
+                    <td>{{importaciontemp.for_id}}</td>
+                </tr>
+                <tr>
+                    <th>Fecha Inicial</th>
+                    <td>{{importaciontemp.imp_fecha_ini|date:"d/m/Y H:i:s"}}</td>
+                </tr>
+                <tr>
+                    <th>Fecha Final</th>
+                    <td>{{importaciontemp.imp_fecha_fin|date:"d/m/Y H:i:s "}}</td>
+                </tr>
+
+
+            </table>
+        </div><!--div class col-lg-6-->
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <table class="table table-bordered">
+
+                <tr class="table-primary">
+                    <th colspan="3">Información de Importación</th>
+                </tr>
+                <tr class="table-light">
+                    <th>Variable</th>
+                    <th>Sobreescribir</th>
+                    <th>Ultima Fecha de Información</th>
+                </tr>
+
+
+                {% for item in informacion %}
+                {% if item.existe %}
+                <tr  class="table-danger">
+                    {%else%}
+                    <tr  class="table-success">
+                {% endif%}
+
+                    <td>{{ item.var_nombre}}</td>
+                    {% if item.existe %}
+                    <td>*Si</td>
+                    {%else%}
+                    <td>No</td>
+                    {% endif %}
+
+                    <td>{{ item.ultima_fecha|date:"d/m/Y H:i:s"}}</td>
+                </tr>
+
+                {% endfor%}
+
+            </table>
+        </div>
+
+    </div>
+    <div class="row">
+
+    </div>
+    <p>
+        <small>*Cuando se sobreescribe la información se toma las fechas inicial y final del archivo</small>
+    </p>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-8">
+            <div class="card">
+                <div class="card-header">Registro de Carga de Información</div>
+                <div class="card-body">
+                    <form id="form_confirm" method="post" class="form"
+                          action="{% url 'importacion:importacion_confirm' importaciontemp.imp_id %}">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        {% if existe_vacio%}
+                        <div class="help-block">*Por favor registre el motivo del vacio de información</div>
+                        {% endif%}
+                        <button id="btn_confirmar" type="button" class="btn btn-primary">
+                            Confirmar
+                        </button>
+                        <a class="btn btn-light" id="btn_cancelar"
+                           href="{% url 'importacion:importacion_index' %}">
+                            Cancelar</a>
+                        <input type="hidden" name="accion" value="">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+<br>
+<div id="div_loading" class="row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/media/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+<div id="div_error" class="row" style="display:none;">
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+    </div>
+</div>
+
+{% endblock %}

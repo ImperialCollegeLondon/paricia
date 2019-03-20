@@ -8,7 +8,8 @@ from home.functions import dictfetchall
 def matrizI(estacion, variable, periodo):
     datos = []
     cursor = connection.cursor()
-    tabla = variable.var_codigo + '.m' + periodo
+    #tabla = variable.var_codigo + '.m' + periodo
+    tabla = 'medicion_' + str(variable.var_modelo)
     # máximos absolutos y máximos promedio
     sql = "SELECT max(med_maximo) as maximo,  max(med_valor) as valor, "
     sql += "date_part('month',med_fecha) as mes "

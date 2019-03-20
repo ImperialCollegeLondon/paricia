@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from formato.models import Formato, Asociacion
 from importacion.functions import (consultar_formatos, guardar_datos,
-                                   procesar_archivo_automatico, guardar_vacios, guardar_datos_automatico)
+                                   guardar_vacios, guardar_datos_automatico)
 import daemon
 import time
 
@@ -14,6 +14,7 @@ def iniciar_lectura():
             if len(consulta) > 0:
                 estacion = consulta[0].est_id
                 archivo = open(formato.for_ubicacion + formato.for_archivo)
+                ruta=formato.for_ubicacion + formato.for_archivo
                 datos = procesar_archivo_automatico(archivo, formato, estacion)
                 archivo.close()
                 if len(datos) > 0:

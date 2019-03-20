@@ -16,6 +16,7 @@ from django.http.response import HttpResponse
 
 from sedc.settings import BASE_DIR
 
+
 # Create your views here.
 class ProcesarVariables(LoginRequiredMixin, FormView):
     template_name = 'anuarios/procesar_variable.html'

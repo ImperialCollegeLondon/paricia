@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
-import os
-import shutil
-from datetime import datetime, timedelta
-from formato.models import Clasificacion, Formato, Asociacion
-from importacion.functions import valid_number, validar_fechas, eliminar_datos, guardar_vacios, procesar_archivo_automatico
+
+from formato.models import Formato, Asociacion
+from importacion.functions import ( eliminar_datos,
+                                   guardar_vacios, construir_matriz,
+                                   preformato_matriz, get_modelo,
+                                   ultima_fecha, verificar_vacios)
 from importacion.models import Importacion
 from home.models import Usuarios
 import time
 import daemon
 from temporal.models import Datos
+from medicion.models import Precipitacion, TemperaturaAire, HumedadAire, VelocidadViento
+from medicion.models import DireccionViento, HumedadSuelo, RadiacionSolar, PresionAtmosferica
+from medicion.models import TemperaturaAgua, Caudal, NivelAgua
+from numbers import Number
 
 
 def run(*args):
@@ -48,17 +53,20 @@ def leer_archivos(formato, estacion):
         estacion.est_codigo) + 'Formato:' + str(
         formato.for_descripcion))
     try:
-        archivo = open(formato.for_ubicacion + formato.for_archivo)
-        datos = procesar_archivo_automatico(archivo, formato, estacion)
-        archivo.close()
+        archivo_src = formato.for_ubicacion + formato.for_archivo
+        datos = preformato_matriz(archivo_src, formato)
     except Exception as e:
-        registrar_log("Error Inesperado "+ str(e.errno) + ' '+e.strerror)
+        # registrar_log("No hay nueva información")
+        datos = []
         pass
 
     if len(datos) > 0:
-        fecha_ini, fecha_fin = get_fechas_datos(datos)
+        # fecha_ini, fecha_fin = get_fechas_datos(datos)
+        fecha_ini = datos.loc[0, 'fecha']
+        fecha_fin = datos.loc[datos.shape[0] - 1, 'fecha']
         obj_importacion = set_object_importacion(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
-        guardar_datos(obj_importacion, datos, estacion)
+        matriz = construir_matriz(archivo_src, formato, estacion)
+        guardar_datos(obj_importacion, matriz, estacion, formato)
         registrar_log('Información guardada Estacion:' + str(
                     estacion.est_codigo) + 'Formato:' + str(
                     formato.for_descripcion))
@@ -68,17 +76,25 @@ def leer_archivos(formato, estacion):
                       + str(formato.for_descripcion))
 
 
-def guardar_datos(importacion, datos, estacion):
-    informacion, existe_vacio = validar_fechas(importacion)
-    for fila in informacion:
-        if fila.get('existe'):
-            eliminar_datos(fila, importacion)
-        if fila.get('vacio'):
+def guardar_datos(importacion, datos, estacion, formato):
+    observacion = 'vacio datos automaticos'
+    flag = 0;
+    for var_id, tabla in datos.items():
+        modelo = get_modelo(var_id)
+        fecha_datos = ultima_fecha(modelo, estacion.est_id)
+        if verificar_vacios(importacion.imp_fecha_ini, fecha_datos):
             registrar_log('Vacio de información')
-            observacion = 'vacio datos automaticos'
-            guardar_vacios(fila, estacion, observacion, importacion.imp_fecha_ini)
-    Datos.objects.bulk_create(datos)
-    Datos.objects.all().delete()
+            guardar_vacios(var_id, fecha_datos, estacion, observacion, importacion.imp_fecha_ini)
+        eliminar_datos(modelo, importacion, estacion.est_id)
+
+        modelo.objects.bulk_create(
+            modelo(**row) for row in tabla.to_dict('records')
+        )
+        print (var_id)
+        if flag == 0:
+            formato.for_fil_ini = formato.for_fil_ini + tabla['fecha'].count()
+            formato.save()
+        flag+=1
 
 
 def get_fechas_datos(datos):
@@ -103,70 +119,3 @@ def set_object_importacion(estacion, formato, fecha_ini, fecha_fin, archivo):
 
 
 
-
-#construir la matriz de datos
-def procesar_archivo(archivo, formato, fecha, estacion):
-    intervalo = timedelta(minutes=get_frecuencia(formato.for_archivo))
-    lineas = archivo.readlines()
-    clasificacion = list(Clasificacion.objects.filter(
-        for_id=formato.for_id))
-    datos = []
-    for linea in lineas:
-        valores = linea.split(',')
-        if len(valores) > 1:
-            val_lim = list(map(lambda item: item.strip(), valores))
-
-            for fila in clasificacion:
-                if fila.cla_valor is not None:
-                    valor = valid_number(val_lim[fila.cla_valor], fila.var_id.var_id)
-                else:
-                    valor = None
-                if fila.cla_maximo is not None:
-                    maximo = valid_number(val_lim[fila.cla_maximo], fila.var_id.var_id)
-                else:
-                    maximo = None
-                if fila.cla_minimo is not None:
-                    minimo = valid_number(val_lim[fila.cla_minimo], fila.var_id.var_id)
-                else:
-                    minimo = None
-                dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
-                             med_fecha=fecha, mar_id=formato.mar_id.mar_id,
-                             med_valor=valor, med_maximo=maximo, med_minimo=minimo,
-                             med_estado=True)
-                datos.append(dato)
-
-            fecha += intervalo
-    return datos
-
-
-def get_frecuencia(prefijo):
-    frecuencia = 0
-    if prefijo == "mn1":
-        frecuencia = 1
-    elif prefijo == "mn2":
-        frecuencia=2
-    return frecuencia
-
-
-# funcion para calcular la fecha y hora del archivo
-def fecha_archivo(file_name, prefijo):
-
-    fecha_str = file_name[12:24]
-    fecha = datetime.strptime(fecha_str, '%y%m%d%H%M%S')
-    # resto 5horas por la diferencia del uso horario
-    # y 15 minutos por la configuración del archivo
-    frecuencia = get_frecuencia(prefijo)
-    minuto = fecha.minute
-    if frecuencia==2 and (minuto % 2)==0:
-        intervalo = timedelta(hours=5, minutes=14)
-    else:
-        intervalo = timedelta(hours=5, minutes=15)
-    fecha -= intervalo
-
-
-
-    return fecha
-
-
-def move(src, dest):
-    shutil.move(src, dest)
