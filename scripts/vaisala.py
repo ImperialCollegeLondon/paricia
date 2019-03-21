@@ -16,9 +16,9 @@ from medicion.models import TemperaturaAgua, Caudal, NivelAgua
 from numbers import Number
 
 
-def run(*args):
+'''def run(*args):
     with daemon.DaemonContext():
-        iniciar_lectura()
+        iniciar_lectura()'''
 
 
 def iniciar_lectura():
@@ -34,7 +34,7 @@ def iniciar_lectura():
                     estacion = consulta[0].est_id
                     root_dir = formato.for_ubicacion
                     leer_archivos(root_dir, formato, estacion)
-                    respaldar_archivos(root_dir)
+                    # respaldar_archivos(root_dir)
                 else:
                     registrar_log('No existen formatos para iniciar la lectura')
 
@@ -152,18 +152,19 @@ def procesar_archivo(archivo, formato, fecha, estacion):
             if len(valores) > 1:
                 # quitar los espacios de los valores del archivo
                 val_lim = list(map(lambda item: item.strip(), valores))
+                print(val_lim)
 
                 if fila.cla_valor is not None:
-                    valor = valid_number(val_lim[fila.cla_valor], fila.var_id.var_id)
+                    valor = valid_number(val_lim[fila.cla_valor-1], fila.var_id.var_id)
                 else:
                     valor = None
                 if fila.cla_maximo is not None:
-                    maximo = valid_number(val_lim[fila.cla_maximo], fila.var_id.var_id)
+                    maximo = valid_number(val_lim[fila.cla_maximo-1], fila.var_id.var_id)
                 else:
                     maximo = None
 
                 if fila.cla_minimo is not None:
-                    minimo = valid_number(val_lim[fila.cla_minimo], fila.var_id.var_id)
+                    minimo = valid_number(val_lim[fila.cla_minimo-1], fila.var_id.var_id)
                 else:
                     minimo = None
                 if fila.var_id.var_id == 1:
@@ -192,7 +193,7 @@ def get_frecuencia(prefijo):
 
 # funcion para calcular la fecha y hora del archivo
 def fecha_archivo(file_name, prefijo):
-
+    print(file_name)
     fecha_str = file_name[12:24]
     fecha = datetime.strptime(fecha_str, '%y%m%d%H%M%S')
     # resto 5horas por la diferencia del uso horario
@@ -215,16 +216,16 @@ def valid_number(val_str, var_id):
             val_num = None
         elif isinstance(val_str, Number):
             val_num = float(val_str)
-            val_num= round(val_num,3)
+            val_num = round(val_num, 3)
         elif val_str == "":
             val_num = None
         else:
             val_str.replace(",", ".")
             val_num = float(val_str)
             val_num = round(val_num, 3)
-        if val_num  is not None:
-            if var_id==7 and val_num>1400:
-                val_num=1400
+        if val_num is not None:
+            if var_id == 7 and val_num > 1400:
+                val_num = 1400
     except:
         val_num = None
     return val_num
@@ -236,3 +237,6 @@ def move(src, dest):
     except:
         registrar_log('Error de copia al respaldo archivo existente')
         pass
+
+
+iniciar_lectura()
