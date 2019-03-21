@@ -209,12 +209,6 @@ class ClasificacionCreate(LoginRequiredMixin, CreateView):
         # form.save_m2m()
         return HttpResponseRedirect(reverse('formato:clasificacion_index', kwargs={'for_id': formato.for_id}))
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(ClasificacionCreate, self).get_context_data(**kwargs)
-        context['title'] = "Crear"
-        return context
-
 
 class ClasificacionList(LoginRequiredMixin, ListView):
     model = Clasificacion
@@ -234,12 +228,6 @@ class ClasificacionDetail(LoginRequiredMixin, DetailView):
 class ClasificacionUpdate(LoginRequiredMixin, UpdateView):
     model = Clasificacion
     fields = ['var_id', 'cla_valor', 'cla_maximo', 'cla_minimo', 'acumular', 'incremental','resolucion']
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(ClasificacionUpdate, self).get_context_data(**kwargs)
-        context['title'] = "Modificar"
-        return context
 
     def form_valid(self, form):
         instance = form.save()

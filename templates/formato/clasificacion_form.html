@@ -1,33 +1,33 @@
 <script>
 $(document).ready(function() {
-  $("#btn_modificar").click(function(){
-    $.ajax({
-      url: $("#form_update").attr('action'),
-      data: $("#form_update").serialize(),
-      type:'POST',
-      beforeSend: function () {
-        $("#div_informacion").hide();
-        $("#div_loading").show();
-        $("#div_error").hide();
-      },
-      success: function (data) {
-        $("#div_informacion").show();
-        $("#div_informacion").html(data)
-        $("#div_loading").hide();
-        $("#div_error").hide();
-        $("#div_update").dialog("close");
-      },
-      error: function () {
-        $("#div_loading").hide();
-        $("#div_error").show();
-        $("#div_update").dialog("close");
-      }
+    $("#btn_modificar").click(function(){
+        $.ajax({
+            url: $("#form_update").attr('action'),
+            data: $("#form_update").serialize(),
+            type:'POST',
+            beforeSend: function () {
+                $("#div_informacion").hide();
+                $("#div_loading").show();
+                $("#div_error").hide();
+            },
+            success: function (data) {
+                $("#div_informacion").show();
+                $("#div_informacion").html(data)
+                $("#div_loading").hide();
+                $("#div_error").hide();
+                $("#div_update").dialog("close");
+            },
+            error: function () {
+                $("#div_loading").hide();
+                $("#div_error").show();
+                $("#div_update").dialog("close");
+            }
+        });
+        return false;
     });
-    return false;
-  });
-  $("#btn_cancelar_modificar").click(function(){
-    $("#div_update").dialog("close");
-  });
+    $("#btn_cancelar_modificar").click(function(){
+        $("#div_update").dialog("close");
+    });
 });
 </script>
 {% load bootstrap4 %}

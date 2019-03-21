@@ -120,20 +120,18 @@ def buscar_archivo(file_name, frecuencia):
 
 def set_object_importacion(estacion, formato, fecha, archivo, prefijo):
     frecuencia = get_frecuencia(prefijo)
-    if frecuencia == 2:
-        intervalo = timedelta(minutes=12)
-    else:
-        intervalo = timedelta(minutes=14)
-    usuario=Usuarios.objects.get(username='admin')
+    if frecuencia == 5:
+        intervalo = timedelta(minutes=15)
+    usuario = Usuarios.objects.get(username='admin')
     importacion = Importacion()
     importacion.est_id = estacion
     importacion.for_id = formato
     importacion.imp_fecha_ini = fecha
     importacion.imp_fecha_fin = fecha + intervalo
-    importacion.imp_archivo=archivo
+    importacion.imp_archivo = archivo
     importacion.imp_observacion = 'Carga de Datos Automatica'
     importacion.usuario = usuario
-    importacion.imp_tipo="a"
+    importacion.imp_tipo = "a"
     return importacion
 
 
@@ -168,11 +166,11 @@ def procesar_archivo(archivo, formato, fecha, estacion):
                     minimo = valid_number(val_lim[fila.cla_minimo], fila.var_id.var_id)
                 else:
                     minimo = None
-                if fila.var_id.var_id==1:
-                    dato = modelo(estacion=estacion.est_id, fecha=fecha_datos,valor=valor)
+                if fila.var_id.var_id == 1:
+                    dato = modelo(estacion=estacion.est_id, fecha=fecha_datos, valor=valor)
                 else:
                     dato = modelo(estacion=estacion.est_id, fecha=fecha_datos, valor=valor,
-                              maximo=maximo, minimo=minimo)
+                                  maximo=maximo, minimo=minimo)
                 datos.append(dato)
 
             fecha_datos += intervalo
@@ -187,6 +185,8 @@ def get_frecuencia(prefijo):
         frecuencia = 1
     elif prefijo == "mn2":
         frecuencia = 2
+    elif prefijo == "mn5":
+        frecuencia = 5
     return frecuencia
 
 
@@ -199,7 +199,7 @@ def fecha_archivo(file_name, prefijo):
     # y 15 minutos por la configuración del archivo
     frecuencia = get_frecuencia(prefijo)
     minuto = fecha.minute
-    if frecuencia==2 and (minuto % 2)==0:
+    if frecuencia == 2 and (minuto % 2) == 0:
         intervalo = timedelta(hours=5, minutes=14)
     else:
         intervalo = timedelta(hours=5, minutes=15)

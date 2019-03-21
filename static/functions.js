@@ -119,6 +119,32 @@ function desactivar_espera(){
   $("#div_informacion").show();
 }
 
+
+function actualizar_informacion(){
+  $.ajax({
+    url: $("#link_consulta").attr('href'),
+    type:'GET',
+    beforeSend: function () {
+      $("#div_informacion").hide();
+      $("#div_loading").show();
+      $("#div_error").hide();
+    },
+    success: function (data) {
+      $("#div_informacion").show();
+      $("#div_informacion").html(data)
+      $("#div_loading").hide();
+      $("#div_error").hide();
+
+    },
+    error: function () {
+      $("#div_loading").hide();
+      $("#div_error").show();
+      $("#div_delete").dialog("open");
+    }
+  });
+
+}
+
 $(document).ready(function() {
 
   $("#form_consulta").submit(function(event){
