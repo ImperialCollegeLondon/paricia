@@ -29,7 +29,7 @@ one_second = np.timedelta64(1, 's')
 
 # consultar formatos por datalogger y estacion
 def consultar_formatos(estacion):
-    asociacion = list(Asociacion.objects.filter(est_id=estacion))
+    asociacion = list(Asociacion.objects.filter(est_id=estacion, for_id__for_tipo='convencional'))
     lista = {}
     for item in asociacion:
         lista[item.for_id.for_id] = item.for_id.for_descripcion
