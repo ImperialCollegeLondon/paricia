@@ -16,9 +16,9 @@ from medicion.models import TemperaturaAgua, Caudal, NivelAgua
 from numbers import Number
 
 
-'''def run(*args):
+def run(*args):
     with daemon.DaemonContext():
-        iniciar_lectura()'''
+        iniciar_lectura()
 
 
 def iniciar_lectura():
@@ -34,7 +34,7 @@ def iniciar_lectura():
                     estacion = consulta[0].est_id
                     root_dir = formato.for_ubicacion
                     leer_archivos(root_dir, formato, estacion)
-                    # respaldar_archivos(root_dir)
+                    respaldar_archivos(root_dir)
                 else:
                     registrar_log('No existen formatos para iniciar la lectura')
 
@@ -152,7 +152,6 @@ def procesar_archivo(archivo, formato, fecha, estacion):
             if len(valores) > 1:
                 # quitar los espacios de los valores del archivo
                 val_lim = list(map(lambda item: item.strip(), valores))
-                print(val_lim)
 
                 if fila.cla_valor is not None:
                     valor = valid_number(val_lim[fila.cla_valor-1], fila.var_id.var_id)
@@ -193,7 +192,6 @@ def get_frecuencia(prefijo):
 
 # funcion para calcular la fecha y hora del archivo
 def fecha_archivo(file_name, prefijo):
-    print(file_name)
     fecha_str = file_name[12:24]
     fecha = datetime.strptime(fecha_str, '%y%m%d%H%M%S')
     # resto 5horas por la diferencia del uso horario
@@ -239,4 +237,3 @@ def move(src, dest):
         pass
 
 
-iniciar_lectura()
