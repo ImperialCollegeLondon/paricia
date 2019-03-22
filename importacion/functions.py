@@ -97,7 +97,7 @@ def preformato_matriz(archivo_src, formato):
     skipfooter = 0
     if formato.for_fil_cola:
         skipfooter = formato.for_fil_cola
-    if formato.ext_id.ext_valor in ['xlsx', 'xlx']:
+    if formato.ext_id.ext_valor in ['XLSX', 'XLS']:
         archivo = pd.read_excel(archivo_src, header=None,
                                 skiprows=formato.for_fil_ini-1, skipfooter=skipfooter,
                                 error_bad_lines=False)
