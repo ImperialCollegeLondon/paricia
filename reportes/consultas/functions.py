@@ -524,7 +524,7 @@ def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
     if len(val) > 0:
         for item_val, item_max_abs, item_max_pro, item_min_abs, item_min_pro, item_time \
                 in zip(val, max_abs, max_pro, min_abs, min_pro, time):
-            if fecha_ini <= item_time <= fecha_fin:
+            if fecha_ini <= datetime.strptime(item_time, '%Y-%m-%d %H:%M:%S') <= fecha_fin:
                 dato = {
                     'fecha': item_time,
                     'valor': item_val,
