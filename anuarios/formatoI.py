@@ -8,42 +8,45 @@ from home.functions import dictfetchall
 def matrizI(estacion, variable, periodo):
     datos = []
     cursor = connection.cursor()
-    #tabla = variable.var_codigo + '.m' + periodo
+    # tabla = variable.var_codigo + '.m' + periodo
     tabla = 'medicion_' + str(variable.var_modelo)
     # máximos absolutos y máximos promedio
-    sql = "SELECT max(med_maximo) as maximo,  max(med_valor) as valor, "
-    sql += "date_part('month',med_fecha) as mes "
+    sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
+    sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
-    #if variable.var_id == 8:
-        #sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo)
+    # if variable.var_id == 8:
+        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable.var_id == 6 or variable.var_id == 8:
-        sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
+        sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)
     med_max = dictfetchall(cursor)
     # mínimos absolutos y mínimos promedio
-    sql = "SELECT min(med_minimo) as minimo,  min(med_valor) as valor, "
-    sql += "date_part('month',med_fecha) as mes "
+    sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
+    sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
-    #if variable.var_id == 8:
-        #sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo)
+    # if variable.var_id == 8:
+        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable.var_id == 6 or variable.var_id == 8:
-        sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
+        sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)
     med_min = dictfetchall(cursor)
     # valores promedio mensuales
-    sql = "SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
+    sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
-        # sql += " and med_maximo!=0 and med_minimo!=0 and med_valor!=0 "
+        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable.var_id == 6 and variable.var_id == 8:
-        sql += " and (med_maximo!=0 or med_minimo!=0 or med_valor!=0) "
+        sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     print(sql)

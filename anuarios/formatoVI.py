@@ -28,21 +28,23 @@ def matrizVI(estacion, variable, periodo):
 # consulta de radiacion maxima
 def rad_max(estacion, variable, periodo):
     # consulta de maximos agrupados por hora y por mes
-    #tabla = variable.var_codigo + ".m" + periodo
+    # tabla = variable.var_codigo + ".m" + periodo
     tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
-    # select max(med_valor) as valor, date_part('month',med_fecha) as mes, date_part('hour',med_fecha) as hora
-    # from rad.m2016 where est_id_id=12
-    # and med_valor<=1400 and date_part('hour',med_fecha)>=5
-    # and date_part('hour',med_fecha)<=18
+    # select max(valor) as valor, date_part('month',fecha) as mes, date_part('hour',fecha) as hora
+    # from rad.m2016 where estacion=12
+    # and valor<=1400 and date_part('hour',fecha)>=5
+    # and date_part('hour',fecha)<=18
     # group by mes, hora
     # order by mes, hora
-    sql = "SELECT max(med_valor) as valor, date_part('month',med_fecha) as mes, "
-    sql += "date_part('hour',med_fecha) as hora from " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<=1400 "
-    sql += "and date_part('hour',med_fecha)>=5 "
-    sql += "and date_part('hour',med_fecha)<=18 "
+    sql = "SELECT max(valor) as valor, date_part('month',fecha) as mes, "
+    sql += "date_part('hour',fecha) as hora from " + tabla + " "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<=1400 "
+    sql += "and date_part('hour',fecha)>=5 "
+    sql += "and date_part('hour',fecha)<=18 "
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,hora ORDER BY mes,hora"
+    print (sql)
     cursor.execute(sql)
     datos = dictfetchall(cursor)
     radiacion = [[0] for i in range(12)]
@@ -59,14 +61,17 @@ def rad_max(estacion, variable, periodo):
 
 
 def rad_min(estacion, variable, periodo):
-    tabla = variable.var_codigo + ".m" + periodo
+    # tabla = variable.var_codigo + ".m" + periodo
+    tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
-    sql = "SELECT min(med_valor) as valor, date_part('month',med_fecha) as mes, "
-    sql += "date_part('hour',med_fecha) as hora from " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<=1400 "
-    sql += "and date_part('hour',med_fecha)>=5 "
-    sql += "and date_part('hour',med_fecha)<=18 "
+    sql = "SELECT min(valor) as valor, date_part('month',fecha) as mes, "
+    sql += "date_part('hour',fecha) as hora from " + tabla + " "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<=1400 "
+    sql += "and date_part('hour',fecha)>=5 "
+    sql += "and date_part('hour',fecha)<=18 "
+    sql += "and date_part('year',fecha)=" + str(periodo)+ " "
     sql += "GROUP BY mes,hora ORDER BY mes,hora"
+    print(sql)
     cursor.execute(sql)
     datos = dictfetchall(cursor)
     radiacion = [[0] for i in range(12)]

@@ -11,18 +11,20 @@ def matrizII(estacion, variable, periodo):
     cursor = connection.cursor()
     datos = []
     # valores de precipitación mensual
-    sql = "SELECT sum(med_valor) as suma, date_part('month',med_fecha) as mes "
+    sql = "SELECT sum(valor) as suma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)
     med_mensual = dictfetchall(cursor)
     # datos diarios
-    sql = "SELECT sum(med_valor) as valor, date_part('month',med_fecha) as mes, "
-    sql += "date_part('day',med_fecha) as dia "
+    sql = "SELECT sum(valor) as valor, date_part('month',fecha) as mes, "
+    sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios = dictfetchall(cursor)

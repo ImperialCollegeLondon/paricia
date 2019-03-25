@@ -10,33 +10,36 @@ class VelocidaDireccion():
     velocidad_max = 0
     direccion = 0
 
+
 def matrizV_mensual(estacion, variable, periodo):
-    
-    tabla_velocidad = "medicion_velocidadviento" + periodo
-    tabla_direccion = "medicin_direccionviento" + periodo
+    tabla_velocidad = "medicion_velocidadviento"
+    tabla_direccion = "medicion_direccionviento"
 
     cursor = connection.cursor()
     # velocidad media en m/s
-    sql = "SELECT avg(med_valor) as valor, date_part('month',med_fecha) as mes "
+    sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
-    # sql += "AND date_part('month',med_fecha)=9 "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    # sql += "AND date_part('month',fecha)=9 "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     vel_media = dictfetchall(cursor)
 
     # numero de registros menores a 0.5 en velocidad
-    sql = "SELECT count(med_valor) as calma, date_part('month',med_fecha) as mes "
+    sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.5 "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<0.5 "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     calma = dictfetchall(cursor)
     if len(calma) == 0:
         # numero de registros menores o igual a 0.5 en velocidad
-        sql = "SELECT count(med_valor) as calma, date_part('month',med_fecha) as mes "
+        sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
         sql += "FROM " + tabla_velocidad + " "
-        sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor<0.6"
+        sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<0.6"
+        sql += "and date_part('year',fecha)=" + str(periodo)
         sql += "GROUP BY mes ORDER BY mes"
 
         cursor.execute(sql)
@@ -47,22 +50,24 @@ def matrizV_mensual(estacion, variable, periodo):
     for item_calma, item_velocidad in zip(calma, vel_media):
         mes = int(item_velocidad.get('mes'))
         # lista de datos de la dirección de viento
-        sql = "SELECT med_valor, med_fecha "
+        sql = "SELECT valor, fecha "
         sql += "FROM " + tabla_direccion + " "
-        sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-        sql += "AND date_part('month',med_fecha)=" + str(mes)+" "
-        sql += "AND med_valor is not null AND med_valor<=360 "
-        sql += "AND med_valor >=0 "
-        sql += "ORDER BY med_fecha"
+        sql += "WHERE estacion=" + str(estacion.est_id) + " "
+        sql += "AND date_part('month',fecha)=" + str(mes)+" "
+        sql += "AND valor is not null AND valor<=360 "
+        sql += "AND valor >=0 "
+        sql += "and date_part('year',fecha)=" + str(periodo)
+        sql += "ORDER BY fecha"
         cursor.execute(sql)
         dat_dvi = dictfetchall(cursor)
         # lista de datos de velocidad del viento
-        sql = "SELECT med_valor,med_maximo, med_fecha "
+        sql = "SELECT valor,maximo, fecha "
         sql += "FROM " + tabla_velocidad + " "
-        sql += "WHERE est_id_id=" + str(estacion.est_id) + " "
-        sql += "AND date_part('month',med_fecha)=" + str(mes)+" "
-        sql += "AND med_valor is not null "
-        sql += "ORDER BY med_fecha"
+        sql += "WHERE estacion=" + str(estacion.est_id) + " "
+        sql += "AND date_part('month',fecha)=" + str(mes)+" "
+        sql += "AND valor is not null "
+        sql += "and date_part('year',fecha)=" + str(periodo)
+        sql += "ORDER BY fecha"
         cursor.execute(sql)
         dat_vvi = dictfetchall(cursor)
         vvi = [[0 for x in range(0)] for y in range(8)]
@@ -142,11 +147,11 @@ def get_maximo(item):
 
 
 def agrupar_viento(dat_dvi, dat_vvi):
-    dvi_fecha = convertir_lista(dat_dvi, 'med_fecha')
-    dvi_valor = convertir_lista(dat_dvi, 'med_valor')
-    vvi_fecha = convertir_lista(dat_vvi, 'med_fecha')
-    vvi_valor = convertir_lista(dat_vvi, 'med_valor')
-    vvi_maximo = convertir_lista(dat_vvi, 'med_maximo')
+    dvi_fecha = convertir_lista(dat_dvi, 'fecha')
+    dvi_valor = convertir_lista(dat_dvi, 'valor')
+    vvi_fecha = convertir_lista(dat_vvi, 'fecha')
+    vvi_valor = convertir_lista(dat_vvi, 'valor')
+    vvi_maximo = convertir_lista(dat_vvi, 'maximo')
     datos = []
     for item_fecha_vvi, item_valor_vvi, item_maximo_vvi in zip(vvi_fecha, vvi_valor, vvi_maximo):
         obj_viento = VelocidaDireccion()

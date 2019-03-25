@@ -12,33 +12,36 @@ from home.functions import dictfetchall
 
 def matrizIV(estacion, variable, periodo):
     datos = []
-    tabla = "hai.m" + periodo
+    # tabla = "hai.m" + periodo
     tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     # promedio mensual
-    sql = "SELECT avg(med_valor) as media, date_part('month',med_fecha) as mes "
+    sql = "SELECT avg(valor) as media, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)
     med_avg = dictfetchall(cursor)
     # datos diarios máximos
-    sql = "SELECT max(med_maximo) as maximo,  max(med_valor) as valor, "
-    sql += "date_part('month',med_fecha) as mes, "
-    sql += "date_part('day',med_fecha) as dia "
+    sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
+    sql += "date_part('month',fecha) as mes, "
+    sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
     cursor.execute(sql)
     datos_diarios_max = dictfetchall(cursor)
     # mínimos absolutos
-    sql = "SELECT min(med_minimo) as minimo,  min(med_valor) as valor, "
-    sql += "date_part('month',med_fecha) as mes, "
-    sql += "date_part('day',med_fecha) as dia "
+    sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
+    sql += "date_part('month',fecha) as mes, "
+    sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE est_id_id=" + str(estacion.est_id) + " and med_valor!='NaN'::numeric "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
     cursor.execute(sql)
