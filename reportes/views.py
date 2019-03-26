@@ -141,15 +141,22 @@ class ConsultasPeriodo(FormView):
         if fecha_fin is None:
             fecha_fin = date.today()
         valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable,fecha_inicio, fecha_fin)
+        print(len(valores))
         # Establecemos el nombre del archivo
         nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.csv"')
         contenido = "attachment; filename={0}".format(nombre_archivo)
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = contenido
         writer = csv.writer(response)
-        writer.writerow(['fecha', 'valor', 'maximo', 'minimo'])
-        for valor, maximo, minimo, fecha in zip(valores, maximos, minimos, tiempo):
-            writer.writerow([fecha, valor, maximo, minimo])
+        if variable.var_id == 1:
+            writer.writerow(['fecha', 'valor'])
+            for valor, fecha in zip(valores, tiempo):
+                writer.writerow([fecha, valor])
+        else:
+            writer.writerow(['fecha', 'valor', 'maximo', 'minimo'])
+            for valor, maximo, minimo, fecha in zip(valores, maximos, minimos, tiempo):
+                writer.writerow([fecha, valor, maximo, minimo])
+
         return response
 
     def export_excel(self,frecuencia,form):
@@ -173,7 +180,7 @@ class ConsultasPeriodo(FormView):
         ruta = str(BASE_DIR) + '/media/logo_fonag.jpg'
         img = Image(ruta)
         # estilo de negrita
-        font_bold=Font(bold=True)
+        font_bold = Font(bold=True)
         # Creamos el libro de trabajo
         wb = Workbook()
         # Definimos como nuestra hoja de trabajo, la hoja activa, por defecto la primera del libro
