@@ -79,23 +79,22 @@ def leer_archivos(root_dir, formato, estacion):
                 fecha = fecha_archivo(file_name, formato.for_archivo)
                 obj_importacion = set_object_importacion(estacion, formato, fecha, file_name, formato.for_archivo)
                 registrar_log('Lectura Iniciada Estacion:' + str(
-                    estacion.est_codigo) + 'Formato:' + str(
-                    formato.for_descripcion))
+                    estacion.est_codigo) + ' archivo: ' + file_name)
                 datos = procesar_archivo(archivo, formato, fecha, estacion)
                 archivo.close()
                 if len(datos) > 0:
                     guardar_datos(obj_importacion, datos, estacion)
                     registrar_log('Información guardada Estacion:' + str(
-                                estacion.est_codigo) + 'Formato:' + str(
-                                formato.for_descripcion))
+                                estacion.est_codigo) + ' Archivo: ' + str(
+                                file_name))
                     obj_importacion.save()
                     move(root_dir + file_name, get_ruta_backup(root_dir))
                 else:
                     registrar_log('No existe información en el archivo: '
                                   + str(file_name))
             else:
-                registrar_log('No hay nueva información en el directorio FTP. Formato: '+str(
-                                formato.for_descripcion))
+                registrar_log('No hay nueva información en el directorio FTP. Estacion: '+str(
+                                estacion.est_codigo))
 
 
 def guardar_datos(importacion, datos, estacion):
