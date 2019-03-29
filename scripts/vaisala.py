@@ -16,9 +16,9 @@ from medicion.models import TemperaturaAgua, Caudal, NivelAgua
 from numbers import Number
 
 
-'''def run(*args):
+def run(*args):
     with daemon.DaemonContext():
-        iniciar_lectura()'''
+        iniciar_lectura()
 
 
 def iniciar_lectura():
@@ -236,5 +236,5 @@ def move(src, dest):
         pass
 
 
-iniciar_lectura()
+#iniciar_lectura()
 
