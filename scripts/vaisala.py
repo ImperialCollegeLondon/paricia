@@ -16,9 +16,9 @@ from medicion.models import TemperaturaAgua, Caudal, NivelAgua
 from numbers import Number
 
 
-def run(*args):
+'''def run(*args):
     with daemon.DaemonContext():
-        iniciar_lectura()
+        iniciar_lectura()'''
 
 
 def iniciar_lectura():
@@ -152,16 +152,16 @@ def procesar_archivo(archivo, formato, fecha, estacion):
                 # quitar los espacios de los valores del archivo
                 val_lim = list(map(lambda item: item.strip(), valores))
 
-                if fila.cla_valor is not None:
+                if fila.cla_valor is not None and fila.cla_valor <= len(val_lim):
                     valor = valid_number(val_lim[fila.cla_valor-1], fila.var_id.var_id)
                 else:
                     valor = None
-                if fila.cla_maximo is not None:
+                if fila.cla_maximo is not None and fila.cla_maximo <= len(val_lim):
                     maximo = valid_number(val_lim[fila.cla_maximo-1], fila.var_id.var_id)
                 else:
                     maximo = None
 
-                if fila.cla_minimo is not None:
+                if fila.cla_minimo is not None and fila.cla_minimo <= len(val_lim):
                     minimo = valid_number(val_lim[fila.cla_minimo-1], fila.var_id.var_id)
                 else:
                     minimo = None
@@ -235,4 +235,6 @@ def move(src, dest):
         registrar_log('Error de copia al respaldo archivo existente')
         pass
 
+
+iniciar_lectura()
 
