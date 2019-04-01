@@ -13,8 +13,8 @@ def matrizIII(estacion, variable, periodo):
     # promedio mensual
     sql = "SELECT avg(valor) as media, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
-    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_avg = dictfetchall(cursor)
@@ -23,18 +23,19 @@ def matrizIII(estacion, variable, periodo):
     sql += "date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
-    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
+    print (sql)
     datos_diarios_max = dictfetchall(cursor)
     # mínimos absolutos
     sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
     sql += "date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
-    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios_min = dictfetchall(cursor)
@@ -66,6 +67,7 @@ def maximostai(datos_diarios_max):
     for i in range(1, 13):
         val_max_abs = []
         val_maxdia = []
+        print (i)
         for fila in datos_diarios_max:
             mes = int(fila.get('mes'))
             dia = int(fila.get('dia'))
