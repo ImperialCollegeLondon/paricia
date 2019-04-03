@@ -275,8 +275,8 @@ def comparar_variable(form):
         val02, max02, max_pro02, min02, min_pro02, time02 = datos_diarios(estacion02, variable02, fecha_inicio, fecha_fin)
     # frecuencia mensual
     elif (frecuencia == str(4)):
-        val01, max01, min01, time01 = datos_mensuales(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, min02, time02 = datos_mensuales(estacion02, variable02, fecha_inicio, fecha_fin)
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_mensuales(estacion01, variable01, fecha_inicio, fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_mensuales(estacion02, variable02, fecha_inicio, fecha_fin)
     trace0 = trace_graph(variable01, estacion01, time01, val01)
     trace1 = trace_graph(variable02, estacion02, time02, val02)
     data = go.Data([trace0, trace1])
