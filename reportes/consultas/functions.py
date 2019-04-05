@@ -2,9 +2,7 @@
 
 from estacion.models import Estacion
 from variable.models import Variable
-import plotly.offline as opy
-import plotly.graph_objs as go
-from datetime import timedelta, datetime, date
+from datetime import timedelta, datetime
 from django.db import connection
 from math import ceil
 from cruce.models import Cruce
@@ -18,187 +16,6 @@ min_abs = 'min(minimo) as min_abs'
 min_pro = 'min(valor) as min_pro'
 coma = ', '
 group_order = 'GROUP BY 1 ORDER BY 1'
-
-'''
-def grafico(form):
-    estacion = form.cleaned_data['estacion']
-    variable = form.cleaned_data['variable']
-    fecha_inicio = form.cleaned_data['inicio']
-    fecha_fin = form.cleaned_data['fin']
-    frecuencia = form.cleaned_data['frecuencia']
-    if fecha_inicio is None:
-        fecha_inicio = estacion.est_fecha_inicio
-    if fecha_fin is None:
-        fecha_fin = date.today()
-    div = ""
-    # frecuencia instantanea
-    if frecuencia == str(0):
-        valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
-        maximos_pro = []
-        minimos_pro = []
-    # frecuencia 5 minutos
-    elif frecuencia == str(1):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
-    # frecuencia horaria
-    elif frecuencia == str(2):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
-    # frecuencia diaria
-    elif frecuencia == str(3):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
-    # frecuencia mensual
-    elif frecuencia == str(4):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
-    else:
-        valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
-    tra_pro = []
-    tra_max_abs = []
-    tra_min_abs = []
-    tra_max_pro = []
-    tra_min_pro = []
-    if len(valores) > 0:
-        if variable.var_id == 1:
-            tra_pro = go.Bar(
-                x=tiempo,
-                y=valores,
-            )
-            data = go.Data([tra_pro])
-
-        elif frecuencia == str(0):
-            tra_prom = go.Scatter(
-                x=tiempo,
-                y=valores,
-                name='Valor',
-                mode='lines',
-                line=dict(
-                    color='#1660A7',
-                )
-            )
-            tra_max_abs = go.Scatter(
-                x=tiempo,
-                y=maximos_abs,
-                name='Máximo',
-                mode='lines',
-                line=dict(
-                    color='#32CD32',
-                )
-            )
-            tra_min_abs = go.Scatter(
-                x=tiempo,
-                y=minimos_abs,
-                name='Mínimo',
-                mode='lines',
-                line=dict(
-                    color='#CD0C18',
-                )
-            )
-            data = go.Data([tra_max_abs, tra_prom, tra_min_abs])
-        else:
-            tra_prom = go.Scatter(
-                x=tiempo,
-                y=valores,
-                name='Media',
-                mode='lines',
-                line=dict(
-                    color='#1660A7',
-                )
-            )
-            print("maximos absolutos", maximos_abs.count(None), maximos_pro.count(None))
-            if len(maximos_abs) != maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
-                tra_max_abs = go.Scatter(
-                    x=tiempo,
-                    y=maximos_abs,
-                    name='Máximo Absoluto',
-                    mode='lines',
-                    line=dict(
-                        color='#32CD32',
-                    )
-                )
-                tra_max_pro = go.Scatter(
-                    x=tiempo,
-                    y=maximos_pro,
-                    name='Máximo del Promedio',
-                    mode='lines',
-                    visible="legendonly",
-                    line=dict(
-                        color='#90EE90',
-                    )
-                )
-            elif len(maximos_abs) == maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
-
-                tra_max_pro = go.Scatter(
-                    x=tiempo,
-                    y=maximos_pro,
-                    name='Máximo del Promedio',
-                    mode='lines',
-                    line=dict(
-                        color='#90EE90',
-                    )
-                )
-            if len(minimos_abs) != minimos_abs.count(None) and len(minimos_pro) != minimos_pro.count(None):
-                tra_min_abs = go.Scatter(
-                    x=tiempo,
-                    y=minimos_abs,
-                    name='Mínimo Absoluto',
-                    mode='lines',
-                    line=dict(
-                        color='#CD0C18',
-                    )
-                )
-                tra_min_pro = go.Scatter(
-                    x=tiempo,
-                    y=minimos_pro,
-                    name='Mínimo del  Promedio',
-                    mode='lines',
-                    visible="legendonly",
-                    line=dict(
-                        color='#FF8C00',
-                    )
-                )
-            elif len(minimos_abs) == minimos_abs.count(None) and len(minimos_pro) != minimos_pro.count(None):
-
-                tra_min_pro = go.Scatter(
-                    x=tiempo,
-                    y=minimos_pro,
-                    name='Mínimo del Promedio',
-                    mode='lines',
-                    line=dict(
-                        color='#FF8C00',
-                    )
-                )
-            if len(tra_max_abs) > 0 and len(tra_min_abs) > 0:
-                data = go.Data([tra_max_abs, tra_prom, tra_min_abs])
-            else:
-                data = go.Data([tra_max_pro, tra_prom, tra_min_pro])
-        layout = go.Layout(
-            title=variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo,
-            yaxis=dict(title=variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"),
-            xaxis=dict(
-                rangeselector=dict(
-                    buttons=list([
-                        dict(count=1,
-                             label='1m',
-                             step='month',
-                             stepmode='backward'),
-                        dict(count=6,
-                             label='6m',
-                             step='month',
-                             stepmode='backward'),
-                        dict(count=1,
-                             label='1y',
-                             step='year',
-                             stepmode='backward'),
-                        dict(step='all')
-                    ])
-                ),
-                rangeslider=dict(),
-                type='date'
-            )
-        )
-
-        figure = go.Figure(data=data, layout=layout)
-        div = opy.plot(figure, auto_open=False, output_type='div')
-    return div
-'''
 
 
 def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
@@ -248,12 +65,12 @@ def datos_estacion(estacion, fecha_inicio, fecha_fin):
         # llenar la frecuencia de tiempo
         if i == 0:
             valores[i] = set_valores(frecuencia)
-            valores[i].insert(0, str("Fecha hora"))
+            valores[i].insert(0, "Fecha hora")
             i += 1
         # comprobar si hay otras frecuecnas de tiempo ej: el viento se registra cada 2 min
         elif len(frecuencia) < (len(valores[i_fecha])-1):
             valores[i] = set_valores(frecuencia)
-            valores[i].insert(0, str("Fecha hora"))
+            valores[i].insert(0, "Fecha hora")
             i_fecha = i
             valores.append([0 for x in range(0)])
             i += 1

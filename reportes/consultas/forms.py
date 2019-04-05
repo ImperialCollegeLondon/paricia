@@ -60,12 +60,29 @@ class VariableForm(forms.Form):
         ('3', 'Diario'),
         ('4', 'Mensual'),
     )
-    estacion01 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Primera Estación')
-    variable01 = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable primera estación')
-    estacion02 = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Segunda Estación')
-    variable02 = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), label='Variable segunda estación')
-    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
-    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin", widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
+    lista_tipos = (
+        # ('1', '5 Minutos'),
+        ('1', 'Promedio'),
+        ('2', 'Máximo'),
+        ('3', 'Mínimo'),
+    )
+    est_con01 = Estacion.objects.order_by('est_id').filter(tipo__tip_nombre="Hidrológica")
+    lbl_est01 = 'Estación Hidrológica'
+    est_con02 = Estacion.objects.order_by('est_id').exclude(tipo__tip_nombre="Hidrológica")
+    lbl_est02 = 'Estación Climática'
+    var_con01 = Variable.objects.order_by('var_id').filter(var_id__in=[10, 11])
+    var_con02 = Variable.objects.order_by('var_id').filter(var_id=1)
+    parametros_widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder': 'dd/mm/yy'})
+    format_input = ['%d/%m/%Y']
+    lbl_inicio = 'Fecha de Inicio'
+    lbl_fin = 'Fecha de Fin'
+    estacion01 = forms.ModelChoiceField(queryset=est_con01, label=lbl_est01)
+    variable01 = forms.ModelChoiceField(queryset=var_con01, label='Variable Hidrológica')
+    parametro = forms.ChoiceField(choices=lista_tipos, label="Parámetro")
+    estacion02 = forms.ModelChoiceField(queryset=est_con02, label=lbl_est02)
+    variable02 = forms.ModelChoiceField(queryset=var_con02, label='Variable Climática')
+    inicio = forms.DateField(input_formats=format_input, label=lbl_inicio, widget=parametros_widget)
+    fin = forms.DateField(input_formats=format_input, label=lbl_fin, widget=parametros_widget)
     frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
 

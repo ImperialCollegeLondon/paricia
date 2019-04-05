@@ -7,7 +7,7 @@ from django.http import HttpResponse
 # from django.template import loader, Context
 from reportes.consultas.functions import (datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
                                           datos_instantaneos, datos_mensuales, datos_estacion)
-from reportes.functions import filtrar, comparar, comparar_variable, consultar_datos
+from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos
 from datetime import date
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -89,10 +89,12 @@ class ComparacionVariables(FormView):
     def post(self, request, *args, **kwargs):
         form = VariableForm(self.request.POST or None)
         if form.is_valid() and self.request.is_ajax():
-            self.grafico = comparar_variable(form)
+            '''self.grafico = comparar_variable(form)
             plantilla = 'reportes/consultas/grafico.html'
             diccionario = {'grafico': self.grafico}
-            return render(request, plantilla, diccionario)
+            return render(request, plantilla, diccionario)'''
+            datos = comparar_variables(form)
+            return JsonResponse(datos, safe=False)
         return render(request, 'home/form_error.html', {'form': form})
 
 

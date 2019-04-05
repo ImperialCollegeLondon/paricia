@@ -12,6 +12,7 @@ from reportes.consultas.functions import datos_instantaneos
 from datetime import timedelta, datetime, date
 import plotly.offline as opy
 import plotly.graph_objs as go
+from plotly import tools
 import json
 
 
@@ -43,23 +44,21 @@ def consultar_datos(form):
         # frecuencia mensual
     elif frecuencia == str(4):
         valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
-    type_graph ='scatter'
-    if variable.var_id == 1:
-        type_graph = 'bar'
-    data_valor = get_elemento_data(type_graph, tiempo, valores, 'Promedio', '#1660A7')
+
+    data_valor = get_elemento_data(variable, tiempo, valores, 'Promedio', '#1660A7')
     if frecuencia == str(0):
-        data_maximo = get_elemento_data(type_graph, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
-        data_minimo = get_elemento_data(type_graph, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
+        data_maximo = get_elemento_data(variable, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
+        data_minimo = get_elemento_data(variable, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
     else:
 
         if maximos_abs.count(None) <= maximos_pro.count(None):
-            data_maximo = get_elemento_data(type_graph, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
+            data_maximo = get_elemento_data(variable, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
         else:
-            data_maximo = get_elemento_data(type_graph, tiempo, maximos_pro, 'Maximo Promedio', '#90EE90')
+            data_maximo = get_elemento_data(variable, tiempo, maximos_pro, 'Maximo Promedio', '#90EE90')
         if minimos_abs.count(None) <= minimos_pro.count(None):
-            data_minimo = get_elemento_data(type_graph, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
+            data_minimo = get_elemento_data(variable, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
         else:
-            data_minimo = get_elemento_data(type_graph, tiempo, minimos_pro, 'Minimo Promedio', '#FF8C00')
+            data_minimo = get_elemento_data(variable, tiempo, minimos_pro, 'Minimo Promedio', '#FF8C00')
     boton_dia = dict(count=1,
                      label='1dia',
                      step='day',
@@ -118,9 +117,12 @@ def consultar_datos(form):
     return grafico
 
 
-def get_elemento_data(tipo,tiempo,valor, nombre, color):
+def get_elemento_data(variable, tiempo, valor, nombre, color):
+    type_graph = 'scatter'
+    if variable.var_id == 1:
+        type_graph = 'bar'
     elemento = {
-        'type': tipo,
+        'type': type_graph,
         'x': tiempo,
         'y': valor,
         'name': nombre,
@@ -128,6 +130,30 @@ def get_elemento_data(tipo,tiempo,valor, nombre, color):
             'color': color,
         },
     }
+    return elemento
+
+
+def get_trace(variable, tiempo, valor, nombre):
+    type_graph = 'scatter'
+    if variable.var_id == 1:
+        type_graph = 'bar'
+        elemento = dict(
+            type=type_graph,
+            x=tiempo,
+            y=valor,
+            name=nombre,
+            yaxis='y2',
+            marker=dict(color="#1660A7")
+        )
+    else:
+        elemento = dict(
+            type=type_graph,
+            x=tiempo,
+            y=valor,
+            name=nombre,
+            line=dict(color="#ff881e")
+
+        )
     return elemento
 
 
@@ -253,6 +279,93 @@ def comparar(form):
     return div
 
 
+# funcion para comparar dos variables entre dos estaciones
+def comparar_variables(form):
+    estacion01 = form.cleaned_data['estacion01']
+    estacion02 = form.cleaned_data['estacion02']
+    variable01 = form.cleaned_data['variable01']
+    variable02 = form.cleaned_data['variable02']
+    fecha_inicio = form.cleaned_data['inicio']
+    fecha_fin = form.cleaned_data['fin']
+    frecuencia = form.cleaned_data['frecuencia']
+    parametro = form.cleaned_data['parametro']
+    if (frecuencia == str(1)):
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_5minutos(estacion01, variable01, fecha_inicio,
+                                                                           fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_5minutos(estacion02, variable02, fecha_inicio,
+                                                                           fecha_fin)
+    # frecuencia horaria
+    elif (frecuencia == str(2)):
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_horarios(estacion01, variable01, fecha_inicio,
+                                                                           fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_horarios(estacion02, variable02, fecha_inicio,
+                                                                           fecha_fin)
+    # frecuencia diaria
+    elif (frecuencia == str(3)):
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_diarios(estacion01, variable01, fecha_inicio,
+                                                                          fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_diarios(estacion02, variable02, fecha_inicio,
+                                                                          fecha_fin)
+    # frecuencia mensual
+    elif (frecuencia == str(4)):
+        val01, max01, max_pro01, min01, min_pro01, time01 = datos_mensuales(estacion01, variable01, fecha_inicio,
+                                                                            fecha_fin)
+        val02, max02, max_pro02, min02, min_pro02, time02 = datos_mensuales(estacion02, variable02, fecha_inicio,
+                                                                            fecha_fin)
+
+    # trace01 = get_trace(variable01, time01, val01, variable01.var_nombre)
+    trace02 = get_trace(variable02, time02, val02, variable02.var_nombre)
+    if parametro == str(1):
+        trace01 = get_trace(variable01, time01, val01, variable01.var_nombre)
+    elif parametro == str(2):
+        if max01.count(None) <= max_pro01.count(None):
+            trace01 = get_trace(variable01, time01, max01, variable01.var_nombre)
+        else:
+            trace01 = get_trace(variable01, time01, max_pro01, variable01.var_nombre)
+    else:
+        if min01.count(None) <= min_pro01.count(None):
+            trace01 = get_trace(variable01, time01, min01, variable01.var_nombre)
+        else:
+            trace01 = get_trace(variable01, time01, min_pro01, variable01.var_nombre)
+    print(parametro, type(parametro))
+
+    titulo_grafico = "Comparacion Variables"
+
+    layout = dict(
+        title=titulo_grafico,
+        yaxis=dict(
+            title=variable01.var_nombre + str(" (") + variable01.uni_id.uni_sigla + str(")"),
+        ),
+        yaxis2=dict(
+            title=variable02.var_nombre + str(" (") + variable02.uni_id.uni_sigla + str(")"),
+            titlefont=dict(
+                color='rgb(148, 103, 189)'
+            ),
+            tickfont=dict(
+                color='rgb(148, 103, 189)'
+            ),
+            overlaying='y',
+            side='right',
+            autorange='reversed'
+
+        ),
+        xaxis=dict(
+            rangeslider={},
+            # type='date',
+        ),
+        height=500
+        
+
+    )
+    data = list([trace01, trace02])
+    grafico = dict(
+        data=data,
+        layout=layout,
+
+    )
+    return grafico
+
+
 def comparar_variable(form):
     estacion01 = form.cleaned_data['estacion01']
     estacion02 = form.cleaned_data['estacion02']
@@ -283,48 +396,21 @@ def comparar_variable(form):
     layout = go.Layout(
         title="Comparación de Variables",
         yaxis=dict(
-            title=variable01.var_nombre + \
-                  str(" (") + variable01.uni_id.uni_sigla + str(")")
+            autorange='reversed'
         ),
         yaxis2=dict(
-            title=variable02.var_nombre + \
-                  str(" (") + variable02.uni_id.uni_sigla + str(")"),
-            titlefont=dict(
-                color='rgb(148, 103, 189)'
-            ),
-            tickfont=dict(
-                color='rgb(148, 103, 189)'
-            ),
-            overlaying='y',
-            side='right'
+            autorange=True
         ),
-        xaxis=dict(
-            rangeselector=dict(
-                buttons=list([
-                    dict(count=1,
-                         label='1d',
-                         step='day',
-                         stepmode='today'),
-                    dict(count=1,
-                         label='1m',
-                         step='month',
-                         stepmode='backward'),
-                    dict(count=6,
-                         label='6m',
-                         step='month',
-                         stepmode='backward'),
-                    dict(count=1,
-                         label='1y',
-                         step='year',
-                         stepmode='backward'),
-                    dict(step='all')
-                ])
-            ),
-            rangeslider=dict(),
-            type='date'
+        xaxis2=dict(
+            visible=False
         )
+
     )
-    figure = go.Figure(data=data, layout=layout)
+    # figure = go.Figure(data=data, layout=layout)
+    figure = tools.make_subplots(rows=2, cols=1)
+    figure.append_trace(trace0, 1, 1)
+    figure.append_trace(trace1, 2, 1)
+    figure['layout'].update(layout)
     div = opy.plot(figure, auto_open=False, output_type='div')
     return div
 
@@ -342,7 +428,7 @@ def trace_graph(variable, estacion, tiempo, valor):
             y=valor,
             name=estacion.est_codigo,
             mode='lines',
-            yaxis='y2'
+            #yaxis='y2'
         )
     return trace
 
