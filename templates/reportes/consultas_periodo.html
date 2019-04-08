@@ -9,37 +9,7 @@
 <script>
 $(document).ready(function() {
 
-  // JQuery code to be added in here.
-  var dateFormat = "dd/mm/yy";
-  $( "#id_inicio" ).datepicker({
-    changeMonth: true,
-    changeYear: true,
-    dateFormat:"dd/mm/yy"
-  });
-  $( "#id_inicio" ).on( "change", function() {
-    $( "#id_fin" ).datepicker( "option", "minDate", getDate( this ) );
-  });
-  $( "#id_fin" ).datepicker({
-    changeMonth: true,
-    changeYear: true,
-    dateFormat:"dd/mm/yy"
-  });
-  $( "#id_fin" ).on( "change", function() {
-    $( "#id_inicio" ).datepicker( "option", "maxDate", getDate( this ) );
-  });
 
-
-
-  function getDate( element ) {
-    var date;
-    try {
-      date = $.datepicker.parseDate( dateFormat, element.value );
-    } catch( error ) {
-      date = null;
-    }
-
-    return date;
-  }
 
   $("#id_estacion").change(function () {
     var estacion = $(this).val();
@@ -73,7 +43,7 @@ $(document).ready(function() {
     </div>
 </div>
 
-<form id="form_busqueda" class="form" method="post">
+<form id="form_consulta" class="form" method="post" action="{% url 'reportes:consultas_periodo' %}">
     <div class="row">
         {% csrf_token %}
         {% for field in form%}
