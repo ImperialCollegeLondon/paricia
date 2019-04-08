@@ -11,7 +11,7 @@ from django.core.paginator import Paginator
 from .forms import EstacionSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
-
+from django.http import JsonResponse
 
 # Create your views here.
 class EstacionCreate(LoginRequiredMixin, CreateView):
@@ -87,3 +87,18 @@ class EstacionUpdate(LoginRequiredMixin, UpdateView):
 class EstacionDelete(LoginRequiredMixin, DeleteView):
     model = Estacion
     success_url = reverse_lazy('estacion:estacion_index')
+
+
+def datos_json_estaciones(request):
+    estaciones=list(Estacion.objects.order_by('est_id').all())
+    datos=[]
+    for item in estaciones:
+        fila = dict(
+            codigo=item.est_codigo,
+            nombre=item.est_nombre,
+
+            x=item.est_utmx,
+            y=item.est_utmy,
+        )
+        datos.append(fila)
+    return JsonResponse(datos,safe=False)
