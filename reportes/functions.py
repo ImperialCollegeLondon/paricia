@@ -114,6 +114,14 @@ def consultar_datos(form):
             'layout': layout
         }
 
+    '''data = []
+    for item_valor, item_tiempo in zip(valores, tiempo):
+        fila=dict(
+            x=item_tiempo,
+            y=item_valor
+        )
+        data.append(fila)'''
+
     return grafico
 
 
@@ -142,7 +150,8 @@ def get_trace(variable, tiempo, valor, nombre):
             x=tiempo,
             y=valor,
             name=nombre,
-            yaxis='y2',
+            # yaxis='y2',
+            # xaxis='x2',
             marker=dict(color="#1660A7")
         )
     else:
@@ -151,7 +160,9 @@ def get_trace(variable, tiempo, valor, nombre):
             x=tiempo,
             y=valor,
             name=nombre,
-            line=dict(color="#ff881e")
+            line=dict(color="#ff881e"),
+            yaxis='y2',
+            xaxis='x',
 
         )
     return elemento
@@ -331,7 +342,7 @@ def comparar_variables(form):
 
     titulo_grafico = "Comparacion Variables"
 
-    layout = dict(
+    '''layout = dict(
         title=titulo_grafico,
         yaxis=dict(
             title=variable01.var_nombre + str(" (") + variable01.uni_id.uni_sigla + str(")"),
@@ -350,11 +361,31 @@ def comparar_variables(form):
 
         ),
         xaxis=dict(
-            rangeslider={},
+            # rangeslider={},
             # type='date',
         ),
         height=500
         
+
+    )'''
+    layout = dict(
+        title=titulo_grafico,
+        yaxis=dict(
+            title=variable01.var_nombre + str(" (") + variable01.uni_id.uni_sigla + str(")"),
+            autorange='reversed',
+            overlaying='y',
+            side='right',
+        ),
+        yaxis2=dict(
+            title=variable02.var_nombre + str(" (") + variable02.uni_id.uni_sigla + str(")"),
+
+        ),
+        xaxis=dict(
+            rangeslider={},
+            type='date',
+        ),
+        grid=dict(rows=2, columns=1),
+        legend=dict(yanchor='bottom')
 
     )
     data = list([trace01, trace02])
@@ -366,61 +397,13 @@ def comparar_variables(form):
     return grafico
 
 
-def comparar_variable(form):
-    estacion01 = form.cleaned_data['estacion01']
-    estacion02 = form.cleaned_data['estacion02']
-    variable01 = form.cleaned_data['variable01']
-    variable02 = form.cleaned_data['variable02']
-    fecha_inicio = form.cleaned_data['inicio']
-    fecha_fin = form.cleaned_data['fin']
-    frecuencia = form.cleaned_data['frecuencia']
-    # frecuencia 5 minutos
-    if (frecuencia == str(1)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_5minutos(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_5minutos(estacion02, variable02, fecha_inicio, fecha_fin)
-    # frecuencia horaria
-    elif (frecuencia == str(2)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_horarios(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_horarios(estacion02, variable02, fecha_inicio, fecha_fin)
-    # frecuencia diaria
-    elif (frecuencia == str(3)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_diarios(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_diarios(estacion02, variable02, fecha_inicio, fecha_fin)
-    # frecuencia mensual
-    elif (frecuencia == str(4)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_mensuales(estacion01, variable01, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_mensuales(estacion02, variable02, fecha_inicio, fecha_fin)
-    trace0 = trace_graph(variable01, estacion01, time01, val01)
-    trace1 = trace_graph(variable02, estacion02, time02, val02)
-    data = go.Data([trace0, trace1])
-    layout = go.Layout(
-        title="Comparación de Variables",
-        yaxis=dict(
-            autorange='reversed'
-        ),
-        yaxis2=dict(
-            autorange=True
-        ),
-        xaxis2=dict(
-            visible=False
-        )
-
-    )
-    # figure = go.Figure(data=data, layout=layout)
-    figure = tools.make_subplots(rows=2, cols=1)
-    figure.append_trace(trace0, 1, 1)
-    figure.append_trace(trace1, 2, 1)
-    figure['layout'].update(layout)
-    div = opy.plot(figure, auto_open=False, output_type='div')
-    return div
-
-
 def trace_graph(variable, estacion, tiempo, valor):
     if variable.var_id == 1:
         trace = go.Bar(
             x=tiempo,
             y=valor,
             name=estacion.est_codigo,
+
         )
     else:
         trace = go.Scatter(
