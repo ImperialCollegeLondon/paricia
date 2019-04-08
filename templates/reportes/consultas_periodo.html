@@ -6,6 +6,9 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="{% static 'js_ajax.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+<link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.css">
 <script>
 $(document).ready(function() {
 
@@ -43,7 +46,7 @@ $(document).ready(function() {
     </div>
 </div>
 
-<form id="form_consulta" class="form" method="post" action="{% url 'reportes:consultas_periodo' %}">
+<form id="form_busqueda" class="form" method="post" action="{% url 'reportes:consultas_periodo' %}">
     <div class="row">
         {% csrf_token %}
         {% for field in form%}
@@ -51,10 +54,10 @@ $(document).ready(function() {
         {% endfor %}
         <div class="form-group col-lg-4 col-md-6">
             <label>&nbsp;</label><br>
-            <button id="btn_graficar" name="exportar" type="button" class="btn btn-primary">
+            <button id="btn_consultar" name="exportar" type="button" class="btn btn-primary">
                 Visualizar
             </button>
-            <button name="visualizar" type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary">
                 Exportar
             </button>
             <a class="btn btn-light" href="/reportes/consultas">Limpiar</a>
@@ -74,6 +77,8 @@ $(document).ready(function() {
 <div id="div_informacion" >
 
 </div>
+
+
 <div id="div_loading" class="row" style="display:none;">
     <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
     <div class="col-lg-4 col-md-4 col-sm-4">
@@ -86,4 +91,6 @@ $(document).ready(function() {
         Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
     </div>
 </div>
+
+
 {% endblock %}

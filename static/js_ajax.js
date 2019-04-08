@@ -21,6 +21,7 @@ $(document).ready(function() {
                 else{
                     $("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
                 }
+                //graficar(data)
                 $("#btn_graficar").removeAttr('disabled');
 
                 $("#div_loading").hide();
@@ -32,6 +33,44 @@ $(document).ready(function() {
                 $("#div_loading").hide();
                 $("#div_error").show();
                 $("#btn_graficar").removeAttr('disabled');
+            }
+        });
+    });
+
+
+    $("#btn_consultar").click(function(){
+        $(this).attr('disabled',true);
+        $.ajax({
+            url: $("#form_busqueda").attr('action'),
+            data: $("#form_busqueda").serialize(),
+            type:'POST',
+            dataType: 'json',
+            beforeSend: function () {
+                $("#div_informacion").hide();
+                $("#div_loading").show();
+                $("#div_error").hide();
+            },
+            success: function (data) {
+                $("#div_informacion").show();
+                var count = Object.keys(data.data[0].y).length;
+                if (count>0) {
+                    Plotly.newPlot('div_informacion', data.data,data.layout);
+                }
+                else{
+                    $("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
+                }
+                //graficar(data)
+                $("#btn_consultar").removeAttr('disabled');
+
+                $("#div_loading").hide();
+
+                $("#div_error").hide();
+            },
+            error: function () {
+                //$("#div_informacion").hide();
+                $("#div_loading").hide();
+                $("#div_error").show();
+                $("#btn_consultar").removeAttr('disabled');
             }
         });
     });
@@ -65,6 +104,46 @@ $(document).ready(function() {
             date = null;
         }
         return date;
+    }
+
+    function graficar(data){
+        var data02= [{
+            x: new Date(),
+            y: 1
+        }, {
+            t: new Date(),
+            y: 10
+        }]
+        var data03= [{
+            x: 10,
+            y: 20
+        }, {
+            x: 15,
+            y: 10
+        }]
+        var ctx = document.getElementById('myChart');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: 'Precipitacion',
+                    data: data,
+                }]
+            },
+            //data:data03,
+            options: {
+                scales: {
+
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        }
+                    }]
+                }
+            }
+        });
     }
 
 
