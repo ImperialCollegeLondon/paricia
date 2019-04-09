@@ -90,15 +90,25 @@ class EstacionDelete(LoginRequiredMixin, DeleteView):
 
 
 def datos_json_estaciones(request):
-    estaciones=list(Estacion.objects.order_by('est_id').all())
-    datos=[]
+    estaciones = list(Estacion.objects.order_by('est_id').all())
+    features = []
     for item in estaciones:
         fila = dict(
-            codigo=item.est_codigo,
-            nombre=item.est_nombre,
+            type='Feature',
+            geometry=dict(
+                type='Point',
+                coordinates=[float(item.est_longitud), float(item.est_latitud)]
+            ),
+            properties=dict(
+                codigo=item.est_codigo,
+                nombre=item.est_nombre,
+                tipo=item.tipo.tip_nombre
+            )
 
-            x=item.est_utmx,
-            y=item.est_utmy,
         )
-        datos.append(fila)
+        features.append(fila)
+    datos = dict(
+        type='FeatureCollection',
+        features=features
+    )
     return JsonResponse(datos,safe=False)
