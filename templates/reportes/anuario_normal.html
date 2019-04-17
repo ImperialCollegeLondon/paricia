@@ -1,0 +1,111 @@
+{% extends base_template %}
+{% block content %}
+{% load bootstrap4 %}
+{% load humanize %}
+
+<style type="text/css">
+table>thead>tr>th{
+  text-align: center;vertical-align: middle;
+}
+table>tbody>tr>td{
+  text-align: center;vertical-align: middle;
+}
+</style>
+
+
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Anuario Hidroclimático</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Esta consulta muestra un resumen estadístico anual de las variables climáticas e hidrológicas organizadas por estación y año</p>
+    </div>
+</div>
+<form class="form" method="post" action="{% url 'reportes:anuario' %}">
+    <div class="row">
+        {% csrf_token %}
+        {% for field in form%}
+        {% bootstrap_field field form_group_class='col-lg-4 col-md-6' %}
+        {% endfor %}
+
+        <div class="form-group col-lg-4 col-md-6">
+            <label>&nbsp;</label><br>
+            <button id="btn_graficar" type="submit" class="btn btn-primary">
+                Buscar
+            </button>
+            <a class="btn btn-light"
+               href="{% url 'reportes:anuario' %}">
+                Limpiar</a>
+        </div>
+    </div>
+</form>
+
+
+
+
+
+{% if 1_matriz %}
+<div class="row">
+    {% include "reportes/anuario/pre.html" %}
+</div>
+{% endif %}
+{% if 2_matriz %}
+<div class="row">
+    {% include "reportes/anuario/tai.html" %}
+</div>
+{% endif %}
+{% if 3_matriz %}
+<div class="row">
+    {% include "reportes/anuario/hai.html" %}
+</div>
+{% endif %}
+{% if 8_matriz %}
+<div class="row">
+    {% include "reportes/anuario/pat.html" %}
+</div>
+{% endif %}
+{% if 4_matriz or 5_matriz %}
+<div class="row">
+    {% include "reportes/anuario/dvi.html" %}
+</div>
+{% endif %}
+{% if 6_matriz %}
+<div class="row">
+    {% include "reportes/anuario/hsu.html" %}
+</div>
+{% endif %}
+{% if 7_matriz %}
+<div class="row">
+    {% include "reportes/anuario/rad.html" %}
+</div>
+{% endif %}
+{% if 9_matriz %}
+<div class="row">
+    {% include "reportes/anuario/tag.html" %}
+</div>
+{% endif %}
+{% if 10_matriz %}
+<div class="row">
+    {% include "reportes/anuario/cau.html" %}
+</div>
+{% endif %}
+{% if 11_matriz %}
+<div class="row">
+    {% include "reportes/anuario/nag.html" %}
+</div>
+{% endif %}
+
+{% if mensaje %}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="alert alert-success" role="alert">
+            {{mensaje}}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}

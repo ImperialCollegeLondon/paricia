@@ -24,24 +24,26 @@ from sedc.settings import BASE_DIR
 
 
 class ReportesAnuario(FormView):
-    template_name = 'reportes/anuario_reporte.html'
+    template_name = 'reportes/anuario_normal.html'
     form_class = AnuarioForm
     success_url = '/reportes/anuario/'
     lista = {}
 
     def get_context_data(self, **kwargs):
         context = super(ReportesAnuario, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            context['base_template'] = "index.html"
-        else:
-            context['base_template'] = "index_invitado.html"
+        context['base_template'] = get_vista_usuario(self.request)
         return context
 
     def post(self, request, *args, **kwargs):
         form = AnuarioForm(self.request.POST or None)
-        if form.is_valid() and self.request.is_ajax():
+        if form.is_valid():
+            context = super(ReportesAnuario, self).get_context_data(**kwargs)
             self.lista = filtrar(form)
-            return render(request,'reportes/anuario/anuario.html',self.lista)
+            print(len(self.lista))
+            context.update(self.lista)
+            context['base_template'] = get_vista_usuario(self.request)
+            return render(request, 'reportes/anuario_normal.html', context)
+
         return render(request, 'home/form_error.html', {'form': form})
 
 
@@ -320,3 +322,11 @@ class ConsultasEstacionVariable(FormView):
 def datos_json_horarios(request, est_id, var_id, fec_ini, fec_fin):
     datos = datos_horarios_json(est_id, var_id, fec_ini, fec_fin)
     return JsonResponse(datos, safe=False)
+
+
+def get_vista_usuario(request):
+    if request.user.is_authenticated:
+        template = "index.html"
+    else:
+        template = "index_invitado.html"
+    return template

@@ -14,8 +14,10 @@ class TypeVI(Titulos):
                        .filter(rad_periodo=periodo))
         rad_max = list(RadiacionMaxima.objects.filter(est_id=estacion)
                        .filter(rad_periodo=periodo))
-        datos = {
-            'rad_max': rad_max,
-            'rad_min': rad_min
-        }
+        if rad_min and rad_max:
+            datos = {
+                'rad_max': rad_max,
+                'rad_min': rad_min
+            }
+
         return datos

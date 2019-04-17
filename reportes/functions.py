@@ -192,34 +192,32 @@ def filtrar(form):
     obj_typeIV = TypeIV()
     obj_typeV = TypeV()
     obj_typeVI = TypeVI()
+    estacion = form.cleaned_data['estacion']
+    periodo = form.cleaned_data['anio']
 
     for item in variables:
         if item.get('var_id') in typeI:
             matriz = obj_typeI.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
             grafico = obj_typeI.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            context.update({str(item.get('var_id')) + '_matriz': matriz})
-            context.update({str(item.get('var_id')) + '_grafico': grafico})
         elif item.get('var_id') in typeII:
-            matriz = obj_typeII.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            grafico = obj_typeII.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            context.update({str(item.get('var_id')) + '_matriz': matriz})
-            context.update({str(item.get('var_id')) + '_grafico': grafico})
+            matriz = obj_typeII.matriz(estacion, periodo)
+            grafico = obj_typeII.grafico(estacion, item.get('var_id'), periodo)
         elif item.get('var_id') in typeIII:
             matriz = obj_typeIII.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
             grafico = obj_typeIII.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            context.update({str(item.get('var_id')) + '_matriz': matriz})
-            context.update({str(item.get('var_id')) + '_grafico': grafico})
         elif item.get('var_id') in typeIV:
             matriz = obj_typeIV.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
             grafico = obj_typeIV.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            context.update({str(item.get('var_id')) + '_matriz': matriz})
-            context.update({str(item.get('var_id')) + '_grafico': grafico})
         elif item.get('var_id') in typeV:
             matriz = obj_typeV.matriz(form.cleaned_data['estacion'], item.get('var_id_id'), form.cleaned_data['anio'])
-            context.update({str(item.get('var_id')) + '_matriz': matriz})
         elif item.get('var_id') in typeVI:
             matriz = obj_typeVI.matriz(form.cleaned_data['estacion'], str(item.get('var_id')),form.cleaned_data['anio'])
+        if len(matriz) > 0:
             context.update({str(item.get('var_id')) + '_matriz': matriz})
+        if grafico:
+            context.update({str(item.get('var_id')) + '_grafico': grafico})
+    if len(context) == 0:
+        context.update({'mensaje':'No existen datos para la consulta'})
     return context
 
 
