@@ -78,7 +78,7 @@ def leer_archivos(formato, estacion):
 
 def guardar_datos(importacion, datos, estacion, formato):
     observacion = 'vacio datos automaticos'
-    flag = 0;
+    flag = 0
     for var_id, tabla in datos.items():
         modelo = get_modelo(var_id)
         fecha_datos = ultima_fecha(modelo, estacion.est_id)
@@ -90,7 +90,6 @@ def guardar_datos(importacion, datos, estacion, formato):
         modelo.objects.bulk_create(
             modelo(**row) for row in tabla.to_dict('records')
         )
-        print (var_id)
         if flag == 0:
             formato.for_fil_ini = formato.for_fil_ini + tabla['fecha'].count()
             formato.save()
