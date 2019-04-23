@@ -102,7 +102,8 @@ def datos_json_estaciones(request):
             properties=dict(
                 codigo=item.est_codigo,
                 nombre=item.est_nombre,
-                tipo=item.tipo.tip_nombre
+                tipo=item.tipo.tip_nombre,
+                altura=item.est_altura
             )
 
         )

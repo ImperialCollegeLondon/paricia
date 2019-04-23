@@ -56,8 +56,11 @@ def leer_archivos(formato, estacion):
         archivo_src = formato.for_ubicacion + formato.for_archivo
         datos = preformato_matriz(archivo_src, formato)
     except Exception as e:
-        # registrar_log("No hay nueva información")
+        registrar_log("No hay nueva información")
         datos = []
+        pass
+    except IOError as e:
+        registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
         pass
 
     if len(datos) > 0:
