@@ -11,6 +11,7 @@ from reportes.consultas.functions import datos_instantaneos
 
 from datetime import timedelta, datetime, date
 import plotly.offline as opy
+import plotly.plotly as py
 import plotly.graph_objs as go
 from plotly import tools
 import json
@@ -44,13 +45,14 @@ def consultar_datos(form):
         # frecuencia mensual
     elif frecuencia == str(4):
         valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
+    print(len(valores))
 
-    data_valor = get_elemento_data(variable, tiempo, valores, 'Promedio', '#1660A7')
     if frecuencia == str(0):
-        data_maximo = get_elemento_data(variable, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
-        data_minimo = get_elemento_data(variable, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
+        data_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
+        data_maximo = get_elemento_data(variable, tiempo, maximos_abs, 'Maximo', '#32CD32')
+        data_minimo = get_elemento_data(variable, tiempo, minimos_abs, 'Minimo', '#CD0C18')
     else:
-
+        data_valor = get_elemento_data(variable, tiempo, valores, 'Promedio', '#1660A7')
         if maximos_abs.count(None) <= maximos_pro.count(None):
             data_maximo = get_elemento_data(variable, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
         else:
@@ -96,37 +98,43 @@ def consultar_datos(form):
         )
 
     }
-    if variable.var_id != 1:
-        grafico = {
-            'data': [
-                data_valor,
-                data_maximo,
-                data_minimo
-            ],
-            'layout': layout
 
-        }
+    if frecuencia == str(0):
+        data = go.Data([data_valor])
     else:
-        grafico = {
-            'data': [
-                data_valor
-            ],
-            'layout': layout
-        }
+        if variable.var_id != 1:
+            '''grafico = {
+                'data': [
+                    data_valor,
+                    data_maximo,
+                    data_minimo
+                ],
+                'layout': layout
+    
+            }'''
+            data = go.Data([data_valor,data_maximo,data_minimo])
+        else:
 
-    '''data = []
-    for item_valor, item_tiempo in zip(valores, tiempo):
-        fila=dict(
-            x=item_tiempo,
-            y=item_valor
-        )
-        data.append(fila)'''
+            '''grafico = {
+                'data': [
+                    data_valor
+                ],
+                'layout': layout
+            }'''
+
+            data = go.Data([data_valor])
+
+    figure = go.Figure(data=data, layout=layout)
+
+    div = opy.plot(figure, auto_open=False, output_type='div', include_plotlyjs=False)
+
+    grafico = dict(grafico=div)
 
     return grafico
 
 
 def get_elemento_data(variable, tiempo, valor, nombre, color):
-    type_graph = 'scatter'
+    '''type_graph = 'scatter'
     if variable.var_id == 1:
         type_graph = 'bar'
     elemento = {
@@ -137,7 +145,41 @@ def get_elemento_data(variable, tiempo, valor, nombre, color):
         'line': {
             'color': color,
         },
-    }
+    }'''
+    if variable.var_id == 1:
+        elemento = go.Bar(
+            x=tiempo,
+            y=valor,
+            name=nombre
+        )
+    else:
+        elemento = go.Scattergl(
+            x=tiempo,
+            y=valor,
+            name=nombre,
+            mode='lines',
+            line=dict(
+                color=color,
+
+            )
+        )
+
+    return elemento
+
+
+def get_trace_minimo(tiempo, valor, nombre, color):
+    elemento = go.Scattergl(
+        x=tiempo,
+        y=valor,
+        name=nombre,
+        mode='lines',
+        marker=dict(
+            color=color,
+            line=dict(
+                width=1,
+                color='rgb(0,0,0)')
+        )
+    )
     return elemento
 
 

@@ -60,6 +60,7 @@ def leer_archivos(formato, estacion):
         datos = []
         pass
     except IOError as e:
+        datos = []
         registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
         pass
 

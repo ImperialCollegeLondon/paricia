@@ -120,6 +120,12 @@ class ConsultasPeriodo(FormView):
                 datos = consultar_datos(form)
                 return JsonResponse(datos, safe=False)
             else:
+                if 'graficar' in request.POST:
+                    context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
+                    context.update(consultar_datos(form))
+                    context['base_template'] = get_vista_usuario(self.request)
+                    return render(request, 'reportes/consultas_periodo.html', context)
+
                 if self.frecuencia == "0":
                     return self.export_csv(form)
                 else:
@@ -128,10 +134,7 @@ class ConsultasPeriodo(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            context['base_template'] = "index.html"
-        else:
-            context['base_template'] = "index_invitado.html"
+        context['base_template'] = get_vista_usuario(self.request)
         context['grafico'] = self.grafico
         return context
 
@@ -145,7 +148,6 @@ class ConsultasPeriodo(FormView):
         if fecha_fin is None:
             fecha_fin = date.today()
         valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable,fecha_inicio, fecha_fin)
-        print(len(valores))
         # Establecemos el nombre del archivo
         nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.csv"')
         contenido = "attachment; filename={0}".format(nombre_archivo)
