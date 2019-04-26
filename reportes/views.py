@@ -1,13 +1,15 @@
-from django.views.generic.base import TemplateView
+from estacion.models import Inamhi
+from variable.models import Parametro
+
 from django.views.generic import FormView
-from reportes.forms import AnuarioForm
+from reportes.forms import AnuarioForm, InamhiForm
 from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, VariableForm, EstacionVariableSearchForm
 import csv
 from django.http import HttpResponse
-# from django.template import loader, Context
+
 from reportes.consultas.functions import (datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
                                           datos_instantaneos, datos_mensuales, datos_estacion)
-from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos
+from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos, procesar_json_inamhi
 from datetime import date
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -18,7 +20,6 @@ from openpyxl.drawing.image import Image
 from openpyxl.chart import (
     LineChart,
     Reference,
-    Series,
 )
 from sedc.settings import BASE_DIR
 
@@ -320,10 +321,47 @@ class ConsultasEstacionVariable(FormView):
         return response
 
 
+class ConsultaInamhi(FormView):
+    template_name = 'reportes/consulta_inamhi.html'
+    form_class = InamhiForm
+    success_url = 'reportes/inamhi'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsultaInamhi, self).get_context_data(**kwargs)
+        context['base_template'] = get_vista_usuario(self.request)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = InamhiForm(self.request.POST or None)
+        informacion = dict(
+            base_template=get_vista_usuario(request),
+            form=form
+        )
+        if form.is_valid():
+            grafico = procesar_json_inamhi(form)
+            informacion.update(grafico)
+            return render(request, 'reportes/consulta_inamhi.html', informacion)
+
+        return render(request, 'reportes/consulta_inamhi.html', informacion)
+
+
 # web service para consultar datos horarios
 def datos_json_horarios(request, est_id, var_id, fec_ini, fec_fin):
     datos = datos_horarios_json(est_id, var_id, fec_ini, fec_fin)
     return JsonResponse(datos, safe=False)
+
+
+# consultar variables de las estaciones del INAMHI
+def variables_inamhi(request):
+    estacion = request.GET.get('estacion', None)
+    frecuencia = request.GET.get('frecuencia', None)
+    inamhi = Inamhi.objects.get(id=estacion)
+    parametros = Parametro.objects.filter(frecuencia=frecuencia, tipo=inamhi.categoria)
+    lista = {}
+    for item in parametros:
+        lista[item.id] = item.nombre + ' ' + item.estadistico
+
+    return JsonResponse(lista)
 
 
 def get_vista_usuario(request):

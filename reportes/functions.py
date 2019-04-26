@@ -11,8 +11,10 @@ from reportes.consultas.functions import datos_instantaneos
 
 from datetime import timedelta, datetime, date
 import plotly.offline as opy
-import plotly.plotly as py
+
 import plotly.graph_objs as go
+
+import requests
 from plotly import tools
 import json
 
@@ -437,6 +439,58 @@ def comparar_variables(form):
     return grafico
 
 
+# funcion para procesar los datos del web service del INAMHI
+def procesar_json_inamhi(form):
+    estacion = form.cleaned_data['estacion']
+    parametro = form.cleaned_data['parametro']
+    frecuencia = form.cleaned_data['frecuencia']
+    inicio = form.cleaned_data['inicio']
+    fin = form.cleaned_data['fin']
+
+    fecha_inicio = datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
+    fecha_fin = datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
+    # formato url web service INAMHI
+    url_base = 'http://186.42.174.236:8090/'
+    url_base += frecuencia + '/'
+    url_base += str(estacion.identificador) + '/'
+    url_base += fecha_inicio.strftime("%Y-%m-%d %H:%M:%S") + '/'
+    url_base += fecha_fin.strftime("%Y-%m-%d %H:%M:%S") + '/'
+    url_base += estacion.transmision + '/'
+    url_base += parametro.parametro
+    # url_base += '171481m'
+    # obtener respuesta del web service
+    response = requests.get(url_base, auth=('FONAG', 'fOnAg2018'))
+    data = response.json()
+    tiempo = []
+    valores = []
+    if len(data) > 0:
+        # print(data)
+        for item in data:
+            fecha = datetime.strptime(item['fechaTomaDelDato'], '%Y-%m-%d %H:%M:%S')
+            tiempo.append(fecha)
+            if len(item['dataJSON']) > 0:
+                # print(item['dataJSON'][0]['valor'], type(item['dataJSON'][0]['valor']))
+                valores.append(item['dataJSON'][0]['valor'])
+            else:
+                valores.append(None)
+        if valores.count(None) == len(data):
+            mensaje = dict(mensaje='No existen datos para la consulta')
+            return mensaje
+        titulo = parametro.nombre + " " + estacion.codigo + " " + estacion.nombre
+        titulo_yaxis = parametro.nombre + " (" + parametro.estadistico + ")"
+
+        layout = get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin)
+
+        trace_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
+        data = get_data_graph(trace_valor)
+        grafico = get_grafico(layout, data)
+
+        return grafico
+    else:
+        mensaje = dict(mensaje='No existen datos para la consulta. Intente cambiando la frecuencia')
+        return mensaje
+
+
 def trace_graph(variable, estacion, tiempo, valor):
     if variable.var_id == 1:
         trace = go.Bar(
@@ -454,6 +508,59 @@ def trace_graph(variable, estacion, tiempo, valor):
             #yaxis='y2'
         )
     return trace
+
+
+def get_grafico(layout, data):
+    figure = go.Figure(data=data, layout=layout)
+    div = opy.plot(figure, auto_open=False, output_type='div', include_plotlyjs=False)
+    grafico = dict(grafico=div)
+    return grafico
+
+
+def get_layout_grafico(titulo,titulo_yaxis, fecha_inicio, fecha_fin):
+    boton_dia = dict(count=1,
+                     label='1dia',
+                     step='day',
+                     stepmode='backward')
+    boton_mes = dict(count=1,
+                     label='1mes',
+                     step='month',
+                     stepmode='backward')
+    boton_6meses = dict(count=6,
+                        label='6meses',
+                        step='month',
+                        stepmode='backward')
+    boton_all = dict(step='all')
+    botones = list()
+
+    botones.append(boton_dia)
+    botones.append(boton_all)
+
+    layout = {
+        'title': titulo,
+        'yaxis': dict(title=titulo_yaxis),
+        'xaxis': dict(
+            range=list([fecha_inicio, fecha_fin]),
+            rangeselector=dict(
+                buttons=botones
+            ),
+            rangeslider={'range': [fecha_inicio, fecha_fin]},
+            type='date',
+
+        )
+
+    }
+    return layout
+
+
+def get_data_graph(trace_valor, trace_maximo=None, trace_minimo=None):
+
+    if trace_maximo is None or trace_minimo is None:
+        data = go.Data([trace_valor])
+    else:
+        data = go.Data([trace_valor, trace_maximo, trace_minimo])
+
+    return data
 
 
 def titulo_frecuencia(frecuencia):

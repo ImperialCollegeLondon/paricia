@@ -216,7 +216,6 @@ def guardar_log(accion, medicion, user):
     logmedicion.save()
 
 
-
 def datos_instantaneos(form):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']

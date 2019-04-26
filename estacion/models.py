@@ -49,3 +49,24 @@ class Estacion(models.Model):
 
     class Meta:
         ordering = ('est_id',)
+
+
+# modelo para almacenar las estaciones del INAMHI
+class Inamhi(models.Model):
+    identificador = models.IntegerField("Id")
+    codigo = models.CharField("Código", max_length=10)
+    nombre = models.CharField("Nombre", max_length=100)
+    transmision = models.CharField("Transmision", max_length=100)
+    latitud = models.DecimalField("Latitud", max_digits=12, decimal_places=8, null=True)
+    longitud = models.DecimalField("Longitud", max_digits=12, decimal_places=8, null=True)
+    provincia = models.CharField("Nombre", max_length=50)
+    canton = models.CharField("Cantón", max_length=50)
+    parroquia = models.CharField("Parroquia", max_length=50)
+    categoria = models.CharField("Categoria", max_length=20)
+
+    def __str__(self):
+        return str(self.codigo) + ' ' + str(self.nombre)
+
+
+
+

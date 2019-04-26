@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from reportes import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -14,5 +14,6 @@ urlpatterns = [
     re_path(
         r'reportes/datos_horarios/(?P<est_id>[0-9]+)/(?P<var_id>[0-9]+)/(?P<fec_ini>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/(?P<fec_fin>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/$',
         views.datos_json_horarios, name='horarios'),
-
+    path('reportes/inamhi', views.ConsultaInamhi.as_view(), name='reporte_inamhi'),
+    path('parametros/inamhi', views.variables_inamhi, name='parametros_inamhi'),
 ]
