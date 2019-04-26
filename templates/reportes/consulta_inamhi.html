@@ -1,0 +1,117 @@
+{% extends "index.html" %}
+{% block content %}
+{% load bootstrap4 %}
+{% load humanize %}
+{% load static %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{% static 'js_ajax.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+        $("#id_estacion").change(function () {
+            var estacion = $("#id_estacion").val();
+            var frecuencia = $("#id_frecuencia").val();
+            $("#id_parametro").find('option').remove().end()
+            $.ajax({
+                url: '/parametros/inamhi',
+                data: {
+                    'estacion': estacion,
+                    'frecuencia':frecuencia
+                },
+                dataType: 'json',
+                success: function (data) {
+                    //datos=JSON.parse(data)
+                    $.each(data, function(index, value) {
+                        $("#id_parametro").append('<option value="' + index + '">' + value + '</option>');
+                    });
+                }
+            });
+        });
+
+
+        $("#id_frecuencia").change(function () {
+            var estacion = $("#id_estacion").val();
+            var frecuencia = $("#id_frecuencia").val();
+            $("#id_parametro").find('option').remove().end()
+            $.ajax({
+                url: '/parametros/inamhi',
+                data: {
+                    'estacion': estacion,
+                    'frecuencia':frecuencia
+                },
+                dataType: 'json',
+                success: function (data) {
+                    //datos=JSON.parse(data)
+                    $.each(data, function(index, value) {
+                        $("#id_parametro").append('<option value="' + index + '">' + value + '</option>');
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+
+
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Información Estaciones INAMHI</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Esta consulta muestra la información de las estaciones del INAMHI. Todos los campos son obligatorios para realizar la consulta</p>
+        <p class="text-warning"><strong>Aviso: </strong>El campo parametro depende de los campos estación y frecuencia</p>
+    </div>
+</div>
+<form class="form" method="post" action="{% url 'reportes:reporte_inamhi' %}">
+    <div class="row">
+        {% csrf_token %}
+        {% for field in form%}
+        {% bootstrap_field field form_group_class='col-lg-4 col-md-6' %}
+        {% endfor %}
+
+        <div class="form-group col-lg-4 col-md-6">
+            <label>&nbsp;</label><br>
+            <button type="submit" class="btn btn-primary">
+                Buscar
+            </button>
+            <a class="btn btn-light"
+               href="{% url 'reportes:reporte_inamhi' %}">
+                Limpiar</a>
+        </div>
+    </div>
+</form>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Nota: </strong>Los tiempos de respuesta y la información mostrada dependen del INAMHI</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class=" col-lg-12 col-md-12 col-sm-12">
+        {% if grafico %}
+        <div style="height:400">
+            {{ grafico|safe }}
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% if mensaje %}
+    <div class="col-lg-6">
+        <div class="alert alert-info" role="alert">
+            {{mensaje}}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+
+
+
+
+
+{% endblock %}
