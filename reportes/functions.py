@@ -32,143 +32,125 @@ def consultar_datos(form):
         fecha_inicio = estacion.est_fecha_inicio
     if fecha_fin is None:
         fecha_fin = date.today()
+    # frecuencia minima
     if frecuencia == str(0):
-        valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
-        maximos_pro = []
-        minimos_pro = []
+        informacion = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+    # frecuencia de 5 minutos
     elif frecuencia == str(1):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
+        informacion = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia horaria
     elif frecuencia == str(2):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
+        informacion = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
     # frecuencia diaria
     elif frecuencia == str(3):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
+        informacion = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
         # frecuencia mensual
     elif frecuencia == str(4):
-        valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
-    print(len(valores))
+        informacion = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
+    tiempo = informacion["tiempo"]
+    valor = informacion["valor"]
+    max_abs = informacion["max_abs"]
+    min_abs = informacion["min_abs"]
+    max_pro = informacion["max_pro"]
+    min_pro = informacion["min_pro"]
+    if len(valor) > 0 and valor.count(None) != len(tiempo):
 
-    if frecuencia == str(0):
-        data_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
-        data_maximo = get_elemento_data(variable, tiempo, maximos_abs, 'Maximo', '#32CD32')
-        data_minimo = get_elemento_data(variable, tiempo, minimos_abs, 'Minimo', '#CD0C18')
+        if frecuencia == str(0):
+            data_valor = get_trace_minimo(tiempo, valor, 'Valor', '#1660A7')
+            data_maximo = get_elemento_data(variable, tiempo, max_abs, 'Maximo', '#32CD32')
+            data_minimo = get_elemento_data(variable, tiempo, min_abs, 'Minimo', '#CD0C18')
+        else:
+            data_valor = get_elemento_data(variable, tiempo, valor, 'Promedio', '#1660A7')
+            if max_abs.count(None) <= max_pro.count(None):
+                data_maximo = get_elemento_data(variable, tiempo, max_abs, 'Maximo Absoluto', '#32CD32')
+            else:
+                data_maximo = get_elemento_data(variable, tiempo, max_pro, 'Maximo Promedio', '#90EE90')
+            if min_abs.count(None) <= min_pro.count(None):
+                data_minimo = get_elemento_data(variable, tiempo, min_abs, 'Minimo Absoluto', '#CD0C18')
+            else:
+                data_minimo = get_elemento_data(variable, tiempo, min_pro, 'Minimo Promedio', '#FF8C00')
+
+        titulo_grafico = variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo
+        titulo_yaxis = variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"
+        layout = get_layout_grafico(titulo_grafico, titulo_yaxis, fecha_inicio, fecha_fin)
+
+        if frecuencia == str(0) or variable.var_id == 1:
+            data = get_data_graph(data_valor)
+        else:
+            data = get_data_graph(data_valor, data_maximo, data_minimo)
+
+        figure = go.Figure(data=data, layout=layout)
+
+        div = opy.plot(figure, auto_open=False, output_type='div', include_plotlyjs=False)
+
+        grafico = dict(grafico=div)
+
     else:
-        data_valor = get_elemento_data(variable, tiempo, valores, 'Promedio', '#1660A7')
-        if maximos_abs.count(None) <= maximos_pro.count(None):
-            data_maximo = get_elemento_data(variable, tiempo, maximos_abs, 'Maximo Absoluto', '#32CD32')
-        else:
-            data_maximo = get_elemento_data(variable, tiempo, maximos_pro, 'Maximo Promedio', '#90EE90')
-        if minimos_abs.count(None) <= minimos_pro.count(None):
-            data_minimo = get_elemento_data(variable, tiempo, minimos_abs, 'Minimo Absoluto', '#CD0C18')
-        else:
-            data_minimo = get_elemento_data(variable, tiempo, minimos_pro, 'Minimo Promedio', '#FF8C00')
-    boton_dia = dict(count=1,
-                     label='1dia',
-                     step='day',
-                     stepmode='backward')
-    boton_mes = dict(count=1,
-                     label='1mes',
-                     step='month',
-                     stepmode='backward')
-    boton_6meses = dict(count=6,
-                        label='6meses',
-                        step='month',
-                        stepmode='backward')
-    boton_all = dict(step='all')
-    botones = list()
-    if frecuencia == str(0) or frecuencia == str(1) or frecuencia == str(2):
-        botones.append(boton_dia)
-    botones.append(boton_mes)
-    if frecuencia == str(3) or frecuencia == str(4):
-        botones.append(boton_6meses)
-    botones.append(boton_all)
-
-    titulo_grafico = variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo
-    layout = {
-        'title': titulo_grafico,
-        'yaxis': dict(title=variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"),
-        'xaxis': dict(
-
-            range=list([fecha_inicio, fecha_fin]),
-            rangeselector=dict(
-                buttons=botones
-            ),
-            rangeslider={'range': [fecha_inicio, fecha_fin]},
-            type='date',
-
-        )
-
-    }
-
-    if frecuencia == str(0):
-        data = go.Data([data_valor])
-    else:
-        if variable.var_id != 1:
-            '''grafico = {
-                'data': [
-                    data_valor,
-                    data_maximo,
-                    data_minimo
-                ],
-                'layout': layout
-    
-            }'''
-            data = go.Data([data_valor,data_maximo,data_minimo])
-        else:
-
-            '''grafico = {
-                'data': [
-                    data_valor
-                ],
-                'layout': layout
-            }'''
-
-            data = go.Data([data_valor])
-
-    figure = go.Figure(data=data, layout=layout)
-
-    div = opy.plot(figure, auto_open=False, output_type='div', include_plotlyjs=False)
-
-    grafico = dict(grafico=div)
-
+        grafico = dict(mensaje="No existe informacion para la consulta")
     return grafico
 
 
-def get_elemento_data(variable, tiempo, valor, nombre, color):
-    '''type_graph = 'scatter'
-    if variable.var_id == 1:
-        type_graph = 'bar'
-    elemento = {
-        'type': type_graph,
-        'x': tiempo,
-        'y': valor,
-        'name': nombre,
-        'line': {
-            'color': color,
-        },
-    }'''
-    if variable.var_id == 1:
-        elemento = go.Bar(
-            x=tiempo,
-            y=valor,
-            name=nombre
-        )
+# funcion para consultar datos pra usuarios
+def consultar_datos_usuario(form):
+    estacion = form.cleaned_data['estacion']
+    variable = form.cleaned_data['variable']
+    fecha_inicio = form.cleaned_data['inicio']
+    fecha_fin = form.cleaned_data['fin']
+    frecuencia = form.cleaned_data['frecuencia']
+    if fecha_inicio is None:
+        fecha_inicio = estacion.est_fecha_inicio
+    if fecha_fin is None:
+        fecha_fin = date.today()
+
+    if frecuencia == str(1):
+        informacion = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
+        # frecuencia diaria
+    elif frecuencia == str(2):
+        informacion = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
+        # frecuencia mensual
+    elif frecuencia == str(3):
+        informacion = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
+    tiempo = informacion["tiempo"]
+    valor = informacion["valor"]
+    max_abs = informacion["max_abs"]
+    min_abs = informacion["min_abs"]
+    max_pro = informacion["max_pro"]
+    min_pro = informacion["min_pro"]
+
+    data_valor = get_elemento_data_json(variable, tiempo, valor, 'Promedio', '#1660A7')
+    if max_abs.count(None) <= max_pro.count(None):
+        data_maximo = get_elemento_data_json(variable, tiempo, max_abs, 'Maximo Absoluto', '#32CD32')
     else:
-        elemento = go.Scattergl(
-            x=tiempo,
-            y=valor,
-            name=nombre,
-            mode='lines',
-            line=dict(
-                color=color,
+        data_maximo = get_elemento_data_json(variable, tiempo, max_pro, 'Maximo Promedio', '#90EE90')
+    if min_abs.count(None) <= min_pro.count(None):
+        data_minimo = get_elemento_data_json(variable, tiempo, min_abs, 'Minimo Absoluto', '#CD0C18')
+    else:
+        data_minimo = get_elemento_data_json(variable, tiempo, min_pro, 'Minimo Promedio', '#FF8C00')
 
-            )
-        )
+    titulo_grafico = variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo
+    titulo_yaxis = variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"
+    layout = get_layout_grafico(titulo_grafico, titulo_yaxis, fecha_inicio, fecha_fin)
+    if variable.var_id != 1:
+        grafico = {
+            'data': [
+                data_valor,
+                data_maximo,
+                data_minimo
+            ],
+            'layout': layout
 
-    return elemento
+        }
+    else:
+        grafico = {
+            'data': [
+                data_valor
+            ],
+            'layout': layout
+        }
+    return grafico
 
 
+# graficar valores a la minima frecuencia
 def get_trace_minimo(tiempo, valor, nombre, color):
     elemento = go.Scattergl(
         x=tiempo,
@@ -185,6 +167,7 @@ def get_trace_minimo(tiempo, valor, nombre, color):
     return elemento
 
 
+# trazo para la comparación de variables
 def get_trace(variable, tiempo, valor, nombre):
     type_graph = 'scatter'
     if variable.var_id == 1:
@@ -194,8 +177,6 @@ def get_trace(variable, tiempo, valor, nombre):
             x=tiempo,
             y=valor,
             name=nombre,
-            # yaxis='y2',
-            # xaxis='x2',
             marker=dict(color="#1660A7")
         )
     else:
@@ -265,6 +246,7 @@ def filtrar(form):
     return context
 
 
+# comparar tres estaciones en la misma vaiable
 def comparar(form):
     estacion01 = form.cleaned_data['estacion01']
     estacion02 = form.cleaned_data['estacion02']
@@ -274,62 +256,41 @@ def comparar(form):
     fecha_fin = form.cleaned_data['fin']
     frecuencia = form.cleaned_data['frecuencia']
     # frecuencia 5 minutos
-    if (frecuencia == str(1)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_5minutos(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_5minutos(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, max_pro03, min03, min_pro03, time03 = datos_5minutos(estacion03, variable, fecha_inicio, fecha_fin)
+    if frecuencia == str(1):
+        info_esta01 = datos_5minutos(estacion01, variable, fecha_inicio, fecha_fin)
+        info_esta02 = datos_5minutos(estacion02, variable, fecha_inicio, fecha_fin)
+        info_esta03 = datos_5minutos(estacion03, variable, fecha_inicio, fecha_fin)
     # frecuencia horaria
-    elif (frecuencia == str(2)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_horarios(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_horarios(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, max_pro03, min03, min_pro03, time03 = datos_horarios(estacion03, variable, fecha_inicio, fecha_fin)
+    elif frecuencia == str(2):
+        info_esta01 = datos_horarios(estacion01, variable, fecha_inicio, fecha_fin)
+        info_esta02 = datos_horarios(estacion02, variable, fecha_inicio, fecha_fin)
+        info_esta03 = datos_horarios(estacion03, variable, fecha_inicio, fecha_fin)
     # frecuencia diaria
-    elif (frecuencia == str(3)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_diarios(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_diarios(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, max_pro03, min03, min_pro03, time03 = datos_diarios(estacion03, variable, fecha_inicio, fecha_fin)
+    elif frecuencia == str(3):
+        info_esta01 = datos_diarios(estacion01, variable, fecha_inicio, fecha_fin)
+        info_esta02 = datos_diarios(estacion02, variable, fecha_inicio, fecha_fin)
+        info_esta03 = datos_diarios(estacion03, variable, fecha_inicio, fecha_fin)
     # frecuencia mensual
-    elif (frecuencia == str(4)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_mensuales(estacion01, variable, fecha_inicio, fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_mensuales(estacion02, variable, fecha_inicio, fecha_fin)
-        val03, max03, max_pro03, min03, min_pro03, time03 = datos_mensuales(estacion03, variable, fecha_inicio, fecha_fin)
-    trace0 = trace_graph(variable, estacion01, time01, val01)
-    trace1 = trace_graph(variable, estacion02, time02, val02)
-    trace2 = trace_graph(variable, estacion03, time03, val03)
-    data = go.Data([trace0, trace1, trace2])
-    layout = go.Layout(
-        title="Comparación de Estaciones",
-        yaxis=dict(title=variable.var_nombre + \
-                         str(" (") + variable.uni_id.uni_sigla + str(")")),
-        xaxis=dict(
-            rangeselector=dict(
-                buttons=list([
-                    dict(count=1,
-                         label='1d',
-                         step='day',
-                         stepmode='today'),
-                    dict(count=1,
-                         label='1m',
-                         step='month',
-                         stepmode='backward'),
-                    dict(count=6,
-                         label='6m',
-                         step='month',
-                         stepmode='backward'),
-                    dict(count=1,
-                         label='1y',
-                         step='year',
-                         stepmode='backward'),
-                    dict(step='all')
-                ])
-            ),
-            rangeslider=dict(),
-            type='date'
-        )
-    )
-    figure = go.Figure(data=data, layout=layout)
-    div = opy.plot(figure, auto_open=False, output_type='div')
-    return div
+    elif frecuencia == str(4):
+        info_esta01 = datos_mensuales(estacion01, variable, fecha_inicio, fecha_fin)
+        info_esta02 = datos_mensuales(estacion02, variable, fecha_inicio, fecha_fin)
+        info_esta01 = datos_mensuales(estacion03, variable, fecha_inicio, fecha_fin)
+    time01 = info_esta01["tiempo"]
+    time02 = info_esta02["tiempo"]
+    time03 = info_esta03["tiempo"]
+    val01 = info_esta01["valor"]
+    val02 = info_esta02["valor"]
+    val03 = info_esta03["valor"]
+    trace0 = get_elemento_data(variable, time01, val01, estacion01.est_codigo)
+    trace1 = get_elemento_data(variable, time02, val02, estacion02.est_codigo)
+    trace2 = get_elemento_data(variable, time03, val03, estacion03.est_codigo)
+
+    titulo = "Comparación de Estaciones"
+    titulo_yaxis = variable.var_nombre + str(" (") + variable.uni_id.uni_sigla + str(")")
+    layout = get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin)
+    data = get_data_graph(trace0, trace1, trace2)
+    grafico = get_grafico(layout, data)
+    return grafico
 
 
 # funcion para comparar dos variables entre dos estaciones
@@ -342,32 +303,33 @@ def comparar_variables(form):
     fecha_fin = form.cleaned_data['fin']
     frecuencia = form.cleaned_data['frecuencia']
     parametro = form.cleaned_data['parametro']
-    if (frecuencia == str(1)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_5minutos(estacion01, variable01, fecha_inicio,
-                                                                           fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_5minutos(estacion02, variable02, fecha_inicio,
-                                                                           fecha_fin)
+    if frecuencia == str(1):
+        info_est01 = datos_5minutos(estacion01, variable01, fecha_inicio, fecha_fin)
+        info_est02 = datos_5minutos(estacion02, variable02, fecha_inicio, fecha_fin)
     # frecuencia horaria
-    elif (frecuencia == str(2)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_horarios(estacion01, variable01, fecha_inicio,
-                                                                           fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_horarios(estacion02, variable02, fecha_inicio,
-                                                                           fecha_fin)
+    elif frecuencia == str(2):
+        info_est01 = datos_horarios(estacion01, variable01, fecha_inicio, fecha_fin)
+        info_est02 = datos_horarios(estacion02, variable02, fecha_inicio, fecha_fin)
     # frecuencia diaria
-    elif (frecuencia == str(3)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_diarios(estacion01, variable01, fecha_inicio,
-                                                                          fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_diarios(estacion02, variable02, fecha_inicio,
-                                                                          fecha_fin)
+    elif frecuencia == str(3):
+        info_est01 = datos_diarios(estacion01, variable01, fecha_inicio, fecha_fin)
+        info_est02 = datos_diarios(estacion02, variable02, fecha_inicio, fecha_fin)
     # frecuencia mensual
-    elif (frecuencia == str(4)):
-        val01, max01, max_pro01, min01, min_pro01, time01 = datos_mensuales(estacion01, variable01, fecha_inicio,
-                                                                            fecha_fin)
-        val02, max02, max_pro02, min02, min_pro02, time02 = datos_mensuales(estacion02, variable02, fecha_inicio,
-                                                                            fecha_fin)
+    elif frecuencia == str(4):
+        info_est01 = datos_mensuales(estacion01, variable01, fecha_inicio, fecha_fin)
+        info_est02 = datos_mensuales(estacion02, variable02, fecha_inicio, fecha_fin)
 
+    time01 = info_est01["tiempo"]
+    time02 = info_est02["tiempo"]
+    val01 = info_est01["valor"]
+    max01 = info_est01["max_abs"]
+    max_pro01 = info_est01["max_pro"]
+    min01 = info_est01["min_abs"]
+    min_pro01 = info_est01["min_abs"]
+    val02 = info_est02["valor"]
     # trace01 = get_trace(variable01, time01, val01, variable01.var_nombre)
     trace02 = get_trace(variable02, time02, val02, variable02.var_nombre)
+
     if parametro == str(1):
         trace01 = get_trace(variable01, time01, val01, variable01.var_nombre)
     elif parametro == str(2):
@@ -380,46 +342,18 @@ def comparar_variables(form):
             trace01 = get_trace(variable01, time01, min01, variable01.var_nombre)
         else:
             trace01 = get_trace(variable01, time01, min_pro01, variable01.var_nombre)
-    print(parametro, type(parametro))
 
     titulo_grafico = "Comparacion Variables"
-
-    '''layout = dict(
-        title=titulo_grafico,
-        yaxis=dict(
-            title=variable01.var_nombre + str(" (") + variable01.uni_id.uni_sigla + str(")"),
-        ),
-        yaxis2=dict(
-            title=variable02.var_nombre + str(" (") + variable02.uni_id.uni_sigla + str(")"),
-            titlefont=dict(
-                color='rgb(148, 103, 189)'
-            ),
-            tickfont=dict(
-                color='rgb(148, 103, 189)'
-            ),
-            overlaying='y',
-            side='right',
-            autorange='reversed'
-
-        ),
-        xaxis=dict(
-            # rangeslider={},
-            # type='date',
-        ),
-        height=500
-        
-
-    )'''
     layout = dict(
         title=titulo_grafico,
         yaxis=dict(
-            title=variable01.var_nombre + str(" (") + variable01.uni_id.uni_sigla + str(")"),
+            title=variable02.var_nombre + str(" (") + variable02.uni_id.uni_sigla + str(")"),
             autorange='reversed',
             overlaying='y',
             side='right',
         ),
         yaxis2=dict(
-            title=variable02.var_nombre + str(" (") + variable02.uni_id.uni_sigla + str(")"),
+            title=variable01.var_nombre + str(" (") + variable01.uni_id.uni_sigla + str(")"),
 
         ),
         xaxis=dict(
@@ -469,7 +403,6 @@ def procesar_json_inamhi(form):
             fecha = datetime.strptime(item['fechaTomaDelDato'], '%Y-%m-%d %H:%M:%S')
             tiempo.append(fecha)
             if len(item['dataJSON']) > 0:
-                # print(item['dataJSON'][0]['valor'], type(item['dataJSON'][0]['valor']))
                 valores.append(item['dataJSON'][0]['valor'])
             else:
                 valores.append(None)
@@ -478,9 +411,7 @@ def procesar_json_inamhi(form):
             return mensaje
         titulo = parametro.nombre + " " + estacion.codigo + " " + estacion.nombre
         titulo_yaxis = parametro.nombre + " (" + parametro.estadistico + ")"
-
         layout = get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin)
-
         trace_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
         data = get_data_graph(trace_valor)
         grafico = get_grafico(layout, data)
@@ -491,25 +422,45 @@ def procesar_json_inamhi(form):
         return mensaje
 
 
-def trace_graph(variable, estacion, tiempo, valor):
+def get_elemento_data_json(variable, tiempo, valor, nombre, color):
+    type_graph = 'scatter'
     if variable.var_id == 1:
-        trace = go.Bar(
+        type_graph = 'bar'
+    elemento = {
+        'type': type_graph,
+        'x': tiempo,
+        'y': valor,
+        'name': nombre,
+        'line': {
+            'color': color,
+        }
+    }
+    return elemento
+
+
+def get_elemento_data(variable, tiempo, valor, nombre, color=None):
+    if variable.var_id == 1:
+        elemento = go.Bar(
             x=tiempo,
             y=valor,
-            name=estacion.est_codigo,
-
+            name=nombre
         )
     else:
-        trace = go.Scatter(
+        elemento = go.Scattergl(
             x=tiempo,
             y=valor,
-            name=estacion.est_codigo,
+            name=nombre,
             mode='lines',
-            #yaxis='y2'
+            line=dict(
+                color=color,
+
+            )
         )
-    return trace
+
+    return elemento
 
 
+# crear el gráfico con cualquier tipo de datos
 def get_grafico(layout, data):
     figure = go.Figure(data=data, layout=layout)
     div = opy.plot(figure, auto_open=False, output_type='div', include_plotlyjs=False)
@@ -517,7 +468,8 @@ def get_grafico(layout, data):
     return grafico
 
 
-def get_layout_grafico(titulo,titulo_yaxis, fecha_inicio, fecha_fin):
+# crear el estilo del grafico
+def get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin):
     boton_dia = dict(count=1,
                      label='1dia',
                      step='day',
@@ -534,6 +486,7 @@ def get_layout_grafico(titulo,titulo_yaxis, fecha_inicio, fecha_fin):
     botones = list()
 
     botones.append(boton_dia)
+    botones.append(boton_mes)
     botones.append(boton_all)
 
     layout = {
@@ -556,9 +509,9 @@ def get_layout_grafico(titulo,titulo_yaxis, fecha_inicio, fecha_fin):
 def get_data_graph(trace_valor, trace_maximo=None, trace_minimo=None):
 
     if trace_maximo is None or trace_minimo is None:
-        data = go.Data([trace_valor])
+        data = [trace_valor]
     else:
-        data = go.Data([trace_valor, trace_maximo, trace_minimo])
+        data = [trace_valor, trace_maximo, trace_minimo]
 
     return data
 

@@ -7,6 +7,18 @@ from django.db import connection
 from math import ceil
 from cruce.models import Cruce
 from importacion.functions import get_modelo
+from datetime import date
+from sedc.settings import BASE_DIR
+
+from openpyxl.styles import Font
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
+
+from openpyxl.chart import (
+    LineChart,
+    Reference,
+)
+from django.http import HttpResponse
 
 suma = 'sum(valor) as valor '
 promedio = 'avg(valor) as valor'
@@ -16,6 +28,130 @@ min_abs = 'min(minimo) as min_abs'
 min_pro = 'min(valor) as min_pro'
 coma = ', '
 group_order = 'GROUP BY 1 ORDER BY 1'
+
+
+def reporte_excel(form):
+    estacion = form.cleaned_data['estacion']
+    variable = form.cleaned_data['variable']
+    fecha_inicio = form.cleaned_data['inicio']
+    fecha_fin = form.cleaned_data['fin']
+    frecuencia = form.cleaned_data['frecuencia']
+    if fecha_inicio is None:
+        fecha_inicio = estacion.est_fecha_inicio
+    if fecha_fin is None:
+        fecha_fin = date.today()
+    if frecuencia == "1":
+        informacion = datos_5minutos(estacion, variable,fecha_inicio, fecha_fin)
+    elif frecuencia == "2":
+        informacion = datos_horarios(estacion, variable,fecha_inicio, fecha_fin)
+    elif frecuencia == "3":
+        informacion = datos_diarios(estacion, variable,fecha_inicio, fecha_fin)
+    else:
+        informacion = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
+
+    tiempo = informacion["tiempo"]
+    valores = informacion["valor"]
+    maximos_abs = informacion["max_abs"]
+    minimos_abs = informacion["min_abs"]
+    maximos_pro = informacion["max_pro"]
+    minimos_pro = informacion["min_pro"]
+
+    # ruta de la imagen
+    ruta = str(BASE_DIR) + '/media/logo_fonag.jpg'
+    img = Image(ruta)
+    # estilo de negrita
+    font_bold = Font(bold=True)
+    # Creamos el libro de trabajo
+    wb = Workbook()
+    # Definimos como nuestra hoja de trabajo, la hoja activa, por defecto la primera del libro
+    ws = wb.active
+    ws['B1'] = 'Reporte de Datos Hidrometerológicos'
+    ws['B1'].font = font_bold
+    ws.add_image(img, 'G1')
+    ws.merge_cells('B1:F1')
+    ws['A4'] = 'Estación'
+    ws['A4'].font = font_bold
+    ws['B4'] = estacion.est_codigo
+    ws['C4'] = estacion.est_nombre
+    ws.merge_cells('C4:E4')
+    ws['F4'] = 'Variable'
+    ws['F4'].font = font_bold
+    ws['G4'] = variable.var_nombre
+    ws['B6'] = 'Coordenadas Geográfica UTM (DATUM WGS 84)'
+    ws['B6'].font = font_bold
+    ws.merge_cells('B6:G6')
+    ws['A7'] = 'Latitud'
+    ws['A7'].font = font_bold
+    ws['B7'] = estacion.est_latitud
+    ws['F7'] = 'Longitud'
+    ws['F7'].font = font_bold
+    ws['G7'] = estacion.est_longitud
+
+    # Creamos los encabezados desde la celda B9 hasta la E9
+    ws['A9'] = 'Fecha'
+    ws['B9'] = 'Valor'
+
+    cont = 10
+    # Recorremos el conjunto de datos
+    if len(maximos_abs) != maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
+        ws['C9'] = 'Max absoluto'
+        ws['D9'] = 'Min absoluto'
+        ws['E9'] = 'Max promedio'
+        ws['F9'] = 'Min promedio'
+        for valor, maximo_abs, maximos_pro, minimo_abs, minimo_pro, fecha in zip(valores, maximos_abs, maximos_pro,
+                                                                                 minimos_abs, minimos_pro, tiempo):
+            ws.cell(row=cont, column=1).value = fecha
+            ws.cell(row=cont, column=2).value = valor
+            ws.cell(row=cont, column=3).value = maximo_abs
+            ws.cell(row=cont, column=4).value = minimo_abs
+            ws.cell(row=cont, column=5).value = maximos_pro
+            ws.cell(row=cont, column=6).value = minimo_pro
+            cont = cont + 1
+    else:
+        ws['C9'] = 'Max promedio'
+        ws['D9'] = 'Min promedio'
+        for valor, maximos_pro, minimo_pro, fecha in zip(valores, maximos_pro, minimos_pro, tiempo):
+            ws.cell(row=cont, column=1).value = fecha
+            ws.cell(row=cont, column=2).value = valor
+            ws.cell(row=cont, column=3).value = maximos_pro
+            ws.cell(row=cont, column=4).value = minimo_pro
+            cont = cont + 1
+
+    # grafico
+    chart = LineChart()
+    chart.title = variable.var_nombre
+    chart.style = 12
+    chart.x_axis.title = 'Tiempo'
+    chart.x_axis.number_format = 'dd-mm-yyyy'
+    chart.x_axis.majorTimeUnit = 'days'
+    chart.y_axis.title = variable.var_nombre
+    final = 10 + len(tiempo)
+    data = Reference(ws, min_col=2, min_row=9, max_col=4, max_row=final - 1)
+    chart.add_data(data, titles_from_data=True)
+    s0 = chart.series[0]
+    s0.graphicalProperties.line.solidFill = "32CD32"
+    s0.graphicalProperties.line.width = 10
+    s0.smooth = True
+    s1 = chart.series[1]
+    s1.graphicalProperties.line.solidFill = "1645A7"
+    s1.graphicalProperties.line.width = 10
+    s1.smooth = True
+    s2 = chart.series[2]
+    s2.graphicalProperties.line.solidFill = "CD0C18"
+    s2.graphicalProperties.line.width = 10
+    s2.smooth = True
+    dates = Reference(ws, min_col=1, min_row=10, max_row=final)
+    chart.set_categories(dates)
+    if frecuencia != "0":
+        ws.add_chart(chart, "H9")
+    # Establecemos el nombre del archivo
+    nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.xlsx"')
+    # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
+    response = HttpResponse(content_type="application/ms-excel")
+    contenido = "attachment; filename={0}".format(nombre_archivo)
+    response["Content-Disposition"] = contenido
+    wb.save(response)
+    return response
 
 
 def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
@@ -51,7 +187,15 @@ def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
                 minimo.append(None)
         # frecuencia.append(fila.fecha)
         frecuencia.append(fila.fecha.strftime("%Y-%m-%d %H:%M:%S"))
-    return valor, maximo, minimo, frecuencia
+    informacion = dict(
+        valor=valor,
+        max_abs=maximo,
+        min_abs=minimo,
+        max_pro=[],
+        min_pro=[],
+        tiempo=frecuencia
+    )
+    return informacion
 
 
 def datos_estacion(estacion, fecha_inicio, fecha_fin):
@@ -134,16 +278,25 @@ def datos_5minutos(estacion, variable, fecha_inicio, fecha_fin):
             frecuencia.append(fecha.strftime("%Y-%m-%d %H:%M:%S"))
             fecha += intervalo
 
-    return valor, maximo_abs, maximo_pro, minimo_abs, minimo_pro, frecuencia
+    informacion = dict(
+        valor=valor,
+        max_abs=maximo_abs,
+        min_abs=minimo_abs,
+        max_pro=maximo_pro,
+        min_pro=minimo_pro,
+        tiempo=frecuencia
+    )
+
+    return informacion
 
 
 def datos_horarios(estacion, variable, fecha_inicio, fecha_fin):
     datos = armar_consulta(estacion, variable, 2, fecha_inicio, fecha_fin)
     valor = []
-    maximos_abs = []
-    maximos_pro = []
-    minimos_abs = []
-    minimos_pro = []
+    maximo_abs = []
+    maximo_pro = []
+    minimo_abs = []
+    minimo_pro = []
     frecuencia = []
     intervalo = timedelta(hours=1)
     fecha = datetime.combine(fecha_inicio, datetime.min.time())
@@ -155,31 +308,40 @@ def datos_horarios(estacion, variable, fecha_inicio, fecha_fin):
             fecha_datos = datos[item].get('fecha')
             if fecha_datos == fecha:
                 valor.append(datos[item].get('valor'))
-                maximos_abs.append(datos[item].get('max_abs'))
-                maximos_pro.append(datos[item].get('max_pro'))
-                minimos_abs.append(datos[item].get('min_abs'))
-                minimos_pro.append(datos[item].get('min_pro'))
+                maximo_abs.append(datos[item].get('max_abs'))
+                maximo_pro.append(datos[item].get('max_pro'))
+                minimo_abs.append(datos[item].get('min_abs'))
+                minimo_pro.append(datos[item].get('min_pro'))
                 item += 1
             else:
                 valor.append(None)
-                maximos_abs.append(None)
-                maximos_pro.append(None)
-                minimos_abs.append(None)
-                minimos_pro.append(None)
+                maximo_abs.append(None)
+                maximo_pro.append(None)
+                minimo_abs.append(None)
+                minimo_pro.append(None)
             # frecuencia.append(fecha)
             frecuencia.append(fecha.strftime("%Y-%m-%d %H:%M:%S"))
             fecha += intervalo
-    return valor, maximos_abs, maximos_pro, minimos_abs, minimos_pro, frecuencia
+    informacion = dict(
+        valor=valor,
+        max_abs=maximo_abs,
+        min_abs=minimo_abs,
+        max_pro=maximo_pro,
+        min_pro=minimo_pro,
+        tiempo=frecuencia
+    )
+
+    return informacion
 
 
 def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
     datos = armar_consulta(estacion, variable, 3, fecha_inicio, fecha_fin)
     valor = []
     # maximos absolutos
-    maximos_abs = []
-    maximos_pro = []
-    minimos_abs = []
-    minimos_pro = []
+    maximo_abs = []
+    maximo_pro = []
+    minimo_abs = []
+    minimo_pro = []
     frecuencia = []
     intervalo = timedelta(days=1)
 
@@ -193,20 +355,29 @@ def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
             if fecha_datos == fecha:
 
                 valor.append(datos[item].get('valor'))
-                maximos_abs.append(datos[item].get('max_abs'))
-                maximos_pro.append(datos[item].get('max_pro'))
-                minimos_abs.append(datos[item].get('min_abs'))
-                minimos_pro.append(datos[item].get('min_pro'))
+                maximo_abs.append(datos[item].get('max_abs'))
+                maximo_pro.append(datos[item].get('max_pro'))
+                minimo_abs.append(datos[item].get('min_abs'))
+                minimo_pro.append(datos[item].get('min_pro'))
                 item += 1
             else:
                 valor.append(None)
-                maximos_abs.append(None)
-                maximos_pro.append(None)
-                minimos_abs.append(None)
-                minimos_pro.append(None)
+                maximo_abs.append(None)
+                maximo_pro.append(None)
+                minimo_abs.append(None)
+                minimo_pro.append(None)
             frecuencia.append(fecha)
             fecha += intervalo
-    return valor, maximos_abs, maximos_pro, minimos_abs, minimos_pro, frecuencia
+
+    informacion = dict(
+        valor=valor,
+        max_abs=maximo_abs,
+        min_abs=minimo_abs,
+        max_pro=maximo_pro,
+        min_pro=minimo_pro,
+        tiempo=frecuencia
+    )
+    return informacion
 
 
 def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
@@ -242,8 +413,15 @@ def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
             frecuencia.append(fecha)
             intervalo = dias_mes(fecha.month, fecha.year)
             fecha += timedelta(days=intervalo)
-
-    return valor, maximo_abs, maximo_pro, minimo_abs, minimo_pro, frecuencia
+    informacion = dict(
+        valor=valor,
+        max_abs=maximo_abs,
+        min_abs=minimo_abs,
+        max_pro=maximo_pro,
+        min_pro=minimo_pro,
+        tiempo=frecuencia
+    )
+    return informacion
 
 
 def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):

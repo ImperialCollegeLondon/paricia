@@ -17,11 +17,11 @@ $(document).ready(function() {
                 var count = Object.keys(data.data[0].y).length;
                 if (count>0) {
                     Plotly.newPlot('div_informacion', data.data,data.layout);
+
                 }
                 else{
                     $("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
                 }
-                //graficar(data)
                 $("#btn_graficar").removeAttr('disabled');
 
                 $("#div_loading").hide();
@@ -59,7 +59,7 @@ $(document).ready(function() {
                 else{
                     $("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
                 }
-                //graficar(data)
+
                 $("#btn_consultar").removeAttr('disabled');
 
                 $("#div_loading").hide();

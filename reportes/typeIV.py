@@ -54,7 +54,7 @@ class TypeIV(Titulos):
                     color=('rgb(50, 205, 50)'),
                     width=4, )
             )
-            data = go.Data([trace0, trace1, trace2])
+            data = [trace0, trace1, trace2]
             layout = go.Layout(
                 title=str(self.titulo_grafico(variable)) + str(" (") + str(self.titulo_unidad(variable)) + str(")"))
             figure = go.Figure(data=data, layout=layout)

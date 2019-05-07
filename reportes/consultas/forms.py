@@ -4,7 +4,6 @@ from estacion.models import Estacion
 from variable.models import Variable, Unidad
 
 
-
 class MedicionSearchForm(forms.Form):
     lista_frecuencias = (
         ('0', 'Minima'),
@@ -23,18 +22,23 @@ class MedicionSearchForm(forms.Form):
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin", required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
     frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
-    # saber si hay datos
-    '''def exists(self, form):
-        estacion = form.cleaned_data['estacion']
-        variable = form.cleaned_data['variable']
-        fecha_inicio = form.cleaned_data['inicio']
-        fecha_fin = form.cleaned_data['fin']
-        frecuencia = form.cleaned_data['frecuencia']
-        # filtrar los datos por estacion, variable y rango de fechas
-        consulta = (Medicion.objects.filter(est_id=estacion)
-                    .filter(var_id=variable)
-                    .filter(med_fecha__range=[fecha_inicio, fecha_fin]).exists())
-        return consulta'''
+
+class UsuarioSearchForm(forms.Form):
+    lista_frecuencias = (
+
+        ('1', 'Horario'),
+        ('2', 'Diario'),
+        ('3', 'Mensual'),
+    )
+    estacion = forms.ModelChoiceField(
+        queryset=Estacion.objects.order_by('est_id').all())
+    variable = forms.ModelChoiceField(
+        queryset=Variable.objects.order_by('var_id').all())
+
+    # inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(dd/mm/yyyy)",required=False)
+    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio", required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
+    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin", required=False, widget=forms.TextInput(attrs={'autocomplete': 'off', 'placeholder':'dd/mm/yy'}))
+    frecuencia = forms.ChoiceField(choices=lista_frecuencias)
 
 
 class ComparacionForm(forms.Form):

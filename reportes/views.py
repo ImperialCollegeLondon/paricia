@@ -1,27 +1,17 @@
 from estacion.models import Inamhi
 from variable.models import Parametro
 
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 from reportes.forms import AnuarioForm, InamhiForm
-from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, VariableForm, EstacionVariableSearchForm
+from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, VariableForm, EstacionVariableSearchForm,UsuarioSearchForm
 import csv
 from django.http import HttpResponse
 
-from reportes.consultas.functions import (datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
-                                          datos_instantaneos, datos_mensuales, datos_estacion)
-from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos, procesar_json_inamhi
+from reportes.consultas.functions import (datos_horarios_json, datos_instantaneos, datos_estacion, reporte_excel)
+from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos, procesar_json_inamhi, consultar_datos_usuario
 from datetime import date
 from django.shortcuts import render
 from django.http import JsonResponse
-from openpyxl.styles import Font
-from openpyxl import Workbook
-from openpyxl.drawing.image import Image
-
-from openpyxl.chart import (
-    LineChart,
-    Reference,
-)
-from sedc.settings import BASE_DIR
 
 
 class ReportesAnuario(FormView):
@@ -66,9 +56,8 @@ class ComparacionValores(FormView):
     def post(self, request, *args, **kwargs):
         form = ComparacionForm(self.request.POST or None)
         if form.is_valid() and self.request.is_ajax():
-            self.grafico = comparar(form)
             plantilla = 'reportes/consultas/grafico.html'
-            diccionario = {'grafico': self.grafico}
+            diccionario = comparar(form)
             return render(request, plantilla, diccionario)
 
         return render(request, 'home/form_error.html', {'form': form})
@@ -130,7 +119,7 @@ class ConsultasPeriodo(FormView):
                 if self.frecuencia == "0":
                     return self.export_csv(form)
                 else:
-                    return self.export_excel(self.frecuencia, form)
+                    return self.export_excel(form)
         return render(request, 'home/form_error.html', {'form': form})
 
     def get_context_data(self, **kwargs):
@@ -148,7 +137,7 @@ class ConsultasPeriodo(FormView):
             fecha_inicio = estacion.est_fecha_inicio
         if fecha_fin is None:
             fecha_fin = date.today()
-        valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable,fecha_inicio, fecha_fin)
+        valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
         # Establecemos el nombre del archivo
         nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.csv"')
         contenido = "attachment; filename={0}".format(nombre_archivo)
@@ -166,118 +155,33 @@ class ConsultasPeriodo(FormView):
 
         return response
 
-    def export_excel(self,frecuencia,form):
-        estacion = form.cleaned_data['estacion']
-        variable = form.cleaned_data['variable']
-        fecha_inicio = form.cleaned_data['inicio']
-        fecha_fin = form.cleaned_data['fin']
-        if fecha_inicio is None:
-            fecha_inicio = estacion.est_fecha_inicio
-        if fecha_fin is None:
-            fecha_fin = date.today()
-        if frecuencia == "1":
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "2":
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "3":
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
-        else:
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
-        # ruta de la imagen
-        ruta = str(BASE_DIR) + '/media/logo_fonag.jpg'
-        img = Image(ruta)
-        # estilo de negrita
-        font_bold = Font(bold=True)
-        # Creamos el libro de trabajo
-        wb = Workbook()
-        # Definimos como nuestra hoja de trabajo, la hoja activa, por defecto la primera del libro
-        ws = wb.active
-        ws['B1'] = 'Reporte de Datos Hidrometerológicos'
-        ws['B1'].font=font_bold
-        ws.add_image(img, 'G1')
-        ws.merge_cells('B1:F1')
-        ws['A4'] = 'Estación'
-        ws['A4'].font = font_bold
-        ws['B4'] = estacion.est_codigo
-        ws['C4'] = estacion.est_nombre
-        ws.merge_cells('C4:E4')
-        ws['F4'] = 'Variable'
-        ws['F4'].font = font_bold
-        ws['G4'] = variable.var_nombre
-        ws['B6'] = 'Coordenadas Geográfica UTM (DATUM WGS 84)'
-        ws['B6'].font = font_bold
-        ws.merge_cells('B6:G6')
-        ws['A7'] = 'Latitud'
-        ws['A7'].font = font_bold
-        ws['B7'] = estacion.est_latitud
-        ws['F7'] = 'Longitud'
-        ws['F7'].font = font_bold
-        ws['G7'] = estacion.est_longitud
+    def export_excel(self, form):
+        return reporte_excel(form)
 
-        # Creamos los encabezados desde la celda B9 hasta la E9
-        ws['A9'] = 'Fecha'
-        ws['B9'] = 'Valor'
 
-        cont = 10
-        # Recorremos el conjunto de datos
-        if len(maximos_abs) != maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
-            ws['C9'] = 'Max absoluto'
-            ws['D9'] = 'Min absoluto'
-            ws['E9'] = 'Max promedio'
-            ws['F9'] = 'Min promedio'
-            for valor, maximo_abs, maximos_pro, minimo_abs, minimo_pro, fecha in zip(valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo):
-                ws.cell(row=cont, column=1).value = fecha
-                ws.cell(row=cont, column=2).value = valor
-                ws.cell(row=cont, column=3).value = maximo_abs
-                ws.cell(row=cont, column=4).value = minimo_abs
-                ws.cell(row=cont, column=5).value = maximos_pro
-                ws.cell(row=cont, column=6).value = minimo_pro
-                cont = cont + 1
-        else:
-            ws['C9'] = 'Max promedio'
-            ws['D9'] = 'Min promedio'
-            for valor, maximos_pro, minimo_pro, fecha in zip(valores, maximos_pro, minimos_pro, tiempo):
-                ws.cell(row=cont, column=1).value = fecha
-                ws.cell(row=cont, column=2).value = valor
-                ws.cell(row=cont, column=3).value = maximos_pro
-                ws.cell(row=cont, column=4).value = minimo_pro
-                cont = cont + 1
+# consultas por periodo para usuarios invitados
+class ConsultasUsuario(FormView):
+    template_name = 'reportes/consultas_usuario.html'
+    form_class = UsuarioSearchForm
+    success_url = '/reportes/usuarios/'
 
-        # grafico
-        chart = LineChart()
-        chart.title = variable.var_nombre
-        chart.style = 12
-        chart.x_axis.title = 'Tiempo'
-        chart.x_axis.number_format = 'dd-mm-yyyy'
-        chart.x_axis.majorTimeUnit = 'days'
-        chart.y_axis.title = variable.var_nombre
-        final = 10+len(tiempo)
-        data = Reference(ws, min_col=2, min_row=9, max_col=4, max_row=final-1)
-        chart.add_data(data, titles_from_data=True)
-        s0 = chart.series[0]
-        s0.graphicalProperties.line.solidFill = "32CD32"
-        s0.graphicalProperties.line.width = 10
-        s0.smooth = True
-        s1 = chart.series[1]
-        s1.graphicalProperties.line.solidFill = "1645A7"
-        s1.graphicalProperties.line.width = 10
-        s1.smooth = True
-        s2 = chart.series[2]
-        s2.graphicalProperties.line.solidFill = "CD0C18"
-        s2.graphicalProperties.line.width = 10
-        s2.smooth = True
-        dates = Reference(ws, min_col=1, min_row=10, max_row=final)
-        chart.set_categories(dates)
-        if frecuencia != "0":
-            ws.add_chart(chart, "H9")
-        # Establecemos el nombre del archivo
-        nombre_archivo = str('"')+str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.xlsx"')
-        # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
-        response = HttpResponse(content_type="application/ms-excel")
-        contenido = "attachment; filename={0}".format(nombre_archivo)
-        response["Content-Disposition"] = contenido
-        wb.save(response)
-        return response
+    def post(self, request, *args, **kwargs):
+        form = UsuarioSearchForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                datos = consultar_datos_usuario(form)
+                return JsonResponse(datos, safe=False)
+            else:
+                return self.export_excel(form)
+        return render(request, 'home/form_error.html', {'form': form})
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsultasUsuario, self).get_context_data(**kwargs)
+        return context
+
+    @staticmethod
+    def export_excel(form):
+        return reporte_excel(form)
 
 
 # consultas por periodo de todas las variables
@@ -297,7 +201,8 @@ class ConsultasEstacionVariable(FormView):
         context = super(ConsultasEstacionVariable, self).get_context_data(**kwargs)
         return context
 
-    def export_csv(self, form):
+    @staticmethod
+    def export_csv(form):
         estacion = form.cleaned_data['estacion']
         fecha_inicio = form.cleaned_data['inicio']
         fecha_fin = form.cleaned_data['fin']
@@ -343,6 +248,10 @@ class ConsultaInamhi(FormView):
             return render(request, 'reportes/consulta_inamhi.html', informacion)
 
         return render(request, 'reportes/consulta_inamhi.html', informacion)
+
+
+class ConsultaDatos(TemplateView):
+    template_name = 'reportes/mapa_estaciones.html'
 
 
 # web service para consultar datos horarios

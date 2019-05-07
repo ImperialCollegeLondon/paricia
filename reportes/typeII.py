@@ -27,13 +27,13 @@ class TypeII(Titulos):
         elif parametro == 'maximo':
             informacion = list(
                 consulta
-                .annotate(valor=Max('pre_suma', output_field=FloatField())-Avg('pre_suma'))
+                .annotate(valor=Max('pre_suma', output_field=FloatField())-Avg('pre_suma', output_field=FloatField()))
                 .order_by('pre_mes')
             )
         else:
             informacion = list(
                 consulta
-                .annotate(valor=Avg('pre_suma')-Min('pre_suma', output_field=FloatField()))
+                .annotate(valor=Avg('pre_suma', output_field=FloatField())-Min('pre_suma', output_field=FloatField()))
                 .order_by('pre_mes')
             )
         datos = []
@@ -73,7 +73,7 @@ class TypeII(Titulos):
                     arrayminus=min_historico
                 )
             )
-            data = go.Data([trace1, trace2])
+            data = [trace1, trace2]
             layout = go.Layout(
                 title=str(self.titulo_grafico(variable)) + str(" (") + str(self.titulo_unidad(variable)) + str(")"))
             figure = go.Figure(data=data, layout=layout)

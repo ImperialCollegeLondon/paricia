@@ -103,6 +103,8 @@ def datos_json_estaciones(request):
                 codigo=item.est_codigo,
                 nombre=item.est_nombre,
                 tipo=item.tipo.tip_nombre,
+                latitud=item.est_latitud,
+                longitud=item.est_longitud,
                 altura=item.est_altura
             )
 

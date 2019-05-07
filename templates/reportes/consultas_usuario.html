@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "index_invitado.html" %}
 {% block content %}
 {% load bootstrap4 %}
 {% load humanize %}
@@ -7,7 +7,6 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="{% static 'js_ajax.js' %}"></script>
 <script src="{% static 'estaciones-geojson.js' %}"></script>
-
 <div class="row">
     <div class="col-lg-10 col-sm-10">
         <h3>Consultas por periodo</h3>
@@ -19,7 +18,7 @@
     </div>
 </div>
 
-<form id="form_busqueda" class="form" method="post" action="{% url 'reportes:consultas_periodo' %}">
+<form id="form_busqueda" class="form" method="post" action="{% url 'reportes:consultas_usuario' %}">
     <div class="row">
         <!-- formulario -->
         <div class="col-lg-4 col-md-6 col-sm-12">
@@ -30,20 +29,23 @@
                 {% endfor %}
                 <div class="form-group col-lg-12 col-md-12">
                     <label>&nbsp;</label><br>
-                    <button name="graficar" type="submit" class="btn btn-primary">
+                    <button id="btn_consultar" name="graficar" type="button" class="btn btn-primary">
                         Graficar
                     </button>
                     <button type="submit" class="btn btn-primary">
                         Exportar
                     </button>
-                    <a class="btn btn-light" href="/reportes/consultas">Limpiar</a>
+                    <a class="btn btn-light" href="/reportes/usuarios">Limpiar</a>
                 </div>
+
             </div>
+
         </div>
         <!--mapa-->
         <div class="col-lg-8 col-md-6 col-sm-12">
             <div id="mapid" style="height: 400px;"></div>
         </div>
+
 
     </div>
 </form>
@@ -59,24 +61,28 @@
         </p>
     </div>
 </div>
-<div class="row">
-    <div class=" col-lg-12 col-md-12 col-sm-12">
-        {% if grafico %}
-        <div style="height:400">
-            {{ grafico|safe }}
-        </div>
-        {% endif %}
-    </div>
 
-    <div class="col-lg-12">
-        {% if mensaje %}
-        <div class="alert alert-success" role="alert">
-            {{mensaje}}
-        </div>
-        {% endif %}
-    </div>
+
+<div id="div_informacion">
 
 </div>
+
+
+<div id="div_loading" class="row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/media/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+<div id="div_error" class="row" style="display:none;">
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+    </div>
+</div>
+
+
+
 
 
 {% endblock %}

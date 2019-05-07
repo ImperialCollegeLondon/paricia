@@ -287,7 +287,7 @@ def eliminar(form):
     return "Proceso Realizado"
 
 
-def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
+def grafico(form, valores, maximos_abs, minimos_abs, tiempo):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
     div = ""
@@ -297,7 +297,7 @@ def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
                 x=tiempo,
                 y=valores,
             )
-            data = go.Data([tra_pro])
+            data = [tra_pro]
         else:
             tra_prom = go.Scatter(
                 x=tiempo,
@@ -326,7 +326,7 @@ def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
                     color='#CD0C18',
                 )
             )
-            data = go.Data([tra_max_abs, tra_prom, tra_min_abs])
+            data = [tra_max_abs, tra_prom, tra_min_abs]
 
         layout = go.Layout(
             title=estacion.est_codigo + " " + estacion.est_nombre,
