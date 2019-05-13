@@ -71,6 +71,7 @@ def verificar_fechahora(fechahora, formatofechahora):
         fechahora = datetime.utcfromtimestamp((fechahora - unix_epoch) / one_second)
         return fechahora
     elif isinstance(fechahora, str):
+        # print("str")
         pass
         # valores = fechahora.split(" ")
         # valores = list(filter(None, valores))
@@ -86,10 +87,57 @@ def verificar_fechahora(fechahora, formatofechahora):
         fechahora = ''
 
     try:
+        # print(fechahora, formatofechahora)
         _fechahora = datetime.strptime(fechahora, formatofechahora)
     except:
-        _fechahora = None
+        # print("excepcion")
+
+        separar = fechahora.split(" ")
+
+        fecha_str = separar[0]
+        hora_str = separar[1]
+        if len(separar) == 3:
+            hora_str += ' ' + separar[2]
+        separar = formatofechahora.split(" ")
+        formato_fecha = separar[0]
+        formato_hora = separar[1]
+        fecha = cambiar_formato_fecha(fecha_str, formato_fecha)
+        hora = cambiar_formato_hora(hora_str, formato_hora)
+        if fecha is None or hora is None:
+            _fechahora = None
+        else:
+            _fechahora = datetime(fecha.year, fecha.month, fecha.day, hora.hour, hora.minute, hora.second)
     return _fechahora
+
+
+def cambiar_formato_fecha(fecha_str, formato_fecha):
+    fecha = None
+    con_fecha = list(Fecha.objects.exclude(fec_formato=formato_fecha))
+    for i in range(len(con_fecha)):
+        try:
+            # print("fecha: ",fecha_str,con_fecha[i].fec_codigo)
+            fecha = datetime.strptime(fecha_str, con_fecha[i].fec_codigo)
+            # formato.fec_id = fila
+            # formato.save()
+            break
+        except ValueError:
+            pass
+    return fecha
+
+
+def cambiar_formato_hora(hora_str, formato_hora):
+    hora = None
+    con_hora = list(Hora.objects.exclude(hor_formato=formato_hora))
+    for i in range(len(con_hora)):
+        try:
+            # print("Hora: ",hora_str, con_hora[i].hor_codigo)
+            hora = datetime.strptime(hora_str, con_hora[i].hor_codigo)
+            # formato.fec_id = fila
+            # formato.save()
+            break
+        except ValueError:
+            pass
+    return hora
 
 
 # Obtener los datos del archivo importado
@@ -114,11 +162,11 @@ def preformato_matriz(archivo_src, formato):
 
     formatofechahora = formato.fec_id.fec_codigo + ' ' + formato.hor_id.hor_codigo
     if formato.for_col_fecha == formato.for_col_hora:
-        print("llego al true")
+        # print("llego al true")
         # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
         archivo['fecha'] = pd.Series([verificar_fechahora(row, formatofechahora) for row in archivo[formato.for_col_fecha - 1].values], index=archivo.index)
     else:
-        print("llego al false")
+        # print("llego al false")
         items_fecha = formato.fec_id.fec_codigo.split(formato.del_id.del_caracter)
         cols_fecha = list(range(formato.for_col_fecha - 1, formato.for_col_fecha - 1 + len(items_fecha)))
         items_hora = formato.hor_id.hor_codigo.split(formato.del_id.del_caracter)
@@ -177,60 +225,6 @@ def guardar_datos__temp_a_final(imp_id, form):
 
 
 # leer el archivo y convertirlo a una matriz de objetos de la clase Datos
-'''def construir_matriz(archivo, formato, estacion):
-    # variables para el acumulado
-    ValorReal = 0
-    UltimoValor = 0
-    # determinar si debemos restar 5 horas a la fecha del archivo
-    cambiar_fecha = validar_datalogger(formato.mar_id)
-    # validar si los valores del archivo son acumulados
-    acumulado = validar_acumulado(formato.mar_id)
-    clasificacion = list(Clasificacion.objects.filter(
-        for_id=formato.for_id))
-    i = 0
-    datos = []
-    lineas=archivo.readlines()
-    for linea in lineas:
-        i += 1
-        # controlar la fila de inicio
-        if i >= formato.for_fil_ini:
-            valores = linea.split(formato.del_id.del_caracter)
-            fecha = formato_fecha(formato, valores, cambiar_fecha)
-            j = 0
-            for fila in clasificacion:
-                if fila.cla_valor is not None:
-                    valor = valid_number(valores[fila.cla_valor], fila.var_id.var_id)
-                    if valor != None and acumulado and fila.var_id.var_id == 1:
-                        dblValor = valor
-                        if dblValor == 0:
-                            UltimoValor = 0
-                        ValorReal = dblValor - UltimoValor
-                        if ValorReal < 0:
-                            ValorReal = dblValor
-                        UltimoValor = dblValor
-                        valor = ValorReal
-                else:
-                    valor = None
-                if fila.cla_maximo is not None:
-                    maximo = valid_number(valores[fila.cla_maximo], fila.var_id.var_id)
-                else:
-                    maximo = None
-                if fila.cla_minimo is not None:
-                    minimo = valid_number(valores[fila.cla_minimo], fila.var_id.var_id)
-                else:
-                    minimo = None
-                dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
-                             med_fecha=fecha, mar_id=formato.mar_id.mar_id,
-                             med_valor=valor, med_maximo=maximo, med_minimo=minimo,
-                             med_estado=True)
-                datos.append(dato)
-                j += 1
-            if formato.for_tipo == 'automatico':
-                formato.for_fil_ini = i + 1
-                formato.save()
-    return datos'''
-
-
 def construir_matriz(archivo_src, formato, estacion):
     # TODO : Eliminar validar_datalogger, validar acumulado
 
@@ -412,7 +406,7 @@ def ultima_fecha(modelo, estacion):
     return informacion
 
 
-#Consultar periodo de tiempo del archivo
+# Consultar periodo de tiempo del archivo
 def consulta_fecha(fec_ini, fec_fin, est_id, modelo):
     consulta = modelo.objects.filter(estacion=est_id).filter(fecha__gte=fec_ini).filter(fecha__lte=fec_fin)
     if consulta.exists():
