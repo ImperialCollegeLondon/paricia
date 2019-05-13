@@ -2,12 +2,12 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from .models import Estacion  # , Registro
+from .models import Estacion, Inamhi   # , Registro
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
+
 from .forms import EstacionSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
@@ -88,7 +88,7 @@ class EstacionDelete(LoginRequiredMixin, DeleteView):
     model = Estacion
     success_url = reverse_lazy('estacion:estacion_index')
 
-
+# estaciones FONAG  en formato JSON
 def datos_json_estaciones(request):
     estaciones = list(Estacion.objects.order_by('est_id').all())
     features = []
@@ -106,6 +106,35 @@ def datos_json_estaciones(request):
                 latitud=item.est_latitud,
                 longitud=item.est_longitud,
                 altura=item.est_altura
+            )
+
+        )
+        features.append(fila)
+    datos = dict(
+        type='FeatureCollection',
+        features=features
+    )
+    return JsonResponse(datos,safe=False)
+
+
+# estaciones INAMHI en formato JSON
+def estaciones_inamhi_json(request):
+    estaciones = list(Inamhi.objects.order_by('id').all())
+    features = []
+    for item in estaciones:
+        fila = dict(
+            type='Feature',
+            geometry=dict(
+                type='Point',
+                coordinates=[float(item.longitud), float(item.latitud)]
+            ),
+            properties=dict(
+                codigo=item.codigo,
+                nombre=item.nombre,
+                tipo=item.categoria,
+                latitud=item.latitud,
+                longitud=item.longitud,
+                altura=None
             )
 
         )
