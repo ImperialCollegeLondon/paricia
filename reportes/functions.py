@@ -543,13 +543,11 @@ def titulo_frecuencia(frecuencia):
     nombre = []
     if frecuencia == '0':
         nombre = 'Instantanea'
-    if frecuencia == '1':
-        nombre = '5 Minutos'
-    elif frecuencia == '2':
+    elif frecuencia == '1':
         nombre = 'Horaria'
-    elif frecuencia == '3':
+    elif frecuencia == '2':
         nombre = 'Diaria'
-    elif frecuencia == '4':
+    elif frecuencia == '3':
         nombre = 'Mensual'
     return nombre
 
