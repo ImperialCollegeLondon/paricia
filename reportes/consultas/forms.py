@@ -15,7 +15,7 @@ class MedicionSearchForm(forms.Form):
     lista_transmision = (
         ('0','Todo'),
         ('1', 'Automática'),
-        ('1', 'Manual'),
+        ('2', 'Manual'),
     )
     transmision = forms.ChoiceField(choices=lista_transmision)
     estacion = forms.ModelChoiceField(
