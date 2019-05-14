@@ -8,10 +8,16 @@ class MedicionSearchForm(forms.Form):
     lista_frecuencias = (
         ('0', 'Minima'),
         #('1', '5 Minutos'),
-        ('2', 'Horario'),
-        ('3', 'Diario'),
-        ('4', 'Mensual'),
+        ('1', 'Horario'),
+        ('2', 'Diario'),
+        ('3', 'Mensual'),
     )
+    lista_transmision = (
+        ('0','Todo'),
+        ('1', 'Automática'),
+        ('1', 'Manual'),
+    )
+    transmision = forms.ChoiceField(choices=lista_transmision)
     estacion = forms.ModelChoiceField(
         queryset=Estacion.objects.order_by('est_id').all())
     variable = forms.ModelChoiceField(
@@ -30,6 +36,12 @@ class UsuarioSearchForm(forms.Form):
         ('2', 'Diario'),
         ('3', 'Mensual'),
     )
+    lista_transmision = (
+        ('0', 'Todo'),
+        ('1', 'Automática'),
+        ('1', 'Manual'),
+    )
+    transmision = forms.ChoiceField(choices=lista_transmision)
     estacion = forms.ModelChoiceField(
         queryset=Estacion.objects.order_by('est_id').all())
     variable = forms.ModelChoiceField(

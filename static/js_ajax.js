@@ -49,15 +49,26 @@ $(document).ready(function() {
                 $("#div_informacion").hide();
                 $("#div_loading").show();
                 $("#div_error").hide();
+                $("#div_mensaje").hide();
             },
             success: function (data) {
-                $("#div_informacion").show();
-                var count = Object.keys(data.data[0].y).length;
-                if (count>0) {
-                    Plotly.newPlot('div_informacion', data.data,data.layout);
+
+                if (Object.keys(data)=="mensaje"){
+                    $("#div_mensaje").html(data.mensaje);
+                    $("#div_mensaje").show();
                 }
                 else{
-                    $("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
+                    $("#div_informacion").show();
+                    var count = Object.keys(data.data[0].y).length;
+                    if (count>0) {
+                        Plotly.newPlot('div_informacion', data.data,data.layout);
+                    }
+                    else{
+                        //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
+                        $("#div_mensaje").html('<label>No hay información para los parametros ingresados</label>');
+                        $("#div_mensaje").show();
+                    }
+
                 }
 
                 $("#btn_consultar").removeAttr('disabled');

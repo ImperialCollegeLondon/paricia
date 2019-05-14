@@ -77,6 +77,7 @@ class ImportacionCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         archivo = self.request.FILES['imp_archivo']
         matriz = preformato_matriz(archivo, form.cleaned_data['for_id'])
+        # print (matriz)
         form.instance.imp_fecha_ini = matriz.loc[0, 'fecha']
         form.instance.imp_fecha_fin = matriz.loc[matriz.shape[0] - 1, 'fecha']
         form.instance.usuario = self.request.user

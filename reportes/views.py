@@ -1,4 +1,4 @@
-from estacion.models import Inamhi
+from estacion.models import Inamhi, Estacion
 from variable.models import Parametro
 
 from django.views.generic import FormView, TemplateView
@@ -104,17 +104,15 @@ class ConsultasPeriodo(FormView):
         if form.is_valid():
             self.frecuencia = form.cleaned_data["frecuencia"]
             if self.request.is_ajax():
-                '''self.grafico = grafico(form)
-                return render(request, 'reportes/consultas/grafico.html',
-                              {'grafico': self.grafico, 'frecuencia': self.frecuencia})'''
-                datos = consultar_datos(form)
+
+                datos = consultar_datos_usuario(form)
                 return JsonResponse(datos, safe=False)
             else:
-                if 'graficar' in request.POST:
+                '''if 'graficar' in request.POST:
                     context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
                     context.update(consultar_datos(form))
                     context['base_template'] = get_vista_usuario(self.request)
-                    return render(request, 'reportes/consultas_periodo.html', context)
+                    return render(request, 'reportes/consultas_periodo.html', context)'''
 
                 if self.frecuencia == "0":
                     return self.export_csv(form)
@@ -137,7 +135,11 @@ class ConsultasPeriodo(FormView):
             fecha_inicio = estacion.est_fecha_inicio
         if fecha_fin is None:
             fecha_fin = date.today()
-        valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+        informacion = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+        valores=informacion['valor']
+        maximos = informacion['max_abs']
+        minimos = informacion['min_abs']
+        tiempo = informacion['tiempo']
         # Establecemos el nombre del archivo
         nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.csv"')
         contenido = "attachment; filename={0}".format(nombre_archivo)
@@ -155,7 +157,8 @@ class ConsultasPeriodo(FormView):
 
         return response
 
-    def export_excel(self, form):
+    @staticmethod
+    def export_excel(form):
         return reporte_excel(form)
 
 
@@ -243,6 +246,9 @@ class ConsultaInamhi(FormView):
             form=form
         )
         if form.is_valid():
+            if self.request.is_ajax():
+                datos = procesar_json_inamhi(form)
+                return JsonResponse(datos, safe=False)
             grafico = procesar_json_inamhi(form)
             informacion.update(grafico)
             return render(request, 'reportes/consulta_inamhi.html', informacion)
@@ -270,6 +276,22 @@ def variables_inamhi(request):
     for item in parametros:
         lista[item.id] = item.nombre + ' ' + item.estadistico
 
+    return JsonResponse(lista)
+
+
+# consultar estaciones por tipo de trasnmision
+def tipo_estaciones(request):
+    transmision = request.GET.get('transmision', None)
+    if transmision == str(0):
+        estaciones = Estacion.objects.all()
+    elif transmision == str(1):
+        estaciones = Estacion.objects.filter(transmision=True)
+    else:
+        estaciones = Estacion.objects.filter(transmision=False)
+    lista = {}
+
+    for item in estaciones:
+        lista[item.est_id] = item.est_codigo
     return JsonResponse(lista)
 
 

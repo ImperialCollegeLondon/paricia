@@ -16,10 +16,10 @@ $(document).ready(function() {
         transparent: true,
         //attribution: "Weather data © 2012 IEM Nexrad"
     }).addTo(mymap);
-    //consultar la capa de estaciones del FONAG en JSON
+    //consultar la capa de estaciones del INAMHI en JSON
     geojsonFeature = $.ajax({
         type: 'GET',
-        url: '/estacion/getjson',
+        url: '/estacion/getjsoninamhi',
         async: false,
         dataType: 'json',
         done: function(results) {},
@@ -55,13 +55,13 @@ $(document).ready(function() {
         pointToLayer: function (feature, latlng) {
 
             switch(feature.properties.tipo){
-                case "Meteorológica":
+                case "METEOROLOGICA":
                 return L.marker(latlng, {icon: meteo_icon});
                 break;
                 case "Pluviométrica":
                 return L.marker(latlng, {icon: pluvio_icon});
                 break
-                case "Hidrológica":
+                case "HIDROLOGICA":
                 return L.marker(latlng, {icon: hidro_icon});
                 break
             }
@@ -82,61 +82,59 @@ $(document).ready(function() {
 
         var div =  L.DomUtil.create('div', 'legend');
         div.innerHTML = '<img src="/static/leaflet/images/ico-meteo.png" height="16px" width="16px" alt="Meteorologica"> Meteorológica<br>';
-        div.innerHTML += '<img src="/static/leaflet/images/ico-pluvio.png" height="16px" width="16px" alt="Pluviometrica"> Pluviométrica<br>';
+        //div.innerHTML += '<img src="/static/leaflet/images/ico-pluvio.png" height="16px" width="16px" alt="Pluviometrica"> Pluviométrica<br>';
         div.innerHTML += '<img src="/static/leaflet/images/ico-hidro.png" height="16px" width="16px" alt="Hidrologica"> Hidrológica<br>';
         return div
 
     };
 
     legend.addTo(mymap);
-    // llamar las variables por estaciones
-    $("#id_transmision").change(function () {
-        var transmision = $(this).val();
-
-        $("#id_estacion").find('option').remove().end()
-        $("#id_estacion").append('<option value="">---------</option>');
-        $("#id_variable").find('option').remove().end()
-        $("#id_variable").append('<option value="">---------</option>');
-        $.ajax({
-            url: '/estaciones/tipo',
-            data: {
-                'transmision': transmision
-            },
-            dataType: 'json',
-            success: function (data) {
-            //datos=JSON.parse(data)
-
-                $.each(data, function(index, value) {
-                    $("#id_estacion").append('<option value="' + index + '">' + value + '</option>');
-                });
-            }
-        });
-
-    });
-
 
     // llamar las variables por estaciones
     $("#id_estacion").change(function () {
-        var estacion = $(this).val();
-        var codigo = $('#id_estacion option:selected').text();
-        $("#id_variable").find('option').remove().end()
-        $("#id_variable").append('<option value="">---------</option>');
+        var estacion = $("#id_estacion").val();
+        var frecuencia = $("#id_frecuencia").val();
+
+        $("#id_parametro").find('option').remove().end()
         $.ajax({
-            url: '/anuarios/variables',
+            url: '/parametros/inamhi',
             data: {
-                'estacion': estacion
+                'estacion': estacion,
+                'frecuencia':frecuencia
             },
             dataType: 'json',
             success: function (data) {
-
+                //datos=JSON.parse(data)
                 $.each(data, function(index, value) {
-                    $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
+                    $("#id_parametro").append('<option value="' + index + '">' + value + '</option>');
                 });
             }
         });
+        var informacion = $('#id_estacion option:selected').text();
+        informacion = informacion.split(" ");
+        var codigo = informacion[0]
         set_zoom_estacion(codigo, geojsonFeature,mymap);
     });
 
+    $("#id_frecuencia").change(function () {
+        var estacion = $("#id_estacion").val();
+        var frecuencia = $("#id_frecuencia").val();
+        $("#id_parametro").find('option').remove().end()
+        $.ajax({
+            url: '/parametros/inamhi',
+            data: {
+                'estacion': estacion,
+                'frecuencia':frecuencia
+            },
+            dataType: 'json',
+            success: function (data) {
+                //datos=JSON.parse(data)
+                $.each(data, function(index, value) {
+                    $("#id_parametro").append('<option value="' + index + '">' + value + '</option>');
+                });
+            }
+        });
+    });
 
 
     //cambiar el zoom del mapa a una estacion
@@ -173,7 +171,9 @@ $(document).ready(function() {
         return objHTML;
     }
     // enfocar la estacion cuando se recarga la pagina
-    var codigo = $('#id_estacion option:selected').text();
+    var informacion = $('#id_estacion option:selected').text();
+        informacion = informacion.split(" ");
+        var codigo = informacion[0]
     if (codigo!="---------"){
         set_zoom_estacion(codigo, geojsonFeature,mymap);
     }

@@ -44,7 +44,7 @@ class InamhiForm(forms.Form):
     consulta_parametro = Parametro.objects.order_by('id').all()
     # atributos del formulario
     estacion = forms.ModelChoiceField(queryset=consulta_estacion, label='Estacion')
-    frecuencia = forms.ChoiceField(choices=lista_frecuencia,label="Frecuencia")
+    frecuencia = forms.ChoiceField(choices=lista_frecuencia, label="Frecuencia")
     parametro = forms.ModelChoiceField(queryset=consulta_parametro, label='Parametro')
     inicio = forms.DateField(input_formats=format_input, label=lbl_inicio, widget=parametros_widget)
     fin = forms.DateField(input_formats=format_input, label=lbl_fin, widget=parametros_widget)

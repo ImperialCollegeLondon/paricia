@@ -101,7 +101,8 @@ def consultar_datos_usuario(form):
         fecha_inicio = estacion.est_fecha_inicio
     if fecha_fin is None:
         fecha_fin = date.today()
-
+    if frecuencia == str(0):
+        informacion = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
     if frecuencia == str(1):
         informacion = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
         # frecuencia diaria
@@ -116,8 +117,10 @@ def consultar_datos_usuario(form):
     min_abs = informacion["min_abs"]
     max_pro = informacion["max_pro"]
     min_pro = informacion["min_pro"]
-
-    data_valor = get_elemento_data_json(variable, tiempo, valor, 'Promedio', '#1660A7')
+    if frecuencia == str(0):
+        data_valor = get_elemento_data_json(variable, tiempo, valor, 'Valor', '#1660A7', 'JSON')
+    else:
+        data_valor = get_elemento_data_json(variable, tiempo, valor, 'Promedio', '#1660A7')
     if max_abs.count(None) <= max_pro.count(None):
         data_maximo = get_elemento_data_json(variable, tiempo, max_abs, 'Maximo Absoluto', '#32CD32')
     else:
@@ -151,19 +154,31 @@ def consultar_datos_usuario(form):
 
 
 # graficar valores a la minima frecuencia
-def get_trace_minimo(tiempo, valor, nombre, color):
-    elemento = go.Scattergl(
-        x=tiempo,
-        y=valor,
-        name=nombre,
-        mode='lines',
-        marker=dict(
-            color=color,
-            line=dict(
-                width=1,
-                color='rgb(0,0,0)')
+def get_trace_minimo(tiempo, valor, nombre, color, tipo=None):
+    if tipo:
+        elemento = {
+            'type': 'scatter',
+            'x': tiempo,
+            'y': valor,
+            'name': nombre,
+            'line': {
+                'color': color,
+            }
+        }
+
+    else:
+        elemento = go.Scattergl(
+            x=tiempo,
+            y=valor,
+            name=nombre,
+            mode='lines',
+            marker=dict(
+                color=color,
+                line=dict(
+                    width=1,
+                    color='rgb(0,0,0)')
+            )
         )
-    )
     return elemento
 
 
@@ -409,12 +424,20 @@ def procesar_json_inamhi(form):
         if valores.count(None) == len(data):
             mensaje = dict(mensaje='No existen datos para la consulta')
             return mensaje
+
         titulo = parametro.nombre + " " + estacion.codigo + " " + estacion.nombre
         titulo_yaxis = parametro.nombre + " (" + parametro.estadistico + ")"
         layout = get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin)
-        trace_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
+        # trace_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
+        trace_valor = get_elemento_data_json(None, tiempo, valores, parametro.nombre, color='#1660A7')
         data = get_data_graph(trace_valor)
-        grafico = get_grafico(layout, data)
+        # grafico = get_grafico(layout, data)
+
+        grafico = dict(
+            data=data,
+            layout=layout,
+
+        )
 
         return grafico
     else:
@@ -422,9 +445,9 @@ def procesar_json_inamhi(form):
         return mensaje
 
 
-def get_elemento_data_json(variable, tiempo, valor, nombre, color):
+def get_elemento_data_json(variable, tiempo, valor, nombre, color, tipo=None):
     type_graph = 'scatter'
-    if variable.var_id == 1:
+    if variable is not None and variable.var_id == 1 and tipo is None:
         type_graph = 'bar'
     elemento = {
         'type': type_graph,

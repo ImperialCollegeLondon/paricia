@@ -1,0 +1,24 @@
+{% extends "index_visor.html" %}
+{% block content %}
+{% load bootstrap4 %}
+{% load humanize %}
+{% load static %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{% static 'js_ajax.js' %}"></script>
+<script src="{% static 'visor.js' %}"></script>
+
+
+
+<div id="mapid" style="height: 100%;"></div>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

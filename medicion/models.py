@@ -77,7 +77,7 @@ class ValorDecimal:
 
 class DigVar:
     v1 = ValorDecimal(max_dig=6, dec_pla=2)
-    v2 = ValorDecimal(max_dig=5, dec_pla=2)
+    v2 = ValorDecimal(max_dig=14, dec_pla=6)
     v3 = ValorDecimal(max_dig=14, dec_pla=6)
     v4 = ValorDecimal(max_dig=14, dec_pla=6)
     v5 = ValorDecimal(max_dig=14, dec_pla=6)

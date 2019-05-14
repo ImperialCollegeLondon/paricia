@@ -40,6 +40,7 @@ class Estacion(models.Model):
     est_fecha_inicio = models.DateField("Fecha Inicio Operaciones", null=True)
     provincia = models.ForeignKey(Provincia,  on_delete=models.CASCADE, verbose_name="Provincia", null=True, blank=True)
     tipo = models.ForeignKey(Tipo,  on_delete=models.CASCADE, verbose_name="Tipo", null=True, blank=True)
+    transmision = models.BooleanField("Trasmision",default=False, null=True, blank=True)
 
     def __str__(self):
         return str(self.est_codigo)

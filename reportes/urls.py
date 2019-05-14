@@ -16,6 +16,7 @@ urlpatterns = [
         views.datos_json_horarios, name='horarios'),
     path('reportes/inamhi', views.ConsultaInamhi.as_view(), name='reporte_inamhi'),
     path('parametros/inamhi', views.variables_inamhi, name='parametros_inamhi'),
+    path('estaciones/tipo', views.tipo_estaciones, name='tipo_estaciones'),
 
     path('reportes/mapa', views.ConsultaDatos.as_view(), name='mapa_estaciones'),
     path('reportes/usuarios/', views.ConsultasUsuario.as_view(), name='consultas_usuario'),

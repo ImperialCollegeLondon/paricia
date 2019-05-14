@@ -41,10 +41,8 @@ def reporte_excel(form):
     if fecha_fin is None:
         fecha_fin = date.today()
     if frecuencia == "1":
-        informacion = datos_5minutos(estacion, variable,fecha_inicio, fecha_fin)
-    elif frecuencia == "2":
         informacion = datos_horarios(estacion, variable,fecha_inicio, fecha_fin)
-    elif frecuencia == "3":
+    elif frecuencia == "2":
         informacion = datos_diarios(estacion, variable,fecha_inicio, fecha_fin)
     else:
         informacion = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)

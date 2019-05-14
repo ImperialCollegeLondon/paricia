@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     // crear la capa base del mapa
-    var mymap = L.map('mapid').setView([-0.25, -78.43], 9);
+    var mymap = L.map('mapid').setView([-0.25, -78.43], 10);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		    maxZoom: 18,
 		    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -17,9 +17,21 @@ $(document).ready(function() {
         //attribution: "Weather data © 2012 IEM Nexrad"
     }).addTo(mymap);
     //consultar la capa de estaciones del FONAG en JSON
-    geojsonFeature = $.ajax({
+    geojsonFONAG = $.ajax({
         type: 'GET',
         url: '/estacion/getjson',
+        async: false,
+        dataType: 'json',
+        done: function(results) {},
+        fail: function( jqXHR, textStatus, errorThrown ) {
+            console.log( 'Could not get posts, server response: ' + textStatus + ': ' + errorThrown );
+        }
+    }).responseJSON;
+
+    //consultar la capa de estaciones del INAMHI en JSON
+    geojsonINAMHI = $.ajax({
+        type: 'GET',
+        url: '/estacion/getjsoninamhi',
         async: false,
         dataType: 'json',
         done: function(results) {},
@@ -50,7 +62,7 @@ $(document).ready(function() {
 		popupAnchor: [0, -28]
 	});
     //cargar la capa de estaciones al mapa
-    L.geoJSON(geojsonFeature, {
+    L.geoJSON([geojsonFONAG, geojsonINAMHI], {
 
         pointToLayer: function (feature, latlng) {
 
@@ -58,10 +70,16 @@ $(document).ready(function() {
                 case "Meteorológica":
                 return L.marker(latlng, {icon: meteo_icon});
                 break;
+                case "METEOROLOGICA":
+                return L.marker(latlng, {icon: meteo_icon});
+                break;
                 case "Pluviométrica":
                 return L.marker(latlng, {icon: pluvio_icon});
                 break
                 case "Hidrológica":
+                return L.marker(latlng, {icon: hidro_icon});
+                break
+                case "HIDROLOGICA":
                 return L.marker(latlng, {icon: hidro_icon});
                 break
             }
@@ -89,30 +107,6 @@ $(document).ready(function() {
     };
 
     legend.addTo(mymap);
-    // llamar las variables por estaciones
-    $("#id_transmision").change(function () {
-        var transmision = $(this).val();
-
-        $("#id_estacion").find('option').remove().end()
-        $("#id_estacion").append('<option value="">---------</option>');
-        $("#id_variable").find('option').remove().end()
-        $("#id_variable").append('<option value="">---------</option>');
-        $.ajax({
-            url: '/estaciones/tipo',
-            data: {
-                'transmision': transmision
-            },
-            dataType: 'json',
-            success: function (data) {
-            //datos=JSON.parse(data)
-
-                $.each(data, function(index, value) {
-                    $("#id_estacion").append('<option value="' + index + '">' + value + '</option>');
-                });
-            }
-        });
-
-    });
 
 
     // llamar las variables por estaciones
@@ -120,7 +114,6 @@ $(document).ready(function() {
         var estacion = $(this).val();
         var codigo = $('#id_estacion option:selected').text();
         $("#id_variable").find('option').remove().end()
-        $("#id_variable").append('<option value="">---------</option>');
         $.ajax({
             url: '/anuarios/variables',
             data: {
@@ -128,16 +121,14 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function (data) {
-
+            //datos=JSON.parse(data)
                 $.each(data, function(index, value) {
                     $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
                 });
             }
         });
-        set_zoom_estacion(codigo, geojsonFeature,mymap);
+        set_zoom_estacion(codigo, geojsonFONAG,mymap);
     });
-
-
 
     //cambiar el zoom del mapa a una estacion
     function set_zoom_estacion(codigo, capa_estaciones,mapa){
@@ -173,9 +164,9 @@ $(document).ready(function() {
         return objHTML;
     }
     // enfocar la estacion cuando se recarga la pagina
-    var codigo = $('#id_estacion option:selected').text();
-    if (codigo!="---------"){
-        set_zoom_estacion(codigo, geojsonFeature,mymap);
-    }
+    //var codigo = $('#id_estacion option:selected').text();
+    /*if (codigo!="---------"){
+        set_zoom_estacion(codigo, geojsonFONAG,mymap);
+    }*/
 
 });

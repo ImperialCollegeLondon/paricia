@@ -18,17 +18,17 @@
     </div>
 </div>
 
-<form id="form_busqueda" class="form" method="post" action="{% url 'reportes:consultas_usuario' %}">
-    <div class="row">
-        <!-- formulario -->
-        <div class="col-lg-4 col-md-6 col-sm-12">
+<div class="row">
+    <!-- formulario -->
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <form id="form_busqueda" class="form" method="post" action="{% url 'reportes:consultas_usuario' %}">
             <div class="row">
                 {% csrf_token %}
                 {% for field in form%}
                 {% bootstrap_field field form_group_class='col-lg-12 col-md-12' %}
                 {% endfor %}
-                <div class="form-group col-lg-12 col-md-12">
-                    <label>&nbsp;</label><br>
+                <div class="form-group col-lg-12 col-md-12 mt-4">
+
                     <button id="btn_consultar" name="graficar" type="button" class="btn btn-primary">
                         Graficar
                     </button>
@@ -39,31 +39,20 @@
                 </div>
 
             </div>
-
-        </div>
-        <!--mapa-->
-        <div class="col-lg-8 col-md-6 col-sm-12">
-            <div id="mapid" style="height: 400px;"></div>
-        </div>
-
-
+        </form>
     </div>
-</form>
 
-
-
-
-<div class="row">
-    <div class="col-lg-12">
-        <p class="text-info"><strong>Nota: </strong>
-            Si no selecciona/ingresa la <strong>Fecha de Inicio</strong>, la consulta se hará desde la fecha de inicio de operación de las estación seleccionada.<br>
-            Si no selecciona/ingresa la <strong>Fecha de Fin</strong>, la consulta se hará hasta la fecha actual.
-        </p>
+    <!--mapa-->
+    <div class="col-lg-8 col-md-6 col-sm-12">
+        <div id="mapid" style="height: 400px;"></div>
     </div>
 </div>
 
 
 <div id="div_informacion">
+
+</div>
+<div id="div_mensaje" class="alert alert-info" role="alert" style="display:none;">
 
 </div>
 
@@ -81,6 +70,14 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Nota: </strong>
+            Si no selecciona/ingresa la <strong>Fecha de Inicio</strong>, la consulta se hará desde la fecha de inicio de operación de las estación seleccionada.<br>
+            Si no selecciona/ingresa la <strong>Fecha de Fin</strong>, la consulta se hará hasta la fecha actual.
+        </p>
+    </div>
+</div>
 
 
 
