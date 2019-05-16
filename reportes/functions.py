@@ -117,23 +117,25 @@ def consultar_datos_usuario(form):
     min_abs = informacion["min_abs"]
     max_pro = informacion["max_pro"]
     min_pro = informacion["min_pro"]
-    if frecuencia == str(0):
-        data_valor = get_elemento_data_json(variable, tiempo, valor, 'Valor', '#1660A7', 'JSON')
+    if frecuencia == str(0) or variable.var_id != 1:
+
+        data_valor = get_elemento_data_json('scatter', tiempo, valor, 'Valor', '#1660A7')
     else:
-        data_valor = get_elemento_data_json(variable, tiempo, valor, 'Promedio', '#1660A7')
+        data_valor = get_elemento_data_json('bar', tiempo, valor, 'Promedio', '#1660A7')
+
     if max_abs.count(None) <= max_pro.count(None):
-        data_maximo = get_elemento_data_json(variable, tiempo, max_abs, 'Maximo Absoluto', '#32CD32')
+        data_maximo = get_elemento_data_json('scatter', tiempo, max_abs, 'Maximo Absoluto', '#32CD32')
     else:
-        data_maximo = get_elemento_data_json(variable, tiempo, max_pro, 'Maximo Promedio', '#90EE90')
+        data_maximo = get_elemento_data_json('scatter', tiempo, max_pro, 'Maximo Promedio', '#90EE90')
     if min_abs.count(None) <= min_pro.count(None):
-        data_minimo = get_elemento_data_json(variable, tiempo, min_abs, 'Minimo Absoluto', '#CD0C18')
+        data_minimo = get_elemento_data_json('scatter', tiempo, min_abs, 'Minimo Absoluto', '#CD0C18')
     else:
-        data_minimo = get_elemento_data_json(variable, tiempo, min_pro, 'Minimo Promedio', '#FF8C00')
+        data_minimo = get_elemento_data_json('scatter', tiempo, min_pro, 'Minimo Promedio', '#FF8C00')
 
     titulo_grafico = variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo
     titulo_yaxis = variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"
     layout = get_layout_grafico(titulo_grafico, titulo_yaxis, fecha_inicio, fecha_fin)
-    if variable.var_id != 1:
+    '''if variable.var_id != 1:
         grafico = {
             'data': [
                 data_valor,
@@ -149,7 +151,16 @@ def consultar_datos_usuario(form):
                 data_valor
             ],
             'layout': layout
-        }
+        }'''
+    if variable.var_id == 1:
+        data = get_data_graph(data_valor)
+    else:
+        data = get_data_graph(data_valor, data_maximo, data_minimo)
+
+    grafico = dict(
+        data=data,
+        layout=layout,
+    )
     return grafico
 
 
@@ -406,6 +417,8 @@ def procesar_json_inamhi(form):
     url_base += fecha_fin.strftime("%Y-%m-%d %H:%M:%S") + '/'
     url_base += estacion.transmision + '/'
     url_base += parametro.parametro
+
+    print (url_base)
     # url_base += '171481m'
     # obtener respuesta del web service
     response = requests.get(url_base, auth=('FONAG', 'fOnAg2018'))
@@ -416,9 +429,12 @@ def procesar_json_inamhi(form):
         # print(data)
         for item in data:
             fecha = datetime.strptime(item['fechaTomaDelDato'], '%Y-%m-%d %H:%M:%S')
-            tiempo.append(fecha)
+
             if len(item['dataJSON']) > 0:
-                valores.append(item['dataJSON'][0]['valor'])
+
+                if item['dataJSON'][0]['valor'] is not None:
+                    valores.append(item['dataJSON'][0]['valor'])
+                    tiempo.append(fecha)
             else:
                 valores.append(None)
         if valores.count(None) == len(data):
@@ -429,14 +445,15 @@ def procesar_json_inamhi(form):
         titulo_yaxis = parametro.nombre + " (" + parametro.estadistico + ")"
         layout = get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin)
         # trace_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
-        trace_valor = get_elemento_data_json(None, tiempo, valores, parametro.nombre, color='#1660A7')
+        if frecuencia == 'storage':
+            trace_valor = get_elemento_data_json('scatter', tiempo, valores, parametro.nombre, color='#1660A7')
+        else:
+            trace_valor = get_elemento_data_json('bar', tiempo, valores, parametro.nombre, color='#1660A7')
         data = get_data_graph(trace_valor)
-        # grafico = get_grafico(layout, data)
 
         grafico = dict(
             data=data,
             layout=layout,
-
         )
 
         return grafico
@@ -445,10 +462,7 @@ def procesar_json_inamhi(form):
         return mensaje
 
 
-def get_elemento_data_json(variable, tiempo, valor, nombre, color, tipo=None):
-    type_graph = 'scatter'
-    if variable is not None and variable.var_id == 1 and tipo is None:
-        type_graph = 'bar'
+def get_elemento_data_json(type_graph, tiempo, valor, nombre, color):
     elemento = {
         'type': type_graph,
         'x': tiempo,
