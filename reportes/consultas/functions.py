@@ -512,11 +512,18 @@ def datos_horarios_json(est_id, var_id, fec_ini, fec_fin):
     datos = []
     estacion = Estacion.objects.get(est_id=est_id)
     variable = Variable.objects.get(var_id=var_id)
-    val, max_abs, max_pro, min_abs, min_pro, time = \
-        datos_horarios(estacion, variable, fecha_ini, fecha_fin)
+
+    informacion = datos_horarios(estacion, variable, fecha_ini, fecha_fin)
+    val = informacion['valor']
+    max_abs = informacion['max_abs']
+    min_abs = informacion['min_abs']
+    max_pro = informacion['max_pro']
+    min_pro = informacion['min_pro']
+    tiempo = informacion['tiempo']
     if len(val) > 0:
         for item_val, item_max_abs, item_max_pro, item_min_abs, item_min_pro, item_time \
-                in zip(val, max_abs, max_pro, min_abs, min_pro, time):
+                in zip(val, max_abs, max_pro, min_abs, min_pro, tiempo):
+            print(item_time)
             if fecha_ini <= datetime.strptime(item_time, '%Y-%m-%d %H:%M:%S') <= fecha_fin:
                 dato = {
                     'fecha': item_time,
