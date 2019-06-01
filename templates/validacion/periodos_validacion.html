@@ -1,0 +1,41 @@
+{% load bootstrap3 %}
+{% load humanize %}
+<style type="text/css">
+.validado > td {
+    background: rgba(127,255,127,0.5);
+}
+.no-validado > td {
+    background: rgba(190,190,190,0.5);
+}
+
+thead {
+    background: rgba(255,255,255,0.5);
+}
+
+</style>
+
+{% if intervalos %}
+<div class="col-lg-6" style="height:400px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
+    <table class="table table-bordered table-condensed table-hover">
+        <thead>
+            <th class="col-lg-5"><center><h5>Fecha Inicio</h5></center></th>
+            <th class="col-lg-5"><center><h5>Fecha Fin</h5></center></th>
+            <th class="col-lg-1"><center><h5>Validado</h5></center></th>
+        </thead>
+
+        <tbody>
+        {% for item in intervalos %}
+        <tr class="{% if item.validado %}validado{% else %}no-validado{% endif %}">
+            <td class="inicio" >{{item.fecha_inicio | date:"Y-m-d H:i:s.u"}}</td>
+            <td class="fin">{{item.fecha_fin | date:"Y-m-d H:i:s.u"}}</td>
+            <td class="validado">{% if item.validado %}Sí{% else %}No{% endif %}</td>
+        </tr>
+        {% endfor%}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="row" style="background-color: #FFBFBF">
+    <center><h2>No hay datos de mediciones!</h2></center>
+</div>
+{% endif %}
