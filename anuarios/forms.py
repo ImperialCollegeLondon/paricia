@@ -20,6 +20,7 @@ class AnuarioForm(forms.Form):
         ('2016', '2016'),
         ('2017', '2017'),
         ('2018', '2018'),
+        ('2019', '2019'),
     )
 
     estacion = forms.ModelChoiceField(required=False,

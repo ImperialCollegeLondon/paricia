@@ -445,10 +445,11 @@ def procesar_json_inamhi(form):
         titulo_yaxis = parametro.nombre + " (" + parametro.estadistico + ")"
         layout = get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin)
         # trace_valor = get_trace_minimo(tiempo, valores, 'Valor', '#1660A7')
-        if frecuencia == 'storage':
-            trace_valor = get_elemento_data_json('scatter', tiempo, valores, parametro.nombre, color='#1660A7')
-        else:
+        print(parametro.parametro)
+        if parametro.parametro == '171481h' and frecuencia == 'data1h':
             trace_valor = get_elemento_data_json('bar', tiempo, valores, parametro.nombre, color='#1660A7')
+        else:
+            trace_valor = get_elemento_data_json('scatter', tiempo, valores, parametro.nombre, color='#1660A7')
         data = get_data_graph(trace_valor)
 
         grafico = dict(

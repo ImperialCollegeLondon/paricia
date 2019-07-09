@@ -25,6 +25,7 @@ class AnuarioForm(ModelForm):
         ('2016', '2016'),
         ('2017', '2017'),
         ('2018', '2018'),
+        ('2019', '2019'),
     )
     lista = []
     estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Estación')
