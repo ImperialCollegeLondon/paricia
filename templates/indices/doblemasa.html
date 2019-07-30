@@ -1,14 +1,263 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap4 %}
+{% load humanize %}
+{% load static %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
-<div class="card">
-    <div class="card-header">{{title}} Sensor</div>
-    <div class="card-body">
-        {{numeber}}
+<style type="text/css">
+    .popup-overlay {
+        visibility:hidden;
+        position:fixed;
+        background-size:100% 100%;
+        height: 100%;
+        width: 100% ;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .popup-content {
+        position:relative;
+        margin:0 auto;
+        visibility:hidden;
+        height:20%;
+        width:40%;
+        vertical-align: middle;
+    }
+    .mensaje{
+        vertical-align: middle;
+        text-align: center;
+    }
+    .popup-overlay.active{visibility:visible;}
+    .popup-content.active{visibility:visible;}
+
+    .filtro{
+    background: rgba(255,255,255,0.6);
+    }
+
+    .titulo{
+    background: rgba(185,185,185,0.6);
+    }
+</style>
+
+<script>
+// JQuery code to be added in here.
+var error_validacion = false;
+
+function cargar_variables(estacion){
+    if (estacion == undefined){estacion = ""}
+    $("#id_variable").prop( "disabled", true );
+    $("#id_variable").find('option').remove().end()
+    $("#id_variable").append('<option value selected>---------</option>');
+    $.ajax({
+        url: '/ajax/medicion_variables/',
+        data: {
+        'estacion_id': estacion
+        },
+        dataType: 'json',
+        success: function (data) {
+            $.each(data, function(index, value) {
+                $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
+            });
+        }
+    });
+    $("#id_variable").prop( "disabled", false);
+}
+
+
+function activar_espera(){
+    $("#div_loading").show();
+    $("#div_informacion").hide();
+}
+
+
+function desactivar_espera(){
+    $("#div_loading").hide();
+    $("#div_informacion").show();
+}
+
+
+function periodos_validacion(){
+    token = $("input[name='csrfmiddlewaretoken']").val();
+    estacion_id = $("input[name='orig_estacion_id']").val();
+    variable_id = $("input[name='orig_variable_id']").val();
+
+    $.ajax({
+        url: '/validacion/periodos_validacion/',
+        data: $("#form_filter").serialize(),
+        type:'POST',
+        beforeSend: function () {
+            activar_espera();
+            $("#div_error").hide();
+        },
+        success: function (data) {
+            $("#btn_periodos_validacion").attr("disabled", false);
+            $("#div_informacion").html(data)
+            desactivar_espera();
+            $("#div_error").hide();
+            //$("#id_estacion").prop("disabled", true);
+            //$("#id_variable").prop("disabled", true);
+            //$("#id_inicio").prop("disabled", true);
+            //$("#id_fin").prop("disabled", true);
+            //$("#btn_filtrar").prop("disabled", true);
+            //$("#btn_periodos_validacion").prop("disabled", true);
+        },
+        error: function () {
+            $("#div_informacion").hide();
+            $("#div_loading").hide();
+            $("#div_error").show();
+        }
+    });
+}
+
+function actualizar_lista(){
+    $.ajax({
+        url: '/medicion/filter/',
+        data: $("#form_filter").serialize(),
+        type:'POST',
+        beforeSend: function () {
+            activar_espera();
+            $("#div_error").hide();
+        },
+        success: function (data) {
+            $("#btn_validacion_enviar").attr("disabled", false);
+            $("#div_informacion").html(data)
+            console.log(data)
+            desactivar_espera();
+            $("#div_error").hide();
+            //$("#id_estacion").prop("disabled", true);
+            //$("#id_variable").prop("disabled", true);
+            //$("#id_inicio").prop("disabled", true);
+            //$("#id_fin").prop("disabled", true);
+            //$("#btn_filtrar").prop("disabled", true);
+            //$("#btn_periodos_validacion").prop("disabled", true);
+        },
+        error: function () {
+            $("#div_informacion").hide();
+            $("#div_loading").hide();
+            $("#div_error").show();
+        }
+    });
+
+}
+
+
+
+$(document).ready(function() {
+
+    $("#btn_validacion_enviar").attr("disabled", true);
+
+    $(".close").on("click", function(){
+        $("#mensaje_overlay, #mensaje_content").removeClass("active");
+        if (!error_validacion){
+            $('#id_limpiar span').click();
+        }
+    });
+
+    $("#id_estacion").change(function () {
+        var estacion = $(this).val();
+        cargar_variables(estacion);
+    });
+
+    $( "#id_inicio" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat:"yy-mm-dd",
+        yearRange: '2000:'+(new Date).getFullYear()
+    });
+
+    $( "#id_fin" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat:"yy-mm-dd",
+        yearRange: '2000:'+(new Date).getFullYear()
+    });
+
+
+    $( "#div_edit" ).dialog({
+        autoOpen: false,
+        width:400,
+        height:350
+    });
+
+    $( "#div_delete" ).dialog({
+        autoOpen: false,
+        width:400,
+        height:350
+    });
+
+    $("#btn_filtrar").click(function(){
+        actualizar_lista();
+        return false;
+    });
+
+    $("#btn_periodos_validacion").click(function(){
+        periodos_validacion();
+    });
+
+});
+
+</script>
+
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Validación Datos Crudos</h3>
     </div>
 </div>
 
 
+<form id="form_filter" class="form" method="post">
+    <div class="row">
+        {% csrf_token %}
+        {% for field in form%}
+        {% bootstrap_field field form_group_class='col-lg-3 col-md-6' %}
+        {% endfor %}
+        <div class="form-group col-lg-4 col-md-6">
+            <label></label><br>
+            <button id="btn_periodos_validacion" type="button" class="btn btn-default">Consultar</button>
+            <a id="id_limpiar" class="btn btn-default" href="{% url 'medicion:medicion_filter' %}"><span>Limpiar</span></a>
+        </div>
+    </div>
+</form>
+
+
+<div id="mensaje_overlay" class="popup-overlay"  >
+    <br><br><br>
+    <center>
+        <div id="gif_loading" style="display:none;"><img src="/media/loading6.gif"/></div>
+    </center>
+    <div id="mensaje_content" class="popup-content">
+        <a id="clover" class="close">Cerrar</a>
+        <h2><div id="mensaje_texto"></div></h2>
+     </div>
+</div>
+
+<br>
+<div id="div_informacion" class="row">
+</div>
+
+<div id="div_edit" title="Modificar Información">
+</div>
+
+<div id="div_delete" title="Eliminar Información">
+</div>
+
+<div id="div_loading" class="row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/media/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+
+<div id="div_error" class="row" style="display:none;">
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+    </div>
+</div>
 {% endblock %}

@@ -8,6 +8,7 @@ from marca.models import Marca
 from django.urls import reverse
 
 
+
 # clase para almacenar los datos crudos del sistema
 class Medicion(models.Model):
     med_id = models.AutoField("Id", primary_key=True)
@@ -87,6 +88,8 @@ class DigVar:
     v9 = ValorDecimal(max_dig=14, dec_pla=6)
     v10 = ValorDecimal(max_dig=14, dec_pla=6)
     v11 = ValorDecimal(max_dig=14, dec_pla=6)
+    v12 = ValorDecimal(max_dig=14, dec_pla=6)
+
 
 class Precipitacion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
@@ -264,6 +267,20 @@ class NivelAgua(models.Model):
     valor = models.DecimalField("Valor", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['estacion', 'fecha']),
+            models.Index(fields=['fecha', 'estacion']),
+        ]
+
+class VoltajeBateria(models.Model):
+    id = models.BigAutoField("Id", primary_key=True)
+    estacion = models.PositiveIntegerField("Estacion")
+    fecha = models.DateTimeField("Fecha")
+    valor = models.DecimalField("Valor", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
 
     class Meta:
         indexes = [

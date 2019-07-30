@@ -147,6 +147,7 @@ function actualizar_informacion(){
 
 $(document).ready(function() {
 
+
   $("#form_consulta").submit(function(event){
     //actualizar_lista($("#form_consulta").attr('action'));
     event.preventDefault();

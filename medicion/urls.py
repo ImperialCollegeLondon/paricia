@@ -23,4 +23,7 @@ urlpatterns = [
     path('medicion/curvadescarga/detail/<int:pk>/', views.CurvaDescargaDetail.as_view(), name='curvadescarga_detail'),
     path('medicion/curvadescarga/edit/<int:pk>/', views.CurvaDescargaUpdate.as_view(), name='curvadescarga_update'),
     path('medicion/curvadescarga/<int:pk>/delete/', views.CurvaDescargaDelete.as_view(), name='curvadescarga_delete'),
+
+    re_path(r'^ajax/medicion_variables', views.variables, name='variables'),
+    re_path(r'^ajax/validacion_enviar', views.validacion_enviar, name='validacion_enviar'),
 ]

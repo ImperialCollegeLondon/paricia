@@ -255,6 +255,8 @@ function validacion_enviar(){
             $("#mensaje_overlay, #mensaje_content").addClass("active");
             $("#mensaje_content").css("background", "rgba(255, 127, 127, 0.8)");
             $("#mensaje_texto").text("Error: Validación no fue generada");
+
+            alert("Soy un error en la validacion pero no se cual ")
             error_validacion = true;
         }
     });

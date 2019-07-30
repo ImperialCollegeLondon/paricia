@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', 'infoagua-guayllabamba.ec','www.infoagua-guayllabamba.ec','157.100.182.61','sedc.fonag.org.ec','www.sedc.fonag.org.ec']
 
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
+    'indices.apps.IndicesConfig',
 
 ]
 LOGIN_URL = '/login/'
@@ -97,15 +98,16 @@ WSGI_APPLICATION = 'sedc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_sedc',
-        'USER': 'postgres',
-        'PASSWORD': 'dev123*',
-        'HOST': '192.168.19.2',
+        'NAME': 'sedc_dev',
+        'USER': 'usr_sedc',
+        'PASSWORD': 'postgres',
+        #'HOST': '192.168.19.2',
+        'HOST': 'localhost',
         'PORT': '5432'
     },
-    'desarrollo': {
+    'produccion': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_sedc_alt',
+        'NAME': 'db_sedc',
         'USER': 'postgres',
         'PASSWORD': 'dev123*',
         'HOST': '192.168.19.8',
@@ -134,13 +136,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-EC'
 
 TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
-USE_L10N = True
+#USE_L10N = True
+USE_L10N = False
+DECIMAL_SEPARATOR = '.'
 
 USE_TZ = False
 

@@ -1,4 +1,4 @@
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 {% load humanize %}
 <style type="text/css">
 .validado > td {
@@ -18,17 +18,17 @@ thead {
 <div class="col-lg-6" style="height:400px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
     <table class="table table-bordered table-condensed table-hover">
         <thead>
-            <th class="col-lg-5"><center><h5>Fecha Inicio</h5></center></th>
-            <th class="col-lg-5"><center><h5>Fecha Fin</h5></center></th>
-            <th class="col-lg-1"><center><h5>Validado</h5></center></th>
+            <th class=""><center><h5>Fecha Inicio</h5></center></th>
+            <th class=""><center><h5>Fecha Fin</h5></center></th>
+            <th class=""><center><h5>Validado</h5></center></th>
         </thead>
 
         <tbody>
         {% for item in intervalos %}
         <tr class="{% if item.validado %}validado{% else %}no-validado{% endif %}">
-            <td class="inicio" >{{item.fecha_inicio | date:"Y-m-d H:i:s.u"}}</td>
-            <td class="fin">{{item.fecha_fin | date:"Y-m-d H:i:s.u"}}</td>
-            <td class="validado">{% if item.validado %}Sí{% else %}No{% endif %}</td>
+            <td class="inicio col-md-auto" >{{item.fecha_inicio | date:"Y-m-d H:i:s"}}</td>
+            <td class="fin col-md-auto">{{item.fecha_fin | date:"Y-m-d H:i:s"}}</td>
+            <td class="validado ">{% if item.validado %}Sí{% else %}No{% endif %}</td>
         </tr>
         {% endfor%}
         </tbody>
