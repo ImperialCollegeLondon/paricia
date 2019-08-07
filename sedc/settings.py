@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'cruce.apps.CruceConfig',
     'home.apps.HomeConfig',
     'registro.apps.RegistroConfig',
+    'horario.apps.HorarioConfig',
+    'diario.apps.DiarioConfig',
+    'mensual.apps.MensualConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -104,15 +107,16 @@ DATABASES = {
         #'HOST': '192.168.19.2',
         'HOST': 'localhost',
         'PORT': '5432'
-    },
-    'produccion': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_sedc',
-        'USER': 'postgres',
-        'PASSWORD': 'dev123*',
-        'HOST': '192.168.19.8',
-        'PORT': '5432'
     }
+    # ,
+    # 'produccion': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'db_sedc',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'dev123*',
+    #     'HOST': '192.168.19.8',
+    #     'PORT': '5432'
+    # }
 }
 
 # Password validation

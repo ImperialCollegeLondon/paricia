@@ -25,12 +25,7 @@ class Unidad(models.Model):
 
 class Variable(models.Model):
     var_id = models.AutoField("Id", primary_key=True)
-    uni_id = models.ForeignKey(
-        Unidad,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Unidad")
+    uni_id = models.ForeignKey(Unidad, models.SET_NULL, blank=True, null=True, verbose_name="Unidad")
     var_codigo = models.CharField("Codigo", max_length=6)
     var_nombre = models.CharField("Nombre", max_length=50)
     var_modelo = models.CharField("Modelo",max_length=50, blank=True, null=True)
@@ -40,7 +35,10 @@ class Variable(models.Model):
     var_err = models.DecimalField("Error", max_digits=7, decimal_places=2, null=True, blank=True)
     var_min = models.DecimalField("Error minimo", max_digits=7, decimal_places=2, null=True, blank=True)
     var_estado = models.BooleanField("Estado", default=True)
-
+    var_estado = models.BooleanField("Estado", default=True)
+    es_acumulada = models.BooleanField("Acumulada (check)/ Promediada", default=True) # True: ACUMULADA, False: PROMEDIADA
+    reporte_automatico = models.BooleanField("Reporte Automático", default=True)
+    umbral_completo = models.DecimalField("Umbral completo (%)", max_digits=4, decimal_places=1, null=True)
     def __str__(self):
         return str(self.var_nombre)
 
