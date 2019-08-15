@@ -49,9 +49,11 @@ def respaldar_archivos(root_dir):
     for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
         for file_name in file_list:
             # mn5 = buscar_archivo(file_name, 'mn5')
+            mn1 = buscar_archivo(file_name, 'mn1')
+            mn2 = buscar_archivo(file_name, 'mn2')
             hor = buscar_archivo(file_name, 'hor')
             dia = buscar_archivo(file_name, 'dia')
-            if hor or dia:
+            if hor or dia or mn1 or mn2:
                 move(root_dir + file_name, get_ruta_backup(root_dir))
             else:
                 registrar_log('No existen archivos nuevos')
@@ -236,5 +238,5 @@ def move(src, dest):
         pass
 
 
-#iniciar_lectura()
+# iniciar_lectura()
 
