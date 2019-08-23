@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
+    'rest_framework',
+    'corsheaders',
     'indices.apps.IndicesConfig',
 
 ]
@@ -66,6 +68,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -92,7 +95,7 @@ TEMPLATES = [
         },
     },
 ]
-
+CORS_ORIGIN_ALLOW_ALL=True # coords access
 WSGI_APPLICATION = 'sedc.wsgi.application'
 
 # Database

@@ -310,7 +310,7 @@ class CurvaDescargaDelete(LoginRequiredMixin, DeleteView):
 
 threads = {}
 
-
+### proceso automatico de generacion de datos horarios diarios y mensuales
 def generar_reportes_1variable(variable_id):
     threads[variable_id] = True
     cursor = connection.cursor()
@@ -318,20 +318,25 @@ def generar_reportes_1variable(variable_id):
     if not es_reporte_automatico:
         del threads[variable_id]
         return
-
-    sql = "SELECT * FROM generar_horario_var" + str(variable_id) + "();"
+    variable = Variable.objects.filter(var_id=variable_id, reporte_automatico=True).values("var_modelo")
+    variable = variable[0].get('var_modelo').lower()
+    print(" ******************************** ")
+    print(" ******************************** ")
+    print("Estoy en medicion views ")
+    print("Estoy en medicion views ")
+    sql = "SELECT * FROM generar_horario_" + variable + "();"
     res = True
     while res:
         cursor.execute(sql)
         res = cursor.fetchone()[0]
 
-    sql = "SELECT * FROM generar_diario_var" + str(variable_id) + "();"
+    sql = "SELECT * FROM generar_diario_" + variable + "();"
     res = True
     while res:
         cursor.execute(sql)
         res = cursor.fetchone()[0]
 
-    sql = "SELECT * FROM generar_mensual_var" + str(variable_id) + "();"
+    sql = "SELECT * FROM generar_mensual_" + variable + "();"
     res = True
     while res:
         cursor.execute(sql)
@@ -414,6 +419,7 @@ def validacion_enviar(request):
         lista = {'resultado': resultado}
         return JsonResponse(lista)
     return None
+
 
 class MedicionBorrar(LoginRequiredMixin, FormView):
     ### IMPORTANTE: SE BORRAN CRUDOS Y VALIDADOS

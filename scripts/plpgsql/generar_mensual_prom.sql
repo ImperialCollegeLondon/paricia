@@ -1,5 +1,5 @@
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de temperaturaaire
+-- ---####  funcion para generar datos mensuales de temperaturaaire
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_temperaturaaire();
@@ -91,7 +91,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de humedadaire
+-- ---####  funcion para generar datos mensuales de humedadaire
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_humedadaire();
@@ -183,7 +183,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de velocidadviento
+-- ---####  funcion para generar datos mensuales de velocidadviento
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_velocidadviento();
@@ -275,7 +275,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de direccionviento
+-- ---####  funcion para generar datos mensuales de direccionviento
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_direccionviento();
@@ -367,7 +367,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de humedadsuelo
+-- ---####  funcion para generar datos mensuales de humedadsuelo
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_humedadsuelo();
@@ -459,7 +459,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de radiacionsolar
+-- ---####  funcion para generar datos mensuales de radiacionsolar
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_radiacionsolar();
@@ -551,7 +551,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de presionatmosferica
+-- ---####  funcion para generar datos mensuales de presionatmosferica
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_presionatmosferica();
@@ -643,7 +643,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de temperaturaagua
+-- ---####  funcion para generar datos mensuales de temperaturaagua
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_temperaturaagua();
@@ -735,7 +735,7 @@ END
 $BODY$  LANGUAGE plpgsql;
 
 -- ---##############################################################
--- ---####  funcion para generar datos diarios de caudal
+-- ---####  funcion para generar datos mensuales de caudal
 -- ---##############################################################
 
 DROP FUNCTION IF EXISTS generar_mensual_caudal();

@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import re_path, path
 from validacion import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -15,5 +15,7 @@ urlpatterns = [
     re_path(r'validacion/procesar/$', views.ProcesarValidacion.as_view(), name='procesar_validacion'),
     re_path(r'^validacion/periodos_validacion/$', views.PeriodosValidacion.as_view(), name='periodos_validacion'),
     re_path(r'^validacion/borrar/$', views.ValidacionBorrar.as_view(), name='borrar'),
+    ### url para los datos desde la api
+    path('inst/', views.VarList.as_view()),
 
 ]

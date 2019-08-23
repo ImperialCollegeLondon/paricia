@@ -91,3 +91,9 @@ class Parametro(models.Model):
 
     def __str__(self):
         return str(self.nombre) + ' ' + str(self.estadistico)
+
+class CurvaDescarga(models.Model):
+    estacion = models.ForeignKey(Estacion, on_delete=models.CASCADE, verbose_name="Estacion",
+                                 related_name='var_curvadescarga_estacion_id')
+    funcion = models.CharField("Función", max_length=200)
+    fecha = models.DateField("Fecha")
