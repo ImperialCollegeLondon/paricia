@@ -87,11 +87,9 @@ def verificar_fechahora(fechahora, formatofechahora):
         fechahora = ''
 
     try:
-        # print(fechahora, formatofechahora)
         _fechahora = datetime.strptime(fechahora, formatofechahora)
     except:
         # print("excepcion")
-
         separar = fechahora.split(" ")
 
         fecha_str = separar[0]
@@ -107,36 +105,44 @@ def verificar_fechahora(fechahora, formatofechahora):
             _fechahora = None
         else:
             _fechahora = datetime(fecha.year, fecha.month, fecha.day, hora.hour, hora.minute, hora.second)
+
+
     return _fechahora
 
 
 def cambiar_formato_fecha(fecha_str, formato_fecha):
     fecha = None
-    con_fecha = list(Fecha.objects.exclude(fec_formato=formato_fecha))
-    for i in range(len(con_fecha)):
-        try:
-            # print("fecha: ",fecha_str,con_fecha[i].fec_codigo)
-            fecha = datetime.strptime(fecha_str, con_fecha[i].fec_codigo)
-            # formato.fec_id = fila
-            # formato.save()
-            break
-        except ValueError:
-            pass
+    try:
+        fecha = datetime.strptime(fecha_str, formato_fecha)
+    except ValueError:
+        con_fecha = list(Fecha.objects.exclude(fec_formato=formato_fecha))
+        for i in range(len(con_fecha)):
+            try:
+                # print("fecha: ",fecha_str,con_fecha[i].fec_codigo)
+                fecha = datetime.strptime(fecha_str, con_fecha[i].fec_codigo)
+                # formato.fec_id = fila
+                # formato.save()
+                break
+            except ValueError:
+                pass
     return fecha
 
 
 def cambiar_formato_hora(hora_str, formato_hora):
     hora = None
-    con_hora = list(Hora.objects.exclude(hor_formato=formato_hora))
-    for i in range(len(con_hora)):
-        try:
-            # print("Hora: ",hora_str, con_hora[i].hor_codigo)
-            hora = datetime.strptime(hora_str, con_hora[i].hor_codigo)
-            # formato.fec_id = fila
-            # formato.save()
-            break
-        except ValueError:
-            pass
+    try:
+        hora = datetime.strptime(hora_str, formato_hora)
+    except ValueError:
+        con_hora = list(Hora.objects.exclude(hor_formato=formato_hora))
+        for i in range(len(con_hora)):
+            try:
+                # print("Hora: ",hora_str, con_hora[i].hor_codigo)
+                hora = datetime.strptime(hora_str, con_hora[i].hor_codigo)
+                # formato.fec_id = fila
+                # formato.save()
+                break
+            except ValueError:
+                pass
     return hora
 
 
@@ -175,6 +181,7 @@ def preformato_matriz(archivo_src, formato):
         # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
         archivo['fechahora_str'] = pd.Series([' '.join(row.astype(str)) for row in archivo[cols].values], index=archivo.index)
         archivo['fecha'] = pd.Series([verificar_fechahora(row, formatofechahora) for row in archivo['fechahora_str'].values], index=archivo.index)
+
     cambiar_fecha = validar_datalogger(formato.mar_id)
     if cambiar_fecha:
         intervalo = timedelta(hours=5)
