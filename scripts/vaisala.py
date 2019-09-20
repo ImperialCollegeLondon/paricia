@@ -4,7 +4,8 @@ import shutil
 from datetime import datetime, timedelta
 from formato.models import Clasificacion, Formato, Asociacion
 from importacion.functions import (validar_fechas, eliminar_datos, guardar_vacios,
-                                   get_modelo, ultima_fecha, verificar_vacios)
+                                   get_modelo, ultima_fecha, verificar_vacios, preformato_matriz,
+                                   construir_matriz)
 from importacion.models import Importacion
 from home.models import Usuarios
 import time
@@ -15,16 +16,19 @@ from medicion.models import TemperaturaAgua, Caudal, NivelAgua
 
 from numbers import Number
 
+import pandas.io.common
+from django.db.utils import DataError
 
-def run(*args):
+'''def run(*args):
     with daemon.DaemonContext():
-        iniciar_lectura()
+        iniciar_lectura()'''
 
 
 def iniciar_lectura():
 
     while True:
         formatos = list(Formato.objects.filter(for_tipo='ftp'))
+        print(formatos)
         if len(formatos) == 0:
             registrar_log('No existen formatos FTP')
         try:
@@ -76,7 +80,7 @@ def get_ruta_backup(root_dir):
 def leer_archivos(root_dir, formato, estacion):
     for dir_name, subdir_list, file_list in os.walk(root_dir, topdown=False):
         for file_name in file_list:
-            if buscar_archivo(file_name, formato.for_archivo):
+            '''if buscar_archivo(file_name, formato.for_archivo):
                 archivo = open(root_dir + file_name)
                 fecha = fecha_archivo(file_name, formato.for_archivo)
                 obj_importacion = set_object_importacion(estacion, formato, fecha, file_name, formato.for_archivo)
@@ -96,11 +100,88 @@ def leer_archivos(root_dir, formato, estacion):
                                   + str(file_name))
             else:
                 registrar_log('No hay nueva información en el directorio FTP. Estacion: '+str(
-                                estacion.est_codigo))
+                                estacion.est_codigo))'''
+            print(formato.for_archivo)
+            if formato.for_archivo == 'YDOC':
+                procesar_ydoc(file_name, root_dir, formato, estacion)
+            else:
+                procesar_vaisala(file_name, root_dir, formato, estacion)
 
 
-def guardar_datos(importacion, datos, estacion):
+def procesar_vaisala(file_name, root_dir, formato, estacion):
+    if buscar_archivo(file_name, formato.for_archivo):
+        archivo = open(root_dir + file_name)
+        fecha = fecha_archivo(file_name, formato.for_archivo)
+        obj_importacion = set_object_importacion(estacion, formato, fecha, file_name, formato.for_archivo)
+        registrar_log('Lectura Iniciada Estacion:' + str(
+            estacion.est_codigo) + ' archivo: ' + file_name)
+        datos = procesar_archivo(archivo, formato, fecha, estacion)
+        archivo.close()
+        if len(datos) > 0:
+            guardar_datos(obj_importacion, datos, estacion,formato)
+            registrar_log('Información guardada Estacion:' + str(
+                estacion.est_codigo) + ' Archivo: ' + str(
+                file_name))
+            obj_importacion.save()
+            move(root_dir + file_name, get_ruta_backup(root_dir))
+        else:
+            registrar_log('No existe información en el archivo: '
+                          + str(file_name))
+    else:
+        registrar_log('No hay nueva información en el directorio FTP. Estacion: ' + str(
+            estacion.est_codigo))
+
+
+def procesar_ydoc(file_name, root_dir, formato, estacion):
+    archivo = root_dir + file_name
+    registrar_log('Lectura Iniciada Estacion:' + str(
+        estacion.est_codigo) + ' archivo: ' + file_name)
+    try:
+        datos = preformato_matriz(archivo, formato)
+    except pandas.io.common.EmptyDataError:
+        registrar_log('No existe nueva informacion para el Formato: '
+                      + str(formato.for_descripcion))
+        datos = []
+        pass
+    except Exception as e:
+        registrar_log("Error Inesperado:"+str(e))
+        datos = []
+        pass
+    except IOError as e:
+        datos = []
+        registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
+        pass
+    except DataError as e:
+        datos = []
+        registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
+        pass
+    # print(datos)
+    print(len(datos))
+    if len(datos) > 0:
+        # fecha_ini, fecha_fin = get_fechas_datos(datos)
+        fecha_ini = datos.loc[0, 'fecha']
+        fecha_fin = datos.loc[datos.shape[0] - 1, 'fecha']
+        obj_importacion = set_object_importacion_ydoc(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
+        matriz = construir_matriz(archivo, formato, estacion)
+        # print(matriz)
+        try:
+            guardar_datos(obj_importacion, matriz, estacion, formato)
+            registrar_log('Información guardada Estacion:' + str(
+                        estacion.est_codigo) + 'Formato:' + str(
+                        formato.for_descripcion))
+            obj_importacion.save()
+        except DataError:
+            registrar_log('Error en la información')
+        except TypeError:
+            registrar_log('Error en la información')
+        except ValueError:
+            registrar_log('Error en la información')
+        move(root_dir + file_name, get_ruta_backup(root_dir))
+
+
+def guardar_datos(importacion, datos, estacion, formato):
     observacion = 'vacio datos automaticos'
+
     for var_id, tabla in datos.items():
         modelo = get_modelo(var_id)
         fecha_datos = ultima_fecha(modelo, estacion.est_id)
@@ -108,8 +189,13 @@ def guardar_datos(importacion, datos, estacion):
             registrar_log('Vacio de información')
             guardar_vacios(var_id, fecha_datos, estacion, observacion, importacion.imp_fecha_ini)
         eliminar_datos(modelo, importacion, estacion.est_id)
+        if formato.for_archivo == 'YDOC':
+            modelo.objects.bulk_create(
+                modelo(**row) for row in tabla.to_dict('records')
+            )
+        else:
+            modelo.objects.bulk_create(tabla)
 
-        modelo.objects.bulk_create(tabla)
 
 
 def buscar_archivo(file_name, frecuencia):
@@ -129,6 +215,20 @@ def set_object_importacion(estacion, formato, fecha, archivo, prefijo):
     importacion.for_id = formato
     importacion.imp_fecha_ini = fecha
     importacion.imp_fecha_fin = fecha + intervalo
+    importacion.imp_archivo = archivo
+    importacion.imp_observacion = 'Carga de Datos Automatica'
+    importacion.usuario = usuario
+    importacion.imp_tipo = "a"
+    return importacion
+
+
+def set_object_importacion_ydoc(estacion, formato, fecha_ini, fecha_fin, archivo):
+    usuario = Usuarios.objects.get(username='admin')
+    importacion = Importacion()
+    importacion.est_id = estacion
+    importacion.for_id = formato
+    importacion.imp_fecha_ini = fecha_ini
+    importacion.imp_fecha_fin = fecha_fin
     importacion.imp_archivo = archivo
     importacion.imp_observacion = 'Carga de Datos Automatica'
     importacion.usuario = usuario
@@ -238,5 +338,5 @@ def move(src, dest):
         pass
 
 
-# iniciar_lectura()
+iniciar_lectura()
 
