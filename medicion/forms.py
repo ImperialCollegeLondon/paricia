@@ -5,6 +5,19 @@ from variable.models import Variable
 from medicion.models import CurvaDescarga
 
 
+class ValidacionSearchForm(forms.Form):
+    TIPO_VALOR = (
+        ('valor', 'valor'),
+        ('maximo', 'máximo'),
+        ('minimo', 'mínimo'),
+    )
+    estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all())
+    variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all())
+    inicio = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Inicio(yyyy-mm-dd)")
+    fin = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
+    #valor = forms.ChoiceField(choices=TIPO_VALOR)
+
+
 class MedicionSearchForm(forms.Form):
     TIPO_VARIABLE = (
         ('valor', 'valor'),
@@ -49,3 +62,10 @@ class CurvaDescargaSearchForm(forms.Form):
         else:
             lista = CurvaDescarga.objects.all()
         return lista
+
+
+class BorrarForm(forms.Form):
+    estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all())
+    variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all())
+    inicio = forms.DateTimeField(input_formats=['%Y-%m-%d %H:%M:%S'], label="Fecha de Inicio(yyyy-mm-dd HH:MM:SS)")
+    fin = forms.DateTimeField(input_formats=['%Y-%m-%d %H:%M:%S'], label="Fecha de Fin(yyyy-mm-dd HH:MM:SS)")

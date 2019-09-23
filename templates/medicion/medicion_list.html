@@ -1,181 +1,186 @@
 {% load bootstrap4 %}
 {% load humanize %}
-<script>
-// JQuery code to be added in here.
-$( function() {
-
-  $(".link_edit").click(function(){
-    $.ajax({
-      url: $(this).attr('href'),
-      type:'GET',
-      beforeSend: function () {
-        $("#div_loading").show();
-        $("#div_informacion").hide();
-      },
-      success: function (data) {
-        $("#div_edit").html(data);
-        $("#div_edit").dialog( "open" );
-        $("#div_loading").hide();
-        $("#div_informacion").show();
-      },
-      error: function () {
-        $("#div_loading").hide();
-        $("#div_error").show();
-      }
-    });
-    return false;
-  });
-
-  $(".link_delete").click(function(){
-    $.ajax({
-      url: $(this).attr('href'),
-      type:'GET',
-      beforeSend: function(){
-        activar_espera();
-      },
-      success: function (data) {
-        $("#div_delete").html(data)
-        $("#div_delete").dialog("open");
-        desactivar_espera();
-      },
-      error: function () {
-        $("#div_loading").hide();
-        $("#div_error").show();
-      }
-    });
-    return false;
-  });
-
-});
-
-</script>
-<div class="col-lg-12">
+{% load static %}
 
 
-<div class="row" >
-    <div class="col-lg-3 col-md-3 col-sm-6">
+<script src="{% static 'validacion.js' %}"></script>
+<link rel="stylesheet" href="{% static 'validacion.css' %}">
 
-        <p class="text-center"><strong>Umbrales</strong></p>
-        <div class="row">
-            <div class="col-lg-5 col-md-5 col-sm-5">
-                <img src="/media/normal.jpg" width="25px"/>
-                <small>Normal</small>
-            </div>
-            <div class="col-lg-7 col-md-7 col-sm-7">
-                <img src="/media/error.jpg" width="25px"/>
-                <small>Fuera de Rango</small>
-            </div>
+<input type="hidden" name="orig_estacion_id" value="{{estacion.est_id }}">
+<input type="hidden" name="orig_variable_id" value="{{variable.var_id}}">
+<input type="hidden" name="orig_fecha_inicio" value="{{inicio|date:'Y-m-d'}}">
+<input type="hidden" name="orig_fecha_fin" value="{{fin|date:'Y-m-d'}}">
+<input type="hidden" name="orig_lim_sup" value="{{variable.var_maximo}}">
+<input type="hidden" name="orig_lim_inf" value="{{variable.var_minimo}}">
+<input type="hidden" name="orig_variacion_sos" value="{{variable.var_sos}}">
+<input type="hidden" name="orig_variacion_err" value="{{variable.var_err}}">
+
+
+<div id="comentario_overlay" class="popup-overlay"  >
+    <div id="comentario_content" class="popup-content">
+        <input type="hidden" name="row_id" value="">
+        <div id="id_comentario_dialog" class="dialog" title="Comentario por cambio de valor" >
+            <textarea name="nuevo_comentario" rows="10" cols="40"></textarea>
+            <br>
+            <button id="btn_guardar_comentario" type="button" class="btn btn-success btn-xs">Guardar comentario</button>
+            <button id="btn_sin_comentario" type="button" class="btn btn-danger btn-xs">Sin comentario</button>
         </div>
-        <p class="font-italic"><small>Desde {{variable.var_minimo}} hasta {{variable.var_maximo}}</small></p>
-    </div>
-    {% if variable.var_err %}
-    <div class="col-lg-6 col-md-6 col-sm-6">
-        <p class="text-center"><strong>Resta Consecutiva</strong></p>
-        <div class="row">
-            <div class="col-lg-4 col-md-2 col-sm-4">
-                <img src="/media/normal.jpg" width="25px"/>
-                <small>Normal</small>
-            </div>
-            <div class="col-lg-4 col-md-5 col-sm-4">
-                <img src="/media/sospechoso.jpg" width="25px"/>
-                <small>Sospechoso</small>
-            </div>
-            <div class="col-lg-4 col-md-5 col-sm-4">
-                <img src="/media/error.jpg" width="25px"/>
-                <small>Fuera de Rango</small>
-            </div>
-        </div>
-        <p class="font-italic"><small>Sospechoso (Desde: {{variable.var_sos}} Hasta {{variable.var_err}}) y Erróneo>={{variable.var_err}}</small></p>
-    </div>
-    {% endif %}
-    {% if variable.var_min %}
-    <div class="col-lg-3 col-md-3 col-sm-6">
-        <p class="text-center"><strong>Variabilidad</strong></p>
-        <div class="row">
-
-            <div class="col-lg-5 col-md-5 col-sm-5">
-                <img src="/media/normal.jpg" width="25px"/>
-                <small>Normal</small>
-            </div>
-            <div class="col-lg-7 col-md-7 col-sm-7">
-                <img src="/media/error.jpg" width="25px"/>
-                <small>Fuera de Rango</small>
-            </div>
-
-        </div>
-        <p class="font-italic"><small>Normal>={{variable.var_min}}</small></p>
-    </div>
-    {% endif %}
+     </div>
 </div>
+
+<br>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12" style="border: 1px solid lightgrey;">
+        {% if grafico %}
+        <center><div id="grafico" style="width:auto;height:300">{{ grafico|safe }}</div></center>
+        {%else%}
+        <label>No hay información para los parametros ingresados</label>
+        {% endif %}
+        <br>
     </div>
-<p>
-    <small>*Los Umbrales, Resta Consecutiva y Variabilidad aplican para información con frecuencia de un minuto</small>
-</p>
+
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 fondo-transp-blanco" style="border: 1px solid lightgrey;">
+        <div class="row">
+            <h5>Límites Dato crudo:
+            <button id="limites_cambiar" class="btn btn-xs" style="background-color: #BFBFFF">Cambiar</button>
+            <button id="limites_reset" class="btn btn-default btn-xs">Reestablecer</button>
+            </h5>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-2 col-md-2 col-sm-2">Inferior:</div>
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <input name="lim_inf" type="number" class="form-control" step="0.1" >
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1"><br></div>
+            <div class="col-lg-2 col-md-2 col-sm-2">Superior:</div>
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <input name="lim_sup" type="number" class="form-control" step="0.1" >
+            </div>
+        </div>
+        <br>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 fondo-transp-blanco">
+        <h4>Comentario general</h4>
+        <textarea name="comentario_general" rows="2" cols="60" class="form-control"></textarea>
+        <br>
+    </div>
+</div>
+
+<br>
+<center>
+    <button id="btn_validacion_enviar" type="button" class="btn btn-default btn-info btn-space">Enviar validación</button>
+</center>
+
+<br>
 
 
 
-<table class="table table-sm table-fixed">
-    <thead class="thead-light">
-        <tr>
-            <th class="col-2" scope="col">Fecha</th>
-            <th class="col-2" scope="col">Hora</th>
-            <th class="col-2" scope="col">Valor</th>
-            <th class="col-2" scope="col">Resta Consecutiva</th>
-            <th class="col-2" scope="col">Variabilidad</th>
-            <th class="col-2" scope="col">Acciones</th>
-        </tr>
-    </thead>
+    <table class="table table-bordered table-condensed table-hover">
+        <thead>
+            <tr>
 
-    <tbody>
+                <th class="col1">
+                    <div class="row" >
+                        <center>Fecha</center>
+                        <h6><br></h6>
+                    </div>
+
+                    <div class="row" >
+                        <center>
+                            <span id="btn_fec_error" class="badge badge-danger">Error</span>
+                            <span id="btn_fec_normal" class="badge badge-success">Normal<br/>-</span>
+                            <span id="btn_fec_salto" class="badge badge-warning ">Salto<br/>-</span>
+                        </center>
+                    </div>
+                </th>
+
+                <th class="col2">
+                    <div class="row" >
+                        <center>Validación</center>
+                        <h6><br></h6>
+                    </div>
+
+                    <div class="row" >
+                        <center>
+                            <span id="btn_val_nuevo"  class="badge badge-default" title="No Validado">No Val.<br/>-</span>
+                            <span id="btn_val_ya_validado"  class="badge badge-success" title="Validado">Val.<br/>-</span>
+                            <span id="btn_val_cambio" class="badge badge-info" title="Cambio realizado">Cambio<br/>-</span>
+                        </center>
+                    </div>
+                </th>
+
+                <th class="col3">
+                    <div class="row" >
+                        <center><p class="small font-weight-bold">Valor</p>
+                            <p class="small"><small>Norm: [{{variable.var_minimo}} , {{variable.var_maximo}}]</small></p></center>
+                    </div>
+
+                    <div class="row" >
+                        <center>
+                            <span id="btn_med_normal" class="badge badge-success">Normal</span>
+                            <span id="btn_med_error"  class="badge badge-danger">Error</span>
+                        </center>
+                    </div>
+                </th>
+
+
+                <th class="col4">
+                    <div class="row">
+                            <p class="small font-weight-bold">Variación consecutiva</p>
+                        <p class="small"><small>Sosp: [{{variable.var_sos}} ; {{variable.var_err}}] <br/> Err >= {{variable.var_err}}</small></p>
+                    </div>
+
+                    <div class="row" >
+                        <center>
+                            <span id="btn_var_normal" class="badge badge-success ">Norm.<br/>-</span>
+                            <span id="btn_var_sospechoso" class="badge badge-warning ">Sosp.<br/>-</span>
+                            <span id="btn_var_error" class="badge badge-danger ">Error<br/>-</span>
+                        </center>
+                    </div>
+                </th>
+
+
+                <th class="col5">
+                    <div class="row">
+                        <p class="small font-weight-bold">Valores atípicos</p>
+                         <p class="small"><small>Fuera de {{variable.var_min | floatformat:1}} sigmas</small></p></center>
+                    </div>
+                    <div class="row" >
+                        <center>
+                            <span id="btn_dev_normal"  class="badge badge-success">Normal<br/>-</span>
+                            <span id="btn_dev_error"  class="badge badge-danger">Extr.<br/>-</span>
+                        </center>
+                    </div>
+                </th>
+
+
+                <th class="col6"><p class="font-weight-bold">Comentario</p></th>
+
+            </tr>
+        </thead>
+
+
+
+        <tbody>
+
         {% for item in lista %}
-        <tr>
-            <td scope="row" class="col-2">{{ item.fecha|date:"d/m/Y"}}</td>
-            <td class="col-2">{{ item.hora|date:"H:i:s"}}</td>
-            {% if item.valor_error %}
-            <td class="col-2" style="background-color: #ff1a1a;">{{ item.valor|floatformat:3}}</td>
-            {% else %}
-            <td class="col-2" style="background-color: #90EE90;">{{ item.valor|floatformat:3}}</td>
-            {%endif%}
-            {% ifequal item.resta_error "normal" %}
-            <td class="col-2" style="background-color: #90EE90;">{{ item.resta|floatformat:3}}</td>
-            {% else %}
-            {% ifequal item.resta_error "sospechoso" %}
-            <td class="col-2" style="background-color: #ff4500;">{{ item.resta|floatformat:3}}</td>
-            {% else %}
-            {% ifequal item.resta_error "error" %}
-            <td class="col-2" style="background-color: #ff1a1a;">{{ item.resta|floatformat:3}}</td>
-            {% else %}
-            <td class="col-2">&nbsp;</td>
-            {% endifequal %}
-            {% endifequal %}
-            {% endifequal %}
-            {% if item.variabilidad %}
-            {% ifequal item.var_error True %}
-            <td class="col-2" style="background-color: #ff1a1a;">{{ item.variabilidad|floatformat:3}}</td>
-            {% else %}
-            {% ifequal item.var_error False %}
-            <td class="col-2" style="background-color: #90EE90;">{{ item.variabilidad|floatformat:3}}</td>
-            {% else %}
-            <td class="col-2">&nbsp;</td>
-            {% endifequal %}
-            {% endifequal %}
-            {% else %}
-            <td class="col-2">&nbsp;</td>
-            {% endif %}
-
-
-            <td class="col-2">
-                <a class="link_edit" href="{% url 'medicion:medicion_update' item.med_id item.fecha item.var_id %}">
-                    <span class="far fa-edit" aria-hidden="true"></span>
-                </a>
-                <a class="link_delete" href="{% url 'medicion:medicion_delete' item.med_id item.fecha item.var_id %}">
-                    <span class="far fa-trash-alt" aria-hidden="true"></span>
-                </a>
-            </td>
+        <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
+            <td class="col1 small {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s.u"}}</td>
+            <td class="col2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"" }}</td>
+            <td class="col3 {{item.class_valor}}">{{item.valor|default_if_none:"" }}</td>
+            <td class="col4 {{item.class_variacion_consecutiva}}">{{item.variacion_consecutiva|default_if_none:"" }}</td>
+            <td class="col5 {{item.class_stddev_error}}"></td>
+            <td class="col6 comentario" >{{item.comentario|default_if_none:""}}</td>
         </tr>
-
         {% endfor%}
 
-    </tbody>
+        </tbody>
 
-</table>
+    </table>
+

@@ -3,12 +3,39 @@ from estacion.models import Estacion
 from variable.models import Variable, Unidad
 from medicion.models import Medicion
 from registro.models import LogMedicion
-from datetime import datetime, timedelta, date
+import datetime
 from django.db import connection
 from django.contrib.auth.models import User
-
+from django.db import models
 import plotly.offline as opy
 import plotly.graph_objs as go
+
+
+class ReporteValidacion(models.Model):
+    numero_fila = models.BigAutoField(primary_key=True)
+    seleccionado = models.BooleanField()
+    fecha = models.DateTimeField()
+    valor_seleccionado = models.DecimalField(max_digits=14, decimal_places=6, null=True)
+    valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)
+    variacion_consecutiva = models.DecimalField(max_digits=14, decimal_places=6, null=True)
+    comentario = models.CharField(max_length=350)
+    class_fila = models.CharField(max_length=30)
+    class_fecha = models.CharField(max_length=30)
+    class_validacion = models.CharField(max_length=30)
+    class_valor = models.CharField(max_length=30)
+    class_variacion_consecutiva = models.CharField(max_length=30)
+    class_stddev_error = models.CharField(max_length=30)
+
+
+def reporte_validacion(form):
+    est_id = form.cleaned_data['estacion'].est_id
+    var_id = form.cleaned_data['variable'].var_modelo
+    inicio = form.cleaned_data['inicio']
+    fin = datetime.datetime.combine(form.cleaned_data['fin'], datetime.time(23, 59, 59, 999999))
+    query = "select * FROM reporte_validacion_" + str(var_id).lower() + "(%s, %s, %s);"
+    print(query,est_id, inicio, fin)
+    consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
+    return consulta
 
 
 def filtrar(form):
@@ -286,8 +313,32 @@ def eliminar(form):
                        [est_id, var_id, fec_ini, fec_fin])
     return "Proceso Realizado"
 
+def grafico2(consulta, variable, estacion):
+    valor = []
+    frecuencia = []
+    for fila in consulta:
+        if not fila.seleccionado:
+            continue
+        valor.append(fila.valor)
+        frecuencia.append(fila.fecha)
+    if variable.var_id == 1:
+        trace = go.Bar(x=frecuencia, y=valor, name='Precipitacion (mm)')
+        data = [trace]
+    else:
+        trace2 = go.Scatter(x=frecuencia, y=valor, name='Media', mode='lines', line=dict(color=('rgb(22, 96, 167)'),))
+        #data = go.Data([trace0, trace1, trace2])
+        data = [trace2]
+    shapes = []
 
-def grafico(form, valores, maximos_abs, minimos_abs, tiempo):
+    layout = go.Layout(autosize=False, width=1000, height=300, title=estacion.est_codigo + " " + estacion.est_nombre,
+                       yaxis=dict(title=variable.var_nombre),
+                       shapes=shapes
+                       )
+    figure = go.Figure(data=data, layout=layout)
+    div = opy.plot(figure, auto_open=False, output_type='div')
+    return div
+
+def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
     div = ""

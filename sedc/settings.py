@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
+    'indices.apps.IndicesConfig',
 
 ]
 LOGIN_URL = '/login/'
