@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', 'infoagua-guayllabamba.ec','www.infoagua-guayllabamba.ec','157.100.182.61','sedc.fonag.org.ec','www.sedc.fonag.org.ec']
 
@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'cruce.apps.CruceConfig',
     'home.apps.HomeConfig',
     'registro.apps.RegistroConfig',
+    'horario.apps.HorarioConfig',
+    'diario.apps.DiarioConfig',
+    'mensual.apps.MensualConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,6 +59,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',
+    'rest_framework',
+    'corsheaders',
     'indices.apps.IndicesConfig',
 
 ]
@@ -63,6 +68,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -89,7 +95,7 @@ TEMPLATES = [
         },
     },
 ]
-
+CORS_ORIGIN_ALLOW_ALL=True # coords access
 WSGI_APPLICATION = 'sedc.wsgi.application'
 
 # Database

@@ -42,7 +42,7 @@ urlpatterns = [
     re_path(r'^', include('bitacora.urls', namespace='bitacora')),
     re_path(r'^', include('cruce.urls', namespace='cruce')),
     re_path(r'^', include('registro.urls', namespace='registro')),
-    # re_path(r'^', include('indices.urls', namespace='indices')),
+    re_path(r'^', include('indices.urls', namespace='indices')),
     re_path('^', include('django.contrib.auth.urls')),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})

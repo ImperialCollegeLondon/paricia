@@ -52,24 +52,20 @@ class MedicionFilter(LoginRequiredMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = ValidacionSearchForm(self.request.POST or None)
         if form.is_valid():
+            print("form valid")
             if self.request.is_ajax():
-                self.lista = reporte_validacion(form)
-                self.variable = form.cleaned_data['variable']
-                self.estacion = form.cleaned_data['estacion']
-                self.grafico = grafico2(self.lista, self.variable, self.estacion)
-                self.inicio = form.cleaned_data['inicio']
-                self.fin = form.cleaned_data['fin']
-                return render(request, 'medicion/medicion_list.html',
-                              {'lista': self.lista,
-                               'variable': self.variable,
-                               'estacion': self.estacion,
-                               'grafico': self.grafico,
-                               'inicio': self.inicio,
-                               'fin': self.fin
-                               })
-        #return self.render_to_response(self.get_context_data(form=form))
-        return HttpResponse('')
+                print("ajax")
 
+                variable = form.cleaned_data['variable']
+                estacion = form.cleaned_data['estacion']
+                inicio = form.cleaned_data['inicio']
+                fin = form.cleaned_data['fin']
+                self.grafico = grafico_validacion(variable, estacion, inicio, fin)
+
+                return JsonResponse(self.grafico, safe=False)
+
+        # return self.render_to_response(self.get_context_data(form=form))
+        return render(request, 'home/form_error.html', {'form': form})
 
     def get_context_data(self, **kwargs):
         context = super(MedicionFilter, self).get_context_data(**kwargs)
@@ -77,6 +73,29 @@ class MedicionFilter(LoginRequiredMixin, FormView):
         context['variable'] = self.variable
         context['grafico'] = self.grafico
         return context
+
+
+@login_required
+def lista_datos_validacion(request):
+    estacion_id = request.POST.get('estacion', None)
+    variable_id = request.POST.get('variable', None)
+    inicio = request.POST.get('inicio', None)
+    fin = request.POST.get('fin', None)
+    print(inicio, fin)
+    estacion = Estacion.objects.get(est_id=estacion_id)
+    variable = Variable.objects.get(var_id=variable_id)
+    inicio = datetime.datetime.strptime(inicio, '%d/%m/%Y')
+    fin = datetime.datetime.strptime(fin, '%d/%m/%Y')
+    lista = reporte_validacion(estacion, variable, inicio, fin)
+    # lista = []
+
+    return render(request, 'medicion/medicion_list.html',
+                  {'lista': lista,
+                   'variable': variable,
+                   'estacion': estacion,
+                   'inicio': inicio,
+                   'fin': fin
+                   })
 
 
 # Lista de datos crudos
@@ -240,7 +259,8 @@ class MedicionConsulta(LoginRequiredMixin,FormView):
         form = MedicionConsultaForm(self.request.POST or None)
         if form.is_valid() and self.request.is_ajax():
             valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(form)
-            self.grafico = grafico(form, valores, maximos_abs, minimos_abs, tiempo)
+            # TODO cambiar la funcion del gráfico
+            # self.grafico = grafico(form, valores, maximos_abs, minimos_abs, tiempo)
             return render(request, 'reportes/consultas/grafico.html',
                           {'grafico': self.grafico})
         # elif form.is_valid():
@@ -348,6 +368,7 @@ def stack_reportes(variable_id):
         time.sleep(10)
     t = Thread(target=generar_reportes_1variable, args=(variable_id,))
     t.start()
+
 
 @login_required
 def variables(request):

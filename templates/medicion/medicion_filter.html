@@ -3,8 +3,9 @@
 {% load bootstrap4 %}
 {% load humanize %}
 {% load static %}
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{% static 'js_ajax.js' %}"></script>
 
 
 <style type="text/css">
@@ -164,19 +165,7 @@ $(document).ready(function() {
         cargar_variables(estacion);
     });
 
-    $( "#id_inicio" ).datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat:"yy-mm-dd",
-        yearRange: '2000:'+(new Date).getFullYear()
-    });
 
-    $( "#id_fin" ).datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat:"yy-mm-dd",
-        yearRange: '2000:'+(new Date).getFullYear()
-    });
 
 
     $( "#div_edit" ).dialog({
@@ -191,10 +180,7 @@ $(document).ready(function() {
         height:350
     });
 
-    $("#btn_filtrar").click(function(){
-        actualizar_lista();
-        return false;
-    });
+
 
     $("#btn_periodos_validacion").click(function(){
         periodos_validacion();
@@ -219,7 +205,7 @@ $(document).ready(function() {
         {% endfor %}
         <div class="form-group col-lg-6 col-md-6">
             <label></label><br>
-            <button id="btn_periodos_validacion" type="button" class="btn btn-default">Consultar</button>
+            <button id="btn_periodos_validacion" type="button" class="btn btn-default">Historial</button>
             <button id="btn_filtrar" type="button" class="btn btn-default btn-primary">Validar</button>
             <a id="id_limpiar" class="btn btn-default" href="{% url 'medicion:medicion_filter' %}"><span>Limpiar</span></a>
         </div>
@@ -239,8 +225,13 @@ $(document).ready(function() {
 </div>
 
 <br>
-<div id="div_informacion" class="row">
+<div id="div_informacion">
 </div>
+
+<div id="div_lista_datos">
+</div>
+
+
 
 <div id="div_edit" title="Modificar Información">
 </div>

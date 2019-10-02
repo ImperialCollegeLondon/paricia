@@ -7,25 +7,17 @@ from estacion.models import Estacion
 from django.urls import reverse
 from medicion.models import DigVar
 from datetime import datetime
+from django.utils import timezone
+
 
 class Validacion(models.Model):
     val_id = models.AutoField("Id", primary_key=True)
-    var_id = models.ForeignKey(
-        Variable,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Variable")
-    est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación")
-    val_fecha = models.DateField("Fecha")
-    val_num_dat = models.IntegerField("Número de Datos", default=0)
-    val_fre_reg = models.IntegerField("Número de Registros", default=0)
-    val_porcentaje = models.DecimalField("Procentaje", max_digits=5, decimal_places=2, default=0)
+    var_id = models.ForeignKey(Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable")
+    est_id = models.ForeignKey(Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación")
+    fecha_validacion = models.DateField("Fecha validación")
+    fecha_inicio_datos = models.DateTimeField("Fecha inicio datos")
+    fecha_fin_datos = models.DateTimeField("Fecha fin datos")
+    comentario = models.CharField("Comentario", max_length=350)
 
     def __str__(self):
         return str(self.var_id) + ' -- ' + str(self.est_id) + ' -- ' + str(self.fecha_validacion)

@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.db import models
 import plotly.offline as opy
 import plotly.graph_objs as go
+from reportes.functions import get_elemento_data_json, get_layout_grafico, datos_instantaneos
 
 
 class ReporteValidacion(models.Model):
@@ -27,14 +28,15 @@ class ReporteValidacion(models.Model):
     class_stddev_error = models.CharField(max_length=30)
 
 
-def reporte_validacion(form):
-    est_id = form.cleaned_data['estacion'].est_id
-    var_id = form.cleaned_data['variable'].var_modelo
-    inicio = form.cleaned_data['inicio']
-    fin = datetime.datetime.combine(form.cleaned_data['fin'], datetime.time(23, 59, 59, 999999))
+def reporte_validacion(estacion, variable, inicio, final):
+    print("Inicio Reporte Validacion: ", datetime.datetime.now())
+    est_id = estacion.est_id
+    var_id = variable.var_modelo
+    fin = datetime.datetime.combine(final, datetime.time(23, 59, 59, 999999))
     query = "select * FROM reporte_validacion_" + str(var_id).lower() + "(%s, %s, %s);"
-    print(query,est_id, inicio, fin)
+    print(query, est_id, inicio, fin)
     consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
+    print("Fin Reporte Validacion: ", datetime.datetime.now())
     return consulta
 
 
@@ -243,60 +245,6 @@ def guardar_log(accion, medicion, user):
     logmedicion.save()
 
 
-def datos_instantaneos(form):
-    estacion = form.cleaned_data['estacion']
-    variable = form.cleaned_data['variable']
-    fecha_inicio = form.cleaned_data['inicio']
-    fecha_fin = form.cleaned_data['fin']
-    year_ini = fecha_inicio.strftime('%Y')
-    year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        sql = 'SELECT * FROM ' + tabla + ' WHERE '
-        sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-        sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-        sql += 'med_fecha<=\'' + str(fecha_fin) + '\' order by med_fecha'
-        consulta = list(Medicion.objects.raw(sql))
-    else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        consulta = []
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_estado is not False and '
-                sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' order by med_fecha'
-            elif str(year) == year_fin:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_estado is not False and '
-                sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59 \' order by med_fecha'
-            else:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'med_estado is not False and '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' order by med_fecha'
-            consulta.extend(list(Medicion.objects.raw(sql)))
-    valor = []
-    maximo = []
-    minimo = []
-    frecuencia = []
-    for fila in consulta:
-        if fila.med_valor is not None:
-            valor.append(fila.med_valor)
-        else:
-            valor.append(None)
-        if fila.med_maximo is not None:
-            maximo.append(fila.med_maximo)
-        else:
-            maximo.append(None)
-        if fila.med_minimo is not None:
-            minimo.append(fila.med_minimo)
-        else:
-            minimo.append(None)
-        frecuencia.append(fila.med_fecha)
-    return valor, maximo, minimo, frecuencia
 
 
 def eliminar(form):
@@ -313,32 +261,34 @@ def eliminar(form):
                        [est_id, var_id, fec_ini, fec_fin])
     return "Proceso Realizado"
 
-def grafico2(consulta, variable, estacion):
-    valor = []
-    frecuencia = []
-    for fila in consulta:
-        if not fila.seleccionado:
-            continue
-        valor.append(fila.valor)
-        frecuencia.append(fila.fecha)
+
+# Grafico para la validacion de datos
+def grafico_validacion(variable, estacion, fecha_inicio, fecha_fin):
+    print("Inicio grafico2: ", datetime.datetime.now())
+    informacion = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+    tiempo = informacion["tiempo"]
+    valor = informacion["valor"]
     if variable.var_id == 1:
-        trace = go.Bar(x=frecuencia, y=valor, name='Precipitacion (mm)')
-        data = [trace]
+        data_valor = get_elemento_data_json('scatter', tiempo, valor, 'Valor', '#1660A7')
     else:
-        trace2 = go.Scatter(x=frecuencia, y=valor, name='Media', mode='lines', line=dict(color=('rgb(22, 96, 167)'),))
-        #data = go.Data([trace0, trace1, trace2])
-        data = [trace2]
-    shapes = []
+        data_valor = get_elemento_data_json('bar', tiempo, valor, 'Media', '#1660A7')
 
-    layout = go.Layout(autosize=False, width=1000, height=300, title=estacion.est_codigo + " " + estacion.est_nombre,
-                       yaxis=dict(title=variable.var_nombre),
-                       shapes=shapes
-                       )
-    figure = go.Figure(data=data, layout=layout)
-    div = opy.plot(figure, auto_open=False, output_type='div')
-    return div
+    titulo_grafico = variable.var_nombre + " " + estacion.est_codigo
+    titulo_yaxis = variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"
 
-def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
+    data = [data_valor]
+
+    layout = get_layout_grafico(titulo_grafico, titulo_yaxis, fecha_inicio, fecha_fin)
+
+    grafico_div = dict(
+        data=data,
+        layout=layout,
+    )
+
+    return grafico_div
+
+
+'''def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
     div = ""
@@ -385,7 +335,7 @@ def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
         )
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
-    return div
+    return div'''
 
 
 def titulo_unidad(variable):

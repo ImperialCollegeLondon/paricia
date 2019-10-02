@@ -86,12 +86,92 @@ $(document).ready(function() {
         });
     });
 
+    //formulario validacion
+    $("#btn_filtrar").click(function(){
+
+        //actualizar_lista();
+        $(this).attr('disabled',true);
+        /*$.ajax({
+            url: '/medicion/filter/',
+            data: $("#form_filter").serialize(),
+            type:'POST',
+            dataType: 'json',
+            beforeSend: function () {
+                $("#div_informacion").hide();
+                $("#div_loading").show();
+                $("#div_error").hide();
+                $("#div_mensaje").hide();
+            },
+            success: function (data) {
+                if (Object.keys(data)=="mensaje"){
+                    $("#div_mensaje").html(data.mensaje);
+                    $("#div_mensaje").show();
+                }
+                else{
+                    $("#div_informacion").show();
+                    var count = Object.keys(data.data[0].y).length;
+                    if (count>0) {
+                        Plotly.newPlot('div_informacion', data.data,data.layout);
+                    }
+                    else{
+                        //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
+                        $("#div_mensaje").html('<label>No hay información para los parametros ingresados</label>');
+                        $("#div_mensaje").show();
+                    }
+
+                }
+
+                $("#btn_filtrar").removeAttr('disabled');
+
+                $("#div_loading").hide();
+
+                $("#div_error").hide();
+            },
+            error: function () {
+                $("#btn_filtrar").removeAttr('disabled');
+                $("#div_informacion").hide();
+                $("#div_loading").hide();
+                $("#div_error").show();
+            }
+        });*/
+
+        $.ajax({
+            url: '/medicion/datos_validacion/',
+            data: $("#form_filter").serialize(),
+            type:'POST',
+            beforeSend: function () {
+                $("#div_lista_datos").hide();
+                $("#div_loading").show();
+                $("#div_error").hide();
+                $("#div_mensaje").hide();
+            },
+            success: function (data) {
+                $("#div_lista_datos").html(data);
+                $("#div_lista_datos").show();
+                $("#btn_filtrar").removeAttr('disabled');
+                $("#div_loading").hide();
+                $("#div_error").hide();
+                $("#div_mensaje").hide();
+
+            },
+            error: function () {
+
+                $("#btn_filtrar").removeAttr('disabled');
+                $("#div_lista_datos").hide();
+                $("#div_loading").hide();
+                $("#div_error").show();
+            }
+        });
+        return false;
+    });
+
     //datepicker con intervalo registringido
     var dateFormat = "dd/mm/yy";
     $( "#id_inicio" ).datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat:"dd/mm/yy"
+        dateFormat:"dd/mm/yy",
+        yearRange: '2007:'+(new Date).getFullYear()
     });
     $( "#id_inicio" ).on( "change", function() {
         $( "#id_fin" ).datepicker( "option", "minDate", getDate( this ) );
@@ -99,7 +179,8 @@ $(document).ready(function() {
     $( "#id_fin" ).datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat:"dd/mm/yy"
+        dateFormat:"dd/mm/yy",
+        yearRange: '2007:'+(new Date).getFullYear()
     });
     $( "#id_fin" ).on( "change", function() {
         $( "#id_inicio" ).datepicker( "option", "maxDate", getDate( this ) );

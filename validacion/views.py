@@ -17,6 +17,13 @@ from django.db import connection
 from django.http import JsonResponse
 from variable.models import Variable
 
+####para las vistas serializables de la api
+#from .models import *
+from .serializers import *
+from rest_framework import generics
+import re
+import calendar
+
 """class ValidacionCreate(LoginRequiredMixin, CreateView):
     model = Validacion
     fields = ['est_id', 'var_id', 'val_fecha', 'val_num_dat', 'val_fre_reg', 'val_porcentaje']
@@ -212,3 +219,59 @@ class ValidacionBorrar(LoginRequiredMixin, FormView):
             return JsonResponse(data)
         else:
             return super().form_valid(form)
+
+
+
+
+
+### Vista para tadas las variables
+class VarList(generics.ListAPIView):
+
+    serializer_class = PrecipitacionSerial
+
+    def get_queryset(self):
+        ##### Truncar a un mes si la fecha fin es mas de unmes
+        #####
+        varibles = ["precipitacion", "temperatura_aire", "humedad_relativa", "velocidad_viento", "direcion_viento",
+                    "humedad_suelo", "radiacion_solar", "presion_atmosferica", "temperatura_agua", "caudal",
+                    "nivel_agua",
+                    "voltaje_bateria", "caudal_aforo", "nivel_regleta", "direcion_rafaga", "recorrido_viento",
+                    "gust_dir",
+                    "gust_h", "gust_m", "temperatura_suelo", "radiacion_indirecta", "radiacion_suma"]
+        varModel = ["Precipitacion", "temperatura_aire", "humedad_relativa", "velocidad_viento", "direcion_viento",
+                    "humedad_suelo", "radiacion_solar", "presion_atmosferica", "temperatura_agua", "caudal",
+                    "nivel_agua",
+                    "voltaje_bateria", "caudal_aforo", "nivel_regleta", "direcion_rafaga", "recorrido_viento",
+                    "gust_dir",
+                    "gust_h", "gust_m", "temperatura_suelo", "radiacion_indirecta", "radiacion_suma"]
+        varname = self.request.query_params.get('var', None)
+        if varname in varibles:
+            ind = varibles.index(varname)
+            clasS = str(varModel[ind]) + "Serial"
+            serializer_class = clasS
+            tableD = globals()[str(varModel[ind])]
+        print("class Serializer ", clasS)
+
+        estacion_id = self.request.query_params.get('estacion_id', None)
+        fecha = self.request.query_params.get('fecha', None)
+        print(fecha)
+        patron = re.compile(r'(\d{4})(-|/)(\d{1,2})(-|/)(\d{1,2})')
+        regF = False
+        if patron.match(fecha) is not None:
+            fecha = fecha.replace('/', '-')
+            fecha = fecha.split("-")
+            day = calendar.monthrange(int(fecha[0]), int(fecha[1]))[1]
+            fechaini = fecha[0] + '-' + fecha[1] +'-'+ fecha[2]
+            if (int(fecha[2]) <= day):
+                fechaFin = fecha[0] + '-' + fecha[1] + '-' + str(int(fecha[2]) + 1 )
+            else:
+                fechaFin = fecha[0] + '-' + fecha[1] + '-' + str(day)
+            regF = True
+
+        queryset = tableD.objects.all()[:5]
+        if estacion_id is not None and regF == True:
+            queryset = tableD.objects.filter(estacion_id=estacion_id, fecha__gte=fechaini, fecha__lte=fechaFin)[:]
+
+        return queryset
+
+    ### Vista para Var2Validado
