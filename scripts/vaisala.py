@@ -28,7 +28,7 @@ def iniciar_lectura():
 
     while True:
         formatos = list(Formato.objects.filter(for_tipo='ftp'))
-        print(formatos)
+        # print(formatos)
         if len(formatos) == 0:
             registrar_log('No existen formatos FTP')
         try:
@@ -101,7 +101,7 @@ def leer_archivos(root_dir, formato, estacion):
             else:
                 registrar_log('No hay nueva información en el directorio FTP. Estacion: '+str(
                                 estacion.est_codigo))'''
-            print(formato.for_archivo)
+            # print(formato.for_archivo)
             if formato.for_archivo == 'YDOC':
                 procesar_ydoc(file_name, root_dir, formato, estacion)
             else:
@@ -156,7 +156,7 @@ def procesar_ydoc(file_name, root_dir, formato, estacion):
         registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
         pass
     # print(datos)
-    print(len(datos))
+    # print(len(datos))
     if len(datos) > 0:
         # fecha_ini, fecha_fin = get_fechas_datos(datos)
         fecha_ini = datos.loc[0, 'fecha']
