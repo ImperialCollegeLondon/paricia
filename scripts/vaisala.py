@@ -19,9 +19,9 @@ from numbers import Number
 import pandas.io.common
 from django.db.utils import DataError
 
-'''def run(*args):
+def run(*args):
     with daemon.DaemonContext():
-        iniciar_lectura()'''
+        iniciar_lectura()
 
 
 def iniciar_lectura():
@@ -338,5 +338,5 @@ def move(src, dest):
         pass
 
 
-iniciar_lectura()
+# iniciar_lectura()
 
