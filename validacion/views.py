@@ -60,13 +60,13 @@ class ValidacionList(LoginRequiredMixin, ListView, FormView):
         else:
             self.object_list = Validacion.objects.all()
         context = super(ValidacionList, self).get_context_data(**kwargs)
-        context.update(pagination(self.object_list, page, 12))
+        #context.update(pagination(self.object_list, page, 12))
         return render(request, 'validacion/validacion_table.html', context)
 
     def get_context_data(self, **kwargs):
         context = super(ValidacionList, self).get_context_data(**kwargs)
         page = self.request.GET.get('page')
-        context.update(pagination(self.object_list, page, 12))
+        #context.update(pagination(self.object_list, page, 12))
         return context
 
 
@@ -122,30 +122,6 @@ class ProcesarValidacion(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super(ProcesarValidacion, self).get_context_data(**kwargs)
         return context
-
-
-def pagination(lista, page, num_reg):
-    # lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    if page is None:
-        page = 1
-    else:
-        page = int(page)
-    if page == 1:
-        start = 1
-        last = start + 1
-    elif page == paginator.num_pages:
-        last = paginator.num_pages
-        start = last - 1
-    else:
-        start = page - 1
-        last = page + 1
-    context = {
-        'first': '1',
-        'last': paginator.num_pages,
-        'range': range(start, last + 1),
-    }
-    return context
 
 
 class PeriodosValidacion(LoginRequiredMixin, FormView):

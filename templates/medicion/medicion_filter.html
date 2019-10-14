@@ -83,38 +83,7 @@ function desactivar_espera(){
 }
 
 
-function periodos_validacion(){
-    token = $("input[name='csrfmiddlewaretoken']").val();
-    estacion_id = $("input[name='orig_estacion_id']").val();
-    variable_id = $("input[name='orig_variable_id']").val();
 
-    $.ajax({
-        url: '/validacion/periodos_validacion/',
-        data: $("#form_filter").serialize(),
-        type:'POST',
-        beforeSend: function () {
-            activar_espera();
-            $("#div_error").hide();
-        },
-        success: function (data) {
-            $("#btn_periodos_validacion").attr("disabled", false);
-            $("#div_informacion").html(data)
-            desactivar_espera();
-            $("#div_error").hide();
-            //$("#id_estacion").prop("disabled", true);
-            //$("#id_variable").prop("disabled", true);
-            //$("#id_inicio").prop("disabled", true);
-            //$("#id_fin").prop("disabled", true);
-            //$("#btn_filtrar").prop("disabled", true);
-            //$("#btn_periodos_validacion").prop("disabled", true);
-        },
-        error: function () {
-            $("#div_informacion").hide();
-            $("#div_loading").hide();
-            $("#div_error").show();
-        }
-    });
-}
 
 function actualizar_lista(){
     $.ajax({
@@ -165,31 +134,10 @@ $(document).ready(function() {
         cargar_variables(estacion);
     });
 
-
-
-
-    $( "#div_edit" ).dialog({
-        autoOpen: false,
-        width:400,
-        height:350
-    });
-
-    $( "#div_delete" ).dialog({
-        autoOpen: false,
-        width:400,
-        height:350
-    });
-
-
-
-    $("#btn_periodos_validacion").click(function(){
-        periodos_validacion();
-    });
-
 });
 
 </script>
-
+<!-- div titulo-->
 <div class="row">
     <div class="col-lg-10 col-sm-10">
         <h3>Validación Datos Crudos</h3>
@@ -197,20 +145,72 @@ $(document).ready(function() {
 </div>
 
 
-<form id="form_filter" class="form" method="post">
-    <div class="row">
-        {% csrf_token %}
-        {% for field in form%}
-        {% bootstrap_field field form_group_class='col-lg-3 col-md-6' %}
-        {% endfor %}
-        <div class="form-group col-lg-6 col-md-6">
-            <label></label><br>
-            <button id="btn_periodos_validacion" type="button" class="btn btn-default">Historial</button>
-            <button id="btn_filtrar" type="button" class="btn btn-default btn-primary">Validar</button>
-            <a id="id_limpiar" class="btn btn-default" href="{% url 'medicion:medicion_filter' %}"><span>Limpiar</span></a>
-        </div>
+<!-- div formulario-->
+<div class="row">
+
+    <div class="col-lg-4 col-md-6 col-sm-12">
+
+        <form id="form_filter" class="form" method="post">
+            <div class="row">
+                {% csrf_token %}
+                {% for field in form%}
+                {% bootstrap_field field form_group_class='col-lg-12 col-md-12' %}
+                {% endfor %}
+                <div class="form-group col-lg-12 col-md-12 mt-4">
+
+                    <button id="btn_filtrar" type="button" class="btn btn-default btn-primary">Validar</button>
+                    <a id="id_limpiar" class="btn btn-default" href="{% url 'medicion:medicion_filter' %}"><span>Limpiar</span></a>
+                </div>
+            </div>
+        </form>
+
+
     </div>
-</form>
+
+    <div class="col-lg-8 col-md-6 col-sm-12">
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 col-sm-12">
+                        <h5 class="card-title">Historial de Validación</h5>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <button id="btn_periodos_validacion" type="button" class="btn btn-outline-info" data-toggle="tooltip" data-placement="bottom" title="Revisa el Historial de Validacion">
+                            Revisar
+                        </button>
+                    </div>
+                </div>
+
+
+
+
+                <div id="div_loading_historial" style="display:none;">
+                    <div class="d-flex align-items-center">
+                        <strong>Loading...</strong>
+                        <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div id="div_historial" class="row mt-4">
+
+                </div>
+
+                <div id="div_error_historial" class="row mt-4" style="display:none;">
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+</div>
+
 
 
 <div id="mensaje_overlay" class="popup-overlay"  >
@@ -224,20 +224,12 @@ $(document).ready(function() {
      </div>
 </div>
 
-<br>
-<div id="div_informacion">
+<div id="div_informacion" >
+
+
 </div>
 
-<div id="div_lista_datos">
-</div>
 
-
-
-<div id="div_edit" title="Modificar Información">
-</div>
-
-<div id="div_delete" title="Eliminar Información">
-</div>
 
 <div id="div_loading" class="row" style="display:none;">
     <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
@@ -247,9 +239,30 @@ $(document).ready(function() {
     <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
 </div>
 
+
+
 <div id="div_error" class="row" style="display:none;">
     <div class="alert alert-danger alert-dismissible" role="alert">
         Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
     </div>
 </div>
+
+
+<div id="div_lista_datos">
+</div>
+
+<div id="div_loading_datos" class="row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/media/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+
+<div id="div_error_datos" class="row" style="display:none;">
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+    </div>
+</div>
+
 {% endblock %}

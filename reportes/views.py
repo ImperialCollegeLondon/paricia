@@ -9,9 +9,10 @@ from django.http import HttpResponse
 
 from reportes.consultas.functions import (datos_horarios_json, datos_instantaneos, datos_estacion, reporte_excel)
 from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos, procesar_json_inamhi, consultar_datos_usuario
-from datetime import date
+from datetime import date, datetime
 from django.shortcuts import render
 from django.http import JsonResponse
+import requests
 
 
 class ReportesAnuario(FormView):
@@ -249,11 +250,63 @@ class ConsultaInamhi(FormView):
             if self.request.is_ajax():
                 datos = procesar_json_inamhi(form)
                 return JsonResponse(datos, safe=False)
+            else:
+                return self.export_csv(form)
+
             grafico = procesar_json_inamhi(form)
             informacion.update(grafico)
             return render(request, 'reportes/consulta_inamhi.html', informacion)
 
         return render(request, 'reportes/consulta_inamhi.html', informacion)
+
+    @staticmethod
+    def export_csv(form):
+        estacion = form.cleaned_data['estacion']
+        parametro = form.cleaned_data['parametro']
+        frecuencia = form.cleaned_data['frecuencia']
+        inicio = form.cleaned_data['inicio']
+        fin = form.cleaned_data['fin']
+
+        fecha_inicio = datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
+        fecha_fin = datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
+        # formato url web service INAMHI
+        url_base = 'http://186.42.174.236:8090/'
+        url_base += frecuencia + '/'
+        url_base += str(estacion.identificador) + '/'
+        url_base += fecha_inicio.strftime("%Y-%m-%d %H:%M:%S") + '/'
+        url_base += fecha_fin.strftime("%Y-%m-%d %H:%M:%S") + '/'
+        url_base += estacion.transmision + '/'
+        url_base += parametro.parametro
+
+        response = requests.get(url_base, auth=('FONAG', 'fOnAg2018'))
+        data = response.json()
+        tiempo = []
+        valores = []
+        if len(data) > 0:
+            # print(data)
+            for item in data:
+                fecha = datetime.strptime(item['fechaTomaDelDato'], '%Y-%m-%d %H:%M:%S')
+
+                if len(item['dataJSON']) > 0:
+
+                    if item['dataJSON'][0]['valor'] is not None:
+                        valores.append(item['dataJSON'][0]['valor'])
+                        tiempo.append(fecha)
+                else:
+                    valores.append(None)
+
+
+        # Establecemos el nombre del archivo
+        nombre_archivo = str('"') + str(estacion) + str("_") + str(parametro) + str('.csv"')
+        contenido = "attachment; filename={0}".format(nombre_archivo)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = contenido
+        writer = csv.writer(response)
+
+        writer.writerow(['fecha', 'valor'])
+        for valor, fecha in zip(valores, tiempo):
+            writer.writerow([fecha, valor])
+        return response
 
 
 class ConsultaDatos(TemplateView):

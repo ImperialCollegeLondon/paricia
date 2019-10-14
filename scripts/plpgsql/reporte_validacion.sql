@@ -1,92 +1,5 @@
-# Este script crea las funciones necesarias para el modulo validacion.
-# creacion de las funcion para mostrar los datos para validar
-
-import os
-from django.db import connection
-cursor = connection.cursor()
-
-# variables para validaciones
-varibles = ["precipitacion", "temperaturaaire", "humedadaire", "velocidadviento", "direccionviento", "humedadsuelo",
-            "radiacionsolar", "presionatmosferica", "temperaturaagua", "caudal", "nivelagua"]
-
-# Tipos de datos para inserccion
-inserccion_types = """
-DROP TYPE IF EXISTS fecha__valor__maximo__minimo__estacion_id;
-CREATE TYPE fecha__valor__maximo__minimo__estacion_id AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC, maximo NUMERIC, minimo NUMERIC, estacion_id INT);
-
-DROP TYPE IF EXISTS fecha__valor__estacion_id;
-CREATE TYPE fecha__valor__estacion_id AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC, estacion_id INT);
-
-DROP TYPE IF EXISTS fecha__valor;
-CREATE TYPE fecha__valor AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC);
-
-DROP TYPE IF EXISTS fecha__valor__maximo__minimo;
-CREATE TYPE fecha__valor__maximo__minimo AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC, maximo NUMERIC, minimo NUMERIC);
-
-"""
-cursor.execute(inserccion_types)
-######################################################################
-##  insertar validacion
-validacion_type = """
-DROP TYPE IF EXISTS validacion;
-CREATE type validacion AS (fecha TIMESTAMP, valor NUMERIC, comentario VARCHAR);
-"""
-cursor.execute(validacion_type)
-
-funcionValidacion = """DROP FUNCTION IF EXISTS insertar_%%variable%%_validacion(bigint, json);
-CREATE OR REPLACE FUNCTION insertar_%%variable%%_validacion(_estacion_id bigint, _datos json)
-  RETURNS BOOLEAN AS
-$BODY$
-DECLARE
-	curs_datos CURSOR FOR
-		SELECT * FROM json_populate_recordset( null::validacion, _datos) t1;
-
-	ultimo_validacion   integer;
-	ultimo_valor        numeric;
-	id_insertado       validacion_%%variable%%.id%TYPE;
-BEGIN
-    FOR row_datos in curs_datos LOOP
-        ultimo_validacion := NULL;
-		SELECT val.validacion, val.valor INTO ultimo_validacion, ultimo_valor
-  			FROM validacion_%%variable%% val
-  			WHERE val.estacion_id = _estacion_id AND val.fecha = row_datos.fecha
-			ORDER BY val.validacion DESC LIMIT 1;
-
-  		IF ultimo_validacion IS NULL THEN
-  			ultimo_validacion := 0;
-  		ELSE
-  			ultimo_validacion := ultimo_validacion + 1;
-            IF (row_datos.valor IS NULL) AND (ultimo_valor IS NULL) THEN CONTINUE; END IF;
-		    IF row_datos.valor = ultimo_valor THEN CONTINUE; END IF;  			
-  		END IF;
-
-		INSERT INTO validacion_%%variable%%(estacion_id, fecha, valor, usado_para_horario, validacion)
-			VALUES (_estacion_id, row_datos.fecha, row_datos.valor, FALSE, ultimo_validacion) 
-			RETURNING id INTO id_insertado;
-
-		IF row_datos.comentario IS NOT NULL THEN
-			INSERT INTO validacion_comentariovalidacion(variable_id, estacion_id, validado_id, comentario)
-				VALUES (%%var_id%%, _estacion_id, id_insertado, row_datos.comentario);
-		END IF;
-
-    END LOOP;
-
-	RETURN TRUE;
-END
-$BODY$  LANGUAGE plpgsql
-"""
-
-for index, var in enumerate(varibles):
-    #print("Variable ",var, "indice ", index+1)
-    validacion_sql = funcionValidacion.replace('%%variable%%', var)
-    validacion_sql = validacion_sql.replace('%%var_id%%',str(index))
-    cursor.execute(validacion_sql)
-
-
-
-### funciones de reportes de validadcion
-funRepoValida = """DROP FUNCTION IF EXISTS reporte_validacion_%%variable%%(integer,timestamp with time zone,timestamp with time zone);
-CREATE OR REPLACE FUNCTION reporte_validacion_%%variable%%(_estacion_id INT, _fecha_inicio TIMESTAMP WITH TIME ZONE, _fecha_fin TIMESTAMP WITH TIME ZONE)
+DROP FUNCTION IF EXISTS reporte_validacion_var%%var_id%%(integer,timestamp with time zone,timestamp with time zone);
+CREATE OR REPLACE FUNCTION reporte_validacion_var%%var_id%%(_estacion_id INT, _fecha_inicio TIMESTAMP WITH TIME ZONE, _fecha_fin TIMESTAMP WITH TIME ZONE)
 RETURNS TABLE (
 	numero_fila BIGINT,
 	seleccionado BOOL,
@@ -111,12 +24,12 @@ BEGIN
 	variable AS (SELECT * FROM variable_variable var WHERE var.var_id = %%var_id%%),
 	validacion AS (
 		SELECT v.id, v.fecha, 0 AS tipo, v.valor, v.validacion, TRUE AS existe_en_validacion
-		FROM validacion_%%variable%% v WHERE v.estacion_id = (SELECT est_id FROM estacion) AND v.fecha >= _fecha_inicio AND v.fecha <= _fecha_fin
+		FROM validacion_var%%var_id%%validado v WHERE v.estacion_id = (SELECT est_id FROM estacion) AND v.fecha >= _fecha_inicio AND v.fecha <= _fecha_fin
 	),
 	medicion AS (
 		SELECT m.id, m.fecha, 1 AS tipo, m.valor, CAST(NULL AS smallint) AS validacion,
 			EXISTS(SELECT * FROM validacion v WHERE v.fecha = m.fecha AND v.valor = m.valor) AS existe_en_validacion
-		FROM medicion_%%variable%% m WHERE m.estacion = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
+		FROM medicion_var%%var_id%%medicion m WHERE m.estacion_id = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
 	),
 	union_med_val AS (
 		SELECT * FROM validacion UNION SELECT * FROM medicion
@@ -204,13 +117,4 @@ BEGIN
 	SELECT rf.numero_fila, rf.seleccionado, rf.fecha, rf.valor_seleccionado, rf.valor, rf.variacion_consecutiva, rf.comentario, rf.class_fila, rf.class_fecha, rf.class_validacion,
 		rf.class_valor, rf.class_variacion_consecutiva, rf.class_stddev_error FROM reporte_con_clases_para_html rf;
 END; $$
-LANGUAGE 'plpgsql';"""
-
-for index, var in enumerate(varibles):
-    print("Variable ",var,"indice ",index+1)
-    sqlFun = funRepoValida.replace('%%variable%%', var)
-    sqlFun = sqlFun.replace('%%var_id%%',str(index+1))
-    cursor.execute(sqlFun)
-
-
-
+LANGUAGE 'plpgsql';

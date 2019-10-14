@@ -52,10 +52,7 @@ class MedicionFilter(LoginRequiredMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = ValidacionSearchForm(self.request.POST or None)
         if form.is_valid():
-            print("form valid")
             if self.request.is_ajax():
-                print("ajax")
-
                 variable = form.cleaned_data['variable']
                 estacion = form.cleaned_data['estacion']
                 inicio = form.cleaned_data['inicio']
@@ -81,14 +78,14 @@ def lista_datos_validacion(request):
     variable_id = request.POST.get('variable', None)
     inicio = request.POST.get('inicio', None)
     fin = request.POST.get('fin', None)
-    print(inicio, fin)
+
     estacion = Estacion.objects.get(est_id=estacion_id)
     variable = Variable.objects.get(var_id=variable_id)
     inicio = datetime.datetime.strptime(inicio, '%d/%m/%Y')
     fin = datetime.datetime.strptime(fin, '%d/%m/%Y')
     lista = reporte_validacion(estacion, variable, inicio, fin)
     # lista = []
-
+    print("Fin datos validacion: ", datetime.datetime.now())
     return render(request, 'medicion/medicion_list.html',
                   {'lista': lista,
                    'variable': variable,

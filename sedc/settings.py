@@ -165,6 +165,20 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Settings for django-bootstrap4
 BOOTSTRAP4 = {
+    "css_url": {
+        "href": "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css",
+        "integrity": "sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T",
+        "crossorigin": "anonymous",
+    },
+
+    # The complete URL to the Bootstrap JavaScript file
+    "javascript_url": {
+        "url": "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js",
+        "integrity": "sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM",
+        "crossorigin": "anonymous",
+    },
+
+
     "error_css_class": "bootstrap4-error",
     "required_css_class": "bootstrap4-required",
     "javascript_in_head": True,

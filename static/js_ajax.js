@@ -1,5 +1,10 @@
 
 $(document).ready(function() {
+    //activar tooltip
+    $('[data-toggle="tooltip"]').tooltip()
+
+
+
     $("#btn_graficar").click(function(){
         $(this).attr('disabled',true);
         $.ajax({
@@ -91,7 +96,7 @@ $(document).ready(function() {
 
         //actualizar_lista();
         $(this).attr('disabled',true);
-        /*$.ajax({
+        $.ajax({
             url: '/medicion/filter/',
             data: $("#form_filter").serialize(),
             type:'POST',
@@ -118,7 +123,6 @@ $(document).ready(function() {
                         $("#div_mensaje").html('<label>No hay información para los parametros ingresados</label>');
                         $("#div_mensaje").show();
                     }
-
                 }
 
                 $("#btn_filtrar").removeAttr('disabled');
@@ -133,7 +137,7 @@ $(document).ready(function() {
                 $("#div_loading").hide();
                 $("#div_error").show();
             }
-        });*/
+        });
 
         $.ajax({
             url: '/medicion/datos_validacion/',
@@ -141,16 +145,16 @@ $(document).ready(function() {
             type:'POST',
             beforeSend: function () {
                 $("#div_lista_datos").hide();
-                $("#div_loading").show();
-                $("#div_error").hide();
+                $("#div_loading_datos").show();
+                $("#div_error_datos").hide();
                 $("#div_mensaje").hide();
             },
             success: function (data) {
                 $("#div_lista_datos").html(data);
                 $("#div_lista_datos").show();
                 $("#btn_filtrar").removeAttr('disabled');
-                $("#div_loading").hide();
-                $("#div_error").hide();
+                $("#div_loading_datos").hide();
+                $("#div_error_datos").hide();
                 $("#div_mensaje").hide();
 
             },
@@ -158,11 +162,16 @@ $(document).ready(function() {
 
                 $("#btn_filtrar").removeAttr('disabled');
                 $("#div_lista_datos").hide();
-                $("#div_loading").hide();
-                $("#div_error").show();
+                $("#div_loading_datos").hide();
+                $("#div_error_datos").show();
             }
         });
         return false;
+    });
+
+    //consultar los periodos de validacion
+    $("#btn_periodos_validacion").click(function(){
+        periodos_validacion();
     });
 
     //datepicker con intervalo registringido
@@ -236,6 +245,48 @@ $(document).ready(function() {
                 }
             }
         });
+    }
+
+
+    function periodos_validacion(){
+        token = $("input[name='csrfmiddlewaretoken']").val();
+        estacion_id = $("input[name='orig_estacion_id']").val();
+        variable_id = $("input[name='orig_variable_id']").val();
+
+        $.ajax({
+            url: '/validacion/periodos_validacion/',
+            data: $("#form_filter").serialize(),
+            type:'POST',
+            beforeSend: function () {
+                //$("#div_historial").hide();
+                //$("#div_loading_historial").show();
+                //$("#div_error_historial").hide();
+                activar_espera($("#div_loading_historial"), $("#div_historial"), $("#div_error_historial"))
+            },
+            success: function (data) {
+                $("#btn_periodos_validacion").attr("disabled", false);
+                $("#div_historial").html(data)
+
+
+                $("#div_historial").show();
+                $("#div_loading_historial").hide();
+                $("#div_error_historial").hide();
+
+            },
+            error: function () {
+                $("#div_historial").hide();
+                $("#div_loading_historial").hide();
+                $("#div_error_historial").show();
+
+            }
+        });
+    }
+
+    function activar_espera(div_loading, div_informacion, div_error){
+        console.log("llego")
+        div_loading.show();
+        div_informacion.hide();
+        div_error.hide();
     }
 
 

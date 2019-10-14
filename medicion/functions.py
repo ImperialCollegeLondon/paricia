@@ -264,7 +264,7 @@ def eliminar(form):
 
 # Grafico para la validacion de datos
 def grafico_validacion(variable, estacion, fecha_inicio, fecha_fin):
-    print("Inicio grafico2: ", datetime.datetime.now())
+
     informacion = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
     tiempo = informacion["tiempo"]
     valor = informacion["valor"]
