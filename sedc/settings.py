@@ -107,7 +107,7 @@ DATABASES = {
         'NAME': 'db_sedc',
         'USER': 'postgres',
         'PASSWORD': 'dev123*',
-        'HOST': '192.168.19.2',
+        'HOST': 'localhost',
         'PORT': '5432'
     },
     'desarrollo': {
