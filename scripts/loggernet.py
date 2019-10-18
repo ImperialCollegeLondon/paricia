@@ -17,9 +17,9 @@ from medicion.models import TemperaturaAgua, Caudal, NivelAgua
 from numbers import Number
 
 
-def run(*args):
+'''def run(*args):
     with daemon.DaemonContext():
-        iniciar_lectura()
+        iniciar_lectura()'''
 
 
 def iniciar_lectura():
@@ -62,7 +62,7 @@ def leer_archivos(formato, estacion):
         datos = []
         pass
     except Exception as e:
-        registrar_log("Error Inesperado:"+str(e.errno) + ' ' + e.strerror)
+        registrar_log("Error Inesperado:"+str(e))
         datos = []
         pass
     except IOError as e:
@@ -75,9 +75,9 @@ def leer_archivos(formato, estacion):
         fecha_ini = datos.loc[0, 'fecha']
         fecha_fin = datos.loc[datos.shape[0] - 1, 'fecha']
         obj_importacion = set_object_importacion(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
-        registrar_log("Guardar Registro")
+
         matriz = construir_matriz(archivo_src, formato, estacion)
-        registrar_log("Construir Matriz")
+
         guardar_datos(obj_importacion, matriz, estacion, formato)
         registrar_log('Información guardada Estacion:' + str(
                     estacion.est_codigo) + 'Formato:' + str(
@@ -125,10 +125,10 @@ def set_object_importacion(estacion, formato, fecha_ini, fecha_fin, archivo):
     importacion.imp_observacion = 'Carga de Datos Automatica'
     importacion.usuario = usuario
     importacion.imp_tipo = "a"
-    registrar_log("Objeto importacion")
+
     return importacion
 
-#iniciar_lectura()
+iniciar_lectura()
 
 
 
