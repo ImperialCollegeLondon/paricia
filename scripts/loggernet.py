@@ -75,12 +75,16 @@ def leer_archivos(formato, estacion):
         fecha_ini = datos.loc[0, 'fecha']
         fecha_fin = datos.loc[datos.shape[0] - 1, 'fecha']
         obj_importacion = set_object_importacion(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
+        registrar_log("Guardar Registro")
         matriz = construir_matriz(archivo_src, formato, estacion)
+        registrar_log("Construir Matriz")
         guardar_datos(obj_importacion, matriz, estacion, formato)
         registrar_log('Información guardada Estacion:' + str(
                     estacion.est_codigo) + 'Formato:' + str(
                     formato.for_descripcion))
         obj_importacion.save()
+    else:
+        registrar_log("No existen datos")
 
 
 def guardar_datos(importacion, datos, estacion, formato):
@@ -121,6 +125,7 @@ def set_object_importacion(estacion, formato, fecha_ini, fecha_fin, archivo):
     importacion.imp_observacion = 'Carga de Datos Automatica'
     importacion.usuario = usuario
     importacion.imp_tipo = "a"
+    registrar_log("Objeto importacion")
     return importacion
 
 #iniciar_lectura()
