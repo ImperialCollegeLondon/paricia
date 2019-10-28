@@ -93,15 +93,15 @@ function alarma_valores_atipicos(){
     $("#btn_dev_normal").html("Normal <br/>" + normales);
 };
 
-menu0_err_fechahora = "<div class='dropdown open' id='habilitar_fecha'><span data-toggle='dropdown' aria-expanded='true'></span><ul class='dropdown-menu'><li><p onclick='habilitar_esta_fecha(this)'>Habilitar esta fecha</p></li></ul></div>";
-menu0_fechahora = "<div class='dropdown open' id='anular_fecha0'><span data-toggle='dropdown' aria-expanded='true'></span><ul class='dropdown-menu'><li><p onclick='anular_esta_fecha(this)'>Anular esta fecha</p></li><li><p onclick='anular_desde_aqui(this)'>Anular desde aquí</p></li></ul></div>";
+menu0_err_fechahora = "<div class='dropdown' id='habilitar_fecha'><span class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-expanded='true'></span><div class='dropdown-menu'><a class='dropdown-item' onclick='habilitar_esta_fecha(this)'>Habilitar esta fecha</a></div></div>";
+menu0_fechahora = "<div class='dropdown' id='anular_fecha0'><span class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-expanded='true'></span><div class='dropdown-menu'><a class='dropdown-item' onclick='anular_esta_fecha(this)'>Anular esta fecha</a><a class='dropdown-item' onclick='anular_desde_aqui(this)'>Anular desde aquí</a></div></div>";
+menu1_fechahora = "<div class='dropdown' id='anular_fecha1'><span class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-expanded='true'></span><div class='dropdown-menu'><a class='dropdown-item' onclick='anular_hasta_aca(this)'>Anular hasta aquí</a><a class='dropdown-item' onclick='anular_cancelar(this)'>Cancelar</a></div></div>";
 menu0 = false;
-menu1_fechahora = "<div class='dropdown open' id='anular_fecha1'><span data-toggle='dropdown' aria-expanded='true'></span><ul class='dropdown-menu'><li><p onclick='anular_hasta_aca(this)'>Anular hasta aquí</p></li><li><p onclick='anular_cancelar(this)'>Cancelar</p></li></ul></div>";
 id_fila = null;
 
 
 function habilitar_esta_fecha(e){
-    $(e).parent().parent().parent().parent().removeClass('error').addClass('normal');
+    $(e).parent().parent().parent().removeClass('error').addClass('normal');
     $("#habilitar_fecha").remove();
     alarma_fecha();
 }
@@ -109,19 +109,20 @@ function habilitar_esta_fecha(e){
 
 
 function anular_esta_fecha(e){
-    $(e).parent().parent().parent().parent().removeClass('normal').addClass('error');
+    $(e).parent().parent().parent().removeClass('normal').addClass('error');
     $("#anular_fecha0").remove();
     alarma_fecha();
 }
 
 function anular_desde_aqui(e){
-    id_fila=$(e).parent().parent().parent().parent().parent().get(0).id;
+    $(e).parent().parent().parent().removeClass('normal').addClass('error');
+    id_fila=$(e).parent().parent().parent().parent().get(0).id;
     menu0 = true;
     $("#anular_fecha0").remove();
 }
 
 function anular_hasta_aca(e){
-    id_fila_fin=$(e).parent().parent().parent().parent().parent().get(0).id;
+    id_fila_fin=$(e).parent().parent().parent().parent().get(0).id;
 
     idIni = parseInt(id_fila);
     idFin = parseInt(id_fila_fin);
@@ -333,18 +334,22 @@ $(document).ready(function() {
 
 
     $('.seleccionado > .fecha').dblclick(function(){
+        console.log("entro")
         $("#anular_fecha0").remove();
         $("#anular_fecha1").remove();
         $("#habilitar_fecha").remove();
 
         if ($(this).hasClass('error')){
+            console.log("error")
             $(this).append(menu0_err_fechahora);
             return;
         }
 
         if (menu0 == false){
+            console.log("false")
             $(this).append(menu0_fechahora);
         }else{
+            console.log("true")
             $(this).append(menu1_fechahora);
         }
     });
