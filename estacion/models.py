@@ -90,7 +90,7 @@ class Estacion(models.Model):
     est_ficha = models.FileField("Fichas", upload_to='documents/')
     est_fecha_inicio = models.DateField("Fecha Inicio Operaciones", null=True)
     sistemacuenca = models.ForeignKey(SistemaCuenca, on_delete=models.SET_NULL, null=True, verbose_name="SistemaCuenca")
-
+    est_externa = models.BooleanField("Externa",default=True);
 
     def __str__(self):
         return str(self.est_codigo)
