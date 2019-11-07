@@ -3,7 +3,7 @@
 from anuarios.models import TemperaturaAire
 from django.db import connection
 from home.functions import dictfetchall
-
+from math import isnan
 
 def matrizIII(estacion, variable, periodo):
     datos = []
@@ -17,6 +17,7 @@ def matrizIII(estacion, variable, periodo):
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
+
     med_avg = dictfetchall(cursor)
     # datos diarios máximos
     sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
@@ -27,7 +28,7 @@ def matrizIII(estacion, variable, periodo):
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
-    print (sql)
+
     datos_diarios_max = dictfetchall(cursor)
     # mínimos absolutos
     sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
@@ -38,6 +39,7 @@ def matrizIII(estacion, variable, periodo):
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
+
     datos_diarios_min = dictfetchall(cursor)
     max_abs, max_dia, maximo = maximostai(datos_diarios_max)
     min_abs, min_dia, minimo = minimostai(datos_diarios_min)
@@ -111,18 +113,17 @@ def minimostai(datos_diarios_min):
 
 
 def get_maximo(fila):
-    if fila.get('maximo') is None:
-        if fila.get('valor') is None:
+    if isnan(fila.get('maximo')):
+        if isnan(fila.get('valor')):
             return 0
         else:
             return fila.get('valor')
-
     return fila.get('maximo')
 
 
 def get_minimo(fila):
-    if fila.get('minimo') is None:
-        if fila.get('valor') is None:
+    if isnan(fila.get('minimo')):
+        if isnan(fila.get('valor')):
             return 0
         else:
             return fila.get('valor')

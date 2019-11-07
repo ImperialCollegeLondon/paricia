@@ -2,12 +2,9 @@
 from medicion.models import Medicion
 
 from anuarios.models import HumedadAire
-from django.db.models.functions import TruncMonth
-from django.db.models import Max, Min, Avg, Count
-from django.db.models.functions import (
-    ExtractYear, ExtractMonth, ExtractDay, ExtractHour)
 from django.db import connection
 from home.functions import dictfetchall
+from math import isnan
 
 
 def matrizIV(estacion, variable, periodo):
@@ -41,7 +38,8 @@ def matrizIV(estacion, variable, periodo):
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
     sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
-    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "and date_part('year',fecha)=" + str(periodo)+" "
+    sql += "and valor > 0 and minimo> 0 "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
     cursor.execute(sql)
@@ -83,7 +81,7 @@ def maximoshai(datos_diarios_max):
             if mes == i:
                 val_max_abs.append(get_maximo(fila))
                 val_maxdia.append(dia)
-        print(val_max_abs)
+
         if len(val_max_abs) > 0:
             max_abs.append(max(val_max_abs))
             maxdia.append(val_maxdia[val_max_abs.index(max(val_max_abs))])
@@ -117,16 +115,16 @@ def minimoshai(datos_diarios_min):
 
 
 def get_maximo(fila):
-    if fila.get('maximo') is None:
-        if fila.get('valor') is None:
+    if isnan(fila.get('maximo')):
+        if isnan(fila.get('valor')):
             return 0
         return fila.get('valor')
     return fila.get('maximo')
 
 
 def get_minimo(fila):
-    if fila.get('minimo') is None:
-        if fila.get('valor') is None:
-            return 100
+    if isnan(fila.get('minimo')):
+        if isnan(fila.get('valor')):
+            return 0
         return fila.get('valor')
     return fila.get('minimo')
