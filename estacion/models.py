@@ -21,6 +21,55 @@ class Tipo(models.Model):
         return str(self.tip_nombre)
 
 
+class Sistema(models.Model):
+    id = models.AutoField("Id", primary_key=True)
+    nombre = models.CharField(max_length=40)
+    imagen = models.FileField("Imagen", upload_to='estacion/sistema_imagen/', null=True)
+
+    def __str__(self):
+        return str(self.nombre)
+
+    def get_absolute_url(self):
+        return reverse('estacion:sistema_detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        ordering = ('id',)
+
+
+class Cuenca(models.Model):
+    id = models.AutoField("Id", primary_key=True)
+    nombre = models.CharField(max_length=40)
+    imagen = models.FileField("Imagen", upload_to='estacion/cuenca_imagen/', null=True)
+
+    def __str__(self):
+        return str(self.nombre)
+
+    def get_absolute_url(self):
+        return reverse('estacion:cuenca_detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        ordering = ('id',)
+
+
+class SistemaCuenca(models.Model):
+    id = models.AutoField("Id", primary_key=True)
+    sistema = models.ForeignKey(Sistema, on_delete=models.SET_NULL, null=True, verbose_name="Sistema")
+    cuenca = models.ForeignKey(Cuenca, on_delete=models.SET_NULL, null=True, verbose_name="Cuenca")
+    imagen = models.FileField("Imagen", upload_to='estacion/sistemacuenca_imagen/', null=True)
+
+    def __str__(self):
+        return str(self.sistema) + ' - ' + str(self.cuenca)
+
+    def get_absolute_url(self):
+        return reverse('estacion:sistemacuenca_detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        unique_together = ("sistema", "cuenca")
+        ordering = ('id',)
+
+
+
+
 class Estacion(models.Model):
     TIPO_ESTACION = (
         ('M', 'Meteorológica'),
@@ -41,6 +90,8 @@ class Estacion(models.Model):
     provincia = models.ForeignKey(Provincia,  on_delete=models.CASCADE, verbose_name="Provincia", null=True, blank=True)
     tipo = models.ForeignKey(Tipo,  on_delete=models.CASCADE, verbose_name="Tipo", null=True, blank=True)
     transmision = models.BooleanField("Trasmision",default=False, null=True, blank=True)
+    sistemacuenca = models.ForeignKey(SistemaCuenca, on_delete=models.SET_NULL, null=True, verbose_name="SistemaCuenca")
+    est_externa = models.BooleanField("Externa",default=True);
 
     def __str__(self):
         return str(self.est_codigo)

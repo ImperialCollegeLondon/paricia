@@ -118,13 +118,13 @@ def get_maximo(fila):
     if isnan(fila.get('maximo')):
         if isnan(fila.get('valor')):
             return 0
-        return fila.get('valor')
-    return fila.get('maximo')
+        return round(fila.get('valor'),2)
+    return round(fila.get('maximo'),2)
 
 
 def get_minimo(fila):
     if isnan(fila.get('minimo')):
         if isnan(fila.get('valor')):
             return 0
-        return fila.get('valor')
-    return fila.get('minimo')
+        return round(fila.get('valor'))
+    return round(fila.get('minimo'))

@@ -3,6 +3,7 @@
 from anuarios.models import PresionAtmosferica, HumedadSuelo, TemperaturaAgua, Caudal, NivelAgua
 from django.db import connection
 from home.functions import dictfetchall
+from math import isnan
 
 
 def matrizI(estacion, variable, periodo):
@@ -104,18 +105,18 @@ def matrizI(estacion, variable, periodo):
 
 
 def get_maximo(item_max):
-    if item_max.get('maximo') is None:
+    if isnan(item_max.get('maximo')):
         return round(item_max.get('valor'), 2)
     return round(item_max.get('maximo'), 2)
 
 
 def get_minimo(item_min):
-    if item_min.get('minimo') is None:
+    if isnan(item_min.get('minimo')):
         return round(item_min.get('valor'), 2)
     return round(item_min.get('minimo'), 2)
 
 
 def get_promedio(item_avg):
-    if item_avg.get('valor') is None:
+    if isnan(item_avg.get('valor')):
         return 0
     return round(item_avg.get('valor'), 2)

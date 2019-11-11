@@ -38,6 +38,19 @@ $(document).ready(function() {
         return false;
     });
 
+    $("#id_estacion").autocomplete({
+        source: "/estacion/search",
+        minLength: 2,
+        select: function (event, ui) { //item selected
+            AutoCompleteSelectHandler(event, ui)
+        },
+    });
+
+    function AutoCompleteSelectHandler(event, ui)
+    {
+        var selectedObj = ui.item;
+    }
+
 
 
 });

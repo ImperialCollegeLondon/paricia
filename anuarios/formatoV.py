@@ -2,7 +2,6 @@
 
 from anuarios.models import Viento
 from django.db import connection
-from datetime import datetime
 
 
 class VelocidaDireccion():

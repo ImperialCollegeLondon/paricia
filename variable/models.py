@@ -40,6 +40,9 @@ class Variable(models.Model):
     var_err = models.DecimalField("Error", max_digits=7, decimal_places=2, null=True, blank=True)
     var_min = models.DecimalField("Error minimo", max_digits=7, decimal_places=2, null=True, blank=True)
     var_estado = models.BooleanField("Estado", default=True)
+    es_acumulada = models.BooleanField("Acumulada (check)/ Promediada", default=True) # True: ACUMULADA, False: PROMEDIADA
+    reporte_automatico = models.BooleanField("Reporte Automático", default=True)
+    umbral_completo = models.DecimalField("Umbral completo (%)", max_digits=4, decimal_places=1, null=True)
 
     def __str__(self):
         return str(self.var_nombre)

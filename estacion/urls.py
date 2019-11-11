@@ -14,5 +14,6 @@ urlpatterns = [
     re_path(r'estacion/(?P<pk>[0-9]+)/delete/$', views.EstacionDelete.as_view(), name='estacion_delete'),
     path('estacion/getjson', views.datos_json_estaciones, name='jsonestaciones'),
     path('estacion/getjsoninamhi', views.estaciones_inamhi_json, name='jsonestacionesinamhi'),
+    path('estacion/search', views.search_estaciones, name='search_estaciones'),
     # path('marca/',views.MarcaList.as_view(),name='marca_index'),
 ]

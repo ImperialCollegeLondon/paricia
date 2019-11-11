@@ -11,7 +11,8 @@ from django.urls import reverse_lazy
 from .forms import EstacionSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+import json
 
 # Create your views here.
 class EstacionCreate(LoginRequiredMixin, CreateView):
@@ -87,6 +88,22 @@ class EstacionUpdate(LoginRequiredMixin, UpdateView):
 class EstacionDelete(LoginRequiredMixin, DeleteView):
     model = Estacion
     success_url = reverse_lazy('estacion:estacion_index')
+
+
+# Consulta de estaciones por codigo
+def search_estaciones(request):
+    if request.is_ajax():
+        q = request.GET.get('term', '').capitalize()
+        search_qs = Estacion.objects.filter(est_codigo__startswith=q).filter(est_externa=False)
+        results = []
+        for r in search_qs:
+            results.append(r.est_codigo)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+
 
 # estaciones FONAG  en formato JSON
 def datos_json_estaciones(request):

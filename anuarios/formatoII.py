@@ -3,6 +3,7 @@
 from anuarios.models import Precipitacion
 from django.db import connection
 from home.functions import dictfetchall
+from math import isnan
 
 
 def matrizII(estacion, variable, periodo):
@@ -78,7 +79,7 @@ def maximospre(datos_diarios):
 
 
 def get_valor(fila):
-    if fila.get('valor') is None:
+    if isnan(fila.get('valor')):
         return 0
     return fila.get('valor')
 
