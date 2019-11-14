@@ -61,7 +61,7 @@ class FrecuenciaDetail(LoginRequiredMixin, DetailView):
 
 class FrecuenciaUpdate(LoginRequiredMixin, UpdateView):
     model = Frecuencia
-    fields = ['est_id', 'var_id', 'fre_fecha_ini', 'fre_fecha_fin']
+    fields = ['est_id', 'var_id', 'fre_valor', 'fre_fecha_ini', 'fre_fecha_fin']
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
