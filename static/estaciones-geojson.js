@@ -10,8 +10,8 @@ $(document).ready(function() {
 		    id: 'mapbox.streets'
 	}).addTo(mymap);
     // añadir el ambito del FONAG
-	var nexrad = L.tileLayer.wms("http://www.infoagua-guayllabamba.ec:8080/geoserver/fonag01/wms", {
-        layers: 'fonag01:Ambito_FONAG_2018',
+	var nexrad = L.tileLayer.wms("http://3.13.203.7/geoserver/geonode/wms", {
+        layers: 'geonode:ambito_fonag_2019',
         format: 'image/png',
         transparent: true,
         //attribution: "Weather data © 2012 IEM Nexrad"

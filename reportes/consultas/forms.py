@@ -19,7 +19,7 @@ class MedicionSearchForm(forms.Form):
     )
     transmision = forms.ChoiceField(choices=lista_transmision)
     estacion = forms.ModelChoiceField(
-        queryset=Estacion.objects.order_by('est_id').all())
+        queryset=Estacion.objects.order_by('est_id').filter(est_externa=False))
     variable = forms.ModelChoiceField(
         queryset=Variable.objects.order_by('var_id').all())
 
@@ -43,7 +43,7 @@ class UsuarioSearchForm(forms.Form):
     )
     transmision = forms.ChoiceField(choices=lista_transmision)
     estacion = forms.ModelChoiceField(
-        queryset=Estacion.objects.order_by('est_id').all())
+        queryset=Estacion.objects.order_by('est_id').filter(est_externa=False))
     variable = forms.ModelChoiceField(
         queryset=Variable.objects.order_by('var_id').all())
 
