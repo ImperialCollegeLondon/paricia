@@ -7,16 +7,14 @@ from reportes.typeIV import TypeIV
 from reportes.typeV import TypeV
 from reportes.typeVI import TypeVI
 from cruce.models import Cruce
-from reportes.consultas.functions import datos_instantaneos
+from reportes.consultas.functions import (datos_instantaneos)
 
-from datetime import timedelta, datetime, date
+from datetime import datetime, date
 import plotly.offline as opy
 
 import plotly.graph_objs as go
 
 import requests
-from plotly import tools
-import json
 
 
 from .consultas.functions import (datos_diarios, datos_5minutos, datos_horarios, datos_mensuales)
@@ -28,6 +26,7 @@ def consultar_datos(form):
     fecha_inicio = form.cleaned_data['inicio']
     fecha_fin = form.cleaned_data['fin']
     frecuencia = form.cleaned_data['frecuencia']
+    informacion = dict()
     if fecha_inicio is None:
         fecha_inicio = estacion.est_fecha_inicio
     if fecha_fin is None:
@@ -46,7 +45,7 @@ def consultar_datos(form):
         informacion = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
         # frecuencia mensual
     elif frecuencia == str(4):
-        informacion = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
+        informacion = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
     tiempo = informacion["tiempo"]
     valor = informacion["valor"]
     max_abs = informacion["max_abs"]
@@ -97,6 +96,7 @@ def consultar_datos_usuario(form):
     fecha_inicio = form.cleaned_data['inicio']
     fecha_fin = form.cleaned_data['fin']
     frecuencia = form.cleaned_data['frecuencia']
+    informacion = dict()
     if fecha_inicio is None:
         fecha_inicio = estacion.est_fecha_inicio
     if fecha_fin is None:
@@ -135,23 +135,6 @@ def consultar_datos_usuario(form):
     titulo_grafico = variable.var_nombre + " " + str(titulo_frecuencia(frecuencia)) + " " + estacion.est_codigo
     titulo_yaxis = variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"
     layout = get_layout_grafico(titulo_grafico, titulo_yaxis, fecha_inicio, fecha_fin)
-    '''if variable.var_id != 1:
-        grafico = {
-            'data': [
-                data_valor,
-                data_maximo,
-                data_minimo
-            ],
-            'layout': layout
-
-        }
-    else:
-        grafico = {
-            'data': [
-                data_valor
-            ],
-            'layout': layout
-        }'''
     if variable.var_id == 1:
         data = get_data_graph(data_valor)
     else:
@@ -245,6 +228,7 @@ def filtrar(form):
     obj_typeVI = TypeVI()
     estacion = form.cleaned_data['estacion']
     periodo = form.cleaned_data['anio']
+    matriz=[]
 
     for item in variables:
         if item.get('var_id') in typeI:
@@ -268,7 +252,7 @@ def filtrar(form):
         if grafico:
             context.update({str(item.get('var_id')) + '_grafico': grafico})
     if len(context) == 0:
-        context.update({'mensaje':'No existen datos para la consulta'})
+        context.update({'mensaje': 'No existen datos para la consulta'})
     return context
 
 
@@ -281,6 +265,9 @@ def comparar(form):
     fecha_inicio = form.cleaned_data['inicio']
     fecha_fin = form.cleaned_data['fin']
     frecuencia = form.cleaned_data['frecuencia']
+    info_esta01 = dict()
+    info_esta02 = dict()
+    info_esta03 = dict()
     # frecuencia 5 minutos
     if frecuencia == str(1):
         info_esta01 = datos_5minutos(estacion01, variable, fecha_inicio, fecha_fin)
@@ -300,7 +287,7 @@ def comparar(form):
     elif frecuencia == str(4):
         info_esta01 = datos_mensuales(estacion01, variable, fecha_inicio, fecha_fin)
         info_esta02 = datos_mensuales(estacion02, variable, fecha_inicio, fecha_fin)
-        info_esta01 = datos_mensuales(estacion03, variable, fecha_inicio, fecha_fin)
+        info_esta03 = datos_mensuales(estacion03, variable, fecha_inicio, fecha_fin)
     time01 = info_esta01["tiempo"]
     time02 = info_esta02["tiempo"]
     time03 = info_esta03["tiempo"]
@@ -329,6 +316,8 @@ def comparar_variables(form):
     fecha_fin = form.cleaned_data['fin']
     frecuencia = form.cleaned_data['frecuencia']
     parametro = form.cleaned_data['parametro']
+    info_est01 = dict()
+    info_est02 = dict()
     if frecuencia == str(1):
         info_est01 = datos_5minutos(estacion01, variable01, fecha_inicio, fecha_fin)
         info_est02 = datos_5minutos(estacion02, variable02, fecha_inicio, fecha_fin)
@@ -565,5 +554,6 @@ def titulo_frecuencia(frecuencia):
     elif frecuencia == '3':
         nombre = 'Mensual'
     return nombre
+
 
 
