@@ -48,12 +48,12 @@
 
 <div class="row">
     <div class="col-lg-10 col-sm-10">
-        <h3>Índice de doble masa</h3>
+        <h3>Indices para precipitación</h3>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <p class="text-info"><strong>Información: </strong>Permite generar índice de doble masa entre dos estaciones</p>
+        <p class="text-info"><strong>Información: </strong>Muestra los índices de precipitación para una estación selecionada</p>
     </div>
 </div>
 
@@ -66,10 +66,10 @@
 
         <div class="col-lg-4 col-md-6">
             <label>&nbsp;</label><br>
-            <button id="btn_validado" type="button" class="btn btn-primary">
+            <button id="btn_bus_est" type="button" class="btn btn-primary">
                 Buscar
             </button>
-            <a class="btn btn-light" href="{% url 'indices:doblemasa' %}">Limpiar</a>
+            <!--a class="btn btn-light" href="{% url 'indices:doblemasa' %}">Limpiar</a-->
         </div>
     </div>
 </form>
@@ -84,29 +84,7 @@
 <div class="border-top my-3"></div>
 
 <div id="div_informacion" >
-    <!--div class="table-responsive"-->
-        <table id="tableacum" class="table table-bordered table-hover table-fixed">
-            <thead >
-                <tr>
-                    <th class="col-sm-4" rowspan="">Fecha</th>
-                    <th class="col-sm-2">Valor</th>
-                    <th class="col-sm-2">Acumulado</th>
-                    <th class="col-sm-2">Valor</th>
-                    <th class="col-sm-2">Acumulado</th>
-                </tr>
-            </thead>
 
-            <tbody id="tbody" >
-
-            </tbody>
-        </table>
-    <!--/div-->
-    <div id="grfico">
-
-    </div>
-    <div id="grfico2">
-
-    </div>
     <div id="espacio">
 
     </div>

@@ -200,3 +200,21 @@ class Caudal(models.Model):
             models.Index(fields=['fecha', 'estacion_id']),
         ]
         unique_together = ('estacion_id', 'fecha')
+
+class NivelAgua(models.Model):
+    id = models.BigAutoField("Id", primary_key=True)
+    estacion_id = models.PositiveIntegerField("estacion_id")
+    fecha = models.DateTimeField("Fecha")
+    valor = models.DecimalField("Valor", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    max_abs = models.DecimalField("Máximo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    completo_mediciones = models.DecimalField("Completo mediciones %", max_digits=4, decimal_places=1)
+    usado_para_diario = models.BooleanField("Usado para diario", default=False)
+
+    class Meta:
+        indexes = [
+            #models.Index(fields=['estacion_id', 'fecha']),
+            models.Index(fields=['usado_para_diario', 'id']),
+            models.Index(fields=['fecha', 'estacion_id']),
+        ]
+        unique_together = ('estacion_id', 'fecha')

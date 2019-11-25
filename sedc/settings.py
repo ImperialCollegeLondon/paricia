@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'horario.apps.HorarioConfig',
     'diario.apps.DiarioConfig',
     'mensual.apps.MensualConfig',
+    'anual.apps.AnualConfig',
+    'estames.apps.EstamesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -174,3 +176,4 @@ BOOTSTRAP4 = {
     "javascript_in_head": True,
     "include_jquery": True,
 }
+

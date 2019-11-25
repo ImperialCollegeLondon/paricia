@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from validacion.models import Validacion
+from validacion.models import *
 from frecuencia.models import Frecuencia
 from medicion.models import Medicion
 from estacion.models import Estacion
@@ -90,7 +90,6 @@ def generar_validacion(form):
         # obj_validacion.save()
 
     return validaciones
-
 
 def guardar_validacion(datos):
     for item in datos:

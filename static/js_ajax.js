@@ -1,5 +1,6 @@
 
 $(document).ready(function() {
+
     $("#btn_graficar").click(function(){
         $(this).attr('disabled',true);
         $.ajax({
@@ -75,6 +76,8 @@ $(document).ready(function() {
         });
     });
 
+
+
     //datepicker con intervalo registringido
     var dateFormat = "dd/mm/yy";
     $( "#id_inicio" ).datepicker({
@@ -148,3 +151,4 @@ $(document).ready(function() {
 
 
 });
+

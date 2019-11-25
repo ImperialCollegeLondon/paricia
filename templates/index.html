@@ -14,6 +14,7 @@
     <script src="{% static 'functions.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
 </head>
 
 {# Display django.contrib.messages as Bootstrap alerts #}
@@ -121,8 +122,14 @@
                    aria-haspopup="true" aria-expanded="false">Indices
                     <span class="caret"></span></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">doble Masa</a>
+                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">Doble Masa</a>
+                    <a class="dropdown-item" href="{% url 'indices:precipitacion' %}">Precipitación</a>
+                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">Caudales</a>
+                    <a class="dropdown-item" href="{% url 'indices:intensidad' %}">Intensidad - Duración</a>
+                    <a class="dropdown-item" href="{% url 'indices:duracaudal' %}">Duración Caudal</a>
+
                 </div>
+
             </li>
 
         </ul>
