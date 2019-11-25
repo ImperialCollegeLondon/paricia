@@ -4,7 +4,7 @@ from variable.models import Variable
 cursor = connection.cursor()
 variables = Variable.objects.filter(reporte_automatico=True)
 for variable in variables:
-    sql = "SELECT * FROM generar_mensual_var" + str(variable.var_modelo).lower() + "();"
+    sql = "SELECT * FROM generar_mensual_" + str(variable.var_modelo).lower() + "();"
     res = True
     while res:
         cursor.execute(sql)
