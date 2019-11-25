@@ -107,7 +107,8 @@ def search_estaciones(request):
 
 # estaciones FONAG  en formato JSON
 def datos_json_estaciones(request):
-    estaciones = list(Estacion.objects.order_by('est_id').filter(est_externa=False))
+    # estaciones = list(Estacion.objects.order_by('est_id').filter(est_externa=False))
+    estaciones = list(Estacion.objects.order_by('est_id').all())
     features = []
     for item in estaciones:
         fila = dict(

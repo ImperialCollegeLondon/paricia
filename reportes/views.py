@@ -1,17 +1,33 @@
-from estacion.models import Inamhi, Estacion
-from variable.models import Parametro
+from estacion.models import Inamhi, Estacion, Sistema, Cuenca, SistemaCuenca
+from variable.models import Parametro, Variable
+from cruce.models import Cruce
 
 from django.views.generic import FormView, TemplateView
 from reportes.forms import AnuarioForm, InamhiForm
-from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, VariableForm, EstacionVariableSearchForm,UsuarioSearchForm
+from reportes.consultas.forms import (MedicionSearchForm, ComparacionForm, VariableForm,
+                                      EstacionVariableSearchForm, UsuarioSearchForm, ConsultasForm)
 import csv
-from django.http import HttpResponse
 
-from reportes.consultas.functions import (datos_horarios_json, datos_instantaneos, datos_estacion, reporte_excel)
-from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos, procesar_json_inamhi, consultar_datos_usuario
+from reportes.consultas.functions import (
+    datos_horarios_json,
+    datos_instantaneos,
+    datos_estacion,
+    reporte_excel
+)
+from reportes.functions import (filtrar, comparar, comparar_variables, procesar_json_inamhi,
+                                consultar_datos_usuario)
+
+from reportes.sistemacuenca import (
+    get_datos_graficar,
+    export_csv,
+    export_excel
+)
+
 from datetime import date, datetime
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.http import JsonResponse
+from django.db.models import Q, Prefetch
 import requests
 
 
@@ -188,6 +204,55 @@ class ConsultasUsuario(FormView):
         return reporte_excel(form)
 
 
+# Consultas Estacion Sistema Cuenca
+class ConsultasSistema(FormView):
+    template_name = 'reportes/consultas_sistema.html'
+    form_class = ConsultasForm
+    success_url = '/reportes/sistema'
+
+    def post(self, request, *args, **kwargs):
+        form = ConsultasForm(self.request.POST or None)
+        if form.is_valid():
+            variable = form.cleaned_data['variable']
+            estacion = form.cleaned_data['estacion']
+            inicio = form.cleaned_data['inicio']
+            fin = form.cleaned_data['fin']
+            frecuencia = form.data["frecuencia"]
+
+            if self.request.is_ajax():
+                datos = get_datos_graficar(estacion, variable, inicio, fin, frecuencia, None)
+                # graf1 = grafico(datos, variable, estacion, titulo)
+                #return render(request, 'reportes/consultas/porPeriodo.html', {'grafico': graf1})
+                return JsonResponse(datos, safe=False)
+            else:
+                if 'accion' not in request.POST:
+                    return
+                if request.POST['accion'] == 'csv':
+                    response = export_csv(estacion, variable, inicio, fin, frecuencia, None)
+                    if response: return response
+                    form.mensaje = "No hay datos (" + frecuencia + ") en estación " + \
+                                   estacion.est_codigo + " en " + variable.var_nombre + " en el período seleccionado."
+                    return self.render_to_response(self.get_context_data(form=form))
+                elif request.POST['accion'] == 'excel':
+                    response = export_excel(estacion, variable, inicio, fin, frecuencia, None)
+                    if response: return response
+                    form.mensaje = "No hay datos (" + frecuencia + ") en estación " + \
+                                   estacion.est_codigo + " en " + variable.var_nombre + " en el período seleccionado."
+                    return self.render_to_response(self.get_context_data(form=form))
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsultasSistema, self).get_context_data(**kwargs)
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(ConsultasSistema, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+
 # consultas por periodo de todas las variables
 class ConsultasEstacionVariable(FormView):
     template_name = 'reportes/consultas_estacion.html'
@@ -345,6 +410,107 @@ def tipo_estaciones(request):
 
     for item in estaciones:
         lista[item.est_id] = item.est_codigo
+    return JsonResponse(lista)
+
+# @login_required
+def variables(request):
+    try:
+        estacion_id = int(request.GET.get('estacion_id', None))
+    except ValueError:
+        estacion_id = None
+
+    lista = {}
+    if estacion_id is not None:
+        variables = Cruce.objects.prefetch_related(
+            Prefetch('var_id', queryset=Variable.objects.all())
+        ).filter(est_id=estacion_id)
+        for row in variables:
+            lista[row.var_id.var_id] = row.var_id.var_nombre
+    else:
+        variables = Variable.objects.all()
+        for row in variables:
+            lista[row.var_id] = row.var_nombre
+    return JsonResponse(lista)
+
+
+# @login_required
+def cuencas(request):
+    try:
+        sistema_id = int(request.GET.get('sistema_id', None))
+    except ValueError:
+        sistema_id = None
+    if sistema_id is not None:
+        cuencas = SistemaCuenca.objects.prefetch_related(
+            Prefetch('cuenca', queryset=Cuenca.objects.all())
+        ).filter(sistema_id=sistema_id)
+    else:
+        cuencas = SistemaCuenca.objects.all()
+    lista = {}
+    for row in cuencas:
+        try:
+            lista[row.cuenca.id] = row.cuenca.nombre
+        except:
+            pass
+    return JsonResponse(lista)
+
+
+# @login_required
+def estaciones(request):
+    variable_id = sistema_id = cuenca_id = estacion_tipo_id = unidadoperativa_id = None
+    filtro = Q()
+
+    try:
+        variable_id = int(request.GET.get('variable_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        sistema_id = int(request.GET.get('sistema_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        cuenca_id = int(request.GET.get('cuenca_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        estacion_tipo_id = int(request.GET.get('estacion_tipo_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        unidadoperativa_id = int(request.GET.get('unidadoperativa_id', None))
+    except Exception as e:
+        pass
+
+    if variable_id:
+        filtro &= Q(cruce__var_id_id=variable_id)
+    if sistema_id:
+        filtro &= Q(sistemacuenca__sistema_id=sistema_id)
+    if cuenca_id:
+        filtro &= Q(sistemacuenca__cuenca_id=cuenca_id)
+    if estacion_tipo_id:
+        filtro &= Q(tipo_id=estacion_tipo_id)
+
+
+    estaciones = Estacion.objects.filter(filtro)
+
+    imagen=None
+    if cuenca_id:
+        imagen = Cuenca.objects.get(id=cuenca_id).imagen
+    elif sistema_id:
+        imagen = Sistema.objects.get(id=sistema_id).imagen
+
+    try:
+        imagen_url = imagen.url
+    except:
+        imagen_url = ""
+
+    lista = {'estaciones':{}, 'imagen': imagen_url}
+
+    for row in estaciones:
+        lista['estaciones'][row.est_id] = row.est_codigo + " - " + row.est_nombre
     return JsonResponse(lista)
 
 

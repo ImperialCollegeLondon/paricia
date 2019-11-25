@@ -91,7 +91,8 @@ class Estacion(models.Model):
     tipo = models.ForeignKey(Tipo,  on_delete=models.CASCADE, verbose_name="Tipo", null=True, blank=True)
     transmision = models.BooleanField("Trasmision",default=False, null=True, blank=True)
     sistemacuenca = models.ForeignKey(SistemaCuenca, on_delete=models.SET_NULL, null=True, verbose_name="SistemaCuenca")
-    est_externa = models.BooleanField("Externa",default=True);
+    est_externa = models.BooleanField("Externa",default=True)
+    influencia_km = models.DecimalField("Infuencia km", max_digits=12, decimal_places=4, null=True)
 
     def __str__(self):
         return str(self.est_codigo)

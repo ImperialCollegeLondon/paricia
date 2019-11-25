@@ -21,4 +21,10 @@ urlpatterns = [
     path('reportes/mapa', views.ConsultaDatos.as_view(), name='mapa_estaciones'),
     path('reportes/usuarios/', views.ConsultasUsuario.as_view(), name='consultas_usuario'),
 
+
+    path('reportes/sistema/', views.ConsultasSistema.as_view(), name='consultas_sistema'),
+    # TODO mejorar url
+    path('ajax/reportes_estaciones/', views.estaciones, name='estaciones'),
+    path('ajax/reportes_cuencas/', views.cuencas, name='cuencas'),
+
 ]

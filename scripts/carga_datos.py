@@ -1,7 +1,7 @@
 import pandas as pd
-from estacion.models import Estacion
+from estacion.models import Estacion, SistemaCuenca
 from variable.models import Parametro
-excel_file = '/media/sf_compartida/estaciones_sedc.xlsx'
+excel_file = '/media/sf_compartida/estaciones_Sistemas_Cuenca.xlsx'
 xl = pd.ExcelFile(excel_file)
 #estaciones = xl.parse('estaciones').set_index('id', drop=False).to_dict('index')
 variables = xl.parse('estaciones').set_index('id', drop=False).to_dict('index')
@@ -38,5 +38,7 @@ for key,row in variables.items():
 
 for key, row in variables.items():
     estacion = Estacion.objects.get(est_id=key)
-    estacion.transmision = row['transmision']
+    sitemacuenca = SistemaCuenca.objects.get(id=row['nuevo_id'])
+
+    estacion.sistemacuenca = sitemacuenca
     estacion.save()

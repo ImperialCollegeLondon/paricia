@@ -2,14 +2,16 @@
 
 from estacion.models import Estacion
 from variable.models import Variable
-from datetime import timedelta, datetime
-from django.db import connection
-from math import ceil
 from cruce.models import Cruce
 from importacion.functions import get_modelo
-from datetime import date
-from sedc.settings import BASE_DIR
 
+from datetime import timedelta, datetime
+from math import ceil
+from datetime import date
+
+from django.db import connection
+from sedc.settings import BASE_DIR
+# librerias para manejar los archivos EXCEL
 from openpyxl.styles import Font
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image
@@ -41,11 +43,11 @@ def reporte_excel(form):
     if fecha_fin is None:
         fecha_fin = date.today()
     if frecuencia == "1":
-        informacion = datos_horarios(estacion, variable,fecha_inicio, fecha_fin)
+        informacion = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
     elif frecuencia == "2":
-        informacion = datos_diarios(estacion, variable,fecha_inicio, fecha_fin)
+        informacion = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
     else:
-        informacion = datos_mensuales(estacion, variable,fecha_inicio, fecha_fin)
+        informacion = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
 
     tiempo = informacion["tiempo"]
     valores = informacion["valor"]
@@ -460,6 +462,8 @@ def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
     datos = dictfetchall(cursor)
     cursor.close()
     return datos
+
+
 
 
 def dias_mes(month, year):

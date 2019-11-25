@@ -84,8 +84,9 @@ def lista_datos_validacion(request):
     inicio = datetime.datetime.strptime(inicio, '%d/%m/%Y')
     fin = datetime.datetime.strptime(fin, '%d/%m/%Y')
     lista = reporte_validacion(estacion, variable, inicio, fin)
+    print (len(lista))
     # lista = []
-    print("Fin datos validacion: ", datetime.datetime.now())
+    # print("Fin datos validacion: ", datetime.datetime.now())
     return render(request, 'medicion/medicion_list.html',
                   {'lista': lista,
                    'variable': variable,

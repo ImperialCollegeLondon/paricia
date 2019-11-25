@@ -145,6 +145,19 @@ function actualizar_informacion(){
 
 }
 
+
+
+function getDate(element) {
+    var date;
+    try {
+        date = $.datepicker.parseDate(dateFormat, element.value);
+    } catch( error ) {
+        date = null;
+    }
+    return date;
+}
+
+
 $(document).ready(function() {
 
   $("#form_consulta").submit(function(event){

@@ -40,6 +40,7 @@
     .titulo{
     background: rgba(185,185,185,0.6);
     }
+
 </style>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -48,16 +49,17 @@
 
 <div class="row">
     <div class="col-lg-10 col-sm-10">
-        <h3>Índice de doble masa</h3>
+        <h3>Intensidad Duración</h3>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <p class="text-info"><strong>Información: </strong>Permite generar índice de doble masa entre dos estaciones</p>
+        <p class="text-info"><strong>Información: </strong>Curva de Intensidad VS Duración
+            </p>
     </div>
 </div>
 
-<form id="SearchForm" class="form" method="post" action="{% url 'indices:doblemasa' %}">
+<form id="SearchForm" class="form" method="post" action="{% url 'indices:intensidad' %}">
     <div class="row">
         {% csrf_token %}
         {% for field in form%}
@@ -66,52 +68,43 @@
 
         <div class="col-lg-4 col-md-6">
             <label>&nbsp;</label><br>
-            <button id="btn_validado" type="button" class="btn btn-primary">
+            <button id="btn_bus_inten" type="button" class="btn btn-primary">
                 Buscar
             </button>
-            <a class="btn btn-light" href="{% url 'indices:doblemasa' %}">Limpiar</a>
+            <!--a class="btn btn-light" href="{% url 'indices:doblemasa' %}">Limpiar</a-->
         </div>
     </div>
 </form>
 
 <div>
 
-<!--div class="row">
-    <div class="col"><hr></div>
-    <div class="col-auto">OR</div>
-    <div class="col"><hr></div>
-</div-->
-<div class="border-top my-3"></div>
+    <!--div class="row">
+        <div class="col"><hr></div>
+        <div class="col-auto">OR</div>
+        <div class="col"><hr></div>
+    </div-->
+    <div class="border-top my-3"></div>
 
-<div id="div_informacion" >
-    <!--div class="table-responsive"-->
-        <table id="tableacum" class="table table-bordered table-hover table-fixed">
-            <thead >
-                <tr>
-                    <th class="col-sm-4" rowspan="">Fecha</th>
-                    <th class="col-sm-2">Valor</th>
-                    <th class="col-sm-2">Acumulado</th>
-                    <th class="col-sm-2">Valor</th>
-                    <th class="col-sm-2">Acumulado</th>
-                </tr>
+    <div id="div_informacion">
+        <table id="tableacum" class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th  rowspan="">Duración</th>
+                <th>Intencidad</th>
+            </tr>
             </thead>
-
-            <tbody id="tbody" >
+            <tbody id="tbody">
 
             </tbody>
         </table>
-    <!--/div-->
-    <div id="grfico">
+        <div id="grfico">
+
+        </div>
+        <div id="espacio">
+
+        </div>
 
     </div>
-    <div id="grfico2">
-
-    </div>
-    <div id="espacio">
-
-    </div>
-
-</div>
 
 
 </div>
@@ -125,10 +118,9 @@
     <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
 </div>
 
-    <div id="div_error" class="alert alert-danger alert-dismissible div-hiden" role="alert">
-        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
-    </div>
-
+<div id="div_error" class="alert alert-danger alert-dismissible div-hiden" role="alert">
+    Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+</div>
 
 
 {% endblock %}
