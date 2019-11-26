@@ -26,6 +26,16 @@ class SelecEstForm(forms.Form):
     inicio = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Iniciodfdf(yyyy-mm-dd)")
     fin = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
 
+class IndPrecipForm(forms.Form):
+    estacion = forms.ModelChoiceField(queryset=Estacion.objects.filter(tipo_id__in=[1,2]).order_by('est_id'), label="Estacion meteorológica")
+    #inicio = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Iniciodfdf(yyyy-mm-dd)")
+    #fin = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
+
+class IndCaudForm(forms.Form):
+    estacion = forms.ModelChoiceField(queryset=Estacion.objects.filter(tipo_id__in=[3]).order_by('est_id'), label="Estacion hidrológicas")
+    #inicio = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Iniciodfdf(yyyy-mm-dd)")
+    #fin = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
+
 class SelecCaudalForm(forms.Form):
     estacion = forms.ModelChoiceField(queryset=Estacion.objects.filter(tipo_id__exact=3).order_by('est_id'), label="Estacion Hidrológica")
     inicio = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Iniciodfdf(yyyy-mm-dd)")

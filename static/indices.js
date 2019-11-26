@@ -188,12 +188,15 @@ $(document).ready(function () {
         Plotly.newPlot('grfico', data, layout);
     };
 
-    /*indices de precipitación*/
-    $("#btn_bus_est").click(function(){
+/**********************************************
+***********************************************
+        *indices de precipitación
+    */
+    $("#btn_ind_pre").click(function () {
         $(this).attr('disabled', true);
         $.ajax({
-            url: $("#SearchForm").attr('action'),
-            data: $("#SearchForm").serialize(),
+            url: $("#IndPrecipForm").attr('action'),
+            data: $("#IndPrecipForm").serialize(),
             type: 'POST',
             dataType: 'json',
             cache: false,
@@ -205,7 +208,34 @@ $(document).ready(function () {
             success: function (data) {
                 //add scroll to datatable
 
+                if(JSON.stringify(data) !='{}'){
+                    console.log(data)
+                    $("#div_error").removeClass("div-show").addClass( "div-hiden" );
+                    $("#div_informacion").show();
+                    var rows = "";
+                    rows += '<tr>';
+                    rows += '<td class="col-sm-4">Precipitación anual.</td>';
+                    rows += '<td class="col-sm-2">'+data.rranual+'</td>';
+                    rows += '</tr> <tr>'
+                    rows += '<td class="col-sm-4">Precipitación mensual.</td>';
+                    rows += '<td class="col-sm-2">'+data.rrmes+'</td>';
+                    rows += '</tr> <tr>'
+                    rows += '<td class="col-sm-4">Precipitación del mes más seco.</td>';
+                    rows += '<td class="col-sm-2">'+data.messeco+'</td>';
+                    rows += '</tr> <tr>'
+                    rows += '<td class="col-sm-4">Intensidad máxima de precipitación acumulado cada hora.</td>';
+                    rows += '<td class="col-sm-2">'+data.maxhora+'</td>';
+                    rows += '</tr>';
+                    $("#tbody").html(rows);
 
+                }else{
+
+                    $("#div_error").removeClass("div-hiden").addClass("div-show");
+                    $("#div_informacion").hide();
+                    $("#div_error").html('No existe información para la estaciones');
+                    $("#div_error").show();
+                }
+                //graficar(data)
                 $("#btn_validado").removeAttr('disabled');
 
                 $("#div_loading").hide();
@@ -220,7 +250,80 @@ $(document).ready(function () {
                 $("#btn_consultar").removeAttr('disabled');
             }
         });
+    });
+    /**********************************************
+***********************************************
+        *indices de caudales
+    */
+    $("#btn_indi_cau").click(function () {
+        $(this).attr('disabled', true);
+        $.ajax({
+            url: $("#IndCaudForm").attr('action'),
+            data: $("#IndCaudForm").serialize(),
+            type: 'POST',
+            dataType: 'json',
+            cache: false,
+            beforeSend: function () {
+                $("#div_informacion").hide();
+                $("#div_loading").show();
+                $("#div_error").hide();
+            },
+            success: function (data) {
+                //add scroll to datatable
 
+                if(JSON.stringify(data) !='{}'){
+                    console.log(data)
+                    $("#div_error").removeClass("div-show").addClass( "div-hiden" );
+                    $("#div_informacion").show();
+                    var rows = "";
+                    rows += '<tr>';
+                    rows += '<td class="col-sm-4">Caudal mínimo diario</td>';
+                    rows += '<td class="col-sm-2">'+data.cmim+'</td>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Q10.</td>';
+                    rows += '<td class="col-sm-2">'+data.per10+'</td>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Promedio de caudal del mes más seco.</td>';
+                    rows += '<td class="col-sm-2">'+data.cmessec+'</td>';
+                    rows += '</tr> <tr> <th class="col-sm-4" colspan="3">Caudales altos</th>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Caudal máximo diario.</td>';
+                    rows += '<td class="col-sm-2">'+data.cmax+'</td>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Q95.</td>';
+                    rows += '<td class="col-sm-2">'+data.per95+'</td>';
+                    rows += '</tr> <tr> <th class="col-sm-4" colspan="3">Caudales medios</th>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Caudal o volumen promedio diario anual o mensual.</td>';
+                    rows += '<td class="col-sm-2">'+data.cavg+'</td>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Q50.</td>';
+                    rows += '<td class="col-sm-2">'+data.per50+'</td>';
+                    rows += '</tr>';
+                    $("#tbody").html(rows);
+
+                }else{
+
+                    $("#div_error").removeClass("div-hiden").addClass("div-show");
+                    $("#div_informacion").hide();
+                    $("#div_error").html('No existe información para la estaciones');
+                    $("#div_error").show();
+                }
+                //graficar(data)
+                $("#btn_validado").removeAttr('disabled');
+
+                $("#div_loading").hide();
+
+                $("#div_error").hide();
+            },
+            error: function (xhr, status, error, data) {
+                console.log("Soy un error " + error)
+                //$("#div_informacion").show();
+                $("#div_loading").hide();
+                $("#div_error").show();
+                $("#btn_consultar").removeAttr('disabled');
+            }
+        });
     });
 
     // intencidad duracion de precipitacion
@@ -326,15 +429,29 @@ $(document).ready(function () {
                 $("#div_error").hide();
             },
             success: function (data) {
-                console.log(data);
-                $("#div_informacion").html(data.mensaje);
-                $("#div_informacion").show();
-                $("#btn_bus_inten").removeAttr('disabled');
+                if(JSON.stringify(data)!='{}'){
+                    let x = []
+                    let y = []
+                    var con = data.length - 1;
+                    for (var i in data) {
+                        //console.log(con);
+                        x.push(data[i].frecuencia);
+                        y.push(data[con].CauEsp);
+                        con = con - 1;
+                    }
+                    $("#grfico").html(duracaudal(x,y))
+                    $("#div_informacion").show();
+                }else{
+                    $("#div_informacion").hide();
+                    $("#div_error").html("No hay datos para Procesar")
+                    $("#div_error").removeAttr('div-hiden');
+                }
+                $("#btn_bus_durcau").removeAttr('disabled');
                 $("#div_loading").hide();
-                $("#div_error").hide();
-                //$("#grfico").html(gIntensidad(data))
+                //$("#div_error").hide();
+                //
             },
-            error: function (xhr, status, error, data) {
+            error: function (xhr, status, error) {
                 console.log("Soy un error " + error)
                 //$("#div_informacion").show();
                 $("#div_loading").hide();
@@ -345,6 +462,37 @@ $(document).ready(function () {
 
     });
 
+    /// grafica duracion de caudal
+    function duracaudal(xx,yy){
+       var trace1 = {
+          x: xx,
+          y: yy,
+          mode: 'lines',
+          name: 'CDC',
+          //text: ['United States', 'Canada'],
+          line: {
+              color: 'blue',
+              width: 3
+          },
+          type: 'scatter'
+        };
 
+        var data = [trace1];
+
+        var layout = {
+          title: 'Duración de caudal',
+          xaxis: {
+            title: 'Frecuencia',
+            showgrid: true,
+            zeroline: true
+          },
+          yaxis: {
+            title: 'Caudal (l/s Km^2)',
+            showline: false
+          }
+        };
+
+        Plotly.newPlot('grfico', data, layout);
+    };
 
 });

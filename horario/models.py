@@ -12,6 +12,7 @@ from medicion.models import DigVar
 8   PresionAtmosferica
 9   TemperaturaAgua
 10  Caudal
+11 Nivel agua
 """
 
 ###############################

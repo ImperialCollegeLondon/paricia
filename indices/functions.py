@@ -5,10 +5,11 @@ import diario.models as dia
 import mensual.models as mes
 from anuarios.models import Precipitacion, Caudal
 from datetime import datetime, timedelta
-from django.db.models import Sum, Max
+from django.db.models import Sum, Max, Min, Avg
 from estacion.models import Estacion
 import pandas as pd
 import decimal
+import numpy as np
 
 def periodos(i):
     switcher = {
@@ -97,13 +98,6 @@ def acumularDoble(est1, est2, frecuencia):
 
 
 
-def anualizar(estacion_id):
-    """une los datos mesuales generados por los anuarios en tablas anuales"""
-    precip = Precipitacion.objects.filter(est_id__exact = estacion_id).order_by("pre_periodo","pre_mes")
-
-    pass
-
-
 def intensidadDiracion(estacion_id, fechaini, fechafin):
     # horas de acumulacion (2,5,10,20,24,48)
     acu2h = acumulaHoras(estacion_id, fechaini, fechafin, 2)
@@ -190,35 +184,40 @@ def acumulaSimple(est1,frecuencia):
     print(data)
     return data
 
-def getCaudal(estacion_id,inicio, fin,frecuencia):
+def getCaudalFrec(estacion_id,inicio, fin,frecuencia):
     """Calcula el caudal especifico de una estacion hidrológica"""
     print("funcion caudal ")
     const = 0.0
     est = Estacion.objects.get(est_id=estacion_id)
     inf = est.influencia_km
-    print("influencia ",inf)
+    print("influencia ",inf, "fecha ini :",inicio," fecha fin: ",fin)
     #Qesp = Q / inf
     if frecuencia == 1:  # 'Horario':
         print("entra en horario frecuencia ",frecuencia)
-        const = 0.0036
+        const = 1
         caudal = hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
                                                  fecha__lte=fin).values( "valor")
     elif frecuencia == 2:  # 'Diario':
-        print("entra en diario ",frecuencia)
-        const = 0.0864
+        #print("entra en diario ",frecuencia)
+        const = 1
         caudal =  dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
                                                 fecha__lte=fin).values( "valor")
     else:  # 'Mensual':
-        print("entra en mensuales ,frecuencia")
+        #print("entra en mensuales ,frecuencia")
         caudal = mes.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
                                                 fecha__lte=fin).values('fecha','valor')
-    valores = []
+
 
     if caudal is not None and len(caudal) > 0 and inf is not None:
-        pand = pd.DataFrame(caudal)
-        pand['CauEsp'] = pand['valor']/inf * decimal.Decimal(const)
-        print(pand.head(5))
-    return valores
+        df = pd.DataFrame(caudal)
+        df['CauEsp'] = df['valor']/inf * decimal.Decimal(const)
+        df = df.sort_values(by=['CauEsp'], ascending=[True])
+        td = len(df['CauEsp'])
+        df['rango'] = range(1, td+1)
+        df['frecuencia'] = (df['rango']/td) * 1
+        return df.to_json(orient='records')
+    else:
+        return [{}]
 
 def caudalEspecifico(caudal, estacion_id, frecuencia):
     const = 0
@@ -230,3 +229,71 @@ def caudalEspecifico(caudal, estacion_id, frecuencia):
         const = 0.0864
     if inf is not None:
         caudal
+
+def IndicaPreci(estacion_id):
+    #rrmes = mes.Precipitacion.objects.all()
+    fechas = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id).aggregate(Max('fecha'), Min('fecha'))
+    if fechas is not None:
+        amax = fechas['fecha__max'].year
+        amin = fechas['fecha__min'].year
+        print("min",amin,"max",amax)
+        con = 0
+        acum = 0
+        for i in range(amin, amax):
+            #print("Buscar en ", str(i)+"-01-01",str(i+1)+"-01-01")
+            tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=str(i)+"-01-01", fecha__lt=str(i+1)+"-01-01").aggregate(Sum('valor'))
+            #print(tmes, "con ", con)
+            acum = acum + tmes["valor__sum"]
+            con = con + 1
+
+        rranual = round(acum / con,2)
+        tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id).aggregate(Avg('valor'),Min('valor'))
+        rrmes = round(tmes["valor__avg"],2)
+        rrSeco = round(tmes["valor__min"],2)
+        tmes = hora.Precipitacion.objects.filter(estacion_id__exact=estacion_id).aggregate(Avg('valor'), Min('valor'), Max('valor'))
+        rrmaxh = tmes["valor__max"]
+        dic = {"rranual":str(rranual),"rrmes":str(rrmes), "messeco":str(rrSeco), "maxhora":str(rrmaxh)}
+        return dic
+    else:
+        return [{}]
+
+def IndicaCaudal(estacion_id):
+    fechas = mes.Caudal.objects.filter(estacion_id__exact=estacion_id).aggregate(Max('fecha'),Min('fecha'))
+    # amax = fechas['fecha__max'].year
+    # amin = fechas['fecha__min'].year
+    # print("min", amin, "max", amax)
+    if fechas is not None:
+        tcau = dia.Caudal.objects.filter(estacion_id__exact=estacion_id).aggregate(Avg('valor'),Min('valor'), Max('valor'))
+        camax = tcau["valor__max"]
+        caavg = tcau["valor__avg"]
+        camim = tcau["valor__min"]
+
+        tcau = dia.Caudal.objects.filter(estacion_id__exact=estacion_id).order_by("valor")
+        total_count = tcau.count()
+
+        p10 = posi(total_count,10)
+        p50 = posi(total_count, 50)
+        p95 = posi(total_count, 95)
+        # print("posiciones",p10,p50,p95)
+        cap10 = tcau[p10].valor
+        cap50 = tcau[p50].valor
+        cap95 = tcau[p95].valor
+        cames = mes.Caudal.objects.filter(estacion_id__exact=estacion_id).aggregate(Avg('valor'),Min('valor'), Max('valor'))
+        caSeco = cames["valor__min"]
+        dic = {"cmax": str(camax), "cavg": str(caavg), "cmim": str(camim), "per10": str(cap10), "per50":str(cap50), "per95": str(cap95),"cmessec":str(caSeco)}
+        return dic
+    else:
+        return [{}]
+
+
+
+
+
+def posi(N,i):
+    x = (N*i)/100
+    return int(x)
+    # if x % 2 == 0:
+    #     return [x]
+    # else:
+    #     return [x, x + 1]
+
