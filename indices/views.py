@@ -3,7 +3,8 @@ from datetime import datetime
 
 from django.views import generic
 from indices.forms import *
-from .functions import getVarValidado, acumularDoble, intensidadDiracion, getCaudalFrec, IndicaPreci, IndicaCaudal
+from .functions import getVarValidado, acumularDoble, \
+    intensidadDiracion, getCaudalFrec, IndicaPreci, IndicaCaudal, consultaPeriodos
 from django.shortcuts import render
 # Create your views here.
 from django.http import JsonResponse, HttpResponse
@@ -37,11 +38,26 @@ class Doblemasa(generic.FormView):
         fin = datetime.strptime(tfin+" 23:59:00", '%d/%m/%Y %H:%M:%S')
         intervalos = getVarValidado(variable_id,estacion1_id, inicio,fin, frecuencia)
         intervalos1 = getVarValidado(variable_id, estacion2_id, inicio, fin, frecuencia)
-        data = json.dumps(acumularDoble(intervalos,intervalos1,frecuencia),allow_nan=True,cls=DecimalEncoder)
+        dicAcum = acumularDoble(intervalos,intervalos1,frecuencia)
+        per1 = consultaPeriodos(estacion1_id, frecuencia)
+        per2 = consultaPeriodos(estacion1_id, frecuencia)
+        dicAdd = {'f1max': per1[0][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'f1mim': per1[1][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'e1cod': per1[2][0]['est_codigo'],
+                  'f2max': per2[0][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'f2mim': per2[1][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'e2cod': per2[2][0]['est_codigo']}
+        dicAcum.append(dicAdd)
+        data = json.dumps(dicAcum,allow_nan=True,cls=DecimalEncoder)
         #print(data)
         #intervalosSerial = serializers.serialize('json',intervalos, fields=('id','fecha','valor') )
         return HttpResponse(data, content_type='application/json')
         #return HttpResponse(intervalosSerial, content_type='application/json')
+
+class PeriodoDatos(generic.View):
+    template_name = "indices/rangos.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
 
 class IndPrecip(generic.FormView):
     """Calcula los indices de precipitacion dispinibles para la estación selecionada"""
@@ -52,8 +68,22 @@ class IndPrecip(generic.FormView):
         form = SelecEstForm(self.request.POST or None)
         # try:
         estacion_id = int(request.POST.get('estacion', None))
+        tinicio = request.POST.get('inicio', 'vacio')
+        tfin = request.POST.get('fin', None)
+        print("tinico ",tinicio,"tfin ",tfin)
+        completo  = True
+        inicio = None
+        fin = None
+        if tinicio != '':
+            print("no hay fecha de inicio")
+            inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
+            completo = False
+        if tfin !='':
+            fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
+            #completo =False
+
         #anualizar(estacion_id)
-        data = IndicaPreci(estacion_id)
+        data = IndicaPreci(estacion_id,inicio,fin, completo)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
 
@@ -66,8 +96,21 @@ class IndCaudal(generic.FormView):
         form = SelecEstForm(self.request.POST or None)
         # try:
         estacion_id = int(request.POST.get('estacion', None))
+        tinicio = request.POST.get('inicio', 'vacio')
+        tfin = request.POST.get('fin', None)
+        print("tinico ", tinicio, "tfin ", tfin)
+        completo = True
+        inicio = None
+        fin = None
+        if tinicio != '':
+            print("no hay fecha de inicio")
+            inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
+            completo = False
+        if tfin != '':
+            fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
+            # completo =False
         #anualizar(estacion_id)
-        data = IndicaCaudal(estacion_id)
+        data = IndicaCaudal(estacion_id,inicio,fin, completo)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
 
@@ -103,7 +146,8 @@ class DuracionCaudal(generic.FormView):
         inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
         fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
         data = getCaudalFrec(estacion_id,inicio,fin,frecuencia)
-        print(data)
+        if data is None:
+            data = [{}]
         #data = {"mensaje":"hola mundo "}
         #data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')

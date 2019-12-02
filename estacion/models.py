@@ -94,7 +94,7 @@ class Estacion(models.Model):
     influencia_km = models.DecimalField("Infuencia km", max_digits=12, decimal_places=4, null=True)
 
     def __str__(self):
-        return str(self.est_codigo)
+        return str(self.est_codigo+"  "+self.est_nombre)
 
     def get_absolute_url(self):
         return reverse('estacion:estacion_detail', kwargs={'pk': self.pk})
