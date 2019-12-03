@@ -146,7 +146,7 @@ $(document).ready(function () {
           x: ydate,
           y: yy,
           mode: 'lines',
-          name: e1,
+          name: e2,
           //text: ['United States', 'Canada'],
           marker: {
             color: 'rgb(0, 0, 204)',
@@ -187,13 +187,10 @@ $(document).ready(function () {
           mode: 'lines',
           name: 'RR acumulada',
           //text: ['United States', 'Canada'],
-          marker: {
-            color: 'rgb(164, 194, 244)',
-            size: 12,
-            line: {
-              color: 'red',
-              width: 1
-            }
+          line: {
+              color: 'rgb(55, 128, 191)',
+              width: 3
+
           },
           type: 'scatter'
         };
@@ -408,19 +405,19 @@ $(document).ready(function () {
                 console.log(data.h1);
                 rows = "";
                 rows += '<tr> <td >60 min</td>';
-                rows += '<td >'+data.h1+'</td> </tr>';
+                rows += '<td >'+data.h1+' (mm/h).</td> </tr>';
                 rows += '<tr> <td >120 min</td>';
-                rows += '<td >'+data.h2+'</td> </tr>';
+                rows += '<td >'+data.h2+' (mm/h).</td> </tr>';
                 rows += '<tr> <td >300 min</td>';
-                rows += '<td >'+data.h5+'</td> </tr>';
+                rows += '<td >'+data.h5+' (mm/h).</td> </tr>';
                 rows += '<tr> <td >600 min</td>';
-                rows += '<td >'+data.h10+'</td> </tr>';
+                rows += '<td >'+data.h10+' (mm/h).</td> </tr>';
                 rows += '<tr> <td >1200 min</td>';
-                rows += '<td >'+data.h20+'</td> </tr>';
+                rows += '<td >'+data.h20+' (mm/h).</td> </tr>';
                 rows += '<tr> <td >1440 min</td>';
-                rows += '<td >'+data.h24+'</td> </tr>';
+                rows += '<td >'+data.h24+' (mm/h).</td> </tr>';
                 rows += '<tr> <td >2880 min</td>';
-                rows += '<td >'+data.h48+'</td> </tr>';
+                rows += '<td >'+data.h48+' (mm/h).</td> </tr>';
                 $("#tbody").html(rows);
                 $("#div_informacion").show();
                 $("#btn_bus_inten").removeAttr('disabled');
@@ -447,13 +444,9 @@ $(document).ready(function () {
           mode: 'lines',
           name: 'RR acumulada',
           //text: ['United States', 'Canada'],
-          marker: {
-            color: 'rgb(164, 194, 244)',
-            size: 12,
-            line: {
-              color: 'red',
-              width: 1
-            }
+          line: {
+              color: 'blue',
+              width: 3
           },
           type: 'scatter'
         };

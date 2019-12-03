@@ -40,7 +40,7 @@ class Doblemasa(generic.FormView):
         intervalos1 = getVarValidado(variable_id, estacion2_id, inicio, fin, frecuencia)
         dicAcum = acumularDoble(intervalos,intervalos1,frecuencia)
         per1 = consultaPeriodos(estacion1_id, frecuencia)
-        per2 = consultaPeriodos(estacion1_id, frecuencia)
+        per2 = consultaPeriodos(estacion2_id, frecuencia)
         dicAdd = {'f1max': per1[0][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'f1mim': per1[1][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'e1cod': per1[2][0]['est_codigo'],
                   'f2max': per2[0][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'f2mim': per2[1][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'e2cod': per2[2][0]['est_codigo']}
         dicAcum.append(dicAdd)

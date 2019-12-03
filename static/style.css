@@ -3,7 +3,7 @@
   width: 97%;
 }
 
-.table-fixed tbody {
+.table-fixed #tbody {
   height: 230px;
   overflow-y: auto;
   width: 100%;
