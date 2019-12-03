@@ -104,7 +104,8 @@ def matrizI(estacion, variable, periodo):
     return datos
 
 
-def get_maximo(item_max):
+'''def get_maximo(item_max):
+    print(item_max)
     if isnan(item_max.get('maximo')):
         return round(item_max.get('valor'), 2)
     return round(item_max.get('maximo'), 2)
@@ -118,5 +119,23 @@ def get_minimo(item_min):
 
 def get_promedio(item_avg):
     if isnan(item_avg.get('valor')):
+        return 0
+    return round(item_avg.get('valor'), 2)'''
+
+
+def get_maximo(item_max):
+    if item_max.get('maximo') is None:
+        return round(item_max.get('valor'), 2)
+    return round(item_max.get('maximo'), 2)
+
+
+def get_minimo(item_min):
+    if item_min.get('minimo') is None:
+        return round(item_min.get('valor'), 2)
+    return round(item_min.get('minimo'), 2)
+
+
+def get_promedio(item_avg):
+    if item_avg.get('valor') is None:
         return 0
     return round(item_avg.get('valor'), 2)
