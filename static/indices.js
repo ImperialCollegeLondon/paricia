@@ -325,7 +325,7 @@ $(document).ready(function () {
                 $("#div_loading").show();
                 $("#div_error").hide();
             },
-            success: function (data) {
+            success: function (data) { 
                 //add scroll to datatable
 
                 if(data != null){
