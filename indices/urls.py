@@ -8,4 +8,6 @@ urlpatterns = [
     path('indices/caudal/', IndCaudal.as_view(),name='caudal'),
     path('indices/intensidad/', IntensidadRR.as_view(),name='intensidad'),
     path('indices/duracaudal/', DuracionCaudal.as_view(),name='duracaudal'),
+    path('indices/rangos/', PeriodoDatos.as_view(),name='rangos'),
+
 ]
