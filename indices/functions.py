@@ -307,18 +307,19 @@ def IndicaPreci(estacion_id,inicio,fin,completo):
         temdcsl = 0
         for i in tdia:
             print(i['valor'])
-            if i['valor'] == 0:
-                temdcsl = temdcsl + 1
-                if temdcsl > dcsl :
-                    dcsl = temdcsl
-            else:
-                temdcsl = 0
-            if i['valor'] > 0.1:
-                temdccl = temdccl + 1
-                if temdccl > dccl:
-                    dccl = temdccl
-            else:
-                temdccl = 0
+            if i['valor'] is not None:
+                if i['valor'] == 0:
+                    temdcsl = temdcsl + 1
+                    if temdcsl > dcsl :
+                        dcsl = temdcsl
+                else:
+                    temdcsl = 0
+                if i['valor'] > 0.1:
+                    temdccl = temdccl + 1
+                    if temdccl > dccl:
+                        dccl = temdccl
+                else:
+                    temdccl = 0
 
 
         tdia = dia.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
