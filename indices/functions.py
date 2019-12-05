@@ -251,9 +251,11 @@ def IndicaPreci(estacion_id,inicio,fin,completo):
     datos = 0
     if completo:
         fechas = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id).aggregate(Max('fecha'), Min('fecha'))
-        amax = fechas['fecha__max'].year
-        amin = fechas['fecha__min'].year
-        datos = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id)[:10]
+        print(fechas)
+        if fechas['fecha__max'] is not None and fechas['fecha__min'] is not None:
+            amax = fechas['fecha__max'].year
+            amin = fechas['fecha__min'].year
+            datos = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id)[:10]
     elif inicio is not None and fin is not None:
         amax = fin.year
         amin = inicio.year
