@@ -245,7 +245,7 @@ def caudalEspecifico(caudal, estacion_id, frecuencia):
         caudal
 
 def IndicaPreci(estacion_id,inicio,fin,completo):
-    #rrmes = mes.Precipitacion.objects.all()
+
     amax = None
     amin = None
     datos = 0
@@ -304,7 +304,7 @@ def IndicaPreci(estacion_id,inicio,fin,completo):
         dcsl = 0
         temdcsl = 0
         for i in tdia:
-            #print(i['valor'])
+            print(i['valor'])
             if i['valor'] == 0:
                 temdcsl = temdcsl + 1
                 if temdcsl > dcsl :
