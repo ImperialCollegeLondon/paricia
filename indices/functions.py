@@ -285,8 +285,10 @@ def IndicaPreci(estacion_id,inicio,fin,completo):
                     fechaMinAnual = i
                 acum = acum + tmes["valor__sum"]
                 con = con + 1
-
-        rranual = round(acum / con,2)
+        if con == 0:
+            rranual= 0.0
+        else:
+            rranual = round(acum / con,2)
         tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu, fecha__lte=finconsu).aggregate(Avg('valor'),Min('valor'),Max('valor'))
         fmeMax = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id,fecha__gte=iniconsu, fecha__lte=finconsu, valor__exact = tmes["valor__max"]).values('fecha')[:1]
         fmeMin = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id,fecha__gte=iniconsu, fecha__lte=finconsu, valor__exact = tmes["valor__min"]).values('fecha')[:1]
