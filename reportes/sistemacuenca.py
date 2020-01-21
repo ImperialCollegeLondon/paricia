@@ -303,10 +303,10 @@ def consulta_crudos_graficar(estacion_id, variable, inicio, fin, profundidad):
 def consulta_validados(estacion_id, variable, inicio, fin, profundidad):
     modelo = str(variable.var_modelo)
     if inicio:
-        inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
+        inicio = datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
     if fin:
-        fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
+        fin = datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
 
     sql = """
     WITH 
@@ -412,17 +412,17 @@ def consulta_validados_graficar(estacion_id, variable, inicio, fin, profundidad)
 def consulta_horario(estacion_id, variable, inicio, fin, profundidad):
     modelo = str(variable.var_modelo)
     if inicio:
-        inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
+        inicio = datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
     if fin:
-        fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
+        fin = datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
     sql = """
     WITH 
     variable AS (
         SELECT * FROM variable_variable vv WHERE vv.var_id = %%var_id%%
     ),
     consulta AS (
-        select * from horario_%%var_id%% c 
+        select * from horario_%%var_modelo%% c 
         WHERE c.estacion_id = %%est_id%% 
         %%filtro%%
         AND c.completo_mediciones >= (SELECT vv.umbral_completo FROM variable vv)
@@ -444,7 +444,8 @@ def consulta_horario(estacion_id, variable, inicio, fin, profundidad):
         filtro += ' AND c.fecha <=\'' + str(fin) + '\''
 
     sql = sql.replace('%%est_id%%', str(estacion_id))
-    sql = sql.replace('%%var_id%%', modelo)
+    sql = sql.replace('%%var_modelo%%', modelo)
+    sql = sql.replace('%%var_id%%', str(variable.var_id))
     sql = sql.replace('%%filtro%%', filtro)
 
     consulta = ConsultaGenericaFechaHora.objects.raw(sql)
@@ -468,17 +469,17 @@ def consulta_horario_graficar(estacion_id, variable_id, inicio, fin, profundidad
 def consulta_diario(estacion_id, variable, inicio, fin, profundidad):
     modelo = str(variable.var_modelo)
     if inicio:
-        inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
+        inicio = datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
     if fin:
-        fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
+        fin = datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
     sql = """
     WITH 
     variable AS (
         SELECT * FROM variable_variable vv WHERE vv.var_id = %%var_id%%
     ),
     consulta AS (
-        select * from diario_%%var_id%% c 
+        select * from diario_%%var_modelo%% c 
         WHERE c.estacion_id = %%est_id%% 
         %%filtro%%
         AND c.completo_umbral >= (SELECT vv.umbral_completo FROM variable vv)
@@ -500,7 +501,8 @@ def consulta_diario(estacion_id, variable, inicio, fin, profundidad):
         filtro += ' AND c.fecha <=\'' + str(fin) + '\''
 
     sql = sql.replace('%%est_id%%', str(estacion_id))
-    sql = sql.replace('%%var_id%%', modelo)
+    sql = sql.replace('%%var_modelo%%', modelo)
+    sql = sql.replace('%%var_id%%', str(variable.var_id))
     sql = sql.replace('%%filtro%%', filtro)
 
     consulta = ConsultaGenericaFecha.objects.raw(sql)
@@ -523,17 +525,17 @@ def consulta_diario_graficar(estacion_id, variable_id, inicio, fin, profundidad)
 def consulta_mensual(estacion_id, variable, inicio, fin, profundidad):
     modelo = str(variable.var_modelo)
     if inicio:
-        inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
+        inicio = datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
     if fin:
-        fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
+        fin = datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
     sql = """
     WITH 
     variable AS (
         SELECT * FROM variable_variable vv WHERE vv.var_id = %%var_id%%
     ),
     consulta AS (
-        select * from mensual_var%%var_id%%mensual c 
+        select * from mensual_%%var_modelo%%mensual c 
         WHERE c.estacion_id = %%est_id%% 
         %%filtro%%
         AND c.completo_umbral >= (SELECT vv.umbral_completo FROM variable vv)
@@ -555,7 +557,8 @@ def consulta_mensual(estacion_id, variable, inicio, fin, profundidad):
         filtro += ' AND c.fecha <=\'' + str(fin) + '\''
 
     sql = sql.replace('%%est_id%%', str(estacion_id))
-    sql = sql.replace('%%var_id%%', modelo)
+    sql = sql.replace('%%var_modelo%%', modelo)
+    sql = sql.replace('%%var_id%%', str(variable.var_id))
     sql = sql.replace('%%filtro%%', filtro)
 
     consulta = ConsultaGenericaFecha.objects.raw(sql)
