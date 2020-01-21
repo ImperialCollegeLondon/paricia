@@ -188,6 +188,7 @@ def preformato_matriz(archivo_src, formato):
         archivo['fecha'] = archivo['fecha'] - intervalo
     archivo = archivo.sort_values('fecha')
     archivo = archivo.reset_index(drop=True)
+    print(archivo)
     return archivo
 
 
@@ -199,6 +200,7 @@ def guardar_datos__temp_a_final(imp_id, form):
     ruta = str(BASE_DIR) + '/media/' + str(importaciontemp.imp_archivo)
     datos = construir_matriz(ruta, formato, estacion)
     observacion = form.cleaned_data['imp_observacion']
+    print (datos)
     for var_id, tabla in datos.items():
 
         varmodel = get_modelo(var_id)
