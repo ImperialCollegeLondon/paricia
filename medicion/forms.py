@@ -54,7 +54,8 @@ class MedicionConsultaForm(forms.Form):
 
 class CurvaDescargaSearchForm(forms.Form):
     lista = []
-    estacion = forms.ModelChoiceField(required=False, queryset=Estacion.objects.order_by('est_codigo').all())
+    consulta = Estacion.objects.filter(est_externa=False).filter(tipo_id=3).order_by('est_codigo').all()
+    estacion = forms.ModelChoiceField(required=False, queryset=consulta)
 
     def filtrar(self, form):
         if form.cleaned_data['estacion']:
