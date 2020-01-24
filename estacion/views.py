@@ -94,7 +94,7 @@ class EstacionDelete(LoginRequiredMixin, DeleteView):
 def search_estaciones(request):
     if request.is_ajax():
         q = request.GET.get('term', '').capitalize()
-        search_qs = Estacion.objects.filter(est_codigo__startswith=q).filter(est_externa=False)
+        search_qs = Estacion.objects.filter(est_codigo__istartswith=q).filter(est_externa=False)
         results = []
         for r in search_qs:
             results.append(r.est_codigo)

@@ -41,8 +41,10 @@ class FrecuenciaList(LoginRequiredMixin, ListView, FormView):
         form = FrecuenciaSearchForm(self.request.POST or None)
         page = kwargs.get('page')
         if form.is_valid() and self.request.is_ajax():
+
             self.object_list = form.filtrar(form)
         else:
+
             self.object_list = Frecuencia.objects.all()
         context = super(FrecuenciaList, self).get_context_data(**kwargs)
         context.update(pagination(self.object_list, page, 10))
