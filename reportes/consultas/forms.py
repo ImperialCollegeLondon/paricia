@@ -44,7 +44,7 @@ class MedicionSearchForm(forms.Form):
     )
     transmision = forms.ChoiceField(choices=lista_transmision)
     estacion = forms.ModelChoiceField(
-        queryset=Estacion.objects.order_by('est_id').all())
+        queryset=Estacion.objects.filter(est_externa=False).order_by('est_codigo'))
     variable = forms.ModelChoiceField(
         queryset=Variable.objects.order_by('var_id').all())
 

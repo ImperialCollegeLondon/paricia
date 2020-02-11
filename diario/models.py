@@ -206,16 +206,15 @@ class Caudal(models.Model):
             models.Index(fields=['fecha', 'estacion_id']),
         ]
 
-
 class NivelAgua(models.Model):
     id = models.AutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
-    max_abs = models.DecimalField("Máximo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
-    min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
-    max_del_prom = models.DecimalField("Máximo del promedio", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
-    min_del_prom = models.DecimalField("Mínimo del promedio", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
+    valor = models.DecimalField("Valor", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    max_abs = models.DecimalField("Máximo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    max_del_prom = models.DecimalField("Máximo del promedio", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    min_del_prom = models.DecimalField("Mínimo del promedio", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
     completo_mediciones = models.DecimalField("Completo mediciones", max_digits=4, decimal_places=1)
     completo_umbral = models.DecimalField("Completo umbral %", max_digits=4, decimal_places=1)
     usado_para_mensual = models.BooleanField("Usado para mes", default=False)
@@ -226,4 +225,5 @@ class NivelAgua(models.Model):
             models.Index(fields=['usado_para_mensual', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
+
 

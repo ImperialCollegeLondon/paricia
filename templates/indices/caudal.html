@@ -48,16 +48,16 @@
 
 <div class="row">
     <div class="col-lg-10 col-sm-10">
-        <h3>Indices para precipitación</h3>
+        <h3>Indicadores para Caudales</h3>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
-        <p class="text-info"><strong>Información: </strong>Muestra los índices de precipitación para una estación selecionada</p>
+        <p class="text-info"><strong>Información: </strong>Muestra los indicadores de Caudales para una estación selecionada</p>
     </div>
 </div>
 
-<form id="IndPrecipForm" class="form" method="post" action="{% url 'indices:precipitacion' %}">
+<form id="IndCaudForm" class="form" method="post" action="{% url 'indices:caudal' %}">
     <div class="row">
         {% csrf_token %}
         {% for field in form%}
@@ -66,7 +66,7 @@
 
         <div class="col-lg-4 col-md-6">
             <label>&nbsp;</label><br>
-            <button id="btn_ind_pre" type="button" class="btn btn-primary">
+            <button id="btn_indi_cau" type="button" class="btn btn-primary">
                 Buscar
             </button>
             <!--a class="btn btn-light" href="{% url 'indices:doblemasa' %}">Limpiar</a-->
@@ -87,9 +87,12 @@
     <table id="tableacum" class="table table-bordered table-hover">
             <thead >
                 <tr>
-                    <th class="col-sm-4" >Indicador</th>
-                    <th class="col-sm-4" >Valor</th>
-                    <th class="col-sm-4" >Fecha</th>
+                    <th class="col-sm-4" colspan="3">RÉGIMEN DE CAUDAL</th>
+                </tr>
+                <tr>
+                    <th class="col-sm-4" >Caudales bajos</th>
+                    <th class="col-sm-4" >valor</th>
+                    <th class="col-sm-4" >fecha</th>
                 </tr>
             </thead>
 
@@ -97,7 +100,6 @@
 
             </tbody>
     </table>
-
     <div id="espacio">
 
     </div>

@@ -44,4 +44,7 @@ margin-bottom:0
 
 .div-hiden{
     display:none  !important;
- }
+}
+.div-show{
+    display:block !important;
+}

@@ -44,6 +44,20 @@
                 <th>Fichas</th>
                 <td><a target="_blank" href="{{ estacion.est_ficha.url }}">Descargar</a></td>
             </tr>
+            <tr>
+                <th>Custodio</th>
+                {% if estacion.est_externa %}
+                <td>Epmaps</td>
+                {% else %}
+                <td>Fonag</td>
+                {% endif %}
+                <th>Influencia</th>
+                {% if estacion.influencia_km != None %}
+                <td>{{estacion.influencia_km}}</td>
+                {% else %}
+                <td>0</td>
+                {% endif %}
+            </tr>
 
         </table>
     </div>

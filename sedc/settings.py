@@ -24,7 +24,7 @@ SECRET_KEY = 'a^gr0b4)=81coo9(&*qwllg3cijlx-$8xlyvddi)omrzt4&kc('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '157.100.182.61', 'sedc.fonag.org.ec', 'www.sedc.fonag.org.ec']
+ALLOWED_HOSTS = ['localhost', '157.100.182.61','157.100.182.60', 'sedc.fonag.org.ec', 'www.sedc.fonag.org.ec']
 
 # Application definition
 
