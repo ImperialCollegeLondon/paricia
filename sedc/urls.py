@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  re_path(r'^blog/', include('blog.urls'))
 """
 
-from django.urls import re_path, include
+from django.urls import re_path, include,path
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.conf import settings
@@ -43,6 +43,7 @@ urlpatterns = [
     re_path(r'^', include('cruce.urls', namespace='cruce')),
     re_path(r'^', include('registro.urls', namespace='registro')),
     re_path(r'^', include('indices.urls', namespace='indices')),
+    path('', include('mensual.urls',namespace='mensual')),
     re_path('^', include('django.contrib.auth.urls')),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})

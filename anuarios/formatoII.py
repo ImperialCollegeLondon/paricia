@@ -6,7 +6,7 @@ from home.functions import dictfetchall
 from math import isnan
 
 
-def matrizII(estacion, variable, periodo):
+def get_precipitacion(estacion, variable, periodo):
     #tabla = "pre.m" + periodo
     tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
@@ -17,7 +17,6 @@ def matrizII(estacion, variable, periodo):
     sql += "WHERE estacion=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
-    print(sql)
     cursor.execute(sql)
     med_mensual = dictfetchall(cursor)
     # datos diarios
@@ -29,6 +28,18 @@ def matrizII(estacion, variable, periodo):
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios = dictfetchall(cursor)
+    # Número de datos por mes
+    sql = "SELECT date_part('month',fecha) as mes, count(*) as valor  "
+    sql += "FROM " + tabla + " "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "GROUP BY mes ORDER BY mes"
+    cursor.execute(sql)
+    num_registros = dictfetchall(cursor)
+
+
+
+
     max24h, maxdia, totdias = maximospre(datos_diarios)
     for item in med_mensual:
         mes = int(item.get('mes'))
