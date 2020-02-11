@@ -4,7 +4,7 @@
 from anuarios import models
 
 from anuarios.formatoI import matrizI
-from anuarios.formatoII import matrizII
+from anuarios.formatoII import get_precipitacion
 from anuarios.formatoIII import matrizIII
 from anuarios.formatoIV import matrizIV
 from anuarios.formatoV import datos_viento, matrizV_mensual
@@ -34,7 +34,7 @@ def calcular(form):
     if variable.var_id in typeI:
         datos = matrizI(estacion, variable, periodo)
     elif variable.var_id in typeII:
-        datos = matrizII(estacion, variable, periodo)
+        datos = get_precipitacion(estacion, variable, periodo)
     elif variable.var_id in typeIII:
         datos = matrizIII(estacion, variable, periodo)
     elif variable.var_id in typeIV:

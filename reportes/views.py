@@ -23,6 +23,8 @@ from reportes.sistemacuenca import (
     export_excel
 )
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from datetime import date, datetime
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -205,7 +207,7 @@ class ConsultasUsuario(FormView):
 
 
 # Consultas Estacion Sistema Cuenca
-class ConsultasSistema(FormView):
+class ConsultasSistema(LoginRequiredMixin, FormView):
     template_name = 'reportes/consultas_sistema.html'
     form_class = ConsultasForm
     success_url = '/reportes/sistema'

@@ -10,8 +10,8 @@ $(document).ready(function() {
   $("#btn_procesar").click(function(){
     $(this).attr('disabled',true);
     $.ajax({
-      url: $("#form_validacion").attr('action'),
-      data: $("#form_validacion").serialize(),
+      url: $("#form_mensual").attr('action'),
+      data: $("#form_mensual").serialize(),
       type:'POST',
       beforeSend: function () {
         $("#div_informacion").hide();
@@ -60,12 +60,12 @@ $(document).ready(function() {
 
 
 <div class="card">
-    <div class="card-header">Procesar Variables del Anuario</div>
+    <div class="card-header">Revisar Frecuencias por Estación</div>
     <div class="card-body">
         <div id="div_mensaje" class="alert alert-info alert-dismissible" role="alert">
-            Si la información del anuario ya existe, al procesarlo nuevamente los datos se sobreescribiran
+            Aquí se muestran los porcentajes de registro mensuales por estación, variable y periodo
         </div>
-        <form id="form_validacion" class="form" method="post" action="{% url 'anuarios:anuarios_procesar' %}">
+        <form id="form_mensual" class="form" method="post" action="{% url 'mensual:frecuencia' %}">
             {% csrf_token %}
 
             <div class="row">

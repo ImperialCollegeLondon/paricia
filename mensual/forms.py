@@ -3,10 +3,9 @@
 from django import forms
 from estacion.models import Estacion
 from variable.models import Variable
-from cruce.models import Cruce
 
 
-class AnuarioForm(forms.Form):
+class FrecuenciaMensualForm(forms.Form):
     YEAR = (
         ('2007', '2007'),
         ('2008', '2008'),
