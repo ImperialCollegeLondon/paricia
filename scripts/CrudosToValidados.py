@@ -44,9 +44,9 @@ def iniciar_lectura():
     # Presión Atmosférica
     #filtro_estaciones = [1, 5, 6, 7]
     # Temperatura del Agua, Caudal, Nivel del Agua
+    filtro_estaciones = [17]
 
-
-    filtro_estaciones = [1, 5, 6, 7]
+    #filtro_estaciones = [1, 5, 6, 7]
 
 
     #estaciones = Estacion.objects.filter(est_externa=False).exclude(est_id__in=filtro_estaciones)
@@ -54,7 +54,7 @@ def iniciar_lectura():
     #estaciones = Estacion.objects.filter(est_externa=False).all()
 
 
-    periodos = [2007]
+    periodos = [2013]
 
     # periodos = [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
 
@@ -69,7 +69,7 @@ def iniciar_lectura():
             modelo_medicion = get_modelo(fila_cru.var_id.var_id)
 
 
-            filtro = [2, 3, 4, 5, 8]
+            filtro = [9,10,11]
 
             if fila_cru.var_id.var_id in filtro:
 

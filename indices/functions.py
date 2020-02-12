@@ -207,7 +207,7 @@ def getCaudalFrec(estacion_id,inicio, fin,frecuencia):
     print("influencia ",inf, "fecha ini :",inicio," fecha fin: ",fin)
     #Qesp = Q / inf
     if frecuencia == 1:  # 'Horario':
-        print("entra en horario frecuencia ",frecuencia)
+        print("entra en horario frecuencia ",frecuencia, estacion_id, inicio,fin)
         const = 1
         caudal = hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
                                                  fecha__lte=fin).values( "valor")
