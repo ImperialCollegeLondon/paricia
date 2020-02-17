@@ -284,6 +284,9 @@ def construir_matriz(archivo_src, formato, estacion):
         if var.var_id_id == 7:
             datos.loc[datos['valor'] > 1400, 'valor'] = 1400
 
+        if var.var_id_id == 6:
+            datos.loc[datos['valor'] < 1, 'valor'] = datos['valor'] * 100
+
         if var.acumular:
             # Se asume que si es incremental solo trabaja con VALOR (Se excluye MAXIMO y MINIMO)
             if var.incremental:
