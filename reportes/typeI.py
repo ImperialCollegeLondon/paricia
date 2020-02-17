@@ -9,6 +9,7 @@ import plotly.graph_objs as go
 from reportes.titulos import Titulos
 import calendar
 
+
 # clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
 class TypeI(Titulos):
     def consulta(self, estacion, variable, periodo):

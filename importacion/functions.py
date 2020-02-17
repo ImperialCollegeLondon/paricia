@@ -200,7 +200,6 @@ def guardar_datos__temp_a_final(imp_id, form):
     ruta = str(BASE_DIR) + '/media/' + str(importaciontemp.imp_archivo)
     datos = construir_matriz(ruta, formato, estacion)
     observacion = form.cleaned_data['imp_observacion']
-    print (datos)
     for var_id, tabla in datos.items():
 
         varmodel = get_modelo(var_id)
@@ -336,8 +335,14 @@ def eliminar_datos(modelo, importacion, estacion):
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
     datos = modelo.objects.filter(fecha__gte=fecha_ini).filter(fecha__lte=fecha_fin).filter(estacion=estacion)
+
     if datos:
         datos.delete()
+
+    if modelo.var_id == 11:
+        datos = Caudal.objects.filter(fecha__gte=fecha_ini).filter(fecha__lte=fecha_fin).filter(estacion=estacion)
+        if datos:
+            datos.delete()
 
 
 # validar si son datalogger VAISALA para restar 5 horas

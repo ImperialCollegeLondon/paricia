@@ -16,6 +16,7 @@ from reportes.consultas.functions import (
 )
 from reportes.functions import (filtrar, comparar, comparar_variables, procesar_json_inamhi,
                                 consultar_datos_usuario)
+from reportes.excel import reporte_excel_anuario
 
 from reportes.sistemacuenca import (
     get_datos_graficar,
@@ -48,11 +49,13 @@ class ReportesAnuario(FormView):
         form = AnuarioForm(self.request.POST or None)
         if form.is_valid():
             context = super(ReportesAnuario, self).get_context_data(**kwargs)
-            self.lista = filtrar(form)
-            print(len(self.lista))
-            context.update(self.lista)
-            context['base_template'] = get_vista_usuario(self.request)
-            return render(request, 'reportes/anuario_normal.html', context)
+            if request.POST.get('grafico') == 'grafico':
+                self.lista = filtrar(form)
+                context.update(self.lista)
+                context['base_template'] = get_vista_usuario(self.request)
+                return render(request, 'reportes/anuario_normal.html', context)
+            else:
+                return reporte_excel_anuario(form)
 
         return render(request, 'home/form_error.html', {'form': form})
 

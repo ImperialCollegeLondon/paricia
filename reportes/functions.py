@@ -256,6 +256,16 @@ def filtrar(form):
     return context
 
 
+
+
+
+
+
+
+
+
+
+
 # comparar tres estaciones en la misma vaiable
 def comparar(form):
     estacion01 = form.cleaned_data['estacion01']
