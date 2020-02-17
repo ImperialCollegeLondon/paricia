@@ -188,7 +188,7 @@ def preformato_matriz(archivo_src, formato):
         archivo['fecha'] = archivo['fecha'] - intervalo
     archivo = archivo.sort_values('fecha')
     archivo = archivo.reset_index(drop=True)
-    print(archivo)
+
     return archivo
 
 
@@ -207,6 +207,9 @@ def guardar_datos__temp_a_final(imp_id, form):
         if verificar_vacios(importaciontemp.imp_fecha_ini, fecha_datos):
             guardar_vacios(var_id, fecha_datos, estacion, observacion, importaciontemp.imp_fecha_ini)
         eliminar_datos(varmodel, importaciontemp, estacion.est_id)
+        if var_id == 11:
+            eliminar_datos(Caudal, importaciontemp, estacion.est_id)
+
         varmodel.objects.bulk_create(
             varmodel(**row) for row in tabla.to_dict('records')
         )
@@ -338,11 +341,6 @@ def eliminar_datos(modelo, importacion, estacion):
 
     if datos:
         datos.delete()
-
-    if modelo.var_id == 11:
-        datos = Caudal.objects.filter(fecha__gte=fecha_ini).filter(fecha__lte=fecha_fin).filter(estacion=estacion)
-        if datos:
-            datos.delete()
 
 
 # validar si son datalogger VAISALA para restar 5 horas
