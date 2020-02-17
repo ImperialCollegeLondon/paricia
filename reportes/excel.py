@@ -69,6 +69,7 @@ def reporte_excel_anuario(form):
 
             obj_typeii.set_encabezado_excel(ws_pre, estacion, periodo)
             obj_typeii.tabla_excel(ws_pre, estacion, periodo)
+            obj_typeii.grafico_excel(ws_pre, estacion, periodo)
 
     # Establecemos el nombre del archivo
     nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(periodo) + str('.xlsx"')

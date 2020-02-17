@@ -24,27 +24,7 @@ from rest_framework import generics
 import re
 import calendar
 
-"""class ValidacionCreate(LoginRequiredMixin, CreateView):
-    model = Validacion
-    fields = ['est_id', 'var_id', 'val_fecha', 'val_num_dat', 'val_fre_reg', 'val_porcentaje']
 
-    def get_context_data(self, **kwargs):
-        context = super(ValidacionCreate, self).get_context_data(**kwargs)
-        context['title'] = "Crear"
-        return context
-
-
-class ValidacionList(LoginRequiredMixin, ListView):
-    model = Validacion
-    paginate_by = 10
-
-    def get_context_data(self, **kwargs):
-        context = super(ValidacionList, self).get_context_data(**kwargs)
-        lista = Validacion.objects.all()
-        page = self.request.GET.get('page')
-        context.update(pagination(self.object_list, page, 10))
-        return context
-"""
 class ValidacionList(LoginRequiredMixin, ListView, FormView):
     model = Validacion
     paginate_by = 12

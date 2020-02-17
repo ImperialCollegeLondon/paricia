@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from medicion.models import Medicion
+
 
 from anuarios.models import HumedadAire
 from django.db import connection

@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import time
 from threading import Thread
 import json
-from medicion.models import Medicion, CurvaDescarga
+from medicion.models import CurvaDescarga
 from formato.models import Clasificacion
 from importacion.models import Importacion
 from variable.models import Variable
@@ -22,22 +22,6 @@ from validacion.models import Validacion
 from medicion.forms import *
 from medicion.functions import *
 from home.functions import pagination
-
-# Medicion views
-class MedicionCreate(LoginRequiredMixin, CreateView):
-    model = Medicion
-    fields = ['var_id', 'est_id', 'med_fecha', 'med_valor', 'med_maximo',
-              'med_minimo']
-
-    def form_valid(self, form):
-        return super(MedicionCreate, self).form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(MedicionCreate, self).get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context['title'] = "Crear"
-        return context
 
 
 # filtro para la validación de Datos Crudos
@@ -84,7 +68,7 @@ def lista_datos_validacion(request):
     inicio = datetime.datetime.strptime(inicio, '%d/%m/%Y')
     fin = datetime.datetime.strptime(fin, '%d/%m/%Y')
     lista = reporte_validacion(estacion, variable, inicio, fin)
-    print (len(lista))
+
     # lista = []
     # print("Fin datos validacion: ", datetime.datetime.now())
     return render(request, 'medicion/medicion_list.html',
@@ -94,157 +78,6 @@ def lista_datos_validacion(request):
                    'inicio': inicio,
                    'fin': fin
                    })
-
-
-# Lista de datos crudos
-class MedicionList(LoginRequiredMixin, FormView):
-    template_name = 'medicion/medicion_list1.html'
-    form_class = MedicionSearchForm
-    success_url = '/medicion/'
-    lista = []
-    variable = ""
-
-    def post(self, request, *args, **kwargs):
-        form = MedicionSearchForm(self.request.POST or None)
-        if form.is_valid():
-            self.lista = filtrar(form)
-            self.variable = form.cleaned_data['variable']
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(MedicionList, self).get_context_data(**kwargs)
-        context['lista'] = self.lista
-        context['variable'] = self.variable
-        return context
-
-
-# Clase para filtrar datos para la vista delete
-class ListDelete(LoginRequiredMixin, FormView, ListView):
-    template_name = 'medicion/list_delete.html'
-    form_class = FilterDeleteForm
-    success_url = '/medicion/listdelete/'
-    model = Medicion
-    variable = ""
-
-    def post(self, request, *args, **kwargs):
-        form = FilterDeleteForm(self.request.POST or None)
-        if form.is_valid():
-            self.lista = filtrar(form)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(ListDelete, self).get_context_data(**kwargs)
-        context['lista'] = self.lista
-        return context
-
-
-# filtro para eliminar los datos
-class FilterDelete(LoginRequiredMixin, FormView):
-    template_name = 'medicion/filter_delete.html'
-    form_class = FilterDeleteForm
-    success_url = '/medicion/filterdelete/'
-    # mensaje de confirmación
-    mensaje = ""
-
-    def post(self, request, *args, **kwargs):
-        form = FilterDeleteForm(self.request.POST or None)
-        if form.is_valid():
-            eliminar(form)
-            self.mensaje = "Datos Eliminados"
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(FilterDelete, self).get_context_data(**kwargs)
-        context['mensaje'] = self.mensaje
-        return context
-
-
-class MedicionUpdate(LoginRequiredMixin, UpdateView):
-    model = Medicion
-    fields = ['med_valor', 'med_maximo', 'med_minimo']
-    url = ""
-
-    def get(self, request, *args, **kwargs):
-        med_id = kwargs.get('pk')
-        med_fecha = kwargs.get('fecha')
-        var_id = kwargs.get('var_id')
-        self.object = consultar_objeto(kwargs)
-        self.url = "/medicion/" + med_id + "/" + med_fecha + "/" + var_id + "/"
-        return self.render_to_response(self.get_context_data(**kwargs))
-
-    def post(self, request, *args, **kwargs):
-        modificar_medicion(kwargs, request.POST)
-        self.object = consultar_objeto(kwargs)
-        guardar_log(accion="Modificar", medicion=self.object, user=request.user)
-        return self.render_to_response(self.get_context_data(**kwargs))
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(MedicionUpdate, self).get_context_data(**kwargs)
-        context['url'] = self.url
-        return context
-
-
-class MedicionDelete(LoginRequiredMixin, UpdateView):
-    model = Medicion
-    fields = ['est_id', 'var_id', 'med_fecha', 'med_valor', 'med_valor', 'med_maximo', 'med_minimo']
-    url = ""
-    template_name = 'medicion/medicion_delete.html'
-
-    def get(self, request, *args, **kwargs):
-        med_id = kwargs.get('pk')
-        med_fecha = kwargs.get('fecha')
-        var_id = kwargs.get('var_id')
-        self.object = consultar_objeto(kwargs)
-        self.url = "/medicion/delete/" + med_id + "/" + med_fecha + "/" + var_id + "/"
-        return self.render_to_response(self.get_context_data(**kwargs))
-
-    def post(self, request, *args, **kwargs):
-        eliminar_medicion(kwargs, request.POST)
-        self.object = consultar_objeto(kwargs)
-        guardar_log(accion="Eliminar", medicion=self.object, user=request.user)
-        return self.render_to_response(self.get_context_data(**kwargs))
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(MedicionDelete, self).get_context_data(**kwargs)
-        context['url'] = self.url
-        return context
-
-
-'''class MedicionImportacion(LoginRequiredMixin, FormView):
-    model = Medicion
-    template_name = 'medicion/medicion_importacion.html'
-    form_class = MedicionSearchForm
-
-    def get(self, request, *args, **kwargs):
-        imp_id = kwargs.get('imp_id')
-        importacion = Importacion.objects.get(imp_id=imp_id)
-        clasificacion = Clasificacion.objects.filter(for_id=importacion.for_id)
-        context = []
-        for fila in clasificacion:
-            data = {
-                'estacion': importacion.est_id.est_id,
-                'variable': fila.var_id.var_id,
-                'inicio': importacion.imp_fecha_ini.strftime('%d/%m/%Y'),
-                'fin': importacion.imp_fecha_fin.strftime('%d/%m/%Y')
-            }
-            form = MedicionSearchForm(data)
-            if form.is_valid():
-                # context[str(fila.var_id.var_codigo)]=consultar(form)
-                consulta = consultar(form)
-                obj_informacion = Informacion()
-                obj_informacion.nombre = fila.var_id.var_nombre
-                obj_informacion.lista = consulta
-                obj_informacion.grafico = grafico(consulta, fila.var_id, importacion.est_id)
-                context.append(obj_informacion)
-            else:
-                context = []
-        return self.render_to_response(self.get_context_data(informacion=context, form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(MedicionImportacion, self).get_context_data(**kwargs)
-        return context'''
 
 
 class MedicionConsulta(LoginRequiredMixin,FormView):
@@ -358,8 +191,6 @@ def generar_reportes_1variable(variable_id):
     del threads[variable_id]
 
 
-
-
 ###### usado para generar los datos diarios horarios y mensuales a partir de las validaciones
 def stack_reportes(variable_id):
     while variable_id in threads:
@@ -433,6 +264,7 @@ def validacion_enviar(request):
         lista = {'resultado': resultado}
         return JsonResponse(lista)
     return None
+
 
 class MedicionBorrar(LoginRequiredMixin, FormView):
     ### IMPORTANTE: SE BORRAN CRUDOS Y VALIDADOS

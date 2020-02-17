@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from medicion.models import Medicion
+
 from estacion.models import Estacion
 from anuarios.models import RadiacionSolar, RadiacionMaxima, RadiacionMinima
 from django.db.models.functions import TruncMonth

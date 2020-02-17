@@ -204,11 +204,8 @@ class TypeII(Titulos):
                            border='border_thin')
             fila += 1
 
-
-
-
-
-    def grafico_excel(self, ws, estacion, periodo):
+    @staticmethod
+    def grafico_excel(ws, estacion, periodo):
         chart1 = BarChart()
         chart1.type = "col"
         chart1.style = 10
@@ -216,12 +213,12 @@ class TypeII(Titulos):
         chart1.y_axis.title = 'Precipitación (mm)'
         chart1.x_axis.title = 'Meses'
 
-        data = Reference(ws, min_col=2, min_row=9, max_row=20, max_col=8)
+        data = Reference(ws, min_col=2, min_row=7, max_row=20, max_col=3)
         cats = Reference(ws, min_col=1, min_row=9, max_row=20)
         chart1.add_data(data, titles_from_data=True)
         chart1.set_categories(cats)
         chart1.shape = 4
-        ws.add_chart(chart1, "A10")
+        ws.add_chart(chart1, "I6")
 
 
 
