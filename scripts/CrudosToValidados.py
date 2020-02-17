@@ -29,7 +29,7 @@ from validacion.models import NivelAgua as NAG
 
 def registrar_log(mensaje):
 
-    registro = open('/home/developer/datoscrudos2014.txt', 'a')
+    registro = open('/home/developer/log_sedc/datoscrudos2008.txt', 'a')
     registro.write(time.ctime() + ': ' + mensaje + '\n')
 
     registro.close()
@@ -54,7 +54,7 @@ def iniciar_lectura():
     #estaciones = Estacion.objects.filter(est_externa=False).all()
 
 
-    periodos = [2007]
+    periodos = [2008]
 
     # periodos = [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
 
