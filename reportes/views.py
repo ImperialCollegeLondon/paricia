@@ -49,7 +49,8 @@ class ReportesAnuario(FormView):
         form = AnuarioForm(self.request.POST or None)
         if form.is_valid():
             context = super(ReportesAnuario, self).get_context_data(**kwargs)
-            if request.POST.get('grafico') == 'grafico':
+            print(request.POST)
+            if request.POST.get('grafico') == '':
                 self.lista = filtrar(form)
                 context.update(self.lista)
                 context['base_template'] = get_vista_usuario(self.request)
