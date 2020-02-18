@@ -10,8 +10,10 @@ from reportes.titulos import Titulos
 import calendar
 
 from openpyxl.chart import (
+    ScatterChart,
     LineChart,
     Reference,
+    Series,
 )
 from openpyxl.chart.axis import DateAxis
 
@@ -177,13 +179,13 @@ class TypeI(Titulos):
 
     @staticmethod
     def grafico_excel(ws, variable):
-        c1 = LineChart()
+        c1 = ScatterChart()
         c1.title = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
         c1.style = 13
         c1.y_axis.title = str(variable.uni_id.uni_sigla)
         c1.x_axis.title = 'Meses'
 
-        data = Reference(ws, min_col=2, min_row=7, max_col=4, max_row=19)
+        '''data = Reference(ws, min_col=2, min_row=7, max_col=4, max_row=19)
         cats = Reference(ws, min_col=1, min_row=8, max_row=19)
 
         c1.add_data(data, titles_from_data=True)
@@ -200,7 +202,25 @@ class TypeI(Titulos):
         s2.graphicalProperties.line.width = 100050  # width in EMUs
 
         c1.set_categories(cats)
-        c1.grouping = "stacked"
+        c1.grouping = "stacked"'''
+
+        xvalues = Reference(ws, min_col=1, min_row=8, max_row=19)
+        for i in range(2, 5):
+            values = Reference(ws, min_col=i, min_row=7, max_row=19)
+            series = Series(values, xvalues, title_from_data=True)
+            c1.series.append(series)
+
+        serie_max = c1.series[0]
+        serie_max.marker.symbol = "diamond"
+        serie_max.graphicalProperties.line.solidFill = "1660a7"
+
+        serie_min = c1.series[1]
+        serie_min.marker.symbol = "triangle"
+        serie_min.graphicalProperties.line.solidFill = "cd0c18"
+
+        serie_pro = c1.series[2]
+        serie_pro.marker.symbol = "square"
+        serie_pro.graphicalProperties.line.solidFill = "32cd32"
 
         ws.add_chart(c1, "E6")
 
