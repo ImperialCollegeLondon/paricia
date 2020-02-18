@@ -535,7 +535,7 @@ def consulta_mensual(estacion_id, variable, inicio, fin, profundidad):
         SELECT * FROM variable_variable vv WHERE vv.var_id = %%var_id%%
     ),
     consulta AS (
-        select * from mensual_%%var_modelo%%mensual c 
+        select * from mensual_%%var_modelo%% c 
         WHERE c.estacion_id = %%est_id%% 
         %%filtro%%
         AND c.completo_umbral >= (SELECT vv.umbral_completo FROM variable vv)
