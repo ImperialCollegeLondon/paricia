@@ -9,10 +9,17 @@ import plotly.graph_objs as go
 from reportes.titulos import Titulos
 import calendar
 
+from openpyxl.chart import (
+    LineChart,
+    Reference,
+)
+from openpyxl.chart.axis import DateAxis
 
 # clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
 class TypeI(Titulos):
-    def consulta(self, estacion, variable, periodo):
+
+    @staticmethod
+    def consulta(estacion, variable, periodo):
         if variable == 6:
             informacion = list(HumedadSuelo.objects.filter(est_id=estacion).filter(hsu_periodo=periodo))
         elif variable == 8:
@@ -94,3 +101,181 @@ class TypeI(Titulos):
             div = opy.plot(figure, auto_open=False, output_type='div')
             return div
         return False
+
+    def tabla_excel(self, ws, estacion, variable, periodo):
+        fila = 5
+        col_fin = 11
+        col = 1
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col_fin)
+        subtitle = ws.cell(row=fila, column=col)
+        subtitle.value = self.get_titulo(variable.var_id)
+        self.set_style(cell=subtitle, font='font_bold_10', alignment='center',
+                       border='border_thin', fill='light_salmon')
+
+        fila += 1
+        col = 1
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "MES"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+        col += 1
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col+2)
+        cell = ws.cell(row=fila, column=col)
+        cell.value = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+        fila += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Máximo"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Mínimo"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Media"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        matriz = self.matriz(estacion, variable.var_id, periodo)
+        fila += 1
+        col = 1
+
+        for item in matriz:
+            cell = ws.cell(row=fila, column=col)
+            cell.value = self.get_mes_anio(self.get_item_mes(variable.var_id,item))
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+            cell = ws.cell(row=fila, column=col+1)
+            cell.value = self.get_item_maximo(variable.var_id,item)
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col+2)
+            cell.value = self.get_item_minimo(variable.var_id,item)
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col+3)
+            cell.value = self.get_item_promedio(variable.var_id,item)
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            fila += 1
+
+    @staticmethod
+    def grafico_excel(ws, variable):
+        c1 = LineChart()
+        c1.title = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
+        c1.style = 13
+        c1.y_axis.title = str(variable.uni_id.uni_sigla)
+        c1.x_axis.title = 'Meses'
+
+        data = Reference(ws, min_col=2, min_row=7, max_col=4, max_row=19)
+        cats = Reference(ws, min_col=1, min_row=8, max_row=19)
+
+        c1.add_data(data, titles_from_data=True)
+
+        s1 = c1.series[0]
+        s1.marker.symbol = "triangle"
+        s1.marker.graphicalProperties.solidFill = "FF0000"  # Marker filling
+        s1.marker.graphicalProperties.line.solidFill = "FF0000"  # Marker outlin
+        s1.graphicalProperties.line.noFill = True
+
+        s2 = c1.series[1]
+        s2.graphicalProperties.line.solidFill = "00AAAA"
+        s2.graphicalProperties.line.dashStyle = "sysDot"
+        s2.graphicalProperties.line.width = 100050  # width in EMUs
+
+        c1.set_categories(cats)
+        c1.grouping = "stacked"
+
+        ws.add_chart(c1, "E6")
+
+
+    @staticmethod
+    def get_titulo(variable):
+        if variable == 6:
+            titulo = 'Humedad del Suelo - Valores medios diarios, absolutos maximos y mimimos'
+        elif variable == 8:
+            titulo = 'Presion Atomsferica - Valores medios diarios, absolutos maximos y mimimos'
+        elif variable == 9:
+            titulo = 'Temperatura de Agua - Valores medios diarios, medios maximos y mimimos'
+        elif variable == 10:
+            titulo = 'Caudal - Valores medios diarios, medios maximos y mimimos'
+        elif variable == 11:
+            titulo = 'Nivel del agua - Valores medios diarios, medios maximos y mimimos'
+        return titulo
+    
+    @staticmethod
+    def get_item_promedio(variable, item):
+        if variable == 6:
+            promedio = item.hsu_promedio
+        elif variable == 8:
+            promedio = item.pat_promedio
+        elif variable == 9:
+            promedio = item.tag_promedio
+        elif variable == 10:
+            promedio = item.cau_promedio
+        elif variable == 11:
+            promedio = item.nag_promedio
+        return promedio
+
+    @staticmethod
+    def get_item_maximo(variable, item):
+        if variable == 6:
+            maximo = item.hsu_maximo
+        elif variable == 8:
+            maximo = item.pat_maximo
+        elif variable == 9:
+            maximo = item.tag_maximo
+        elif variable == 10:
+            maximo = item.cau_maximo
+        elif variable == 11:
+            maximo = item.nag_maximo
+        return maximo
+
+    @staticmethod
+    def get_item_minimo(variable, item):
+        if variable == 6:
+            minimo = item.hsu_minimo
+        elif variable == 8:
+            minimo = item.pat_minimo
+        elif variable == 9:
+            minimo = item.tag_minimo
+        elif variable == 10:
+            minimo = item.cau_minimo
+        elif variable == 11:
+            minimo = item.nag_minimo
+        return minimo
+
+    @staticmethod
+    def get_item_mes(variable, item):
+        if variable == 6:
+            mes = item.hsu_mes
+        elif variable == 8:
+            mes = item.pat_mes
+        elif variable == 9:
+            mes = item.tag_mes
+        elif variable == 10:
+            mes = item.cau_mes
+        elif variable == 11:
+            mes = item.nag_mes
+        return mes
+
+
+
+
+

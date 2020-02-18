@@ -29,7 +29,7 @@ from validacion.models import NivelAgua as NAG
 
 def registrar_log(mensaje):
 
-    registro = open('/home/developer/log_sedc/datoscrudos2008.txt', 'a')
+    registro = open('/home/developer/log_sedc/datoscrudos2010.txt', 'a')
     registro.write(time.ctime() + ': ' + mensaje + '\n')
 
     registro.close()
@@ -44,21 +44,14 @@ def iniciar_lectura():
     # Presión Atmosférica
     #filtro_estaciones = [1, 5, 6, 7]
     # Temperatura del Agua, Caudal, Nivel del Agua
-    filtro_estaciones = [17]
+    #filtro_estaciones = [17]
 
-    #filtro_estaciones = [1, 5, 6, 7]
-
-
+    filtro_estaciones = [5]
     #estaciones = Estacion.objects.filter(est_externa=False).exclude(est_id__in=filtro_estaciones)
     estaciones = Estacion.objects.filter(est_id__in=filtro_estaciones)
     #estaciones = Estacion.objects.filter(est_externa=False).all()
 
-
-
-    periodos = [2008]
-
-
-    # periodos = [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
+    periodos = [2010]
 
     for fila_est in estaciones:
 
@@ -70,14 +63,13 @@ def iniciar_lectura():
 
             modelo_medicion = get_modelo(fila_cru.var_id.var_id)
 
+            filtro = [1, 2, 3, 4, 5, 8]
 
-            filtro = [9,10,11]
 
             if fila_cru.var_id.var_id in filtro:
 
                 for periodo in periodos:
                     datos_crudos = modelo_medicion.objects.filter(estacion=fila_est.est_id).filter(fecha__year=periodo)
-
 
                     if len(datos_crudos) > 0:
 

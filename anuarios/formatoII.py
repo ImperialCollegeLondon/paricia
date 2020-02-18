@@ -7,7 +7,7 @@ from math import isnan
 
 
 def get_precipitacion(estacion, variable, periodo):
-    #tabla = "pre.m" + periodo
+
     tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     datos = []
@@ -36,9 +36,6 @@ def get_precipitacion(estacion, variable, periodo):
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     num_registros = dictfetchall(cursor)
-
-
-
 
     max24h, maxdia, totdias = maximospre(datos_diarios)
     for item in med_mensual:

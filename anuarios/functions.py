@@ -69,33 +69,33 @@ def borrar_datos(estacion, variable, periodo):
         models.Precipitacion.objects.filter(est_id=estacion.est_id) \
             .filter(pre_periodo=periodo).delete()
     elif variable.var_id == 2:
-        result = models.TemperaturaAire.objects.filter(est_id=estacion.est_id) \
+        models.TemperaturaAire.objects.filter(est_id=estacion.est_id) \
             .filter(tai_periodo=periodo).delete()
     elif variable.var_id == 3:
-        result = models.HumedadAire.objects.filter(est_id=estacion.est_id) \
+        models.HumedadAire.objects.filter(est_id=estacion.est_id) \
             .filter(hai_periodo=periodo).delete()
     elif variable.var_id == 4 or variable.var_id == 5:
-        result = models.Viento.objects.filter(est_id=estacion.est_id) \
+        models.Viento.objects.filter(est_id=estacion.est_id) \
             .filter(vie_periodo=periodo).delete()
     elif variable.var_id == 6:
-        result = models.HumedadSuelo.objects.filter(est_id=estacion.est_id) \
+        models.HumedadSuelo.objects.filter(est_id=estacion.est_id) \
             .filter(hsu_periodo=periodo).delete()
     elif variable.var_id == 7:
-        result = models.RadiacionMaxima.objects.filter(est_id=estacion.est_id) \
+        models.RadiacionMaxima.objects.filter(est_id=estacion.est_id) \
             .filter(rad_periodo=periodo).delete()
-        result = models.RadiacionMinima.objects.filter(est_id=estacion.est_id) \
+        models.RadiacionMinima.objects.filter(est_id=estacion.est_id) \
             .filter(rad_periodo=periodo).delete()
     elif variable.var_id == 8:
-        result = models.PresionAtmosferica.objects.filter(est_id=estacion.est_id) \
+        models.PresionAtmosferica.objects.filter(est_id=estacion.est_id) \
             .filter(pat_periodo=periodo).delete()
     elif variable.var_id == 9:
-        result = models.TemperaturaAgua.objects.filter(est_id=estacion.est_id) \
+        models.TemperaturaAgua.objects.filter(est_id=estacion.est_id) \
             .filter(tag_periodo=periodo).delete()
     elif variable.var_id == 10:
-        result = models.Caudal.objects.filter(est_id=estacion.est_id) \
+        models.Caudal.objects.filter(est_id=estacion.est_id) \
             .filter(cau_periodo=periodo).delete()
     elif variable.var_id == 11:
-        result = models.NivelAgua.objects.filter(est_id=estacion.est_id) \
+        models.NivelAgua.objects.filter(est_id=estacion.est_id) \
             .filter(nag_periodo=periodo).delete()
 
 
@@ -137,7 +137,7 @@ def verficar_anuario(estacion, variable, periodo):
 
 
 def template(variable):
-    template = 'anuarios/tai.html'
+    template = ''
     if variable.var_id == 1:
         template = 'anuarios/pre.html'
     elif variable.var_id == 2:

@@ -9,7 +9,8 @@ import calendar
 # clase para anuario de la variable TAI
 class TypeIII(Titulos):
 
-    def consulta(self, estacion, periodo):
+    @staticmethod
+    def consulta(estacion, periodo):
         # annotate agrupa los valores en base a un campo y a una operacion
         informacion = list(TemperaturaAire.objects.filter(est_id=estacion).filter(tai_periodo=periodo))
         return informacion
@@ -62,3 +63,5 @@ class TypeIII(Titulos):
             div = opy.plot(figure, auto_open=False, output_type='div')
             return div
         return False
+
+

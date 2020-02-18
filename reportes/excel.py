@@ -61,15 +61,20 @@ def reporte_excel_anuario(form):
         print(item.var_id.var_nombre)
         variable = item.var_id
         if variable.var_id == 1:
-            if len(wb.sheetnames) > 1:
-                ws_pre = wb.create_sheet(str(variable.var_nombre))
-            else:
+            if len(wb.sheetnames) == 1:
                 ws_pre = wb.active
                 ws_pre.title = variable.var_nombre
+            else:
+                ws_pre = wb.create_sheet(str(variable.var_nombre))
 
             obj_typeii.set_encabezado_excel(ws_pre, estacion, periodo)
             obj_typeii.tabla_excel(ws_pre, estacion, periodo)
             obj_typeii.grafico_excel(ws_pre, estacion, periodo)
+        elif variable.var_id == 8:
+            ws_pat = wb.create_sheet(str(variable.var_nombre))
+            obj_typei.set_encabezado_excel(ws_pat, estacion, periodo)
+            obj_typei.tabla_excel(ws_pat, estacion, variable, periodo)
+            obj_typei.grafico_excel(ws_pat, variable)
 
     # Establecemos el nombre del archivo
     nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(periodo) + str('.xlsx"')
