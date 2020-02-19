@@ -157,32 +157,32 @@ class TypeIV(Titulos):
                            border='border_thin')
             cell = ws.cell(row=fila, column=col+1)
             cell.value = item.hai_maximo
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+2)
             cell.value = item.hai_maximo_dia
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+3)
             cell.value = item.hai_minimo
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+4)
             cell.value = item.hai_minimo_dia
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col + 5)
             cell.value = item.hai_promedio
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col + 6)
             cell.value = round(media_historica[item.hai_mes-1], 2)
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             fila += 1

@@ -194,42 +194,42 @@ class TypeIII(Titulos):
                            border='border_thin')
             cell = ws.cell(row=fila, column=col+1)
             cell.value = item.tai_maximo_abs
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+2)
             cell.value = item.tai_maximo_dia
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+3)
             cell.value = item.tai_minimo_abs
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+4)
             cell.value = item.tai_minimo_dia
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col + 5)
             cell.value = item.tai_maximo
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col + 6)
             cell.value = item.tai_minimo
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col + 7)
             cell.value = item.tai_promedio
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col + 8)
             cell.value = round(media_historica[item.tai_mes-1], 2)
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             fila += 1

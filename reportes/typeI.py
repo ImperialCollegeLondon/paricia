@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from anuarios.models import HumedadSuelo
+'''from anuarios.models import HumedadSuelo
 from anuarios.models import PresionAtmosferica
 from anuarios.models import TemperaturaAgua
 from anuarios.models import Caudal
 from anuarios.models import NivelAgua
-from django.db.models import Avg
+from django.db.models import Avg'''
 import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
@@ -16,25 +16,10 @@ from openpyxl.chart import (
     Reference,
     Series,
 )
-from openpyxl.chart.axis import DateAxis
+
 
 # clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
-
 class TypeI(Titulos):
-
-    '''@staticmethod
-    def consulta(estacion, variable, periodo):
-        if variable == 6:
-            informacion = list(HumedadSuelo.objects.filter(est_id=estacion).filter(hsu_periodo=periodo))
-        elif variable == 8:
-            informacion = list(PresionAtmosferica.objects.filter(est_id=estacion).filter(pat_periodo=periodo))
-        elif variable == 9:
-            informacion = list(TemperaturaAgua.objects.filter(est_id=estacion).filter(tag_periodo=periodo))
-        elif variable == 10:
-            informacion = list(Caudal.objects.filter(est_id=estacion).filter(cau_periodo=periodo))
-        elif variable == 11:
-            informacion = list(NivelAgua.objects.filter(est_id=estacion).filter(nag_periodo=periodo))
-        return informacion'''
 
     def matriz(self, estacion, variable, periodo):
         datos = self.consulta(estacion, variable, periodo)
@@ -79,7 +64,7 @@ class TypeI(Titulos):
                 y=max_simple,
                 name='Max',
                 line=dict(
-                    color=('rgb(22, 96, 167)'),
+                    color='rgb(22, 96, 167)',
                     width=4)
             )
             trace1 = go.Scatter(
@@ -87,7 +72,7 @@ class TypeI(Titulos):
                 y=min_simple,
                 name='Min',
                 line=dict(
-                    color=('rgb(205, 12, 24)'),
+                    color='rgb(205, 12, 24)',
                     width=4, )
             )
             trace2 = go.Scatter(
@@ -95,7 +80,7 @@ class TypeI(Titulos):
                 y=avg_simple,
                 name='Media',
                 line=dict(
-                    color=('rgb(50, 205, 50)'),
+                    color='rgb(50, 205, 50)',
                     width=4, )
             )
             data = [trace0, trace1, trace2]
@@ -180,23 +165,23 @@ class TypeI(Titulos):
             self.set_style(cell=cell, font='font_10', alignment='left',
                            border='border_thin')
             cell = ws.cell(row=fila, column=col+1)
-            cell.value = self.get_item_maximo(variable.var_id,item)
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            cell.value = self.get_item_maximo(variable.var_id, item)
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+2)
-            cell.value = self.get_item_minimo(variable.var_id,item)
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            cell.value = self.get_item_minimo(variable.var_id, item)
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+3)
-            cell.value = self.get_item_promedio(variable.var_id,item)
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            cell.value = self.get_item_promedio(variable.var_id, item)
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+4)
             cell.value = round(media_historica[mes-1], 1)
-            self.set_style(cell=cell, font='font_10', alignment='wrap',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             fila += 1
@@ -205,7 +190,7 @@ class TypeI(Titulos):
     def grafico_excel(ws, variable, periodo):
         c1 = ScatterChart()
         c1.title = str(variable.var_nombre) + str(" (") + \
-                   str(variable.uni_id.uni_sigla) + str(") ") + str(periodo)
+            str(variable.uni_id.uni_sigla) + str(") ") + str(periodo)
         # c1.style = 13
         # c1.y_axis.title = str(variable.uni_id.uni_sigla)
         c1.x_axis.title = 'Meses'
@@ -248,6 +233,7 @@ class TypeI(Titulos):
 
     @staticmethod
     def get_titulo(variable):
+        titulo = ''
         if variable == 6:
             titulo = 'Humedad del Suelo - Valores medios diarios, absolutos maximos y mimimos'
         elif variable == 8:
@@ -262,6 +248,7 @@ class TypeI(Titulos):
     
     @staticmethod
     def get_item_promedio(variable, item):
+        promedio = None
         if variable == 6:
             promedio = item.hsu_promedio
         elif variable == 8:
@@ -276,6 +263,7 @@ class TypeI(Titulos):
 
     @staticmethod
     def get_item_maximo(variable, item):
+        maximo = None
         if variable == 6:
             maximo = item.hsu_maximo
         elif variable == 8:
@@ -290,6 +278,7 @@ class TypeI(Titulos):
 
     @staticmethod
     def get_item_minimo(variable, item):
+        minimo = None
         if variable == 6:
             minimo = item.hsu_minimo
         elif variable == 8:
@@ -304,6 +293,7 @@ class TypeI(Titulos):
 
     @staticmethod
     def get_item_mes(variable, item):
+        mes = None
         if variable == 6:
             mes = item.hsu_mes
         elif variable == 8:
@@ -315,8 +305,3 @@ class TypeI(Titulos):
         elif variable == 11:
             mes = item.nag_mes
         return mes
-
-
-
-
-

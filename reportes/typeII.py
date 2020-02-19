@@ -8,17 +8,12 @@ from django.db.models import Avg, Max, Min
 from django.db.models import FloatField
 import calendar
 
-from openpyxl.chart import BarChart, Reference
+from openpyxl.chart import BarChart, Reference, Series, StockChart
+from openpyxl.chart.axis import DateAxis, ChartLines
 
 
 # clase para anuario de la variable PRE
 class TypeII(Titulos):
-
-    '''@staticmethod
-    def consulta(estacion, periodo):
-        # annotate agrupa los valores en base a un campo y a una operacion
-        informacion = list(Precipitacion.objects.filter(est_id=estacion).filter(pre_periodo=periodo).order_by('pre_id'))
-        return informacion'''
 
     @staticmethod
     def datos_historicos(estacion, periodo, parametro):
@@ -122,53 +117,54 @@ class TypeII(Titulos):
                        border='border_thin', fill='light_salmon')
         fila += 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila+2, end_column=col)
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
         cell = ws.cell(row=fila, column=col)
         cell.value = "MES"
         self.set_style(cell=cell, font='font_10', alignment='center',
                        border='border_thin')
 
-        ws.merge_cells(start_row=fila, start_column=col+7, end_row=fila + 2, end_column=col+7)
+        ws.merge_cells(start_row=fila, start_column=col+7, end_row=fila + 1, end_column=col+7)
         cell = ws.cell(row=fila, column=col+7)
-        cell.value = "Cantidad de días con precipitación"
+        cell.value = "# de días con precipitación"
         self.set_style(cell=cell, font='font_8', alignment='wrap',
                        border='border_thin')
         col += 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col+5)
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col+3)
         cell = ws.cell(row=fila, column=col)
         cell.value = "Precipitación (mm)"
         self.set_style(cell=cell, font='font_10', alignment='center',
                        border='border_thin')
         fila += 1
         col = 2
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila+1, end_column=col)
+        # ws.merge_cells(start_row=fila, start_column=col, end_row=fila+1, end_column=col)
         cell = ws.cell(row=fila, column=col)
         cell.value = "Mensual"
         self.set_style(cell=cell, font='font_10', alignment='center',
                        border='border_thin')
         col += 1
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
+        # ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
         cell = ws.cell(row=fila, column=col)
-        cell.value = "Medía Histórica"
+        cell.value = "Medía His"
         self.set_style(cell=cell, font='font_10', alignment='wrap',
                        border='border_thin')
 
         col += 1
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
+        # ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
         cell = ws.cell(row=fila, column=col)
-        cell.value = "Máximo Histórica"
+        cell.value = "Máx His"
         self.set_style(cell=cell, font='font_10', alignment='wrap',
                        border='border_thin')
 
         col += 1
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
+        # ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
         cell = ws.cell(row=fila, column=col)
-        cell.value = "Mínimo Histórica"
+        cell.value = "Mín His"
         self.set_style(cell=cell, font='font_10', alignment='wrap',
                        border='border_thin')
 
         col += 1
+        fila = 6
         ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col+1)
         cell = ws.cell(row=fila, column=col)
         cell.value = "Máxima en"
@@ -179,7 +175,7 @@ class TypeII(Titulos):
         col = 6
 
         cell = ws.cell(row=fila, column=col)
-        cell.value = "24H"
+        cell.value = "24H (mm)"
         self.set_style(cell=cell, font='font_10', alignment='center',
                        border='border_thin')
 
@@ -203,37 +199,37 @@ class TypeII(Titulos):
                            border='border_thin')
             cell = ws.cell(row=fila, column=col+1)
             cell.value = item.pre_suma
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col+2)
+            cell = ws.cell(row=fila, column=col+4)
             cell.value = round(historicos[item.pre_mes-1], 1)
             self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col + 3)
+            cell = ws.cell(row=fila, column=col + 2)
             cell.value = round(max_historico[item.pre_mes-1], 1)
             self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col + 4)
+            cell = ws.cell(row=fila, column=col + 3)
             cell.value = round(min_historico[item.pre_mes-1], 1)
             self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+5)
             cell.value = item.pre_maximo
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+6)
             cell.value = item.pre_maximo_dia
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+7)
             cell.value = item.pre_dias
-            self.set_style(cell=cell, font='font_10', alignment='left',
+            self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
             fila += 1
@@ -243,15 +239,44 @@ class TypeII(Titulos):
         chart1 = BarChart()
         chart1.type = "col"
         chart1.style = 10
-        chart1.title = "Distribución temporal de Precipitación (mm)" + str(periodo)
-        chart1.y_axis.title = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
+        chart1.title = str(variable.var_nombre) + str(" (") + \
+            str(variable.uni_id.uni_sigla) + str(") ") + str(periodo)
         chart1.x_axis.title = 'Meses'
 
-        data = Reference(ws, min_col=2, min_row=7, max_row=20, max_col=3)
-        cats = Reference(ws, min_col=1, min_row=9, max_row=20)
+        data = Reference(ws, min_col=2, min_row=7, max_row=19, max_col=3)
+        cats = Reference(ws, min_col=1, min_row=8, max_row=19)
         chart1.add_data(data, titles_from_data=True)
         chart1.set_categories(cats)
         chart1.shape = 5
+
+        chart_his = StockChart()
+        labels = Reference(ws, min_col=1, min_row=8, max_row=19)
+        data = Reference(ws, min_col=3, max_col=5, min_row=7, max_row=19)
+        chart_his.add_data(data, titles_from_data=True)
+        chart_his.set_categories(labels)
+        for s in chart_his.series:
+            s.graphicalProperties.line.noFill = True
+        chart_his.y_axis.majorGridlines = None
+        chart_his.y_axis.title = "Price"
+
+        '''chart1.y_axis.axId = 20
+        chart1.z_axis = chart_his.y_axis
+        chart1.y_axis.crosses = "max"
+        chart1 += chart_his'''
+        # marker for close
+        s.marker.symbol = "dot"
+        s.marker.size = 5
+        chart_his.title = "High-low-close"
+        chart_his.hiLowLines = ChartLines()
+
+        # Excel is broken and needs a cache of values in order to display hiLoLines :-/
+        from openpyxl.chart.data_source import NumData, NumVal
+        pts = [NumVal(idx=i) for i in range(len(data) - 1)]
+        cache = NumData(pt=pts)
+        chart_his.series[-1].val.numRef.numCache = cache
+
+        ws.add_chart(chart_his, "I21")
+        
         chart1.legend.position = "b"
         ws.add_chart(chart1, "A21")
 
