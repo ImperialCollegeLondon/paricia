@@ -203,6 +203,8 @@ def get_trace(variable, tiempo, valor, nombre):
 
 
 def filtrar(form):
+    estacion = form.cleaned_data['estacion']
+    periodo = form.cleaned_data['anio']
     context = {}
     # humedadsuelo,presionatmosferica,temperaturaagua,caudal,nivelagua
     typeI = [6, 8, 9, 10, 11]
@@ -217,55 +219,48 @@ def filtrar(form):
     # radiacion
     typeVI = [7]
     variables = list(Cruce.objects
-                     .filter(est_id=form.cleaned_data['estacion'])
-                     .values('var_id')
+                     .filter(est_id=estacion)
+
                      )
+    
     obj_typeI = TypeI()
     obj_typeII = TypeII()
     obj_typeIII = TypeIII()
     obj_typeIV = TypeIV()
     obj_typeV = TypeV()
     obj_typeVI = TypeVI()
-    estacion = form.cleaned_data['estacion']
-    periodo = form.cleaned_data['anio']
+
+
     matriz=[]
 
     for item in variables:
-        if item.get('var_id') in typeI:
-            matriz = obj_typeI.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            grafico = obj_typeI.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-        elif item.get('var_id') in typeII:
 
-            matriz = obj_typeII.matriz(estacion, periodo)
-            grafico = obj_typeII.grafico(estacion, item.get('var_id'), periodo)
-            print(matriz)
-        elif item.get('var_id') in typeIII:
-            matriz = obj_typeIII.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            grafico = obj_typeIII.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-        elif item.get('var_id') in typeIV:
-            matriz = obj_typeIV.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-            grafico = obj_typeIV.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
-        elif item.get('var_id') in typeV:
-            matriz = obj_typeV.matriz(form.cleaned_data['estacion'], item.get('var_id_id'), form.cleaned_data['anio'])
-        elif item.get('var_id') in typeVI:
-            matriz = obj_typeVI.matriz(form.cleaned_data['estacion'], str(item.get('var_id')),form.cleaned_data['anio'])
+        variable = item.var_id
+        print(variable)
+        
+        if variable.var_id in typeI:
+            matriz = obj_typeI.matriz(estacion, variable, periodo)
+            grafico = obj_typeI.grafico(estacion, variable, periodo)
+        elif variable.var_id in typeII:
+            matriz = obj_typeII.matriz(estacion, variable, periodo)
+            grafico = obj_typeII.grafico(estacion, variable, periodo)
+        elif variable.var_id in typeIII:
+            matriz = obj_typeIII.matriz(estacion, variable, periodo)
+            grafico = obj_typeIII.grafico(estacion, variable, periodo)
+        elif variable.var_id in typeIV:
+            matriz = obj_typeIV.matriz(estacion, variable, periodo)
+            grafico = obj_typeIV.grafico(estacion, variable, periodo)
+        elif variable.var_id in typeV:
+            matriz = obj_typeV.matriz(estacion, variable, periodo)
+        elif variable.var_id in typeVI:
+            matriz = obj_typeVI.matriz(estacion, variable, periodo)
         if len(matriz) > 0:
-            context.update({str(item.get('var_id')) + '_matriz': matriz})
+            context.update({str(variable.var_id) + '_matriz': matriz})
         if grafico:
-            context.update({str(item.get('var_id')) + '_grafico': grafico})
+            context.update({str(variable.var_id) + '_grafico': grafico})
     if len(context) == 0:
         context.update({'mensaje': 'No existen datos para la consulta'})
     return context
-
-
-
-
-
-
-
-
-
-
 
 
 # comparar tres estaciones en la misma vaiable
@@ -428,13 +423,13 @@ def procesar_json_inamhi(form):
     valores = []
     if len(data) > 0:
         # print(data)
-        for item in data:
-            fecha = datetime.strptime(item['fechaTomaDelDato'], '%Y-%m-%d %H:%M:%S')
+        for variable in data:
+            fecha = datetime.strptime(variable['fechaTomaDelDato'], '%Y-%m-%d %H:%M:%S')
 
-            if len(item['dataJSON']) > 0:
+            if len(variable['dataJSON']) > 0:
 
-                if item['dataJSON'][0]['valor'] is not None:
-                    valores.append(item['dataJSON'][0]['valor'])
+                if variable['dataJSON'][0]['valor'] is not None:
+                    valores.append(variable['dataJSON'][0]['valor'])
                     tiempo.append(fecha)
             else:
                 valores.append(None)

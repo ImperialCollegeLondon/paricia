@@ -1,6 +1,18 @@
-from variable.models import Variable, Unidad
+# -*- coding: utf-8 -*-
+from variable.models import Variable
 # librerias para manejar los archivos EXCEL
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+
+from anuarios.models import Precipitacion
+from anuarios.models import TemperaturaAire
+from anuarios.models import HumedadAire
+from anuarios.models import HumedadSuelo
+from anuarios.models import PresionAtmosferica
+from anuarios.models import TemperaturaAgua
+from anuarios.models import Caudal
+from anuarios.models import NivelAgua
+
+from django.db.models import Avg
 
 
 class Titulos:
@@ -43,6 +55,58 @@ class Titulos:
     def titulo_unidad(variable):
         var = Variable.objects.get(var_id=variable)
         return var.uni_id.uni_sigla
+
+    @staticmethod
+    def consulta(estacion, variable, periodo):
+        print("llego", variable)
+        if variable.var_id == 1:
+            informacion = list(Precipitacion.objects.filter(est_id=estacion).filter(pre_periodo=periodo))
+        elif variable.var_id == 2:
+            informacion = list(TemperaturaAire.objects.filter(est_id=estacion).filter(tai_periodo=periodo))
+        elif variable.var_id == 3:
+            informacion = list(HumedadAire.objects.filter(est_id=estacion).filter(hai_periodo=periodo))
+        elif variable.var_id == 6:
+            informacion = list(HumedadSuelo.objects.filter(est_id=estacion).filter(hsu_periodo=periodo))
+        elif variable.var_id == 8:
+            informacion = list(PresionAtmosferica.objects.filter(est_id=estacion).filter(pat_periodo=periodo))
+        elif variable.var_id == 9:
+            informacion = list(TemperaturaAgua.objects.filter(est_id=estacion).filter(tag_periodo=periodo))
+        elif variable.var_id == 10:
+            informacion = list(Caudal.objects.filter(est_id=estacion).filter(cau_periodo=periodo))
+        elif variable.var_id == 11:
+            informacion = list(NivelAgua.objects.filter(est_id=estacion).filter(nag_periodo=periodo))
+        return informacion
+
+
+    @staticmethod
+    def datos_historicos(estacion, variable, periodo):
+        modelo = globals()[variable.var_modelo]
+        consulta = modelo.objects.filter(est_id=estacion)
+        mes = str(variable.var_codigo).lower() + "_mes"
+        promedio = str(variable.var_codigo).lower() + "_promedio"
+        if variable.var_id == 2:
+            consulta = consulta.exclude(tai_periodo=periodo).values(mes)
+        elif variable.var_id == 3:
+            consulta = consulta.exclude(hai_periodo=periodo).values(mes)
+        elif variable.var_id == 6:
+            consulta = consulta.exclude(hsu_periodo=periodo).values(mes)
+        elif variable.var_id == 8:
+            consulta = consulta.exclude(pat_periodo=periodo).values(mes)
+        elif variable.var_id == 9:
+            consulta = consulta.exclude(tag_periodo=periodo).values(mes)
+        elif variable.var_id == 10:
+            consulta = consulta.exclude(cau_periodo=periodo).values(mes)
+        elif variable.var_id == 11:
+            consulta = consulta.exclude(nag_periodo=periodo).values(mes)
+
+        informacion = list(
+            consulta.annotate(valor=Avg(promedio)).order_by(mes)
+        )
+
+        datos = []
+        for item in informacion:
+            datos.append(item['valor'])
+        return datos
 
     def set_encabezado_excel(self, ws, estacion, periodo):
         fila = 1

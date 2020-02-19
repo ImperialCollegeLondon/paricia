@@ -19,9 +19,10 @@ from openpyxl.chart import (
 from openpyxl.chart.axis import DateAxis
 
 # clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
+
 class TypeI(Titulos):
 
-    @staticmethod
+    '''@staticmethod
     def consulta(estacion, variable, periodo):
         if variable == 6:
             informacion = list(HumedadSuelo.objects.filter(est_id=estacion).filter(hsu_periodo=periodo))
@@ -33,34 +34,7 @@ class TypeI(Titulos):
             informacion = list(Caudal.objects.filter(est_id=estacion).filter(cau_periodo=periodo))
         elif variable == 11:
             informacion = list(NivelAgua.objects.filter(est_id=estacion).filter(nag_periodo=periodo))
-        return informacion
-
-    @staticmethod
-    def datos_historicos(estacion, variable, periodo):
-        modelo = globals()[variable.var_modelo]
-        consulta = modelo.objects.filter(est_id=estacion)
-        mes = str(variable.var_codigo).lower()+"_mes"
-        promedio = str(variable.var_codigo).lower()+"_promedio"
-        if variable.var_id == 6:
-            consulta = consulta.exclude(hsu_periodo=periodo).values(mes)
-        elif variable.var_id == 8:
-            consulta = consulta.exclude(pat_periodo=periodo).values(mes)
-        elif variable.var_id == 9:
-            consulta = consulta.exclude(tag_periodo=periodo).values(mes)
-        elif variable.var_id == 10:
-            consulta = consulta.exclude(cau_periodo=periodo).values(mes)
-        elif variable.var_id == 11:
-            consulta = consulta.exclude(nag_periodo=periodo).values(mes)
-
-        informacion = list(
-            consulta
-                .annotate(valor=Avg(promedio)).order_by(mes)
-        )
-
-        datos = []
-        for item in informacion:
-            datos.append(item['valor'])
-        return datos
+        return informacion'''
 
     def matriz(self, estacion, variable, periodo):
         datos = self.consulta(estacion, variable, periodo)
@@ -74,27 +48,27 @@ class TypeI(Titulos):
             min_simple = []
             avg_simple = []
             for item in datos:
-                if variable == 6:
+                if variable.var_id == 6:
                     meses.append(str(calendar.month_abbr[item.hsu_mes]))
                     max_simple.append(item.hsu_maximo)
                     min_simple.append(item.hsu_minimo)
                     avg_simple.append(item.hsu_promedio)
-                elif variable == 8:
+                elif variable.var_id == 8:
                     meses.append(str(calendar.month_abbr[item.pat_mes]))
                     max_simple.append(item.pat_maximo)
                     min_simple.append(item.pat_minimo)
                     avg_simple.append(item.pat_promedio)
-                elif variable == 9:
+                elif variable.var_id == 9:
                     meses.append(str(calendar.month_abbr[item.tag_mes]))
                     max_simple.append(item.tag_maximo)
                     min_simple.append(item.tag_minimo)
                     avg_simple.append(item.tag_promedio)
-                elif variable == 10:
+                elif variable.var_id == 10:
                     meses.append(str(calendar.month_abbr[item.cau_mes]))
                     max_simple.append(item.cau_maximo)
                     min_simple.append(item.cau_minimo)
                     avg_simple.append(item.cau_promedio)
-                elif variable == 11:
+                elif variable.var_id == 11:
                     meses.append(str(calendar.month_abbr[item.nag_mes]))
                     max_simple.append(item.nag_maximo)
                     min_simple.append(item.nag_minimo)
@@ -126,7 +100,8 @@ class TypeI(Titulos):
             )
             data = [trace0, trace1, trace2]
             layout = go.Layout(
-                title=str(self.titulo_grafico(variable)) + str(" (") + str(self.titulo_unidad(variable)) + str(")"))
+                title=str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(") ")
+            )
             figure = go.Figure(data=data, layout=layout)
             div = opy.plot(figure, auto_open=False, output_type='div')
             return div
@@ -139,8 +114,11 @@ class TypeI(Titulos):
 
         ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col_fin)
         subtitle = ws.cell(row=fila, column=col)
+        subtitle_end = ws.cell(row=fila, column=col_fin)
         subtitle.value = self.get_titulo(variable.var_id)
         self.set_style(cell=subtitle, font='font_bold_10', alignment='center',
+                       border='border_thin', fill='light_salmon')
+        self.set_style(cell=subtitle_end, font='font_bold_10', alignment='center',
                        border='border_thin', fill='light_salmon')
 
         fila += 1
@@ -153,10 +131,13 @@ class TypeI(Titulos):
                        border='border_thin')
         col += 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col+2)
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col+3)
         cell = ws.cell(row=fila, column=col)
+        cell_final = ws.cell(row=fila, column=col+3)
         cell.value = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
         self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+        self.set_style(cell=cell_final, font='font_10', alignment='center',
                        border='border_thin')
         fila += 1
 
@@ -190,9 +171,12 @@ class TypeI(Titulos):
         fila += 1
         col = 1
 
+        media_historica = self.datos_historicos(estacion, variable, periodo)
+
         for item in matriz:
+            mes = self.get_item_mes(variable.var_id, item)
             cell = ws.cell(row=fila, column=col)
-            cell.value = self.get_mes_anio(self.get_item_mes(variable.var_id,item))
+            cell.value = self.get_mes_anio(mes)
             self.set_style(cell=cell, font='font_10', alignment='left',
                            border='border_thin')
             cell = ws.cell(row=fila, column=col+1)
@@ -210,35 +194,25 @@ class TypeI(Titulos):
             self.set_style(cell=cell, font='font_10', alignment='left',
                            border='border_thin')
 
-            fila += 1
-        media_historica = self.datos_historicos(estacion, variable, periodo)
-        fila = 8
-        col = 5
-
-        for item in media_historica:
-            cell = ws.cell(row=fila, column=col)
-            cell.value = round(item, 1)
+            cell = ws.cell(row=fila, column=col+4)
+            cell.value = round(media_historica[mes-1], 1)
             self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
             fila += 1
 
-
-
-
-
-
     @staticmethod
-    def grafico_excel(ws, variable):
+    def grafico_excel(ws, variable, periodo):
         c1 = ScatterChart()
-        c1.title = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
-        c1.style = 13
-        c1.y_axis.title = str(variable.uni_id.uni_sigla)
+        c1.title = str(variable.var_nombre) + str(" (") + \
+                   str(variable.uni_id.uni_sigla) + str(") ") + str(periodo)
+        # c1.style = 13
+        # c1.y_axis.title = str(variable.uni_id.uni_sigla)
         c1.x_axis.title = 'Meses'
 
         xvalues = Reference(ws, min_col=1, min_row=8, max_row=19)
 
-        for i in range(2, 5):
+        for i in range(2, 6):
             values = Reference(ws, min_col=i, min_row=7, max_row=19)
             series = Series(values, xvalues, title_from_data=True)
             c1.series.append(series)
@@ -261,11 +235,16 @@ class TypeI(Titulos):
         serie_pro.marker.graphicalProperties.line.solidFill = "32cd32"
         serie_pro.graphicalProperties.line.solidFill = "32cd32"
 
+        serie_pro = c1.series[3]
+        serie_pro.marker.symbol = "x"
+        serie_pro.marker.graphicalProperties.solidFill = "7d60a0"
+        serie_pro.marker.graphicalProperties.line.solidFill = "7d60a0"
+        serie_pro.graphicalProperties.line.solidFill = "7d60a0"
+
         cats = Reference(ws, min_col=1, min_row=8, max_row=19)
         c1.set_categories(cats)
         c1.legend.position = "b"
         ws.add_chart(c1, "F6")
-
 
     @staticmethod
     def get_titulo(variable):

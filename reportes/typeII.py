@@ -14,11 +14,11 @@ from openpyxl.chart import BarChart, Reference
 # clase para anuario de la variable PRE
 class TypeII(Titulos):
 
-    @staticmethod
+    '''@staticmethod
     def consulta(estacion, periodo):
         # annotate agrupa los valores en base a un campo y a una operacion
         informacion = list(Precipitacion.objects.filter(est_id=estacion).filter(pre_periodo=periodo).order_by('pre_id'))
-        return informacion
+        return informacion'''
 
     @staticmethod
     def datos_historicos(estacion, periodo, parametro):
@@ -50,8 +50,8 @@ class TypeII(Titulos):
         # datos.append(suma)
         return datos
 
-    def matriz(self, estacion, periodo):
-        datos = self.consulta(estacion, periodo)
+    def matriz(self, estacion, variable, periodo):
+        datos = self.consulta(estacion, variable, periodo)
         '''sum_pre = 0
         avg_max = 0
         sum_max = 0
@@ -73,7 +73,7 @@ class TypeII(Titulos):
         return datos
 
     def grafico(self, estacion, variable, periodo):
-        datos = self.consulta(estacion, periodo)
+        datos = self.consulta(estacion, variable, periodo)
         if datos:
             historicos = self.datos_historicos(estacion, periodo, 'promedio')
             max_historico = self.datos_historicos(estacion, periodo, 'maximo')
@@ -102,8 +102,7 @@ class TypeII(Titulos):
             )
             data = [trace1, trace2]
             layout = go.Layout(
-                title=str(self.titulo_grafico(variable)) + str(" (") +
-                str(self.titulo_unidad(variable)) + str(")")
+                title=str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(") ")
             )
             figure = go.Figure(data=data, layout=layout)
 
@@ -111,7 +110,7 @@ class TypeII(Titulos):
             return div
         return False
 
-    def tabla_excel(self, ws, estacion, periodo):
+    def tabla_excel(self, ws, estacion, variable, periodo):
         fila = 5
         col_fin = 11
         col = 1
@@ -190,9 +189,12 @@ class TypeII(Titulos):
         self.set_style(cell=cell, font='font_10', alignment='center',
                        border='border_thin')
 
-        matriz = self.matriz(estacion, periodo)
+        matriz = self.matriz(estacion, variable, periodo)
         fila += 1
         col = 1
+        historicos = self.datos_historicos(estacion, periodo, 'promedio')
+        max_historico = self.datos_historicos(estacion, periodo, 'maximo')
+        min_historico = self.datos_historicos(estacion, periodo, 'minimo')
 
         for item in matriz:
             cell = ws.cell(row=fila, column=col)
@@ -202,6 +204,21 @@ class TypeII(Titulos):
             cell = ws.cell(row=fila, column=col+1)
             cell.value = item.pre_suma
             self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col+2)
+            cell.value = round(historicos[item.pre_mes-1], 1)
+            self.set_style(cell=cell, font='font_10', alignment='wrap',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col + 3)
+            cell.value = round(max_historico[item.pre_mes-1], 1)
+            self.set_style(cell=cell, font='font_10', alignment='wrap',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col + 4)
+            cell.value = round(min_historico[item.pre_mes-1], 1)
+            self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
             cell = ws.cell(row=fila, column=col+5)
@@ -220,35 +237,14 @@ class TypeII(Titulos):
                            border='border_thin')
 
             fila += 1
-        historicos = self.datos_historicos(estacion, periodo, 'promedio')
-        max_historico = self.datos_historicos(estacion, periodo, 'maximo')
-        min_historico = self.datos_historicos(estacion, periodo, 'minimo')
 
-        fila = 9
-        col = 3
-        for (item_his, item_max, item_min) in zip(historicos, max_historico, min_historico):
-            cell = ws.cell(row=fila, column=col)
-            cell.value = round(item_his, 1)
-            self.set_style(cell=cell, font='font_10', alignment='wrap',
-                           border='border_thin')
-
-            cell = ws.cell(row=fila, column=col+1)
-            cell.value = round(item_max, 1)
-            self.set_style(cell=cell, font='font_10', alignment='wrap',
-                           border='border_thin')
-
-            cell = ws.cell(row=fila, column=col+2)
-            cell.value = round(item_min, 1)
-            self.set_style(cell=cell, font='font_10', alignment='wrap',
-                           border='border_thin')
-            fila += 1
-
-    def grafico_excel(self, ws, estacion, periodo):
+    @staticmethod
+    def grafico_excel(ws, variable, periodo):
         chart1 = BarChart()
         chart1.type = "col"
         chart1.style = 10
         chart1.title = "Distribución temporal de Precipitación (mm)" + str(periodo)
-        chart1.y_axis.title = 'Precipitación (mm)'
+        chart1.y_axis.title = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
         chart1.x_axis.title = 'Meses'
 
         data = Reference(ws, min_col=2, min_row=7, max_row=20, max_col=3)
@@ -257,7 +253,7 @@ class TypeII(Titulos):
         chart1.set_categories(cats)
         chart1.shape = 5
         chart1.legend.position = "b"
-        ws.add_chart(chart1, "I6")
+        ws.add_chart(chart1, "A21")
 
 
 

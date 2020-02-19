@@ -69,8 +69,8 @@ def reporte_excel_anuario(form):
                 ws_pre = wb.create_sheet(str(variable.var_nombre), -1)
 
             obj_typeii.set_encabezado_excel(ws_pre, estacion, periodo)
-            obj_typeii.tabla_excel(ws_pre, estacion, periodo)
-            obj_typeii.grafico_excel(ws_pre, estacion, periodo)
+            obj_typeii.tabla_excel(ws_pre, estacion, variable, periodo)
+            obj_typeii.grafico_excel(ws_pre, variable, periodo)
 
         elif variable.var_id == 2:
             if len(wb.sheetnames) == 1:
@@ -79,8 +79,18 @@ def reporte_excel_anuario(form):
                 ws_tai = wb.create_sheet(str(variable.var_nombre), -1)
 
             obj_typeiii.set_encabezado_excel(ws_tai, estacion, periodo)
-            obj_typeiii.tabla_excel(ws_tai, estacion, periodo)
-            # obj_typei.grafico_excel(ws_tai, variable)
+            obj_typeiii.tabla_excel(ws_tai, estacion, variable, periodo)
+            obj_typeiii.grafico_excel(ws_tai, variable, periodo)
+
+        elif variable.var_id == 3:
+            if len(wb.sheetnames) == 1:
+                ws_hai = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_hai = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typeiv.set_encabezado_excel(ws_hai, estacion, periodo)
+            obj_typeiv.tabla_excel(ws_hai, estacion, variable, periodo)
+            obj_typeiv.grafico_excel(ws_hai, variable, periodo)
 
         elif variable.var_id == 6:
             if len(wb.sheetnames) == 1:
@@ -90,7 +100,7 @@ def reporte_excel_anuario(form):
 
             obj_typei.set_encabezado_excel(ws_hsu, estacion, periodo)
             obj_typei.tabla_excel(ws_hsu, estacion, variable, periodo)
-            obj_typei.grafico_excel(ws_hsu, variable)
+            obj_typei.grafico_excel(ws_hsu, variable, periodo)
 
         elif variable.var_id == 8:
             if len(wb.sheetnames) == 1:
@@ -100,7 +110,7 @@ def reporte_excel_anuario(form):
 
             obj_typei.set_encabezado_excel(ws_pat, estacion, periodo)
             obj_typei.tabla_excel(ws_pat, estacion, variable, periodo)
-            obj_typei.grafico_excel(ws_pat, variable)
+            obj_typei.grafico_excel(ws_pat, variable, periodo)
 
         elif variable.var_id == 9:
             if len(wb.sheetnames) == 1:
@@ -110,7 +120,7 @@ def reporte_excel_anuario(form):
 
             obj_typei.set_encabezado_excel(ws_tag, estacion, periodo)
             obj_typei.tabla_excel(ws_tag, estacion, variable, periodo)
-            obj_typei.grafico_excel(ws_tag, variable)
+            obj_typei.grafico_excel(ws_tag, variable, periodo)
 
         elif variable.var_id == 10:
             if len(wb.sheetnames) == 1:
@@ -120,7 +130,7 @@ def reporte_excel_anuario(form):
 
             obj_typei.set_encabezado_excel(ws_cau, estacion, periodo)
             obj_typei.tabla_excel(ws_cau, estacion, variable, periodo)
-            obj_typei.grafico_excel(ws_cau, variable)
+            obj_typei.grafico_excel(ws_cau, variable, periodo)
 
         elif variable.var_id == 11:
             if len(wb.sheetnames) == 1:
@@ -130,7 +140,7 @@ def reporte_excel_anuario(form):
 
             obj_typei.set_encabezado_excel(ws_nag, estacion, periodo)
             obj_typei.tabla_excel(ws_nag, estacion, variable, periodo)
-            obj_typei.grafico_excel(ws_nag, variable)
+            obj_typei.grafico_excel(ws_nag, variable, periodo)
 
 
 
