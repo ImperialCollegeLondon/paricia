@@ -29,7 +29,8 @@ class AnuarioForm(ModelForm):
         ('2020', '2020'),
     )
     lista = []
-    estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Estación')
+    consulta = Estacion.objects.filter(est_externa=False).order_by('est_codigo')
+    estacion = forms.ModelChoiceField(queryset=consulta, label='Estación')
     anio = forms.ChoiceField(choices=YEAR, label='Año')
 
 

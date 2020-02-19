@@ -167,7 +167,7 @@ class TypeI(Titulos):
         self.set_style(cell=cell, font='font_10', alignment='center',
                        border='border_thin')
 
-        matriz = self.matriz(estacion, variable.var_id, periodo)
+        matriz = self.matriz(estacion, variable, periodo)
         fila += 1
         col = 1
 
