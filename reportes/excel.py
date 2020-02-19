@@ -62,19 +62,78 @@ def reporte_excel_anuario(form):
         variable = item.var_id
         if variable.var_id == 1:
             if len(wb.sheetnames) == 1:
-                ws_pre = wb.active
-                ws_pre.title = variable.var_nombre
+                # ws_pre = wb.active
+                # ws_pre.title = variable.var_nombre
+                ws_pre = wb.create_sheet(str(variable.var_nombre), 0)
             else:
-                ws_pre = wb.create_sheet(str(variable.var_nombre))
+                ws_pre = wb.create_sheet(str(variable.var_nombre), -1)
 
             obj_typeii.set_encabezado_excel(ws_pre, estacion, periodo)
             obj_typeii.tabla_excel(ws_pre, estacion, periodo)
             obj_typeii.grafico_excel(ws_pre, estacion, periodo)
+
+        elif variable.var_id == 2:
+            if len(wb.sheetnames) == 1:
+                ws_tai = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_tai = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typeiii.set_encabezado_excel(ws_tai, estacion, periodo)
+            obj_typeiii.tabla_excel(ws_tai, estacion, periodo)
+            # obj_typei.grafico_excel(ws_tai, variable)
+
+        elif variable.var_id == 6:
+            if len(wb.sheetnames) == 1:
+                ws_hsu = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_hsu = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typei.set_encabezado_excel(ws_hsu, estacion, periodo)
+            obj_typei.tabla_excel(ws_hsu, estacion, variable, periodo)
+            obj_typei.grafico_excel(ws_hsu, variable)
+
         elif variable.var_id == 8:
-            ws_pat = wb.create_sheet(str(variable.var_nombre))
+            if len(wb.sheetnames) == 1:
+                ws_pat = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_pat = wb.create_sheet(str(variable.var_nombre), -1)
+
             obj_typei.set_encabezado_excel(ws_pat, estacion, periodo)
             obj_typei.tabla_excel(ws_pat, estacion, variable, periodo)
             obj_typei.grafico_excel(ws_pat, variable)
+
+        elif variable.var_id == 9:
+            if len(wb.sheetnames) == 1:
+                ws_tag = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_tag = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typei.set_encabezado_excel(ws_tag, estacion, periodo)
+            obj_typei.tabla_excel(ws_tag, estacion, variable, periodo)
+            obj_typei.grafico_excel(ws_tag, variable)
+
+        elif variable.var_id == 10:
+            if len(wb.sheetnames) == 1:
+                ws_cau = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_cau = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typei.set_encabezado_excel(ws_cau, estacion, periodo)
+            obj_typei.tabla_excel(ws_cau, estacion, variable, periodo)
+            obj_typei.grafico_excel(ws_cau, variable)
+
+        elif variable.var_id == 11:
+            if len(wb.sheetnames) == 1:
+                ws_nag = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_nag = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typei.set_encabezado_excel(ws_nag, estacion, periodo)
+            obj_typei.tabla_excel(ws_nag, estacion, variable, periodo)
+            obj_typei.grafico_excel(ws_nag, variable)
+
+
+
 
     # Establecemos el nombre del archivo
     nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(periodo) + str('.xlsx"')

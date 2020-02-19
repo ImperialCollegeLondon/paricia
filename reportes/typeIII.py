@@ -64,6 +64,150 @@ class TypeIII(Titulos):
             return div
         return False
 
+    def tabla_excel(self, ws, estacion, periodo):
+        fila = 5
+        col_fin = 11
+        col = 1
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col_fin)
+        subtitle = ws.cell(row=fila, column=col)
+        subtitle.value = "Temperatura del Aire - Valores medios mensuales," \
+                         " absolutos maximos y mimimos, medios maximos y minimos "
+        self.set_style(cell=subtitle, font='font_bold_10', alignment='center',
+                       border='border_thin', fill='light_salmon')
+
+        fila += 1
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 2, end_column=col)
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "MES"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col + 6)
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Temperatura del Aire (ºC)"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        fila += 1
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col + 3)
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Absoluta"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col = 6
+
+        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col + 2)
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Media"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        fila += 1
+        col = 2
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Max"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Día"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Min"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Día"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Max"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Min"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Mensual"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
+        matriz = self.matriz(estacion, "", periodo)
+        fila += 1
+        col = 1
+
+        for item in matriz:
+            cell = ws.cell(row=fila, column=col)
+            cell.value = self.get_mes_anio(item.tai_mes)
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+            cell = ws.cell(row=fila, column=col+1)
+            cell.value = item.tai_maximo_abs
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col+2)
+            cell.value = item.tai_maximo_dia
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col+3)
+            cell.value = item.tai_minimo_abs
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col+4)
+            cell.value = item.tai_minimo_dia
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col + 5)
+            cell.value = item.tai_maximo
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col + 6)
+            cell.value = item.tai_minimo
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            cell = ws.cell(row=fila, column=col + 7)
+            cell.value = item.tai_promedio
+            self.set_style(cell=cell, font='font_10', alignment='left',
+                           border='border_thin')
+
+            fila += 1
+
+
+
+
+
 
 
 

@@ -42,12 +42,34 @@ class TypeII(Titulos):
                 .order_by('pre_mes')
             )
         datos = []
+        # suma = 0
         for item in informacion:
             datos.append(item['valor'])
+            # suma += item['valor']
+
+        # datos.append(suma)
         return datos
 
     def matriz(self, estacion, periodo):
         datos = self.consulta(estacion, periodo)
+        '''sum_pre = 0
+        avg_max = 0
+        sum_max = 0
+        sum_max_dia = 0
+        avg_max_dia = 0
+        sum_dias = 0
+        obj_pre = Precipitacion
+        for item in datos:
+            sum_pre += item.pre_suma
+            sum_max += item.pre_maximo
+            sum_max_dia += item.pre_maximo_dia
+            sum_dias += item.pre_dias
+        obj_pre.pre_mes = 13
+        obj_pre.pre_suma = sum_pre
+        obj_pre.pre_maximo = round(sum_max/12, 1)
+        obj_pre.pre_maximo_dia = round(sum_max_dia/12, 1)
+        obj_pre.pre_dias = sum_dias
+        datos.append(obj_pre)'''
         return datos
 
     def grafico(self, estacion, variable, periodo):
@@ -225,8 +247,7 @@ class TypeII(Titulos):
         chart1 = BarChart()
         chart1.type = "col"
         chart1.style = 10
-        # chart1.title = "Distribución temporal de Precipitación (mm)" + str(periodo)
-        chart1.title = str(estacion.est_nombre) + str(periodo)
+        chart1.title = "Distribución temporal de Precipitación (mm)" + str(periodo)
         chart1.y_axis.title = 'Precipitación (mm)'
         chart1.x_axis.title = 'Meses'
 
@@ -235,6 +256,7 @@ class TypeII(Titulos):
         chart1.add_data(data, titles_from_data=True)
         chart1.set_categories(cats)
         chart1.shape = 5
+        chart1.legend.position = "b"
         ws.add_chart(chart1, "I6")
 
 

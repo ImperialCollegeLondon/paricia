@@ -115,7 +115,7 @@ class Titulos:
         # meses = ['Enero', 'Febrero','Marzo', 'Abril', 'Mayo', 'Junio', 'Julio','Agosto',
         # 'Septiembre','Octubre','Noviembre','Diciembre']
         meses = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT',
-                 'NOV', 'DIC']
+                 'NOV', 'DIC', 'ANUAL']
 
         return meses[int_mes-1]
 

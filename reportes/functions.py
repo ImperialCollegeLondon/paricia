@@ -235,8 +235,10 @@ def filtrar(form):
             matriz = obj_typeI.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
             grafico = obj_typeI.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
         elif item.get('var_id') in typeII:
+
             matriz = obj_typeII.matriz(estacion, periodo)
             grafico = obj_typeII.grafico(estacion, item.get('var_id'), periodo)
+            print(matriz)
         elif item.get('var_id') in typeIII:
             matriz = obj_typeIII.matriz(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])
             grafico = obj_typeIII.grafico(form.cleaned_data['estacion'], item.get('var_id'), form.cleaned_data['anio'])

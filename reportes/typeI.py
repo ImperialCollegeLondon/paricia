@@ -4,6 +4,7 @@ from anuarios.models import PresionAtmosferica
 from anuarios.models import TemperaturaAgua
 from anuarios.models import Caudal
 from anuarios.models import NivelAgua
+from django.db.models import Avg
 import plotly.offline as opy
 import plotly.graph_objs as go
 from reportes.titulos import Titulos
@@ -34,13 +35,40 @@ class TypeI(Titulos):
             informacion = list(NivelAgua.objects.filter(est_id=estacion).filter(nag_periodo=periodo))
         return informacion
 
+    @staticmethod
+    def datos_historicos(estacion, variable, periodo):
+        modelo = globals()[variable.var_modelo]
+        consulta = modelo.objects.filter(est_id=estacion)
+        mes = str(variable.var_codigo).lower()+"_mes"
+        promedio = str(variable.var_codigo).lower()+"_promedio"
+        if variable.var_id == 6:
+            consulta = consulta.exclude(hsu_periodo=periodo).values(mes)
+        elif variable.var_id == 8:
+            consulta = consulta.exclude(pat_periodo=periodo).values(mes)
+        elif variable.var_id == 9:
+            consulta = consulta.exclude(tag_periodo=periodo).values(mes)
+        elif variable.var_id == 10:
+            consulta = consulta.exclude(cau_periodo=periodo).values(mes)
+        elif variable.var_id == 11:
+            consulta = consulta.exclude(nag_periodo=periodo).values(mes)
+
+        informacion = list(
+            consulta
+                .annotate(valor=Avg(promedio)).order_by(mes)
+        )
+
+        datos = []
+        for item in informacion:
+            datos.append(item['valor'])
+        return datos
+
     def matriz(self, estacion, variable, periodo):
         datos = self.consulta(estacion, variable, periodo)
         return datos
 
     def grafico(self, estacion, variable, periodo):
         datos = self.consulta(estacion, variable, periodo)
-        if len(datos)>0:
+        if len(datos) > 0:
             meses = []
             max_simple = []
             min_simple = []
@@ -151,6 +179,13 @@ class TypeI(Titulos):
         self.set_style(cell=cell, font='font_10', alignment='center',
                        border='border_thin')
 
+        col += 1
+
+        cell = ws.cell(row=fila, column=col)
+        cell.value = "Media His"
+        self.set_style(cell=cell, font='font_10', alignment='center',
+                       border='border_thin')
+
         matriz = self.matriz(estacion, variable.var_id, periodo)
         fila += 1
         col = 1
@@ -176,6 +211,22 @@ class TypeI(Titulos):
                            border='border_thin')
 
             fila += 1
+        media_historica = self.datos_historicos(estacion, variable, periodo)
+        fila = 8
+        col = 5
+
+        for item in media_historica:
+            cell = ws.cell(row=fila, column=col)
+            cell.value = round(item, 1)
+            self.set_style(cell=cell, font='font_10', alignment='wrap',
+                           border='border_thin')
+
+            fila += 1
+
+
+
+
+
 
     @staticmethod
     def grafico_excel(ws, variable):
@@ -185,26 +236,8 @@ class TypeI(Titulos):
         c1.y_axis.title = str(variable.uni_id.uni_sigla)
         c1.x_axis.title = 'Meses'
 
-        '''data = Reference(ws, min_col=2, min_row=7, max_col=4, max_row=19)
-        cats = Reference(ws, min_col=1, min_row=8, max_row=19)
-
-        c1.add_data(data, titles_from_data=True)
-
-        s1 = c1.series[0]
-        s1.marker.symbol = "triangle"
-        s1.marker.graphicalProperties.solidFill = "FF0000"  # Marker filling
-        s1.marker.graphicalProperties.line.solidFill = "FF0000"  # Marker outlin
-        s1.graphicalProperties.line.noFill = True
-
-        s2 = c1.series[1]
-        s2.graphicalProperties.line.solidFill = "00AAAA"
-        s2.graphicalProperties.line.dashStyle = "sysDot"
-        s2.graphicalProperties.line.width = 100050  # width in EMUs
-
-        c1.set_categories(cats)
-        c1.grouping = "stacked"'''
-
         xvalues = Reference(ws, min_col=1, min_row=8, max_row=19)
+
         for i in range(2, 5):
             values = Reference(ws, min_col=i, min_row=7, max_row=19)
             series = Series(values, xvalues, title_from_data=True)
@@ -212,17 +245,26 @@ class TypeI(Titulos):
 
         serie_max = c1.series[0]
         serie_max.marker.symbol = "diamond"
+        serie_max.marker.graphicalProperties.solidFill = "1660a7"
+        serie_max.marker.graphicalProperties.line.solidFill = "1660a7"
         serie_max.graphicalProperties.line.solidFill = "1660a7"
 
         serie_min = c1.series[1]
         serie_min.marker.symbol = "triangle"
+        serie_min.marker.graphicalProperties.solidFill = "cd0c18"
+        serie_min.marker.graphicalProperties.line.solidFill = "cd0c18"
         serie_min.graphicalProperties.line.solidFill = "cd0c18"
 
         serie_pro = c1.series[2]
         serie_pro.marker.symbol = "square"
+        serie_pro.marker.graphicalProperties.solidFill = "32cd32"
+        serie_pro.marker.graphicalProperties.line.solidFill = "32cd32"
         serie_pro.graphicalProperties.line.solidFill = "32cd32"
 
-        ws.add_chart(c1, "E6")
+        cats = Reference(ws, min_col=1, min_row=8, max_row=19)
+        c1.set_categories(cats)
+        c1.legend.position = "b"
+        ws.add_chart(c1, "F6")
 
 
     @staticmethod
