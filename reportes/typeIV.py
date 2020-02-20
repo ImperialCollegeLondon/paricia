@@ -29,6 +29,7 @@ class TypeIV(Titulos):
 
     def grafico(self, estacion, variable, periodo):
         datos = self.consulta(estacion, variable, periodo)
+        historico = self.datos_historicos(estacion, variable, periodo)
         if datos:
             meses = []
             max_simple = []
@@ -52,7 +53,7 @@ class TypeIV(Titulos):
                 y=min_simple,
                 name='Min',
                 line=dict(
-                    color=('rgb(205, 12, 24)'),
+                    color='rgb(205, 12, 24)',
                     width=4, )
             )
             trace2 = go.Scatter(
@@ -60,14 +61,24 @@ class TypeIV(Titulos):
                 y=avg_simple,
                 name='Media',
                 line=dict(
-                    color=('rgb(50, 205, 50)'),
+                    color='rgb(50, 205, 50)',
                     width=4, )
             )
-            data = [trace0, trace1, trace2]
+            trace3 = go.Scatter(
+                x=meses,
+                y=historico,
+                name='Media',
+                line=dict(
+                    color='rgb(125, 96, 160)',
+                    width=4, )
+            )
+
+            data = [trace0, trace1, trace2, trace3]
             layout = go.Layout(
                 title=str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(") ")
             )
             figure = go.Figure(data=data, layout=layout)
+            figure.update_layout(legend_orientation="h")
             div = opy.plot(figure, auto_open=False, output_type='div')
             return div
         return False

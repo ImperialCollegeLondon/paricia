@@ -58,6 +58,7 @@ class TypeI(Titulos):
                     max_simple.append(item.nag_maximo)
                     min_simple.append(item.nag_minimo)
                     avg_simple.append(item.nag_promedio)
+            historico = self.datos_historicos(estacion, variable, periodo)
 
             trace0 = go.Scatter(
                 x=meses,
@@ -83,11 +84,21 @@ class TypeI(Titulos):
                     color='rgb(50, 205, 50)',
                     width=4, )
             )
-            data = [trace0, trace1, trace2]
+            trace3 = go.Scatter(
+                x=meses,
+                y=historico,
+                name='Media',
+                line=dict(
+                    color='rgb(125, 96, 160)',
+                    width=4, )
+            )
+
+            data = [trace0, trace1, trace2, trace3]
             layout = go.Layout(
                 title=str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(") ")
             )
             figure = go.Figure(data=data, layout=layout)
+            figure.update_layout(legend_orientation="h")
             div = opy.plot(figure, auto_open=False, output_type='div')
             return div
         return False

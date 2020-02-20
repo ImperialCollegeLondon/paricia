@@ -316,7 +316,6 @@ def IndicaPreci(estacion_id,inicio,fin,completo):
             else:
                 temdccl = 0
 
-
         tdia = dia.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                                 fecha__lte=finconsu).order_by("valor")
         total_count = tdia.count()

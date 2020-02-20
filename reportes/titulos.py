@@ -77,7 +77,6 @@ class Titulos:
             informacion = list(NivelAgua.objects.filter(est_id=estacion).filter(nag_periodo=periodo))
         return informacion
 
-
     @staticmethod
     def datos_historicos(estacion, variable, periodo):
         modelo = globals()[variable.var_modelo]
@@ -173,6 +172,16 @@ class Titulos:
         title.value = estacion.est_altura
         self.set_style(cell=title, font='font_10', alignment='center',
                        border='border_thin')
+
+    def bordes_celdas(self, ws, start_row, start_column, end_row, end_column):
+        for fil in range(start_row, end_row+1):
+            for col in range(start_column, end_column + 1):
+                cell = ws.cell(row=fil, column=col)
+                self.set_style(cell=cell, border='border_thin')
+
+
+
+
 
     @staticmethod
     def get_mes_anio(int_mes):

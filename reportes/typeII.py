@@ -8,7 +8,7 @@ from django.db.models import Avg, Max, Min
 from django.db.models import FloatField
 import calendar
 
-from openpyxl.chart import BarChart, Reference, Series, StockChart
+from openpyxl.chart import BarChart, Reference, Series, LineChart
 from openpyxl.chart.axis import DateAxis, ChartLines
 
 
@@ -82,12 +82,14 @@ class TypeII(Titulos):
             trace1 = go.Bar(
                 x=meses,
                 y=mensual_simple,
-                name='Precipitacion (mm)'
+                name='Precipitacion (mm)',
+                marker_color='rgb(31, 119, 180)',
             )
             trace2 = go.Bar(
                 x=meses,
                 y=historicos,
                 name='Pre. Historica (mm)',
+                marker_color='rgb(255, 127, 14)',
                 error_y=dict(
                     type='data',
                     symmetric=False,
@@ -100,6 +102,7 @@ class TypeII(Titulos):
                 title=str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(") ")
             )
             figure = go.Figure(data=data, layout=layout)
+            figure.update_layout(legend_orientation="h")
 
             div = opy.plot(figure, auto_open=False, output_type='div')
             return div
@@ -197,37 +200,37 @@ class TypeII(Titulos):
             cell.value = self.get_mes_anio(item.pre_mes)
             self.set_style(cell=cell, font='font_10', alignment='left',
                            border='border_thin')
-            cell = ws.cell(row=fila, column=col+1)
+            cell = ws.cell(row=fila, column=col + 1)
             cell.value = item.pre_suma
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col+4)
+            cell = ws.cell(row=fila, column=col + 2)
             cell.value = round(historicos[item.pre_mes-1], 1)
             self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col + 2)
+            cell = ws.cell(row=fila, column=col + 3)
             cell.value = round(max_historico[item.pre_mes-1], 1)
             self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col + 3)
+            cell = ws.cell(row=fila, column=col + 4)
             cell.value = round(min_historico[item.pre_mes-1], 1)
             self.set_style(cell=cell, font='font_10', alignment='wrap',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col+5)
+            cell = ws.cell(row=fila, column=col + 5)
             cell.value = item.pre_maximo
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col+6)
+            cell = ws.cell(row=fila, column=col + 6)
             cell.value = item.pre_maximo_dia
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
 
-            cell = ws.cell(row=fila, column=col+7)
+            cell = ws.cell(row=fila, column=col + 7)
             cell.value = item.pre_dias
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
@@ -249,34 +252,6 @@ class TypeII(Titulos):
         chart1.set_categories(cats)
         chart1.shape = 5
 
-        chart_his = StockChart()
-        labels = Reference(ws, min_col=1, min_row=8, max_row=19)
-        data = Reference(ws, min_col=3, max_col=5, min_row=7, max_row=19)
-        chart_his.add_data(data, titles_from_data=True)
-        chart_his.set_categories(labels)
-        for s in chart_his.series:
-            s.graphicalProperties.line.noFill = True
-        chart_his.y_axis.majorGridlines = None
-        chart_his.y_axis.title = "Price"
-
-        '''chart1.y_axis.axId = 20
-        chart1.z_axis = chart_his.y_axis
-        chart1.y_axis.crosses = "max"
-        chart1 += chart_his'''
-        # marker for close
-        s.marker.symbol = "dot"
-        s.marker.size = 5
-        chart_his.title = "High-low-close"
-        chart_his.hiLowLines = ChartLines()
-
-        # Excel is broken and needs a cache of values in order to display hiLoLines :-/
-        from openpyxl.chart.data_source import NumData, NumVal
-        pts = [NumVal(idx=i) for i in range(len(data) - 1)]
-        cache = NumData(pt=pts)
-        chart_his.series[-1].val.numRef.numCache = cache
-
-        ws.add_chart(chart_his, "I21")
-        
         chart1.legend.position = "b"
         ws.add_chart(chart1, "A21")
 

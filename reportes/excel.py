@@ -92,6 +92,17 @@ def reporte_excel_anuario(form):
             obj_typeiv.tabla_excel(ws_hai, estacion, variable, periodo)
             obj_typeiv.grafico_excel(ws_hai, variable, periodo)
 
+        elif variable.var_id == 4:
+            if len(wb.sheetnames) == 1:
+                ws_vvi = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                print(variable.var_nombre)
+                ws_vvi = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typev.set_encabezado_excel(ws_vvi, estacion, periodo)
+            obj_typev.tabla_excel(ws_vvi, estacion, variable, periodo)
+            # obj_typeiv.grafico_excel(ws_vvi, variable, periodo)
+
         elif variable.var_id == 6:
             if len(wb.sheetnames) == 1:
                 ws_hsu = wb.create_sheet(str(variable.var_nombre), 0)
@@ -101,6 +112,17 @@ def reporte_excel_anuario(form):
             obj_typei.set_encabezado_excel(ws_hsu, estacion, periodo)
             obj_typei.tabla_excel(ws_hsu, estacion, variable, periodo)
             obj_typei.grafico_excel(ws_hsu, variable, periodo)
+
+        elif variable.var_id == 7:
+            if len(wb.sheetnames) == 1:
+                ws_rad = wb.create_sheet(str(variable.var_nombre), 0)
+            else:
+                ws_rad = wb.create_sheet(str(variable.var_nombre), -1)
+
+            obj_typevi.set_encabezado_excel(ws_rad, estacion, periodo)
+            obj_typevi.tabla_excel(ws_rad, estacion, variable, periodo, 'maxima')
+            obj_typevi.tabla_excel(ws_rad, estacion, variable, periodo, 'minima')
+            # obj_typei.grafico_excel(ws_hsu, variable, periodo)
 
         elif variable.var_id == 8:
             if len(wb.sheetnames) == 1:
