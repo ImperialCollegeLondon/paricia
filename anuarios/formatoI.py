@@ -3,7 +3,45 @@
 from anuarios.models import PresionAtmosferica, HumedadSuelo, TemperaturaAgua, Caudal, NivelAgua
 from django.db import connection
 from home.functions import dictfetchall
+from anuarios.anuario import Anuarios
 from math import isnan
+
+
+class FormatoI(Anuarios):
+    maximo = 0
+    minimo = 0
+    promedio = 0
+
+    def consulta(self, estacion, variable, periodo,tipo):
+        cursor = connection.cursor()
+        tabla = 'validacion_' + str(variable.var_modelo)
+        sql = "SELECT "
+        if tipo == 'maixmo':
+            sql += "max(valor) as valor, "
+        elif tipo == 'minimo':
+            sql += "min(valor) as valor, "
+        else:
+            sql += "avg(valor) as valor, "
+
+        sql += "date_part('month',fecha) as mes "
+        sql += "FROM " + tabla + " "
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+        sql += "and date_part('year',fecha)=" + str(periodo)
+        # if variable.var_id == 8:
+        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
+        if variable.var_id == 6 or variable.var_id == 8:
+            sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
+        sql += "GROUP BY mes ORDER BY mes"
+
+
+
+
+
+
+
+
+    def matriz(self, estacion, variable, periodo):
+        pass
 
 
 def matrizI(estacion, variable, periodo):
@@ -15,7 +53,7 @@ def matrizI(estacion, variable, periodo):
     sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -29,7 +67,7 @@ def matrizI(estacion, variable, periodo):
     sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -42,7 +80,7 @@ def matrizI(estacion, variable, periodo):
     # valores promedio mensuales
     sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
