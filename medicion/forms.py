@@ -59,7 +59,7 @@ class CurvaDescargaSearchForm(forms.Form):
 
     def filtrar(self, form):
         if form.cleaned_data['estacion']:
-            lista = CurvaDescarga.objects.filter(estacion=form.cleaned_data['estacion'])
+            lista = CurvaDescarga.objects.filter(estacion_id=form.cleaned_data['estacion'])
         else:
             lista = CurvaDescarga.objects.all()
         return lista

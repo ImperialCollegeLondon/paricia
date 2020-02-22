@@ -340,7 +340,7 @@ def guardar_datos_automatico(datos):
 def eliminar_datos(modelo, importacion, estacion):
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
-    datos = modelo.objects.filter(fecha__gte=fecha_ini).filter(fecha__lte=fecha_fin).filter(estacion=estacion)
+    datos = modelo.objects.filter(fecha__gte=fecha_ini).filter(fecha__lte=fecha_fin).filter(estacion_id=estacion)
 
     if datos:
         datos.delete()
@@ -411,7 +411,7 @@ def verificar_vacios(fecha_archivo, fecha_datos):
 # Consultar la ultima fecha de los datos
 def ultima_fecha(modelo, estacion):
     # año base de la información
-    consulta = list(modelo.objects.filter(estacion=estacion).order_by('-fecha')[:1])
+    consulta = list(modelo.objects.filter(estacion_id=estacion).order_by('-fecha')[:1])
     if len(consulta) > 0:
 
         informacion = consulta[0].fecha
@@ -423,7 +423,7 @@ def ultima_fecha(modelo, estacion):
 
 # Consultar periodo de tiempo del archivo
 def consulta_fecha(fec_ini, fec_fin, est_id, modelo):
-    consulta = modelo.objects.filter(estacion=est_id).filter(fecha__gte=fec_ini).filter(fecha__lte=fec_fin)
+    consulta = modelo.objects.filter(estacion_id=est_id).filter(fecha__gte=fec_ini).filter(fecha__lte=fec_fin)
     if consulta.exists():
         return True
     return False

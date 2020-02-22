@@ -442,7 +442,7 @@ def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
     elif frecuencia == 4:
         fecha = 'date_trunc(\'month\',fecha) as fecha, '
     tabla = 'medicion_' + str(variable.var_modelo)
-    filtro = 'estacion=' + str(estacion.est_id) + ' and valor !=\'NaN\'::numeric '
+    filtro = 'estacion_id=' + str(estacion.est_id) + ' and valor !=\'NaN\'::numeric '
     if fecha_inicio:
         filtro += ' and fecha>=\'' + str(fecha_inicio) + '\''
     if fecha_fin:

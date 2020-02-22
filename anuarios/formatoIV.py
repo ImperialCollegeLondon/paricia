@@ -15,7 +15,7 @@ def matrizIV(estacion, variable, periodo):
     # promedio mensual
     sql = "SELECT avg(valor) as media, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
@@ -26,7 +26,7 @@ def matrizIV(estacion, variable, periodo):
     sql += "date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
@@ -37,7 +37,7 @@ def matrizIV(estacion, variable, periodo):
     sql += "date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)+" "
     sql += "and valor > 0 and minimo> 0 "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"

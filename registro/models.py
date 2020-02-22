@@ -76,11 +76,11 @@ class LogMedicionSearchForm(forms.Form):
             lista = LogMedicion.objects.filter(
                 variable=variable
             ).filter(
-                estacion=estacion
+                estacion_id=estacion
             )
         elif variable is None and estacion:
             lista = LogMedicion.objects.filter(
-                estacion=estacion
+                estacion_id=estacion
             )
         elif estacion is None and variable:
             lista = LogMedicion.objects.filter(

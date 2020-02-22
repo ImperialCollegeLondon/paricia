@@ -53,7 +53,7 @@ def matrizI(estacion, variable, periodo):
     sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -67,7 +67,7 @@ def matrizI(estacion, variable, periodo):
     sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -80,7 +80,7 @@ def matrizI(estacion, variable, periodo):
     # valores promedio mensuales
     sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "

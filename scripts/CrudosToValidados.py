@@ -68,7 +68,7 @@ def iniciar_lectura():
             if fila_cru.var_id.var_id in filtro:
 
                 for periodo in periodos:
-                    datos_crudos = modelo_medicion.objects.filter(estacion=fila_est.est_id).filter(fecha__year=periodo)
+                    datos_crudos = modelo_medicion.objects.filter(estacion_id=fila_est.est_id).filter(fecha__year=periodo)
 
                     if len(datos_crudos) > 0:
 

@@ -18,7 +18,7 @@ def matrizV_mensual(estacion, variable, periodo):
     # velocidad media en m/s
     sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     # sql += "AND date_part('month',fecha)=9 "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
@@ -28,7 +28,7 @@ def matrizV_mensual(estacion, variable, periodo):
     # numero de registros menores a 0.5 en velocidad
     sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<0.5 "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<0.5 "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
@@ -37,7 +37,7 @@ def matrizV_mensual(estacion, variable, periodo):
         # numero de registros menores o igual a 0.5 en velocidad
         sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
         sql += "FROM " + tabla_velocidad + " "
-        sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<0.6"
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<0.6"
         sql += "and date_part('year',fecha)=" + str(periodo)
         sql += "GROUP BY mes ORDER BY mes"
 
@@ -51,7 +51,7 @@ def matrizV_mensual(estacion, variable, periodo):
         # lista de datos de la dirección de viento
         sql = "SELECT valor, fecha "
         sql += "FROM " + tabla_direccion + " "
-        sql += "WHERE estacion=" + str(estacion.est_id) + " "
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',fecha)=" + str(mes)+" "
         sql += "AND valor is not null AND valor<=360 "
         sql += "AND valor >=0 "
@@ -62,7 +62,7 @@ def matrizV_mensual(estacion, variable, periodo):
         # lista de datos de velocidad del viento
         sql = "SELECT valor,maximo, fecha "
         sql += "FROM " + tabla_velocidad + " "
-        sql += "WHERE estacion=" + str(estacion.est_id) + " "
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',fecha)=" + str(mes)+" "
         sql += "AND valor is not null "
         sql += "and date_part('year',fecha)=" + str(periodo)

@@ -9,18 +9,8 @@ from reportes.typeVI import TypeVI
 from cruce.models import Cruce
 
 from django.http import HttpResponse
-from sedc.settings import BASE_DIR
-# librerias para manejar los archivos EXCEL
-from openpyxl.styles import Font, Alignment, Border, Side
+
 from openpyxl import Workbook
-from openpyxl.drawing.image import Image
-
-from openpyxl.chart import (
-    LineChart,
-    Reference,
-)
-
-
 
 
 def reporte_excel_anuario(form):
@@ -31,25 +21,8 @@ def reporte_excel_anuario(form):
 
                      )
 
-    # ruta de la imagen
-    ruta = str(BASE_DIR) + '/media/logo_fonag.jpg'
-    img = Image(ruta)
-
     # Creamos el libro de trabajo
     wb = Workbook()
-
-    # humedadsuelo,presionatmosferica,temperaturaagua,caudal,nivelagua
-    typei = [6, 8, 9, 10, 11]
-    # precipitacion
-    typeii = [1]
-    # temperaturaaire
-    typeiii = [2]
-    # humedadaire
-    typeiv = [3]
-    # direccion y velocidad
-    typev = [4, 5]
-    # radiacion
-    typevi = [7]
 
     obj_typei = TypeI()
     obj_typeii = TypeII()

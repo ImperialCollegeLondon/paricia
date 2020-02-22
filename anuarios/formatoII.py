@@ -14,7 +14,7 @@ def get_precipitacion(estacion, variable, periodo):
     # valores de precipitación mensual
     sql = "SELECT sum(valor) as suma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
@@ -23,7 +23,7 @@ def get_precipitacion(estacion, variable, periodo):
     sql = "SELECT sum(valor) as valor, date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
@@ -31,7 +31,7 @@ def get_precipitacion(estacion, variable, periodo):
     # Número de datos por mes
     sql = "SELECT date_part('month',fecha) as mes, count(*) as valor  "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)

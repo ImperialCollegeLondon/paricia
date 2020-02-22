@@ -268,9 +268,9 @@ def procesar_archivo(archivo, formato, fecha, estacion):
                 else:
                     minimo = None
                 if fila.var_id.var_id == 1:
-                    dato = modelo(estacion=estacion.est_id, fecha=fecha_datos, valor=valor)
+                    dato = modelo(estacion_id=estacion.est_id, fecha=fecha_datos, valor=valor)
                 else:
-                    dato = modelo(estacion=estacion.est_id, fecha=fecha_datos, valor=valor,
+                    dato = modelo(estacion_id=estacion.est_id, fecha=fecha_datos, valor=valor,
                                   maximo=maximo, minimo=minimo)
                 datos.append(dato)
 

@@ -26,7 +26,7 @@ BEGIN
 	medicion AS (
 		SELECT m.id, m.fecha, 1 AS tipo, m.valor, CAST(NULL AS smallint) AS validacion,
 			EXISTS(SELECT * FROM validacion v WHERE v.fecha = m.fecha AND v.valor = m.valor) AS existe_en_validacion
-		FROM medicion_precipitacion m WHERE m.estacion = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
+		FROM medicion_precipitacion m WHERE m.estacion_id = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
 	),
 	union_med_val AS (
 		SELECT * FROM validacion UNION SELECT * FROM medicion
