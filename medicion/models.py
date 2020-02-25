@@ -51,15 +51,15 @@ class DigVar:
 
 class Precipitacion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion = models.PositiveIntegerField("Estacion")
+    estacion = models.PositiveIntegerField("estacion_id")
     estacion_id = models.PositiveIntegerField("estacion_id", blank=True, null=True)
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v1.max_dig, decimal_places=DigVar.v1.dec_pla, null=True)
 
     class Meta:
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=['estacion', 'fecha']),
+            models.Index(fields=['fecha', 'estacion']),
         ]
 
 
