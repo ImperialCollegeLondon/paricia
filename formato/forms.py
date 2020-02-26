@@ -3,6 +3,7 @@
 from django.forms import ModelForm
 from formato.models import Formato, Clasificacion, Asociacion
 from django import forms
+from estacion.models import Estacion
 
 
 class FormatoSearchForm(forms.Form):
@@ -19,7 +20,7 @@ class FormatoSearchForm(forms.Form):
         help_text='Puede usar una o varias palabras',
         label='Descripción'
     )
-    for_tipo=forms.ChoiceField(required=False, choices=TIPO_FORMATO)
+    for_tipo = forms.ChoiceField(required=False, choices=TIPO_FORMATO)
 
     def filtrar(self, form):
         if form.cleaned_data['for_descripcion'] and form.cleaned_data['for_tipo']:
@@ -90,6 +91,11 @@ class AsociacionSearchForm(ModelForm):
         model = Asociacion
         fields = ['est_id', 'for_id']
 
+    def __init__(self, *args, **kwargs):
+        super(AsociacionSearchForm, self).__init__(*args, **kwargs)
+        self.fields['est_id'].queryset = Estacion.objects.filter(est_externa=False).order_by('est_codigo')
+
+
     def filtrar(self, form):
         for_id = form.cleaned_data['for_id']
         est_id = form.cleaned_data['est_id']
@@ -111,14 +117,12 @@ class AsociacionSearchForm(ModelForm):
             lista = Asociacion.objects.all()
         return lista
 
-    def cadena(self, form):
-        keys = form.cleaned_data.keys()
-        string = str("?")
-        i = 1
-        for item in keys:
-            if i < len(keys):
-                string += item + "=" + str(form.cleaned_data[item]) + "&"
-            else:
-                string += item + "=" + str(form.cleaned_data[item])
-            i += 1
-        return string
+
+class AsociacionCreateForm(ModelForm):
+    class Meta:
+        model = Asociacion
+        fields = ['est_id', 'for_id']
+
+    def __init__(self, *args, **kwargs):
+        super(AsociacionCreateForm, self).__init__(*args, **kwargs)
+        self.fields['est_id'].queryset = Estacion.objects.filter(est_externa=False).order_by('est_codigo')

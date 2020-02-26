@@ -1,4 +1,4 @@
-from django.urls import re_path, include
+from django.urls import re_path, path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -36,7 +36,8 @@ urlpatterns = [
     re_path(r'clasificacion/edit/(?P<pk>[0-9]+)/$', views.ClasificacionUpdate.as_view(), name='clasificacion_update'),
     re_path(r'clasificacion/(?P<pk>[0-9]+)/delete/$', views.ClasificacionDelete.as_view(), name='clasificacion_delete'),
 
-    re_path(r'^asociacion/$', views.AsociacionList.as_view(), name='asociacion_index'),
+    path('asociacion/', views.AsociacionList.as_view(), name='asociacion_index'),
+    path('asociacion/<int:page>', views.AsociacionList.as_view(), name='asociacion_index'),
     re_path(r'asociacion/create/$', views.AsociacionCreate.as_view(), name='asociacion_create'),
     re_path(r'asociacion/detail/(?P<pk>[0-9]+)/$', views.AsociacionDetail.as_view(), name='asociacion_detail'),
     re_path(r'asociacion/(?P<pk>[0-9]+)/$', views.AsociacionUpdate.as_view(), name='asociacion_update'),

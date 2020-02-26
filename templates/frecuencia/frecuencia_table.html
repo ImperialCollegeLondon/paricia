@@ -16,7 +16,8 @@
             <th>Variable</th>
             <th>Valor</th>
             <th>Fecha inicio</th>
-            <th>Fecha fin</th>
+
+            <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -26,7 +27,7 @@
             <td>{{ item.var_id }}</td>
             <td>{{ item.fre_valor }}</td>
             <td>{{ item.fre_fecha_ini|date:"d/m/Y" }}</td>
-            <td>{{ item.fre_fecha_fin|date:"d/m/Y" }}</td>
+
             <td>
                 <a href="{% url 'frecuencia:frecuencia_detail' item.fre_id %}">
                     <span class="far fa-eye" aria-hidden="true"></span>
