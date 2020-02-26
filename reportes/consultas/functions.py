@@ -160,7 +160,7 @@ def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
     fecha_inicio = datetime(fecha_inicio.year, fecha_inicio.month, fecha_inicio.day, 0, 0, 0)
     fecha_fin = datetime(fecha_fin.year, fecha_fin.month, fecha_fin.day, 23, 59, 59, 999999)
     tabla = 'medicion_' + str(variable.var_modelo)
-    sql = 'SELECT * FROM ' + tabla + ' WHERE estacion =' + str(estacion.est_id)
+    sql = 'SELECT * FROM ' + tabla + ' WHERE estacion_id =' + str(estacion.est_id)
     # if fecha_inicio:
     sql = sql + ' AND fecha>=\'' + str(fecha_inicio) + '\''
     # if fecha_fin:
