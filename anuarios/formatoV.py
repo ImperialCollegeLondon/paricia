@@ -2,6 +2,8 @@
 
 from anuarios.models import Viento
 from django.db import connection
+import numpy as np
+from math import isnan
 
 
 class VelocidaDireccion():
@@ -55,8 +57,9 @@ def matrizV_mensual(estacion, variable, periodo):
         sql += "AND date_part('month',fecha)=" + str(mes)+" "
         sql += "AND valor is not null AND valor<=360 "
         sql += "AND valor >=0 "
-        sql += "and date_part('year',fecha)=" + str(periodo)
+        sql += "and date_part('year',fecha)=" + str(periodo)+" "
         sql += "ORDER BY fecha"
+        print(sql)
         cursor.execute(sql)
         dat_dvi = dictfetchall(cursor)
         # lista de datos de velocidad del viento
@@ -65,9 +68,10 @@ def matrizV_mensual(estacion, variable, periodo):
         sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',fecha)=" + str(mes)+" "
         sql += "AND valor is not null "
-        sql += "and date_part('year',fecha)=" + str(periodo)
+        sql += "and date_part('year',fecha)=" + str(periodo)+" "
         sql += "ORDER BY fecha"
         cursor.execute(sql)
+        print(sql)
         dat_vvi = dictfetchall(cursor)
         vvi = [[0 for x in range(0)] for y in range(8)]
         vvi_max = [[0 for x in range(0)] for y in range(8)]
@@ -112,6 +116,7 @@ def matrizV_mensual(estacion, variable, periodo):
             # porcentaje por direccion
             valores[mes - 1].append(round(por_med, 2))
             # maximos por direcciion
+
             if len(vvi_max[j]) > 0:
                 maximos.append(max(vvi_max[j]))
             else:
@@ -119,7 +124,7 @@ def matrizV_mensual(estacion, variable, periodo):
         # velocidad media en km/h
         vel_media = item_velocidad.get('valor')*36/10
         # porcentaje de calma
-        if len(datos)>0:
+        if len(datos) > 0:
             valor_calma = round(float(item_calma.get('calma')) / len(datos) * 100, 2)
         else:
             valor_calma = 0
@@ -137,8 +142,14 @@ def matrizV_mensual(estacion, variable, periodo):
 
 
 def get_maximo(item):
-    if item.velocidad_max is None:
+    '''if item.velocidad_max is None:
         if item.velocidad is None:
+            return 0
+        else:
+            return item.velocidad
+    return item.velocidad_max'''
+    if isnan(item.velocidad_max):
+        if isnan(item.velocidad):
             return 0
         else:
             return item.velocidad

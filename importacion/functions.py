@@ -313,7 +313,7 @@ def construir_matriz(archivo_src, formato, estacion):
             if var.resolucion:
                 datos['valor'] = datos['valor'] * float(var.resolucion)
 
-        datos['estacion'] = estacion.est_id
+        datos['estacion_id'] = estacion.est_id
         datos_variables[var.var_id_id] = datos
     return datos_variables
 

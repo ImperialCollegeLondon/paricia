@@ -125,8 +125,8 @@ class VelocidadViento(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['estacion', 'fecha']),
-            models.Index(fields=['fecha', 'estacion']),
+            models.Index(fields=['estacion_id', 'fecha']),
+            models.Index(fields=['fecha', 'estacion_id']),
         ]
 
 
