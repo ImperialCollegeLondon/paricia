@@ -248,7 +248,7 @@ def consulta_crudos_graficar(estacion_id, variable, inicio, fin, profundidad):
     medicion AS (
         SELECT m.id, m.fecha, m.valor
         FROM medicion_var101 m
-        WHERE m.estacion = (SELECT est_id FROM estacion)
+        WHERE m.estacion_id = (SELECT est_id FROM estacion)
     """
     if profundidad:
         sql = sql + '        AND profundidad = ' + str(profundidad)

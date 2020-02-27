@@ -39,10 +39,8 @@ $(document).ready(function() {
     var estacion = $(this).val();
     $("#id_variable").find('option').remove().end()
     $.ajax({
-      url: '/anuarios/variables',
-      data: {
-        'estacion': estacion
-      },
+      url: '/anuarios/variables/'+estacion,
+
       dataType: 'json',
       success: function (data) {
         //datos=JSON.parse(data)

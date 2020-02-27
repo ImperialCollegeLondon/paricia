@@ -14,7 +14,7 @@ def consultar_dias(form):
     datos=[]
     if year_ini == year_fin:
         tabla = var_cod + '.m' + year_ini
-        sql = 'SELECT date_trunc(\'day\',med_fecha) as fecha from ' + tabla + ' '
+        sql = 'SELECT date_trunc(\'day\',fecha) as fecha from ' + tabla + ' '
         sql += 'where est_id_id=' + str(estacion.est_id) + ' and '
         sql += 'med_fecha>=\'' + str(fecha_ini) + '\' and '
         sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '

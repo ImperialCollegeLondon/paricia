@@ -11,9 +11,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.http import JsonResponse
 from importacion.functions import (consultar_formatos, validar_fechas,
                                    preformato_matriz, guardar_datos__temp_a_final)
-from importacion.forms import ImportacionForm, ImportacionSearchForm
-from importacion.lectura import iniciar_lectura
-from django.db import transaction
+from importacion.forms import ImportacionForm, ImportacionSearchForm, ImportacionCreateForm
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
 import os
@@ -71,7 +70,8 @@ class ListAutomatico(LoginRequiredMixin, ListView, FormView):
 # Vista para cargar el archivo y leer los datos
 class ImportacionCreate(LoginRequiredMixin, CreateView):
     model = ImportacionTemp
-    fields = ['est_id', 'for_id', 'imp_archivo']
+    # fields = ['est_id', 'for_id', 'imp_archivo']
+    form_class = ImportacionCreateForm
     template_name = 'importacion/importacion_form.html'
 
     def form_valid(self, form):

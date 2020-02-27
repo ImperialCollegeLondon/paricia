@@ -41,24 +41,8 @@ class ProcesarVariables(LoginRequiredMixin, FormView):
 
 
 # lista de variables por estacion
-def lista_variables(request):
-    estacion = request.GET.get('estacion', None)
+def lista_variables(request, estacion):
+    print(estacion)
     datos = functions.consultar_variables(estacion)
     return JsonResponse(datos)
 
-
-# Reporte Excel
-class ReportePersonasExcel(TemplateView):
-    def get(self, request, *args, **kwargs):
-        ruta = str(BASE_DIR) + '/media/anuario/AnuarioBase.xlsx'
-        wb = load_workbook(ruta)
-        ws=wb['H5006-AGLLA']
-        ws['B13']=1
-        # Establecemos el nombre del archivo
-        nombre_archivo = "ReporteAnuario.xlsx"
-        # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
-        response = HttpResponse(content_type="application/ms-excel")
-        contenido = "attachment; filename={0}".format(nombre_archivo)
-        response["Content-Disposition"] = contenido
-        wb.save(response)
-        return response

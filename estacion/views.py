@@ -14,6 +14,7 @@ from home.functions import pagination
 from django.http import JsonResponse, HttpResponse
 import json
 
+
 # Create your views here.
 class EstacionCreate(LoginRequiredMixin, CreateView):
     model = Estacion
