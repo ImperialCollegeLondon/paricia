@@ -122,10 +122,7 @@ $(document).ready(function() {
         $("#id_variable").find('option').remove().end()
         $("#id_variable").append('<option value="">---------</option>');
         $.ajax({
-            url: '/anuarios/variables',
-            data: {
-                'estacion': estacion
-            },
+            url: '/anuarios/variables/'+estacion,
             dataType: 'json',
             success: function (data) {
 
