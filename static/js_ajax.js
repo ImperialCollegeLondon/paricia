@@ -66,7 +66,7 @@ $(document).ready(function() {
                     $("#div_informacion").show();
                     var count = Object.keys(data.data[0].y).length;
                     if (count>0) {
-                        Plotly.newPlot('div_informacion', data.data,data.layout);
+                        Plotly.newPlot('div_informacion', data.data,data.layout,{scrollZoom: true});
                     }
                     else{
                         //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')

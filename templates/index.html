@@ -86,8 +86,10 @@
                    role="button" aria-haspopup="true" aria-expanded="false">
                     Análisis de Datos<span class="caret"></span></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
                     <a class="dropdown-item" href="{% url 'medicion:medicion_filter' %}">Validación Datos Crudos</a>
                     <a class="dropdown-item" href="{% url 'anuarios:anuarios_procesar' %}">Procesar Anuario</a>
+                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">Doble Masa</a>
                 </div>
             </li>
 
@@ -132,7 +134,7 @@
                    aria-haspopup="true" aria-expanded="false">Indicadores
                     <span class="caret"></span></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">Doble Masa</a>
+
                     <a class="dropdown-item" href="{% url 'indices:precipitacion' %}">Precipitación</a>
                     <a class="dropdown-item" href="{% url 'indices:caudal' %}">Caudales</a>
                     <a class="dropdown-item" href="{% url 'indices:intensidad' %}">Intensidad - Duración</a>

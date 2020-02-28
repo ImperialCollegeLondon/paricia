@@ -118,7 +118,6 @@ def consultar_datos_usuario(form):
     max_pro = informacion["max_pro"]
     min_pro = informacion["min_pro"]
     if frecuencia == str(0) or variable.var_id != 1:
-
         data_valor = get_elemento_data_json('scatter', tiempo, valor, 'Valor', '#1660A7')
     else:
         data_valor = get_elemento_data_json('bar', tiempo, valor, 'Promedio', '#1660A7')
@@ -138,6 +137,7 @@ def consultar_datos_usuario(form):
     if variable.var_id == 1:
         data = get_data_graph(data_valor)
     else:
+        print(data_maximo)
         data = get_data_graph(data_valor, data_maximo, data_minimo)
 
     grafico = dict(

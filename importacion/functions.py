@@ -65,13 +65,13 @@ def guardar_datos(imp_id, form):
 
 # verificar si la columna de la hora y fecha tienen el formato adecuado
 def verificar_fechahora(fechahora, formatofechahora):
+    # print(fechahora)
     if isinstance(fechahora, datetime):
         return fechahora
     elif isinstance(fechahora, np.datetime64):
         fechahora = datetime.utcfromtimestamp((fechahora - unix_epoch) / one_second)
         return fechahora
     elif isinstance(fechahora, str):
-        # print("str")
         pass
         # valores = fechahora.split(" ")
         # valores = list(filter(None, valores))
@@ -79,7 +79,6 @@ def verificar_fechahora(fechahora, formatofechahora):
 
     elif isinstance(fechahora, list):
         fechahora = ' '.join(fechahora)
-
     elif isinstance(fechahora, pd.Series):
         fechahora = ' '.join([str(val) for val in list(fechahora[:])])
 
@@ -87,9 +86,10 @@ def verificar_fechahora(fechahora, formatofechahora):
         fechahora = ''
 
     try:
+        # print(fechahora, formatofechahora)
         _fechahora = datetime.strptime(fechahora, formatofechahora)
     except:
-        # print("excepcion")
+        # print("excepcion", fechahora)
         separar = fechahora.split(" ")
 
         fecha_str = separar[0]
@@ -105,7 +105,6 @@ def verificar_fechahora(fechahora, formatofechahora):
             _fechahora = None
         else:
             _fechahora = datetime(fecha.year, fecha.month, fecha.day, hora.hour, hora.minute, hora.second)
-
 
     return _fechahora
 
