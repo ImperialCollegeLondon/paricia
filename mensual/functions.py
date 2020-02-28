@@ -9,7 +9,6 @@ def get_frecuencia_registro(form):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
     periodo = form.cleaned_data['periodo']
-    # tabla = "pre.m" + periodo
     tabla = 'mensual_' + str(variable.var_modelo)
     cursor = connection.cursor()
     # promedio  de la frecuencia de registro registro

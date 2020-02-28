@@ -19,6 +19,7 @@ def consultar_dias(form):
     sql += 'fecha>=\'' + str(fecha_ini) + '\' and '
     sql += 'fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
     sql += 'group by fecha order by fecha'
+    print(sql)
     cursor.execute(sql)
     datos = dictfetchall(cursor)
 

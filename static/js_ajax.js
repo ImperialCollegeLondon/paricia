@@ -4,7 +4,7 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip()
 
 
-
+    // Comparar Variables
     $("#btn_graficar").click(function(){
         $(this).attr('disabled',true);
         $.ajax({
@@ -174,6 +174,56 @@ $(document).ready(function() {
         periodos_validacion();
     });
 
+
+    //Cargar variables por estacion
+
+    $("#id_estacion").change(function () {
+        var estacion = $(this).val();
+        $("#id_variable").find('option').remove().end()
+        $.ajax({
+            url: '/anuarios/variables/'+estacion,
+            dataType: 'json',
+            success: function (data) {
+                //datos=JSON.parse(data)
+                $.each(data, function(index, value) {
+                    $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
+                //console.log(value)
+                });
+            }
+        });
+    });
+
+
+    //consulta y guarda la información
+    $("#btn_procesar").click(function(){
+        $(this).attr('disabled',true);
+        $.ajax({
+            url: $("#form_mensual").attr('action'),
+            data: $("#form_mensual").serialize(),
+            type:'POST',
+            beforeSend: function () {
+                $("#div_informacion").hide();
+                $("#div_loading").show();
+                $("#div_error").hide();
+            },
+            success: function (data) {
+                $("#div_informacion").html(data)
+                $("#btn_procesar").removeAttr('disabled');
+                $("#div_informacion").show();
+                $("#div_loading").hide();
+                $("#div_mensaje").html("Datos Guardados")
+                $("#div_error").hide();
+            },
+            error: function () {
+                $("#div_informacion").hide();
+                $("#div_loading").hide();
+                $("#div_error").show();
+                $("#btn_procesar").removeAttr('disabled');
+            }
+        });
+    });
+
+
     //datepicker con intervalo registringido
     var dateFormat = "dd/mm/yy";
     $( "#id_inicio" ).datepicker({
@@ -195,8 +245,6 @@ $(document).ready(function() {
         $( "#id_inicio" ).datepicker( "option", "maxDate", getDate( this ) );
     });
 
-
-
     function getDate( element ) {
         var date;
         try {
@@ -205,46 +253,6 @@ $(document).ready(function() {
             date = null;
         }
         return date;
-    }
-
-    function graficar(data){
-        var data02= [{
-            x: new Date(),
-            y: 1
-        }, {
-            t: new Date(),
-            y: 10
-        }]
-        var data03= [{
-            x: 10,
-            y: 20
-        }, {
-            x: 15,
-            y: 10
-        }]
-        var ctx = document.getElementById('myChart');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: 'Precipitacion',
-                    data: data,
-                }]
-            },
-            //data:data03,
-            options: {
-                scales: {
-
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            unit: 'day'
-                        }
-                    }]
-                }
-            }
-        });
     }
 
 
