@@ -18,8 +18,9 @@ import json
 # Create your views here.
 class EstacionCreate(LoginRequiredMixin, CreateView):
     model = Estacion
-    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_latitud',
-              'est_longitud', 'est_altura', 'est_fecha_inicio', 'est_ficha', 'tipo', 'provincia', 'est_externa', 'influencia_km']
+    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_estado', 'est_latitud', 'est_longitud',
+              'est_altura', 'est_ficha', 'est_fecha_inicio', 'provincia', 'tipo',
+              'transmision', 'sistemacuenca', 'est_externa', 'influencia_km']
 
     def form_valid(self, form):
         return super(EstacionCreate, self).form_valid(form)
@@ -76,8 +77,9 @@ class EstacionDetail(LoginRequiredMixin, DetailView):
 
 class EstacionUpdate(LoginRequiredMixin, UpdateView):
     model = Estacion
-    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_latitud', 'est_longitud', 'est_altura',
-              'est_fecha_inicio', 'est_ficha', 'tipo', 'provincia', 'est_estado','est_externa', 'influencia_km']
+    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_estado', 'est_latitud', 'est_longitud',
+              'est_altura', 'est_ficha', 'est_fecha_inicio', 'provincia', 'tipo',
+              'transmision', 'sistemacuenca', 'est_externa', 'influencia_km']
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
