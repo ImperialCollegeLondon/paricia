@@ -20,7 +20,7 @@ def periodos_validacion(est_id, var_id):
     fechas AS (
     SELECT m.fecha, 
         EXISTS (SELECT v.fecha FROM validacion_%%var_id%% v WHERE v.estacion_id = %%est_id%% AND v.fecha = m.fecha) AS validado
-        FROM medicion_%%var_id%% m WHERE m.estacion = %%est_id%%
+        FROM medicion_%%var_id%% m WHERE m.estacion_id = %%est_id%%
     ),
     fechas_cambio AS (
         SELECT fecha, validado, CASE WHEN validado != lag(validado) OVER (ORDER BY fecha ASC) THEN lag(fecha) OVER (ORDER BY fecha ASC) END AS fecha_bloque_anterior FROM fechas

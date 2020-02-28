@@ -6,7 +6,7 @@ from django.db import connection
 cursor = connection.cursor()
 
 # variables para validaciones
-varibles = ["precipitacion", "temperaturaaire", "humedadaire", "velocidadviento", "direccionviento", "humedadsuelo",
+variables = ["precipitacion", "temperaturaaire", "humedadaire", "velocidadviento", "direccionviento", "humedadsuelo",
             "radiacionsolar", "presionatmosferica", "temperaturaagua", "caudal", "nivelagua"]
 
 # Tipos de datos para inserccion
@@ -24,14 +24,14 @@ DROP TYPE IF EXISTS fecha__valor__maximo__minimo;
 CREATE TYPE fecha__valor__maximo__minimo AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC, maximo NUMERIC, minimo NUMERIC);
 
 """
-cursor.execute(inserccion_types)
+# cursor.execute(inserccion_types)
 ######################################################################
 ##  insertar validacion
 validacion_type = """
 DROP TYPE IF EXISTS validacion;
 CREATE type validacion AS (fecha TIMESTAMP, valor NUMERIC, comentario VARCHAR);
 """
-cursor.execute(validacion_type)
+#cursor.execute(validacion_type)
 
 funcionValidacion = """DROP FUNCTION IF EXISTS insertar_%%variable%%_validacion(bigint, json);
 CREATE OR REPLACE FUNCTION insertar_%%variable%%_validacion(_estacion_id bigint, _datos json)
@@ -76,11 +76,11 @@ END
 $BODY$  LANGUAGE plpgsql
 """
 
-for index, var in enumerate(varibles):
+'''for index, var in enumerate(variables):
     #print("Variable ",var, "indice ", index+1)
     validacion_sql = funcionValidacion.replace('%%variable%%', var)
     validacion_sql = validacion_sql.replace('%%var_id%%',str(index))
-    cursor.execute(validacion_sql)
+    cursor.execute(validacion_sql)'''
 
 
 
@@ -206,11 +206,11 @@ BEGIN
 END; $$
 LANGUAGE 'plpgsql';"""
 
-for index, var in enumerate(varibles):
+'''for index, var in enumerate(variables):
     print("Variable ",var,"indice ",index+1)
     sqlFun = funRepoValida.replace('%%variable%%', var)
     sqlFun = sqlFun.replace('%%var_id%%',str(index+1))
-    cursor.execute(sqlFun)
+    cursor.execute(sqlFun)'''
 
 
 
