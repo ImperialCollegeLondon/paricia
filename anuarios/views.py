@@ -42,7 +42,6 @@ class ProcesarVariables(LoginRequiredMixin, FormView):
 
 # lista de variables por estacion
 def lista_variables(request, estacion):
-    print(estacion)
     datos = functions.consultar_variables(estacion)
     return JsonResponse(datos)
 

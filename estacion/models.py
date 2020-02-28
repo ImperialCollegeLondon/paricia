@@ -101,7 +101,7 @@ class Estacion(models.Model):
         return reverse('estacion:estacion_detail', kwargs={'pk': self.pk})
 
     class Meta:
-        ordering = ('est_id',)
+        ordering = ('est_externa','est_codigo',)
 
 
 # modelo para almacenar las estaciones del INAMHI
