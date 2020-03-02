@@ -1,0 +1,62 @@
+{% load static %}
+
+
+<script src="{% static 'porcentaje.js' %}"></script>
+{% if datos %}
+<div class="col-md-5">
+    <table style="font-size: 12px" class="table table-sm table-striped table-bordered table-sm">
+
+        <thead>
+        <tr>
+            <th align="center" colspan='2'>Frecuencia de Registro Horaria</th>
+        </tr>
+        <tr>
+            <th>Fecha</th>
+            <th>Valor</th>
+            <th>Porcentaje</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th>
+                <div class="row mt-2 no-gutters justify-content-md-center" >
+                    <div class="col-md-auto">
+                        <span id="btn_valor_normal"  class="badge badge-success">Normal<br/>-</span>
+                        <span id="btn_valor_error"  class="badge badge-danger">Error<br/>-</span>
+                    </div>
+                </div>
+                <div class="row mt-2 no-gutters justify-content-md-center" >
+                    <div class="col-md-auto">
+                        <span id="btn_valor_prev"  class="badge badge-success"><<</span>
+                        <span id="btn_valor_next"  class="badge badge-danger">>></span>
+                    </div>
+                </div>
+            </th>
+            <th></th>
+        </tr>
+
+        </thead>
+        <tbody>
+
+        {% for item in datos %}
+
+        <tr>
+            <td>{{ item.fecha|date:"Y-m-d H:i:s" }}</td>
+            <td class="valor {{item.class_valor}}">{{ item.valor }}</td>
+            <td class="porcentaje {{item.class_porcentaje}}">{{ item.completo_mediciones }}</td>
+
+        </tr>
+
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{%else%}
+<div class="col-lg-5 col-md-5">
+    <div class="alert alert-primary" role="alert">
+        Información no Disponible
+    </div>
+</div>
+{% endif %}
+
+

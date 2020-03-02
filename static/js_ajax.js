@@ -198,26 +198,19 @@ $(document).ready(function() {
     $("#btn_procesar").click(function(){
         $(this).attr('disabled',true);
         $.ajax({
-            url: $("#form_mensual").attr('action'),
-            data: $("#form_mensual").serialize(),
+            url: $("#form_procesar").attr('action'),
+            data: $("#form_procesar").serialize(),
             type:'POST',
             beforeSend: function () {
-                $("#div_informacion").hide();
-                $("#div_loading").show();
-                $("#div_error").hide();
+                activar_espera("#div_loading","#div_informacion","#div_error")
             },
             success: function (data) {
                 $("#div_informacion").html(data)
                 $("#btn_procesar").removeAttr('disabled');
-                $("#div_informacion").show();
-                $("#div_loading").hide();
-                $("#div_mensaje").html("Datos Guardados")
-                $("#div_error").hide();
+                desactivar_espera("#div_loading","#div_informacion","#div_error")
             },
             error: function () {
-                $("#div_informacion").hide();
-                $("#div_loading").hide();
-                $("#div_error").show();
+                mostrar_error("#div_loading","#div_informacion","#div_error")
                 $("#btn_procesar").removeAttr('disabled');
             }
         });
@@ -291,10 +284,21 @@ $(document).ready(function() {
     }
 
     function activar_espera(div_loading, div_informacion, div_error){
-        console.log("llego")
-        div_loading.show();
-        div_informacion.hide();
-        div_error.hide();
+        console.log("Activar espera")
+        $(div_loading).show();
+        $(div_informacion).hide();
+        $(div_error).hide();
+    }
+    function desactivar_espera(div_loading, div_informacion, div_error){
+        $(div_loading).hide();
+        $(div_informacion).show();
+        $(div_error).hide();
+    }
+    function mostrar_error(div_loading, div_informacion, div_error){
+        $(div_loading).hide();
+        $(div_informacion).hide();
+        $(div_error).show();
+
     }
 
 

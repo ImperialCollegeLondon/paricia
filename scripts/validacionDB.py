@@ -206,11 +206,11 @@ BEGIN
 END; $$
 LANGUAGE 'plpgsql';"""
 
-'''for index, var in enumerate(variables):
+for index, var in enumerate(variables):
     print("Variable ",var,"indice ",index+1)
     sqlFun = funRepoValida.replace('%%variable%%', var)
     sqlFun = sqlFun.replace('%%var_id%%',str(index+1))
-    cursor.execute(sqlFun)'''
+    cursor.execute(sqlFun)
 
 
 

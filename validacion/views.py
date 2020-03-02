@@ -116,7 +116,7 @@ class PeriodosValidacion(LoginRequiredMixin, FormView):
         try:
             estacion_id = int(request.POST.get('estacion', None))
             variable_id = int(request.POST.get('variable', None))
-            varBusc=Variable.objects.get(var_id=variable_id)
+            varBusc = Variable.objects.get(var_id=variable_id)
             variable_id = varBusc.var_modelo.lower()
         except:
             pass

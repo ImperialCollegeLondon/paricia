@@ -48,3 +48,5 @@ margin-bottom:0
 .div-show{
     display:block !important;
 }
+.normal {background-color: #BFFFBF;}
+.error {background-color: #FFBFBF;}
