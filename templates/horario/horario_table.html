@@ -4,7 +4,7 @@
 <script src="{% static 'porcentaje.js' %}"></script>
 {% if datos %}
 <div class="col-md-5">
-    <table style="font-size: 12px" class="table table-sm table-striped table-bordered table-sm">
+    <table id="tbl_data" style="font-size: 12px" class="table table-sm table-striped table-bordered table-sm">
 
         <thead>
         <tr>
@@ -12,8 +12,27 @@
         </tr>
         <tr>
             <th>Fecha</th>
-            <th>Valor</th>
-            <th>Porcentaje</th>
+            <th>
+                <div class="form-group">
+                    <label>Valor</label>
+                    <select id="chk_valor" class="form-control form-control-sm">
+                        <option value="valor">Todos</option>
+                        <option value="valor normal">Normal</option>
+                        <option value="valor error">Error</option>
+                    </select>
+                </div>
+
+            </th>
+            <th>
+                <div class="form-group">
+                    <label>Porcentaje</label>
+                    <select id="chk_porcentaje" class="form-control form-control-sm">
+                        <option value="porcentaje">Todos</option>
+                        <option value="porcentaje normal">Normal</option>
+                        <option value="porcentaje error">Error</option>
+                    </select>
+                </div>
+            </th>
         </tr>
         <tr>
             <th></th>
