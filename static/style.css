@@ -50,3 +50,27 @@ margin-bottom:0
 }
 .normal {background-color: #BFFFBF;}
 .error {background-color: #FFBFBF;}
+
+#tbl_data{
+    width: 436px;
+    border-spacing: 0;
+}
+
+#tbl_data>thead>tr, #tbl_data>tbody{
+    display: block;
+}
+#tbl_data tbody{
+
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#tbl_data>tbody td, #tbl_data>thead th {
+    width: 140px;
+}
+
+#tbl_data>thead th:last-child{
+    width: 156px;
+}
+

@@ -7,9 +7,7 @@
     <table id="tbl_data" style="font-size: 12px" class="table table-sm table-striped table-bordered table-sm">
 
         <thead>
-        <tr>
-            <th align="center" colspan='2'>Frecuencia de Registro Horaria</th>
-        </tr>
+
         <tr>
             <th>Fecha</th>
             <th>
@@ -18,8 +16,14 @@
                     <select id="chk_valor" class="form-control form-control-sm">
                         <option value="valor">Todos</option>
                         <option value="valor normal">Normal</option>
-                        <option value="valor error">Error</option>
+                        <option value="valor error">Sospechoso</option>
                     </select>
+                </div>
+                <div class="row mt-2 no-gutters justify-content-md-center" >
+                    <div class="col-md-auto">
+                        <span id="btn_valor_normal"  class="badge badge-success">Normal<br/>-</span>
+                        <span id="btn_valor_error"  class="badge badge-warning">Sospechoso<br/>-</span>
+                    </div>
                 </div>
 
             </th>
@@ -29,28 +33,16 @@
                     <select id="chk_porcentaje" class="form-control form-control-sm">
                         <option value="porcentaje">Todos</option>
                         <option value="porcentaje normal">Normal</option>
-                        <option value="porcentaje error">Error</option>
+                        <option value="porcentaje error">Sospechoso</option>
                     </select>
                 </div>
-            </th>
-        </tr>
-        <tr>
-            <th></th>
-            <th>
                 <div class="row mt-2 no-gutters justify-content-md-center" >
                     <div class="col-md-auto">
-                        <span id="btn_valor_normal"  class="badge badge-success">Normal<br/>-</span>
-                        <span id="btn_valor_error"  class="badge badge-danger">Error<br/>-</span>
+                        <span id="btn_porcentaje_normal" class="badge badge-success">Normal<br/>-</span>
+                        <span id="btn_porcentaje_error" class="badge badge-warning">Sospechoso<br/>-</span>
                     </div>
                 </div>
-                <!--<div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">
-                        <span id="btn_valor_prev"  class="badge badge-success"><<</span>
-                        <span id="btn_valor_next"  class="badge badge-danger">>></span>
-                    </div>
-                </div>-->
             </th>
-            <th></th>
         </tr>
 
         </thead>
