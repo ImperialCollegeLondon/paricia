@@ -51,28 +51,19 @@ def guardar_validacion(datos):
 
 # función para consultar datos horarios
 def consultar_horario(est_id, var_id, fecha_str):
-    fecha = datetime.strptime(fecha_str, '%Y-%m-%d %H:%M:%S')
-    fin = fecha + timedelta(hours=1)
+    inicio = datetime.strptime(fecha_str, '%Y-%m-%d %H:%M:%S')
+    fin = inicio + timedelta(hours=1)
     variable = Variable.objects.get(var_id=var_id)
-    sql = """
-    SELECT id, fecha, valor FROM %%var_id%% where estacion_id=%%est_id%% 
-    and date_trunc('day',fecha)='%%fecha%%'
-    """
-    #inicio = fecha.strftime('%d/%m/%Y')
-    #fin = fecha.strftime('%d/%m/%Y')
 
     query = "select * FROM reporte_validacion_" + str(variable.var_modelo).lower() + "(%s, %s, %s);"
-
-    consulta = ReporteValidacion.objects.raw(query, [est_id, fecha, fin])
-
+    consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
     datos = []
     for fila in consulta:
-
         if not fila.seleccionado:
             continue
         if fila.class_fecha == 'fecha salto':
             dato = {
-                'fecha':fila.fecha - datetime.timedelta(minutes=1),
+                'fecha': fila.fecha - datetime.timedelta(minutes=1),
                 'valor': None
             }
             datos.append(dato)
@@ -81,5 +72,4 @@ def consultar_horario(est_id, var_id, fecha_str):
             'valor': fila.valor
         }
         datos.append(dato)
-
     return datos
