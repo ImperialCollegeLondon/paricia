@@ -2,12 +2,9 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from validacion.models import Validacion
+
 from django.views.generic import ListView, FormView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.core.paginator import Paginator
+
 from validacion.forms import *
 from medicion.forms import ValidacionSearchForm
 from validacion import functions
@@ -15,7 +12,6 @@ from validacion import functions
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 from django.http import JsonResponse
-from variable.models import Variable
 
 ####para las vistas serializables de la api
 #from .models import *
@@ -25,66 +21,7 @@ import re
 import calendar
 
 
-class ValidacionList(LoginRequiredMixin, ListView, FormView):
-    model = Validacion
-    paginate_by = 12
-    template_name = 'validacion/validacion_list.html'
-    form_class = ConsultaValidacionForm
-
-    def post(self, request, *args, **kwargs):
-        print("clase validacion list, metodo post")
-        form = ConsultaValidacionForm(self.request.POST or None)
-        page = kwargs.get('page')
-        if form.is_valid() and self.request.is_ajax():
-            self.object_list = form.filtrar(form)
-        else:
-            self.object_list = Validacion.objects.all()
-        context = super(ValidacionList, self).get_context_data(**kwargs)
-        #context.update(pagination(self.object_list, page, 12))
-        return render(request, 'validacion/validacion_table.html', context)
-
-    def get_context_data(self, **kwargs):
-        context = super(ValidacionList, self).get_context_data(**kwargs)
-        page = self.request.GET.get('page')
-        #context.update(pagination(self.object_list, page, 12))
-        return context
-
-
-class ValidacionDetail(LoginRequiredMixin, DetailView):
-    model = Validacion
-
-
-def procesar_validacion(request):
-    if request.method == 'POST':
-        form = ValidacionProcess(request.POST)
-        # if form.is_valid():
-    else:
-        form = ValidacionProcess()
-    return render(request, 'validacion/validacion_procesar.html', {'form': form})
-
-
-# lista de validaciones por estacion y variable
-class ProcesarValidacion(LoginRequiredMixin, FormView):
-    template_name = 'validacion/validacion_procesar.html'
-    form_class = ValidacionProcess
-    success_url = '/validacion/'
-
-    def post(self, request, *args, **kwargs):
-        form = ValidacionProcess(self.request.POST or None)
-        if form.is_valid():
-            # functions.guardar_validacion(form)
-            datos = functions.generar_validacion(form)
-            if self.request.is_ajax():
-                return render(request, 'validacion/validacion_filtro.html', {'datos': datos})
-            else:
-                functions.guardar_validacion(datos)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(ProcesarValidacion, self).get_context_data(**kwargs)
-        return context
-
-
+# Consular los periodos de validacion por estacion y variable
 class PeriodosValidacion(LoginRequiredMixin, FormView):
     template_name = 'validacion/periodos_validacion.html'
     form_class = ValidacionSearchForm
@@ -97,11 +34,11 @@ class PeriodosValidacion(LoginRequiredMixin, FormView):
         try:
             estacion_id = int(request.POST.get('estacion', None))
             variable_id = int(request.POST.get('variable', None))
-            varBusc = Variable.objects.get(var_id=variable_id)
-            variable_id = varBusc.var_modelo.lower()
+            variable = Variable.objects.get(var_id=variable_id)
+            variable_id = variable.var_modelo.lower()
         except:
             pass
-        #intervalos = functions.periodos_validacion(est_id=estacion_id, var_id=variable_id)
+
         intervalos = functions.periodos_validacion(est_id=estacion_id, var_id=variable_id)
         return render(request, self.template_name, {'intervalos': intervalos})
 
@@ -174,10 +111,7 @@ class ValidacionBorrar(LoginRequiredMixin, FormView):
             return super().form_valid(form)
 
 
-
-
-
-### Vista para tadas las variables
+# Vista para tadas las variables
 class VarList(generics.ListAPIView):
 
     serializer_class = PrecipitacionSerial
