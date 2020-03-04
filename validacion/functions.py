@@ -6,6 +6,7 @@ from estacion.models import Estacion
 from variable.models import Variable
 from datetime import datetime, timedelta, date
 from django.db import models
+from medicion.functions import ReporteValidacion
 
 
 class consulta(models.Model):
@@ -46,3 +47,39 @@ def periodos_validacion(est_id, var_id):
 def guardar_validacion(datos):
     for item in datos:
         item.save()
+
+
+# función para consultar datos horarios
+def consultar_horario(est_id, var_id, fecha_str):
+    fecha = datetime.strptime(fecha_str, '%Y-%m-%d %H:%M:%S')
+    fin = fecha + timedelta(hours=1)
+    variable = Variable.objects.get(var_id=var_id)
+    sql = """
+    SELECT id, fecha, valor FROM %%var_id%% where estacion_id=%%est_id%% 
+    and date_trunc('day',fecha)='%%fecha%%'
+    """
+    #inicio = fecha.strftime('%d/%m/%Y')
+    #fin = fecha.strftime('%d/%m/%Y')
+
+    query = "select * FROM reporte_validacion_" + str(variable.var_modelo).lower() + "(%s, %s, %s);"
+
+    consulta = ReporteValidacion.objects.raw(query, [est_id, fecha, fin])
+
+    datos = []
+    for fila in consulta:
+
+        if not fila.seleccionado:
+            continue
+        if fila.class_fecha == 'fecha salto':
+            dato = {
+                'fecha':fila.fecha - datetime.timedelta(minutes=1),
+                'valor': None
+            }
+            datos.append(dato)
+        dato = {
+            'fecha': fila.fecha,
+            'valor': fila.valor
+        }
+        datos.append(dato)
+
+    return datos

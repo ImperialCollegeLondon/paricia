@@ -53,27 +53,8 @@ class ValidacionList(LoginRequiredMixin, ListView, FormView):
 class ValidacionDetail(LoginRequiredMixin, DetailView):
     model = Validacion
 
-"""
-class ValidacionUpdate(LoginRequiredMixin, UpdateView):
-    model = Validacion
-    fields = ['est_id', 'var_id', 'val_fecha', 'val_num_dat', 'val_fre_reg', 'val_porcentaje']
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(ValidacionUpdate, self).get_context_data(**kwargs)
-        context['title'] = "Modificar"
-        return context
-
-
-class ValidacionDelete(LoginRequiredMixin, DeleteView):
-    model = Validacion
-    success_url = reverse_lazy('medicion:validacion_index')
-
-"""
-
 
 def procesar_validacion(request):
-    print(" def procesar validación" )
     if request.method == 'POST':
         form = ValidacionProcess(request.POST)
         # if form.is_valid():
@@ -123,6 +104,22 @@ class PeriodosValidacion(LoginRequiredMixin, FormView):
         #intervalos = functions.periodos_validacion(est_id=estacion_id, var_id=variable_id)
         intervalos = functions.periodos_validacion(est_id=estacion_id, var_id=variable_id)
         return render(request, self.template_name, {'intervalos': intervalos})
+
+
+# Consulta de datos horarios por estacion, variable y hora
+class DatosHorarios(LoginRequiredMixin,ListView):
+    template_name = 'validacion/datos_horarios.html'
+
+    def get(self, request, *args, **kwargs):
+        if self.request.is_ajax():
+            template = 'validacion/datos_horarios.html'
+            est_id = kwargs.get('estacion')
+            var_id = kwargs.get('variable')
+            fecha_str = kwargs.get('fecha')
+            datos = functions.consultar_horario(est_id, var_id, fecha_str)
+            diccionario = {'datos': datos}
+            return render(request, template, diccionario)
+        return self.render_to_response(self.get_context_data(save=True))
 
 
 class ValidacionBorrar(LoginRequiredMixin, FormView):

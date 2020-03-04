@@ -15,6 +15,9 @@ urlpatterns = [
     re_path(r'validacion/procesar/$', views.ProcesarValidacion.as_view(), name='procesar_validacion'),
     re_path(r'^validacion/periodos_validacion/$', views.PeriodosValidacion.as_view(), name='periodos_validacion'),
     re_path(r'^validacion/borrar/$', views.ValidacionBorrar.as_view(), name='borrar'),
+
+    path('validacion/horario/<int:estacion>/<int:variable>/<str:fecha>', views.DatosHorarios.as_view(), name='horario'),
+
     ### url para los datos desde la api
     path('inst/', views.VarList.as_view()),
 

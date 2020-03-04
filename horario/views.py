@@ -17,7 +17,10 @@ class ConsultarPorcentaje(LoginRequiredMixin, FormView):
         if form.is_valid() and self.request.is_ajax():
             datos = get_porcentaje_registro(form)
             template = 'horario/horario_table.html'
-            return render(request, template, {'datos': datos})
+            diccionario = {'datos': datos,
+                           'estacion': form.cleaned_data['estacion'],
+                           'variable': form.cleaned_data['variable']}
+            return render(request, template, diccionario)
         return self.render_to_response(self.get_context_data(form=form, save=True))
 
     def get_context_data(self, **kwargs):
