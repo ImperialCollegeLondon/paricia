@@ -80,25 +80,6 @@ def lista_datos_validacion(request):
                    })
 
 
-class MedicionConsulta(LoginRequiredMixin,FormView):
-    template_name = 'medicion/consulta.html'
-    form_class = MedicionConsultaForm
-    success_url = '/medicion/consulta'
-    grafico = []
-
-    def post(self, request, *args, **kwargs):
-        form = MedicionConsultaForm(self.request.POST or None)
-        if form.is_valid() and self.request.is_ajax():
-            valores, maximos_abs, minimos_abs, tiempo = datos_instantaneos(form)
-            # TODO cambiar la funcion del gráfico
-            # self.grafico = grafico(form, valores, maximos_abs, minimos_abs, tiempo)
-            return render(request, 'reportes/consultas/grafico.html',
-                          {'grafico': self.grafico})
-        # elif form.is_valid():
-            # return self.export_excel(self.frecuencia, form)
-        return render(request, 'home/form_error.html', {'form': form})
-
-
 class CurvaDescargaList(LoginRequiredMixin, ListView, FormView):
     # parámetros ListView
     model = CurvaDescarga
