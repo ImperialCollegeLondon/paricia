@@ -206,17 +206,30 @@ def validacion_enviar(request):
     try:
         estacion_id = int(request.POST.get('estacion_id', None))
         variable_id = int(request.POST.get('variable_id', None))
-        varBusc = Variable.objects.get(var_id=variable_id)
-        variable_nombre = varBusc.var_modelo.lower()
+        variable = Variable.objects.get(var_id=variable_id)
+        variable_nombre = variable.var_modelo.lower()
     except:
         estacion_id = None
         variable_id = None
 
 
+
+
+
+
     # Verificando datos json para evitar inyeccion SQL
     cambios_json = request.POST.get('cambios', None)
 
-    #
+    cambios_lista = json.loads(cambios_json)
+    fecha_inicio_dato = cambios_lista[0]['fecha']
+    fecha_fin_dato = cambios_lista[-1]['fecha']
+    # Borrar datos
+    with connection.cursor() as cursor:
+        sql = "DELETE FROM validacion_%%var_id%% WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s;"
+        sql = sql.replace('%%var_id%%', str(variable_nombre))
+        print(sql)
+        cursor.execute(sql, [estacion_id, fecha_inicio_dato, fecha_fin_dato])
+
     comentario = request.POST.get('comentario_general', None)
 
     resultado = False
