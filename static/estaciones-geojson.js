@@ -117,7 +117,8 @@ $(document).ready(function() {
 
     // llamar las variables por estaciones
     $("#id_estacion").change(function () {
-        var estacion = $(this).val();
+        var codigo = $('#id_estacion option:selected').text();
+        /*var estacion = $(this).val();
         var codigo = $('#id_estacion option:selected').text();
         $("#id_variable").find('option').remove().end()
         $("#id_variable").append('<option value="">---------</option>');
@@ -130,7 +131,7 @@ $(document).ready(function() {
                     $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
                 });
             }
-        });
+        });*/
         set_zoom_estacion(codigo, geojsonFeature,mymap);
     });
 

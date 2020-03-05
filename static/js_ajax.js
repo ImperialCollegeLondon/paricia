@@ -180,19 +180,20 @@ $(document).ready(function() {
     $("#id_estacion").change(function () {
         var estacion = $(this).val();
         $("#id_variable").find('option').remove().end()
+        $("#id_variable").append('<option value="">---------</option>');
         $.ajax({
             url: '/anuarios/variables/'+estacion,
             dataType: 'json',
             success: function (data) {
-                //datos=JSON.parse(data)
+
                 $.each(data, function(index, value) {
                     $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
-                //console.log(value)
                 });
             }
         });
-    });
 
+
+    });
 
     //consulta y guarda la información
     $("#btn_procesar").click(function(){
