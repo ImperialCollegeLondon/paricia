@@ -1,4 +1,4 @@
-#tabla_datos{
+/*#tabla_datos{
   display: block;
   max-height: 400px;
   overflow-y: scroll;
@@ -13,7 +13,7 @@ tbody tr {
 
 .table thead {
   overflow-y: scroll;
-}
+}*/
 
 .btn-cambio{background-color: #BFBFFF;}
 

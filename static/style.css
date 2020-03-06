@@ -52,10 +52,8 @@ margin-bottom:0
 .error {background-color: #FFBFBF;}
 
 
-
-
 .table-scroll tbody {
-    height: 300px;
+    height: 400px;
     overflow-y: auto;
     width: 100%;
 }

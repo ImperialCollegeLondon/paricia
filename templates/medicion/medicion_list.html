@@ -50,140 +50,152 @@
     </div>
 </div>
 
+<!--
+<div class="row">
+    <div class="col-2">
+        <b>Filtro Fecha</b>
+    </div>
+    <div class="col-4">
+        <div class="form-group">
+            <select id="chk_fecha" class="form-control form-control-sm">
+                <option value="fecha">Todos</option>
+                <option value="fecha normal">Normales</option>
+                <option value="fecha salto">Saltos</option>
+                <option value="fecha error">No esperados</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-2">
+        <b>Filtro Valor</b>
+    </div>
+    <div class="col-4">
+        <div class="form-group">
+            <select id="chk_valor" class="form-control form-control-sm">
+                <option value="fecha">Todos</option>
+                <option value="fecha normal">Normales</option>
+                <option value="fecha salto">Errores</option>
+            </select>
+        </div>
+    </div>
+
+</div>
+-->
+
+    <div class="col-12">
+        <div class="table-responsive">
+            <table id="tabla_datos" style="font-size: 12px"  class="table table-scroll table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-3">
+
+                            <div class="row mt-2 no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">Fecha</div>
+                            </div>
+
+                            <div class="row mt-2 no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">
+                                    <span id="btn_fec_error" class="badge badge-danger">Error</span>
+                                    <span id="btn_fec_normal" class="badge badge-success">Normal<br/>-</span>
+                                    <span id="btn_fec_salto" class="badge badge-warning ">Salto<br/>-</span>
+                                </div>
+                            </div>
+
+                        </th>
+
+                        <th scope="col" class="col-2">
+
+                            <div class="row mt-2 no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">Validación</div>
+                            </div>
+
+                            <div class="row mt-2 no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">
+                                    <span id="btn_val_nuevo"  class="badge badge-default" title="No Validado">No Val.<br/>-</span>
+                                    <span id="btn_val_ya_validado"  class="badge badge-success" title="Validado">Val.<br/>-</span>
+                                    <span id="btn_val_cambio" class="badge badge-info" title="Cambio realizado">Cambio<br/>-</span>
+                                </div>
+                            </div>
+
+                        </th>
+
+                        <th scope="col" class="col-2">
+
+                            <div class="row no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">Valor</div>
+                            </div>
+
+                            <div class="row no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">
+                                    <div class="small"><small>Norm: [{{variable.var_minimo}} , {{variable.var_maximo}}]</small></div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2 no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">
+                                    <span id="btn_med_normal" class="badge badge-success">Normal</span>
+                                    <span id="btn_med_error"  class="badge badge-danger">Error</span>
+                                </div>
+
+                            </div>
+
+                        </th>
+
+                        <th scope="col" class="col-2">
+
+                            <div class="row no-gutters justify-content-md-center">
+                                <div class="col-md-auto">
+                                    <div class="small font-weight-bold">Valores atípicos</div>
+                                </div>
+                            </div>
+
+
+                            <div class="row mt-2 no-gutters justify-content-md-center">
+                                <div class="col-md-auto">
+                                    <div class="small"><small>Fuera de {{variable.var_min | floatformat:1}} sigmas</small></div>
+                                </div>
+
+                            </div>
+
+                            <div class="row mt-2 no-gutters justify-content-md-center" >
+                                <div class="col-md-auto">
+                                    <span id="btn_dev_normal"  class="badge badge-success">Normal<br/>-</span>
+                                    <span id="btn_dev_error"  class="badge badge-danger">Extr.<br/>-</span>
+                                </div>
+                            </div>
+
+
+                        </th>
+
+                        <th scope="col" class="col-3"><p class="font-weight-bold">Comentario</p></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for item in lista %}
+                        <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
+                            <th scope="row" class="col-3 {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s"}}</th>
+                            <td class="col-2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"" }}</td>
+                            <td class="col-2 {{item.class_valor}}">{{item.valor|default_if_none:"" }}</td>
+                            <td class="col-2 {{item.class_stddev_error}}">&nbsp;</td>
+
+                            <td class="col-3 comentario" >{{item.comentario|default_if_none:"Sin Comentario"}}</td>
+
+                        </tr>
+                    {% endfor%}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </div>
 
 
 
-
-<table id="tabla_datos" class="table table-bordered table-condensed table-hover">
-    <thead>
-        <tr>
-
-            <th class="col1">
-                <div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">Fecha</div>
-                </div>
-
-                <div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">
-                        <span id="btn_fec_error" class="badge badge-danger">Error</span>
-                        <span id="btn_fec_normal" class="badge badge-success">Normal<br/>-</span>
-                        <span id="btn_fec_salto" class="badge badge-warning ">Salto<br/>-</span>
-                    </div>
-                </div>
-            </th>
-
-            <th class="col2">
-                <div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">Validación</div>
-                </div>
-
-                <div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">
-                        <span id="btn_val_nuevo"  class="badge badge-default" title="No Validado">No Val.<br/>-</span>
-                        <span id="btn_val_ya_validado"  class="badge badge-success" title="Validado">Val.<br/>-</span>
-                        <span id="btn_val_cambio" class="badge badge-info" title="Cambio realizado">Cambio<br/>-</span>
-                    </div>
-                </div>
-
-            </th>
-
-            <th class="col3">
-                <div class="row no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">Valor</div>
-                </div>
-
-                <div class="row no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">
-                        <div class="small"><small>Norm: [{{variable.var_minimo}} , {{variable.var_maximo}}]</small></div>
-                    </div>
-                </div>
-
-                <div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">
-                        <span id="btn_med_normal" class="badge badge-success">Normal</span>
-                        <span id="btn_med_error"  class="badge badge-danger">Error</span>
-                    </div>
-
-                </div>
-
-            </th>
-
-
-            <th class="col4">
-                <div class="row no-gutters justify-content-md-center">
-                    <div class="col-md-auto">
-                        <div class="small font-weight-bold">Variación consecutiva</div>
-                    </div>
-                </div>
-
-
-                <div class="row mt-2 no-gutters justify-content-md-center">
-                    <div class="col-md-auto">
-                        <div class="small"><small>Sosp: [{{variable.var_sos}} ; {{variable.var_err}}] <br/> Err >= {{variable.var_err}}</small></div>
-                    </div>
-
-                </div>
-
-                <div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">
-                        <span id="btn_var_normal" class="badge badge-success ">Norm.<br/>-</span>
-                        <span id="btn_var_sospechoso" class="badge badge-warning ">Sosp.<br/>-</span>
-                        <span id="btn_var_error" class="badge badge-danger ">Error<br/>-</span>
-                    </div>
-                </div>
-            </th>
-
-
-            <th class="col5">
-
-                <div class="row no-gutters justify-content-md-center">
-                    <div class="col-md-auto">
-                        <div class="small font-weight-bold">Valores atípicos</div>
-                    </div>
-                </div>
-
-
-                <div class="row mt-2 no-gutters justify-content-md-center">
-                    <div class="col-md-auto">
-                        <div class="small"><small>Fuera de {{variable.var_min | floatformat:1}} sigmas</small></div>
-                    </div>
-
-                </div>
-
-                <div class="row mt-2 no-gutters justify-content-md-center" >
-                    <div class="col-md-auto">
-                        <span id="btn_dev_normal"  class="badge badge-success">Normal<br/>-</span>
-                        <span id="btn_dev_error"  class="badge badge-danger">Extr.<br/>-</span>
-                    </div>
-                </div>
-
-
-            </th>
-
-
-            <th class="col6"><p class="font-weight-bold">Comentario</p></th>
-
-        </tr>
-    </thead>
-
-
-
-    <tbody>
-
-    {% for item in lista %}
-    <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
-        <td class="col1 small {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s.u"}}</td>
-        <td class="col2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"" }}</td>
-        <td class="col3 {{item.class_valor}}">{{item.valor|default_if_none:"" }}</td>
-        <td class="col4 {{item.class_variacion_consecutiva}}">{{item.variacion_consecutiva|default_if_none:"" }}</td>
-        <td class="col5 {{item.class_stddev_error}}"></td>
-        <td class="col6 comentario" >{{item.comentario|default_if_none:""}}</td>
-    </tr>
-    {% endfor%}
-
-    </tbody>
-
-</table>
 
 
 
