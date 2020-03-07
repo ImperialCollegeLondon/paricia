@@ -285,7 +285,8 @@ $(document).ready(function() {
     });
 
     $("#btn_fec_salto").click(function(){
-        $(".fecha.salto").first().closest("tr").get(0).scrollIntoView();
+        console.log($(".col-3.fecha.salto"))
+        $(".col-3.fecha.salto").first().closest("tr").get(0).scrollIntoView();
     });
 
     $("#btn_val_nuevo").click(function(){

@@ -84,7 +84,7 @@
 
     <div class="col-12">
         <div class="table-responsive">
-            <table id="tabla_datos" style="font-size: 12px"  class="table table-scroll table-bordered">
+            <table id="tabla_datos"  class="table table-scroll table-bordered">
                 <thead>
                     <tr>
                         <th scope="col" class="col-3">
@@ -175,12 +175,12 @@
 
                     {% for item in lista %}
                         <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
-                            <th scope="row" class="col-3 {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s"}}</th>
+                            <td scope="row" class="col-3 {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s:u"}}</td>
                             <td class="col-2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"" }}</td>
                             <td class="col-2 {{item.class_valor}}">{{item.valor|default_if_none:"" }}</td>
                             <td class="col-2 {{item.class_stddev_error}}">&nbsp;</td>
 
-                            <td class="col-3 comentario" >{{item.comentario|default_if_none:"Sin Comentario"}}</td>
+                            <td class="col-3 comentario" >{{item.comentario|default_if_none:"&nbsp;"}}</td>
 
                         </tr>
                     {% endfor%}
