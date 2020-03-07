@@ -113,18 +113,36 @@ def minimostai(datos_diarios_min):
 
 
 def get_maximo(fila):
-    if isnan(fila.get('maximo')):
-        if isnan(fila.get('valor')):
-            return 0
-        else:
-            return fila.get('valor')
-    return fila.get('maximo')
+    print(fila)
+    try:
+
+        if isnan(fila.get('maximo')):
+            if isnan(fila.get('valor')):
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('maximo')
+    except TypeError:
+        if fila.get('maximo') is None:
+            if fila.get('valor') is None:
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('maximo')
 
 
 def get_minimo(fila):
-    if isnan(fila.get('minimo')):
-        if isnan(fila.get('valor')):
-            return 0
-        else:
-            return fila.get('valor')
-    return fila.get('minimo')
+    try:
+        if isnan(fila.get('minimo')):
+            if isnan(fila.get('valor')):
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('minimo')
+    except TypeError:
+        if fila.get('minimo') is None:
+            if fila.get('valor') is None:
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('minimo')
