@@ -1,7 +1,5 @@
 from django.urls import re_path,path
-from . import views
-
-from django.contrib.auth import views as auth_views
+from medicion import views
 
 app_name = 'medicion'
 urlpatterns = [
