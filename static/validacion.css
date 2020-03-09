@@ -1,4 +1,4 @@
-#tabla_datos{
+/*#tabla_datos{
   display: block;
   max-height: 400px;
   overflow-y: scroll;
@@ -13,7 +13,7 @@ tbody tr {
 
 .table thead {
   overflow-y: scroll;
-}
+}*/
 
 .btn-cambio{background-color: #BFBFFF;}
 
@@ -26,10 +26,11 @@ tbody tr {
 .seleccionado > .cambio {background-color: #BFFFFF;}
 .seleccionado > .no-validado {background-color: #DFDFDF;}
 .no-seleccionado > .no-validado {background-color: #7F7F7F;}
-
+/*
 .col1 {width: 18%;}
 .col2 {width: 18%;}
 .col3 {width: 12%;}
 .col4 {width: 15%;}
 .col5 {width: 12%;}
 .col6 {width: 25%;}
+*/

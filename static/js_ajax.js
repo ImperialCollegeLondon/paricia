@@ -116,7 +116,7 @@ $(document).ready(function() {
                     $("#div_informacion").show();
                     var count = Object.keys(data.data[0].y).length;
                     if (count>0) {
-                        Plotly.newPlot('div_informacion', data.data,data.layout);
+                        Plotly.newPlot('div_informacion', data.data,data.layout, {scrollZoom: true});
                     }
                     else{
                         //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
@@ -263,7 +263,7 @@ $(document).ready(function() {
                 //$("#div_historial").hide();
                 //$("#div_loading_historial").show();
                 //$("#div_error_historial").hide();
-                activar_espera($("#div_loading_historial"), $("#div_historial"), $("#div_error_historial"))
+                activar_espera("#div_loading_historial", "#div_historial", "#div_error_historial")
             },
             success: function (data) {
                 $("#btn_periodos_validacion").attr("disabled", false);
