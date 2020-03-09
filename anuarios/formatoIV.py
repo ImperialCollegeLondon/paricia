@@ -16,7 +16,7 @@ def matrizIV(estacion, variable, periodo):
     sql = "SELECT avg(valor) as media, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
-    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)
@@ -27,7 +27,7 @@ def matrizIV(estacion, variable, periodo):
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
-    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
     cursor.execute(sql)
@@ -39,7 +39,7 @@ def matrizIV(estacion, variable, periodo):
     sql += "FROM " + tabla + " "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)+" "
-    sql += "and valor > 0 and minimo> 0 "
+    sql += "and valor > 0 "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     print(sql)
     cursor.execute(sql)
@@ -59,7 +59,7 @@ def matrizIV(estacion, variable, periodo):
         obj_hai.hai_maximo_dia = maximo_dia[mes - 1]
         obj_hai.hai_minimo = minimo[mes - 1]
         obj_hai.hai_minimo_dia = minimo_dia[mes - 1]
-        if item.get('media')>100:
+        if item.get('media') > 100:
             obj_hai.hai_promedio = 100
         else:
             obj_hai.hai_promedio = item.get('media')
@@ -101,6 +101,7 @@ def minimoshai(datos_diarios_min):
         for fila in datos_diarios_min:
             mes = int(fila.get('mes'))
             dia = int(fila.get('dia'))
+            # print(fila)
             if mes == i:
                 val_min_abs.append(get_minimo(fila))
                 val_mindia.append(dia)
@@ -115,16 +116,36 @@ def minimoshai(datos_diarios_min):
 
 
 def get_maximo(fila):
-    if isnan(fila.get('maximo')):
-        if isnan(fila.get('valor')):
-            return 0
-        return round(fila.get('valor'),2)
-    return round(fila.get('maximo'),2)
+    try:
+
+        if isnan(fila.get('maximo')):
+            if isnan(fila.get('valor')):
+                return 0
+            else:
+                return round(fila.get('valor'), 2)
+        return round(fila.get('maximo'), 2)
+    except TypeError:
+        if fila.get('maximo') is None:
+            if fila.get('valor') is None:
+                return 0
+            else:
+                return round(fila.get('valor'), 2)
+        return round(fila.get('maximo'), 2)
 
 
 def get_minimo(fila):
-    if isnan(fila.get('minimo')):
-        if isnan(fila.get('valor')):
-            return 0
-        return round(fila.get('valor'))
-    return round(fila.get('minimo'))
+    try:
+        if isnan(fila.get('minimo')):
+            if isnan(fila.get('valor')):
+                return 0
+            else:
+                return round(fila.get('valor'))
+        return round(fila.get('minimo'))
+    except TypeError:
+        if fila.get('minimo') is None:
+            if fila.get('valor') is None:
+                return 0
+            else:
+                return round(fila.get('valor'))
+        return round(fila.get('minimo'))
+
