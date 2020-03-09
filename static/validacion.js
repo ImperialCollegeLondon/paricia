@@ -334,7 +334,6 @@ $(document).ready(function() {
 
 
     $('.seleccionado > .fecha').dblclick(function(){
-        console.log("entro")
         $("#anular_fecha0").remove();
         $("#anular_fecha1").remove();
         $("#habilitar_fecha").remove();
@@ -353,7 +352,6 @@ $(document).ready(function() {
             $(this).append(menu1_fechahora);
         }
     });
-
 
 
     $('.seleccionado > .validacion').dblclick(function(){
@@ -412,4 +410,65 @@ $(document).ready(function() {
     $("#btn_validacion_enviar").click(function(){
         validacion_enviar();
     });
+
+
+    //filtros de la tabla
+    //filtro de la columna fecha
+    $("#chk_fecha").on("change", function(){
+        filtro = document.getElementById("chk_fecha").value;
+        table = document.getElementById("tabla_datos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.className;
+                if (txtValue.indexOf(filtro) > -1) {
+                    tr[i].style.display = "";
+                    if (filtro!=="fecha normal"){
+                        tr[i-1].style.display = "";
+                    }
+
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    });
+
+    //filtro de la columna valor
+    $("#chk_valor").on("change", function(){
+        filtro = document.getElementById("chk_valor").value;
+        table = document.getElementById("tabla_datos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+                txtValue = td.className;
+                if (txtValue.indexOf(filtro) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    });
+
+    //filtro de la columna de la desviación standar
+    $("#chk_stddev").on("change", function(){
+        filtro = document.getElementById("chk_stddev").value;
+        table = document.getElementById("tabla_datos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[3];
+            if (td) {
+                txtValue = td.className;
+                if (txtValue.indexOf(filtro) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    });
+
 });

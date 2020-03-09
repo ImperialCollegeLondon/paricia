@@ -44,7 +44,7 @@ class PeriodosValidacion(LoginRequiredMixin, FormView):
 
 
 # Consulta de datos horarios por estacion, variable y hora
-class DatosHorarios(LoginRequiredMixin,ListView):
+class DatosHorarios(LoginRequiredMixin, ListView):
     template_name = 'validacion/datos_horarios.html'
 
     def get(self, request, *args, **kwargs):
