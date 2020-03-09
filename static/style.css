@@ -82,5 +82,9 @@ margin-bottom:0
     display: block;
 }
 
+#tabla_datos thead th{
+    height:110px;
+}
+
 
 
