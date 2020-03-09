@@ -162,15 +162,39 @@ def get_promedio(item_avg):
 
 
 def get_maximo(item_max):
-    if item_max.get('maximo') is None:
-        return round(item_max.get('valor'), 2)
-    return round(item_max.get('maximo'), 2)
+    try:
+
+        if isnan(item_max.get('maximo')):
+            if isnan(item_max.get('valor')):
+                return 0
+            else:
+                return round(item_max.get('valor'), 2)
+        return round(item_max.get('maximo'), 2)
+    except TypeError:
+        if item_max.get('maximo') is None:
+            if item_max.get('valor') is None:
+                return 0
+            else:
+                return round(item_max.get('valor'), 2)
+        return round(item_max.get('maximo'), 2)
 
 
 def get_minimo(item_min):
-    if item_min.get('minimo') is None:
-        return round(item_min.get('valor'), 2)
-    return round(item_min.get('minimo'), 2)
+    print(item_min)
+    try:
+        if isnan(item_min.get('minimo')):
+            if isnan(item_min.get('valor')):
+                return 0
+            else:
+                return round(item_min.get('valor'), 2)
+        return round(item_min.get('minimo'), 2)
+    except TypeError:
+        if item_min.get('minimo') is None:
+            if item_min.get('valor') is None:
+                return 0
+            else:
+                return round(item_min.get('valor'), 2)
+        return round(item_min.get('minimo'), 2)
 
 
 def get_promedio(item_avg):

@@ -139,13 +139,13 @@ def get_minimo(fila):
             if isnan(fila.get('valor')):
                 return 0
             else:
-                return round(fila.get('valor'))
-        return round(fila.get('minimo'))
+                return round(fila.get('valor'), 2)
+        return round(fila.get('minimo'), 2)
     except TypeError:
         if fila.get('minimo') is None:
             if fila.get('valor') is None:
                 return 0
             else:
-                return round(fila.get('valor'))
-        return round(fila.get('minimo'))
+                return round(fila.get('valor'), 2)
+        return round(fila.get('minimo'), 2)
 
