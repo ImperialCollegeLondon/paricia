@@ -38,6 +38,7 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
     sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<0.5 "
+    # sql += "AND date_part('month',fecha)=9 "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
@@ -85,28 +86,28 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
         datos = agrupar_viento(dat_dvi, dat_vvi)
         for item in datos:
             if item.direccion < 22.5 or item.direccion > 337.5:
-                vvi[0].append(item.velocidad)
+                vvi[0].append(get_promedio(item))
                 vvi_max[0].append(get_maximo(item))
             elif item.direccion < 67.5:
-                vvi[1].append(item.velocidad)
+                vvi[1].append(get_promedio(item))
                 vvi_max[1].append(get_maximo(item))
             elif item.direccion < 112.5:
-                vvi[2].append(item.velocidad)
+                vvi[2].append(get_promedio(item))
                 vvi_max[2].append(get_maximo(item))
             elif item.direccion < 157.5:
-                vvi[3].append(item.velocidad)
+                vvi[3].append(get_promedio(item))
                 vvi_max[3].append(get_maximo(item))
             elif item.direccion < 202.5:
-                vvi[4].append(item.velocidad)
+                vvi[4].append(get_promedio(item))
                 vvi_max[4].append(get_maximo(item))
             elif item.direccion < 247.5:
-                vvi[5].append(item.velocidad)
+                vvi[5].append(get_promedio(item))
                 vvi_max[5].append(get_maximo(item))
             elif item.direccion < 292.5:
-                vvi[6].append(item.velocidad)
+                vvi[6].append(get_promedio(item))
                 vvi_max[6].append(get_maximo(item))
             elif item.direccion < 337.5:
-                vvi[7].append(item.velocidad)
+                vvi[7].append(get_promedio(item))
                 vvi_max[7].append(get_maximo(item))
         maximos = []
         valores[mes - 1].append(mes)
@@ -149,18 +150,19 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
 
 
 def get_maximo(item):
-    '''if item.velocidad_max is None:
-        if item.velocidad is None:
-            return 0
-        else:
-            return item.velocidad
-    return item.velocidad_max'''
     if isnan(item.velocidad_max):
         if isnan(item.velocidad):
             return 0
         else:
             return item.velocidad
     return item.velocidad_max
+
+
+def get_promedio(item):
+    if isnan(item.velocidad):
+        return 0
+    else:
+        return item.velocidad
 
 
 def agrupar_viento(dat_dvi, dat_vvi):
