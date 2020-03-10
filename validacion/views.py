@@ -43,7 +43,7 @@ class PeriodosValidacion(LoginRequiredMixin, FormView):
         return render(request, self.template_name, {'intervalos': intervalos})
 
 
-# Consulta de datos horarios por estacion, variable y hora
+# Consulta de datos horarios crudos y/o validados por estacion, variable y hora
 class DatosHorarios(LoginRequiredMixin, ListView):
     template_name = 'validacion/datos_horarios.html'
 

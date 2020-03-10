@@ -5,10 +5,14 @@ from django.db import connection
 from home.functions import dictfetchall
 from math import isnan
 
-def matrizIII(estacion, variable, periodo):
+
+def matrizIII(estacion, variable, periodo, tipo):
     datos = []
     # tabla = "tai.m" + periodo
-    tabla = 'medicion_' + str(variable.var_modelo)
+    if tipo == 'validado':
+        tabla = 'validacion_' + str(variable.var_modelo)
+    else:
+        tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     # promedio mensual
     sql = "SELECT avg(valor) as media, date_part('month',fecha) as mes "

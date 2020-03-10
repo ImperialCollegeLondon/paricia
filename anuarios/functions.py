@@ -31,18 +31,19 @@ def calcular(form):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
     periodo = form.cleaned_data['periodo']
+    tipo = form.cleaned_data['tipo']
     if variable.var_id in typeI:
-        datos = matrizI(estacion, variable, periodo)
+        datos = matrizI(estacion, variable, periodo, tipo)
     elif variable.var_id in typeII:
-        datos = get_precipitacion(estacion, variable, periodo)
+        datos = get_precipitacion(estacion, variable, periodo, tipo)
     elif variable.var_id in typeIII:
-        datos = matrizIII(estacion, variable, periodo)
+        datos = matrizIII(estacion, variable, periodo, tipo)
     elif variable.var_id in typeIV:
-        datos = matrizIV(estacion, variable, periodo)
+        datos = matrizIV(estacion, variable, periodo, tipo)
     elif variable.var_id in typeV:
-        datos = matrizV_mensual(estacion, variable, periodo)
+        datos = matrizV_mensual(estacion, variable, periodo, tipo)
     elif variable.var_id in typeVI:
-        datos = matrizVI(estacion, variable, periodo)
+        datos = matrizVI(estacion, variable, periodo, tipo)
     return datos
 
 

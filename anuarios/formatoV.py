@@ -12,9 +12,16 @@ class VelocidaDireccion():
     direccion = 0
 
 
-def matrizV_mensual(estacion, variable, periodo):
+def matrizV_mensual(estacion, variable, periodo, tipo):
     tabla_velocidad = "medicion_velocidadviento"
     tabla_direccion = "medicion_direccionviento"
+
+    if tipo == 'validado':
+        tabla_velocidad = "validacion_velocidadviento"
+        tabla_direccion = "validacion_direccionviento"
+    else:
+        tabla_velocidad = "medicion_velocidadviento"
+        tabla_direccion = "medicion_direccionviento"
 
     cursor = connection.cursor()
     # velocidad media en m/s

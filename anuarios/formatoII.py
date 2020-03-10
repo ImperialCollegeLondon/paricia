@@ -6,9 +6,12 @@ from home.functions import dictfetchall
 from math import isnan
 
 
-def get_precipitacion(estacion, variable, periodo):
+def get_precipitacion(estacion, variable, periodo, tipo):
 
-    tabla = 'medicion_' + str(variable.var_modelo)
+    if tipo == 'validado':
+        tabla = 'validacion_' + str(variable.var_modelo)
+    else:
+        tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     datos = []
     # valores de precipitación mensual

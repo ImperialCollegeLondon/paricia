@@ -44,11 +44,14 @@ class FormatoI(Anuarios):
         pass
 
 
-def matrizI(estacion, variable, periodo):
+def matrizI(estacion, variable, periodo, tipo):
     datos = []
     cursor = connection.cursor()
     # tabla = variable.var_codigo + '.m' + periodo
-    tabla = 'medicion_' + str(variable.var_modelo)
+    if tipo == 'validado':
+        tabla = 'validacion_' + str(variable.var_modelo)
+    else:
+        tabla = 'medicion_' + str(variable.var_modelo)
     # máximos absolutos y máximos promedio
     sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
