@@ -72,6 +72,8 @@ class TemperaturaAire(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -89,6 +91,8 @@ class HumedadAire(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -106,6 +110,8 @@ class VelocidadViento(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -123,6 +129,8 @@ class DireccionViento(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -140,6 +148,8 @@ class HumedadSuelo(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -157,6 +167,8 @@ class RadiacionSolar(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -174,6 +186,8 @@ class PresionAtmosferica(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -191,6 +205,8 @@ class TemperaturaAgua(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -208,6 +224,8 @@ class Caudal(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 
@@ -225,6 +243,8 @@ class NivelAgua(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
+    maximo = models.DecimalField("Máximo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
+    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
     validacion = models.PositiveSmallIntegerField("Validación")
 

@@ -65,7 +65,6 @@ def guardar_datos(imp_id, form):
 
 # verificar si la columna de la hora y fecha tienen el formato adecuado
 def verificar_fechahora(fechahora, formatofechahora):
-    # print(fechahora)
     if isinstance(fechahora, datetime):
         return fechahora
     elif isinstance(fechahora, np.datetime64):
@@ -248,8 +247,10 @@ def construir_matriz(archivo_src, formato, estacion):
     for var in clasificacion:
         columnas = []
         columnas.append(('fecha', 'fecha'))
+
         ##
         columnas.append((var.cla_valor - 1, 'valor'))
+
         if var.col_validador_valor:
             matriz.loc[matriz[var.col_validador_valor - 1] != var.txt_validador_valor, var.cla_valor - 1] = np.nan
         ##
@@ -262,7 +263,7 @@ def construir_matriz(archivo_src, formato, estacion):
             columnas.append((var.cla_minimo - 1, 'minimo'))
         if var.col_validador_minimo:
             matriz.loc[matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo, var.cla_minimo - 1] = np.nan
-        ##
+        # sacar los datos de la variable matriz a la variable datos de acuerdo a la columna
         datos = matriz.loc[:, [v[0] for v in columnas]]
         datos.rename(columns=dict(columnas), inplace=True)
 
@@ -276,8 +277,12 @@ def construir_matriz(archivo_src, formato, estacion):
                 datos[col] = pd.Series([numero_punto_decimal(val) for val in datos[col].values], index=matriz.index)
 
         # Eliminar NAs
-        columnas_datos = [columna[1] for columna in columnas if columna[1]!='fecha']
+        columnas_datos = [columna[1] for columna in columnas if columna[1] != 'fecha']
+
         datos = datos.dropna(axis=0, how='all', subset=columnas_datos)
+
+        datos.loc[pd.isna(datos['valor']), 'valor'] = None
+
 
         # modificar valores de Radiacion mayores a 1400
         if var.var_id_id == 7:
@@ -292,7 +297,7 @@ def construir_matriz(archivo_src, formato, estacion):
                 datos['valor'] = datos['valor'].diff()
                 # datos['valor'][datos['valor'] < 0] = np.nan
                 datos.loc[datos['valor'] < 0, 'valor'] = np.nan
-                datos=datos.dropna()
+                datos = datos.dropna()
             datos['fecha'] = datos['fecha'].apply(lambda x: x.replace(minute=int(x.minute/5) * 5, second=0, microsecond=0, nanosecond=0) )
             datos['fecha'] = datos['fecha'] + pd.Timedelta(minutes=5)
             cuenta = datos.groupby('fecha')['valor'].sum().to_frame()
@@ -308,7 +313,7 @@ def construir_matriz(archivo_src, formato, estacion):
                 datos['valor'] = datos['valor'].diff()
                 # datos['valor'][datos['valor'] < 0] = np.nan
                 datos.loc[datos['valor'] < 0, 'valor'] = np.nan
-                datos=datos.dropna()
+                datos = datos.dropna()
             if var.resolucion:
                 datos['valor'] = datos['valor'] * float(var.resolucion)
 
