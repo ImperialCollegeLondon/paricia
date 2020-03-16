@@ -230,11 +230,11 @@ class TypeIII(Titulos):
             cell.value = item.tai_promedio
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
-
-            cell = ws.cell(row=fila, column=col + 8)
-            cell.value = round(media_historica[item.tai_mes-1], 2)
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            if len(media_historica) > 0:
+                cell = ws.cell(row=fila, column=col + 8)
+                cell.value = round(media_historica[item.tai_mes-1], 2)
+                self.set_style(cell=cell, font='font_10', alignment='center',
+                               border='border_thin')
 
             fila += 1
 

@@ -204,21 +204,21 @@ class TypeII(Titulos):
             cell.value = item.pre_suma
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
-
-            cell = ws.cell(row=fila, column=col + 2)
-            cell.value = round(historicos[item.pre_mes-1], 1)
-            self.set_style(cell=cell, font='font_10', alignment='wrap',
-                           border='border_thin')
-
-            cell = ws.cell(row=fila, column=col + 3)
-            cell.value = round(max_historico[item.pre_mes-1], 1)
-            self.set_style(cell=cell, font='font_10', alignment='wrap',
-                           border='border_thin')
-
-            cell = ws.cell(row=fila, column=col + 4)
-            cell.value = round(min_historico[item.pre_mes-1], 1)
-            self.set_style(cell=cell, font='font_10', alignment='wrap',
-                           border='border_thin')
+            if len(historicos) > 0:
+                cell = ws.cell(row=fila, column=col + 2)
+                cell.value = round(historicos[item.pre_mes-1], 1)
+                self.set_style(cell=cell, font='font_10', alignment='wrap',
+                               border='border_thin')
+            if len(max_historico) > 0:
+                cell = ws.cell(row=fila, column=col + 3)
+                cell.value = round(max_historico[item.pre_mes-1], 1)
+                self.set_style(cell=cell, font='font_10', alignment='wrap',
+                               border='border_thin')
+            if len(min_historico) > 0:
+                cell = ws.cell(row=fila, column=col + 4)
+                cell.value = round(min_historico[item.pre_mes-1], 1)
+                self.set_style(cell=cell, font='font_10', alignment='wrap',
+                               border='border_thin')
 
             cell = ws.cell(row=fila, column=col + 5)
             cell.value = item.pre_maximo

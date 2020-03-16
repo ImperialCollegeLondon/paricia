@@ -90,8 +90,14 @@ def maximospre(datos_diarios):
 
 
 def get_valor(fila):
-    if isnan(fila.get('valor')):
-        return 0
-    return fila.get('valor')
+    try:
+        if isnan(fila.get('valor')):
+            return 0
+        return fila.get('valor')
+    except TypeError:
+        if fila.get('valor') is None:
+            return 0
+        return fila.get('valor')
+
 
 

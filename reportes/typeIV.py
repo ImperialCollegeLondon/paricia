@@ -190,11 +190,11 @@ class TypeIV(Titulos):
             cell.value = item.hai_promedio
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
-
-            cell = ws.cell(row=fila, column=col + 6)
-            cell.value = round(media_historica[item.hai_mes-1], 2)
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            if len(media_historica) > 0:
+                cell = ws.cell(row=fila, column=col + 6)
+                cell.value = round(media_historica[item.hai_mes-1], 2)
+                self.set_style(cell=cell, font='font_10', alignment='center',
+                               border='border_thin')
 
             fila += 1
 

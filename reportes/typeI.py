@@ -189,11 +189,11 @@ class TypeI(Titulos):
             cell.value = self.get_item_promedio(variable.var_id, item)
             self.set_style(cell=cell, font='font_10', alignment='center',
                            border='border_thin')
-
-            cell = ws.cell(row=fila, column=col+4)
-            cell.value = round(media_historica[mes-1], 1)
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            if len(media_historica) > 0:
+                cell = ws.cell(row=fila, column=col+4)
+                cell.value = round(media_historica[mes-1], 1)
+                self.set_style(cell=cell, font='font_10', alignment='center',
+                               border='border_thin')
 
             fila += 1
 
