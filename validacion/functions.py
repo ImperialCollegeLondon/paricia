@@ -40,6 +40,7 @@ def periodos_validacion(est_id, var_id):
     """
 
     sql = sql.replace("%%var_id%%", str(var_id)).replace("%%est_id%%", str(est_id))
+    print(sql)
     result = consulta.objects.raw(sql)
     return result
 
