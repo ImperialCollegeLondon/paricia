@@ -32,6 +32,7 @@ def calcular(form):
     variable = form.cleaned_data['variable']
     periodo = form.cleaned_data['periodo']
     tipo = form.cleaned_data['tipo']
+
     if variable.var_id in typeI:
         datos = matrizI(estacion, variable, periodo, tipo)
     elif variable.var_id in typeII:

@@ -30,5 +30,5 @@ class AnuarioForm(forms.Form):
                                       queryset=Variable.objects.order_by('var_id').all(), label='Variable')
     periodo = forms.ChoiceField(required=False, choices=YEAR, label='Año')
 
-    tipo = forms.ChoiceField(required=False, choices=(('validaddo', 'validado'), ('crudo', 'crudo')),
+    tipo = forms.ChoiceField(required=False, choices=(('validado', 'validado'), ('crudo', 'crudo')),
                              label="Tipo de Dato")
