@@ -4,7 +4,7 @@
         <thead>
 
         <tr>
-            {% if variable.var_id == 1%}
+            {% if variable.var_id == 1 %}
             <th scope="col" class="col-6">Fecha</th>
             <th scope="col" class="col-6">Valor</th>
             {% else %}
@@ -23,9 +23,15 @@
         {% for item in datos %}
 
         <tr>
+            {% if variable.var_id == 1 %}
             <th scope="row" class="col-6">{{ item.fecha|date:"Y-m-d H:i:s" }}</th>
             <td class="col-6 valor {{item.class_valor}}">{{ item.valor }}</td>
-
+            {% else %}
+            <th scope="row" class="col-4">{{ item.fecha|date:"Y-m-d H:i:s" }}</th>
+            <td class="col-4 valor {{item.class_valor}}">{{ item.valor }}</td>
+            <td class="col-4 minimo {{item.class_maximo}}">{{ item.maximo }}</td>
+            <td class="col-4 maximo {{item.class_minimo}}">{{ item.minimo }}</td>
+            {% endif %}
 
         </tr>
 

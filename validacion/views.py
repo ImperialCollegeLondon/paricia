@@ -11,7 +11,12 @@ from validacion import functions
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
+from django.core.serializers.json import DjangoJSONEncoder
+
+
+import json
+from indices.views import DecimalEncoder
 
 ####para las vistas serializables de la api
 #from .models import *
@@ -57,6 +62,55 @@ class DatosHorarios(LoginRequiredMixin, ListView):
             diccionario = {'datos': datos}
             return render(request, template, diccionario)
         return self.render_to_response(self.get_context_data(save=True))
+
+
+# Consulta de datos diarios por reporte
+class ValidacionDiaria(LoginRequiredMixin, FormView):
+    template_name = 'validacion/validacion_diaria.html'
+    form_class = ValidacionSearchForm
+    success_url = '/validacion/diaria/'
+
+    def post(self, request, *args, **kwargs):
+        form = ValidacionSearchForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                variable = form.cleaned_data['variable']
+                estacion = form.cleaned_data['estacion']
+                inicio = form.cleaned_data['inicio']
+                fin = form.cleaned_data['fin']
+
+                lista = functions.reporte_diario(estacion, variable, inicio, fin)
+
+                for fila in lista:
+                    delattr(fila, '_state')
+                    fila.dia = fila.dia.strftime("%Y-%m-%d")
+                    fila.porcentaje = round(fila.porcentaje)
+
+                # lista_nueva = [dict(fila.__dict__) for fila in lista if fila['state']]
+
+                data = {'estacion': [{
+                    'est_id': estacion.est_id,
+                    'est_nombre': estacion.est_nombre,
+
+                    }],
+                    'variable': [{
+                        'var_id': variable.var_id,
+                        'var_nombre': variable.var_nombre,
+                        'var_maximo': variable.var_maximo,
+                        'var_minimo': variable.var_minimo,
+
+                    }],
+                    'datos': [dict(fila.__dict__) for fila in lista]
+                }
+
+                data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
+
+                #return JsonResponse(data, safe=False)
+                return HttpResponse(data_json, content_type='application/json')
+
+        # return self.render_to_response(self.get_context_data(form=form))
+        return render(request, 'home/form_error.html', {'form': form})
+
 
 
 class ValidacionBorrar(LoginRequiredMixin, FormView):

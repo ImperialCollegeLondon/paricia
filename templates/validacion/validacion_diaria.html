@@ -4,8 +4,16 @@
 {% load humanize %}
 {% load static %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 <script src="{% static 'js_ajax.js' %}"></script>
+<script src="{% static 'validacion_diaria.js' %}"></script>
+
+<style type="text/css">
+    .fa-search::before{
+        box-sizing: revert;
+
+    }
+</style>
 
 <!-- div titulo-->
 <div class="row">
@@ -20,7 +28,7 @@
     <!-- div formulario-->
     <div class="col-lg-4 col-md-6 col-sm-12">
 
-        <form id="form_filter" class="form" method="post">
+        <form id="form_validacion" class="form" method="post" action="{% url 'validacion:diaria' %}">
             <div class="row">
                 {% csrf_token %}
                 {% for field in form%}
@@ -28,8 +36,8 @@
                 {% endfor %}
                 <div class="form-group col-lg-12 col-md-12 mt-4">
 
-                    <button id="btn_filtrar" type="button" class="btn btn-default btn-primary">Validar</button>
-                    <a id="id_limpiar" class="btn btn-default" href="{% url 'medicion:medicion_filter' %}"><span>Limpiar</span></a>
+                    <button id="btn_buscar" type="button" class="btn btn-default btn-primary">Validar</button>
+                    <a id="id_limpiar" class="btn btn-default" href="{% url 'validacion:diaria' %}"><span>Limpiar</span></a>
                 </div>
             </div>
         </form>
@@ -81,23 +89,38 @@
 
 </div>
 
+<div class="row">
+        <div class="col-12">
+            <div id='div_grafico' style="height:400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+        </div>
+    </div>
+
+<div id="div_informacion">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table id="tabla_diario" style="font-size: 12px" class="table table-scroll table-bordered">
+                    <thead>
+                    <tr>
+                    </tr>
+
+                    </thead>
+                    <tbody>
+                    <tr>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
 
 
-<div id="mensaje_overlay" class="popup-overlay"  >
-    <br><br><br>
-    <center>
-        <div id="gif_loading" style="display:none;"><img src="/media/loading6.gif"/></div>
-    </center>
-    <div id="mensaje_content" class="popup-content">
-        <a id="clover" class="close">Cerrar</a>
-        <h2><div id="mensaje_texto"></div></h2>
-     </div>
-</div>
 
-<div id="div_informacion" class="row">
+</div><!--end div informacion-->
 
 
-</div>
 
 
 
