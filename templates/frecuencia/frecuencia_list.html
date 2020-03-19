@@ -2,7 +2,9 @@
 {% block content %}
 {% load bootstrap4 %}
 {% load humanize %}
+{% load static %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{% static 'js_ajax_once.js' %}"></script>
 <script>
 $(document).ready(function() {
 
@@ -16,6 +18,8 @@ $(document).ready(function() {
     //var enlace=$(this).attr('href')
     actualizar_lista($(this).attr('href'));
   });
+
+
 
 });
 

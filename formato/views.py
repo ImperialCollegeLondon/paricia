@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import render
-from .models import Formato, Extension, Delimitador, Clasificacion, Asociacion
+from .models import Formato, Extension, Delimitador, Clasificacion, Asociacion, Estacion
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
-from .forms import FormatoSearchForm, ClasificacionSearchForm, AsociacionSearchForm, ClasificacionForm
+from .forms import (FormatoSearchForm, ClasificacionSearchForm,
+                    AsociacionSearchForm, ClasificacionForm, AsociacionCreateForm)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
 from django.http import HttpResponseRedirect, HttpResponse
@@ -245,10 +246,11 @@ class ClasificacionDelete(LoginRequiredMixin, DeleteView):
         return HttpResponseRedirect(reverse('formato:clasificacion_index', kwargs={'for_id': formato.for_id}))
 
 
-# Asociacion
+# Asociacion entre formatos y estaciones
 class AsociacionCreate(LoginRequiredMixin, CreateView):
     model = Asociacion
-    fields = ['for_id', 'est_id']
+    # fields = ['for_id', 'est_id']
+    form_class = AsociacionCreateForm
 
     def form_valid(self, form):
         return super(AsociacionCreate, self).form_valid(form)
@@ -261,29 +263,29 @@ class AsociacionCreate(LoginRequiredMixin, CreateView):
         return context
 
 
-class AsociacionList(LoginRequiredMixin, ListView):
+class AsociacionList(LoginRequiredMixin, ListView, FormView):
     # parámetros ListView
     model = Asociacion
     paginate_by = 10
     # parámetros FormView
     template_name = 'formato/asociacion_list.html'
     form_class = AsociacionSearchForm
-    # parametros propios
-    cadena = str("")
 
-    def get(self, request, *args, **kwargs):
-        form = AsociacionSearchForm(self.request.GET or None)
-        self.object_list = Asociacion.objects.all()
-        if form.is_valid():
+    def post(self, request, *args, **kwargs):
+        form = AsociacionSearchForm(self.request.POST or None)
+        page = kwargs.get('page')
+        if form.is_valid() and self.request.is_ajax:
             self.object_list = form.filtrar(form)
-            self.cadena = form.cadena(form)
-        return self.render_to_response(self.get_context_data(form=form))
+        else:
+            self.object_list = Asociacion.objects.all()
+        context = super(AsociacionList, self).get_context_data(**kwargs)
+        context.update(pagination(self.object_list, page, 10))
+        return render(request, 'formato/asociacion_table.html', context)
 
     def get_context_data(self, **kwargs):
         context = super(AsociacionList, self).get_context_data(**kwargs)
         page = self.request.GET.get('page')
         context.update(pagination(self.object_list, page, 10))
-        context["cadena"] = self.cadena
         return context
 
 

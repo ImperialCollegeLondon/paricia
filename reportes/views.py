@@ -1,27 +1,37 @@
-from estacion.models import Inamhi
-from variable.models import Parametro
+from estacion.models import Inamhi, Estacion, Sistema, Cuenca, SistemaCuenca
+from variable.models import Parametro, Variable
+from cruce.models import Cruce
 
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 from reportes.forms import AnuarioForm, InamhiForm
-from reportes.consultas.forms import MedicionSearchForm, ComparacionForm, VariableForm, EstacionVariableSearchForm
+from reportes.consultas.forms import (MedicionSearchForm, ComparacionForm, VariableForm,
+                                      EstacionVariableSearchForm, UsuarioSearchForm, ConsultasForm)
 import csv
-from django.http import HttpResponse
 
-from reportes.consultas.functions import (datos_horarios_json, datos_diarios, datos_5minutos, datos_horarios,
-                                          datos_instantaneos, datos_mensuales, datos_estacion)
-from reportes.functions import filtrar, comparar, comparar_variables, consultar_datos, procesar_json_inamhi
-from datetime import date
-from django.shortcuts import render
-from django.http import JsonResponse
-from openpyxl.styles import Font
-from openpyxl import Workbook
-from openpyxl.drawing.image import Image
-
-from openpyxl.chart import (
-    LineChart,
-    Reference,
+from reportes.consultas.functions import (
+    datos_horarios_json,
+    datos_instantaneos,
+    datos_estacion,
+    reporte_excel
 )
-from sedc.settings import BASE_DIR
+from reportes.functions import (filtrar, comparar, comparar_variables, procesar_json_inamhi,
+                                consultar_datos_usuario)
+from reportes.excel import reporte_excel_anuario
+
+from reportes.sistemacuenca import (
+    get_datos_graficar,
+    export_csv,
+    export_excel
+)
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from datetime import date, datetime
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.db.models import Q, Prefetch
+import requests
 
 
 class ReportesAnuario(FormView):
@@ -39,11 +49,14 @@ class ReportesAnuario(FormView):
         form = AnuarioForm(self.request.POST or None)
         if form.is_valid():
             context = super(ReportesAnuario, self).get_context_data(**kwargs)
-            self.lista = filtrar(form)
-            print(len(self.lista))
-            context.update(self.lista)
-            context['base_template'] = get_vista_usuario(self.request)
-            return render(request, 'reportes/anuario_normal.html', context)
+            print(request.POST)
+            if request.POST.get('grafico') == '':
+                self.lista = filtrar(form)
+                context.update(self.lista)
+                context['base_template'] = get_vista_usuario(self.request)
+                return render(request, 'reportes/anuario_normal.html', context)
+            else:
+                return reporte_excel_anuario(form)
 
         return render(request, 'home/form_error.html', {'form': form})
 
@@ -66,9 +79,8 @@ class ComparacionValores(FormView):
     def post(self, request, *args, **kwargs):
         form = ComparacionForm(self.request.POST or None)
         if form.is_valid() and self.request.is_ajax():
-            self.grafico = comparar(form)
             plantilla = 'reportes/consultas/grafico.html'
-            diccionario = {'grafico': self.grafico}
+            diccionario = comparar(form)
             return render(request, plantilla, diccionario)
 
         return render(request, 'home/form_error.html', {'form': form})
@@ -115,22 +127,20 @@ class ConsultasPeriodo(FormView):
         if form.is_valid():
             self.frecuencia = form.cleaned_data["frecuencia"]
             if self.request.is_ajax():
-                '''self.grafico = grafico(form)
-                return render(request, 'reportes/consultas/grafico.html',
-                              {'grafico': self.grafico, 'frecuencia': self.frecuencia})'''
-                datos = consultar_datos(form)
+
+                datos = consultar_datos_usuario(form)
                 return JsonResponse(datos, safe=False)
             else:
-                if 'graficar' in request.POST:
+                '''if 'graficar' in request.POST:
                     context = super(ConsultasPeriodo, self).get_context_data(**kwargs)
                     context.update(consultar_datos(form))
                     context['base_template'] = get_vista_usuario(self.request)
-                    return render(request, 'reportes/consultas_periodo.html', context)
+                    return render(request, 'reportes/consultas_periodo.html', context)'''
 
                 if self.frecuencia == "0":
                     return self.export_csv(form)
                 else:
-                    return self.export_excel(self.frecuencia, form)
+                    return self.export_excel(form)
         return render(request, 'home/form_error.html', {'form': form})
 
     def get_context_data(self, **kwargs):
@@ -148,7 +158,11 @@ class ConsultasPeriodo(FormView):
             fecha_inicio = estacion.est_fecha_inicio
         if fecha_fin is None:
             fecha_fin = date.today()
-        valores, maximos, minimos, tiempo = datos_instantaneos(estacion, variable,fecha_inicio, fecha_fin)
+        informacion = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+        valores=informacion['valor']
+        maximos = informacion['max_abs']
+        minimos = informacion['min_abs']
+        tiempo = informacion['tiempo']
         # Establecemos el nombre del archivo
         nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.csv"')
         contenido = "attachment; filename={0}".format(nombre_archivo)
@@ -166,118 +180,82 @@ class ConsultasPeriodo(FormView):
 
         return response
 
-    def export_excel(self,frecuencia,form):
-        estacion = form.cleaned_data['estacion']
-        variable = form.cleaned_data['variable']
-        fecha_inicio = form.cleaned_data['inicio']
-        fecha_fin = form.cleaned_data['fin']
-        if fecha_inicio is None:
-            fecha_inicio = estacion.est_fecha_inicio
-        if fecha_fin is None:
-            fecha_fin = date.today()
-        if frecuencia == "1":
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_5minutos(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "2":
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_horarios(estacion, variable, fecha_inicio, fecha_fin)
-        elif frecuencia == "3":
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_diarios(estacion, variable, fecha_inicio, fecha_fin)
-        else:
-            valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo = datos_mensuales(estacion, variable, fecha_inicio, fecha_fin)
-        # ruta de la imagen
-        ruta = str(BASE_DIR) + '/media/logo_fonag.jpg'
-        img = Image(ruta)
-        # estilo de negrita
-        font_bold = Font(bold=True)
-        # Creamos el libro de trabajo
-        wb = Workbook()
-        # Definimos como nuestra hoja de trabajo, la hoja activa, por defecto la primera del libro
-        ws = wb.active
-        ws['B1'] = 'Reporte de Datos Hidrometerológicos'
-        ws['B1'].font=font_bold
-        ws.add_image(img, 'G1')
-        ws.merge_cells('B1:F1')
-        ws['A4'] = 'Estación'
-        ws['A4'].font = font_bold
-        ws['B4'] = estacion.est_codigo
-        ws['C4'] = estacion.est_nombre
-        ws.merge_cells('C4:E4')
-        ws['F4'] = 'Variable'
-        ws['F4'].font = font_bold
-        ws['G4'] = variable.var_nombre
-        ws['B6'] = 'Coordenadas Geográfica UTM (DATUM WGS 84)'
-        ws['B6'].font = font_bold
-        ws.merge_cells('B6:G6')
-        ws['A7'] = 'Latitud'
-        ws['A7'].font = font_bold
-        ws['B7'] = estacion.est_latitud
-        ws['F7'] = 'Longitud'
-        ws['F7'].font = font_bold
-        ws['G7'] = estacion.est_longitud
+    @staticmethod
+    def export_excel(form):
+        return reporte_excel(form)
 
-        # Creamos los encabezados desde la celda B9 hasta la E9
-        ws['A9'] = 'Fecha'
-        ws['B9'] = 'Valor'
 
-        cont = 10
-        # Recorremos el conjunto de datos
-        if len(maximos_abs) != maximos_abs.count(None) and len(maximos_pro) != maximos_pro.count(None):
-            ws['C9'] = 'Max absoluto'
-            ws['D9'] = 'Min absoluto'
-            ws['E9'] = 'Max promedio'
-            ws['F9'] = 'Min promedio'
-            for valor, maximo_abs, maximos_pro, minimo_abs, minimo_pro, fecha in zip(valores, maximos_abs, maximos_pro, minimos_abs, minimos_pro, tiempo):
-                ws.cell(row=cont, column=1).value = fecha
-                ws.cell(row=cont, column=2).value = valor
-                ws.cell(row=cont, column=3).value = maximo_abs
-                ws.cell(row=cont, column=4).value = minimo_abs
-                ws.cell(row=cont, column=5).value = maximos_pro
-                ws.cell(row=cont, column=6).value = minimo_pro
-                cont = cont + 1
-        else:
-            ws['C9'] = 'Max promedio'
-            ws['D9'] = 'Min promedio'
-            for valor, maximos_pro, minimo_pro, fecha in zip(valores, maximos_pro, minimos_pro, tiempo):
-                ws.cell(row=cont, column=1).value = fecha
-                ws.cell(row=cont, column=2).value = valor
-                ws.cell(row=cont, column=3).value = maximos_pro
-                ws.cell(row=cont, column=4).value = minimo_pro
-                cont = cont + 1
+# consultas por periodo para usuarios invitados
+class ConsultasUsuario(FormView):
+    template_name = 'reportes/consultas_usuario.html'
+    form_class = UsuarioSearchForm
+    success_url = '/reportes/usuarios/'
 
-        # grafico
-        chart = LineChart()
-        chart.title = variable.var_nombre
-        chart.style = 12
-        chart.x_axis.title = 'Tiempo'
-        chart.x_axis.number_format = 'dd-mm-yyyy'
-        chart.x_axis.majorTimeUnit = 'days'
-        chart.y_axis.title = variable.var_nombre
-        final = 10+len(tiempo)
-        data = Reference(ws, min_col=2, min_row=9, max_col=4, max_row=final-1)
-        chart.add_data(data, titles_from_data=True)
-        s0 = chart.series[0]
-        s0.graphicalProperties.line.solidFill = "32CD32"
-        s0.graphicalProperties.line.width = 10
-        s0.smooth = True
-        s1 = chart.series[1]
-        s1.graphicalProperties.line.solidFill = "1645A7"
-        s1.graphicalProperties.line.width = 10
-        s1.smooth = True
-        s2 = chart.series[2]
-        s2.graphicalProperties.line.solidFill = "CD0C18"
-        s2.graphicalProperties.line.width = 10
-        s2.smooth = True
-        dates = Reference(ws, min_col=1, min_row=10, max_row=final)
-        chart.set_categories(dates)
-        if frecuencia != "0":
-            ws.add_chart(chart, "H9")
-        # Establecemos el nombre del archivo
-        nombre_archivo = str('"')+str(estacion.est_codigo) + str("_") + str(variable.var_nombre) + str('.xlsx"')
-        # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
-        response = HttpResponse(content_type="application/ms-excel")
-        contenido = "attachment; filename={0}".format(nombre_archivo)
-        response["Content-Disposition"] = contenido
-        wb.save(response)
-        return response
+    def post(self, request, *args, **kwargs):
+        form = UsuarioSearchForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                datos = consultar_datos_usuario(form)
+                return JsonResponse(datos, safe=False)
+            else:
+                return self.export_excel(form)
+        return render(request, 'home/form_error.html', {'form': form})
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsultasUsuario, self).get_context_data(**kwargs)
+        return context
+
+    @staticmethod
+    def export_excel(form):
+        return reporte_excel(form)
+
+
+# Consultas Estacion Sistema Cuenca
+class ConsultasSistema(LoginRequiredMixin, FormView):
+    template_name = 'reportes/consultas_sistema.html'
+    form_class = ConsultasForm
+    success_url = '/reportes/sistema'
+
+    def post(self, request, *args, **kwargs):
+        form = ConsultasForm(self.request.POST or None)
+        if form.is_valid():
+            variable = form.cleaned_data['variable']
+            estacion = form.cleaned_data['estacion']
+            inicio = form.cleaned_data['inicio']
+            fin = form.cleaned_data['fin']
+            frecuencia = form.data["frecuencia"]
+
+            if self.request.is_ajax():
+                datos = get_datos_graficar(estacion, variable, inicio, fin, frecuencia, None)
+                # graf1 = grafico(datos, variable, estacion, titulo)
+                #return render(request, 'reportes/consultas/porPeriodo.html', {'grafico': graf1})
+                return JsonResponse(datos, safe=False)
+            else:
+                if 'accion' not in request.POST:
+                    return
+                if request.POST['accion'] == 'csv':
+                    response = export_csv(estacion, variable, inicio, fin, frecuencia, None)
+                    if response: return response
+                    form.mensaje = "No hay datos (" + frecuencia + ") en estación " + \
+                                   estacion.est_codigo + " en " + variable.var_nombre + " en el período seleccionado."
+                    return self.render_to_response(self.get_context_data(form=form))
+                elif request.POST['accion'] == 'excel':
+                    response = export_excel(estacion, variable, inicio, fin, frecuencia, None)
+                    if response: return response
+                    form.mensaje = "No hay datos (" + frecuencia + ") en estación " + \
+                                   estacion.est_codigo + " en " + variable.var_nombre + " en el período seleccionado."
+                    return self.render_to_response(self.get_context_data(form=form))
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsultasSistema, self).get_context_data(**kwargs)
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(ConsultasSistema, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
 
 # consultas por periodo de todas las variables
@@ -297,7 +275,8 @@ class ConsultasEstacionVariable(FormView):
         context = super(ConsultasEstacionVariable, self).get_context_data(**kwargs)
         return context
 
-    def export_csv(self, form):
+    @staticmethod
+    def export_csv(form):
         estacion = form.cleaned_data['estacion']
         fecha_inicio = form.cleaned_data['inicio']
         fecha_fin = form.cleaned_data['fin']
@@ -338,11 +317,70 @@ class ConsultaInamhi(FormView):
             form=form
         )
         if form.is_valid():
+            if self.request.is_ajax():
+                datos = procesar_json_inamhi(form)
+                return JsonResponse(datos, safe=False)
+            else:
+                return self.export_csv(form)
+
             grafico = procesar_json_inamhi(form)
             informacion.update(grafico)
             return render(request, 'reportes/consulta_inamhi.html', informacion)
 
         return render(request, 'reportes/consulta_inamhi.html', informacion)
+
+    @staticmethod
+    def export_csv(form):
+        estacion = form.cleaned_data['estacion']
+        parametro = form.cleaned_data['parametro']
+        frecuencia = form.cleaned_data['frecuencia']
+        inicio = form.cleaned_data['inicio']
+        fin = form.cleaned_data['fin']
+
+        fecha_inicio = datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
+        fecha_fin = datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
+        # formato url web service INAMHI
+        url_base = 'http://186.42.174.236:8090/'
+        url_base += frecuencia + '/'
+        url_base += str(estacion.identificador) + '/'
+        url_base += fecha_inicio.strftime("%Y-%m-%d %H:%M:%S") + '/'
+        url_base += fecha_fin.strftime("%Y-%m-%d %H:%M:%S") + '/'
+        url_base += estacion.transmision + '/'
+        url_base += parametro.parametro
+
+        response = requests.get(url_base, auth=('FONAG', 'fOnAg2018'))
+        data = response.json()
+        tiempo = []
+        valores = []
+        if len(data) > 0:
+            # print(data)
+            for item in data:
+                fecha = datetime.strptime(item['fechaTomaDelDato'], '%Y-%m-%d %H:%M:%S')
+
+                if len(item['dataJSON']) > 0:
+
+                    if item['dataJSON'][0]['valor'] is not None:
+                        valores.append(item['dataJSON'][0]['valor'])
+                        tiempo.append(fecha)
+                else:
+                    valores.append(None)
+
+
+        # Establecemos el nombre del archivo
+        nombre_archivo = str('"') + str(estacion) + str("_") + str(parametro) + str('.csv"')
+        contenido = "attachment; filename={0}".format(nombre_archivo)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = contenido
+        writer = csv.writer(response)
+
+        writer.writerow(['fecha', 'valor'])
+        for valor, fecha in zip(valores, tiempo):
+            writer.writerow([fecha, valor])
+        return response
+
+
+class ConsultaDatos(TemplateView):
+    template_name = 'reportes/mapa_estaciones.html'
 
 
 # web service para consultar datos horarios
@@ -361,6 +399,123 @@ def variables_inamhi(request):
     for item in parametros:
         lista[item.id] = item.nombre + ' ' + item.estadistico
 
+    return JsonResponse(lista)
+
+
+# consultar estaciones por tipo de trasnmision
+def tipo_estaciones(request):
+    transmision = request.GET.get('transmision', None)
+    if transmision == str(0):
+        estaciones = Estacion.objects.all()
+    elif transmision == str(1):
+        estaciones = Estacion.objects.filter(transmision=True)
+    else:
+        estaciones = Estacion.objects.filter(transmision=False)
+    lista = {}
+
+    for item in estaciones:
+        lista[item.est_id] = item.est_codigo
+    return JsonResponse(lista)
+
+# @login_required
+def variables(request):
+    try:
+        estacion_id = int(request.GET.get('estacion_id', None))
+    except ValueError:
+        estacion_id = None
+
+    lista = {}
+    if estacion_id is not None:
+        variables = Cruce.objects.prefetch_related(
+            Prefetch('var_id', queryset=Variable.objects.all())
+        ).filter(est_id=estacion_id)
+        for row in variables:
+            lista[row.var_id.var_id] = row.var_id.var_nombre
+    else:
+        variables = Variable.objects.all()
+        for row in variables:
+            lista[row.var_id] = row.var_nombre
+    return JsonResponse(lista)
+
+
+# @login_required
+def cuencas(request):
+    try:
+        sistema_id = int(request.GET.get('sistema_id', None))
+    except ValueError:
+        sistema_id = None
+    if sistema_id is not None:
+        cuencas = SistemaCuenca.objects.prefetch_related(
+            Prefetch('cuenca', queryset=Cuenca.objects.all())
+        ).filter(sistema_id=sistema_id)
+    else:
+        cuencas = SistemaCuenca.objects.all()
+    lista = {}
+    for row in cuencas:
+        try:
+            lista[row.cuenca.id] = row.cuenca.nombre
+        except:
+            pass
+    return JsonResponse(lista)
+
+
+# @login_required
+def estaciones(request):
+    variable_id = sistema_id = cuenca_id = estacion_tipo_id = unidadoperativa_id = None
+    filtro = Q()
+
+    try:
+        variable_id = int(request.GET.get('variable_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        sistema_id = int(request.GET.get('sistema_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        cuenca_id = int(request.GET.get('cuenca_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        estacion_tipo_id = int(request.GET.get('estacion_tipo_id', None))
+    except Exception as e:
+        pass
+
+    try:
+        unidadoperativa_id = int(request.GET.get('unidadoperativa_id', None))
+    except Exception as e:
+        pass
+
+    if variable_id:
+        filtro &= Q(cruce__var_id_id=variable_id)
+    if sistema_id:
+        filtro &= Q(sistemacuenca__sistema_id=sistema_id)
+    if cuenca_id:
+        filtro &= Q(sistemacuenca__cuenca_id=cuenca_id)
+    if estacion_tipo_id:
+        filtro &= Q(tipo_id=estacion_tipo_id)
+
+
+    estaciones = Estacion.objects.filter(filtro)
+
+    imagen=None
+    if cuenca_id:
+        imagen = Cuenca.objects.get(id=cuenca_id).imagen
+    elif sistema_id:
+        imagen = Sistema.objects.get(id=sistema_id).imagen
+
+    try:
+        imagen_url = imagen.url
+    except:
+        imagen_url = ""
+
+    lista = {'estaciones':{}, 'imagen': imagen_url}
+
+    for row in estaciones:
+        lista['estaciones'][row.est_id] = row.est_codigo + " - " + row.est_nombre
     return JsonResponse(lista)
 
 

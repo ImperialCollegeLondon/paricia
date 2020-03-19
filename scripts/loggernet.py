@@ -8,6 +8,7 @@ from importacion.functions import ( eliminar_datos,
 from importacion.models import Importacion
 from home.models import Usuarios
 import time
+import pandas.io.common
 import daemon
 from temporal.models import Datos
 from medicion.models import Precipitacion, TemperaturaAire, HumedadAire, VelocidadViento
@@ -55,8 +56,13 @@ def leer_archivos(formato, estacion):
     try:
         archivo_src = formato.for_ubicacion + formato.for_archivo
         datos = preformato_matriz(archivo_src, formato)
+    except pandas.io.common.EmptyDataError:
+        registrar_log('No existe nueva informacion para el Formato: '
+                      + str(formato.for_descripcion))
+        datos = []
+        pass
     except Exception as e:
-        registrar_log("No hay nueva información")
+        registrar_log("Error Inesperado:"+str(e))
         datos = []
         pass
     except IOError as e:
@@ -69,15 +75,16 @@ def leer_archivos(formato, estacion):
         fecha_ini = datos.loc[0, 'fecha']
         fecha_fin = datos.loc[datos.shape[0] - 1, 'fecha']
         obj_importacion = set_object_importacion(estacion, formato, fecha_ini, fecha_fin, formato.for_archivo)
+
         matriz = construir_matriz(archivo_src, formato, estacion)
+
         guardar_datos(obj_importacion, matriz, estacion, formato)
         registrar_log('Información guardada Estacion:' + str(
                     estacion.est_codigo) + 'Formato:' + str(
                     formato.for_descripcion))
         obj_importacion.save()
     else:
-        registrar_log('No existe nueva informacion para el Formato: '
-                      + str(formato.for_descripcion))
+        registrar_log("No existen datos")
 
 
 def guardar_datos(importacion, datos, estacion, formato):
@@ -118,7 +125,10 @@ def set_object_importacion(estacion, formato, fecha_ini, fecha_fin, archivo):
     importacion.imp_observacion = 'Carga de Datos Automatica'
     importacion.usuario = usuario
     importacion.imp_tipo = "a"
+
     return importacion
+
+# iniciar_lectura()
 
 
 

@@ -3,18 +3,60 @@
 from anuarios.models import PresionAtmosferica, HumedadSuelo, TemperaturaAgua, Caudal, NivelAgua
 from django.db import connection
 from home.functions import dictfetchall
+from anuarios.anuario import Anuarios
+from math import isnan
 
 
-def matrizI(estacion, variable, periodo):
+class FormatoI(Anuarios):
+    maximo = 0
+    minimo = 0
+    promedio = 0
+
+    def consulta(self, estacion, variable, periodo,tipo):
+        cursor = connection.cursor()
+        tabla = 'validacion_' + str(variable.var_modelo)
+        sql = "SELECT "
+        if tipo == 'maixmo':
+            sql += "max(valor) as valor, "
+        elif tipo == 'minimo':
+            sql += "min(valor) as valor, "
+        else:
+            sql += "avg(valor) as valor, "
+
+        sql += "date_part('month',fecha) as mes "
+        sql += "FROM " + tabla + " "
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+        sql += "and date_part('year',fecha)=" + str(periodo)
+        # if variable.var_id == 8:
+        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
+        if variable.var_id == 6 or variable.var_id == 8:
+            sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
+        sql += "GROUP BY mes ORDER BY mes"
+
+
+
+
+
+
+
+
+    def matriz(self, estacion, variable, periodo):
+        pass
+
+
+def matrizI(estacion, variable, periodo, tipo):
     datos = []
     cursor = connection.cursor()
     # tabla = variable.var_codigo + '.m' + periodo
-    tabla = 'medicion_' + str(variable.var_modelo)
+    if tipo == 'validado':
+        tabla = 'validacion_' + str(variable.var_modelo)
+    else:
+        tabla = 'medicion_' + str(variable.var_modelo)
     # máximos absolutos y máximos promedio
     sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -28,7 +70,7 @@ def matrizI(estacion, variable, periodo):
     sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -41,7 +83,7 @@ def matrizI(estacion, variable, periodo):
     # valores promedio mensuales
     sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)
     # if variable.var_id == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -103,16 +145,59 @@ def matrizI(estacion, variable, periodo):
     return datos
 
 
-def get_maximo(item_max):
-    if item_max.get('maximo') is None:
+'''def get_maximo(item_max):
+    print(item_max)
+    if isnan(item_max.get('maximo')):
         return round(item_max.get('valor'), 2)
     return round(item_max.get('maximo'), 2)
 
 
 def get_minimo(item_min):
-    if item_min.get('minimo') is None:
+    if isnan(item_min.get('minimo')):
         return round(item_min.get('valor'), 2)
     return round(item_min.get('minimo'), 2)
+
+
+def get_promedio(item_avg):
+    if isnan(item_avg.get('valor')):
+        return 0
+    return round(item_avg.get('valor'), 2)'''
+
+
+def get_maximo(item_max):
+    try:
+
+        if isnan(item_max.get('maximo')):
+            if isnan(item_max.get('valor')):
+                return 0
+            else:
+                return round(item_max.get('valor'), 2)
+        return round(item_max.get('maximo'), 2)
+    except TypeError:
+        if item_max.get('maximo') is None:
+            if item_max.get('valor') is None:
+                return 0
+            else:
+                return round(item_max.get('valor'), 2)
+        return round(item_max.get('maximo'), 2)
+
+
+def get_minimo(item_min):
+    print(item_min)
+    try:
+        if isnan(item_min.get('minimo')):
+            if isnan(item_min.get('valor')):
+                return 0
+            else:
+                return round(item_min.get('valor'), 2)
+        return round(item_min.get('minimo'), 2)
+    except TypeError:
+        if item_min.get('minimo') is None:
+            if item_min.get('valor') is None:
+                return 0
+            else:
+                return round(item_min.get('valor'), 2)
+        return round(item_min.get('minimo'), 2)
 
 
 def get_promedio(item_avg):

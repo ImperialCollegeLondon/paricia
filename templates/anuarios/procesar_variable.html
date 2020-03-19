@@ -10,7 +10,7 @@ $(document).ready(function() {
   $("#btn_procesar").click(function(){
     $(this).attr('disabled',true);
     $.ajax({
-      url: '/anuarios/procesar/',
+      url: $("#form_validacion").attr('action'),
       data: $("#form_validacion").serialize(),
       type:'POST',
       beforeSend: function () {
@@ -39,10 +39,8 @@ $(document).ready(function() {
     var estacion = $(this).val();
     $("#id_variable").find('option').remove().end()
     $.ajax({
-      url: '/anuarios/variables',
-      data: {
-        'estacion': estacion
-      },
+      url: '/anuarios/variables/'+estacion,
+
       dataType: 'json',
       success: function (data) {
         //datos=JSON.parse(data)
@@ -65,7 +63,7 @@ $(document).ready(function() {
         <div id="div_mensaje" class="alert alert-info alert-dismissible" role="alert">
             Si la información del anuario ya existe, al procesarlo nuevamente los datos se sobreescribiran
         </div>
-        <form id="form_validacion" class="form" method="post">
+        <form id="form_validacion" class="form" method="post" action="{% url 'anuarios:anuarios_procesar' %}">
             {% csrf_token %}
 
             <div class="row">

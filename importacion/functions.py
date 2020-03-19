@@ -78,7 +78,6 @@ def verificar_fechahora(fechahora, formatofechahora):
 
     elif isinstance(fechahora, list):
         fechahora = ' '.join(fechahora)
-
     elif isinstance(fechahora, pd.Series):
         fechahora = ' '.join([str(val) for val in list(fechahora[:])])
 
@@ -86,10 +85,63 @@ def verificar_fechahora(fechahora, formatofechahora):
         fechahora = ''
 
     try:
+        # print(fechahora, formatofechahora)
         _fechahora = datetime.strptime(fechahora, formatofechahora)
     except:
-        _fechahora = None
+        # print("excepcion", fechahora)
+        separar = fechahora.split(" ")
+
+        fecha_str = separar[0]
+        hora_str = separar[1]
+        if len(separar) == 3:
+            hora_str += ' ' + separar[2]
+        separar = formatofechahora.split(" ")
+        formato_fecha = separar[0]
+        formato_hora = separar[1]
+        fecha = cambiar_formato_fecha(fecha_str, formato_fecha)
+        hora = cambiar_formato_hora(hora_str, formato_hora)
+        if fecha is None or hora is None:
+            _fechahora = None
+        else:
+            _fechahora = datetime(fecha.year, fecha.month, fecha.day, hora.hour, hora.minute, hora.second)
+
     return _fechahora
+
+
+def cambiar_formato_fecha(fecha_str, formato_fecha):
+    fecha = None
+    try:
+        fecha = datetime.strptime(fecha_str, formato_fecha)
+    except ValueError:
+        con_fecha = list(Fecha.objects.exclude(fec_formato=formato_fecha))
+        for i in range(len(con_fecha)):
+            try:
+                # print("fecha: ",fecha_str,con_fecha[i].fec_codigo)
+                fecha = datetime.strptime(fecha_str, con_fecha[i].fec_codigo)
+                # formato.fec_id = fila
+                # formato.save()
+                break
+            except ValueError:
+                pass
+    return fecha
+
+
+def cambiar_formato_hora(hora_str, formato_hora):
+    hora = None
+    try:
+        hora = datetime.strptime(hora_str, formato_hora)
+    except ValueError:
+        con_hora = list(Hora.objects.exclude(hor_formato=formato_hora))
+        for i in range(len(con_hora)):
+            try:
+                # print("Hora: ",hora_str, con_hora[i].hor_codigo)
+                hora = datetime.strptime(hora_str, con_hora[i].hor_codigo)
+                # formato.fec_id = fila
+                # formato.save()
+                break
+            except ValueError:
+                pass
+    return hora
 
 
 # Obtener los datos del archivo importado
@@ -114,11 +166,11 @@ def preformato_matriz(archivo_src, formato):
 
     formatofechahora = formato.fec_id.fec_codigo + ' ' + formato.hor_id.hor_codigo
     if formato.for_col_fecha == formato.for_col_hora:
-        print("llego al true")
+        # print("llego al true")
         # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
         archivo['fecha'] = pd.Series([verificar_fechahora(row, formatofechahora) for row in archivo[formato.for_col_fecha - 1].values], index=archivo.index)
     else:
-        print("llego al false")
+        # print("llego al false")
         items_fecha = formato.fec_id.fec_codigo.split(formato.del_id.del_caracter)
         cols_fecha = list(range(formato.for_col_fecha - 1, formato.for_col_fecha - 1 + len(items_fecha)))
         items_hora = formato.hor_id.hor_codigo.split(formato.del_id.del_caracter)
@@ -127,12 +179,14 @@ def preformato_matriz(archivo_src, formato):
         # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
         archivo['fechahora_str'] = pd.Series([' '.join(row.astype(str)) for row in archivo[cols].values], index=archivo.index)
         archivo['fecha'] = pd.Series([verificar_fechahora(row, formatofechahora) for row in archivo['fechahora_str'].values], index=archivo.index)
+
     cambiar_fecha = validar_datalogger(formato.mar_id)
     if cambiar_fecha:
         intervalo = timedelta(hours=5)
         archivo['fecha'] = archivo['fecha'] - intervalo
     archivo = archivo.sort_values('fecha')
     archivo = archivo.reset_index(drop=True)
+
     return archivo
 
 
@@ -151,6 +205,9 @@ def guardar_datos__temp_a_final(imp_id, form):
         if verificar_vacios(importaciontemp.imp_fecha_ini, fecha_datos):
             guardar_vacios(var_id, fecha_datos, estacion, observacion, importaciontemp.imp_fecha_ini)
         eliminar_datos(varmodel, importaciontemp, estacion.est_id)
+        if var_id == 11:
+            eliminar_datos(Caudal, importaciontemp, estacion.est_id)
+
         varmodel.objects.bulk_create(
             varmodel(**row) for row in tabla.to_dict('records')
         )
@@ -177,60 +234,6 @@ def guardar_datos__temp_a_final(imp_id, form):
 
 
 # leer el archivo y convertirlo a una matriz de objetos de la clase Datos
-'''def construir_matriz(archivo, formato, estacion):
-    # variables para el acumulado
-    ValorReal = 0
-    UltimoValor = 0
-    # determinar si debemos restar 5 horas a la fecha del archivo
-    cambiar_fecha = validar_datalogger(formato.mar_id)
-    # validar si los valores del archivo son acumulados
-    acumulado = validar_acumulado(formato.mar_id)
-    clasificacion = list(Clasificacion.objects.filter(
-        for_id=formato.for_id))
-    i = 0
-    datos = []
-    lineas=archivo.readlines()
-    for linea in lineas:
-        i += 1
-        # controlar la fila de inicio
-        if i >= formato.for_fil_ini:
-            valores = linea.split(formato.del_id.del_caracter)
-            fecha = formato_fecha(formato, valores, cambiar_fecha)
-            j = 0
-            for fila in clasificacion:
-                if fila.cla_valor is not None:
-                    valor = valid_number(valores[fila.cla_valor], fila.var_id.var_id)
-                    if valor != None and acumulado and fila.var_id.var_id == 1:
-                        dblValor = valor
-                        if dblValor == 0:
-                            UltimoValor = 0
-                        ValorReal = dblValor - UltimoValor
-                        if ValorReal < 0:
-                            ValorReal = dblValor
-                        UltimoValor = dblValor
-                        valor = ValorReal
-                else:
-                    valor = None
-                if fila.cla_maximo is not None:
-                    maximo = valid_number(valores[fila.cla_maximo], fila.var_id.var_id)
-                else:
-                    maximo = None
-                if fila.cla_minimo is not None:
-                    minimo = valid_number(valores[fila.cla_minimo], fila.var_id.var_id)
-                else:
-                    minimo = None
-                dato = Datos(var_id=fila.var_id.var_id, est_id=estacion.est_id,
-                             med_fecha=fecha, mar_id=formato.mar_id.mar_id,
-                             med_valor=valor, med_maximo=maximo, med_minimo=minimo,
-                             med_estado=True)
-                datos.append(dato)
-                j += 1
-            if formato.for_tipo == 'automatico':
-                formato.for_fil_ini = i + 1
-                formato.save()
-    return datos'''
-
-
 def construir_matriz(archivo_src, formato, estacion):
     # TODO : Eliminar validar_datalogger, validar acumulado
 
@@ -244,8 +247,10 @@ def construir_matriz(archivo_src, formato, estacion):
     for var in clasificacion:
         columnas = []
         columnas.append(('fecha', 'fecha'))
+
         ##
         columnas.append((var.cla_valor - 1, 'valor'))
+
         if var.col_validador_valor:
             matriz.loc[matriz[var.col_validador_valor - 1] != var.txt_validador_valor, var.cla_valor - 1] = np.nan
         ##
@@ -258,7 +263,7 @@ def construir_matriz(archivo_src, formato, estacion):
             columnas.append((var.cla_minimo - 1, 'minimo'))
         if var.col_validador_minimo:
             matriz.loc[matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo, var.cla_minimo - 1] = np.nan
-        ##
+        # sacar los datos de la variable matriz a la variable datos de acuerdo a la columna
         datos = matriz.loc[:, [v[0] for v in columnas]]
         datos.rename(columns=dict(columnas), inplace=True)
 
@@ -272,12 +277,19 @@ def construir_matriz(archivo_src, formato, estacion):
                 datos[col] = pd.Series([numero_punto_decimal(val) for val in datos[col].values], index=matriz.index)
 
         # Eliminar NAs
-        columnas_datos = [columna[1] for columna in columnas if columna[1]!='fecha']
+        columnas_datos = [columna[1] for columna in columnas if columna[1] != 'fecha']
+
         datos = datos.dropna(axis=0, how='all', subset=columnas_datos)
+
+        datos.loc[pd.isna(datos['valor']), 'valor'] = None
+
 
         # modificar valores de Radiacion mayores a 1400
         if var.var_id_id == 7:
             datos.loc[datos['valor'] > 1400, 'valor'] = 1400
+
+        if var.var_id_id == 6:
+            datos.loc[datos['valor'] < 1, 'valor'] = datos['valor'] * 100
 
         if var.acumular:
             # Se asume que si es incremental solo trabaja con VALOR (Se excluye MAXIMO y MINIMO)
@@ -285,7 +297,7 @@ def construir_matriz(archivo_src, formato, estacion):
                 datos['valor'] = datos['valor'].diff()
                 # datos['valor'][datos['valor'] < 0] = np.nan
                 datos.loc[datos['valor'] < 0, 'valor'] = np.nan
-                datos=datos.dropna()
+                datos = datos.dropna()
             datos['fecha'] = datos['fecha'].apply(lambda x: x.replace(minute=int(x.minute/5) * 5, second=0, microsecond=0, nanosecond=0) )
             datos['fecha'] = datos['fecha'] + pd.Timedelta(minutes=5)
             cuenta = datos.groupby('fecha')['valor'].sum().to_frame()
@@ -301,11 +313,11 @@ def construir_matriz(archivo_src, formato, estacion):
                 datos['valor'] = datos['valor'].diff()
                 # datos['valor'][datos['valor'] < 0] = np.nan
                 datos.loc[datos['valor'] < 0, 'valor'] = np.nan
-                datos=datos.dropna()
+                datos = datos.dropna()
             if var.resolucion:
                 datos['valor'] = datos['valor'] * float(var.resolucion)
 
-        datos['estacion'] = estacion.est_id
+        datos['estacion_id'] = estacion.est_id
         datos_variables[var.var_id_id] = datos
     return datos_variables
 
@@ -332,7 +344,8 @@ def guardar_datos_automatico(datos):
 def eliminar_datos(modelo, importacion, estacion):
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
-    datos = modelo.objects.filter(fecha__gte=fecha_ini).filter(fecha__lte=fecha_fin).filter(estacion=estacion)
+    datos = modelo.objects.filter(fecha__gte=fecha_ini).filter(fecha__lte=fecha_fin).filter(estacion_id=estacion)
+
     if datos:
         datos.delete()
 
@@ -402,7 +415,7 @@ def verificar_vacios(fecha_archivo, fecha_datos):
 # Consultar la ultima fecha de los datos
 def ultima_fecha(modelo, estacion):
     # año base de la información
-    consulta = list(modelo.objects.filter(estacion=estacion).order_by('-fecha')[:1])
+    consulta = list(modelo.objects.filter(estacion_id=estacion).order_by('-fecha')[:1])
     if len(consulta) > 0:
 
         informacion = consulta[0].fecha
@@ -412,9 +425,9 @@ def ultima_fecha(modelo, estacion):
     return informacion
 
 
-#Consultar periodo de tiempo del archivo
+# Consultar periodo de tiempo del archivo
 def consulta_fecha(fec_ini, fec_fin, est_id, modelo):
-    consulta = modelo.objects.filter(estacion=est_id).filter(fecha__gte=fec_ini).filter(fecha__lte=fec_fin)
+    consulta = modelo.objects.filter(estacion_id=est_id).filter(fecha__gte=fec_ini).filter(fecha__lte=fec_fin)
     if consulta.exists():
         return True
     return False

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from validacion.models import *
+from validacion.models import Validacion
 from frecuencia.models import Frecuencia
-from medicion.models import Medicion
+
 from estacion.models import Estacion
 from variable.models import Variable
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, time
 from django.db import models
+from medicion.functions import ReporteValidacion
+from validacion.abstract import ReporteDiario, ReporteDiarioPrecipitacion
 
 
 class consulta(models.Model):
@@ -14,13 +16,15 @@ class consulta(models.Model):
     validado = models.BooleanField()
 
 
+
+
 def periodos_validacion(est_id, var_id):
     sql = """
     WITH 
     fechas AS (
     SELECT m.fecha, 
         EXISTS (SELECT v.fecha FROM validacion_%%var_id%% v WHERE v.estacion_id = %%est_id%% AND v.fecha = m.fecha) AS validado
-        FROM medicion_%%var_id%% m WHERE m.estacion = %%est_id%%
+        FROM medicion_%%var_id%% m WHERE m.estacion_id = %%est_id%%
     ),
     fechas_cambio AS (
         SELECT fecha, validado, CASE WHEN validado != lag(validado) OVER (ORDER BY fecha ASC) THEN lag(fecha) OVER (ORDER BY fecha ASC) END AS fecha_bloque_anterior FROM fechas
@@ -39,59 +43,59 @@ def periodos_validacion(est_id, var_id):
     """
 
     sql = sql.replace("%%var_id%%", str(var_id)).replace("%%est_id%%", str(est_id))
+    print(sql)
     result = consulta.objects.raw(sql)
     return result
 
 
-
-
-def generar_validacion(form):
-    validaciones = []
-    estacion = form.cleaned_data['est_id']
-    variable = form.cleaned_data['var_id']
-    obj_estacion = Estacion.objects.get(est_id=estacion)
-    obj_variable = Variable.objects.get(var_id=variable)
-    consulta = Validacion.objects.filter(est_id=estacion) \
-                   .filter(var_id=variable).order_by('-val_fecha')[:1]
-    if consulta.exists():
-        fecha_ini = consulta[0].val_fecha
-    else:
-        frecuencia = Frecuencia.objects.filter(est_id=estacion) \
-                         .filter(var_id=variable).order_by('fre_fecha_ini')[:1]
-        # print frecuencia[0].fre_fecha_ini
-        fecha_ini = frecuencia[0].fre_fecha_ini
-    # fecha_ini=date(2017,1,1)
-    mediciones = Medicion.objects.filter(est_id=estacion) \
-                     .filter(var_id=variable).values('med_fecha').reverse()[:1]
-    fecha_fin = mediciones[0].get('med_fecha')
-    fechas = list(Frecuencia.objects.filter(est_id=estacion) \
-                  .filter(var_id=variable).order_by('fre_fecha_ini'))
-    i = 0
-    # frecuencia por defecto
-    val_frecuencia = 5
-    rango = (fecha_fin - fecha_ini).days
-    for item in range(30):
-        val_fecha = fecha_ini + timedelta(days=item)
-        if len(fechas) > 1:
-            if val_fecha >= fechas[i].get('fre_fecha_fin') and i < fechas.count():
-                i += 1
-            val_frecuencia = fechas[i].fre_valor
-        else:
-            val_frecuencia = fechas[i].fre_valor
-        val_num_dat = Medicion.objects.filter(est_id=estacion) \
-            .filter(var_id=variable).filter(med_fecha=val_fecha).count()
-        val_fre_reg = (60 / val_frecuencia) * 24
-        val_porcentaje = float(val_num_dat) / val_fre_reg * 100
-
-        obj_validacion = Validacion(var_id=obj_variable, est_id=obj_estacion,
-                                    val_fecha=val_fecha, val_num_dat=val_num_dat, val_fre_reg=val_fre_reg,
-                                    val_porcentaje=val_porcentaje)
-        validaciones.append(obj_validacion)
-        # obj_validacion.save()
-
-    return validaciones
-
 def guardar_validacion(datos):
     for item in datos:
         item.save()
+
+
+# función para consultar datos horarios
+def consultar_horario(est_id, var_id, fecha_str):
+    inicio = datetime.strptime(fecha_str, '%Y-%m-%d %H:%M:%S')
+    fin = inicio + timedelta(hours=1)
+    variable = Variable.objects.get(var_id=var_id)
+
+    query = "select * FROM reporte_validacion_" + str(variable.var_modelo).lower() + "(%s, %s, %s);"
+    consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
+    datos = []
+    for fila in consulta:
+        if not fila.seleccionado:
+            continue
+        if fila.class_fecha == 'fecha salto':
+            dato = {
+                'fecha': fila.fecha - datetime.timedelta(minutes=1),
+                'valor': None
+            }
+            datos.append(dato)
+        dato = {
+            'fecha': fila.fecha,
+            'valor': fila.valor
+        }
+        datos.append(dato)
+    return datos
+
+
+# consultar datos diarios
+def reporte_diario(estacion, variable, inicio, final):
+    est_id = estacion.est_id
+    var_id = variable.var_modelo
+    print(type(final), final)
+    fin = datetime.combine(final, time(23, 59, 59, 999999))
+    if var_id == 1:
+        query = "select * FROM reporte_validacion_diario_precipitacion(%s, %s, %s);"
+        consulta = ReporteDiarioPrecipitacion.objects.raw(query, [est_id, inicio, fin])
+        print(query, est_id, inicio, fin)
+    else:
+        query = "select * FROM reporte_validacion_diario_" + str(var_id).lower() + "(%s, %s, %s);"
+        consulta = ReporteDiario.objects.raw(query, [est_id, inicio, fin])
+        print(query, est_id, inicio, fin)
+
+    return consulta
+
+
+
 

@@ -2,7 +2,8 @@
 
 from anuarios.models import Viento
 from django.db import connection
-from datetime import datetime
+import numpy as np
+from math import isnan
 
 
 class VelocidaDireccion():
@@ -11,15 +12,22 @@ class VelocidaDireccion():
     direccion = 0
 
 
-def matrizV_mensual(estacion, variable, periodo):
+def matrizV_mensual(estacion, variable, periodo, tipo):
     tabla_velocidad = "medicion_velocidadviento"
     tabla_direccion = "medicion_direccionviento"
+
+    if tipo == 'validado':
+        tabla_velocidad = "validacion_velocidadviento"
+        tabla_direccion = "validacion_direccionviento"
+    else:
+        tabla_velocidad = "medicion_velocidadviento"
+        tabla_direccion = "medicion_direccionviento"
 
     cursor = connection.cursor()
     # velocidad media en m/s
     sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     # sql += "AND date_part('month',fecha)=9 "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
@@ -29,7 +37,8 @@ def matrizV_mensual(estacion, variable, periodo):
     # numero de registros menores a 0.5 en velocidad
     sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<0.5 "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<0.5 "
+    # sql += "AND date_part('month',fecha)=9 "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
@@ -38,7 +47,7 @@ def matrizV_mensual(estacion, variable, periodo):
         # numero de registros menores o igual a 0.5 en velocidad
         sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
         sql += "FROM " + tabla_velocidad + " "
-        sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<0.6"
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<0.6"
         sql += "and date_part('year',fecha)=" + str(periodo)
         sql += "GROUP BY mes ORDER BY mes"
 
@@ -52,51 +61,53 @@ def matrizV_mensual(estacion, variable, periodo):
         # lista de datos de la dirección de viento
         sql = "SELECT valor, fecha "
         sql += "FROM " + tabla_direccion + " "
-        sql += "WHERE estacion=" + str(estacion.est_id) + " "
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',fecha)=" + str(mes)+" "
         sql += "AND valor is not null AND valor<=360 "
         sql += "AND valor >=0 "
-        sql += "and date_part('year',fecha)=" + str(periodo)
+        sql += "and date_part('year',fecha)=" + str(periodo)+" "
         sql += "ORDER BY fecha"
+        print(sql)
         cursor.execute(sql)
         dat_dvi = dictfetchall(cursor)
         # lista de datos de velocidad del viento
         sql = "SELECT valor,maximo, fecha "
         sql += "FROM " + tabla_velocidad + " "
-        sql += "WHERE estacion=" + str(estacion.est_id) + " "
+        sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
         sql += "AND date_part('month',fecha)=" + str(mes)+" "
         sql += "AND valor is not null "
-        sql += "and date_part('year',fecha)=" + str(periodo)
+        sql += "and date_part('year',fecha)=" + str(periodo)+" "
         sql += "ORDER BY fecha"
         cursor.execute(sql)
+        print(sql)
         dat_vvi = dictfetchall(cursor)
         vvi = [[0 for x in range(0)] for y in range(8)]
         vvi_max = [[0 for x in range(0)] for y in range(8)]
         datos = agrupar_viento(dat_dvi, dat_vvi)
         for item in datos:
             if item.direccion < 22.5 or item.direccion > 337.5:
-                vvi[0].append(item.velocidad)
+                vvi[0].append(get_promedio(item))
                 vvi_max[0].append(get_maximo(item))
             elif item.direccion < 67.5:
-                vvi[1].append(item.velocidad)
+                vvi[1].append(get_promedio(item))
                 vvi_max[1].append(get_maximo(item))
             elif item.direccion < 112.5:
-                vvi[2].append(item.velocidad)
+                vvi[2].append(get_promedio(item))
                 vvi_max[2].append(get_maximo(item))
             elif item.direccion < 157.5:
-                vvi[3].append(item.velocidad)
+                vvi[3].append(get_promedio(item))
                 vvi_max[3].append(get_maximo(item))
             elif item.direccion < 202.5:
-                vvi[4].append(item.velocidad)
+                vvi[4].append(get_promedio(item))
                 vvi_max[4].append(get_maximo(item))
             elif item.direccion < 247.5:
-                vvi[5].append(item.velocidad)
+                vvi[5].append(get_promedio(item))
                 vvi_max[5].append(get_maximo(item))
             elif item.direccion < 292.5:
-                vvi[6].append(item.velocidad)
+                vvi[6].append(get_promedio(item))
                 vvi_max[6].append(get_maximo(item))
             elif item.direccion < 337.5:
-                vvi[7].append(item.velocidad)
+                vvi[7].append(get_promedio(item))
                 vvi_max[7].append(get_maximo(item))
         maximos = []
         valores[mes - 1].append(mes)
@@ -113,6 +124,7 @@ def matrizV_mensual(estacion, variable, periodo):
             # porcentaje por direccion
             valores[mes - 1].append(round(por_med, 2))
             # maximos por direcciion
+
             if len(vvi_max[j]) > 0:
                 maximos.append(max(vvi_max[j]))
             else:
@@ -120,7 +132,7 @@ def matrizV_mensual(estacion, variable, periodo):
         # velocidad media en km/h
         vel_media = item_velocidad.get('valor')*36/10
         # porcentaje de calma
-        if len(datos)>0:
+        if len(datos) > 0:
             valor_calma = round(float(item_calma.get('calma')) / len(datos) * 100, 2)
         else:
             valor_calma = 0
@@ -138,12 +150,19 @@ def matrizV_mensual(estacion, variable, periodo):
 
 
 def get_maximo(item):
-    if item.velocidad_max is None:
-        if item.velocidad is None:
+    if isnan(item.velocidad_max):
+        if isnan(item.velocidad):
             return 0
         else:
             return item.velocidad
     return item.velocidad_max
+
+
+def get_promedio(item):
+    if isnan(item.velocidad):
+        return 0
+    else:
+        return item.velocidad
 
 
 def agrupar_viento(dat_dvi, dat_vvi):

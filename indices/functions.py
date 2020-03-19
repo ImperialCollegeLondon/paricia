@@ -207,7 +207,7 @@ def getCaudalFrec(estacion_id,inicio, fin,frecuencia):
     print("influencia ",inf, "fecha ini :",inicio," fecha fin: ",fin)
     #Qesp = Q / inf
     if frecuencia == 1:  # 'Horario':
-        print("entra en horario frecuencia ",frecuencia)
+        print("entra en horario frecuencia ",frecuencia, estacion_id, inicio,fin)
         const = 1
         caudal = hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
                                                  fecha__lte=fin).values( "valor")
@@ -245,17 +245,15 @@ def caudalEspecifico(caudal, estacion_id, frecuencia):
         caudal
 
 def IndicaPreci(estacion_id,inicio,fin,completo):
-
+    #rrmes = mes.Precipitacion.objects.all()
     amax = None
     amin = None
     datos = 0
     if completo:
         fechas = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id).aggregate(Max('fecha'), Min('fecha'))
-        print(fechas)
-        if fechas['fecha__max'] is not None and fechas['fecha__min'] is not None:
-            amax = fechas['fecha__max'].year
-            amin = fechas['fecha__min'].year
-            datos = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id)[:10]
+        amax = fechas['fecha__max'].year
+        amin = fechas['fecha__min'].year
+        datos = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id)[:10]
     elif inicio is not None and fin is not None:
         amax = fin.year
         amin = inicio.year
@@ -287,10 +285,8 @@ def IndicaPreci(estacion_id,inicio,fin,completo):
                     fechaMinAnual = i
                 acum = acum + tmes["valor__sum"]
                 con = con + 1
-        if con == 0:
-            rranual= 0.0
-        else:
-            rranual = round(acum / con,2)
+
+        rranual = round(acum / con,2)
         tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu, fecha__lte=finconsu).aggregate(Avg('valor'),Min('valor'),Max('valor'))
         fmeMax = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id,fecha__gte=iniconsu, fecha__lte=finconsu, valor__exact = tmes["valor__max"]).values('fecha')[:1]
         fmeMin = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id,fecha__gte=iniconsu, fecha__lte=finconsu, valor__exact = tmes["valor__min"]).values('fecha')[:1]
@@ -306,21 +302,19 @@ def IndicaPreci(estacion_id,inicio,fin,completo):
         dcsl = 0
         temdcsl = 0
         for i in tdia:
-            print(i['valor'])
-            if i['valor'] is not None:
-                if i['valor'] == 0:
-                    temdcsl = temdcsl + 1
-                    if temdcsl > dcsl :
-                        dcsl = temdcsl
-                else:
-                    temdcsl = 0
-                if i['valor'] > 0.1:
-                    temdccl = temdccl + 1
-                    if temdccl > dccl:
-                        dccl = temdccl
-                else:
-                    temdccl = 0
-
+            #print(i['valor'])
+            if i['valor'] == 0:
+                temdcsl = temdcsl + 1
+                if temdcsl > dcsl :
+                    dcsl = temdcsl
+            else:
+                temdcsl = 0
+            if i['valor'] > 0.1:
+                temdccl = temdccl + 1
+                if temdccl > dccl:
+                    dccl = temdccl
+            else:
+                temdccl = 0
 
         tdia = dia.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                                 fecha__lte=finconsu).order_by("valor")

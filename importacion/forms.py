@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.forms import ModelForm
 from estacion.models import Estacion
-from importacion.models import Importacion
+from importacion.models import Importacion, ImportacionTemp
 
 
 class ImportacionForm(forms.Form):
@@ -28,3 +29,13 @@ class ImportacionSearchForm(forms.Form):
         else:
             lista = Importacion.objects.filter(imp_tipo=tipo)
         return lista
+
+
+class ImportacionCreateForm(ModelForm):
+    class Meta:
+        model = ImportacionTemp
+        fields = ['est_id', 'for_id', 'imp_archivo']
+
+    def __init__(self, *args, **kwargs):
+        super(ImportacionCreateForm, self).__init__(*args, **kwargs)
+        self.fields['est_id'].queryset = Estacion.objects.filter(est_externa=False).order_by('est_codigo')

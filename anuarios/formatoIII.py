@@ -3,41 +3,47 @@
 from anuarios.models import TemperaturaAire
 from django.db import connection
 from home.functions import dictfetchall
+from math import isnan
 
 
-def matrizIII(estacion, variable, periodo):
+def matrizIII(estacion, variable, periodo, tipo):
     datos = []
     # tabla = "tai.m" + periodo
-    tabla = 'medicion_' + str(variable.var_modelo)
+    if tipo == 'validado':
+        tabla = 'validacion_' + str(variable.var_modelo)
+    else:
+        tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     # promedio mensual
     sql = "SELECT avg(valor) as media, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
+
     med_avg = dictfetchall(cursor)
     # datos diarios máximos
     sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
     sql += "date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
-    print (sql)
+
     datos_diarios_max = dictfetchall(cursor)
     # mínimos absolutos
     sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
     sql += "date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
+
     datos_diarios_min = dictfetchall(cursor)
     max_abs, max_dia, maximo = maximostai(datos_diarios_max)
     min_abs, min_dia, minimo = minimostai(datos_diarios_min)
@@ -111,19 +117,35 @@ def minimostai(datos_diarios_min):
 
 
 def get_maximo(fila):
-    if fila.get('maximo') is None:
-        if fila.get('valor') is None:
-            return 0
-        else:
-            return fila.get('valor')
+    try:
 
-    return fila.get('maximo')
+        if isnan(fila.get('maximo')):
+            if isnan(fila.get('valor')):
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('maximo')
+    except TypeError:
+        if fila.get('maximo') is None:
+            if fila.get('valor') is None:
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('maximo')
 
 
 def get_minimo(fila):
-    if fila.get('minimo') is None:
-        if fila.get('valor') is None:
-            return 0
-        else:
-            return fila.get('valor')
-    return fila.get('minimo')
+    try:
+        if isnan(fila.get('minimo')):
+            if isnan(fila.get('valor')):
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('minimo')
+    except TypeError:
+        if fila.get('minimo') is None:
+            if fila.get('valor') is None:
+                return 0
+            else:
+                return fila.get('valor')
+        return fila.get('minimo')

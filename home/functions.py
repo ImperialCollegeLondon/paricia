@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.db import connection
 
+
 def pagination(lista, page, num_reg):
     paginator = Paginator(lista, num_reg)
     factor = paginator.num_pages // 2
@@ -29,6 +30,7 @@ def pagination(lista, page, num_reg):
         'range': range(start, last + 1),
     }
     return context
+
 
 def dictfetchall(cursor):
     # Return all rows from a cursor as a dict

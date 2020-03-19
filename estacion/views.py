@@ -2,22 +2,25 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from .models import Estacion  # , Registro
+from .models import Estacion, Inamhi   # , Registro
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
+
 from .forms import EstacionSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.functions import pagination
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+import json
+
 
 # Create your views here.
 class EstacionCreate(LoginRequiredMixin, CreateView):
     model = Estacion
-    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_latitud',
-              'est_longitud', 'est_altura', 'est_fecha_inicio', 'est_ficha', 'tipo', 'provincia', 'est_externa', 'influencia_km']
+    fields = ['est_id', 'est_codigo', 'est_nombre', 'est_latitud', 'est_longitud', 'est_altura',
+              'est_fecha_inicio', 'provincia', 'sistemacuenca', 'tipo',
+              'transmision',  'est_externa', 'influencia_km', 'est_estado', 'est_ficha']
 
     def form_valid(self, form):
         return super(EstacionCreate, self).form_valid(form)
@@ -75,7 +78,8 @@ class EstacionDetail(LoginRequiredMixin, DetailView):
 class EstacionUpdate(LoginRequiredMixin, UpdateView):
     model = Estacion
     fields = ['est_id', 'est_codigo', 'est_nombre', 'est_latitud', 'est_longitud', 'est_altura',
-              'est_fecha_inicio', 'est_ficha', 'tipo', 'provincia', 'est_estado','est_externa', 'influencia_km']
+              'est_fecha_inicio', 'provincia', 'sistemacuenca', 'tipo',
+              'transmision', 'est_externa', 'influencia_km', 'est_estado', 'est_ficha']
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -89,7 +93,24 @@ class EstacionDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('estacion:estacion_index')
 
 
+# Consulta de estaciones por codigo
+def search_estaciones(request):
+    if request.is_ajax():
+        q = request.GET.get('term', '').capitalize()
+        search_qs = Estacion.objects.filter(est_codigo__istartswith=q).filter(est_externa=False)
+        results = []
+        for r in search_qs:
+            results.append(r.est_codigo)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+
+
+# estaciones FONAG  en formato JSON
 def datos_json_estaciones(request):
+    #estaciones = list(Estacion.objects.order_by('est_id').filter(est_externa=False))
     estaciones = list(Estacion.objects.order_by('est_id').all())
     features = []
     for item in estaciones:
@@ -103,7 +124,38 @@ def datos_json_estaciones(request):
                 codigo=item.est_codigo,
                 nombre=item.est_nombre,
                 tipo=item.tipo.tip_nombre,
+                latitud=item.est_latitud,
+                longitud=item.est_longitud,
                 altura=item.est_altura
+            )
+
+        )
+        features.append(fila)
+    datos = dict(
+        type='FeatureCollection',
+        features=features
+    )
+    return JsonResponse(datos,safe=False)
+
+
+# estaciones INAMHI en formato JSON
+def estaciones_inamhi_json(request):
+    estaciones = list(Inamhi.objects.order_by('id').all())
+    features = []
+    for item in estaciones:
+        fila = dict(
+            type='Feature',
+            geometry=dict(
+                type='Point',
+                coordinates=[float(item.longitud), float(item.latitud)]
+            ),
+            properties=dict(
+                codigo=item.codigo,
+                nombre=item.nombre,
+                tipo=item.categoria,
+                latitud=item.latitud,
+                longitud=item.longitud,
+                altura=None
             )
 
         )

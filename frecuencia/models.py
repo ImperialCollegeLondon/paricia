@@ -31,3 +31,6 @@ class Frecuencia(models.Model):
 
     def get_absolute_url(self):
         return reverse('frecuencia:frecuencia_detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        ordering = ('fre_id',)

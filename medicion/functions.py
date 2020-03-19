@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from estacion.models import Estacion
 from variable.models import Variable, Unidad
-from medicion.models import Medicion
+
 from registro.models import LogMedicion
 import datetime
 from django.db import connection
@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.db import models
 import plotly.offline as opy
 import plotly.graph_objs as go
+from reportes.functions import get_elemento_data_json, get_layout_grafico, datos_instantaneos
 
 
 class ReporteValidacion(models.Model):
@@ -27,200 +28,16 @@ class ReporteValidacion(models.Model):
     class_stddev_error = models.CharField(max_length=30)
 
 
-def reporte_validacion(form):
-    est_id = form.cleaned_data['estacion'].est_id
-    var_id = form.cleaned_data['variable'].var_modelo
-    inicio = form.cleaned_data['inicio']
-    fin = datetime.datetime.combine(form.cleaned_data['fin'], datetime.time(23, 59, 59, 999999))
+def reporte_validacion(estacion, variable, inicio, final):
+    print("Inicio Reporte Validacion: ", datetime.datetime.now())
+    est_id = estacion.est_id
+    var_id = variable.var_modelo
+    fin = datetime.datetime.combine(final, datetime.time(23, 59, 59, 999999))
     query = "select * FROM reporte_validacion_" + str(var_id).lower() + "(%s, %s, %s);"
-    print(query,est_id, inicio, fin)
+    print(query, est_id, inicio, fin)
     consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
+    print("Fin Reporte Validacion: ", datetime.datetime.now())
     return consulta
-
-
-def filtrar(form):
-    estacion = form.cleaned_data['estacion']
-    variable = form.cleaned_data['variable']
-    inicio = form.cleaned_data['inicio']
-    fin = form.cleaned_data['fin']
-    tipo_variable = form.cleaned_data['valor']
-    year_ini = inicio.strftime('%Y')
-    year_fin = fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        sql = 'SELECT * FROM ' + tabla + ' WHERE '
-        sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-        sql += 'med_fecha>=\'' + str(inicio) + '\' and '
-        sql += 'med_fecha<=\'' + str(fin) + '\' and med_estado is not False '
-        sql += 'and med_valor is not null '
-        sql += 'order by med_fecha'
-        consulta = list(Medicion.objects.raw(sql))
-    else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        consulta = []
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_fecha>=\'' + str(inicio) + '\' and med_estado is not False '
-                sql += 'and med_valor is not null '
-                sql += 'order by med_fecha'
-            elif str(year) == year_fin:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_fecha<=\'' + str(fin) + '\' and med_estado is not False '
-                sql += 'and med_valor is not null '
-                sql += 'order by med_fecha'
-
-            else:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and med_estado is not False '
-                sql += 'and med_valor is not null '
-                sql += 'order by med_fecha'
-            consulta.extend(list(Medicion.objects.raw(sql)))
-
-    # parametros para la resta consecutiva
-    i = 0
-    ans = 0
-    datos = []
-    # parametros para la variabilidad
-    valor_acumulado = 0
-    xi_acumulado = 0
-    hora0 = datetime.strptime("00:00:00", "%H:%M:%S")
-    dat_var = []  # almacena las mediciones de una hora
-    variabilidad = 0
-    for item in consulta:
-        obj_analisis = Analisis()
-        if tipo_variable == 'valor':
-            valor = item.med_valor
-        elif tipo_variable == 'maximo':
-            valor = item.med_maximo
-        elif tipo_variable == 'minimo':
-            valor = item.med_minimo
-        valor_error = False
-        resta = 0
-        resta_error = False
-        var_error = False
-        if valor < variable.var_minimo or valor > variable.var_maximo:
-            valor_error = True
-        if variable.var_sos is None and variable.var_err is None:
-            resta = ""
-            resta_error = "no aplica"
-        else:
-            # calculo de la resta consecutiva
-            if i == 0:
-                resta = 0
-                ans = valor
-                hora0 = item.med_fecha
-            else:
-                resta = valor - ans
-                ans = valor
-            i += 1
-            if resta < variable.var_sos:
-                resta_error = "normal"
-            elif resta >= variable.var_sos and resta < variable.var_err:
-                resta_error = "sospechoso"
-            elif resta >= variable.var_err:
-                resta_error = "error"
-            resta = abs(resta)
-
-        # variabilidad
-        if variable.var_min is None:
-            variabilidad = ""
-            var_error = None
-        else:
-            dif_minutos = int(item.med_fecha.minute) - int(hora0.minute)
-            dif_hora = int(item.med_fecha.hour) - int(hora0.hour)
-            valor_acumulado += valor
-            dat_var.append(item.med_valor)
-            if (dif_minutos == 58 and len(dat_var) == 30) or (
-                    dif_minutos == 59 and len(dat_var) == 60) and dif_hora < 1:
-                promedio = sum(dat_var) / len(dat_var)
-                for val in dat_var:
-                    xi_acumulado += (val - promedio) ** 2
-                variabilidad = float(xi_acumulado / len(dat_var)) ** 0.5
-                dat_var = []
-                valor_acumulado = 0
-                xi_acumulado = 0
-            elif dif_hora >= 1:
-                hora0 = item.med_fecha
-                variabilidad = 0
-            if variabilidad < variable.var_min:
-                var_error = True
-
-        # asignar al objeto analisis
-        obj_analisis.med_id = item.med_id
-        obj_analisis.var_id = item.var_id.var_id
-        obj_analisis.fecha = item.med_fecha.date
-        obj_analisis.hora = item.med_fecha.time
-        obj_analisis.valor = item.med_valor
-        obj_analisis.valor_error = valor_error
-        obj_analisis.resta = resta
-        obj_analisis.resta_error = resta_error
-        obj_analisis.variabilidad = variabilidad
-        obj_analisis.var_error = var_error
-        datos.append(obj_analisis)
-    return datos
-
-
-def consultar_objeto(kwargs):
-    med_id = kwargs.get('pk')
-    med_fecha = kwargs.get('fecha')
-    var_id = kwargs.get('var_id')
-    fecha_split = med_fecha.split("-")
-    variable = Variable.objects.get(var_id=var_id)
-    year = fecha_split[0]
-    var_cod = variable.var_codigo
-    tabla = var_cod + '.m' + year
-    sql = 'SELECT * FROM ' + tabla + ' WHERE '
-    sql += 'med_id=' + str(med_id)
-    consulta = list(Medicion.objects.raw(sql))
-    return consulta[0]
-
-
-def modificar_medicion(kwargs, data):
-    med_id = kwargs.get('pk')
-    med_fecha = kwargs.get('fecha')
-    var_id = kwargs.get('var_id')
-    fecha_split = med_fecha.split("-")
-    variable = Variable.objects.get(var_id=var_id)
-    year = fecha_split[0]
-    var_cod = variable.var_codigo
-    tabla = var_cod + '.m' + year
-    if str(data.get('med_valor')) == '':
-        med_valor = 'Null'
-    else:
-        med_valor = str(data.get('med_maximo'))
-    if str(data.get('med_maximo')) == '':
-        med_maximo = 'Null'
-    else:
-        med_maximo = str(data.get('med_maximo'))
-    if str(data.get('med_minimo')) == '':
-        med_minimo = 'Null'
-    else:
-        med_minimo = str(data.get('med_maximo'))
-    sql = "UPDATE " + tabla + " SET med_valor = " + med_valor
-    sql += ", med_maximo=" + med_maximo + ", med_minimo="
-    sql += med_minimo + "  WHERE med_id = " + str(med_id)
-    with connection.cursor() as cursor:
-        cursor.execute(sql)
-
-
-def eliminar_medicion(kwargs, data):
-    med_id = kwargs.get('pk')
-    med_fecha = kwargs.get('fecha')
-    var_id = kwargs.get('var_id')
-    fecha_split = med_fecha.split("-")
-    variable = Variable.objects.get(var_id=var_id)
-    year = fecha_split[0]
-    var_cod = variable.var_codigo
-    tabla = var_cod + '.m' + year
-    sql = "UPDATE " + tabla + " SET med_estado = false "
-    sql += "WHERE med_id = " + str(med_id)
-    with connection.cursor() as cursor:
-        cursor.execute(sql)
 
 
 # funcion para registrar los cambios en la tabla medicion
@@ -243,102 +60,43 @@ def guardar_log(accion, medicion, user):
     logmedicion.save()
 
 
-def datos_instantaneos(form):
-    estacion = form.cleaned_data['estacion']
-    variable = form.cleaned_data['variable']
-    fecha_inicio = form.cleaned_data['inicio']
-    fecha_fin = form.cleaned_data['fin']
-    year_ini = fecha_inicio.strftime('%Y')
-    year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    if year_ini == year_fin:
-        tabla = var_cod + '.m' + year_ini
-        sql = 'SELECT * FROM ' + tabla + ' WHERE '
-        sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-        sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' and '
-        sql += 'med_fecha<=\'' + str(fecha_fin) + '\' order by med_fecha'
-        consulta = list(Medicion.objects.raw(sql))
-    else:
-        range_year = range(int(year_ini), int(year_fin) + 1)
-        consulta = []
-        for year in range_year:
-            tabla = var_cod + '.m' + str(year)
-            if str(year) == year_ini:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_estado is not False and '
-                sql += 'med_fecha>=\'' + str(fecha_inicio) + '\' order by med_fecha'
-            elif str(year) == year_fin:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' and '
-                sql += 'med_estado is not False and '
-                sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59 \' order by med_fecha'
-            else:
-                sql = 'SELECT * FROM ' + tabla + ' WHERE '
-                sql += 'med_estado is not False and '
-                sql += 'est_id_id=' + str(estacion.est_id) + ' order by med_fecha'
-            consulta.extend(list(Medicion.objects.raw(sql)))
+# Grafico para la validacion de datos
+def grafico_validacion(variable, estacion, fecha_inicio, fecha_fin):
+
+    # informacion = datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin)
+    informacion = reporte_validacion(estacion, variable, fecha_inicio, fecha_fin)
+    tiempo = []
     valor = []
-    maximo = []
-    minimo = []
-    frecuencia = []
-    for fila in consulta:
-        if fila.med_valor is not None:
-            valor.append(fila.med_valor)
-        else:
-            valor.append(None)
-        if fila.med_maximo is not None:
-            maximo.append(fila.med_maximo)
-        else:
-            maximo.append(None)
-        if fila.med_minimo is not None:
-            minimo.append(fila.med_minimo)
-        else:
-            minimo.append(None)
-        frecuencia.append(fila.med_fecha)
-    return valor, maximo, minimo, frecuencia
-
-
-def eliminar(form):
-    est_id = str(form.cleaned_data['estacion'])
-    var_id = str(form.cleaned_data['variable'])
-    fec_ini = str(form.cleaned_data['fec_ini']) + str(" ") + str(form.cleaned_data['hor_ini'])
-    fec_fin = str(form.cleaned_data['fec_fin']) + str(" ") + str(form.cleaned_data['hor_fin'])
-    print(str(form.cleaned_data['fec_ini']) + str(form.cleaned_data['hor_ini']))
-    with connection.cursor() as cursor:
-        cursor.execute("UPDATE medicion_medicion SET med_estado = false \
-        WHERE est_id_id=%s\
-        and var_id_id=%s and med_fecha>=%s \
-        and med_fecha<=%s",
-                       [est_id, var_id, fec_ini, fec_fin])
-    return "Proceso Realizado"
-
-def grafico2(consulta, variable, estacion):
-    valor = []
-    frecuencia = []
-    for fila in consulta:
+    for fila in informacion:
         if not fila.seleccionado:
             continue
+        if fila.class_fecha == 'fecha salto':
+            valor.append(None)
+            tiempo.append(fila.fecha - datetime.timedelta(minutes=1))
         valor.append(fila.valor)
-        frecuencia.append(fila.fecha)
+        tiempo.append(fila.fecha)
+
     if variable.var_id == 1:
-        trace = go.Bar(x=frecuencia, y=valor, name='Precipitacion (mm)')
-        data = go.Data([trace])
+        data_valor = get_elemento_data_json('bar', tiempo, valor, 'Valor', '#1660A7')
     else:
-        trace2 = go.Scatter(x=frecuencia, y=valor, name='Media', mode='lines', line=dict(color=('rgb(22, 96, 167)'),))
-        #data = go.Data([trace0, trace1, trace2])
-        data = go.Data([trace2])
-    shapes = []
+        data_valor = get_elemento_data_json('scatter', tiempo, valor, 'Media', '#1660A7')
 
-    layout = go.Layout(autosize=False, width=1000, height=300, title=estacion.est_codigo + " " + estacion.est_nombre,
-                       yaxis=dict(title=variable.var_nombre),
-                       shapes=shapes
-                       )
-    figure = go.Figure(data=data, layout=layout)
-    div = opy.plot(figure, auto_open=False, output_type='div')
-    return div
+    titulo_grafico = variable.var_nombre + " " + estacion.est_codigo
+    titulo_yaxis = variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"
 
-def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
+    data = [data_valor]
+
+    layout = get_layout_grafico(titulo_grafico, titulo_yaxis, fecha_inicio, fecha_fin)
+
+    grafico_div = dict(
+        data=data,
+        layout=layout,
+    )
+
+    return grafico_div
+
+
+'''def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
     estacion = form.cleaned_data['estacion']
     variable = form.cleaned_data['variable']
     div = ""
@@ -348,7 +106,7 @@ def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
                 x=tiempo,
                 y=valores,
             )
-            data = go.Data([tra_pro])
+            data = [tra_pro]
         else:
             tra_prom = go.Scatter(
                 x=tiempo,
@@ -377,7 +135,7 @@ def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
                     color='#CD0C18',
                 )
             )
-            data = go.Data([tra_max_abs, tra_prom, tra_min_abs])
+            data = [tra_max_abs, tra_prom, tra_min_abs]
 
         layout = go.Layout(
             title=estacion.est_codigo + " " + estacion.est_nombre,
@@ -385,7 +143,7 @@ def grafico(form,valores, maximos_abs, minimos_abs, tiempo):
         )
         figure = go.Figure(data=data, layout=layout)
         div = opy.plot(figure, auto_open=False, output_type='div')
-    return div
+    return div'''
 
 
 def titulo_unidad(variable):

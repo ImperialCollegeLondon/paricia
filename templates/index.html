@@ -13,8 +13,14 @@
     {% load static %}
     <script src="{% static 'functions.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+    <!--carga de leaflet-->
+    <script src="{% static 'leaflet/leaflet.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'leaflet/leaflet.css' %}" />
+
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
+    <!-- favicon -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
 </head>
 
 {# Display django.contrib.messages as Bootstrap alerts #}
@@ -67,7 +73,6 @@
                     <a class="dropdown-item" href="{% url 'formato:formato_index' %}">Formatos de Importación</a>
                     <a class="dropdown-item" href="{% url 'formato:asociacion_index' %}">Formatos por Estación</a>
                     <a class="dropdown-item" href="{% url 'importacion:importacion_create'%}">Importar Archivo</a>
-                    <a class="dropdown-item" href="{% url 'medicion:medicion_consulta' %}">Gestión Datos Crudos</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{% url 'vacios:vacios_index' %}">Vacios de Información</a>
                     <a class="dropdown-item" href="{% url 'vacios:dias' %}">Registro de Vacios por días</a>
@@ -78,21 +83,19 @@
             <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
                    role="button" aria-haspopup="true" aria-expanded="false">
-                    Validación<span class="caret"></span></a>
+                    Análisis de Datos<span class="caret"></span></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'medicion:medicion_filter' %}">Datos Crudos</a>
 
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                   role="button" aria-haspopup="true" aria-expanded="false">
-                    Procesamiento<span class="caret"></span></a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'medicion:medicion_filter' %}">Validación Datos Crudos</a>
                     <a class="dropdown-item" href="{% url 'anuarios:anuarios_procesar' %}">Procesar Anuario</a>
-                    <!--<a class="dropdown-item" href="{% url 'validacion:procesar_validacion' %}">Frecuencia de Registro</a>-->
+                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">Doble Masa</a>
+                    <a class="dropdown-item" href="{% url 'validacion:diaria' %}">Validación Diaria</a>
+                    <!--<a class="dropdown-item" href="{% url 'horario:porcentaje' %}">Porcentaje Horario</a>
+                    <a class="dropdown-item" href="{% url 'mensual:frecuencia' %}">Porcentaje Mensual</a>-->
+                    
                 </div>
             </li>
+
             <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
                    role="button" aria-haspopup="true" aria-expanded="false">
@@ -102,9 +105,11 @@
 
                     <a class="dropdown-item" href="{% url 'reportes:anuario' %}">Anuario</a>
                     <a class="dropdown-item" href="{% url 'reportes:consultas_periodo' %}">Consultas por Periodo</a>
+                    <a class="dropdown-item" href="{% url 'reportes:consultas_sistema' %}">Consultas por Sistema Cuenca</a>
                     <a class="dropdown-item" href="{% url 'reportes:reporte_inamhi' %}">Consultar Información INAMHI</a>
                     <a class="dropdown-item" href="{% url 'reportes:comparacion_reporte' %}">Comparar 3 estaciones</a>
                     <a class="dropdown-item" href="{% url 'reportes:comparacion_variable' %}">Comparar 2 variables</a>
+
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -117,12 +122,20 @@
                     <a class="dropdown-item" href="{% url 'importacion:importacion_automatica' %}">Lectura Automatica</a>
                 </div>
             </li>
+            <!--<li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">Indices
+                    <span class="caret"></span></a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">doble Masa</a>
+                </div>
+            </li>-->
             <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                    aria-haspopup="true" aria-expanded="false">Indicadores
                     <span class="caret"></span></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'indices:doblemasa' %}">Doble Masa</a>
+
                     <a class="dropdown-item" href="{% url 'indices:precipitacion' %}">Precipitación</a>
                     <a class="dropdown-item" href="{% url 'indices:caudal' %}">Caudales</a>
                     <a class="dropdown-item" href="{% url 'indices:intensidad' %}">Intensidad - Duración</a>

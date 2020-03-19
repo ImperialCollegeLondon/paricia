@@ -18,11 +18,13 @@ $(document).ready(function() {
             <th>Nombre</th>
             <th>Tipo</th>
             <th>Provincia</th>
-            <th>Y UTM (WGS 84 17S)</th>
-            <th>X UTM (WGS 84 17S)</th>
+            <!--<th>Y UTM (WGS 84 17S)</th>
+            <th>X UTM (WGS 84 17S)</th>-->
+            <th>Latitud</th>
+            <th>Longitud</th>
             <th>Altura</th>
-            <th>Ubicación</th>
-            <th>Influencia Km</th>
+            <th>Administrador</th>
+
             <th>Acciones</th>
         </tr>
         </thead>
@@ -37,8 +39,6 @@ $(document).ready(function() {
             <td>{{ item.est_longitud}}</td>
             <td>{{ item.est_altura}}</td>
             <td>{% if  item.est_externa == True %}EPMAPS{%else%}FONAG{% endif %}</td>
-            <td>{% if  item.influencia_km != None %} {{ item.influencia_km }} {%else%} 0 {% endif %}</td>
-
             <td>
                 <a href="{% url 'estacion:estacion_detail' item.est_id %}">
                     <span class="far fa-eye" aria-hidden="true"></span>

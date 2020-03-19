@@ -1,7 +1,8 @@
-
 from django.db import models
 from medicion.models import DigVar
 # Create your models here.
+
+
 class EstPrecipitacion(models.Model):
     # estacion = models.ForeignKey( Estacion, on_delete=models.CASCADE)
     estacion_id = models.PositiveIntegerField("estacion_id", db_index=True)
@@ -18,14 +19,14 @@ class EstPrecipitacion(models.Model):
                                       decimal_places=DigVar.v1.dec_pla,
                                       null=True)
     prom_mes = models.DecimalField("Promedio del mes", max_digits=(DigVar.v1.max_dig + 2),
-                                      decimal_places=DigVar.v1.dec_pla,
-                                      null=True)
+                                   decimal_places=DigVar.v1.dec_pla,
+                                   null=True)
     per10= models.DecimalField("percentil 10", max_digits=(DigVar.v1.max_dig + 2),
                                       decimal_places=DigVar.v1.dec_pla,
                                       null=True)
     per50 = models.DecimalField("mediana 50", max_digits=(DigVar.v1.max_dig + 2),
-                                 decimal_places=DigVar.v1.dec_pla,
-                                 null=True)
+                                decimal_places=DigVar.v1.dec_pla,
+                                null=True)
 
     per95 = models.DecimalField("percentil 95", max_digits=(DigVar.v1.max_dig + 2),
                                       decimal_places=DigVar.v1.dec_pla,
@@ -42,7 +43,6 @@ class EstPrecipitacion(models.Model):
         indexes = [
             models.Index(fields=['fecha', 'estacion_id']),
         ]
-
 
 
 class EstCaudal(models.Model):
@@ -78,3 +78,4 @@ class EstCaudal(models.Model):
         indexes = [
             models.Index(fields=['fecha', 'estacion_id']),
         ]
+# Create your models here.

@@ -10,11 +10,22 @@ def consultar_dias(form):
     fecha_fin = form.cleaned_data['fin']
     year_ini = fecha_ini.strftime('%Y')
     year_fin = fecha_fin.strftime('%Y')
-    var_cod = variable.var_codigo
-    datos=[]
-    if year_ini == year_fin:
+
+
+    tabla = 'medicion_'+variable.var_modelo
+
+    sql = 'SELECT date_trunc(\'day\',fecha) as fecha from ' + tabla + ' '
+    sql += 'where estacion_id=' + str(estacion.est_id) + ' and '
+    sql += 'fecha>=\'' + str(fecha_ini) + '\' and '
+    sql += 'fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
+    sql += 'group by fecha order by fecha'
+    print(sql)
+    cursor.execute(sql)
+    datos = dictfetchall(cursor)
+
+    '''if year_ini == year_fin:
         tabla = var_cod + '.m' + year_ini
-        sql = 'SELECT date_trunc(\'day\',med_fecha) as fecha from ' + tabla + ' '
+        sql = 'SELECT date_trunc(\'day\',fecha) as fecha from ' + tabla + ' '
         sql += 'where est_id_id=' + str(estacion.est_id) + ' and '
         sql += 'med_fecha>=\'' + str(fecha_ini) + '\' and '
         sql += 'med_fecha<=\'' + str(fecha_fin) + ' 23:59:59\' '
@@ -40,7 +51,7 @@ def consultar_dias(form):
                 sql += 'where est_id_id=' + str(estacion.est_id) + ' '
                 sql += 'group by fecha order by fecha'
             cursor.execute(sql)
-            datos.extend(dictfetchall(cursor))
+            datos.extend(dictfetchall(cursor))'''
     return datos
 
 

@@ -1,19 +1,218 @@
-{% load bootstrap4 %}
-{% load humanize %}
+
 {% load static %}
 
 
 <script src="{% static 'validacion.js' %}"></script>
 <link rel="stylesheet" href="{% static 'validacion.css' %}">
 
-<input type="hidden" name="orig_estacion_id" value="{{estacion.est_id }}">
-<input type="hidden" name="orig_variable_id" value="{{variable.var_id}}">
-<input type="hidden" name="orig_fecha_inicio" value="{{inicio|date:'Y-m-d'}}">
-<input type="hidden" name="orig_fecha_fin" value="{{fin|date:'Y-m-d'}}">
-<input type="hidden" name="orig_lim_sup" value="{{variable.var_maximo}}">
-<input type="hidden" name="orig_lim_inf" value="{{variable.var_minimo}}">
-<input type="hidden" name="orig_variacion_sos" value="{{variable.var_sos}}">
-<input type="hidden" name="orig_variacion_err" value="{{variable.var_err}}">
+
+<div class="row">
+    <div class="col-lg-7 col-md-7 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <h5>Límites Dato crudo:</h5>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-2 col-md-3 col-sm-6">Inferior:</div>
+                    <div class="col-lg-4 col-md-3 col-sm-6">
+                        <input name="lim_inf" type="number" class="form-control" step="0.1" >
+                    </div>
+
+                    <div class="col-lg-2 col-md-3 col-sm-6">Superior:</div>
+                    <div class="col-lg-4 col-md-3 col-sm-6">
+                        <input name="lim_sup" type="number" class="form-control" step="0.1" >
+                    </div>
+                </div>
+
+                <div >
+                    <button id="limites_cambiar" class="btn btn-primary">Cambiar</button>
+                    <button id="limites_reset" class="btn btn-warning">Reestablecer</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="col-lg-5 col-md-5 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Comentario general</h5>
+                <div class="form-group">
+                    <textarea name="comentario_general" rows="2" cols="60" class="form-control"></textarea>
+                </div>
+
+                <button id="btn_validacion_enviar" type="button" class="btn btn-success">Enviar validación</button>
+            </div>
+        </div>
+
+        <br>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-2">
+        <b>Filtro Fecha</b>
+    </div>
+    <div class="col-lg-2">
+        <div class="form-group">
+            <select id="chk_fecha" class="form-control form-control-sm">
+                <option value="fecha">Todos</option>
+                <option value="fecha normal">Normales</option>
+                <option value="fecha salto">Saltos</option>
+                <option value="fecha error">No esperados</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-lg-2">
+        <b>Filtro Valor</b>
+    </div>
+    <div class="col-lg-2">
+        <div class="form-group">
+            <select id="chk_valor" class="form-control form-control-sm">
+                <option value="valor">Todos</option>
+                <option value="valor normal">Dentro del Limite</option>
+                <option value="valor error">Fuera del Limite</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-lg-2">
+        <b>Valores atípicos</b>
+    </div>
+    <div class="col-lg-2">
+        <div class="form-group">
+            <select id="chk_stddev" class="form-control form-control-sm">
+                <option value="stddev">Todos</option>
+                <option value="stddev normal">Dentro de sigmas</option>
+                <option value="stddev error">Fuera de sigmas</option>
+            </select>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="table-responsive">
+    <table id="tabla_datos"  class="table table-scroll table-bordered">
+        <thead>
+            <tr>
+                <th scope="col" class="col-3">
+
+                    <div class="row mt-2 no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">Fecha</div>
+                    </div>
+
+                    <div class="row mt-2 no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">
+                            <span id="btn_fec_error" class="badge badge-danger">Error</span>
+                            <span id="btn_fec_normal" class="badge badge-success">Normal<br/>-</span>
+                            <span id="btn_fec_salto" class="badge badge-warning ">Salto<br/>-</span>
+                        </div>
+                    </div>
+
+                </th>
+
+                <th scope="col" class="col-2">
+
+                    <div class="row mt-2 no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">Validación</div>
+                    </div>
+
+                    <div class="row mt-2 no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">
+                            <span id="btn_val_nuevo"  class="badge badge-default" title="No Validado">No Val.<br/>-</span>
+                            <span id="btn_val_ya_validado"  class="badge badge-success" title="Validado">Val.<br/>-</span>
+                            <span id="btn_val_cambio" class="badge badge-info" title="Cambio realizado">Cambio<br/>-</span>
+                        </div>
+                    </div>
+
+                </th>
+
+                <th scope="col" class="col-2">
+
+                    <div class="row no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">Valor</div>
+                    </div>
+
+                    <div class="row no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">
+                            <div class="small"><small>Norm: [{{variable.var_minimo}} , {{variable.var_maximo}}]</small></div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">
+                            <span id="btn_med_normal" class="badge badge-success">Normal</span>
+                            <span id="btn_med_error"  class="badge badge-danger">Error</span>
+                        </div>
+
+                    </div>
+
+                </th>
+
+                <th scope="col" class="col-2">
+
+                    <div class="row no-gutters justify-content-md-center">
+                        <div class="col-md-auto">
+                            <div class="small font-weight-bold">Valores atípicos</div>
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-2 no-gutters justify-content-md-center">
+                        <div class="col-md-auto">
+                            <div class="small"><small>Fuera de {{variable.var_min | floatformat:1}} sigmas</small></div>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-2 no-gutters justify-content-md-center" >
+                        <div class="col-md-auto">
+                            <span id="btn_dev_normal"  class="badge badge-success">Normal<br/>-</span>
+                            <span id="btn_dev_error"  class="badge badge-danger">Extr.<br/>-</span>
+                        </div>
+                    </div>
+
+
+                </th>
+
+                <th scope="col" class="col-3"><p class="font-weight-bold">Comentario</p></th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for item in lista %}
+                <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
+
+                    <td scope="row" class="col-3 {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s.u"}}</td>
+
+                    <td class="col-2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"&nbsp;" }}</td>
+                    <td class="col-2 {{item.class_valor}}">{{item.valor|default_if_none:"&nbsp;" }}</td>
+                    <td class="col-2 {{item.class_stddev_error}}">&nbsp;</td>
+
+
+                    <td class="col-3 comentario" >{{item.comentario|default_if_none:"&nbsp;"}}</td>
+
+                </tr>
+            {% endfor%}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+
+
+
+
 
 
 <div id="comentario_overlay" class="popup-overlay"  >
@@ -28,159 +227,12 @@
      </div>
 </div>
 
-<br>
 
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12" style="border: 1px solid lightgrey;">
-        {% if grafico %}
-        <center><div id="grafico" style="width:auto;height:300">{{ grafico|safe }}</div></center>
-        {%else%}
-        <label>No hay información para los parametros ingresados</label>
-        {% endif %}
-        <br>
-    </div>
-
-</div>
-
-
-<div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-6 fondo-transp-blanco" style="border: 1px solid lightgrey;">
-        <div class="row">
-            <h5>Límites Dato crudo:
-            <button id="limites_cambiar" class="btn btn-xs" style="background-color: #BFBFFF">Cambiar</button>
-            <button id="limites_reset" class="btn btn-default btn-xs">Reestablecer</button>
-            </h5>
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-lg-2 col-md-2 col-sm-2">Inferior:</div>
-            <div class="col-lg-3 col-md-3 col-sm-3">
-                <input name="lim_inf" type="number" class="form-control" step="0.1" >
-            </div>
-            <div class="col-lg-1 col-md-1 col-sm-1"><br></div>
-            <div class="col-lg-2 col-md-2 col-sm-2">Superior:</div>
-            <div class="col-lg-3 col-md-3 col-sm-3">
-                <input name="lim_sup" type="number" class="form-control" step="0.1" >
-            </div>
-        </div>
-        <br>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-6 fondo-transp-blanco">
-        <h4>Comentario general</h4>
-        <textarea name="comentario_general" rows="2" cols="60" class="form-control"></textarea>
-        <br>
-    </div>
-</div>
-
-<br>
-<center>
-    <button id="btn_validacion_enviar" type="button" class="btn btn-default btn-info btn-space">Enviar validación</button>
-</center>
-
-<br>
-
-
-
-    <table class="table table-bordered table-condensed table-hover">
-        <thead>
-            <tr>
-
-                <th class="col1">
-                    <div class="row" >
-                        <center>Fecha</center>
-                        <h6><br></h6>
-                    </div>
-
-                    <div class="row" >
-                        <center>
-                            <span id="btn_fec_error" class="badge badge-danger">Error</span>
-                            <span id="btn_fec_normal" class="badge badge-success">Normal<br/>-</span>
-                            <span id="btn_fec_salto" class="badge badge-warning ">Salto<br/>-</span>
-                        </center>
-                    </div>
-                </th>
-
-                <th class="col2">
-                    <div class="row" >
-                        <center>Validación</center>
-                        <h6><br></h6>
-                    </div>
-
-                    <div class="row" >
-                        <center>
-                            <span id="btn_val_nuevo"  class="badge badge-default" title="No Validado">No Val.<br/>-</span>
-                            <span id="btn_val_ya_validado"  class="badge badge-success" title="Validado">Val.<br/>-</span>
-                            <span id="btn_val_cambio" class="badge badge-info" title="Cambio realizado">Cambio<br/>-</span>
-                        </center>
-                    </div>
-                </th>
-
-                <th class="col3">
-                    <div class="row" >
-                        <center><p class="small font-weight-bold">Valor</p>
-                            <p class="small"><small>Norm: [{{variable.var_minimo}} , {{variable.var_maximo}}]</small></p></center>
-                    </div>
-
-                    <div class="row" >
-                        <center>
-                            <span id="btn_med_normal" class="badge badge-success">Normal</span>
-                            <span id="btn_med_error"  class="badge badge-danger">Error</span>
-                        </center>
-                    </div>
-                </th>
-
-
-                <th class="col4">
-                    <div class="row">
-                            <p class="small font-weight-bold">Variación consecutiva</p>
-                        <p class="small"><small>Sosp: [{{variable.var_sos}} ; {{variable.var_err}}] <br/> Err >= {{variable.var_err}}</small></p>
-                    </div>
-
-                    <div class="row" >
-                        <center>
-                            <span id="btn_var_normal" class="badge badge-success ">Norm.<br/>-</span>
-                            <span id="btn_var_sospechoso" class="badge badge-warning ">Sosp.<br/>-</span>
-                            <span id="btn_var_error" class="badge badge-danger ">Error<br/>-</span>
-                        </center>
-                    </div>
-                </th>
-
-
-                <th class="col5">
-                    <div class="row">
-                        <p class="small font-weight-bold">Valores atípicos</p>
-                         <p class="small"><small>Fuera de {{variable.var_min | floatformat:1}} sigmas</small></p></center>
-                    </div>
-                    <div class="row" >
-                        <center>
-                            <span id="btn_dev_normal"  class="badge badge-success">Normal<br/>-</span>
-                            <span id="btn_dev_error"  class="badge badge-danger">Extr.<br/>-</span>
-                        </center>
-                    </div>
-                </th>
-
-
-                <th class="col6"><p class="font-weight-bold">Comentario</p></th>
-
-            </tr>
-        </thead>
-
-
-
-        <tbody>
-
-        {% for item in lista %}
-        <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
-            <td class="col1 small {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s.u"}}</td>
-            <td class="col2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"" }}</td>
-            <td class="col3 {{item.class_valor}}">{{item.valor|default_if_none:"" }}</td>
-            <td class="col4 {{item.class_variacion_consecutiva}}">{{item.variacion_consecutiva|default_if_none:"" }}</td>
-            <td class="col5 {{item.class_stddev_error}}"></td>
-            <td class="col6 comentario" >{{item.comentario|default_if_none:""}}</td>
-        </tr>
-        {% endfor%}
-
-        </tbody>
-
-    </table>
-
+<input type="hidden" name="orig_estacion_id" value="{{estacion.est_id }}">
+<input type="hidden" name="orig_variable_id" value="{{variable.var_id}}">
+<input type="hidden" name="orig_fecha_inicio" value="{{inicio|date:'Y-m-d'}}">
+<input type="hidden" name="orig_fecha_fin" value="{{fin|date:'Y-m-d'}}">
+<input type="hidden" name="orig_lim_sup" value="{{variable.var_maximo}}">
+<input type="hidden" name="orig_lim_inf" value="{{variable.var_minimo}}">
+<input type="hidden" name="orig_variacion_sos" value="{{variable.var_sos}}">
+<input type="hidden" name="orig_variacion_err" value="{{variable.var_err}}">

@@ -1,0 +1,77 @@
+{% load static %}
+
+
+<script src="{% static 'porcentaje.js' %}"></script>
+{% if datos %}
+<div class="col-md-6">
+    <div class="row">
+        <div class="col-4">
+            <b>Filtro % Registro</b>
+        </div>
+        <div class="col-4">
+            <div class="form-group">
+                <select id="chk_porcentaje" class="form-control form-control-sm">
+                    <option value="porcentaje">Todos</option>
+                    <option value="porcentaje normal">Mayor a 70%</option>
+                    <option value="porcentaje error">Menor a 70%</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-2">
+            <span id="btn_porcentaje_normal" class="badge badge-success">Mayor a 70%<br/>-</span>
+        </div>
+        <div class="col-2">
+            <span id="btn_porcentaje_error" class="badge badge-danger">Menor a 70%<br/>-</span>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table id="tbl_data" style="font-size: 12px" class="table table-scroll table-bordered">
+
+            <thead>
+
+                <tr>
+                    <th scope="col" class="col-4">Fecha</th>
+                    <th scope="col" class="col-2">Valor</th>
+                    <th scope="col" class="col-3">% Registro</th>
+                    <th scope="col" class="col-3">Acción</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+            {% for item in datos %}
+
+            <tr>
+                <th scope="row" class="col-4">{{ item.fecha|date:"Y-m-d H:i:s" }}</th>
+                <td class="col-2 valor {{item.class_valor}}">{{ item.valor }}</td>
+                <td class="col-3 porcentaje {{item.class_porcentaje}}">{{ item.completo_mediciones }}</td>
+                <td class="col-3">
+                    <a class="link-validacion" href="{% url 'validacion:horario' estacion.est_id variable.var_id item.fecha %}">
+                    <span class="fas fa-search" aria-hidden="true"></span>
+                    </a>
+                </td>
+
+            </tr>
+
+            {% endfor%}
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<div id="div_datos" class="col-md-6">
+
+</div>
+
+{%else%}
+<div class="col-lg-5 col-md-5">
+    <div class="alert alert-primary" role="alert">
+        Información no Disponible
+    </div>
+</div>
+{% endif %}
+
+

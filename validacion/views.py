@@ -2,20 +2,21 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from validacion.models import Validacion
+
 from django.views.generic import ListView, FormView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.core.paginator import Paginator
+
 from validacion.forms import *
 from medicion.forms import ValidacionSearchForm
 from validacion import functions
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
-from django.http import JsonResponse
-from variable.models import Variable
+from django.http import JsonResponse,HttpResponse
+from django.core.serializers.json import DjangoJSONEncoder
+
+
+import json
+from indices.views import DecimalEncoder
 
 ####para las vistas serializables de la api
 #from .models import *
@@ -24,130 +25,8 @@ from rest_framework import generics
 import re
 import calendar
 
-"""class ValidacionCreate(LoginRequiredMixin, CreateView):
-    model = Validacion
-    fields = ['est_id', 'var_id', 'val_fecha', 'val_num_dat', 'val_fre_reg', 'val_porcentaje']
 
-    def get_context_data(self, **kwargs):
-        context = super(ValidacionCreate, self).get_context_data(**kwargs)
-        context['title'] = "Crear"
-        return context
-
-
-class ValidacionList(LoginRequiredMixin, ListView):
-    model = Validacion
-    paginate_by = 10
-
-    def get_context_data(self, **kwargs):
-        context = super(ValidacionList, self).get_context_data(**kwargs)
-        lista = Validacion.objects.all()
-        page = self.request.GET.get('page')
-        context.update(pagination(self.object_list, page, 10))
-        return context
-"""
-class ValidacionList(LoginRequiredMixin, ListView, FormView):
-    model = Validacion
-    paginate_by = 12
-    template_name = 'validacion/validacion_list.html'
-    form_class = ConsultaValidacionForm
-
-    def post(self, request, *args, **kwargs):
-        print("clase validacion list, metodo post")
-        form = ConsultaValidacionForm(self.request.POST or None)
-        page = kwargs.get('page')
-        if form.is_valid() and self.request.is_ajax():
-            self.object_list = form.filtrar(form)
-        else:
-            self.object_list = Validacion.objects.all()
-        context = super(ValidacionList, self).get_context_data(**kwargs)
-        context.update(pagination(self.object_list, page, 12))
-        return render(request, 'validacion/validacion_table.html', context)
-
-    def get_context_data(self, **kwargs):
-        context = super(ValidacionList, self).get_context_data(**kwargs)
-        page = self.request.GET.get('page')
-        context.update(pagination(self.object_list, page, 12))
-        return context
-
-
-class ValidacionDetail(LoginRequiredMixin, DetailView):
-    model = Validacion
-
-"""
-class ValidacionUpdate(LoginRequiredMixin, UpdateView):
-    model = Validacion
-    fields = ['est_id', 'var_id', 'val_fecha', 'val_num_dat', 'val_fre_reg', 'val_porcentaje']
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(ValidacionUpdate, self).get_context_data(**kwargs)
-        context['title'] = "Modificar"
-        return context
-
-
-class ValidacionDelete(LoginRequiredMixin, DeleteView):
-    model = Validacion
-    success_url = reverse_lazy('medicion:validacion_index')
-
-"""
-
-
-def procesar_validacion(request):
-    print(" def procesar validación" )
-    if request.method == 'POST':
-        form = ValidacionProcess(request.POST)
-        # if form.is_valid():
-    else:
-        form = ValidacionProcess()
-    return render(request, 'validacion/validacion_procesar.html', {'form': form})
-
-
-# lista de validaciones por estacion y variable
-class ProcesarValidacion(LoginRequiredMixin, FormView):
-    template_name = 'validacion/validacion_procesar.html'
-    form_class = ValidacionProcess
-    success_url = '/validacion/'
-
-    def post(self, request, *args, **kwargs):
-        form = ValidacionProcess(self.request.POST or None)
-        if form.is_valid():
-            # functions.guardar_validacion(form)
-            datos = functions.generar_validacion(form)
-            if self.request.is_ajax():
-                return render(request, 'validacion/validacion_filtro.html', {'datos': datos})
-            else:
-                functions.guardar_validacion(datos)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(ProcesarValidacion, self).get_context_data(**kwargs)
-        return context
-
-
-def pagination(lista, page, num_reg):
-    # lista=model.objects.all()
-    paginator = Paginator(lista, num_reg)
-    if page is None:
-        page = 1
-    else:
-        page = int(page)
-    if page == 1:
-        start = 1
-        last = start + 1
-    elif page == paginator.num_pages:
-        last = paginator.num_pages
-        start = last - 1
-    else:
-        start = page - 1
-        last = page + 1
-    context = {
-        'first': '1',
-        'last': paginator.num_pages,
-        'range': range(start, last + 1),
-    }
-    return context
-
-
+# Consular los periodos de validacion por estacion y variable
 class PeriodosValidacion(LoginRequiredMixin, FormView):
     template_name = 'validacion/periodos_validacion.html'
     form_class = ValidacionSearchForm
@@ -160,13 +39,78 @@ class PeriodosValidacion(LoginRequiredMixin, FormView):
         try:
             estacion_id = int(request.POST.get('estacion', None))
             variable_id = int(request.POST.get('variable', None))
-            varBusc=Variable.objects.get(var_id=variable_id)
-            variable_id = varBusc.var_modelo.lower()
+            variable = Variable.objects.get(var_id=variable_id)
+            variable_id = variable.var_modelo.lower()
         except:
             pass
-        #intervalos = functions.periodos_validacion(est_id=estacion_id, var_id=variable_id)
+
         intervalos = functions.periodos_validacion(est_id=estacion_id, var_id=variable_id)
         return render(request, self.template_name, {'intervalos': intervalos})
+
+
+# Consulta de datos horarios crudos y/o validados por estacion, variable y hora
+class DatosHorarios(LoginRequiredMixin, ListView):
+    template_name = 'validacion/datos_horarios.html'
+
+    def get(self, request, *args, **kwargs):
+        if self.request.is_ajax():
+            template = 'validacion/datos_horarios.html'
+            est_id = kwargs.get('estacion')
+            var_id = kwargs.get('variable')
+            fecha_str = kwargs.get('fecha')
+            datos = functions.consultar_horario(est_id, var_id, fecha_str)
+            diccionario = {'datos': datos}
+            return render(request, template, diccionario)
+        return self.render_to_response(self.get_context_data(save=True))
+
+
+# Consulta de datos diarios por reporte
+class ValidacionDiaria(LoginRequiredMixin, FormView):
+    template_name = 'validacion/validacion_diaria.html'
+    form_class = ValidacionSearchForm
+    success_url = '/validacion/diaria/'
+
+    def post(self, request, *args, **kwargs):
+        form = ValidacionSearchForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                variable = form.cleaned_data['variable']
+                estacion = form.cleaned_data['estacion']
+                inicio = form.cleaned_data['inicio']
+                fin = form.cleaned_data['fin']
+
+                lista = functions.reporte_diario(estacion, variable, inicio, fin)
+
+                for fila in lista:
+                    delattr(fila, '_state')
+                    fila.dia = fila.dia.strftime("%Y-%m-%d")
+                    fila.porcentaje = round(fila.porcentaje)
+
+                # lista_nueva = [dict(fila.__dict__) for fila in lista if fila['state']]
+
+                data = {'estacion': [{
+                    'est_id': estacion.est_id,
+                    'est_nombre': estacion.est_nombre,
+
+                    }],
+                    'variable': [{
+                        'var_id': variable.var_id,
+                        'var_nombre': variable.var_nombre,
+                        'var_maximo': variable.var_maximo,
+                        'var_minimo': variable.var_minimo,
+
+                    }],
+                    'datos': [dict(fila.__dict__) for fila in lista]
+                }
+
+                data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
+
+                #return JsonResponse(data, safe=False)
+                return HttpResponse(data_json, content_type='application/json')
+
+        # return self.render_to_response(self.get_context_data(form=form))
+        return render(request, 'home/form_error.html', {'form': form})
+
 
 
 class ValidacionBorrar(LoginRequiredMixin, FormView):
@@ -221,10 +165,7 @@ class ValidacionBorrar(LoginRequiredMixin, FormView):
             return super().form_valid(form)
 
 
-
-
-
-### Vista para tadas las variables
+# Vista para tadas las variables
 class VarList(generics.ListAPIView):
 
     serializer_class = PrecipitacionSerial

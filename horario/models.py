@@ -12,13 +12,14 @@ from medicion.models import DigVar
 8   PresionAtmosferica
 9   TemperaturaAgua
 10  Caudal
-11 Nivel agua
+11  Nivel de Agua
 """
+
 
 ###############################
 class Precipitacion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id" )
+    estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v1.max_dig, decimal_places=DigVar.v1.dec_pla, null=True)
     completo_mediciones = models.DecimalField("Completo mediciones %", max_digits=4, decimal_places=1)
@@ -26,7 +27,7 @@ class Precipitacion(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -37,7 +38,8 @@ class TemperaturaAire(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v2.max_dig + 1, decimal_places=DigVar.v2.dec_pla + 1, null=True)
+    valor = models.DecimalField("Valor", max_digits=DigVar.v2.max_dig + 1, decimal_places=DigVar.v2.dec_pla + 1,
+                                null=True)
     max_abs = models.DecimalField("Máximo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
     min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
     completo_mediciones = models.DecimalField("Completo mediciones %", max_digits=4, decimal_places=1)
@@ -45,7 +47,7 @@ class TemperaturaAire(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -64,7 +66,7 @@ class HumedadAire(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -101,7 +103,7 @@ class VelocidadViento(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -120,7 +122,7 @@ class HumedadSuelo(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -139,7 +141,7 @@ class RadiacionSolar(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -158,7 +160,7 @@ class PresionAtmosferica(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -177,7 +179,7 @@ class TemperaturaAgua(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
@@ -196,25 +198,26 @@ class Caudal(models.Model):
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]
         unique_together = ('estacion_id', 'fecha')
 
+
 class NivelAgua(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
-    max_abs = models.DecimalField("Máximo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
-    min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    valor = models.DecimalField("Valor", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
+    max_abs = models.DecimalField("Máximo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
+    min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
     completo_mediciones = models.DecimalField("Completo mediciones %", max_digits=4, decimal_places=1)
     usado_para_diario = models.BooleanField("Usado para diario", default=False)
 
     class Meta:
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
+            # models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['usado_para_diario', 'id']),
             models.Index(fields=['fecha', 'estacion_id']),
         ]

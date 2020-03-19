@@ -1,15 +1,15 @@
-### Este script crea las funciones necesarias para el modulo validacion.
-#### creacion de las funcion para mostrar lso datos para validar
+# Este script crea las funciones necesarias para el modulo validacion.
+# creacion de las funcion para mostrar los datos para validar
 
 import os
 from django.db import connection
 cursor = connection.cursor()
 
 # variables para validaciones
-varibles = ["precipitacion", "temperaturaaire", "humedadaire", "velocidadviento", "direccionviento", "humedadsuelo",
+variables = ["precipitacion", "temperaturaaire", "humedadaire", "velocidadviento", "direccionviento", "humedadsuelo",
             "radiacionsolar", "presionatmosferica", "temperaturaagua", "caudal", "nivelagua"]
 
-##  Tipos de datos para inserccion
+# Tipos de datos para inserccion
 inserccion_types = """
 DROP TYPE IF EXISTS fecha__valor__maximo__minimo__estacion_id;
 CREATE TYPE fecha__valor__maximo__minimo__estacion_id AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC, maximo NUMERIC, minimo NUMERIC, estacion_id INT);
@@ -24,14 +24,14 @@ DROP TYPE IF EXISTS fecha__valor__maximo__minimo;
 CREATE TYPE fecha__valor__maximo__minimo AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC, maximo NUMERIC, minimo NUMERIC);
 
 """
-cursor.execute(inserccion_types)
+# cursor.execute(inserccion_types)
 ######################################################################
 ##  insertar validacion
 validacion_type = """
 DROP TYPE IF EXISTS validacion;
 CREATE type validacion AS (fecha TIMESTAMP, valor NUMERIC, comentario VARCHAR);
 """
-cursor.execute(validacion_type)
+#cursor.execute(validacion_type)
 
 funcionValidacion = """DROP FUNCTION IF EXISTS insertar_%%variable%%_validacion(bigint, json);
 CREATE OR REPLACE FUNCTION insertar_%%variable%%_validacion(_estacion_id bigint, _datos json)
@@ -76,11 +76,11 @@ END
 $BODY$  LANGUAGE plpgsql
 """
 
-for index, var in enumerate(varibles):
+'''for index, var in enumerate(variables):
     #print("Variable ",var, "indice ", index+1)
     validacion_sql = funcionValidacion.replace('%%variable%%', var)
     validacion_sql = validacion_sql.replace('%%var_id%%',str(index))
-    cursor.execute(validacion_sql)
+    cursor.execute(validacion_sql)'''
 
 
 
@@ -116,7 +116,7 @@ BEGIN
 	medicion AS (
 		SELECT m.id, m.fecha, 1 AS tipo, m.valor, CAST(NULL AS smallint) AS validacion,
 			EXISTS(SELECT * FROM validacion v WHERE v.fecha = m.fecha AND v.valor = m.valor) AS existe_en_validacion
-		FROM medicion_%%variable%% m WHERE m.estacion = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
+		FROM medicion_%%variable%% m WHERE m.estacion_id = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
 	),
 	union_med_val AS (
 		SELECT * FROM validacion UNION SELECT * FROM medicion
@@ -206,12 +206,11 @@ BEGIN
 END; $$
 LANGUAGE 'plpgsql';"""
 
-for index, var in enumerate(varibles):
-    #print("Variable ",var, "indice ", index+1)
+for index, var in enumerate(variables):
+    print("Variable ",var,"indice ",index+1)
     sqlFun = funRepoValida.replace('%%variable%%', var)
-    sqlFun = sqlFun.replace('%%var_id%%',str(index))
+    sqlFun = sqlFun.replace('%%var_id%%',str(index+1))
     cursor.execute(sqlFun)
 
 
 
-##### f3uncion

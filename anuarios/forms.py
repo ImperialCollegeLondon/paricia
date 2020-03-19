@@ -20,6 +20,8 @@ class AnuarioForm(forms.Form):
         ('2016', '2016'),
         ('2017', '2017'),
         ('2018', '2018'),
+        ('2019', '2019'),
+        ('2020', '2020'),
     )
 
     estacion = forms.ModelChoiceField(required=False,
@@ -27,3 +29,6 @@ class AnuarioForm(forms.Form):
     variable = forms.ModelChoiceField(required=False,
                                       queryset=Variable.objects.order_by('var_id').all(), label='Variable')
     periodo = forms.ChoiceField(required=False, choices=YEAR, label='Año')
+
+    tipo = forms.ChoiceField(required=False, choices=(('validado', 'validado'), ('crudo', 'crudo')),
+                             label="Tipo de Dato")

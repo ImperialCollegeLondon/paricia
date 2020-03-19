@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from medicion.models import Medicion
+
 from estacion.models import Estacion
 from anuarios.models import RadiacionSolar, RadiacionMaxima, RadiacionMinima
 from django.db.models.functions import TruncMonth
@@ -26,20 +26,23 @@ def matrizVI(estacion, variable, periodo):
 
 
 # consulta de radiacion maxima
-def rad_max(estacion, variable, periodo):
+def rad_max(estacion, variable, periodo, tipo):
     # consulta de maximos agrupados por hora y por mes
     # tabla = variable.var_codigo + ".m" + periodo
-    tabla = 'medicion_' + str(variable.var_modelo)
+    if tipo == 'validado':
+        tabla = 'validacion_' + str(variable.var_modelo)
+    else:
+        tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     # select max(valor) as valor, date_part('month',fecha) as mes, date_part('hour',fecha) as hora
-    # from rad.m2016 where estacion=12
+    # from rad.m2016 where estacion_id=12
     # and valor<=1400 and date_part('hour',fecha)>=5
     # and date_part('hour',fecha)<=18
     # group by mes, hora
     # order by mes, hora
     sql = "SELECT max(valor) as valor, date_part('month',fecha) as mes, "
     sql += "date_part('hour',fecha) as hora from " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<=1400 "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<=1400 "
     sql += "and date_part('hour',fecha)>=5 "
     sql += "and date_part('hour',fecha)<=18 "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
@@ -66,7 +69,7 @@ def rad_min(estacion, variable, periodo):
     cursor = connection.cursor()
     sql = "SELECT min(valor) as valor, date_part('month',fecha) as mes, "
     sql += "date_part('hour',fecha) as hora from " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " and valor<=1400 "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<=1400 "
     sql += "and date_part('hour',fecha)>=5 "
     sql += "and date_part('hour',fecha)<=18 "
     sql += "and date_part('year',fecha)=" + str(periodo)+ " "

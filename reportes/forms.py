@@ -25,9 +25,12 @@ class AnuarioForm(ModelForm):
         ('2016', '2016'),
         ('2017', '2017'),
         ('2018', '2018'),
+        ('2019', '2019'),
+        ('2020', '2020'),
     )
     lista = []
-    estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), label='Estación')
+    consulta = Estacion.objects.filter(est_externa=False).order_by('est_codigo')
+    estacion = forms.ModelChoiceField(queryset=consulta, label='Estación')
     anio = forms.ChoiceField(choices=YEAR, label='Año')
 
 
@@ -44,7 +47,7 @@ class InamhiForm(forms.Form):
     consulta_parametro = Parametro.objects.order_by('id').all()
     # atributos del formulario
     estacion = forms.ModelChoiceField(queryset=consulta_estacion, label='Estacion')
-    frecuencia = forms.ChoiceField(choices=lista_frecuencia,label="Frecuencia")
+    frecuencia = forms.ChoiceField(choices=lista_frecuencia, label="Frecuencia")
     parametro = forms.ModelChoiceField(queryset=consulta_parametro, label='Parametro')
     inicio = forms.DateField(input_formats=format_input, label=lbl_inicio, widget=parametros_widget)
     fin = forms.DateField(input_formats=format_input, label=lbl_fin, widget=parametros_widget)

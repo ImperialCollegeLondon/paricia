@@ -3,7 +3,7 @@
   width: 97%;
 }
 
-.table-fixed #tbody {
+.table-fixed tbody {
   height: 230px;
   overflow-y: auto;
   width: 100%;
@@ -30,9 +30,61 @@ margin-bottom:0
 }
 
 
+.legend {
+
+    color: #555;
+    padding: 6px 8px;
+    font: 14px/25px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+
+
 .div-hiden{
     display:none  !important;
 }
 .div-show{
     display:block !important;
 }
+.normal {background-color: #BFFFBF;}
+.error {background-color: #FFBFBF;}
+
+
+.table-scroll tbody {
+    height: 400px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.table-scroll thead,
+.table-scroll tbody,
+.table-scroll tr,
+.table-scroll td,
+.table-scroll th {
+    display: block;
+}
+
+.table-scroll tbody td,
+.table-scroll tbody th,
+.table-scroll thead > tr > th {
+    float: left;
+    position: relative;
+}
+
+
+.table-scroll tbody td::after,
+.table-scroll tbody th::after,
+.table-scroll thead > tr > th::after {
+    content: '';
+    clear: both;
+    display: block;
+}
+
+#tabla_datos thead th{
+    height:110px;
+}
+
+
+

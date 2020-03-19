@@ -79,9 +79,7 @@ class Estacion(models.Model):
     est_id = models.AutoField("Id", primary_key=True)
     est_codigo = models.CharField("Código", max_length=10)
     est_nombre = models.CharField("Nombre", max_length=100)
-    tipo = models.ForeignKey(Tipo, on_delete=models.CASCADE, verbose_name="Tipo", null=True, blank=True)
-    provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, verbose_name="Provincia", null=True, blank=True)
-    est_estado = models.BooleanField("Activo", default=True)
+    est_estado = models.BooleanField("Activa", default=True, help_text="Desmarcar si la estación ya no opera")
     est_latitud = models.DecimalField("Latitud", max_digits=12, decimal_places=8, null=True)
     est_longitud = models.DecimalField("Longitud", max_digits=12, decimal_places=8, null=True)
     est_utmy = models.DecimalField("Y UTM", max_digits=10, decimal_places=2, null=True)
@@ -89,18 +87,21 @@ class Estacion(models.Model):
     est_altura = models.IntegerField("Altura", null=True, validators=[MaxValueValidator(6000), MinValueValidator(0)])
     est_ficha = models.FileField("Fichas", upload_to='documents/')
     est_fecha_inicio = models.DateField("Fecha Inicio Operaciones", null=True)
+    provincia = models.ForeignKey(Provincia,  on_delete=models.CASCADE, verbose_name="Provincia", null=True, blank=True)
+    tipo = models.ForeignKey(Tipo,  on_delete=models.CASCADE, verbose_name="Tipo", null=True, blank=True)
+    transmision = models.BooleanField("Trasmision", default=False, null=True, blank=True)
     sistemacuenca = models.ForeignKey(SistemaCuenca, on_delete=models.SET_NULL, null=True, verbose_name="SistemaCuenca")
-    est_externa = models.BooleanField("Externa",default=True);
-    influencia_km = models.DecimalField("Infuencia km", max_digits=12, decimal_places=4, null=True)
+    est_externa = models.BooleanField("Externa", default=True, help_text="Marcar si la estación es de la EPMAPS")
+    influencia_km = models.DecimalField("Área de Aporte (km)", max_digits=12, decimal_places=4, null=True)
 
     def __str__(self):
-        return str(self.est_codigo+"  "+self.est_nombre)
+        return str(self.est_codigo)
 
     def get_absolute_url(self):
         return reverse('estacion:estacion_detail', kwargs={'pk': self.pk})
 
     class Meta:
-        ordering = ('est_id',)
+        ordering = ('est_externa','est_codigo',)
 
 
 # modelo para almacenar las estaciones del INAMHI

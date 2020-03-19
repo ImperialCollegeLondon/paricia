@@ -138,6 +138,7 @@ class DuracionCaudal(generic.FormView):
     template_name = "indices/duracioncaudal.html"
     form_class = SelecCaudalForm
     success_url = "indices/duracioncaudal.html"
+
     def post(self, request, *args, **kwargs):
         estacion_id = int(request.POST.get('estacion', None))
         tinicio = request.POST.get('inicio', None)

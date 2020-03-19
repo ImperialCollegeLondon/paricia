@@ -41,8 +41,10 @@ class FrecuenciaList(LoginRequiredMixin, ListView, FormView):
         form = FrecuenciaSearchForm(self.request.POST or None)
         page = kwargs.get('page')
         if form.is_valid() and self.request.is_ajax():
+
             self.object_list = form.filtrar(form)
         else:
+
             self.object_list = Frecuencia.objects.all()
         context = super(FrecuenciaList, self).get_context_data(**kwargs)
         context.update(pagination(self.object_list, page, 10))
@@ -61,7 +63,7 @@ class FrecuenciaDetail(LoginRequiredMixin, DetailView):
 
 class FrecuenciaUpdate(LoginRequiredMixin, UpdateView):
     model = Frecuencia
-    fields = ['est_id', 'var_id', 'fre_fecha_ini', 'fre_fecha_fin']
+    fields = ['est_id', 'var_id', 'fre_valor', 'fre_fecha_ini', 'fre_fecha_fin']
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context

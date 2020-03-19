@@ -3,31 +3,43 @@
 from anuarios.models import Precipitacion
 from django.db import connection
 from home.functions import dictfetchall
+from math import isnan
 
 
-def matrizII(estacion, variable, periodo):
-    #tabla = "pre.m" + periodo
-    tabla = 'medicion_' + str(variable.var_modelo)
+def get_precipitacion(estacion, variable, periodo, tipo):
+
+    if tipo == 'validado':
+        tabla = 'validacion_' + str(variable.var_modelo)
+    else:
+        tabla = 'medicion_' + str(variable.var_modelo)
     cursor = connection.cursor()
     datos = []
     # valores de precipitación mensual
     sql = "SELECT sum(valor) as suma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes ORDER BY mes"
-    print(sql)
     cursor.execute(sql)
     med_mensual = dictfetchall(cursor)
     # datos diarios
     sql = "SELECT sum(valor) as valor, date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
     sql += "FROM " + tabla + " "
-    sql += "WHERE estacion=" + str(estacion.est_id) + " "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo)
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios = dictfetchall(cursor)
+    # Número de datos por mes
+    sql = "SELECT date_part('month',fecha) as mes, count(*) as valor  "
+    sql += "FROM " + tabla + " "
+    sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
+    sql += "and date_part('year',fecha)=" + str(periodo)
+    sql += "GROUP BY mes ORDER BY mes"
+    cursor.execute(sql)
+    num_registros = dictfetchall(cursor)
+
     max24h, maxdia, totdias = maximospre(datos_diarios)
     for item in med_mensual:
         mes = int(item.get('mes'))
@@ -78,8 +90,14 @@ def maximospre(datos_diarios):
 
 
 def get_valor(fila):
-    if fila.get('valor') is None:
-        return 0
-    return fila.get('valor')
+    try:
+        if isnan(fila.get('valor')):
+            return 0
+        return fila.get('valor')
+    except TypeError:
+        if fila.get('valor') is None:
+            return 0
+        return fila.get('valor')
+
 
 

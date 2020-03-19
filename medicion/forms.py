@@ -6,16 +6,10 @@ from medicion.models import CurvaDescarga
 
 
 class ValidacionSearchForm(forms.Form):
-    TIPO_VALOR = (
-        ('valor', 'valor'),
-        ('maximo', 'máximo'),
-        ('minimo', 'mínimo'),
-    )
     estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all())
     variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all())
-    inicio = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Inicio(yyyy-mm-dd)")
-    fin = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
-    #valor = forms.ChoiceField(choices=TIPO_VALOR)
+    inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(yyyy-mm-dd)")
+    fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(yyyy-mm-dd)")
 
 
 class MedicionSearchForm(forms.Form):
@@ -54,11 +48,12 @@ class MedicionConsultaForm(forms.Form):
 
 class CurvaDescargaSearchForm(forms.Form):
     lista = []
-    estacion = forms.ModelChoiceField(required=False, queryset=Estacion.objects.order_by('est_codigo').all())
+    consulta = Estacion.objects.filter(est_externa=False).filter(tipo_id=3).order_by('est_codigo').all()
+    estacion = forms.ModelChoiceField(required=False, queryset=consulta)
 
     def filtrar(self, form):
         if form.cleaned_data['estacion']:
-            lista = CurvaDescarga.objects.filter(estacion=form.cleaned_data['estacion'])
+            lista = CurvaDescarga.objects.filter(estacion_id=form.cleaned_data['estacion'])
         else:
             lista = CurvaDescarga.objects.all()
         return lista

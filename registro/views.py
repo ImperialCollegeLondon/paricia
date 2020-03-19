@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from registro.models import LogMedicion, LogMedicionSearchForm
-from medicion.models import Medicion
+
 from django.views.generic import ListView, FormView
 from django.views.generic.detail import DetailView
 
@@ -43,15 +43,15 @@ class LogMedicionList(LoginRequiredMixin, ListView, FormView):
         context.update(pagination(self.object_list, page, 10))
         return context
 
-
+#TODO corregir consultar_medicion
 class LogMedicionDetail(LoginRequiredMixin, DetailView):
     model = LogMedicion
     template_name = 'registro/logmedicion_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super(LogMedicionDetail, self).get_context_data(**kwargs)
-        informacion = consultar_medicion(self.object)
-        context['medicion'] = informacion
+        # informacion = consultar_medicion(self.object)
+        # context['medicion'] = informacion
         return context
 
 
@@ -77,12 +77,3 @@ def pagination(lista, page, num_reg):
     }
     return context
 
-
-def consultar_medicion(logmedicion):
-    year = logmedicion.med_fecha.strftime('%Y')
-    var_cod = logmedicion.variable.var_codigo
-    tabla = var_cod + '.m' + year
-    sql = 'SELECT * FROM ' + tabla + ' WHERE '
-    sql += 'med_id=' + str(logmedicion.medicion)
-    consulta = list(Medicion.objects.raw(sql))
-    return consulta[0]
