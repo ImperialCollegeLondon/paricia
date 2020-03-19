@@ -284,23 +284,27 @@ $(document).ready(function() {
         });
     }
 
-    function activar_espera(div_loading, div_informacion, div_error){
-        console.log("Activar espera")
-        $(div_loading).show();
-        $(div_informacion).hide();
-        $(div_error).hide();
-    }
-    function desactivar_espera(div_loading, div_informacion, div_error){
-        $(div_loading).hide();
-        $(div_informacion).show();
-        $(div_error).hide();
-    }
-    function mostrar_error(div_loading, div_informacion, div_error){
-        $(div_loading).hide();
-        $(div_informacion).hide();
-        $(div_error).show();
 
-    }
 
 
 });
+
+
+function activar_espera(div_loading, div_informacion, div_error){
+    console.log("Activar espera")
+    $(div_loading).show();
+    $(div_informacion).hide();
+    $(div_error).hide();
+}
+
+function desactivar_espera(div_loading, div_informacion, div_error){
+    $(div_loading).hide();
+    $(div_informacion).show();
+    $(div_error).hide();
+}
+function mostrar_error(div_loading, div_informacion, div_error){
+    $(div_loading).hide();
+    $(div_informacion).hide();
+    $(div_error).show();
+
+}

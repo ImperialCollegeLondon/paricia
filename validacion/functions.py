@@ -4,15 +4,18 @@ from frecuencia.models import Frecuencia
 
 from estacion.models import Estacion
 from variable.models import Variable
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, time
 from django.db import models
 from medicion.functions import ReporteValidacion
+from validacion.abstract import ReporteDiario, ReporteDiarioPrecipitacion
 
 
 class consulta(models.Model):
     fecha_inicio = models.DateTimeField(primary_key=True)
     fecha_fin = models.DateTimeField()
     validado = models.BooleanField()
+
+
 
 
 def periodos_validacion(est_id, var_id):
@@ -74,3 +77,25 @@ def consultar_horario(est_id, var_id, fecha_str):
         }
         datos.append(dato)
     return datos
+
+
+# consultar datos diarios
+def reporte_diario(estacion, variable, inicio, final):
+    est_id = estacion.est_id
+    var_id = variable.var_modelo
+    print(type(final), final)
+    fin = datetime.combine(final, time(23, 59, 59, 999999))
+    if var_id == 1:
+        query = "select * FROM reporte_validacion_diario_precipitacion(%s, %s, %s);"
+        consulta = ReporteDiarioPrecipitacion.objects.raw(query, [est_id, inicio, fin])
+        print(query, est_id, inicio, fin)
+    else:
+        query = "select * FROM reporte_validacion_diario_" + str(var_id).lower() + "(%s, %s, %s);"
+        consulta = ReporteDiario.objects.raw(query, [est_id, inicio, fin])
+        print(query, est_id, inicio, fin)
+
+    return consulta
+
+
+
+
