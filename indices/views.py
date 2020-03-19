@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from django.views import generic
-from indices.forms import *
+from .forms import *
 from .functions import getVarValidado, acumularDoble, \
     intensidadDiracion, getCaudalFrec, IndicaPreci, IndicaCaudal, consultaPeriodos
 from django.shortcuts import render
@@ -41,18 +41,18 @@ class Doblemasa(generic.FormView):
         dicAcum = acumularDoble(intervalos,intervalos1,frecuencia)
         per1 = consultaPeriodos(estacion1_id, frecuencia)
         per2 = consultaPeriodos(estacion2_id, frecuencia)
+        print(per1," ** ",per2)
         dicAdd = {'f1max': per1[0][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'f1mim': per1[1][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'e1cod': per1[2][0]['est_codigo'],
                   'f2max': per2[0][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'f2mim': per2[1][0]['fecha'].strftime("%m/%d/%Y %H:%M:%S"), 'e2cod': per2[2][0]['est_codigo']}
         dicAcum.append(dicAdd)
         data = json.dumps(dicAcum,allow_nan=True,cls=DecimalEncoder)
-        #print(data)
+        print(data)
         #intervalosSerial = serializers.serialize('json',intervalos, fields=('id','fecha','valor') )
         return HttpResponse(data, content_type='application/json')
         #return HttpResponse(intervalosSerial, content_type='application/json')
 
 class PeriodoDatos(generic.View):
     template_name = "indices/rangos.html"
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context

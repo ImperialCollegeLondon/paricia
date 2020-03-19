@@ -11,7 +11,7 @@ $("#btn_validado").attr('disabled', true);
 function cambio(){
     var estacion1 = document.getElementById("id_estacion1").value;
     var estacion2 = document.getElementById("id_estacion2").value;
-    console.log("valor => "+estacion2.length +" <="+ estacion1+" : "+estacion2)
+    console.log("valor => "+estacion2.length +" <= "+ estacion1 +" : "+estacion2)
     if(estacion1.length > 0  && estacion2.length >0){
         $("#btn_validado").attr('disabled', false);
     }
