@@ -15,7 +15,7 @@
 .table-fixed tr,
 .table-fixed td,
 .table-fixed th {
-  display: block;
+  display: initial;
 }
 
 .table-fixed tbody td,
