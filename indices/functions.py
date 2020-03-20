@@ -244,6 +244,16 @@ def caudalEspecifico(caudal, estacion_id, frecuencia):
     if inf is not None:
         caudal
 
+"""Esta clase se encarga de calcular los indicadores de precipitación,
+Cada funcion de la clase calcula un indicador determinado"""
+class IndicadoresPrecipitacion():
+    def __init__(self,estacion_id,inicio,fin,completo):
+        self.estacion = estacion_id
+        self.inicio = inicio
+        self.fin = fin
+        self.completo = completo
+
+
 def IndicaPreci(estacion_id,inicio,fin,completo):
     #rrmes = mes.Precipitacion.objects.all()
     amax = None
