@@ -7,9 +7,6 @@ var data_valor = [];
 var data_maximo = [];
 var data_minimo = [];
 
-var var_maximo = [];
-var var_minimo = [];
-
 
 $(document).ready(function() {
 
@@ -19,7 +16,7 @@ $(document).ready(function() {
             data: $("#form_validacion").serialize(),
             type:'POST',
             beforeSend: function () {
-                $("#div_grafico").hide();
+                //$("#div_grafico").hide();
                 activar_espera("#div_loading", "#div_informacion", "#div_error")
             },
             success: function (data) {
@@ -27,6 +24,7 @@ $(document).ready(function() {
 
                 var_id = data.variable[0]['var_id'];
                 variable = data.variable[0];
+                estacion = data.estacion[0];
 
                 //datos_json = jQuery.parseJSON(data.datos)
                 datos_json = data.datos
@@ -37,8 +35,6 @@ $(document).ready(function() {
                 data_maximo = [];
                 data_minimo = [];
 
-                var_maximo = [];
-                var_minimo = [];
 
                 for (var i in datos_json) {
                     rows += '<tr>';
@@ -51,16 +47,11 @@ $(document).ready(function() {
                     if (var_id !== 1) {
                         data_maximo.push(datos_json[i]['maximo']);
                         data_minimo.push(datos_json[i]['minimo']);
-                        var_maximo.push(variable['var_maximo']);
-                        var_minimo.push(variable['var_minimo']);
                         rows += get_col(var_id, "maximo", datos_json[i]['maximo'], datos_json[i]['class_maximo']);
                         rows += get_col(var_id, "minimo", datos_json[i]['minimo'], datos_json[i]['class_minimo']);
                     }
-                    else{
-                        var_maximo.push(60);
-                    }
                     //rows += get_col(var_id, "valor", datos_json[i]['valor'], datos_json[i]['class_valor']);
-                    rows += get_col(var_id, "link", datos_json[i]['valor'], datos_json[i]['class_valor']);
+                    rows += get_link(estacion['est_id'], variable['var_id'], datos_json[i]['dia'])
                     rows += '</tr>';
 
                 }
@@ -70,19 +61,61 @@ $(document).ready(function() {
                 graficar(data.variable[0], data.estacion[0] );
 
                 desactivar_espera("#div_loading", "#div_informacion", "#div_error")
-                $("#div_grafico").show();
+                //$("#div_grafico").show();
 
             },
             error: function () {
-                $("#div_grafico").hide();
+                //$("#div_grafico").hide();
                 mostrar_error("#div_loading", "#div_informacion", "#div_error")
 
             }
         });
     });
+
+
+    $(".link-validacion").click(function(e){
+
+    });
+
 });
 
+// generar la tabla de datos de validacion
+function set_tabla_validacion(est_id, var_id, fecha){
+    enlace = '/validacion/lista/' + est_id + '/' + var_id + '/' + fecha;
+    console.log("llego", fecha);
+    //enlace = $(this).attr('href')
+    $.ajax({
+        url: enlace,
+        type:'GET',
+        beforeSend: function () {
+        },
+        success: function (data) {
+            datos_json = data;
+            rows='';
+            for (var i in datos_json) {
+                rows += '<tr>';
+                col_fecha = get_col_val("fecha", datos_json[i]['fecha'], datos_json[i]['class_fecha']);
+                rows += col_fecha;
+                rows += get_col_val("validado", datos_json[i]['valor_seleccionado'], datos_json[i]['class_validacion']);
+                rows += get_col_val("valor", datos_json[i]['valor'], datos_json[i]['class_valor']);
+                rows += get_col_val("stddev", '', datos_json[i]['class_stddev_error']);
+                rows += get_col_val("comentario", datos_json[i]['comentario'], 'comentario');
+                rows += '</tr>';
+            }
 
+            thead = get_thead_val();
+            $("#tabla_valor > thead").html(thead);
+            $("#tabla_valor > tbody").html(rows);
+
+        },
+        error: function () {
+
+        }
+    });
+
+};
+
+// generar las columnas para el reporte diario de crudos
 function get_col(var_id, tipo, valor, clase) {
 
     var col = ''
@@ -96,29 +129,9 @@ function get_col(var_id, tipo, valor, clase) {
             col = '<th scope="row" class="col-2">'+valor+'</th>'
         }
     }
-    else if (tipo === 'link'){
-        if (var_id === 1 ){
-            col = '<td class="col-3">'
-            col += '<a class="link-validacion" href="#">'
-            //col += '<span class="fas fa-search" aria-hidden="true"></span>'
-            //col += '<span class="" aria-hidden="true"></span>'
-            col += 'Revisar'
-            col += '</a></td>'
-            //col += '</td>'
-        }
-        else{
-            col = '<td class="col-2">'
-            col += '<a class="link-validacion" href="#">'
-            //col += '<span class="fas fa-search" aria-hidden="true"></span>'
-            //col += '<span class="" aria-hidden="true"></span>'
-            col += 'Revisar'
-            col += '</a></td>'
-            //col += '</td>'
-        }
-    }
     else{
         if(var_id == 1){
-            col= '<td class="col-3 valor '+clase+'">'+valor+'</td>'
+            col= '<td class="col-3 '+clase+'">'+valor+'</td>'
         }
         else{
             col = '<td class="col-2 '+clase+'">'+valor+'</td>'
@@ -128,6 +141,61 @@ function get_col(var_id, tipo, valor, clase) {
     return col
 
 };
+// generar las columnas para la tabla de validacion de datos
+function get_col_val(tipo, valor, clase){
+
+    var col = ''
+    if (tipo === 'fecha'){
+        col = '<th scope="row" class="col-3 '+ clase + '">'+valor+'</th>'
+    }
+    else if (tipo === 'comentario' ){
+        console.log(valor);
+        if (valor === null){
+            col = '<td class="col-3 '+clase+'">&nbsp;</td>'
+        }
+        else{
+            col = '<td class="col-3 '+clase+'">'+valor+'</td>'
+        }
+
+
+    }
+    else if (tipo === 'stddev') {
+        col = '<td class="col-2 '+clase+'">&nbsp;</td>'
+    }
+    else{
+        col = '<td class="col-2 '+clase+'">'+valor+'</td>'
+    }
+    return col
+};
+
+function get_link(est_id, var_id, fecha){
+    console.log(var_id);
+    if (var_id === 1 ){
+        col = '<td class="col-3">';
+        //col += '<a href="/validacion/lista/';
+        //col += est_id + '/' + var_id + '/' + fecha + '" ';
+        col += '<a href="#"';
+        //col += 'onclick="set_tabla_validacion();return false;"'
+        col += 'onclick="set_tabla_validacion('+ est_id + ',' + var_id + ',\'' + fecha +'\');return false;"';
+        col += '>';
+        col += 'Revisar';
+        col += '</a></td>';
+    }
+    else{
+        col = '<td class="col-2">';
+        //col += '<a href="/validacion/lista/';
+        //col += est_id + '/' + var_id + '/' + fecha + '" ';
+        col += '<a href="#"';
+        //col += 'onclick="set_tabla_validacion();return false;"'
+        col += 'onclick="set_tabla_validacion('+ est_id + ',' + var_id + ',\'' + fecha +'\');return false;"';
+        col += '>';
+        col += 'Revisar';
+        col += '</a></td>';
+    }
+    return col
+
+};
+
 
 function get_thead(var_id){
     var row = ''
@@ -159,6 +227,25 @@ function get_thead(var_id){
     return row
 }
 
+function get_thead_val(){
+    var row = ''
+    var th_fecha = ''
+    var th_porcentaje = ''
+    var th_valor = ''
+
+    th_fecha = '<th scope="col" class="col-3">Fecha</th>';
+    th_validado = '<th scope="col" class="col-2">Validación</th>';
+    th_valor = '<th scope="col" class="col-2">Valor</th>';
+    th_stddev = '<th scope="col" class="col-2">Valores atípicos</th>';
+    th_comentario = '<th scope="col" class="col-3">Comentario</th>';
+    row += '<tr>'
+    row += th_fecha + th_validado + th_valor + th_stddev + th_comentario;
+    row += '</tr>'
+
+
+    return row
+}
+
 function graficar(variable, estacion){
     var_id = variable['var_id'];
     var_nombre = variable['var_nombre']
@@ -171,14 +258,7 @@ function graficar(variable, estacion){
             type: 'bar'
         };
 
-        var limite = {
-            x: data_fecha,
-            y: var_maximo,
-            name: 'Límite',
-            type: 'lines'
-        };
-
-        var data = [trace1, limite];
+        var data = [trace1];
     }
     else{
         var trace1 = {
@@ -200,21 +280,8 @@ function graficar(variable, estacion){
             type: 'scatter'
         };
 
-        var limite_max = {
-            x: data_fecha,
-            y: var_maximo,
-            name: 'Límite Máximo',
-            type: 'lines'
-        };
 
-        var limite_min = {
-            x: data_fecha,
-            y: var_minimo,
-            name: 'Límite Mínimo',
-            type: 'lines'
-        };
-
-        var data = [trace1, trace2, trace3, limite_max, limite_min];
+        var data = [trace1, trace2, trace3];
         //var data = [trace1, trace2, trace3];
         //var data = [trace1, trace2, trace3, limite_min];
     }

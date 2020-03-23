@@ -7,6 +7,7 @@ from django.views.generic import ListView, FormView
 
 from validacion.forms import *
 from medicion.forms import ValidacionSearchForm
+from medicion.functions import reporte_validacion
 from validacion import functions
 # Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -49,19 +50,19 @@ class PeriodosValidacion(LoginRequiredMixin, FormView):
 
 
 # Consulta de datos horarios crudos y/o validados por estacion, variable y hora
-class DatosHorarios(LoginRequiredMixin, ListView):
-    template_name = 'validacion/datos_horarios.html'
+class ListaValidacion(LoginRequiredMixin, ListView):
+    template_name = 'home/mensaje.html'
 
     def get(self, request, *args, **kwargs):
         if self.request.is_ajax():
-            template = 'validacion/datos_horarios.html'
             est_id = kwargs.get('estacion')
             var_id = kwargs.get('variable')
             fecha_str = kwargs.get('fecha')
-            datos = functions.consultar_horario(est_id, var_id, fecha_str)
-            diccionario = {'datos': datos}
-            return render(request, template, diccionario)
-        return self.render_to_response(self.get_context_data(save=True))
+            datos = functions.consultar_diario(est_id, var_id, fecha_str)
+            data_json = json.dumps(datos, allow_nan=True, cls=DjangoJSONEncoder)
+            return HttpResponse(data_json, content_type='application/json')
+        mensaje = 'Ocurrio un problema con el procesamiento de la información, por favor contacte con el administrador'
+        return render(request, 'home/mensaje.html', {'mensaje': mensaje})
 
 
 # Consulta de datos diarios por reporte
@@ -86,6 +87,7 @@ class ValidacionDiaria(LoginRequiredMixin, FormView):
                     fila.dia = fila.dia.strftime("%Y-%m-%d")
                     fila.porcentaje = round(fila.porcentaje)
 
+
                 # lista_nueva = [dict(fila.__dict__) for fila in lista if fila['state']]
 
                 data = {'estacion': [{
@@ -100,7 +102,7 @@ class ValidacionDiaria(LoginRequiredMixin, FormView):
                         'var_minimo': variable.var_minimo,
 
                     }],
-                    'datos': [dict(fila.__dict__) for fila in lista]
+                    'datos': [dict(fila.__dict__) for fila in lista],
                 }
 
                 data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
