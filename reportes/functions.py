@@ -197,6 +197,7 @@ def get_trace(variable, tiempo, valor, nombre):
             line=dict(color="#ff881e"),
             yaxis='y2',
             xaxis='x',
+            position = 0.85
 
         )
     return elemento
@@ -351,7 +352,7 @@ def comparar_variables(form):
     val02 = info_est02["valor"]
     # trace01 = get_trace(variable01, time01, val01, variable01.var_nombre)
     trace02 = get_trace(variable02, time02, val02, variable02.var_nombre)
-
+    print("bedug")
     if parametro == str(1):
         trace01 = get_trace(variable01, time01, val01, variable01.var_nombre)
     elif parametro == str(2):
@@ -379,11 +380,14 @@ def comparar_variables(form):
 
         ),
         xaxis=dict(
-            rangeslider={},
+            #rangeslider={},
             type='date',
         ),
         grid=dict(rows=2, columns=1),
-        legend=dict(yanchor='bottom')
+        legend=dict(
+            #yanchor='bottom'
+            orientation = "h"
+            )
 
     )
     data = list([trace01, trace02])
