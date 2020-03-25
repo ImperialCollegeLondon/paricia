@@ -63,11 +63,14 @@ def lista_datos_validacion(request):
     inicio = request.POST.get('inicio', None)
     fin = request.POST.get('fin', None)
 
+
     estacion = Estacion.objects.get(est_id=estacion_id)
     variable = Variable.objects.get(var_id=variable_id)
     inicio = datetime.datetime.strptime(inicio, '%d/%m/%Y')
+    print(fin)
     fin = datetime.datetime.strptime(fin, '%d/%m/%Y')
     lista = reporte_validacion(estacion, variable, inicio, fin)
+    print(len(lista))
 
     # lista = []
     # print("Fin datos validacion: ", datetime.datetime.now())

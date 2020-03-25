@@ -2,15 +2,19 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from .models import Estacion, Inamhi   # , Registro
-from django.views.generic import ListView, FormView
+from estacion.models import Estacion, Inamhi   # , Registro
+from estacion.serializers import EstacionSerializer
+from django.views import View
+from django.views.generic import ListView, FormView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
+from rest_framework.views import APIView
+
 from .forms import EstacionSearchForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from home.functions import pagination
+from home.functions import pagination, get_links
 from django.http import JsonResponse, HttpResponse
 import json
 
@@ -69,6 +73,42 @@ class EstacionList(LoginRequiredMixin, ListView, FormView):
         page = self.request.GET.get('page')
         context.update(pagination(self.object_list, page, 10))
         return context
+
+
+class EstacionListJson(View):
+
+    def get(self, request):
+
+        estaciones = Estacion.objects.all()
+        total = len(estaciones)
+        estaciones_json = []
+
+        for estacion in estaciones:
+
+            fila = {
+                'est_codigo':estacion.est_codigo,
+                'est_nombre':estacion.est_nombre,
+                'tipo': estacion.tipo.tip_nombre,
+                'provincia': estacion.provincia.pro_nombre,
+                'administrador': 'FONAG' if estacion.est_externa is False else 'EPMAPS',
+                'est_latitud': estacion.est_latitud,
+                'est_longitud': estacion.est_longitud,
+                'est_altura': estacion.est_altura,
+                'accion': get_links(Estacion, estacion.est_id)
+
+            }
+            estaciones_json.append(fila)
+
+        data = {
+            'total': total,
+            'totalNotFiltered': total,
+            'rows': estaciones_json,
+        }
+        return JsonResponse(data, safe=False)
+
+
+class EstacionFilter(TemplateView):
+    template_name = 'estacion/estacion_filter.html'
 
 
 class EstacionDetail(LoginRequiredMixin, DetailView):
