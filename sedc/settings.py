@@ -110,7 +110,7 @@ DATABASES = {
         'NAME': 'db_sedc_new',
         'USER': 'postgres',
         'PASSWORD': 'dev123*',
-        'HOST': 'localhost',
+        'HOST': '192.168.19.8',
         'PORT': '5432'
     },
 
