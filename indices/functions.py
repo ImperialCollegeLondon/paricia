@@ -3,6 +3,7 @@ import validacion.models as vali
 import horario.models as hora
 import diario.models as dia
 import mensual.models as mes
+import anual.models as anio
 from anuarios.models import Precipitacion, Caudal
 from datetime import datetime, timedelta
 from django.db.models import Sum, Max, Min, Avg, Count
@@ -270,7 +271,22 @@ class IndicadoresPrecipitacion():
         self.inicio = inicio
         self.fin = fin
         self.completo = completo
-
+    def rr_med_anual(self):
+        """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
+        rranual = anio.Precipitacion.objects().filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+                                                    fecha__lt = self.fin)
+        if rranual is not None:
+            return rranual
+        else:
+            return None
+    def rr_mensual(self):
+        """ devuelve la tabla de datos mensuales para la fecha seleccionadas"""
+        rrmensual = mes.Precipitacion.objects().filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+                                                    fecha__lt = self.fin)
+        if rrmensual is not None:
+            return rrmensual
+        else:
+            return None
 
 def indicaPreci(estacion_id, inicio, fin, completo):
     # rrmes = mes.Precipitacion.objects.all()

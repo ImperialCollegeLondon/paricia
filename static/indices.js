@@ -19,11 +19,11 @@ function cambio(){
 $(document).ready(function () {
 
     //datepicker con intervalo registringido
-    var dateFormat = "dd/mm/yy";
+    var dateFormat = "yy";
     $("#id_inicio").datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "dd/mm/yy"
+        dateFormat: "yy"
     });
     $("#id_inicio").on("change", function () {
         $("#id_fin").datepicker("option", "minDate", getDate(this));
@@ -31,7 +31,7 @@ $(document).ready(function () {
     $("#id_fin").datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "dd/mm/yy"
+        dateFormat: "yy"
     });
     $("#id_fin").on("change", function () {
         $("#id_inicio").datepicker("option", "maxDate", getDate(this));
