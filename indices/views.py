@@ -2,9 +2,9 @@
 from datetime import datetime
 
 from django.views import generic
-from indices.forms import *
+from .forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm
 from .functions import getVarValidado, acumularDoble, \
-    intensidadDiracion, getCaudalFrec, IndicaPreci, IndicaCaudal, consultaPeriodos
+    intensidadDiracion, getCaudalFrec, indicaPreci, indicaCaudal, consultaPeriodos
 from django.shortcuts import render
 # Create your views here.
 from django.http import JsonResponse, HttpResponse
@@ -75,15 +75,14 @@ class IndPrecip(generic.FormView):
         inicio = None
         fin = None
         if tinicio != '':
-            print("no hay fecha de inicio")
             inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
             completo = False
         if tfin !='':
             fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
             #completo =False
-
+        print(inicio," ::::: ", fin)
         #anualizar(estacion_id)
-        data = IndicaPreci(estacion_id,inicio,fin, completo)
+        data = indicaPreci(estacion_id,inicio,fin, completo)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
 
@@ -110,7 +109,7 @@ class IndCaudal(generic.FormView):
             fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
             # completo =False
         #anualizar(estacion_id)
-        data = IndicaCaudal(estacion_id,inicio,fin, completo)
+        data = indicaCaudal(estacion_id,inicio,fin, completo)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
 
