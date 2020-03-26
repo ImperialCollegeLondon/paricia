@@ -36,18 +36,6 @@ class EstacionCreate(LoginRequiredMixin, CreateView):
         context['title'] = "Crear"
         return context
 
-    '''def model_form_upload(request):
-        if request.method == 'POST':
-            form = DocumentForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('index')
-        else:
-            form = DocumentForm()
-        return render(request, 'core/model_form_upload.html', {
-            'form': form
-        })'''
-
 
 class EstacionList(LoginRequiredMixin, ListView, FormView):
     # parámetros ListView
@@ -75,6 +63,7 @@ class EstacionList(LoginRequiredMixin, ListView, FormView):
         return context
 
 
+# Vista para generar el JSON para el bootstratp table
 class EstacionListJson(View):
 
     def get(self, request):
@@ -107,6 +96,7 @@ class EstacionListJson(View):
         return JsonResponse(data, safe=False)
 
 
+# Vista HTML para la lista de estaciones
 class EstacionFilter(TemplateView):
     template_name = 'estacion/estacion_filter.html'
 

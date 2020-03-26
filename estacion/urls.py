@@ -6,10 +6,10 @@ from django.contrib.auth import views as auth_views
 
 app_name = 'estacion'
 urlpatterns = [
-    path('estacion/', views.EstacionList.as_view(), name='estacion_index'),
+    # path('estacion/', views.EstacionList.as_view(), name='estacion_index'),
     path('estacion/json/', views.EstacionListJson.as_view(), name='json'),
-    path('estacion/filter/', views.EstacionFilter.as_view(), name='filter'),
-    path('estacion/<int:page>/', views.EstacionList.as_view(), name='estacion_index'),
+    path('estacion/', views.EstacionFilter.as_view(), name='estacion_index'),
+    # path('estacion/<int:page>/', views.EstacionList.as_view(), name='estacion_index'),
     path('estacion/create/', views.EstacionCreate.as_view(), name='estacion_create'),
     path('estacion/detail/<int:pk>/', views.EstacionDetail.as_view(), name='estacion_detail'),
     path('estacion/edit/<int:pk>/', views.EstacionUpdate.as_view(), name='estacion_update'),
