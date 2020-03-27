@@ -1,0 +1,82 @@
+{% extends "index.html" %}
+{% load bootstrap3 %}
+{% block content %}
+
+<div class="col-md-7">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 style="display:inline;">Telemetría: Alarma</h3>
+            <br>
+        </div>
+        <br>
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 style="display:inline;">&nbsp;Rango de horas de toleracia de transmisión</h4>
+                </div>
+                <div class="col-md-4">
+                    <a class="btn btn-info" href="{% url 'telemetria:config_alarma_transmision_limites' %}">Modificar límites</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-8">
+
+                <table class="table table-striped table-bordered table-condensed">
+                    <tr>
+                        <th>Límite 1, para estado EXPECTANTE:</th>
+                        <td>{{ lim_inf_horas| floatformat:1}}</td>
+                    </tr>
+                    <tr>
+                        <th>Límite 2, para estado FALLO:</th>
+                        <td>{{ lim_sup_horas| floatformat:1}}</td>
+                    </tr>
+                </table>
+            </div>
+            </tr>
+            </div>
+        </div>
+
+        <br>
+        <div class="panel-heading">
+            <div class="row">
+            <div class="col-md-8">
+                <h4 style="display:inline;">&nbsp;Correo donde se envía alarma</h4>
+            </div>
+            <div class="col-md-4">
+                <a class="btn btn-info" href="{% url 'telemetria:config_alarma_email_create' %}">Agregar nuevo email</a>
+            </div>
+            </div>
+
+        </div>
+        <div class="panel-body">
+
+            <br>
+
+            <table class="table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+            <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for linea in object_list %}
+            <tr>
+            <td>{{ linea.email }}</td>
+            <td>
+            <a href="{% url 'telemetria:config_alarma_email_delete' linea.pk %}">Eliminar</a>
+            </td>
+            </tr>
+
+            {% endfor %}
+            </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

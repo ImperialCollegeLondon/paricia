@@ -1,0 +1,44 @@
+{% extends "index.html" %}
+{% block content %}
+{% load bootstrap3 %}
+{% load humanize %}
+{% load static %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+
+<div class="col-md-8">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+            <h3 style="display:inline;">Telemetría: Alarma</h3>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12"><h4>Tolerancia de horas para alarma de transmisión</h4></div>
+        </div>
+            <form id="form_alarma_transmision_limites" class="form" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-3">{% bootstrap_field form.lim_inf %}</div>
+                    <div class="col-md-3">{% bootstrap_field form.lim_sup %}</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id='guardar_limites' type='button' class='btn btn-primary' >Guardar</button>
+                        <a class="btn btn-default" href="{% url 'telemetria:config_alarma_list' %}">Cancelar (NO GUARDAR)</a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    </div>
+
+
+
+
+{% endblock %}
