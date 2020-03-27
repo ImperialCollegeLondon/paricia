@@ -4,7 +4,7 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip()
 
 
-
+    // Comparar Variables
     $("#btn_graficar").click(function(){
         $(this).attr('disabled',true);
         $.ajax({
@@ -66,7 +66,7 @@ $(document).ready(function() {
                     $("#div_informacion").show();
                     var count = Object.keys(data.data[0].y).length;
                     if (count>0) {
-                        Plotly.newPlot('div_informacion', data.data,data.layout);
+                        Plotly.newPlot('div_informacion', data.data,data.layout,{scrollZoom: true});
                     }
                     else{
                         //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
@@ -116,7 +116,7 @@ $(document).ready(function() {
                     $("#div_informacion").show();
                     var count = Object.keys(data.data[0].y).length;
                     if (count>0) {
-                        Plotly.newPlot('div_informacion', data.data,data.layout);
+                        Plotly.newPlot('div_informacion', data.data,data.layout, {scrollZoom: true});
                     }
                     else{
                         //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
@@ -174,6 +174,50 @@ $(document).ready(function() {
         periodos_validacion();
     });
 
+
+    //Cargar variables por estacion
+
+    $("#id_estacion").change(function () {
+        var estacion = $(this).val();
+        $("#id_variable").find('option').remove().end()
+        $("#id_variable").append('<option value="">---------</option>');
+        $.ajax({
+            url: '/anuarios/variables/'+estacion,
+            dataType: 'json',
+            success: function (data) {
+
+                $.each(data, function(index, value) {
+                    $("#id_variable").append('<option value="' + index + '">' + value + '</option>');
+                });
+            }
+        });
+
+
+    });
+
+    //consulta y guarda la información
+    $("#btn_procesar").click(function(){
+        $(this).attr('disabled',true);
+        $.ajax({
+            url: $("#form_procesar").attr('action'),
+            data: $("#form_procesar").serialize(),
+            type:'POST',
+            beforeSend: function () {
+                activar_espera("#div_loading","#div_informacion","#div_error")
+            },
+            success: function (data) {
+                $("#div_informacion").html(data)
+                $("#btn_procesar").removeAttr('disabled');
+                desactivar_espera("#div_loading","#div_informacion","#div_error")
+            },
+            error: function () {
+                mostrar_error("#div_loading","#div_informacion","#div_error")
+                $("#btn_procesar").removeAttr('disabled');
+            }
+        });
+    });
+
+
     //datepicker con intervalo registringido
     var dateFormat = "dd/mm/yy";
     $( "#id_inicio" ).datepicker({
@@ -195,8 +239,6 @@ $(document).ready(function() {
         $( "#id_inicio" ).datepicker( "option", "maxDate", getDate( this ) );
     });
 
-
-
     function getDate( element ) {
         var date;
         try {
@@ -205,46 +247,6 @@ $(document).ready(function() {
             date = null;
         }
         return date;
-    }
-
-    function graficar(data){
-        var data02= [{
-            x: new Date(),
-            y: 1
-        }, {
-            t: new Date(),
-            y: 10
-        }]
-        var data03= [{
-            x: 10,
-            y: 20
-        }, {
-            x: 15,
-            y: 10
-        }]
-        var ctx = document.getElementById('myChart');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: 'Precipitacion',
-                    data: data,
-                }]
-            },
-            //data:data03,
-            options: {
-                scales: {
-
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            unit: 'day'
-                        }
-                    }]
-                }
-            }
-        });
     }
 
 
@@ -261,7 +263,7 @@ $(document).ready(function() {
                 //$("#div_historial").hide();
                 //$("#div_loading_historial").show();
                 //$("#div_error_historial").hide();
-                activar_espera($("#div_loading_historial"), $("#div_historial"), $("#div_error_historial"))
+                activar_espera("#div_loading_historial", "#div_historial", "#div_error_historial")
             },
             success: function (data) {
                 $("#btn_periodos_validacion").attr("disabled", false);
@@ -282,12 +284,27 @@ $(document).ready(function() {
         });
     }
 
-    function activar_espera(div_loading, div_informacion, div_error){
-        console.log("llego")
-        div_loading.show();
-        div_informacion.hide();
-        div_error.hide();
-    }
+
 
 
 });
+
+
+function activar_espera(div_loading, div_informacion, div_error){
+    console.log("Activar espera")
+    $(div_loading).show();
+    $(div_informacion).hide();
+    $(div_error).hide();
+}
+
+function desactivar_espera(div_loading, div_informacion, div_error){
+    $(div_loading).hide();
+    $(div_informacion).show();
+    $(div_error).hide();
+}
+function mostrar_error(div_loading, div_informacion, div_error){
+    $(div_loading).hide();
+    $(div_informacion).hide();
+    $(div_error).show();
+
+}
