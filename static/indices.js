@@ -250,22 +250,22 @@ $(document).ready(function () {
                     rows += '<tr>';
                     rows += '<td class="col-sm-4">Precipitación media anual (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.prom_anual.__Decimal__+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.secHum.anio_seco.__Decimal__+'</td>';
                     rows += '<td class="col-sm-2">'+data.secHum.fechsec+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Año más lluvioso. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.secHum.anio_humedo.__Decimal__+'</td>';
                     rows += '<td class="col-sm-2">'+data.secHum.fechhum+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Intensidad máxima de precipitación acumulado cada hora. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.maxhora+'</td>';
                     rows += '<td class="col-sm-2">'+data.fmaxhora+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Percentiles 10. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.percen.q10.__Decimal__+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Percentiles 95. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.percen.q95.__Decimal__+'</td>';
                     rows += '</tr>';
@@ -274,16 +274,42 @@ $(document).ready(function () {
                     /*completa la tabla de mensual interanual*/
 
                     var rows = "";
-                    console.log("valores mensuales de precipipitación")
-                    console.log(data.mes)
-                    for (me in data.mes){
-                        console.log(me)
-                        rows += '</tr> <tr>'
-                        rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
-                        rows += '<td class="col-sm-2">'+data.anioseco+'</td>';
-                        rows += '<td class="col-sm-2">'+data.fecAnioMin+'</td>';
-                        rows += '</tr> <tr>'
+                    console.log("valores mensuales de precipipitación");
+                    console.log(data.anios.length);
+                    conteototal = 0;
+                    var me = 0;
+                    for (var an = 0; an < data.anios.length; an++){
+                        fan = data.anios[an].fields.fecha.split('-');
+                        fan = parseInt(fan[0]);
+                        console.log(fan);
+                        rows+='<tr>'
+                        rows += '<td class="col-sm-2">'+fan+'</td>';
+                        mesIte = 1;
+                        console.log('me valor : '+conteototal);
+                        for (var me = conteototal; me < data.mes.length; me++){
+                            console.log(data.mes[me].fields.fecha);
+                            fem = data.mes[me].fields.fecha.split('-');
+                            mm = parseInt(fem[1]);
+                            ma = parseInt(fem[0]);
+                            console.log("año "+ma+" mes "+mm);
+                            if (fan === ma){
+                                if (mm === mesIte){
+                                    //console.log(mm +" : "+ mesIte+" valor :"+data.mes[me].fields.valor);
+                                    rows += '<td class="col-sm-2">'+data.mes[me].fields.valor+'</td>';
+                                }else{
+                                    rows += '<td class="col-sm-2">S/D</td>';
+                                }
+                            }else{
+                                rows+='</tr>'
+                                me = data.mes.length;
+                                conteototal = conteototal - 1;
+                            }
+
+                            mesIte ++;
+                            conteototal ++;
+                        }
                     }
+
                     $("#tbodymen").html(rows);
 
                 }else{

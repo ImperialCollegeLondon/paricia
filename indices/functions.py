@@ -280,7 +280,7 @@ class IndicadoresPrecipitacion():
 
         """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
         rranual = anio.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                   fecha__lte = self.fin)
+                                                   fecha__lte = self.fin).order_by('fecha')
         #rranual = anio.Precipitacion.objects.all()[:1]
         if rranual is not None:
             return rranual
@@ -290,7 +290,7 @@ class IndicadoresPrecipitacion():
     def rr_mensual(self):
         """ devuelve la tabla de datos mensuales para la fecha seleccionadas"""
         rrmensual = mes.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                    fecha__lte = self.fin)
+                                                    fecha__lte = self.fin).order_by('fecha')
         if rrmensual is not None:
             return rrmensual
         else:
