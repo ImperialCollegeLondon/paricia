@@ -11,3 +11,4 @@ def run():
         while res:
             cursor.execute(sql)
             res = cursor.fetchone()[0]
+
