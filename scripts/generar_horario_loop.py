@@ -1,7 +1,6 @@
 from django.db import connection
 from variable.models import Variable
 
-
 def run():
     cursor = connection.cursor()
     variables = Variable.objects.filter(reporte_automatico=True)
