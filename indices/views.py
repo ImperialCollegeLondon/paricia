@@ -2,9 +2,10 @@
 from datetime import datetime
 
 from django.views import generic
-from indices.forms import *
+from .forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm
 from .functions import getVarValidado, acumularDoble, \
-    intensidadDiracion, getCaudalFrec, IndicaPreci, IndicaCaudal, consultaPeriodos
+    intensidadDiracion, getCaudalFrec, indicaPreci, indicaCaudal, consultaPeriodos
+from .functions import IndicadoresPrecipitacion
 from django.shortcuts import render
 # Create your views here.
 from django.http import JsonResponse, HttpResponse
@@ -58,9 +59,9 @@ class PeriodoDatos(generic.View):
         return context
 
 
-
-class IndPrecip(generic.FormView):
-    """Calcula los indices de precipitacion dispinibles para la estación selecionada"""
+##### reasp TMP
+"""class IndPrecip(generic.FormView):
+    Calcula los indices de precipitacion dispinibles para la estación selecionada
     template_name = "indices/precipitacion.html"
     form_class = IndPrecipForm
     success_url = "indices/precipitacion.html"
@@ -75,17 +76,50 @@ class IndPrecip(generic.FormView):
         inicio = None
         fin = None
         if tinicio != '':
-            print("no hay fecha de inicio")
             inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
             completo = False
         if tfin !='':
             fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
             #completo =False
-
+        print(inicio," ::::: ", fin)
         #anualizar(estacion_id)
-        data = IndicaPreci(estacion_id,inicio,fin, completo)
+        data = indicaPreci(estacion_id,inicio,fin, completo)
+        data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
+        return HttpResponse(data, content_type='application/json')"""
+
+class IndPrecip(generic.FormView):
+    """Calcula los indices de precipitacion dispinibles para la estación selecionada"""
+    template_name = "indices/precipitacion.html"
+    form_class = IndPrecipForm
+    success_url = "indices/precipitacion.html"
+    def post(self, request, *args, **kwargs):
+        form = SelecEstForm(self.request.POST or None)
+        # try:
+        estacion_id = int(request.POST.get('estacion', None))
+        tinicio = request.POST.get('inicio', 'vacio')
+        tfin = request.POST.get('fin', None)
+        print("tinico ", tinicio, "tfin ", tfin)
+        completo  = True
+        inicio = None
+        fin = None
+        if tinicio != '':
+            print("antes del if")
+            inicio = datetime.strptime(tinicio , '%Y-%m-%d')
+            completo = False
+        if tfin !='':
+            print("antes del segundoif")
+            fin = datetime.strptime(tfin + " 23:59:00", '%Y-%m-%d %H:%M:%S')
+            #completo =False
+
+        print(inicio," ::::: ", fin)
+        indrr = IndicadoresPrecipitacion(estacion_id,tinicio,tfin,completo);
+        data = indrr.makeDic()
+        #data = indicaPreci(estacion_id,inicio,fin, completo)
+        print("data en el view")
+        print(data)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
+
 
 class IndCaudal(generic.FormView):
     """Calcula los indices de caudal dispinibles para la estación selecionada"""
@@ -110,7 +144,7 @@ class IndCaudal(generic.FormView):
             fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
             # completo =False
         #anualizar(estacion_id)
-        data = IndicaCaudal(estacion_id,inicio,fin, completo)
+        data = indicaCaudal(estacion_id,inicio,fin, completo)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
 

@@ -6,16 +6,10 @@ from medicion.models import CurvaDescarga
 
 
 class ValidacionSearchForm(forms.Form):
-    TIPO_VALOR = (
-        ('valor', 'valor'),
-        ('maximo', 'máximo'),
-        ('minimo', 'mínimo'),
-    )
     estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all())
     variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').all())
     inicio = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Inicio(yyyy-mm-dd)")
     fin = forms.DateField(input_formats=['%d/%m/%Y'], label="Fecha de Fin(yyyy-mm-dd)")
-    #valor = forms.ChoiceField(choices=TIPO_VALOR)
 
 
 class MedicionSearchForm(forms.Form):

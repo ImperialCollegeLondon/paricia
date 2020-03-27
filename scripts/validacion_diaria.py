@@ -30,7 +30,7 @@ BEGIN
 	--Seleccionar los datos de la tabla validados
     validacion AS (
         SELECT v.id, v.fecha, 0 AS tipo, v.valor, v.maximo, v.minimo, TRUE AS existe_en_validacion
-        FROM validacion_velocidadviento v WHERE v.estacion_id = (SELECT est_id FROM estacion) AND v.fecha >= _fecha_inicio AND v.fecha <= _fecha_fin
+        FROM validacion_%%variable%% v WHERE v.estacion_id = (SELECT est_id FROM estacion) AND v.fecha >= _fecha_inicio AND v.fecha <= _fecha_fin
         AND (v.valor != 'Nan'::numeric AND v.maximo != 'Nan'::numeric AND v.minimo != 'Nan'::numeric )
         AND (v.valor IS NOT NULL AND v.maximo IS NOT NULL AND v.minimo IS NOT NULL)
     ),
@@ -38,7 +38,7 @@ BEGIN
     medicion AS (
         SELECT m.id, m.fecha, 1 AS tipo, m.valor, m.maximo, m.minimo,
             EXISTS(SELECT * FROM validacion v WHERE v.fecha = m.fecha AND v.valor = m.valor) AS existe_en_validacion
-        FROM medicion_velocidadviento m WHERE m.estacion_id = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
+        FROM medicion_%%variable%% m WHERE m.estacion_id = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
         AND (m.valor != 'Nan'::numeric AND m.maximo != 'Nan'::numeric AND m.minimo != 'Nan'::numeric )
         AND (m.valor IS NOT NULL AND m.maximo IS NOT NULL AND m.minimo IS NOT NULL)
     ),
