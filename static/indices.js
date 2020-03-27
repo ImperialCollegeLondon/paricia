@@ -238,7 +238,7 @@ $(document).ready(function () {
                 //add scroll to datatable
                 console.log("data in  succes function  ::::::::: ",data)
                 if(data != null){
-                    console.log(data)
+                    //console.log(data)
                     $("#div_error").removeClass("div-show").addClass( "div-hiden" );
                     $("#div_informacion").show();
                     if(data.anioseco == -1 ){ aseco = "";
@@ -249,36 +249,19 @@ $(document).ready(function () {
                     var rows = "";
                     rows += '<tr>';
                     rows += '<td class="col-sm-4">Precipitación media anual (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.rranual+'</td>';
+                    rows += '<td class="col-sm-2">'+data.prom_anual.__Decimal__+'</td>';
                     rows += '</tr> <tr>'
                     rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.anioseco+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fecAnioMin+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.anio_seco.__Decimal__+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.fechsec+'</td>';
                     rows += '</tr> <tr>'
                     rows += '<td class="col-sm-4">Año más lluvioso. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.aniolluvia+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fecAnioMax+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Precipitación mensual. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.rrmes+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Precipitación del mes más seco. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.messeco+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fmesSeco+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Precipitación del mes más lluvioso. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.rrlluvia+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fmeslluvia+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.anio_humedo.__Decimal__+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.fechhum+'</td>';
                     rows += '</tr> <tr>'
                     rows += '<td class="col-sm-4">Intensidad máxima de precipitación acumulado cada hora. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.maxhora+'</td>';
                     rows += '<td class="col-sm-2">'+data.fmaxhora+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Días consecutivos con precipitación.</td>';
-                    rows += '<td class="col-sm-2">'+data.dccl+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Días consecutivos sin precipitación.</td>';
-                    rows += '<td class="col-sm-2">'+data.dcsl+'</td>';
                     rows += '</tr> <tr>'
                     rows += '<td class="col-sm-4">Percentiles 10. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.Q10+'</td>';
@@ -287,6 +270,15 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-2">'+data.Q95+'</td>';
                     rows += '</tr>';
                     $("#tbody").html(rows);
+
+                    /*completa la tabla de mensual interanual*/
+                    console.log("valores mensuales de precipipitación")
+                    console.log(data.mes)
+                    rows += '</tr> <tr>'
+                    rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
+                    rows += '<td class="col-sm-2">'+data.anioseco+'</td>';
+                    rows += '<td class="col-sm-2">'+data.fecAnioMin+'</td>';
+                    rows += '</tr> <tr>'
 
                 }else{
 

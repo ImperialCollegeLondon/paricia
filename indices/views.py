@@ -5,7 +5,7 @@ from django.views import generic
 from .forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm
 from .functions import getVarValidado, acumularDoble, \
     intensidadDiracion, getCaudalFrec, indicaPreci, indicaCaudal, consultaPeriodos
-from .functions import IndicadoresPrecipitacion as indrr
+from .functions import IndicadoresPrecipitacion
 from django.shortcuts import render
 # Create your views here.
 from django.http import JsonResponse, HttpResponse
@@ -112,9 +112,9 @@ class IndPrecip(generic.FormView):
             #completo =False
 
         print(inicio," ::::: ", fin)
-        #anuales = indrr.rr_med_anual(estacion_id,tinicio,tfin,completo)
-        #print(anuales)
-        data = indicaPreci(estacion_id,inicio,fin, completo)
+        indrr = IndicadoresPrecipitacion(estacion_id,tinicio,tfin,completo);
+        data = indrr.makeDic()
+        #data = indicaPreci(estacion_id,inicio,fin, completo)
         print("data en el view")
         print(data)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
