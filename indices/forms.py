@@ -4,6 +4,7 @@ from estacion.models import Estacion
 from variable.models import Variable
 from medicion.models import CurvaDescarga
 
+from datetime import datetime
 
 class SearchForm(forms.Form):
     TIPO_VALOR = (
@@ -29,9 +30,12 @@ class SelecEstForm(forms.Form):
     fin = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
 
 class IndPrecipForm(forms.Form):
-    estacion = forms.ModelChoiceField(queryset=Estacion.objects.filter(tipo_id__in=[1,2]).order_by('est_id'), label="Estacion meteorológica")
-    inicio = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Inicio(yyyy-mm-dd)")
-    fin = forms.DateField(input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
+
+    fechi = datetime.strptime("01/01/2010", '%d/%m/%Y')
+    fechf = datetime.strptime("01/01/2005", '%d/%m/%Y')
+    estacion = forms.ModelChoiceField(initial = 1,queryset=Estacion.objects.filter(tipo_id__in=[1,2]).order_by('est_id'), label="Estacion meteorológica")
+    inicio = forms.DateField(initial=fechi,input_formats=['%Y-%m-%d'], label="Fecha de Inicio(yyyy-mm-dd)",)
+    fin = forms.DateField(initial=fechf,input_formats=['%Y-%m-%d'], label="Fecha de Fin(yyyy-mm-dd)")
 
 class IndCaudForm(forms.Form):
     estacion = forms.ModelChoiceField(queryset=Estacion.objects.filter(tipo_id__in=[3]).order_by('est_id'), label="Estacion hidrológicas")

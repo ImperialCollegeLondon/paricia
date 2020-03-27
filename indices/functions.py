@@ -272,6 +272,7 @@ class IndicadoresPrecipitacion():
         self.fin = fin
         self.completo = completo
     def rr_med_anual(self):
+
         """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
         rranual = anio.Precipitacion.objects().filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
                                                     fecha__lt = self.fin)
@@ -287,6 +288,7 @@ class IndicadoresPrecipitacion():
             return rrmensual
         else:
             return None
+
 
 def indicaPreci(estacion_id, inicio, fin, completo):
     # rrmes = mes.Precipitacion.objects.all()
@@ -305,7 +307,7 @@ def indicaPreci(estacion_id, inicio, fin, completo):
         print("Buscar segun las fechas")
 
     if amax is not None and amin and len(datos) > 2:
-        # print("min",amin,"max",amax)
+        print("min",amin,"max",amax)
         iniconsu = datetime(amin, 1, 1, 0, 0, 0)
         finconsu = datetime(amax, 12, 31, 23, 59, 0)
         con = 0
@@ -314,10 +316,11 @@ def indicaPreci(estacion_id, inicio, fin, completo):
         minAnual = 99999
         fechaMaxAnual = None
         fechaMinAnual = None
-        for i in range(amin, amax):
-            # print("Buscar en ", str(i)+"-01-01",str(i+1)+"-01-01")
-            tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=str(i) + "-01-01",
-                                                    fecha__lt=str(i + 1) + "-01-01").aggregate(Count('fecha'),
+
+        for ter in range(2005, 2010):
+            print("Buscar en ", str(ter)+"-01-01",str(ter+1)+"-01-01")
+            tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=str(ter) + "-01-01",
+                                                    fecha__lt=str(ter + 1) + "-01-01").aggregate(Count('fecha'),
                                                                                                Sum('valor'))
             # print(tmes)
             if (tmes["fecha__count"] == 12):
@@ -325,10 +328,10 @@ def indicaPreci(estacion_id, inicio, fin, completo):
                 # print("len",len(tmes),tmes, "con ", con)
                 if tmes['valor__sum'] > maxAnual:
                     maxAnual = tmes["valor__sum"]
-                    fechaMaxAnual = i
+                    fechaMaxAnual = ter
                 if tmes['valor__sum'] < minAnual:
                     minAnual = tmes["valor__sum"]
-                    fechaMinAnual = i
+                    fechaMinAnual = ter
                 acum = acum + tmes["valor__sum"]
                 con = con + 1
 
@@ -352,15 +355,15 @@ def indicaPreci(estacion_id, inicio, fin, completo):
         temdccl = 0
         dcsl = 0
         temdcsl = 0
-        for i in tdia:
+        for ter in tdia:
             # print(i['valor'])
-            if i['valor'] == 0:
+            if ter['valor'] == 0:
                 temdcsl = temdcsl + 1
                 if temdcsl > dcsl:
                     dcsl = temdcsl
             else:
                 temdcsl = 0
-            if i['valor'] > 0.1:
+            if ter['valor'] > 0.1:
                 temdccl = temdccl + 1
                 if temdccl > dccl:
                     dccl = temdccl

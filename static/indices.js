@@ -19,11 +19,11 @@ function cambio(){
 $(document).ready(function () {
 
     //datepicker con intervalo registringido
-    var dateFormat = "yy";
+    var dateFormat = "dd/mm/yy";
     $("#id_inicio").datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "yy"
+        dateFormat: "dd/mm/yy"
     });
     $("#id_inicio").on("change", function () {
         $("#id_fin").datepicker("option", "minDate", getDate(this));
@@ -31,10 +31,12 @@ $(document).ready(function () {
     $("#id_fin").datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "yy"
+        dateFormat: "dd/mm/yy"
     });
     $("#id_fin").on("change", function () {
         $("#id_inicio").datepicker("option", "maxDate", getDate(this));
+        console.log("Aqui cambia la fecha se debe activar el botn buscar")
+        $("#btn_ind_pre").attr('disabled', false);
     });
 
 
@@ -215,10 +217,12 @@ $(document).ready(function () {
 
 /**********************************************
 ***********************************************
-        *indices de precipitación
+        *indices de precipitación btn_ind_pre
     */
     $("#btn_ind_pre").click(function () {
-        $(this).attr('disabled', true);
+        //$(this).attr('disabled', true);
+         console.log("soy la data que pasa del view ...")
+            //console.log(data);
         $.ajax({
             url: $("#IndPrecipForm").attr('action'),
             data: $("#IndPrecipForm").serialize(),
@@ -232,7 +236,7 @@ $(document).ready(function () {
             },
             success: function (data) {
                 //add scroll to datatable
-                console.log(data)
+                console.log("data in  succes function  ::::::::: ",data)
                 if(data != null){
                     console.log(data)
                     $("#div_error").removeClass("div-show").addClass( "div-hiden" );
@@ -299,6 +303,12 @@ $(document).ready(function () {
                 $("#div_error").hide();
             },
             error: function (xhr, status, error, data) {
+                console.log("xhr :");
+                console.log(xhr);
+                console.log("status :")
+                console.log(status);
+                console.log("data :")
+                console.log(data);
                 console.log("Soy un error " + error)
                 //$("#div_informacion").show();
                 $("#div_loading").hide();
