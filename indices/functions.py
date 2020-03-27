@@ -1,3 +1,4 @@
+from anuarios import anuario
 from variable.models import Variable
 import validacion.models as vali
 import horario.models as hora
@@ -11,6 +12,9 @@ from estacion.models import Estacion
 import pandas as pd
 import decimal
 import numpy as np
+from decimal import Decimal
+
+from django.core import serializers
 
 
 def periodos(i):
@@ -264,29 +268,94 @@ def caudalEspecifico(caudal, estacion_id, frecuencia):
 """Esta clase se encarga de calcular los indicadores de precipitación,
 Cada funcion de la clase calcula un indicador determinado"""
 
-
+import json
 class IndicadoresPrecipitacion():
     def __init__(self, estacion_id, inicio, fin, completo):
         self.estacion = estacion_id
         self.inicio = inicio
         self.fin = fin
         self.completo = completo
-    def rr_med_anual(self):
+
+    def rr_anual(self):
+        print(self.inicio,self.fin)
         """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
-        rranual = anio.Precipitacion.objects().filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                    fecha__lt = self.fin)
+        rranual = anio.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+                                                   fecha__lte = self.fin).order_by('fecha')
+        #rranual = anio.Precipitacion.objects.all()[:1]
         if rranual is not None:
             return rranual
         else:
             return None
+
     def rr_mensual(self):
         """ devuelve la tabla de datos mensuales para la fecha seleccionadas"""
-        rrmensual = mes.Precipitacion.objects().filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                    fecha__lt = self.fin)
+        rrmensual = mes.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+                                                    fecha__lte = self.fin).order_by('fecha')
         if rrmensual is not None:
             return rrmensual
         else:
             return None
+
+    def percentilesDiarios(self):
+        """Calcula los percentelies en base a los datos diarios"""
+        a = np.array([[10.3, 7.5, 4.4,3.0, 2.3, 1.4]])
+        diarios = list(dia.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+                                                    fecha__lte = self.fin).values_list('valor'))
+        print(type(diarios))
+        a = np.array(diarios, dtype=object)
+        #print("diarios" ,a)
+        #print(type(a[[0]]))
+        q10=np.percentile(a,10,  interpolation='lower')
+        q95 = np.percentile(a, 95, interpolation='lower')
+        return {'q10':q10,'q95':q95}
+
+    def makeDic(self):
+
+        print("*******************datos anuales *******************")
+        anuales = self.rr_anual()
+        print(anuales)
+
+        anioSecoMin = 1000000
+        anioHumedoMax = 0
+        iter = 0
+        fechaMin = None
+        fechaMax = None
+        promedio = 0
+        print("años consultados ",anuales.count())
+        if anuales.count() is 0:
+            return None
+        for an in anuales:
+            print (an.valor)
+            promedio += an.valor
+            if an.valor < anioSecoMin:
+                anioSecoMin = an.valor;
+                fechaMin = an.fecha
+            if an.valor > anioHumedoMax:
+                anioHumedoMax = an.valor
+                fechaMax = an.fecha
+            iter += 1
+        promedio = promedio/iter
+        print("anio_seco :",anioSecoMin, "fechsec :", fechaMin.strftime("%m-%Y"),"anio_humedo :",anioHumedoMax, "fechhum:", fechaMax.strftime("%Y"))
+
+        secHum = {'anio_seco':anioSecoMin, 'fechsec':fechaMin.strftime("%Y"),'anio_humedo':anioHumedoMax, 'fechhum': fechaMax.strftime("%Y")}
+        mensuales = self.rr_mensual()
+        print("*******************datos mensuales *******************")
+        print(mensuales)
+        per = self.percentilesDiarios()
+
+        print("****************************dict *******************")
+        anual2json = serializers.serialize('json', anuales,fields=('fecha', 'valor',
+        'completo_mediciones', 'completo_umbral', 'dias_con_lluvia', 'dias_sin_lluvia', 'mes_lluvioso', 'mes_seco',
+        'mes_lluvioso_valor', 'mes_seco_valor', 'estacionalidad'))
+        anuales = json.loads(anual2json)
+        print("type of anuales")
+        print(type(anuales))
+        mes2json = serializers.serialize('json', mensuales,fields=('fecha','valor'))
+        mensuales= json.loads(mes2json)
+        dict={'prom_anual':promedio,'secHum': secHum,'mes':mensuales , 'anios':anuales, 'percen':per}
+        print(dict)
+
+        return dict
 
 def indicaPreci(estacion_id, inicio, fin, completo):
     # rrmes = mes.Precipitacion.objects.all()
@@ -305,62 +374,78 @@ def indicaPreci(estacion_id, inicio, fin, completo):
         print("Buscar segun las fechas")
 
     if amax is not None and amin and len(datos) > 2:
-        # print("min",amin,"max",amax)
-        iniconsu = datetime(amin, 1, 1, 0, 0, 0)
-        finconsu = datetime(amax, 12, 31, 23, 59, 0)
+        print("min",amin,"max",amax)
+        iniconsu = datetime(amax, 1, 1, 0, 0, 0)
+        finconsu = datetime(amin, 12, 31, 23, 59, 0)
         con = 0
         acum = 0
         maxAnual = -1
         minAnual = 99999
         fechaMaxAnual = None
         fechaMinAnual = None
-        for i in range(amin, amax):
-            # print("Buscar en ", str(i)+"-01-01",str(i+1)+"-01-01")
-            tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=str(i) + "-01-01",
-                                                    fecha__lt=str(i + 1) + "-01-01").aggregate(Count('fecha'),
+
+        for ter in range(2005, 2010):
+            #print(estacion_id, "Buscar en ", str(ter)+"-01-01",str(ter+1)+"-01-01")
+            tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=str(ter) + "-01-01",
+                                                    fecha__lt=str(ter + 1) + "-01-01").aggregate(Count('fecha'),
                                                                                                Sum('valor'))
-            # print(tmes)
+            #print(tmes["fecha__count"])
             if (tmes["fecha__count"] == 12):
-                # print("Perfecto estamos completos")
+                #print("Perfecto estamos completos")
                 # print("len",len(tmes),tmes, "con ", con)
                 if tmes['valor__sum'] > maxAnual:
                     maxAnual = tmes["valor__sum"]
-                    fechaMaxAnual = i
+                    fechaMaxAnual = ter
                 if tmes['valor__sum'] < minAnual:
                     minAnual = tmes["valor__sum"]
-                    fechaMinAnual = i
+                    fechaMinAnual = ter
                 acum = acum + tmes["valor__sum"]
                 con = con + 1
-
-        rranual = round(acum / con, 2)
+        if(con >0):
+            rranual = round(acum / con, 2)
+        else:
+            rranual = 0
         tmes = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                                 fecha__lte=finconsu).aggregate(Avg('valor'), Min('valor'), Max('valor'))
+        print("*****************************************************")
+        print("años para el nuevo tmes : fecha__gte:",iniconsu," fecha__lte: ",finconsu )
+        print(tmes)
         fmeMax = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                                   fecha__lte=finconsu, valor__exact=tmes["valor__max"]).values('fecha')[
                  :1]
         fmeMin = mes.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                                   fecha__lte=finconsu, valor__exact=tmes["valor__min"]).values('fecha')[
                  :1]
-        # print(fmeMax[0]['fecha'])
-        rrmes = round(tmes["valor__avg"], 2)
-        rrSeco = round(tmes["valor__min"], 2)
-        rrlluvia = round(tmes["valor__max"], 2)
+
         tdia = dia.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                                 fecha__lte=finconsu).values('valor')
-        print(tdia)
+        if tmes["valor__avg"] is not None and tmes["valor__min"] is not None and tmes["valor__max"] is not None:
+            rrmes = round(tmes["valor__avg"], 2)
+            rrSeco = round(tmes["valor__min"], 2)
+            rrlluvia = round(tmes["valor__max"], 2)
+        else:
+            rrmes = None
+            rrSeco = None
+            rrlluvia = None
+            print("Conteo dia y mes  ", tdia.count(), tmes)
+            if tdia.count() is 0:
+                print("no hay datos")
+                return None;
+
+
         dccl = 0
         temdccl = 0
         dcsl = 0
         temdcsl = 0
-        for i in tdia:
+        for ter in tdia:
             # print(i['valor'])
-            if i['valor'] == 0:
+            if ter['valor'] == 0:
                 temdcsl = temdcsl + 1
                 if temdcsl > dcsl:
                     dcsl = temdcsl
             else:
                 temdcsl = 0
-            if i['valor'] > 0.1:
+            if ter['valor'] > 0.1:
                 temdccl = temdccl + 1
                 if temdccl > dccl:
                     dccl = temdccl
@@ -368,14 +453,20 @@ def indicaPreci(estacion_id, inicio, fin, completo):
                 temdccl = 0
 
         tdia = dia.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
-                                                fecha__lte=finconsu).order_by("valor")
-        total_count = tdia.count()
-        p10 = posi(total_count, 10)
-        p95 = posi(total_count, 95)
-        print(total_count, p10, p95)
-        cap10 = tdia[p10].valor
-        cap95 = tdia[p95].valor
-        print(tdia[p10 - 1].valor, tdia[p10].valor, tdia[p10 + 1].valor)
+                                               fecha__lte=finconsu).order_by("valor")
+        print("conteo dias ",tdia, tdia.count())
+        if tdia.count() > 0:
+            total_count = tdia.count()
+            p10 = posi(total_count, 10)
+            p95 = posi(total_count, 95)
+            print(total_count, p10, p95)
+            cap10 = tdia[p10].valor
+            cap95 = tdia[p95].valor
+            print(tdia[p10 - 1].valor, tdia[p10].valor, tdia[p10 + 1].valor)
+        else:
+            cap10 = None
+            cap95 = None
+
         thora = hora.Precipitacion.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                                   fecha__lte=finconsu).aggregate(Avg('valor'), Min('valor'),
                                                                                  Max('valor'))

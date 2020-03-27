@@ -17,6 +17,8 @@ class Precipitacion(models.Model):
                                  null=True)
     dias_con_lluvia = models.IntegerField("dias con lluvia",null=True)
     dias_sin_lluvia = models.IntegerField("dias sin lluvia",null=True)
+    estacionalidad = models.DecimalField("estacionalidad", max_digits=(DigVar.v1.max_dig + 2), decimal_places=DigVar.v1.dec_pla,
+                                 null=True)
     class Meta:
         unique_together = ('estacion_id', 'fecha')
         indexes = [
