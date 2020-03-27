@@ -300,6 +300,7 @@ $(document).ready(function () {
                                     rows += '<td class="col-sm-2">S/D</td>';
                                 }
                             }else{
+                                rows += '<td class="col-sm-2">'+data.anios[an].fields.valor+'</td>';
                                 rows+='</tr>'
                                 me = data.mes.length;
                                 conteototal = conteototal - 1;
@@ -311,6 +312,36 @@ $(document).ready(function () {
                     }
 
                     $("#tbodymen").html(rows);
+
+                    /*<th class="col-sm-4" >Año</th>
+                    <th class="col-sm-4" >mes más seco</th>
+                    <th class="col-sm-4" >valor mes seco</th>
+                    <th class="col-sm-4" >mes más húmedo</th>
+                    <th class="col-sm-4" >valor mes húmedo</th>
+                    <th class="col-sm-4" >días con lluvia</th>
+                    <th class="col-sm-4" >días sin lluvia</th>
+                    <th class="col-sm-4" >indice de estacionalidad</th>
+                    dias_con_lluvia', 'dias_sin_lluvia', 'mes_lluvioso', 'mes_seco',
+        'mes_lluvioso_valor', 'mes_seco_valor', 'estacionalidad
+                    */
+
+                    var rows = "";
+                    for (var an = 0; an < data.anios.length; an++){
+                        fan = data.anios[an].fields.fecha.split('-');
+                        fan = parseInt(fan[0]);
+                        console.log(fan);
+                        rows+='<tr>'
+                        rows += '<td class="col-sm-2">'+fan+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_seco+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_seco_valor+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_lluvioso+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_lluvioso_valor+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.dias_con_lluvia+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.dias_sin_lluvia+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.estacionalidad+'</td>';
+                        rows+='</tr>'
+                    }
+                    $("#tbodyanu").html(rows);
 
                 }else{
 
