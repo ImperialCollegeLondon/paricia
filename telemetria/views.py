@@ -2,6 +2,8 @@ from django.views.generic import FormView, ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
+
 from .forms import *
 from .functions import *
 from .models import *
@@ -74,7 +76,8 @@ class ConfigAlarmaList(ListView):
         try:
             context['lim_inf_horas'] = TeleVariables.objects.get(nombre='ALAR_TRAN_LIMI_INFE').valor
             context['lim_sup_horas'] = TeleVariables.objects.get(nombre='ALAR_TRAN_LIMI_SUPE').valor
-        except TeleVariables.DoesNotExit:
+        #except TeleVariables.DoesNotExit:
+        except ObjectDoesNotExist:
             context['lim_inf_horas'] = None
             context['lim_sup_horas'] = None
         return context
