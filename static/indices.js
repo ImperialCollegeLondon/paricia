@@ -264,21 +264,27 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-2">'+data.fmaxhora+'</td>';
                     rows += '</tr> <tr>'
                     rows += '<td class="col-sm-4">Percentiles 10. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.Q10+'</td>';
+                    rows += '<td class="col-sm-2">'+data.percen.q10.__Decimal__+'</td>';
                     rows += '</tr> <tr>'
                     rows += '<td class="col-sm-4">Percentiles 95. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.Q95+'</td>';
+                    rows += '<td class="col-sm-2">'+data.percen.q95.__Decimal__+'</td>';
                     rows += '</tr>';
                     $("#tbody").html(rows);
 
                     /*completa la tabla de mensual interanual*/
+
+                    var rows = "";
                     console.log("valores mensuales de precipipitación")
                     console.log(data.mes)
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.anioseco+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fecAnioMin+'</td>';
-                    rows += '</tr> <tr>'
+                    for (me in data.mes){
+                        console.log(me)
+                        rows += '</tr> <tr>'
+                        rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
+                        rows += '<td class="col-sm-2">'+data.anioseco+'</td>';
+                        rows += '<td class="col-sm-2">'+data.fecAnioMin+'</td>';
+                        rows += '</tr> <tr>'
+                    }
+                    $("#tbodymen").html(rows);
 
                 }else{
 

@@ -337,7 +337,7 @@ class IndicadoresPrecipitacion():
         promedio = promedio/iter
         print("anio_seco :",anioSecoMin, "fechsec :", fechaMin.strftime("%m-%Y"),"anio_humedo :",anioHumedoMax, "fechhum:", fechaMax.strftime("%Y"))
 
-        secHum = {'anio_seco':anioSecoMin, 'fechsec':fechaMin.strftime("%m-%Y"),'anio_humedo':anioHumedoMax, 'fechhum': fechaMax.strftime("ggggg%Y")}
+        secHum = {'anio_seco':anioSecoMin, 'fechsec':fechaMin.strftime("%Y"),'anio_humedo':anioHumedoMax, 'fechhum': fechaMax.strftime("%Y")}
         mensuales = self.rr_mensual()
         print("*******************datos mensuales *******************")
         print(mensuales)
