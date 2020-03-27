@@ -45,6 +45,7 @@ urlpatterns = [
     re_path(r'^', include('indices.urls', namespace='indices')),
     path('', include('mensual.urls', namespace='mensual')),
     path('', include('horario.urls', namespace='horario')),
+    path('', include('telemetria.urls', namespace='telemetria')),
     re_path('^', include('django.contrib.auth.urls')),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})

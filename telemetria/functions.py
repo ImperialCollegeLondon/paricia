@@ -31,8 +31,8 @@ def consulta(estacion_id, inicio):
             viento = True
             continue
 
-        Crudo = apps.get_model(app_label='medicion', model_name='Var' + str(v.var_id) + 'Medicion')
-        tabla = 'medicion_var' + str(v.var_id) + 'medicion'
+        Crudo = apps.get_model(app_label='medicion', model_name='medicion_' + str(v.var_modelo))
+        tabla = 'medicion_' + str(v.var_modelo)
         sql = 'SELECT * FROM ' + tabla + ' WHERE estacion_id = %s AND fecha>= %s AND fecha<= %s order by fecha ASC;'
         consulta = Crudo.objects.raw(sql, [estacion_id, inicio, fechahora_actual])
 
@@ -72,7 +72,7 @@ def consulta(estacion_id, inicio):
         sql = """
 SELECT ROW_NUMBER() OVER (ORDER BY vvi.fecha) AS id, 
     vvi.fecha AS fecha, vvi.valor AS velocidad, dvi.valor AS direccion 
-FROM medicion_var4medicion vvi, medicion_var5medicion dvi
+FROM medicion_velocidadviento vvi, medicion_direccionviento dvi
 WHERE vvi.estacion_id = %s AND vvi.fecha>= %s AND vvi.fecha<= %s 
 AND dvi.fecha = vvi.fecha AND dvi.estacion_id = vvi.estacion_id 
 ORDER BY fecha ASC
@@ -111,7 +111,7 @@ def consulta_alarma_transmision():
         estacion = {
             'codigo': e.estacion.est_codigo + ' - ' + e.estacion.est_nombre,
             'latitud': e.estacion.est_latitud,
-            'longitud':e.estacion.est_longitud,
+            'longitud': e.estacion.est_longitud,
             'estado': e.estado.nombre,
             'fecha_estado_actual': e.fecha
         }
@@ -146,7 +146,7 @@ def datos_precipitacion(estacion_id, inicio, fin):
     sql = """
     with 
     crudos as (
-        select *, date(fecha) AS año_mes_dia from medicion_var1medicion 
+        select *, date(fecha) AS año_mes_dia from medicion_precipitacion 
         where estacion_id = %s and fecha >= %s and fecha <= %s
     ),
     acumulado as (
@@ -173,7 +173,7 @@ def datos_precipitacion(estacion_id, inicio, fin):
     ######################################################################################
     sql2 = """
         select fecha, valor 
-        from medicion_var1medicion 
+        from medicion_precipitacion 
         where estacion_id = %s and fecha >= %s and fecha <= %s 
         and valor > 0.0
         order by fecha;
@@ -199,7 +199,7 @@ def datos_precipitacion(estacion_id, inicio, fin):
             extract(YEAR FROM fecha)::integer AS año, 
             extract(MONTH FROM fecha)::integer AS mes, 
             valor
-        from mensual_var1mensual 
+        from mensual_precipitacion 
         where estacion_id = %s and fecha <= %s
         order by fecha asc;
     """
@@ -234,7 +234,7 @@ def datos_precipitacion(estacion_id, inicio, fin):
         sql3b = """
             with crudos as (	
                 select *, date_trunc('MONTH', fecha)
-                from medicion_var1medicion where estacion_id = %s
+                from medicion_precipitacion where estacion_id = %s
                 and fecha >= %s and fecha <= %s
                 order by fecha
 
@@ -303,7 +303,7 @@ def datos_precipitacion_multiestacion(estaciones_list, inicio, fin):
     sql = """
     WITH acumulado AS (
         select estacion_id, sum(valor) as acumulado
-        from medicion_var1medicion m
+        from medicion_precipitacion m
         where m.estacion_id = ANY(%s) 
         and m.fecha >= %s and m.fecha <= %s
         group by m.estacion_id
