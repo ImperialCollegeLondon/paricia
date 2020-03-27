@@ -1,15 +1,15 @@
 {% extends "index.html" %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 {% block content %}
 
 <div class="col-md-7">
-    <div class="panel panel-default">
-        <div class="panel-heading">
+    <div class="card">
+        <div class="card-header">
                 <h3 style="display:inline;">Telemetría: Alarma</h3>
             <br><br>
                     <h4 style="display:inline;">&nbsp;Eliminar correo electrónico de la lista</h4>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <form  method="post">
             {% csrf_token %}
 
@@ -25,7 +25,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <input class="btn btn-danger" type="submit"  value="Confirmar"  />
-                        <a class="btn btn-default" href="{% url 'telemetria:config_alarma_list' %}">Regresar (No eliminar)</a>
+                        <a class="btn btn-light" href="{% url 'telemetria:config_alarma_list' %}">Regresar (No eliminar)</a>
                     </div>
                 </div>
             </form>

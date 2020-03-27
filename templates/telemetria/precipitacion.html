@@ -199,8 +199,8 @@ $(document).ready(function() {
 
 
 <div class="col-md-12">
-    <div class="panel panel-default">
-    <div class="panel-heading">
+    <div class="card">
+    <div class="card-header">
         <div class="row">
             <form id="form_precipitacion" class="form" method="post">
                 {% csrf_token %}
@@ -220,13 +220,13 @@ $(document).ready(function() {
                 </div>
                 <div class="col-lg-2">
                     <button id='visualizar' type='button' class='btn btn-primary' >Visualizar</button>
-                    <a class="btn btn-default" href="{% url 'telemetria:precipitacion' %}">Limpiar</a>
+                    <a class="btn btn-light" href="{% url 'telemetria:precipitacion' %}">Limpiar</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="panel-body">
+    <div class="card-body">
 
         <div class="col-lg-12">
             <div id="div_informacion" >

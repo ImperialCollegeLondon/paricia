@@ -179,8 +179,8 @@ $(document).ready(function() {
 <form id="form_telemetria" class="form" method="post">
     {% csrf_token %}
     <div class="col-md-12">
-    <div class="panel panel-default">
-    <div class="panel-heading">
+    <div class="card">
+    <div class="card-header">
         <div class="row">
             <div class="col-lg-3"><h4 style="display: inline;">Telemetría <br>Precipitación Multiestación</h4></div>
             <div class="col-lg-2"><button id='visualizar' type='button' class='btn btn-success' >Visualizar</button></div>
@@ -192,10 +192,10 @@ $(document).ready(function() {
     </div>
 
     <div class="col-lg-1 col-lg-1-5">
-        <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="card">
+            <div class="card-body">
                 <div class="row top7"><div class="col-lg-12">
-                    <a id="seleccionar_ninguno" class="btn btn-default btn-xs" >Ningún</a>
+                    <a id="seleccionar_ninguno" class="btn btn-light btn-xs" >Ningún</a>
                     <a id="seleccionar_todos" class="btn btn-primary btn-xs" >Todos</a>
                 </div></div>
                 <div class="row top7"><div class="col-lg-12" style="height:430px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
@@ -210,8 +210,8 @@ $(document).ready(function() {
 
 
 <div class="col-lg-10 col-lg-10-5">
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-body">
 
             <div id="div_informacion" >
 

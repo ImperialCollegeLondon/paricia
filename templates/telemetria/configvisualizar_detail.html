@@ -3,12 +3,12 @@
 {% block content %}
 
 <div class="col-md-6">
-    <div class="panel panel-default">
-        <div class="panel-heading">
+    <div class="card">
+        <div class="card-header">
                 <h3 style="display:inline;">Telemetría:</h3>
                     <h4 style="display:inline;">&nbsp;Asociar Variable a Estación</h4>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <table class="table table-striped table-bordered">
                 <tr><th>Estación:</th><td>{{object.estacion}}</td></tr>
                 <tr><th>Variable:</th><td>{{object.variable}}</td></tr>
@@ -16,7 +16,7 @@
                 <tr><th>Umbral inferior:</th><td>{{object.umbral_inferior|default_if_none:""}}</td></tr>
             </table>
 
-            <a class="btn btn-default" href="{% url 'telemetria:configvisualizar_list' %}">Regresar</a>
+            <a class="btn btn-light" href="{% url 'telemetria:configvisualizar_list' %}">Regresar</a>
             <a class="btn btn-warning" href="{% url 'telemetria:configvisualizar_delete'  object.pk  %}">Borrar</a>
 
         </div>
