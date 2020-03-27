@@ -10,7 +10,7 @@ class Precipitacion(models.Model):
     valor = models.DecimalField("Valor", max_digits=(DigVar.v1.max_dig+2), decimal_places=DigVar.v1.dec_pla, null=True)
     completo_mediciones = models.DecimalField("Completo mediciones %", max_digits=4, decimal_places=1)
     completo_umbral = models.DecimalField("Completo Umbral %", max_digits=4, decimal_places=1)
-    #usado_para_anual = models.BooleanField("Usado para anual", default=False, null=True)
+    usado_para_anual = models.BooleanField("Usado para anual", default=False, null=True)
     class Meta:
         unique_together = ('estacion_id', 'fecha')
         indexes = [
@@ -171,7 +171,7 @@ class Caudal(models.Model):
     min_del_prom = models.DecimalField("Mínimo del promedio", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
     completo_mediciones = models.DecimalField("Completo mediciones %", max_digits=4, decimal_places=1)
     completo_umbral = models.DecimalField("Completo Umbral %", max_digits=4, decimal_places=1)
-    #usado_para_anual = models.BooleanField("Usado para anual", default=False, null=True)
+    usado_para_anual = models.BooleanField("Usado para anual", default=False, null=True)
     class Meta:
         unique_together = ('estacion_id', 'fecha')
         indexes = [

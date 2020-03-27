@@ -19,11 +19,11 @@ function cambio(){
 $(document).ready(function () {
 
     //datepicker con intervalo registringido
-    var dateFormat = "dd/mm/yy";
+    var dateFormat = "yy";
     $("#id_inicio").datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "dd/mm/yy"
+        dateFormat: "yy"
     });
     $("#id_inicio").on("change", function () {
         $("#id_fin").datepicker("option", "minDate", getDate(this));
@@ -31,7 +31,7 @@ $(document).ready(function () {
     $("#id_fin").datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: "dd/mm/yy"
+        dateFormat: "yy"
     });
     $("#id_fin").on("change", function () {
         $("#id_inicio").datepicker("option", "maxDate", getDate(this));
@@ -244,7 +244,7 @@ $(document).ready(function () {
 
                     var rows = "";
                     rows += '<tr>';
-                    rows += '<td class="col-sm-4">Precipitación anual (mm).</td>';
+                    rows += '<td class="col-sm-4">Precipitación media anual (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.rranual+'</td>';
                     rows += '</tr> <tr>'
                     rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
@@ -276,10 +276,10 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-4">Días consecutivos sin precipitación.</td>';
                     rows += '<td class="col-sm-2">'+data.dcsl+'</td>';
                     rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Q 10. (mm).</td>';
+                    rows += '<td class="col-sm-4">Percentiles 10. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.Q10+'</td>';
                     rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Q 95. (mm).</td>';
+                    rows += '<td class="col-sm-4">Percentiles 95. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.Q95+'</td>';
                     rows += '</tr>';
                     $("#tbody").html(rows);
