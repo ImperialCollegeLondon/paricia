@@ -104,15 +104,15 @@ class IndPrecip(generic.FormView):
         fin = None
         if tinicio != '':
             print("antes del if")
-            inicio = datetime.strptime(tinicio , '%Y-%m-%d')
+            inicio = datetime.strptime(tinicio , '%d/%m/%Y')
             completo = False
         if tfin !='':
             print("antes del segundoif")
-            fin = datetime.strptime(tfin + " 23:59:00", '%Y-%m-%d %H:%M:%S')
+            fin = datetime.strptime(tfin , '%d/%m/%Y')
             #completo =False
 
         print(inicio," ::::: ", fin)
-        indrr = IndicadoresPrecipitacion(estacion_id,tinicio,tfin,completo);
+        indrr = IndicadoresPrecipitacion(estacion_id,inicio,fin,completo);
         data = indrr.makeDic()
         #data = indicaPreci(estacion_id,inicio,fin, completo)
         print("data en el view")

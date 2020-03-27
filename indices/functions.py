@@ -277,7 +277,7 @@ class IndicadoresPrecipitacion():
         self.completo = completo
 
     def rr_anual(self):
-
+        print(self.inicio,self.fin)
         """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
         rranual = anio.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
                                                    fecha__lte = self.fin).order_by('fecha')
