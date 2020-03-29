@@ -35,6 +35,8 @@ $(document).ready(function () {
     });
     $("#id_fin").on("change", function () {
         $("#id_inicio").datepicker("option", "maxDate", getDate(this));
+        console.log("Aqui cambia la fecha se debe activar el botn buscar")
+        $("#btn_ind_pre").attr('disabled', false);
     });
 
 
@@ -215,10 +217,12 @@ $(document).ready(function () {
 
 /**********************************************
 ***********************************************
-        *indices de precipitación
+        *indices de precipitación btn_ind_pre
     */
     $("#btn_ind_pre").click(function () {
-        $(this).attr('disabled', true);
+        //$(this).attr('disabled', true);
+         console.log("soy la data que pasa del view ...")
+            //console.log(data);
         $.ajax({
             url: $("#IndPrecipForm").attr('action'),
             data: $("#IndPrecipForm").serialize(),
@@ -232,9 +236,9 @@ $(document).ready(function () {
             },
             success: function (data) {
                 //add scroll to datatable
-                console.log(data)
+                console.log("data in  succes function  ::::::::: ",data)
                 if(data != null){
-                    console.log(data)
+                    //console.log(data)
                     $("#div_error").removeClass("div-show").addClass( "div-hiden" );
                     $("#div_informacion").show();
                     if(data.anioseco == -1 ){ aseco = "";
@@ -244,45 +248,100 @@ $(document).ready(function () {
 
                     var rows = "";
                     rows += '<tr>';
-                    rows += '<td class="col-sm-4">Precipitación anual (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.rranual+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '<td class="col-sm-4">Precipitación media anual (mm).</td>';
+                    rows += '<td class="col-sm-2">'+data.prom_anual.__Decimal__+'</td>';
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.anioseco+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fecAnioMin+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '<td class="col-sm-2">'+data.secHum.anio_seco.__Decimal__+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.fechsec+'</td>';
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Año más lluvioso. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.aniolluvia+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fecAnioMax+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Precipitación mensual. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.rrmes+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Precipitación del mes más seco. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.messeco+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fmesSeco+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Precipitación del mes más lluvioso. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.rrlluvia+'</td>';
-                    rows += '<td class="col-sm-2">'+data.fmeslluvia+'</td>';
-                    rows += '</tr> <tr>'
+                    rows += '<td class="col-sm-2">'+data.secHum.anio_humedo.__Decimal__+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.fechhum+'</td>';
+                    rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Intensidad máxima de precipitación acumulado cada hora. (mm).</td>';
                     rows += '<td class="col-sm-2">'+data.maxhora+'</td>';
                     rows += '<td class="col-sm-2">'+data.fmaxhora+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Días consecutivos con precipitación.</td>';
-                    rows += '<td class="col-sm-2">'+data.dccl+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Días consecutivos sin precipitación.</td>';
-                    rows += '<td class="col-sm-2">'+data.dcsl+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Q 10. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.Q10+'</td>';
-                    rows += '</tr> <tr>'
-                    rows += '<td class="col-sm-4">Q 95. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.Q95+'</td>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Percentiles 10. (mm).</td>';
+                    rows += '<td class="col-sm-2">'+data.percen.q10.__Decimal__+'</td>';
+                    rows += '</tr> <tr>';
+                    rows += '<td class="col-sm-4">Percentiles 95. (mm).</td>';
+                    rows += '<td class="col-sm-2">'+data.percen.q95.__Decimal__+'</td>';
                     rows += '</tr>';
                     $("#tbody").html(rows);
+
+                    /*completa la tabla de mensual interanual*/
+
+                    var rows = "";
+                    console.log("valores mensuales de precipipitación");
+                    console.log(data.anios.length);
+                    conteototal = 0;
+                    var me = 0;
+                    for (var an = 0; an < data.anios.length; an++){
+                        fan = data.anios[an].fields.fecha.split('-');
+                        fan = parseInt(fan[0]);
+                        console.log(fan);
+                        rows+='<tr>'
+                        rows += '<td class="col-sm-2">'+fan+'</td>';
+                        mesIte = 1;
+                        console.log('me valor : '+conteototal);
+                        for (var me = conteototal; me < data.mes.length; me++){
+                            console.log(data.mes[me].fields.fecha);
+                            fem = data.mes[me].fields.fecha.split('-');
+                            mm = parseInt(fem[1]);
+                            ma = parseInt(fem[0]);
+                            console.log("año "+ma+" mes "+mm);
+                            if (fan === ma){
+                                if (mm === mesIte){
+                                    //console.log(mm +" : "+ mesIte+" valor :"+data.mes[me].fields.valor);
+                                    rows += '<td class="col-sm-2">'+data.mes[me].fields.valor+'</td>';
+                                }else{
+                                    rows += '<td class="col-sm-2">S/D</td>';
+                                }
+                            }else{
+                                rows += '<td class="col-sm-2">'+data.anios[an].fields.valor+'</td>';
+                                rows+='</tr>'
+                                me = data.mes.length;
+                                conteototal = conteototal - 1;
+                            }
+
+                            mesIte ++;
+                            conteototal ++;
+                        }
+                    }
+
+                    $("#tbodymen").html(rows);
+
+                    /*<th class="col-sm-4" >Año</th>
+                    <th class="col-sm-4" >mes más seco</th>
+                    <th class="col-sm-4" >valor mes seco</th>
+                    <th class="col-sm-4" >mes más húmedo</th>
+                    <th class="col-sm-4" >valor mes húmedo</th>
+                    <th class="col-sm-4" >días con lluvia</th>
+                    <th class="col-sm-4" >días sin lluvia</th>
+                    <th class="col-sm-4" >indice de estacionalidad</th>
+                    dias_con_lluvia', 'dias_sin_lluvia', 'mes_lluvioso', 'mes_seco',
+        'mes_lluvioso_valor', 'mes_seco_valor', 'estacionalidad
+                    */
+
+                    var rows = "";
+                    for (var an = 0; an < data.anios.length; an++){
+                        fan = data.anios[an].fields.fecha.split('-');
+                        fan = parseInt(fan[0]);
+                        console.log(fan);
+                        rows+='<tr>'
+                        rows += '<td class="col-sm-2">'+fan+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_seco+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_seco_valor+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_lluvioso+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.mes_lluvioso_valor+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.dias_con_lluvia+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.dias_sin_lluvia+'</td>';
+                        rows += '<td class="col-sm-2">'+data.anios[an].fields.estacionalidad+'</td>';
+                        rows+='</tr>'
+                    }
+                    $("#tbodyanu").html(rows);
 
                 }else{
 
@@ -299,6 +358,12 @@ $(document).ready(function () {
                 $("#div_error").hide();
             },
             error: function (xhr, status, error, data) {
+                console.log("xhr :");
+                console.log(xhr);
+                console.log("status :")
+                console.log(status);
+                console.log("data :")
+                console.log(data);
                 console.log("Soy un error " + error)
                 //$("#div_informacion").show();
                 $("#div_loading").hide();
