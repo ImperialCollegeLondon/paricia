@@ -31,7 +31,7 @@ def consulta(estacion_id, inicio):
             viento = True
             continue
 
-        Crudo = apps.get_model(app_label='medicion', model_name='medicion_' + str(v.var_modelo))
+        Crudo = apps.get_model(app_label='medicion', model_name=v.var_modelo)
         tabla = 'medicion_' + str(v.var_modelo)
         sql = 'SELECT * FROM ' + tabla + ' WHERE estacion_id = %s AND fecha>= %s AND fecha<= %s order by fecha ASC;'
         consulta = Crudo.objects.raw(sql, [estacion_id, inicio, fechahora_actual])

@@ -1,23 +1,19 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap4 %}
-{% load humanize %}
-{% load static %}
+
+
 
 
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<style>
-    .container {
-        width: 1600px;
-    }
-</style>
+
 <script>
 
 var graf_width = 510;
-var graf_height = 320;
+var graf_height = 340;
 var graf_margin_right = 5;
-var graf_margin_top = 55;
+var graf_margin_top = 90;
 var graf_margin_bottom = 45;
 var graf_margin_left = 35;
 var legends = {};
@@ -509,6 +505,8 @@ function enviar_consulta(){
         type:'POST',
         beforeSend: function () {
             $("#div_error").hide();
+            $("#div_loading").show();
+            $("#div_informacion").hide();
         },
         success: function (data) {
             $("#div_informacion").show();
@@ -546,13 +544,16 @@ $(document).ready(function() {
         $("#graf4").empty();
         $("#graf5").empty();
         $("#graf6").empty();
+        $("#graf7").empty();
+        $("#graf8").empty();
+        $("#graf9").empty();
         $("input[name='estacion']").val($('#id_estacion').val() );
         $("input[name='inicio']").val($('#id_inicio').val() );
-        $("#div_loading").show();
-        $("#div_information").show();
+        //$("#div_loading").show();
+        //$("#div_informacion").show();
         enviar_consulta();
-        $("#div_loading").hide();
-        setInterval(enviar_consulta, 150000);
+        //$("#div_loading").hide();
+        //setInterval(enviar_consulta, 150000);
     });
 
 
@@ -563,63 +564,79 @@ $(document).ready(function() {
 
 
 
-<div class="col-md-12">
+<div class="">
     <div class="card">
-    <div class="card-header">
-        <div class="row">
-            <div class="col-md-3"><h4>Telemetría</h4></div>
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-3"><h4>Telemetría</h4></div>
+            </div>
+        </div>
+
+        <div class="card-body">
             <form id="form_telemetria" class="form" method="post">
                 {% csrf_token %}
                 <input type="hidden" value="" name="estacion"/>
                 <input type="hidden" value="" name="inicio"/>
-                <div class="col-md-3">{% bootstrap_field form.estacion %}</div>
-                <div class="col-md-3">{% bootstrap_field form.inicio %}</div>
-                <div class="col-md-3">
-                    <button id='visualizar' type='button' class='btn btn-primary' >Visualizar</button>
-                    <a class="btn btn-light" href="{% url 'telemetria:visualizar' %}">Limpiar</a>
+                <div class="form-row">
+                    <div class="col">
+                        {% bootstrap_field form.estacion %}
+                    </div>
+                    <div class="col">
+                        {% bootstrap_field form.inicio %}
+                    </div>
+                    <div class="col" style="padding-top:30px">
+                        <button id='visualizar' type='button' class='btn btn-primary' >Visualizar</button>
+                        <a class="btn btn-light" href="{% url 'telemetria:visualizar' %}">Limpiar</a>
+
+                    </div>
+
                 </div>
             </form>
+
+
+            <div id="div_informacion" >
+
+                <div class="row">
+                    <!--<div id="graf1" class="grafico" style="display:inline-block" ></div>
+                    <div id="graf2" class="grafico" style="display:inline-block" ></div>-->
+                    <div id="graf1" class="col-lg-6 col-md-6 col-sm-12"></div>
+                    <div id="graf2" class="col-lg-6 col-md-6 col-sm-12"></div>
+                </div>
+                <div class="row">
+                    <div id="graf3" class="col-lg-6 col-md-6 col-sm-12"></div>
+                    <div id="graf4" class="col-lg-6 col-md-6 col-sm-12"></div>
+                </div>
+                <div class="row">
+                    <div id="graf5" class="col-lg-6 col-md-6 col-sm-12"></div>
+                    <div id="graf6" class="col-lg-6 col-md-6 col-sm-12"></div>
+                </div>
+                <div class="row">
+                    <div id="graf7" class="col-lg-6 col-md-6 col-sm-12"></div>
+                    <div id="graf8" class="col-lg-6 col-md-6 col-sm-12"></div>
+                </div>
+                <div class="row">
+                    <div id="graf9" class="col-lg-6 col-md-6 col-sm-12"></div>
+
+                </div>
+            </div>
+
+
+            <div id="div_loading" class="row" style="display:none;">
+                <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <img src="/media/loading6.gif"/>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+            </div>
+
+            <div id="div_error" class="row" style="display:none;">
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="card-body">
-
-
-
-<div id="div_informacion" >
-
-    <div class="row">
-        <div id="graf1" class="grafico" style="display:inline-block" ></div>
-        <div id="graf2" class="grafico" style="display:inline-block" ></div>
-        <div id="graf3" class="grafico" style="display:inline-block" ></div>
-        <div id="graf4" class="grafico" style="display:inline-block" ></div>
-        <div id="graf5" class="grafico" style="display:inline-block" ></div>
-        <div id="graf6" class="grafico" style="display:inline-block" ></div>
-        <div id="graf7" class="grafico" style="display:inline-block" ></div>
-        <div id="graf8" class="grafico" style="display:inline-block" ></div>
-        <div id="graf9" class="grafico" style="display:inline-block" ></div>
-    </div>
 </div>
-
-
-<div id="div_loading" class="row" style="display:none;">
-    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
-    <div class="col-lg-4 col-md-4 col-sm-4">
-        <img src="/media/loading6.gif"/>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
-</div>
-
-<div id="div_error" class="row" style="display:none;">
-    <div class="alert alert-danger alert-dismissible" role="alert">
-        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
-    </div>
-</div>
-
-
-        </div>
-    </div>
-    </div>
 
 
 
