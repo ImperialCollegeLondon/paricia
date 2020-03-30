@@ -327,10 +327,11 @@ class IndicadoresPrecipitacion():
     def percentilesDiarios(self):
         """Calcula los percentelies en base a los datos diarios"""
         diarios = list(dia.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                    fecha__lte = self.fin).values_list('valor'))
-        print(type(diarios))
+                                                    fecha__lte = self.fin, valor__isnull=False).values_list('valor'))
+        print("typo de datos en percentiles ", type(diarios))
+        print(diarios)
         a = np.array(diarios, dtype=object)
-        q10=np.percentile(a,10,  interpolation='lower')
+        q10 = np.percentile(a,10,  interpolation='lower')
         q95 = np.percentile(a, 95, interpolation='lower')
         return {'q10':q10,'q95':q95}
 
@@ -418,7 +419,7 @@ def indicaCaudal(estacion_id, inicio, fin, completo):
         """Calcula los percentelies en base a los datos diarios"""
 
         tcau = list(dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
-                                         fecha__lte=finconsu).order_by("valor").values_list('valor'))
+                                         fecha__lte=finconsu, valor__isnull=False).order_by("valor").values_list('valor'))
         print(type(tcau))
         a = np.array(tcau, dtype=object)
         p10 = np.percentile(a, 10, interpolation='lower')
