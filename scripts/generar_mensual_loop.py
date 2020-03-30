@@ -11,3 +11,6 @@ def run():
         while res:
             cursor.execute(sql)
             res = cursor.fetchone()[0]
+
+    print("cerrando la coneccion")
+    cursor.close()
