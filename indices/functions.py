@@ -327,10 +327,11 @@ class IndicadoresPrecipitacion():
     def percentilesDiarios(self):
         """Calcula los percentelies en base a los datos diarios"""
         diarios = list(dia.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                    fecha__lte = self.fin).values_list('valor'))
-        print(type(diarios))
+                                                    fecha__lte = self.fin, valor__isnull=False).values_list('valor'))
+        # print("typo de datos en percentiles ", type(diarios))
+        # print(diarios)
         a = np.array(diarios, dtype=object)
-        q10=np.percentile(a,10,  interpolation='lower')
+        q10 = np.percentile(a,10,  interpolation='lower')
         q95 = np.percentile(a, 95, interpolation='lower')
         return {'q10':q10,'q95':q95}
 
@@ -396,13 +397,18 @@ def indicaCaudal(estacion_id, inicio, fin, completo):
         amax = fin.year
         amin = inicio.year
         datos = mes.Caudal.objects.filter(estacion_id__exact=estacion_id)[:10]
-        print("Buscar segun las fechas")
 
+    print("buscara para los años", amax,amin)
     if amax is not None and amin and len(datos) > 2:
         iniconsu = datetime(amin, 1, 1, 0, 0, 0)
         finconsu = datetime(amax, 12, 31, 23, 59, 0)
         tcau = dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
                                          fecha__lte=finconsu).aggregate(Avg('valor'), Min('valor'), Max('valor'))
+
+        print("datos encontrados",tcau['valor__avg'])
+        print(tcau)
+        if tcau['valor__avg'] is None:
+            return None
         camax = tcau["valor__max"]
         caavg = tcau["valor__avg"]
         camim = tcau["valor__min"]
@@ -418,8 +424,10 @@ def indicaCaudal(estacion_id, inicio, fin, completo):
         """Calcula los percentelies en base a los datos diarios"""
 
         tcau = list(dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=iniconsu,
-                                         fecha__lte=finconsu).order_by("valor").values_list('valor'))
-        print(type(tcau))
+                                         fecha__lte=finconsu, valor__isnull=False).order_by("valor").values_list('valor'))
+        print("tipo de datos :",type(tcau))
+        print(len(tcau))
+
         a = np.array(tcau, dtype=object)
         p10 = np.percentile(a, 10, interpolation='lower')
         p50 = np.percentile(a, 50, interpolation='lower')
