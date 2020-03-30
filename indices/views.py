@@ -4,7 +4,7 @@ from datetime import datetime
 from django.views import generic
 from .forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm
 from .functions import getVarValidado, acumularDoble, \
-    intensidadDiracion, getCaudalFrec, indicaPreci, indicaCaudal, consultaPeriodos
+    intensidadDiracion, getCaudalFrec, indicaCaudal, consultaPeriodos
 from .functions import IndicadoresPrecipitacion
 from django.shortcuts import render
 # Create your views here.
@@ -58,35 +58,6 @@ class PeriodoDatos(generic.View):
         context = super().get_context_data(**kwargs)
         return context
 
-
-##### reasp TMP
-"""class IndPrecip(generic.FormView):
-    Calcula los indices de precipitacion dispinibles para la estación selecionada
-    template_name = "indices/precipitacion.html"
-    form_class = IndPrecipForm
-    success_url = "indices/precipitacion.html"
-    def post(self, request, *args, **kwargs):
-        form = SelecEstForm(self.request.POST or None)
-        # try:
-        estacion_id = int(request.POST.get('estacion', None))
-        tinicio = request.POST.get('inicio', 'vacio')
-        tfin = request.POST.get('fin', None)
-        print("tinico ",tinicio,"tfin ",tfin)
-        completo  = True
-        inicio = None
-        fin = None
-        if tinicio != '':
-            inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
-            completo = False
-        if tfin !='':
-            fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
-            #completo =False
-        print(inicio," ::::: ", fin)
-        #anualizar(estacion_id)
-        data = indicaPreci(estacion_id,inicio,fin, completo)
-        data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
-        return HttpResponse(data, content_type='application/json')"""
-
 class IndPrecip(generic.FormView):
     """Calcula los indices de precipitacion dispinibles para la estación selecionada"""
     template_name = "indices/precipitacion.html"
@@ -99,19 +70,22 @@ class IndPrecip(generic.FormView):
         tinicio = request.POST.get('inicio', 'vacio')
         tfin = request.POST.get('fin', None)
         print("tinico ", tinicio, "tfin ", tfin)
+        #####3
+        ###### Eliminar las siguientes filas
+        ######
+        #tinicio = '01/01/2005'
+        #tfin = '31/12/2010'
+        ##############################
         completo  = True
         inicio = None
         fin = None
+
         if tinicio != '':
-            print("antes del if")
             inicio = datetime.strptime(tinicio , '%d/%m/%Y')
             completo = False
         if tfin !='':
-            print("antes del segundoif")
-            fin = datetime.strptime(tfin , '%d/%m/%Y')
+            fin = datetime.strptime(tfin, '%d/%m/%Y')
             #completo =False
-
-        print(inicio," ::::: ", fin)
         indrr = IndicadoresPrecipitacion(estacion_id,inicio,fin,completo);
         data = indrr.makeDic()
         #data = indicaPreci(estacion_id,inicio,fin, completo)
@@ -137,11 +111,10 @@ class IndCaudal(generic.FormView):
         inicio = None
         fin = None
         if tinicio != '':
-            print("no hay fecha de inicio")
-            inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
+            inicio = datetime.strptime(tinicio , '%d/%m/%Y')
             completo = False
         if tfin != '':
-            fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
+            fin = datetime.strptime(tfin , '%d/%m/%Y')
             # completo =False
         #anualizar(estacion_id)
         data = indicaCaudal(estacion_id,inicio,fin, completo)
