@@ -344,7 +344,7 @@ class IndicadoresPrecipitacion():
         iter = 0
         fechaMin = None
         fechaMax = None
-        promedio = None
+        promedio = -1
         print("años consultados ",anuales.count())
         if anuales.count() is 0:
             return None
@@ -367,6 +367,7 @@ class IndicadoresPrecipitacion():
             secHum = {'anio_seco': str(anioSecoMin), 'fechsec': fechaMin.strftime("%Y"), 'anio_humedo': str(anioHumedoMax),
                       'fechhum': fechaMax.strftime("%Y")}
         else:
+            promedio="S/D"
             secHum = {'anio_seco': 'S/D', 'fechsec': 'S/D', 'anio_humedo': 'S/D',
                       'fechhum': 'S/D'}
 
@@ -388,7 +389,7 @@ class IndicadoresPrecipitacion():
         #print(type(anuales))
         mes2json = serializers.serialize('json', mensuales,fields=('fecha','valor'))
         mensuales= json.loads(mes2json)
-        dict={'prom_anual':str(promedio),'secHum': secHum,'mes':mensuales , 'anios':anuales, 'percen':per,'max24':max24}
+        dict={'prom_anual':promedio,'secHum': secHum,'mes':mensuales , 'anios':anuales, 'percen':per,'max24':max24}
         print(dict)
 
         return dict
