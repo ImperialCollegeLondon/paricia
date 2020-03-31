@@ -276,22 +276,18 @@ $(document).ready(function () {
                     //console.log(data)
                     $("#div_error").removeClass("div-show").addClass( "div-hiden" );
                     $("#div_informacion").show();
-                    if(data.anioseco == -1 ){ aseco = "";
-                    }else{ aseco = data.anioseco }
-                    if (data.aniolluvia == 99999){ allu = "";
-                    }else{ allu = data.aniolluvia }
 
                     var rows = "";
                     rows += '<tr>';
                     rows += '<td class="col-sm-4">Precipitación media anual (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.prom_anual.__Decimal__+'</td>';
+                    rows += '<td class="col-sm-2">'+data.prom_anual+'</td>';
                     rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Año más seco. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.secHum.anio_seco.__Decimal__+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.anio_seco+'</td>';
                     rows += '<td class="col-sm-2">'+data.secHum.fechsec+'</td>';
                     rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Año más lluvioso. (mm).</td>';
-                    rows += '<td class="col-sm-2">'+data.secHum.anio_humedo.__Decimal__+'</td>';
+                    rows += '<td class="col-sm-2">'+data.secHum.anio_humedo+'</td>';
                     rows += '<td class="col-sm-2">'+data.secHum.fechhum+'</td>';
                     rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Intensidad máxima de precipitación acumulado cada hora. (mm).</td>';
@@ -307,7 +303,42 @@ $(document).ready(function () {
                     $("#tbody").html(rows);
 
                     /*completa la tabla de mensual interanual*/
+                    //primero llena los anuales para tener la referencia
+                    var rows = "";
+                    let datoa = data.anios.length;
+                    for (var an = 0; an < datoa; an++){
+                        fan = data.anios[an].fields.fecha.split('-');
+                        fan = parseInt(fan[0]);
+                        rows+='<tr>'
+                        rows += '<td class="col-sm-1" style="width: 7%">'+fan+'</td>';
+                        for (var mes  = 0 ; mes < 12 ; mes++){
+                            rows += '<td class="col-sm-2">S/N</td>';
+                        }
+                        rows += '<td class="col-sm-1" style="width: 7%">'+data.anios[an].fields.valor+'</td>';
+                        rows+='<tr>'
+                    }
+                    rows+='</tr>'
+                    $("#tbodymen").html(rows);
+                    ani = parseInt(data.anios[0].fields.fecha.split('-')[0]);
+                    for (var me = 0; me < data.mes.length; me++){
+                        fem = data.mes[me].fields.fecha.split('-');
+                        mm = parseInt(fem[1]);
+                        ma = parseInt(fem[0]);
+                        valor = data.mes[me].fields.valor;
+                        var fila = ma - ani;
+                        console.log("año inico "+ ani +" anio mensual "+ ma+" Fila "+fila+" mes mensual "+mm+ "valor"+ valor);
+                        $("#tbodymen").find("tr").eq(fila).find("td").eq(mm).text(valor);
+                    }
 
+                    /*To select a particular cell, you can reference them with an index:
+
+$('#mytable tr').each(function() {
+       var customerId = $(this).find("td").eq(2).html();
+});
+                    */
+
+
+/****************************
                     var rows = "";
                     //console.log("valores mensuales de precipipitación");
                     //console.log( data.anios.length);
@@ -336,7 +367,7 @@ $(document).ready(function () {
                                     rows += '<td class="col-sm-1" style="width: 7%">S/D</td>';
                                 }
                             }else{
-                                rows += '<td <td class="col-sm-1" style="width: 7%">'+data.anios[an].fields.valor+'</td>';
+                                rows += '<td <td class="col-sm-1" style="width: 7%">''</td>';
                                 rows+='</tr>'
                                 me = data.mes.length;
                                 conteototal = conteototal - 1;
@@ -353,7 +384,7 @@ $(document).ready(function () {
                     //console.log(rows);
 
                     $("#tbodymen").html(rows);
-
+                    **************************************/
                     /////// indices anuales
                     var rows = "";
                     for (var an = 0; an < data.anios.length; an++){
@@ -435,8 +466,8 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-2">'+data.cmim+'</td>';
                     rows += '<td class="col-sm-2">'+data.fdmin+'</td>';
                     rows += '</tr> <tr>';
-                    rows += '<td class="col-sm-4">Percentil 10.  (l/s).</td>';
-                    rows += '<td class="col-sm-2">'+data.per10+'</td>';
+                    rows += '<td class="col-sm-4">Q 10.  (l/s).</td>';
+                    rows += '<td class="col-sm-2">'+data.per95+'</td>';
                     rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Promedio de caudal del mes más seco. (l/s).</td>';
                     rows += '<td class="col-sm-2">'+data.cmessec+'</td><td class="col-sm-2">'+data.fecmessec+'</td>'; //fecmessec
@@ -446,8 +477,8 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-2">'+data.cmax+'</td>';
                     rows += '<td class="col-sm-2">'+data.fdmax+'</td>';
                     rows += '</tr> <tr>';
-                    rows += '<td class="col-sm-4">Percentil 95. (l/s).</td>';
-                    rows += '<td class="col-sm-2">'+data.per95+'</td>';
+                    rows += '<td class="col-sm-4">Q 90. (l/s).</td>';
+                    rows += '<td class="col-sm-2">'+data.per10+'</td>';
                     rows += '</tr> <tr> <th class="col-sm-4" colspan="3">Caudales medios</th>';
                     rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Caudal o volumen promedio diario anual o mensual. (l/s).</td>';
