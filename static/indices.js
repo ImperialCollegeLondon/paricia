@@ -315,83 +315,35 @@ $(document).ready(function () {
                             rows += '<td class="col-sm-2">S/N</td>';
                         }
                         rows += '<td class="col-sm-1" style="width: 7%">'+data.anios[an].fields.valor+'</td>';
-                        rows+='<tr>'
+                        rows+='</tr>'
                     }
-                    rows+='</tr>'
+                    //                    console.log(rows);
                     $("#tbodymen").html(rows);
                     ani = parseInt(data.anios[0].fields.fecha.split('-')[0]);
+                    fila = 0
                     for (var me = 0; me < data.mes.length; me++){
                         fem = data.mes[me].fields.fecha.split('-');
                         mm = parseInt(fem[1]);
                         ma = parseInt(fem[0]);
                         valor = data.mes[me].fields.valor;
-                        var fila = ma - ani;
-                        console.log("año inico "+ ani +" anio mensual "+ ma+" Fila "+fila+" mes mensual "+mm+ "valor"+ valor);
-                        $("#tbodymen").find("tr").eq(fila).find("td").eq(mm).text(valor);
-                    }
-
-                    /*To select a particular cell, you can reference them with an index:
-
-$('#mytable tr').each(function() {
-       var customerId = $(this).find("td").eq(2).html();
-});
-                    */
-
-
-/****************************
-                    var rows = "";
-                    //console.log("valores mensuales de precipipitación");
-                    //console.log( data.anios.length);
-                    conteototal = 0;
-                    var me = 0;
-                    let datoa = data.anios.length;
-                    for (var an = 0; an < datoa; an++){
-                        fan = data.anios[an].fields.fecha.split('-');
-                        fan = parseInt(fan[0]);
-                        //console.log(fan);
-                        rows+='<tr>'
-                        rows += '<td class="col-sm-2">'+fan+'</td>';
-                        mesIte = 1;
-                        //console.log('me valor : '+conteototal);
-                        for (var me = conteototal; me < data.mes.length; me++){
-                            //console.log(data.mes[me].fields.fecha);
-                            fem = data.mes[me].fields.fecha.split('-');
-                            mm = parseInt(fem[1]);
-                            ma = parseInt(fem[0]);
-                            //console.log("año "+ma+" mes "+mm);
-                            if (fan === ma){
-                                if (mm === mesIte){
-                                    //console.log(mm +" : "+ mesIte+" valor :"+data.mes[me].fields.valor);
-                                    rows += '<td class="col-sm-1" style="width: 7%">'+data.mes[me].fields.valor+'</td>';
-                                }else{
-                                    rows += '<td class="col-sm-1" style="width: 7%">S/D</td>';
-                                }
-                            }else{
-                                rows += '<td <td class="col-sm-1" style="width: 7%">''</td>';
-                                rows+='</tr>'
-                                me = data.mes.length;
-                                conteototal = conteototal - 1;
-                            }
-
-                            mesIte ++;
-                            conteototal ++;
+                        if (ani == ma){
+                            console.log("ai "+ ani +" alei "+ ma+" Fila "+fila+" mes "+mm+" __::"+$("#tbodymen").find("tr").eq(fila).find("td").eq(0).text());
+                            $("#tbodymen").find("tr").eq(fila).find("td").eq(mm).text(valor);
+                        }else{
+                            ani=ma;
+                            fila ++;
+                            console.log("ai "+ ani +" alei "+ ma+" Fila "+fila+" mes "+mm+" __::"+$("#tbodymen").find("tr").eq(fila).find("td").eq(0).text());
+                            $("#tbodymen").find("tr").eq(fila).find("td").eq(mm).text(valor);
                         }
+
                     }
-                    //console.log("años en al for :" + datoa );
 
-                    rows += '<td class="col-sm-1" style="width: 7%">'+data.anios[datoa-1].fields.valor+'</td>';
-                    rows+='</tr>'
-                    //console.log(rows);
-
-                    $("#tbodymen").html(rows);
-                    **************************************/
-                    /////// indices anuales
                     var rows = "";
                     for (var an = 0; an < data.anios.length; an++){
                         fan = data.anios[an].fields.fecha.split('-');
                         fan = parseInt(fan[0]);
                         esta = data.anios[an].fields.estacionalidad;
-                        console.log("Estacionalidad valor :=> "+esta);
+                        //console.log("Estacionalidad valor :=> "+esta);
                         rows+='<tr>'
                         rows += '<td class="col-sm-1" style="width: 10%">'+fan+'</td>';
                         rows += '<td class="col-sm-1" style="width: 10%">'+data.anios[an].fields.mes_seco+'</td>';
