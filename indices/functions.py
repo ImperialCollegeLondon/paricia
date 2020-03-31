@@ -344,26 +344,36 @@ class IndicadoresPrecipitacion():
         iter = 0
         fechaMin = None
         fechaMax = None
-        promedio = 0
+        promedio = None
         print("años consultados ",anuales.count())
         if anuales.count() is 0:
             return None
-        for an in anuales:
-            #print (an.valor)
-            promedio += an.valor
-            if an.valor < anioSecoMin:
-                anioSecoMin = an.valor;
-                fechaMin = an.fecha
-            if an.valor > anioHumedoMax:
-                anioHumedoMax = an.valor
-                fechaMax = an.fecha
-            iter += 1
-        promedio = promedio/iter
+
+        for an in anuales:# controla que el año tenga mas de 11 meses
+            print("fecha anual =>  ",an.fecha)
+            #mescontado = mes.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+            #                                        fecha__lte = self.fin, valor__isnull=False)
+            if an.completo_umbral > 89.0:
+                promedio += an.valor
+                if an.valor < anioSecoMin:
+                    anioSecoMin = an.valor;
+                    fechaMin = an.fecha
+                if an.valor > anioHumedoMax:
+                    anioHumedoMax = an.valor
+                    fechaMax = an.fecha
+                iter += 1
+        if promedio is not None:
+            promedio =  round(promedio/iter,2)
+            secHum = {'anio_seco': str(anioSecoMin), 'fechsec': fechaMin.strftime("%Y"), 'anio_humedo': str(anioHumedoMax),
+                      'fechhum': fechaMax.strftime("%Y")}
+        else:
+            secHum = {'anio_seco': 'S/D', 'fechsec': 'S/D', 'anio_humedo': 'S/D',
+                      'fechhum': 'S/D'}
 
         max24=self.rr_max_hora()
         #print("anio_seco :",anioSecoMin, "fechsec :", fechaMin.strftime("%m-%Y"),"anio_humedo :",anioHumedoMax, "fechhum:", fechaMax.strftime("%Y"))
 
-        secHum = {'anio_seco':anioSecoMin, 'fechsec':fechaMin.strftime("%Y"),'anio_humedo':anioHumedoMax, 'fechhum': fechaMax.strftime("%Y")}
+
         mensuales = self.rr_mensual()
         #print("*******************datos mensuales *******************")
         #print(mensuales)
@@ -378,7 +388,7 @@ class IndicadoresPrecipitacion():
         #print(type(anuales))
         mes2json = serializers.serialize('json', mensuales,fields=('fecha','valor'))
         mensuales= json.loads(mes2json)
-        dict={'prom_anual':promedio,'secHum': secHum,'mes':mensuales , 'anios':anuales, 'percen':per,'max24':max24}
+        dict={'prom_anual':str(promedio),'secHum': secHum,'mes':mensuales , 'anios':anuales, 'percen':per,'max24':max24}
         print(dict)
 
         return dict
