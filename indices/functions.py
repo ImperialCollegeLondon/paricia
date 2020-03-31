@@ -363,7 +363,7 @@ class IndicadoresPrecipitacion():
                     fechaMax = an.fecha
                 iter += 1
         if promedio is not None:
-            promedio =  round(promedio/iter,2)
+            promedio =  str(round(promedio/iter,2))
             secHum = {'anio_seco': str(anioSecoMin), 'fechsec': fechaMin.strftime("%Y"), 'anio_humedo': str(anioHumedoMax),
                       'fechhum': fechaMax.strftime("%Y")}
         else:
