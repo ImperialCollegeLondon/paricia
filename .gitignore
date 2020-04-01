@@ -1,4 +1,4 @@
 .idea/
 *.pyc
 media/archivos/
-#sedc/settings.py
+sedc/settings.py

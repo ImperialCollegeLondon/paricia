@@ -79,20 +79,33 @@ def consultar_horario(est_id, var_id, fecha_str):
     return datos
 
 
+# Consultar datos crudos y/o validados por estacion, varianle y fecha
+def consultar_diario(est_id, var_id, fecha_str):
+    print(fecha_str)
+    inicio = datetime.strptime(fecha_str, '%Y-%m-%d')
+    fin = inicio + timedelta(hours=24)
+    variable = Variable.objects.get(var_id=var_id)
+    query = "select * FROM reporte_validacion_" + str(variable.var_modelo).lower() + "(%s, %s, %s);"
+    consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
+    datos = []
+    for fila in consulta:
+        delattr(fila, '_state')
+    datos = [dict(fila.__dict__) for fila in consulta]
+
+    return datos
+
+
 # consultar datos diarios
 def reporte_diario(estacion, variable, inicio, final):
     est_id = estacion.est_id
     var_id = variable.var_modelo
-    print(type(final), final)
     fin = datetime.combine(final, time(23, 59, 59, 999999))
     if var_id == 1:
         query = "select * FROM reporte_validacion_diario_precipitacion(%s, %s, %s);"
         consulta = ReporteDiarioPrecipitacion.objects.raw(query, [est_id, inicio, fin])
-        print(query, est_id, inicio, fin)
     else:
         query = "select * FROM reporte_validacion_diario_" + str(var_id).lower() + "(%s, %s, %s);"
         consulta = ReporteDiario.objects.raw(query, [est_id, inicio, fin])
-        print(query, est_id, inicio, fin)
 
     return consulta
 
