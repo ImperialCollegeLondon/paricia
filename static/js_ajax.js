@@ -302,6 +302,7 @@ function desactivar_espera(div_loading, div_informacion, div_error){
     $(div_informacion).show();
     $(div_error).hide();
 }
+
 function mostrar_error(div_loading, div_informacion, div_error){
     $(div_loading).hide();
     $(div_informacion).hide();

@@ -1,24 +1,9 @@
-{% extends "index.html" %}
 {% load bootstrap4 %}
-{% block content %}
-
-<div class="col-md-6">
-    <div class="card">
-        <div class="card-header">
-                <h3 style="display:inline;">Telemetría:</h3>
-                    <h4 style="display:inline;">&nbsp;Asociar Variable a Estación</h4>
-        </div>
-        <div class="card-body">
-            <form method="post">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <input type="submit" value="Guardar" class="btn btn-success"/>
-                <a class="btn btn-light" href="{% url 'telemetria:configvisualizar_list' %}">Regresar (Sin guardar)</a>
-            </form>
-        </div>
-    </div>
-</div>
+<form id="form_save" method="post" action="{{url}}">
+{% csrf_token %}
+{% bootstrap_form form %}
+</form>
 
 
 
-{% endblock %}
+

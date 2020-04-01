@@ -44,17 +44,17 @@ def dictfetchall(cursor):
 def get_links(model, model_id):
 
     model_str = str(model.__name__).lower()
-    link_view = '<a href="/%%model%%/detail/' + str(model_id) + '">'
+    link_view = '<a class="link_view" href="/%%model%%/detail/' + str(model_id) + '">'
     link_view += '<i class="far fa-eye"></i>'
     link_view += '</a> '
     link_view = link_view.replace('%%model%%', model_str)
 
-    link_edit = '<a href="/%%model%%/edit/' + str(model_id) + '">'
+    link_edit = '<a class="link_edit" href="/%%model%%/edit/' + str(model_id) + '">'
     link_edit += '<i class="far fa-edit" aria-hidden="true"></i>'
     link_edit += '</a> '
     link_edit = link_edit.replace('%%model%%', model_str)
 
-    link_delete = '<a href="/%%model%%/' + str(model_id) + '/delete/">'
+    link_delete = '<a class="link_delete" href="/%%model%%/' + str(model_id) + '/delete/">'
     link_delete += '<i class="far fa-trash-alt" ></i>'
     link_delete += '</a>'
     link_delete = link_delete.replace('%%model%%', model_str)

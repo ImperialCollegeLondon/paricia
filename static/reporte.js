@@ -26,7 +26,7 @@ function accion_click(e){
             type:'POST',
             beforeSend: function () {
                 //$("#mensaje_overlay, #mensaje_content").addClass("active");
-                $("#modal_grafico").modal("show")
+                $("#modal_grafico").modal("show");
                 $("#div_loading_grafico").show();
                 $("#div_error_grafico").hide();
             },

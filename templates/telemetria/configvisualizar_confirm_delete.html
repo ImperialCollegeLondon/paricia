@@ -1,41 +1,23 @@
-{% extends "index.html" %}
+
 {% load bootstrap4 %}
-{% block content %}
-
-<div class="col-md-6">
-    <div class="card">
-        <div class="card-header">
-                <h3 style="display:inline;">Telemetría:</h3>
-                    <h4 style="display:inline;">&nbsp;Eliminar esta asociación</h4>
-        </div>
-        <div class="card-body">
-            <form  method="post">
-            {% csrf_token %}
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-striped table-bordered">
-                            <tr><th>Estación:</th><td>{{object.estacion}}</td></tr>
-                            <tr><th>Variable:</th><td>{{object.variable}}</td></tr>
-                            <tr><th>Umbral superior:</th><td>{{object.umbral_superior}}</td></tr>
-                            <tr><th>Umbral inferior:</th><td>{{object.umbral_inferior}}</td></tr>
-                        </table>
-                    </div>
-
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <input class="btn btn-danger" type="submit"  value="Confirmar"  />
-                        <a class="btn btn-light" href="{% url 'telemetria:configvisualizar_list' %}">Regresar</a>
-                    </div>
-                </div>
-            </form>
-
-
-        </div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered">
+            <tr><th>Estación:</th><td>{{object.estacion}}</td></tr>
+            <tr><th>Variable:</th><td>{{object.variable}}</td></tr>
+            <tr><th>Umbral superior:</th><td>{{object.umbral_superior}}</td></tr>
+            <tr><th>Umbral inferior:</th><td>{{object.umbral_inferior}}</td></tr>
+        </table>
     </div>
+
+    <form id="form_delete"  method="post" class="form" action="{% url 'telemetria:configvisualizar_delete' object.id %}" >
+    {% csrf_token %}
+    <!--<div class="col-md-12">
+        <input class="btn btn-danger" type="submit"  value="Confirmar"  />
+        <a class="btn btn-light" href="{% url 'telemetria:configvisualizar_list' %}">Regresar</a>
+    </div>-->
+    </form>
+
 </div>
 
-{% endblock %}
 

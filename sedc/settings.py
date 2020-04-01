@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'reportes.apps.ReportesConfig',
     'estames.apps.EstamesConfig',
     'anual.apps.AnualConfig',
+    'telemetria.apps.TelemetriaConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -107,9 +108,9 @@ WSGI_APPLICATION = 'sedc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sedc_dev',
+        'NAME': 'db_sedc',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'dev123*',
         'HOST': 'localhost',
         'PORT': '5432'
     },

@@ -859,7 +859,7 @@ BEGIN
     numero_datos_esperado AS (
         SELECT CAST(60/f.fre_valor AS INT) ndatos
         FROM frecuencia_frecuencia f
-        WHERE f.est_id_id = (SELECT d.estacion_id FROM dato d) AND f.var_id_id = 10
+        WHERE f.est_id_id = (SELECT d.estacion_id FROM dato d) AND f.var_id_id = 11
             AND f.fre_fecha_ini <= (SELECT d.fecha FROM dato d)
             AND (f.fre_fecha_fin >= (SELECT d.fecha FROM dato d) OR f.fre_fecha_fin IS NULL)
         ORDER BY f.fre_fecha_ini DESC LIMIT 1

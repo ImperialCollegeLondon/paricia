@@ -46,12 +46,12 @@ def iniciar_lectura():
     # Temperatura del Agua, Caudal, Nivel del Agua
     #filtro_estaciones = [17]
 
-    filtro_estaciones = [3]
+    filtro_estaciones = [31]
     #estaciones = Estacion.objects.filter(est_externa=False).exclude(est_id__in=filtro_estaciones)
     estaciones = Estacion.objects.filter(est_id__in=filtro_estaciones)
     #estaciones = Estacion.objects.filter(est_externa=False).all()
 
-    periodos = [2011]
+    periodos = [2019]
 
     for fila_est in estaciones:
 
@@ -62,7 +62,7 @@ def iniciar_lectura():
 
             modelo_medicion = get_modelo(fila_cru.var_id.var_id)
 
-            filtro = [1, 2]
+            filtro = [10]
 
             if fila_cru.var_id.var_id in filtro:
 
@@ -83,10 +83,10 @@ def iniciar_lectura():
                         # print(datos_validacion)
 
                         modelo_validacion.objects.bulk_create(datos_validacion)
-                        registrar_log(
+                        '''registrar_log(
                             "Estacion: " + fila_est.est_codigo +
                             "; Variable: " + fila_cru.var_id.var_nombre +
-                            "; Num Datos: " + str(len(datos_crudos)))
+                            "; Num Datos: " + str(len(datos_crudos)))'''
 
 
 iniciar_lectura()

@@ -58,7 +58,7 @@ class ConfigVisualizar(models.Model):
         return str(self.estacion.est_nombre + ' - ' + self.variable.var_nombre)
 
     def get_absolute_url(self):
-        return reverse('telemetria:configvisualizar_detail', kwargs={'pk':self.pk})
+        return reverse('telemetria:configvisualizar_detail', kwargs={'pk': self.pk})
 
     class Meta:
         indexes = [

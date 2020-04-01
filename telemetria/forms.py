@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import ModelForm
 from telemetria.models import ConfigVisualizar, TeleVariables
 from estacion.models import Estacion
 from .functions import primer_dia_mes_actual, dia_hoy
@@ -84,5 +85,12 @@ class PrecipitacionMultiestacionForm(forms.Form):
         self.fields['estacion'].choices = lista
 
 
+class ConfigVisualizarCreateForm(ModelForm):
+    class Meta:
+        model = ConfigVisualizar
+        fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super(ConfigVisualizarCreateForm, self).__init__(*args, **kwargs)
+        self.fields['estacion'].queryset = Estacion.objects.filter(est_externa=False).order_by('est_codigo')
 

@@ -1,14 +1,16 @@
+from django.views import  View
 from django.views.generic import FormView, ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .forms import *
+from telemetria.forms import *
 from .functions import *
 from .models import *
 from django.urls import reverse_lazy
-from home.functions import pagination
+from home.functions import pagination, get_links
+from home.views import AjaxableResponseMixin
 
 
 class ConsultaForm(FormView):
@@ -45,24 +47,68 @@ class ConfigVisualizarList(ListView):
         return context
 
 
+# Vista para generar la consulta en JSON para bootstrap table
+class ConfigVisualizarJson(View):
+    @staticmethod
+    def get(request):
+        consulta = ConfigVisualizar.objects.all()
+        total = len(consulta)
+
+        datos_json = []
+
+        for fila in consulta:
+            fila_json = {
+                'id': fila.id,
+                'estacion': fila.estacion.est_codigo,
+                'variable': fila.variable.var_nombre,
+                'umbral_superior': fila.umbral_superior,
+                'umbral_inferior': fila.umbral_inferior
+                 # 'accion': get_links(ConfigVisualizar, fila.id)
+            }
+            datos_json.append(fila_json)
+
+        data = {
+            'total': total,
+            'totalNotFiltered': total,
+            'rows': datos_json,
+        }
+        return JsonResponse(data, safe=False)
+
+
+# Vista HTML para la lista de ConfigVisualizar
+class ConfigVisualizarFilter(TemplateView):
+    template_name = 'telemetria/configvisualizar_list.html'
+
+
 class ConfigVisualizarDetail(DetailView):
     model = ConfigVisualizar
 
 
-class ConfigVisualizarCreate(CreateView):
+class ConfigVisualizarCreate(AjaxableResponseMixin, CreateView):
     model = ConfigVisualizar
-    fields = ['estacion', 'variable', 'umbral_superior', 'umbral_inferior']
-    success_url = "/telemetria/visualizar/config"
+    form_class = ConfigVisualizarCreateForm
+    # fields = ['estacion', 'variable', 'umbral_superior', 'umbral_inferior']
+    # success_url = "home/message/success/"
+
+    def get_context_data(self, **kwargs):
+        context = super(ConfigVisualizarCreate, self).get_context_data(**kwargs)
+        context['url'] = "/configvisualizar/create/"
+        return context
 
 
-class ConfigVisualizarUpdate(UpdateView):
+class ConfigVisualizarUpdate(AjaxableResponseMixin, UpdateView):
     model = ConfigVisualizar
     fields = ['estacion', 'variable', 'umbral_superior', 'umbral_inferior']
+
+    def get_context_data(self, **kwargs):
+        context = super(ConfigVisualizarUpdate, self).get_context_data(**kwargs)
+        context['url'] = "/configvisualizar/edit/" + str(self.object.id)+"/"
+        return context
 
 
 class ConfigVisualizarDelete(DeleteView):
     model = ConfigVisualizar
-    success_url = reverse_lazy('telemetria:configvisualizar_list')
+    success_url = reverse_lazy('home:message_delete')
 
 
 #########################
