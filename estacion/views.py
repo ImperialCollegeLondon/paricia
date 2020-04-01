@@ -67,7 +67,6 @@ class EstacionList(LoginRequiredMixin, ListView, FormView):
 class EstacionListJson(View):
 
     def get(self, request):
-
         estaciones = Estacion.objects.all()
         total = len(estaciones)
         estaciones_json = []
@@ -83,6 +82,10 @@ class EstacionListJson(View):
                 'est_latitud': estacion.est_latitud,
                 'est_longitud': estacion.est_longitud,
                 'est_altura': estacion.est_altura,
+                'estado': 'Activa' if estacion.est_estado is True else 'Inactiva',
+                'fecha_inicio': estacion.est_fecha_inicio,
+                'area_aporte': estacion.influencia_km,
+                'sistema_cuenca': str(estacion.sistemacuenca),
                 'accion': get_links(Estacion, estacion.est_id)
 
             }

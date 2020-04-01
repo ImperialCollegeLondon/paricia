@@ -107,6 +107,8 @@ def consulta_alarma_transmision():
     ).order_by('estacion_id', '-fecha').distinct('estacion_id')
     resultado['estaciones'] = {}
 
+
+
     for e in estaciones:
         estacion = {
             'codigo': e.estacion.est_codigo + ' - ' + e.estacion.est_nombre,
