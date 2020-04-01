@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+{% load bootstrap4 %}
+{% block content %}
+
+<div class="col-md-7">
+    <div class="card">
+        <div class="card-header">
+                <h3 style="display:inline;">Telemetría: Alarma</h3>
+            <br><br>
+                    <h4 style="display:inline;">&nbsp;Eliminar correo electrónico de la lista</h4>
+        </div>
+        <div class="card-body">
+            <form  method="post">
+            {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-bordered">
+                            <tr><th>Email:</th><td>{{object.email}}</td></tr>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <input class="btn btn-danger" type="submit"  value="Confirmar"  />
+                        <a class="btn btn-light" href="{% url 'telemetria:config_alarma_list' %}">Regresar (No eliminar)</a>
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

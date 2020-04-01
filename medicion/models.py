@@ -4,6 +4,26 @@ from __future__ import unicode_literals
 from django.db import models
 from estacion.models import Estacion
 from django.urls import reverse
+from variable.models import Variable
+
+
+class VientoPolar(models.Model):
+    fecha = models.DateTimeField("Fecha")
+    velocidad = models.DecimalField("Velocidad", max_digits=14, decimal_places=6, null=True)
+    direccion = models.DecimalField("Direccion", max_digits=14, decimal_places=6, null=True)
+
+    class Meta:
+        ### Para que no se cree en la migracion
+        managed = False
+
+
+class CaudalViaEstacion(models.Model):
+    id = models.AutoField("Id", primary_key=True)
+    est_id = models.ForeignKey(Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación")
+    fecha_inicio = models.DateTimeField("Fecha inicio")
+    fecha_fin = models.DateTimeField("Fecha fin")
+    valor = models.DecimalField("Valor", max_digits=14, decimal_places=6, blank=True, null=True)
+    calibracion_regleta_sensor = models.NullBooleanField("Calibracion", default=False)
 
 
 class CurvaDescarga(models.Model):

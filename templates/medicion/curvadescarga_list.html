@@ -28,7 +28,7 @@ $(document).ready(function() {
                     Nueva función</a>
             </div>
         </div>
-    </div><!-- end div class="panel-heading"-->
+    </div><!-- end div class="card-header"-->
 
     <div class="card-body">
         <form id="form_consulta" class="form" method="post" action="{% url 'medicion:curvadescarga_index'%}">
@@ -39,10 +39,10 @@ $(document).ready(function() {
                 {% endfor %}
                 <div class="form-group col-lg-4">
                     <label>&nbsp;</label><br>
-                    <button id="btn_filtrar" type="button" class="btn btn-default btn-primary">
+                    <button id="btn_filtrar" type="button" class="btn btn-light btn-primary">
                         Buscar
                     </button>
-                    <a class="btn btn-default"
+                    <a class="btn btn-light"
                        href="{% url 'medicion:curvadescarga_index' %}">
                         Limpiar</a>
                 </div>
