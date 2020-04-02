@@ -440,7 +440,7 @@ def indicaCaudal(estacion_id, inicio, fin, completo):
         print(len(tcau))
 
         a = np.array(tcau, dtype=object)
-        p10 = np.percentile(a, 10, interpolation='lower')
+        p10 = np.percentile(a, 5, interpolation='lower')
         p50 = np.percentile(a, 50, interpolation='lower')
         p95 = np.percentile(a, 95, interpolation='lower')
 
