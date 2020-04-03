@@ -108,9 +108,9 @@ WSGI_APPLICATION = 'sedc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_sedc',
+        'NAME': 'sedc_dev',
         'USER': 'postgres',
-        'PASSWORD': 'dev123*',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '5432'
     },
