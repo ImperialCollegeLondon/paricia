@@ -48,7 +48,7 @@ for fila_cv in configvisualizar:
         diff_horas = diff.days * 24 + diff.seconds/3600
     except e:
         AlarmaEstado.objects.update_or_create(
-            estacion_id=fila_cv.estacion_id, fecha=fecha_actual, defaults={"estado_id": estado['FALLO']}
+            estacion_id=fila_cv.estacion_id, fecha=fecha_actual, fecha_dato=None, defaults={"estado_id": estado['FALLO']}
         )
         continue
 
@@ -62,14 +62,19 @@ for fila_cv in configvisualizar:
     try:
         alarmaestado_anterior = AlarmaEstado.objects.filter(estacion_id=fila_cv.estacion_id).order_by('-fecha').first()
         estado_anterior = alarmaestado_anterior.estado.nombre
-    except e:
+    except:
         estado_anterior = ''
-
+    # Saltar si el estado anterior no cambia
     if estado_actual == estado_anterior:
+        AlarmaEstado.objects.update_or_create(
+            estacion_id=fila_cv.estacion_id, fecha=fecha_actual, fecha_dato=fecha_dato,
+            defaults={"estado_id": estado[estado_anterior]}
+        )
         continue
 
     AlarmaEstado.objects.update_or_create(
-        estacion_id=fila_cv.estacion_id, fecha=fecha_actual, defaults={"estado_id": estado[estado_actual]}
+        estacion_id=fila_cv.estacion_id, fecha=fecha_actual, fecha_dato=fecha_dato,
+        defaults={"estado_id": estado[estado_actual]}
     )
 
     if estado_actual == 'FALLO':
