@@ -148,21 +148,21 @@ class TypeII(Titulos):
         col += 1
         # ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
         cell = ws.cell(row=fila, column=col)
-        cell.value = "Medía His"
+        cell.value = "Media His"
         self.set_style(cell=cell, font='font_10', alignment='wrap',
                        border='border_thin')
 
         col += 1
         # ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
         cell = ws.cell(row=fila, column=col)
-        cell.value = "Máx His"
+        cell.value = "Delta Máx His (Max His - Media His)"
         self.set_style(cell=cell, font='font_10', alignment='wrap',
                        border='border_thin')
 
         col += 1
         # ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
         cell = ws.cell(row=fila, column=col)
-        cell.value = "Mín His"
+        cell.value = "Delta Mín His (Media His - Min His)"
         self.set_style(cell=cell, font='font_10', alignment='wrap',
                        border='border_thin')
 

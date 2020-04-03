@@ -5,8 +5,13 @@
 {% load static %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!--carga de leaflet-->
+<script src="{% static 'leaflet/leaflet.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'leaflet/leaflet.css' %}" />
+
 <script src="{% static 'js_ajax.js' %}"></script>
 <script src="{% static 'estaciones-geojson.js' %}"></script>
+
 <script type='text/javascript'>
 	document.oncontextmenu = function(){return false}
 </script>
