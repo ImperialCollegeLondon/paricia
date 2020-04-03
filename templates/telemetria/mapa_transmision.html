@@ -3,31 +3,13 @@
 {% block content %}
 {% load static %}
 
-
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!--leaflet-->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 
-
-
 <script src="{% static 'telemetria/mapa_transmision.js' %}"></script>
 
-<style>
-    .container {
-        width: 1600px;
-    }
-
-	#map { position: absolute; top: 0; bottom: 0; width: 700; height: 500; };
-
-</style>
-
-<script src="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
-<link href="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
-
-
-
 {% csrf_token %}
-
 
 <div class="row">
     <div class="col-lg-10 col-sm-10">
@@ -44,62 +26,7 @@
     </div>
 
     <div class="col-lg-6 col-md-6 col-sm-12">
-        <p>
-            <!--28a745-->
-            <!--<button type="button"
-                    class="btn btn-success"
-                    data-toggle="collapse"
-                    data-target="#div_success"
-                    aria-expanded="false"
-                    aria-controls="div_success">
-                NORMAL <span id="span_success" class="badge badge-light"></span>
-            </button>-->
-
-            <!--ffc107-->
-            <!--<button type="button"
-                    class="btn btn-warning"
-                    data-toggle="collapse"
-                    data-target="#div_warning"
-                    aria-expanded="false"
-                    aria-controls="div_warning">
-                    EXPECTANTE <span id="span_warning" class="badge badge-light"></span>
-            </button>-->
-            <!--dc3545-->
-            <!--<button type="button"
-                    class="btn btn-danger"
-                    data-toggle="collapse"
-                    data-target="#div_danger"
-                    aria-expanded="false"
-                    aria-controls="div_danger">
-                FALLO <span id="span_danger" class="badge badge-light"></span>
-            </button>-->
-
-        </p>
-
-        <!--<div class="row">
-            <div class="collapse" id="div_success">
-                <div id="div_lista_success" class="card card-body">
-
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="collapse" id="div_warning">
-                <div id="div_lista_warning" class="card card-body">
-                    algo
-                </div>
-            </div>
-
-        </div>-->
-
-        <!--<div class="row">
-            <div class="collapse" id="div_danger">
-                <div id="div_lista_danger" class="card card-body">
-
-                </div>
-            </div>
-        </div>-->
-        <!--success-->
+        <!--success 28a745-->
         <div class="row no-gutters">
             <div class="col-10">
                 <div id="div_msg_success" class="alert alert-success" role="alert"></div>
@@ -110,7 +37,7 @@
         <div class="collapse" id="div_success">
             <div id="div_lista_success" class="card card-body"></div>
         </div>
-        <!--warning-->
+        <!--warning ffc107-->
         <div class="row no-gutters">
             <div class="col-10">
                 <div id="div_msg_warning" class="alert alert-warning" role="alert"></div>
@@ -121,7 +48,7 @@
         <div class="collapse" id="div_warning">
             <div id="div_lista_warning" class="card card-body"></div>
         </div>
-        <!--danger-->
+        <!--danger dc3545-->
         <div class="row no-gutters">
             <div class="col-10">
                 <div id="div_msg_danger" class="alert alert-danger" role="alert"></div>
@@ -133,13 +60,6 @@
             <div id="div_lista_danger" class="card card-body">
             </div>
         </div>
-
-
-
-
-
-
-
 
     </div>
 

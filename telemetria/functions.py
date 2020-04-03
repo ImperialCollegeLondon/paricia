@@ -130,6 +130,7 @@ def consulta_alarma_transmision():
                 nombre=item.estacion.est_nombre,
                 estado=item.estado.nombre,
                 fecha_estado_actual=item.fecha,
+                fecha_dato=item.fecha_dato,
                 latitud=item.estacion.est_latitud,
                 longitud=item.estacion.est_longitud,
                 altura=item.estacion.est_altura

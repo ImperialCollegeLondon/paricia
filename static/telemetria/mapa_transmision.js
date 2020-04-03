@@ -235,7 +235,8 @@ $(document).ready(function() {
 
         var objHTML='<p><b>Codigo:</b>'+feature.properties.codigo+'<br>';
         objHTML+='<b>Nombre:</b> '+feature.properties.nombre+'<br>';
-        objHTML+='<b>Última Fecha:</b> '+feature.properties.fecha_estado_actual+'<br></p>';
+        objHTML+='<b>Última Fecha Transmisión:</b> '+feature.properties.fecha_dato.replace('T',' ')+'<br>';
+        //objHTML+='<b>Fecha Cambio:</b> '+feature.properties.fecha_estado_actual.replace('T',' ')+'<br></p>';
 
         return objHTML;
     }
@@ -244,7 +245,8 @@ $(document).ready(function() {
 
         var objHTML='<li><small><b>Codigo:</b>'+feature.properties.codigo+' ';
         //objHTML+='<b>Nombre:</b> '+feature.properties.nombre+'-';
-        objHTML+='<b>Última Fecha Transmisión:</b> '+feature.properties.fecha_estado_actual.replace('T',' ')+'<br></small></li>';
+        objHTML+='<b>Última Fecha Transmisión:</b> '+feature.properties.fecha_dato.replace('T',' ')+'</li>';
+        //objHTML+='<b>Fecha Cambio:</b> '+feature.properties.fecha_estado_actual.replace('T',' ')+'</small></li>';
 
         return objHTML;
 
