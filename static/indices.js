@@ -412,6 +412,7 @@ $(document).ready(function () {
                     console.log(data)
                     $("#div_error").removeClass("div-show").addClass( "div-hiden" );
                     $("#div_informacion").show();
+                    $("#tableacum").attr('hidden',false);
                     var rows = "";
                     rows += '<tr>';
                     rows += '<td class="col-sm-4">Caudal mínimo diario. (l/s).</td>';
@@ -440,6 +441,46 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-2">'+data.per50+'</td>';
                     rows += '</tr>';
                     $("#tbody").html(rows);
+                    /////// cálculos con caudales especificos
+                    ///
+                    ///muestra las tablas /
+                    if (data.inf === "vacio"){
+                        $("#tableesp").attr('hidden',true);
+                         $("#esp_title").html("");
+                        $("#esp_inf").html("");
+                    }else{
+                        $("#tableesp").attr('hidden',false);
+                        $("#esp_title").html("<h3>Cálculos con caudales específicos </h3>");
+                        $("#esp_inf").html("<h4>Area de aporte = "+data.inf+" Km<sup>2</sup></h4>");
+                        var rows = "";
+                        rows += '<tr>';
+                        rows += '<td class="col-sm-4">Caudal mínimo diario. (l/s).</td>';
+                        rows += '<td class="col-sm-2">'+data.cmim_es+'</td>';
+                        rows += '<td class="col-sm-2">'+data.fdmin_es+'</td>';
+                        rows += '</tr> <tr>';
+                        rows += '<td class="col-sm-4">Q 10.  (l/s).</td>';
+                        rows += '<td class="col-sm-2">'+data.per95_es+'</td>';
+                        rows += '</tr> <tr>';
+                        rows += '<td class="col-sm-4">Promedio de caudal del mes más seco. (l/s).</td>';
+                        rows += '<td class="col-sm-2">'+data.cmessec_es+'</td><td class="col-sm-2">'+data.fecmessec_es+'</td>'; //fecmessec
+                        rows += '</tr> <tr> <th class="col-sm-4" colspan="3">Caudales altos</th>';
+                        rows += '</tr> <tr>';
+                        rows += '<td class="col-sm-4">Caudal máximo diario. (l/s).</td>';
+                        rows += '<td class="col-sm-2">'+data.cmax_es+'</td>';
+                        rows += '<td class="col-sm-2">'+data.fdmax_es+'</td>';
+                        rows += '</tr> <tr>';
+                        rows += '<td class="col-sm-4">Q 90. (l/s).</td>';
+                        rows += '<td class="col-sm-2">'+data.per10_es+'</td>';
+                        rows += '</tr> <tr> <th class="col-sm-4" colspan="3">Caudales medios</th>';
+                        rows += '</tr> <tr>';
+                        rows += '<td class="col-sm-4">Caudal o volumen promedio diario anual o mensual. (l/s).</td>';
+                        rows += '<td class="col-sm-2">'+data.cavg_es+'</td>';
+                        rows += '</tr> <tr>';
+                        rows += '<td class="col-sm-4">Q50. (l/s).</td>';
+                        rows += '<td class="col-sm-2">'+data.per50_es+'</td>';
+                        rows += '</tr>';
+                        $("#tbodyesp").html(rows);
+                    }
 
                 }else{
 
@@ -653,7 +694,7 @@ $(document).ready(function () {
         var data = [trace1];
 
         var layout = {
-          title: 'Duración de caudal sin la influencia',
+          title: 'Duración de caudal sin área de aporte',
           xaxis: {
             title: 'Frecuencia',
             showgrid: true,

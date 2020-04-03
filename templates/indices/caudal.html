@@ -84,7 +84,7 @@
 <div class="border-top my-3"></div>
 
 <div id="div_informacion" >
-    <table id="tableacum" class="table table-bordered table-hover">
+    <table id="tableacum" class="table table-bordered table-hover" hidden="True">
             <thead >
                 <tr>
                     <th class="col-sm-4" colspan="3">RÉGIMEN DE CAUDAL</th>
@@ -97,6 +97,30 @@
             </thead>
 
             <tbody id="tbody" >
+
+            </tbody>
+    </table>
+    <div  aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center"
+             style="min-height: 20px;">
+            <p id="esp_title"></p>
+        </div>
+    <div  aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center"
+             style="min-height: 20px;">
+    <p id="esp_inf"></p>
+        </div>
+    <table id="tableesp" class="table table-bordered table-hover" hidden="True">
+            <thead >
+                <tr>
+                    <th class="col-sm-4" colspan="3">RÉGIMEN DE CAUDAL</th>
+                </tr>
+                <tr>
+                    <th class="col-sm-4" >Caudales bajos</th>
+                    <th class="col-sm-4" >valor</th>
+                    <th class="col-sm-4" >fecha</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbodyesp" >
 
             </tbody>
     </table>
