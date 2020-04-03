@@ -42,6 +42,8 @@ function cargar_datos(e){
                 };
     var puntos = [];
 
+
+
     for (const idx in e.estaciones){
         $('#'+ e.estaciones[idx].estado +' > tbody:last-child').append('<tr><td>'+e.estaciones[idx].codigo+'</td></tr>');
         //////////

@@ -89,7 +89,7 @@ $(document).ready(function() {
     };
 
     legend.addTo(mymap);
-    // llamar las variables por estaciones
+    // llamar las estaciones por tipo de transmisión
     $("#id_transmision").change(function () {
         var transmision = $(this).val();
 

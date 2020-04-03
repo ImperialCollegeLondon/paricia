@@ -107,9 +107,8 @@ def consulta_alarma_transmision():
     ).order_by('estacion_id', '-fecha').distinct('estacion_id')
     resultado['estaciones'] = {}
 
-
-
-    for e in estaciones:
+    features = []
+    '''for e in estaciones:
         estacion = {
             'codigo': e.estacion.est_codigo + ' - ' + e.estacion.est_nombre,
             'latitud': e.estacion.est_latitud,
@@ -117,7 +116,33 @@ def consulta_alarma_transmision():
             'estado': e.estado.nombre,
             'fecha_estado_actual': e.fecha
         }
-        resultado['estaciones'][e.estacion.est_id] = estacion
+        resultado['estaciones'][e.estacion.est_id] = estacion'''
+
+    for item in estaciones:
+        fila = dict(
+            type='Feature',
+            geometry=dict(
+                type='Point',
+                coordinates=[float(item.estacion.est_longitud), float(item.estacion.est_latitud)]
+            ),
+            properties=dict(
+                codigo=item.estacion.est_codigo,
+                nombre=item.estacion.est_nombre,
+                estado=item.estado.nombre,
+                fecha_estado_actual=item.fecha,
+                latitud=item.estacion.est_latitud,
+                longitud=item.estacion.est_longitud,
+                altura=item.estacion.est_altura
+            )
+
+        )
+
+        features.append(fila)
+    datos = dict(
+        type='FeatureCollection',
+        features=features
+    )
+    resultado['estaciones'] = datos
     return resultado
 
 

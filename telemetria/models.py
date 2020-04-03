@@ -79,13 +79,14 @@ class AlarmaTipoEstado(models.Model):
 
     ## 0 NORMAL
     ## 1 EXPECTANTE  mas de 1 hora sin transmitir pero menos del periodo de alerta
-    ## 2 FALLIDO ha superado el periodo de tolerancia. Se genera una alarma
+    ## 2 FALLO ha superado el periodo de tolerancia. Se genera una alarma
 
 
 class AlarmaEstado(models.Model):
     estacion = models.ForeignKey(Estacion, on_delete=models.SET_NULL, null=True)
     estado = models.ForeignKey(AlarmaTipoEstado, on_delete=models.SET_NULL, null=True)
     fecha = models.DateTimeField()
+    fecha_dato = models.DateTimeField(null=True)
 
     class Meta:
         indexes = [
