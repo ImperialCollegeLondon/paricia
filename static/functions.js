@@ -164,6 +164,8 @@ function set_message_error_form(request, status, error){
 }
 
 
+
+
 function abrir_cuadro_dialogo(div,enlace){
     $("#div_error").hide();
     var object="#"+div;
