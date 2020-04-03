@@ -419,8 +419,8 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-2">'+data.cmim+'</td>';
                     rows += '<td class="col-sm-2">'+data.fdmin+'</td>';
                     rows += '</tr> <tr>';
-                    rows += '<td class="col-sm-4">Q 10.  (l/s).</td>';
-                    rows += '<td class="col-sm-2">'+data.per95+'</td>';
+                    rows += '<td class="col-sm-4">Q 95.  (l/s).</td>';
+                    rows += '<td class="col-sm-2">'+data.per10+'</td>';
                     rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Promedio de caudal del mes más seco. (l/s).</td>';
                     rows += '<td class="col-sm-2">'+data.cmessec+'</td><td class="col-sm-2">'+data.fecmessec+'</td>'; //fecmessec
@@ -430,8 +430,8 @@ $(document).ready(function () {
                     rows += '<td class="col-sm-2">'+data.cmax+'</td>';
                     rows += '<td class="col-sm-2">'+data.fdmax+'</td>';
                     rows += '</tr> <tr>';
-                    rows += '<td class="col-sm-4">Q 90. (l/s).</td>';
-                    rows += '<td class="col-sm-2">'+data.per10+'</td>';
+                    rows += '<td class="col-sm-4">Q 10. (l/s).</td>';
+                    rows += '<td class="col-sm-2">'+data.per95+'</td>';
                     rows += '</tr> <tr> <th class="col-sm-4" colspan="3">Caudales medios</th>';
                     rows += '</tr> <tr>';
                     rows += '<td class="col-sm-4">Caudal o volumen promedio diario anual o mensual. (l/s).</td>';
