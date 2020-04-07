@@ -180,4 +180,5 @@ BOOTSTRAP4 = {
     "required_css_class": "bootstrap4-required",
     "javascript_in_head": True,
     "include_jquery": True,
+
 }

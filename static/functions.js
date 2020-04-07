@@ -226,7 +226,7 @@ function activar_espera(type){
     else{
         var $div_data = $('#div_informacion');
         var $div_loading = $('#div_loading');
-        var $div_error = $('#div_error')
+        var $div_message = $('#div_error')
 
     }
     $div_loading.show();
@@ -324,8 +324,33 @@ function getDate(element) {
 
 $(document).ready(function() {
 
-  $("#form_consulta").submit(function(event){
-    //actualizar_lista($("#form_consulta").attr('action'));
-    event.preventDefault();
-  });
+
+    $("#form_consulta").submit(function(event){
+        //actualizar_lista($("#form_consulta").attr('action'));
+        event.preventDefault();
+    });
+
+
+    $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '< Ant',
+        nextText: 'Sig >',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'yy-mm-dd',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+
+    $.datepicker.setDefaults($.datepicker.regional['es']);
+
+
+
 });

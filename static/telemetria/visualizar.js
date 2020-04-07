@@ -1,163 +1,532 @@
-function consulta_mapa(){
-    $.ajax({
-        url: "/ajax/telemetria/mapa_alarma_transmision",
-        data: {
-            'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val(),
+var graf_width = 510;
+var graf_height = 340;
+var graf_margin_right = 5;
+var graf_margin_top = 90;
+var graf_margin_bottom = 45;
+var graf_margin_left = 35;
+var legends = {};
+
+
+function suma(datos, decimales){
+    var res = 0;
+    var tmp;
+    for ( const i in datos){
+        tmp = parseFloat(datos[i]);
+        if (! isNaN(tmp)){
+            res = res + tmp;
+         }
+    }
+    res = res.toFixed(decimales);
+    return res;
+}
+
+function maximo(datos){
+    var res = -Infinity;
+    var tmp;
+    for (const i in datos){
+        tmp = parseFloat(datos[i]);
+        if (! isNaN(tmp)){
+            if (tmp > res){
+                res = tmp;
+            }
+        }
+    }
+    return res;
+}
+
+
+function minimo(datos){
+    var res = Infinity;
+    var tmp;
+    for (const i in datos){
+        tmp = parseFloat(datos[i]);
+        if (! isNaN(tmp)){
+            if (tmp < res){
+                res = tmp;
+            }
+        }
+    };
+    return res;
+}
+
+function renombrar_legends(graf){
+    var trace_index = 0;
+    $("#graf" + graf).find("g .traces").each(function(){
+        trace_index++;
+        var legend_text = legends[graf][trace_index];
+        if (legend_text){
+            $(this).find(".pointtext text").html(legend_text);
+         }
+    });
+}
+
+
+function cargar_datos(data){
+    $("#graf1").empty();
+    $("#graf2").empty();
+    $("#graf3").empty();
+    $("#graf4").empty();
+    $("#graf5").empty();
+    $("#graf6").empty();
+    $("#graf7").empty();
+    $("#graf8").empty();
+    $("#graf9").empty();
+    var graf = 0;
+    for (const var_id in data){
+        if (var_id == 1){
+            graf = graf + 1;
+            grafico_serie_barras(data[var_id], graf);
+        }
+        else if (var_id == 405){
+            graf = graf + 1;
+            grafico_viento(data[var_id], graf);
+        }else{
+            graf = graf + 1;
+            grafico_serie_lineas(data[var_id], graf);
+        }
+    }
+
+}
+
+
+function grafico_serie_barras(data, graf){
+    //console.log(graf)
+
+    var fecha_ini = data.datos.fecha[0];
+    var fecha_fin = data.datos.fecha[data.datos.fecha.length-1];
+    var valor_fin = parseFloat(data.datos.valor[data.datos.fecha.length-1]);
+    var valor_max = maximo(data.datos.valor);
+    var valor_min = minimo(data.datos.valor);
+    var umbral_superior = data.umbral_superior;
+    var valor_acumulado = suma(data.datos.valor, 2);
+    console.log(valor_acumulado);
+    var gdata = [];
+    var idx = 0;
+
+    legends[graf] = {};
+
+    var trace = {
+        name: 'Datos',
+        x: data.datos.fecha,
+        y: data.datos.valor,
+        type: 'bar',
+        marker: {color: 'rgb(0, 90, 0)',},
+    };
+    gdata.push(trace);
+    idx = idx + 1;
+
+
+    if (umbral_superior){
+        gdata.push({
+            name: umbral_superior ,
+            x: [fecha_ini, fecha_fin],
+            y: [umbral_superior, umbral_superior],
+            type: 'scatter',
+            mode: 'lines+text',
+            line: {
+                color: 'rgb(255, 127, 0)',
+                width: 1
+            },
+            connectgaps: true
+        });
+
+        idx = idx + 1;
+        legends[graf][idx] = 'U S';
+     }
+
+
+    if (!isNaN(valor_acumulado) ){
+        gdata.push({
+            name: valor_acumulado,
+            x: [fecha_ini],
+            y: [null],
+            type: 'scatter',
+            mode: 'text',
+        });
+        idx = idx + 1;
+        legends[graf][idx] = 'ACU';
+     };
+
+
+    if (isFinite(valor_max) ){
+        gdata.push({
+            name: valor_max,
+            x: [fecha_ini],
+            y: [null],
+            type: 'scatter',
+            mode: 'text',
+        });
+        idx = idx + 1;
+        legends[graf][idx] = 'Máx';
+     };
+
+
+    if (isFinite(valor_min) ){
+        gdata.push({
+            name: valor_min,
+            x: [fecha_ini],
+            y: [null],
+            type: 'scatter',
+            mode: 'text',
+        });
+        idx = idx + 1;
+        legends[graf][idx] = 'mín';
+     };
+
+
+    if (!isNaN(valor_fin) ){
+        var texto_fin = '<br><br>Último:<br><b>' + valor_fin +'</b><br>';
+        texto_fin = texto_fin +  fecha_fin.slice(0,10) + '<br>' + fecha_fin.slice(11,19);
+        gdata.push({
+            name: texto_fin,
+            x: [fecha_ini],
+            y: [null],
+            type: 'scatter',
+            mode: 'lines',
+            line: {color: 'transparent',},
+            connectgaps: false
+        });
+     };
+
+
+
+    var layout = {
+        title: data.estacion + ': ' + data.var_nombre + ' (' + data.var_unidad + ')',
+        width: $("#graf"+graf).width(),
+        height: graf_height,
+        margin: {
+            r: graf_margin_right,
+            t: graf_margin_top,
+            b: graf_margin_bottom,
+            l: graf_margin_left,
+            pad: 0
         },
+        yaxis: {
+            rangemode: 'nonnegative',
+            autorange: true
+        },
+        bargap :0,
+    };
+
+    var graf_class = 'graf'+graf;
+    Plotly.newPlot(graf_class, gdata, layout, {showSendToCloud: false,});
+
+    renombrar_legends(graf);
+    $('#' + graf_class).on('plotly_restyle', function(clickData){
+        renombrar_legends(graf);
+    });
+
+}
+
+
+function grafico_serie_lineas(data, graf){
+    var fecha_ini = data.datos.fecha[0];
+    var fecha_fin = data.datos.fecha[data.datos.fecha.length-1];
+    var valor_fin = parseFloat(data.datos.valor[data.datos.fecha.length-1]);
+    var valor_max = maximo(data.datos.valor);
+    var valor_min = minimo(data.datos.valor);
+    var umbral_superior = data.umbral_superior;
+    var umbral_inferior = data.umbral_inferior;
+    var gdata = [];
+    var idx = 0;
+
+    legends[graf] = {};
+
+    var trace = {
+        name: 'Datos',
+        x: data.datos.fecha,
+        y: data.datos.valor,
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: {
+            color: 'rgb(0, 90, 0)',
+            width: 1
+        },
+        marker: {size: 1, color: 'rgb(0, 90, 0)',},
+        connectgaps: false
+    };
+    gdata.push(trace);
+    idx = idx + 1;
+
+
+    if (umbral_superior){
+        gdata.push({
+            name: umbral_superior ,
+            x: [fecha_ini, fecha_fin],
+            y: [umbral_superior, umbral_superior],
+            type: 'scatter',
+            mode: 'lines+text',
+            line: {
+                color: 'rgb(255, 127, 0)',
+                width: 1
+            },
+            connectgaps: true
+        });
+
+        idx = idx + 1;
+        legends[graf][idx] = 'U S';
+     }
+
+
+    if (umbral_inferior){
+        gdata.push({
+            name: umbral_inferior ,
+            x: [fecha_ini, fecha_fin],
+            y: [umbral_inferior, umbral_inferior],
+            type: 'scatter',
+            mode: 'lines+text',
+            line: {
+                color: 'rgb(0, 127, 255)',
+                width: 1
+            },
+            connectgaps: true
+        });
+
+        idx = idx + 1;
+        legends[graf][idx] = 'U i';
+     }
+
+
+    if (isFinite(valor_max) ){
+        gdata.push({
+            name: valor_max,
+            x: [fecha_ini],
+            y: [null],
+            type: 'scatter',
+            mode: 'text',
+        });
+        idx = idx + 1;
+        legends[graf][idx] = 'Máx';
+     };
+
+
+    if (isFinite(valor_min) ){
+        gdata.push({
+            name: valor_min,
+            x: [fecha_ini],
+            y: [null],
+            type: 'scatter',
+            mode: 'text',
+        });
+        idx = idx + 1;
+        legends[graf][idx] = 'mín';
+     };
+
+
+    if (!isNaN(valor_fin) ){
+        var texto_fin = '<br><br>Último:<br><b>' + valor_fin +'</b><br>';
+        texto_fin = texto_fin +  fecha_fin.slice(0,10) + '<br>' + fecha_fin.slice(11,19);
+        gdata.push({
+            name: texto_fin,
+            x: [fecha_ini],
+            y: [null],
+            type: 'scatter',
+            mode: 'lines',
+            line: {color: 'transparent',},
+            connectgaps: false
+        });
+
+     };
+
+
+    var layout = {
+        title: data.estacion + ': ' + data.var_nombre + ' (' + data.var_unidad + ')',
+        width: $("#graf"+graf).width(),
+        height: graf_height,
+        margin: {
+            r: graf_margin_right,
+            t: graf_margin_top,
+            b: graf_margin_bottom,
+            l: graf_margin_left,
+            pad: 0
+        },
+    };
+
+    var graf_class = 'graf'+graf;
+    Plotly.newPlot(graf_class, gdata, layout, {showSendToCloud: false});
+
+    renombrar_legends(graf);
+    $('#' + graf_class).on('plotly_restyle', function(clickData){
+        renombrar_legends(graf);
+    });
+
+
+}
+
+
+function grafico_viento(data, graf){
+    console.log(graf)
+    var n = data.datos.velocidad.length;
+    var velocidad_fin = parseFloat(data.datos.velocidad[n-1]);
+    var direccion_fin = data.datos.direccion[n-1];
+    var valor_max = maximo(data.datos.velocidad);
+    var datav = [];
+
+    var idx = 0;
+    legends[graf] = {};
+
+
+    var datos = {
+        name: "<br>Último:<br><b>" + velocidad_fin + "</b><br>",
+        type: "barpolar",
+        r: [velocidad_fin,],
+        theta: [direccion_fin,],
+        thetaunit: 'degrees',
+        marker: {color: "rgb(64, 64, 255)"},
+    };
+    if (n > 0 ){
+        datav.push(datos);
+        idx++;
+    };
+
+
+    var anteriores =  {
+          name: "anteriores",
+          type: "scatterpolargl",
+          r: data.datos.velocidad,
+          theta: data.datos.direccion,
+          thetaunit: 'degrees',
+          mode: "markers",
+          marker: {
+            color: "rgb(27,158,119)",
+            size: 10,
+            line: {
+              color: "white"
+            },
+            opacity: 0.10
+          },
+          cliponaxis: false
+        };
+    datav.push(anteriores);
+    idx++;
+
+
+    if ( isFinite(valor_max) ){
+        datav.push(
+            {
+                  type: "scatterpolargl",
+                  r: [null],
+                  theta: [0],
+                  thetaunit: 'degrees',
+                  mode: "text",
+                  name: valor_max,
+                  cliponaxis: false,
+                  showlegend: true
+            },
+        );
+        idx++;
+        legends[graf][idx] = 'Máx';
+     }
+
+
+    var layout = {
+        title: data.estacion + ': '+ data.var_nombre + ' (' + data.var_unidad + ')',
+        showlegend: true,
+        polar: {
+          bgcolor: "rgb(233, 233, 233)",
+          angularaxis: {
+            tickwidth: 2,
+            linewidth: 3,
+            direction: 'clockwise',
+          },
+          radialaxis: {
+            side: "counterclockwise",
+            showline: true,
+            linewidth: 2,
+            tickwidth: 2,
+            gridcolor: "#FFF",
+            gridwidth: 2
+          },
+        },
+        paper_bgcolor: "rgb(255, 255, 255)",
+        width: $("#graf"+graf).width(),
+        height: graf_height,
+        margin: {
+            r: graf_margin_right,
+            t: graf_margin_top,
+            b: graf_margin_bottom,
+            l: graf_margin_left,
+            pad: 0
+        },
+      }
+
+    var graf_class = 'graf'+graf;
+    Plotly.newPlot(graf_class, datav, layout, {showSendToCloud: false});
+    renombrar_legends(graf);
+    $('#' + graf_class).on('plotly_restyle', function(clickData){
+        renombrar_legends(graf);
+    });
+
+
+    // renombrar angular axis
+    var angulo_index = 0;
+    var angulo_dict = {1:'N', 2:'NE', 3:'E', 4:'SE', 5:'S', 6:'SO', 7:'O', 8:'NO'};
+    $("g.polarsublayer").find("g.angularaxistick").each(function(){
+        angulo_index++;
+        $(this).find("text").html(angulo_dict[angulo_index]);
+    });
+
+}
+
+
+
+function enviar_consulta(){
+    $.ajax({
+        url: "/ajax/telemetria/consulta",
+        data: $("#form_telemetria").serialize(),
         type:'POST',
         beforeSend: function () {
             $("#div_error").hide();
             $("#div_loading").show();
+            $("#div_informacion").hide();
         },
         success: function (data) {
+            $("#div_informacion").show();
             $("#div_loading").hide();
             $("#div_error").hide();
             cargar_datos(data);
         },
         error: function () {
+            $("#div_informacion").hide();
             $("#div_loading").hide();
             $("#div_error").show();
         }
     });
 };
 
-
-function cargar_datos(e){
-
-    $("table#NORMAL > tbody").empty();
-    $("table#EXPECTANTE > tbody").empty();
-    $("table#FALLO > tbody").empty();
-    $("#div-mapa").empty();
-
-    var punto = {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": []
-                    },
-                    "properties": {
-                        "estado": "",
-                        "description": "",
-                    },
-                };
-    var puntos = [];
-
-
-
-    for (const idx in e.estaciones){
-        $('#'+ e.estaciones[idx].estado +' > tbody:last-child').append('<tr><td>'+e.estaciones[idx].codigo+'</td></tr>');
-        //////////
-        _punto = JSON.parse(JSON.stringify(punto));
-        _punto.geometry.coordinates = [e.estaciones[idx].longitud, e.estaciones[idx].latitud];
-        _punto.properties.estado = e.estaciones[idx].estado;
-        var fecha_estado_actual = e.estaciones[idx].fecha_estado_actual;
-        fecha_estado_actual = fecha_estado_actual.replace('T',' ');
-        fecha_estado_actual = fecha_estado_actual.slice(0, -4);
-        _punto.properties.description = e.estaciones[idx].codigo + "<br>" + fecha_estado_actual;
-        puntos.push(_punto);
-    };
-
-    $("table#NORMAL > thead > tr > th ").html("NORMAL<br><small>Transmisión continua < " + parseFloat(e.limites.lim1) + " hora(s).</small>");
-    $("table#EXPECTANTE > thead > tr > th ").html("EXPECTANTE<br><small>Transmisión intermitente.");
-    $("table#FALLO > thead > tr > th ").html("FALLO<br><small>Sin transmisión en las últimas " + parseFloat(e.limites.lim2) + " horas.</small>");
-
-
-
-
-    mapboxgl.accessToken = 'pk.eyJ1IjoicGFibG8tdWlvMjAyMCIsImEiOiJjazU5cG1ncDIwcnd4M2xvMXNkaHlhNDEyIn0.hNSx3eMIBzAVuoftwdvQPg';
-    var map = new mapboxgl.Map({
-        container: 'map',
-        zoom: 9,
-        center: [-78.38, -0.28],
-        style: 'mapbox://styles/mapbox/outdoors-v11'
-        //style: 'mapbox://styles/mapbox/satellite-v9'
-    });
-
-    map.on('style.load', function (e) {
-        map.addSource('markers', {
-            "type": "geojson",
-            "data": {
-                "type": "FeatureCollection",
-                "features": puntos
-            }
-        });
-
-        map.addLayer({
-            "id": "normal",
-            "source": "markers",
-            "type": "circle",
-            "paint": {
-                "circle-radius": 12,
-                "circle-color": "#007c00",
-                "circle-opacity": 0.6,
-                "circle-stroke-width": 0,
-            },
-            "filter": ["==", "estado", "NORMAL"],
-        });
-
-        map.addLayer({
-            "id": "expectante",
-            "source": "markers",
-            "type": "circle",
-            "paint": {
-                "circle-radius": 12,
-                "circle-color": "#7c7c00",
-                "circle-opacity": 0.6,
-                "circle-stroke-width": 0,
-            },
-            "filter": ["==", "estado", "EXPECTANTE"],
-        });
-
-        map.addLayer({
-            "id": "fallo",
-            "source": "markers",
-            "type": "circle",
-            "paint": {
-                "circle-radius": 12,
-                "circle-color": "#7c0000",
-                "circle-opacity": 0.6,
-                "circle-stroke-width": 0,
-            },
-            "filter": ["==", "estado", "FALLO"],
-        });
-    });
-
-
-    map.on('mousemove', 'normal', (e) => {
-        var coordinates = e.features[0].geometry.coordinates.slice();
-        var description = e.features[0].properties.description;
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;}
-        new mapboxgl.Popup().setLngLat(coordinates).setHTML(description).addTo(map);
-    });
-
-    map.on('mouseleave', 'normal',  function() {$(".mapboxgl-popup").remove();});
-
-    map.on('mousemove', 'expectante', (e) => {
-        var coordinates = e.features[0].geometry.coordinates.slice();
-        var description = e.features[0].properties.description;
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;}
-        new mapboxgl.Popup().setLngLat(coordinates).setHTML(description).addTo(map);
-    });
-
-    map.on('mouseleave', 'expectante',  function() {$(".mapboxgl-popup").remove();});
-
-    map.on('mousemove', 'fallo', (e) => {
-        var coordinates = e.features[0].geometry.coordinates.slice();
-        var description = e.features[0].properties.description;
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;}
-        new mapboxgl.Popup().setLngLat(coordinates).setHTML(description).addTo(map);
-    });
-
-    map.on('mouseleave', 'fallo',  function() {$(".mapboxgl-popup").remove();});
-
-};
-
-
-
-
-
 $(document).ready(function() {
-    consulta_mapa();
-    setInterval(consulta_mapa, 1800000);
+
+    $("#id_inicio").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "yy-mm-dd",
+        showButtonPanel: true,
+        yearRange:  ((new Date).getFullYear()-1) + ':'+(new Date).getFullYear()
+    });
+
+    $("#id_inicio").datepicker().focus(function () {
+        $("#ui-datepicker-div").position({ my: "center top", at: "center bottom", of: $("#id_inicio")});
+    })
+    $("#id_inicio").datepicker().datepicker("setDate", new Date());
+
+    $("#visualizar").click(function(){
+        $("#graf1").empty();
+        $("#graf2").empty();
+        $("#graf3").empty();
+        $("#graf4").empty();
+        $("#graf5").empty();
+        $("#graf6").empty();
+        $("#graf7").empty();
+        $("#graf8").empty();
+        $("#graf9").empty();
+        $("input[name='estacion']").val($('#id_estacion').val() );
+        $("input[name='inicio']").val($('#id_inicio').val() );
+        //$("#div_loading").show();
+        //$("#div_informacion").show();
+        enviar_consulta();
+        //$("#div_loading").hide();
+        //setInterval(enviar_consulta, 150000);
+    });
+
 
 });

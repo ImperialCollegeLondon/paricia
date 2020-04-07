@@ -195,8 +195,9 @@ def datos_precipitacion(estacion_id, inicio, fin):
     for fila in consulta:
         valor.append(fila.valor)
         fecha.append(fila.fecha)
-        acumulado_valor = acumulado_valor + fila.valor
         acumulado.append(acumulado_valor)
+        acumulado_valor = acumulado_valor + fila.valor
+        #acumulado.append(acumulado_valor)
 
     ######################################################################################
     sql2 = """

@@ -11,9 +11,9 @@
         </div>
         <div class="card-body">
             <form method="post">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <input type="submit" value="Guardar" class="btn btn-success"/>
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <input type="submit" value="Guardar" class="btn btn-success"/>
                 <a class="btn btn-light" href="{% url 'telemetria:config_alarma_list' %}">Regresar (Sin guardar)</a>
             </form>
         </div>
