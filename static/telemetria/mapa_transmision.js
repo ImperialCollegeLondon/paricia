@@ -63,68 +63,6 @@ $(document).ready(function() {
 
     generar_informacion(geojsonFeature, limites);
 
-
-    /*$.each(geojsonFeature.features, function(i, item) {
-        //console.log(item.properties.codigo);
-        var num_normal = 0;
-        var num_expectante = 0;
-        var num_fallo = 0;
-        var objHTML = '';
-        if (item.properties.estado==="NORMAL"){
-            num_normal ++;
-            objHTML = set_info_estacion(item);
-
-            $("#div_lista_success").append(objHTML);
-        }
-        else if (item.properties.estado==="EXPECTANTE"){
-
-            num_expectante ++;
-            objHTML = set_info_estacion(item);
-            $("#div_lista_warning").append(objHTML);
-
-        }
-        else if (item.properties.estado==="FALLO"){
-            num_fallo ++;
-            objHTML = set_info_estacion(item);
-            $("#div_lista_danger").append(objHTML);
-
-        }
-
-        if (num_normal == 0){
-            $("#div_lista_success").html('Sin estaciones por el momento');
-        }
-        if (num_expectante == 0){
-            console.log("expectante");
-            $("#div_lista_warning").html('Sin estaciones por el momento');
-        }
-        if (num_fallo == 0){
-            $("#div_lista_danger").html('Sin estaciones por el momento');
-        }
-
-
-        $("#span_success").html(num_normal);
-        $("#span_warning").html(num_expectante);
-        //$("#span_danger").html(num_fallo);
-
-
-    });
-    // Mensajes de explicación de las alertas
-     var msg_success = "Transmisión continua < ";
-     msg_success += parseFloat(limites.lim1) + " hora(s).</small>";
-     var msg_warning = "Transmisión intermitente.";
-     var msg_danger = "Estaciones sin transmisión en las últimas ";
-     msg_danger += parseFloat(limites.lim2) + " horas. ";
-     msg_danger += '<button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">'
-     msg_danger += 'Ver</button>'
-
-    $("#div_msg_success").html(msg_success);
-    $("#div_msg_warning").html(msg_warning);
-    $("#div_msg_danger").html(msg_danger);
-
-    */
-
-
-
     //generar los iconos por estacion
     var success_icon = L.icon({
 		iconUrl: '/static/leaflet/images/icon-success.png',
@@ -212,8 +150,7 @@ $(document).ready(function() {
     };
     //Agregar la leyenda al mapa
     legend.addTo(mymap);
-
-
+    //Crear un control para agregar un boton
     var info = L.control({position: 'topright'});
 
     info.onAdd = function (map) {
@@ -223,8 +160,8 @@ $(document).ready(function() {
     };
     info.addTo(mymap);
 
+    // Regresar el zoom del mapa al estado inicial
     $("#btn_reset_zoom").click(function(){
-        console.log("llego");
         mymap.setView([-0.25, -78.43], 9);
     });
 
@@ -240,7 +177,7 @@ $(document).ready(function() {
 
         return objHTML;
     }
-
+    // Información para la lista de estaciones
     function set_info_estacion(feature){
 
         var objHTML='<li><small><b>Codigo:</b>'+feature.properties.codigo+' ';
@@ -293,25 +230,12 @@ $(document).ready(function() {
             $("#div_lista_danger").html('Sin estaciones por el momento');
         }
 
-        console.log(num_fallo);
-        // Mensajes de explicación de las alertas
-        /*var msg_success = "Transmisión continua < ";
-        msg_success += parseFloat(limites.lim1) + " hora(s).</small>";
-        var msg_warning = "Transmisión intermitente.";
-        var msg_danger = "Estaciones sin transmisión en las últimas ";
-        msg_danger += parseFloat(limites.lim2) + " horas. ";
-        //msg_danger += get_button('danger',num_fallo);*/
         set_mensaje_transmision('success',limites);
         set_mensaje_transmision('warning',limites);
         set_mensaje_transmision('danger',limites);
         set_button('success',num_normal);
         set_button('warning',num_expectante);
         set_button('danger',num_fallo);
-
-        //$("#div_msg_success").html(msg_success);
-        //$("#div_msg_warning").html(msg_warning);
-        //$("#div_msg_danger").html(msg_danger);
-
 
     }
 

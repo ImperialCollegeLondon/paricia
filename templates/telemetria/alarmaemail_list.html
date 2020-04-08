@@ -2,17 +2,19 @@
 {% load bootstrap4 %}
 {% block content %}
 
+
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Telemetría: Alarma</h3>
+    </div>
+</div>
+
 <div class="col-md-7">
     <div class="card">
         <div class="card-header">
-            <h3 style="display:inline;">Telemetría: Alarma</h3>
-            <br>
-        </div>
-        <br>
-        <div class="card-header">
             <div class="row">
                 <div class="col-md-8">
-                    <h4 style="display:inline;">&nbsp;Rango de horas de toleracia de transmisión</h4>
+                    <h5>&nbsp;Rango de horas de toleracia de transmisión</h5>
                 </div>
                 <div class="col-md-4">
                     <a class="btn btn-info" href="{% url 'telemetria:config_alarma_transmision_limites' %}">Modificar límites</a>
@@ -22,32 +24,33 @@
         </div>
 
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-8">
+            <!--<div class="row">
+                <div class="col-md-8">-->
 
-                <table class="table table-striped table-bordered table-condensed">
-                    <tr>
-                        <th>Límite 1, para estado EXPECTANTE:</th>
-                        <td>{{ lim_inf_horas| floatformat:1}}</td>
-                    </tr>
-                    <tr>
-                        <th>Límite 2, para estado FALLO:</th>
-                        <td>{{ lim_sup_horas| floatformat:1}}</td>
-                    </tr>
-                </table>
-            </div>
-            </tr>
-            </div>
+                    <table class="table table-striped table-bordered table-condensed">
+                        <tr>
+                            <th>Límite 1, para estado EXPECTANTE:</th>
+                            <td>{{ lim_inf_horas| floatformat:1}}</td>
+                        </tr>
+                        <tr>
+                            <th>Límite 2, para estado FALLO:</th>
+                            <td>{{ lim_sup_horas| floatformat:1}}</td>
+                        </tr>
+                    </table>
+                <!--</div>
+
+            </div>-->
         </div>
 
-        <br>
+    </div>
+    <div class="card">
         <div class="card-header">
             <div class="row">
             <div class="col-md-8">
-                <h4 style="display:inline;">&nbsp;Correo donde se envía alarma</h4>
+                <h4>&nbsp;Correo donde se envía alarma</h4>
             </div>
             <div class="col-md-4">
-                <a class="btn btn-info" href="{% url 'telemetria:config_alarma_email_create' %}">Agregar nuevo email</a>
+                <a class="btn btn-info" href="{% url 'telemetria:config_alarma_email_create' %}">Agregar email</a>
             </div>
             </div>
 
@@ -57,22 +60,26 @@
             <br>
 
             <table class="table table-striped table-bordered table-condensed">
-            <thead>
-            <tr>
-            <th>Email</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for linea in object_list %}
-            <tr>
-            <td>{{ linea.email }}</td>
-            <td>
-            <a href="{% url 'telemetria:config_alarma_email_delete' linea.pk %}">Eliminar</a>
-            </td>
-            </tr>
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linea in object_list %}
+                    <tr>
+                        <td>{{ linea.email }}</td>
+                        <td>
 
-            {% endfor %}
-            </tbody>
+
+                            <a href="{% url 'telemetria:config_alarma_email_delete' linea.pk %}">
+                                <span class="far fa-trash-alt" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
             </table>
 
         </div>

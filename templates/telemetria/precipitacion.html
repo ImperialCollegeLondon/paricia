@@ -1,287 +1,95 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap4 %}
-{% load humanize %}
 {% load static %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<style>
-    .container {
-        width: 1350px;
-    }
-</style>
-<script>
 
-var graf_width = 1300;
-var graf_height = 700;
-var graf_margin_right = 5;
-var graf_margin_top = 35;
-var graf_margin_bottom = 35;
-var graf_margin_left = 35;
-var graf_title_size = 14;
-var graf = 1;
+<script src="{% static 'telemetria/precipitacion.js' %}"></script>
 
 
-$.datepicker.regional['es'] = {
-    closeText: 'Cerrar',
-    prevText: '< Ant',
-    nextText: 'Sig >',
-    currentText: 'Hoy',
-    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-    monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
-    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-    dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
-    dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
-    weekHeader: 'Sm',
-    dateFormat: 'yy-mm-dd',
-    firstDay: 1,
-    isRTL: false,
-    showMonthAfterYear: false,
-    yearSuffix: ''
-};
-
-$.datepicker.setDefaults($.datepicker.regional['es']);
+<div class="row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Precipitación Acumulada Díaria - Histórico Mensual</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Esta consulta muestra los valores de precipitación diarios e historicos mensuales de las estaciones con telemetría</p>
+    </div>
+</div>
 
 
-function cargar_datos(data){
-    $("#graf1").empty();
+<form id="form_precipitacion" class="form" method="post">
+    <input type="hidden" value="" name="estacion"/>
+    <input type="hidden" value="" name="fecha"/>
+    <div class="row">
+        {% csrf_token %}
+        {% for field in form%}
+        {% bootstrap_field field form_group_class='col-lg-3 col-md-3' %}
+        {% endfor %}
 
-    var layout = {
-        title: data.estacion  + '\nPrecipitación acumulada',
-        titlefont: {
-            size: graf_title_size
-        },
-        showlegend: true,
-        width: 900,
-        height: 250,
-        margin: {
-            r: graf_margin_right,
-            t: graf_margin_top,
-            b: graf_margin_bottom,
-            l: graf_margin_left,
-            pad: 0
-        },
-    };
-
-    var trace = {
-        name: 'Diario [mm]',
-        x: data.datos.fecha,
-        y: data.datos.valor,
-        type: 'bar',
-    };
-
-    var acum_total = {
-        name: 'Acum. [mm]',
-        x: data.datos.fecha,
-        y: data.datos.acumulado,
-        type: 'lines',
-        line: {
-            color: 'rgb(219, 64, 82)',
-        }
-    };
-
-    Plotly.newPlot('graf1', [trace, acum_total], layout, {showSendToCloud: false, responsive: true});
-
-    var vmac = data.datos.valor_mayor_a_cero;
-    for (var ix in vmac){
-        $('#table_valor > tbody').append("<tr><td>" + vmac[ix][0] + "</td><td>" + vmac[ix][1] + "</td></tr>");
-    }
-
-
-    $("#graf3").empty();
-
-    var layout = {
-        title: data.estacion  + '\nPrecipitación mensual',
-        titlefont: {
-            size: graf_title_size
-        },
-        showlegend: true,
-        width: 900,
-        height: 250,
-        barmode: 'group',
-        margin: {
-            r: graf_margin_right,
-            t: graf_margin_top,
-            b: graf_margin_bottom,
-            l: graf_margin_left,
-            pad: 0
-        },
-    };
-
-    var historico = {
-        name: 'Histórico',
-        x: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-        y: data.datos.historico,
-        type: 'bar',
-    };
-
-    var actual = {
-        name: data.datos.año_actual,
-        x: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-        y: data.datos.actual,
-        type: 'bar',
-    };
-
-    Plotly.newPlot('graf3', [historico, actual], layout, {showSendToCloud: false, responsive: true});
-}
-
-
-
-function enviar_consulta(){
-    $.ajax({
-        url: "{% url 'telemetria:consulta_precipitacion' %}",
-        data: $("#form_precipitacion").serialize(),
-        type:'POST',
-        beforeSend: function () {
-            $("#div_error").hide();
-        },
-        success: function (data) {
-            $("#div_informacion").show();
-            $("#div_loading").hide();
-            $("#div_error").hide();
-            cargar_datos(data);
-        },
-        error: function () {
-            $("#div_informacion").hide();
-            $("#div_loading").hide();
-            $("#div_error").show();
-        }
-    });
-};
-
-
-$(document).ready(function() {
-
-    $("#id_inicio").datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "yy-mm-dd",
-        showButtonPanel: true,
-        yearRange:  ((new Date).getFullYear()-1) + ':'+(new Date).getFullYear()
-    });
-
-    $("#id_inicio").datepicker().focus(function () {
-        $("#ui-datepicker-div").position({ my: "center top", at: "center bottom", of: $("#id_inicio")});
-    });
-    
-    
-    $("#id_fin").datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "yy-mm-dd",
-        showButtonPanel: true,
-        yearRange:  ((new Date).getFullYear()-1) + ':'+(new Date).getFullYear()
-    });
-
-    $("#id_fin").datepicker().focus(function () {
-        $("#ui-datepicker-div").position({ my: "center top", at: "center bottom", of: $("#id_fin")});
-    })
-    $("#id_fin").datepicker().datepicker("setDate", new Date());    
-
-    $("#visualizar").click(function(){
-        $("#graf1").empty();
-        $("input[name='estacion']").val($('#id_estacion').val() );
-        $("input[name='fecha']").val($('#id_fecha').val() );
-        $("#div_loading").show();
-        $("#div_information").show();
-        enviar_consulta();
-        $("#div_loading").hide();
-    });
-
-
-});
-
-
-</script>
-
-
-
-<div class="col-md-12">
-    <div class="card">
-    <div class="card-header">
-        <div class="row">
-            <form id="form_precipitacion" class="form" method="post">
-                {% csrf_token %}
-                <input type="hidden" value="" name="estacion"/>
-                <input type="hidden" value="" name="fecha"/>
-                <div class="col-lg-1 col-lg-1-5">
-                    <h4 style="display: inline;">Telemetría Precipitación</h4>
-                </div>
-                <div class="col-lg-3">
-                    {% bootstrap_field form.estacion layout='horizontal' %}
-                </div>
-                <div class="col-lg-2">
-                    {% bootstrap_field form.inicio layout='horizontal' %}
-                </div>
-                <div class="col-lg-2" >
-                    {% bootstrap_field form.fin layout='horizontal' %}
-                </div>
-                <div class="col-lg-2">
-                    <button id='visualizar' type='button' class='btn btn-primary' >Visualizar</button>
-                    <a class="btn btn-light" href="{% url 'telemetria:precipitacion' %}">Limpiar</a>
-                </div>
-            </form>
+        <div class="col-lg-3 col-md-3 mt-4">
+            <button id='visualizar' type='button' class='btn btn-primary' >Visualizar</button>
+            <a class="btn btn-light" href="{% url 'telemetria:precipitacion' %}">Limpiar</a>
         </div>
     </div>
 
-    <div class="card-body">
+</form>
 
-        <div class="col-lg-12">
-            <div id="div_informacion" >
 
-                <div class="col-lg-9 col-lg-9-5">
-                    <div class="row">
-                            <div id="graf1" class="grafico" style="display:inline-block" ></div>
-                    </div>
+<div id="div_informacion" style="display:none">
+    <div class="row">
 
-                    <div class="row"><br></div>
+        <div id="div_graficos" class="col-lg-9 col-md-8 col-sm-6">
+            <div class="row">
+                <div id="graf1" class="grafico" style="display:inline-block" ></div>
+            </div>
 
-                    <div class="row">
-                            <div id="graf3"  style="display:inline-block" ></div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-lg-2-5">
-                    <div class="row">
-                        <div class="col-md-12"><h5>Eventos de precipitación.</h5></div>
-                    </div>
-                    <div class="row">
-                        <div id="graf2">
-                            <div id="div_valor" class="col-md-12" style="height:450px; overflow-x:hidden; overflow-y: scroll; padding-bottom:10px;">
-                            <table id="table_valor" class="table table-bordered table-condensed table-hover">
-                                <thead><tr><th>Fecha</th><th>Valor</th></tr></thead>
-                                <tbody></tbody>
-                            </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="row"><br></div>
 
-                <div id="div_loading" class="row" style="display:none;">
-                    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
-                    <div class="col-lg-4 col-md-4 col-sm-4">
-                        <img src="/media/loading6.gif"/>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
-                </div>
+            <div class="row">
+                <div id="graf3"  style="display:inline-block" ></div>
+            </div>
+        </div>
 
-                <div id="div_error" class="row" style="display:none;">
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="row">
+                <div class="col-md-12"><h5>Eventos de precipitación.</h5></div>
+            </div>
+            <div class="row">
+                <div id="graf2">
+                    <div id="div_valor" class="col-md-12" style="height:450px; overflow-x:hidden; overflow-y: scroll; padding-bottom:10px;">
+                        <table id="table_valor" class="table table-bordered table-condensed table-hover table-sm">
+                            <thead><tr><th>Fecha</th><th>Valor</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-
-
         </div>
 
-
-
-
     </div>
+
+
+
 </div>
+
+<div id="div_loading" class="row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/media/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+
+<div id="div_error" class="row" style="display:none;">
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+    </div>
 </div>
 
 

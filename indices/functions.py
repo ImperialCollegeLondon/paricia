@@ -466,21 +466,23 @@ def indicaCaudal(estacion_id, inicio, fin, completo):
             dic = {"cmax": str(round(camax, 7)), "fdmax": fdmax[0]['fecha'].strftime("%d/%m/%Y"),
                    "cavg": str(round(caavg, 7)), "cmim": str(round(camim, 7)),
                    "fdmin": fdmin[0]['fecha'].strftime("%d/%m/%Y"), "per10": str(round(p10, 7)),
-                   "per50": str(round(p50, 7)), "per95": str(round(p95, 7))
-                , "inf":str(inf),"cmessec": str(round(caSeco/inf, 7)),"fecmessec":fecmessec[0].fecha.strftime("%m/%Y"),
+                   "per50": str(round(p50, 7)), "per95": str(round(p95, 7)),
+                   "inf":str(inf),"cmessec": str(round(caSeco, 7)),"fecmessec":fecmessec[0].fecha.strftime("%m/%Y"),
                    "cmax_es": str(round(camax/inf, 7)), "fdmax_es": fdmax[0]['fecha'].strftime("%d/%m/%Y"),
                    "cavg_es": str(round(caavg/inf, 7)), "cmim_es": str(round(camim/inf, 7)),
                    "fdmin_es": fdmin[0]['fecha'].strftime("%d/%m/%Y"), "per10_es": str(round(p10/inf, 2)),
-                   "per50_es": str(round(p50/inf, 7)), "per95_es": str(round(p95/inf, 7))
-                , "cmessec_es": str(round(caSeco/inf, 7)), "fecmessec_es": fecmessec[0].fecha.strftime("%m/%Y")
-                   }
+                   "per50_es": str(round(p50/inf, 7)), "per95_es": str(round(p95/inf, 7)),
+                  "cmessec_es": str(round(caSeco/inf, 7)), "fecmessec_es": fecmessec[0].fecha.strftime("%m/%Y")
+                }
         else:
             print("fecha del me mas secos ::::: ",type(fecmessec[0].fecha),fecmessec[0].fecha)
             dic = {"inf":"vacio","cmax": str(round(camax, 7)), "fdmax": fdmax[0]['fecha'].strftime("%d/%m/%Y"),
                    "cavg": str(round(caavg, 7)), "cmim": str(round(camim, 7)),
                    "fdmin": fdmin[0]['fecha'].strftime("%d/%m/%Y"), "per10": str(round(p10, 2)),
-                   "per50": str(round(p50, 7)), "per95": str(round(p95, 7))
-                , "cmessec": str(round(caSeco, 7)),"fecmessec":fecmessec[0].fecha.strftime("%m/%Y")}
+                   "per50": str(round(p50, 7)), "per95": str(round(p95, 7)),
+                   "cmessec": str(round(caSeco, 7)), "fecmessec":fecmessec[0].fecha.strftime("%m/%Y")
+                   }
+            print(caSeco, caSeco / inf)
         return dic
     else:
         return None

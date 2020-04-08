@@ -139,9 +139,20 @@ class ConfigAlarmaEmailDelete(DeleteView):
     model = AlarmaEmail
     success_url = reverse_lazy('telemetria:config_alarma_list')
 
+
 class ConfigAlarmaTransmisionLimites(FormView):
     template_name = 'telemetria/config_alarma_transmision_limites.html'
     form_class = AlarmaTransmisionLimitesForm
+    success_url = 'telemetria/alarma_transmision/config/'
+
+    def form_valid(self, form):
+        lim_inf = form.cleaned_data['lim_inf']
+        lim_sup = form.cleaned_data['lim_sup']
+
+        TeleVariables.objects.update_or_create(nombre='ALAR_TRAN_LIMI_INFE', defaults={'valor': lim_inf})
+        TeleVariables.objects.update_or_create(nombre='ALAR_TRAN_LIMI_SUPE', defaults={'valor': lim_sup})
+
+        return super().form_valid(form)
 
 
 ##########################

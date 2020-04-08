@@ -409,7 +409,7 @@ $(document).ready(function () {
             },
             success: function (data) {
                 //add scroll to datatable
-                $("#btn_ind_cau").attr('disabled', false);
+                $("#btn_indi_cau").attr('disabled', false);
 
                 if(data != null){
                     console.log(data)

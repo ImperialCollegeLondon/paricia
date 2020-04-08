@@ -10,7 +10,7 @@ import datetime
 class ConsultaForm(forms.Form):
     estacion = forms.ModelChoiceField(queryset=Estacion.objects.none(), label="Estacion", required=False)
     inicio = forms.DateField(
-        input_formats=['%Y-%m-%d'], label="Fecha de inicio", required=False,
+        input_formats=['%Y-%m-%d'], label="Inicio", required=False,
         widget=forms.TextInput(attrs={'autocomplete': 'off'})
     )
 
