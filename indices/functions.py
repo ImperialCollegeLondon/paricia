@@ -13,6 +13,7 @@ import pandas as pd
 import decimal
 import numpy as np
 from decimal import Decimal
+import json
 
 from django.core import serializers
 
@@ -192,7 +193,11 @@ def acumulaHoras(estacion_id, fechaini, fechafin, nhoras):
             # print(fechaini, " -- ", fechatemp," : ",datohora['valor__sum'])
         fechaini = fechatemp
     return acumulados
-
+def acumula5min():
+    # aqui csultar los datos istantaneos
+    valid = vali.Precipitacion.objects.all()[:10]
+    #-na fucioque se desplace solo cadas5 minutos
+    return "Hola mundo"
 
 def acumulaSimple(est1, frecuencia):
     # print("metodo acumular")
@@ -284,7 +289,7 @@ def caudalEspecifico(caudal, estacion_id, frecuencia):
 """Esta clase se encarga de calcular los indicadores de precipitación,
 Cada funcion de la clase calcula un indicador determinado"""
 
-import json
+
 class IndicadoresPrecipitacion():
     def __init__(self, estacion_id, inicio, fin, completo):
         self.estacion = estacion_id
