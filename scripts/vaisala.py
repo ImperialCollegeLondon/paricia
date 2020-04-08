@@ -19,6 +19,7 @@ from numbers import Number
 import pandas.io.common
 from django.db.utils import DataError
 
+
 def run(*args):
     with daemon.DaemonContext():
         iniciar_lectura()

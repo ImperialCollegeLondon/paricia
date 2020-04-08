@@ -160,6 +160,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ADMIN_MEDIA_PREFIX = '/static/admin/'
 
+# MAIL Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'paul.chicaiza@fonag.org.ec'
+EMAIL_HOST_PASSWORD = 'FONAG2018'
+
 # Settings for django-bootstrap4
 BOOTSTRAP4 = {
     "css_url": {
