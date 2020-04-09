@@ -667,10 +667,13 @@ $(document).ready(function () {
 
     /// grafica duracion de caudal
     function duracaudal(data){
+        var width_graph = $(".container").width();
+        console.log(width_graph);
 
         var layout = {
           title: 'Duración de caudal',
           showlegend:true,
+          width: width_graph,
           xaxis: {
             title: 'Frecuencia',
             showgrid: true,
