@@ -9,9 +9,9 @@ import time
 import daemon
 
 
-def run(*args):
+'''def run(*args):
     with daemon.DaemonContext():
-        activar_revision()
+        activar_revision()'''
 
 
 def activar_revision():
@@ -19,7 +19,7 @@ def activar_revision():
         lim_inf_horas, lim_sup_horas = consultar_parametros()
         fallos = revisar_transmision(lim_inf_horas, lim_sup_horas)
         enviar_alarma(fallos, lim_sup_horas)
-        time.sleep(6000)
+        time.sleep(3600)
 
 
 def consultar_parametros():
@@ -42,7 +42,7 @@ def enviar_alarma(fallos, lim_sup_horas):
     if len(fallos) > 0:
         correos = AlarmaEmail.objects.all().values_list('email')
         correos_destino = list(itertools.chain(*correos))
-        if correos_destino:
+        if len(correos_destino)>0:
 
             titulo = 'SEDC: Alerta de transmisión.'
             mensaje = "Se reporta un fallo en la transmisión de una o más estaciones. " + \
@@ -79,6 +79,7 @@ def revisar_transmision(lim_inf_horas, lim_sup_horas):
     fallos = []
     estacion_verificada = None
     for fila_cv in configvisualizar:
+
         ## Si es caudal no se tomará en cuenta porque caudal es una variable derivada usando curva de descarga y nivel
         ## Hubo problema en alarma de transmisión porque Si se recibía NIVEL pero no se calculaba CAUDAL por que no hubo
         ## curva de descarga aún y por lo tanto daba un falso positivo.
@@ -96,6 +97,7 @@ def revisar_transmision(lim_inf_horas, lim_sup_horas):
         with connection.cursor() as cursor:
             cursor.execute(sql, (fila_cv.estacion_id, fecha_actual))
             res = cursor.fetchone()
+        cursor.close()
 
         try:
             fecha_dato = res[0]
@@ -124,14 +126,14 @@ def revisar_transmision(lim_inf_horas, lim_sup_horas):
         # Saltar si el estado anterior no cambia
         if estado_actual == estado_anterior:
             AlarmaEstado.objects.update_or_create(
-                estacion_id=fila_cv.estacion_id, fecha=fecha_actual, fecha_dato=fecha_dato,
-                defaults={"estado_id": estado[estado_anterior]}
+                estacion_id=fila_cv.estacion_id, fecha=fecha_actual, estado_id=estado[estado_anterior],
+                defaults={"fecha_dato": fecha_dato}
             )
             continue
 
         AlarmaEstado.objects.update_or_create(
-            estacion_id=fila_cv.estacion_id, fecha=fecha_actual, fecha_dato=fecha_dato,
-            defaults={"estado_id": estado[estado_actual]}
+            estacion_id=fila_cv.estacion_id, fecha=fecha_actual,
+            defaults={"estado_id": estado[estado_actual], "fecha_dato": fecha_dato}
         )
 
         if estado_actual == 'FALLO':
@@ -141,10 +143,15 @@ def revisar_transmision(lim_inf_horas, lim_sup_horas):
                 'ultimo_dato': fecha_dato,
             }
             fallos.append(reporte)
-        return fallos
+
+    print("fallos", fallos)
+    return fallos
 
 
 def registrar_log(mensaje):
     registro = open('/tmp/transmision.txt', 'a')
     registro.write(time.ctime() + ': ' + mensaje + '\n')
     registro.close()
+
+
+activar_revision()

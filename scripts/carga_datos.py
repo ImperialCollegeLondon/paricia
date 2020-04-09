@@ -1,3 +1,5 @@
+# Este script permite cargar datos de un archivo excel a una tabla de la BD
+
 import pandas as pd
 from estacion.models import Estacion, SistemaCuenca
 

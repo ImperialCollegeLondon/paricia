@@ -1,3 +1,6 @@
+# Este script permite pasar los datos crudos a validados.
+# Es un script temporal
+
 import pandas as pd
 from estacion.models import Estacion
 from cruce.models import Cruce

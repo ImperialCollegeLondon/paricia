@@ -180,9 +180,9 @@ $(document).ready(function() {
     // Información para la lista de estaciones
     function set_info_estacion(feature){
 
-        var objHTML='<li><small><b>Codigo:</b>'+feature.properties.codigo+' ';
+        var objHTML='<tr><td>'+feature.properties.codigo+'</td>';
         //objHTML+='<b>Nombre:</b> '+feature.properties.nombre+'-';
-        objHTML+='<b>Última Fecha Transmisión:</b> '+feature.properties.fecha_dato.replace('T',' ')+'</li>';
+        objHTML+='<td>'+feature.properties.fecha_dato.replace('T',' ')+'</td></tr>';
         //objHTML+='<b>Fecha Cambio:</b> '+feature.properties.fecha_estado_actual.replace('T',' ')+'</small></li>';
 
         return objHTML;
@@ -193,42 +193,70 @@ $(document).ready(function() {
         var num_normal = 0;
         var num_expectante = 0;
         var num_fallo = 0;
-        $("#div_lista_success").html('<ul>');
-        $("#div_lista_warning").html('<ul>');
-        $("#div_lista_danger").html('<ul>');
+
+        var row_success=''
+        var row_warning=''
+        var row_danger=''
         $.each(estaciones.features, function(i, item) {
             //console.log(item.properties.codigo);
             var objHTML = '';
             if (item.properties.estado==="NORMAL"){
                 num_normal ++;
-                objHTML = set_info_estacion(item);
-                $("#div_lista_success").append(objHTML);
+                row_success += set_info_estacion(item);
+                //$("#div_lista_success").append(objHTML);
             }
             else if (item.properties.estado==="EXPECTANTE"){
                 num_expectante ++;
-                objHTML = set_info_estacion(item);
-                $("#div_lista_warning").append(objHTML);
+                row_warning += set_info_estacion(item);
+                //$("#div_lista_warning").append(objHTML);
             }
             else if (item.properties.estado==="FALLO"){
                 num_fallo ++;
-                objHTML = set_info_estacion(item);
-                $("#div_lista_danger").append(objHTML);
+                row_danger += set_info_estacion(item);
+                //$("#div_lista_danger").append(objHTML);
+
             }
         });
 
-        $("#div_lista_success").append('</ul>');
-        $("#div_lista_warning").append('</ul>');
-        $("#div_lista_danger").append('</ul>');
+        //$("#div_lista_success").append('</ul>');
+        //$("#div_lista_warning").append('</ul>');
+        //$("#div_lista_danger").append('</ul>');
+
 
         if (num_normal == 0){
+            $("#div_lista_success").show();
             $("#div_lista_success").html('Sin estaciones por el momento');
+            $("#tabla_success").hide();
+        }
+        else{
+            $("#tabla_success").show();
+            $("#tabla_success > tbody").html(row_success);
+            $("#div_lista_success").hide();
+
         }
         if (num_expectante == 0){
+            $("#div_lista_warning").show();
             $("#div_lista_warning").html('Sin estaciones por el momento');
+            $("#tabla_warning").hide();
+        }
+        else{
+            $("#tabla_warning").show();
+            $("#tabla_warning > tbody").html(row_warning);
+            $("#div_lista_warning").hide();
+
         }
         if (num_fallo == 0){
             $("#div_lista_danger").html('Sin estaciones por el momento');
+            $("#tabla_danger").hide();
         }
+        else{
+            $("#tabla_danger").show();
+            $("#tabla_danger > tbody").html(row_danger);
+            $("#div_lista_danger").hide();
+
+        }
+
+
 
         set_mensaje_transmision('success',limites);
         set_mensaje_transmision('warning',limites);
