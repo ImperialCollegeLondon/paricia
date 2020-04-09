@@ -610,43 +610,46 @@ $(document).ready(function () {
             success: function (data) {
             console.log("ya en el javascript")
             console.log(data," Longitud ");
-                if(data.length > 0){
-                    var traces = [];
-                    console.log("valor del data"+ data.length)
-                    for (var aix = 0; aix < data.length; aix ++){
-                        let dx = []
-                        let dy = []
-                        var con = data[aix].frecuencias.length - 1
-                        for (var vin  = 0 ;vin < data[aix].frecuencias.length; vin++  ){
-                            //console.log("valor del data.frecuencias"+ data[aix].frecuencias[vin])
-                            dx.push(data[aix].frecuencias[vin]);
-                            dy.push(data[aix].valores[con]);
-                            con = con - 1;
-                        }
-                        let tra={
-                            x: dx,
-                            y: dy,
-                            mode: 'lines',
-                            name: ''+data[aix].anio,
-                            line: {
-                            //color: 'blue',
-                                width: 3
-                              },
-                            type: 'scatter'
-                        };
-                        traces.push(tra);
+            if(data.length > 0){
+                rows = "";
+                var traces = [];
+                console.log("valor del data"+ data.length)
+                for (var aix = 0; aix < data.length; aix ++){
+                    let dx = [];
+                    let dy = [];
+                    var con = data[aix].frecuencias.length - 1;
+                    rows+='<tr> <td colspan="2">'+data[aix].anio+'</td> </tr>';
+                    for (var vin  = 0 ;vin < data[aix].frecuencias.length; vin++  ){
+                        //console.log("valor del data.frecuencias"+ data[aix].frecuencias[vin])
+                        dx.push(data[aix].frecuencias[vin]);
+                        dy.push(data[aix].valores[con]);
+                        rows+='<tr> <td >'+data[aix].frecuencias[vin]+'</td>';
+                        rows += '<td >'+data[aix].valores[con]+'</td> </tr>';
+                        con = con - 1;
                     }
-
-
+                    let tra={
+                        x: dx,
+                        y: dy,
+                        mode: 'lines',
+                        name: ''+data[aix].anio,
+                        line: {
+                        //color: 'blue',
+                            width: 3
+                        },
+                        type: 'scatter'
+                    };
+                    traces.push(tra);
+                }
+                    $("#tbody").html(rows);
                     $("#grfico").html(duracaudal(traces));
                     $("#div_informacion").show();
-                }else{
+            }else{
                     $("#div_informacion").hide();
                     $("#div_error").html("No hay datos para Procesar")
                     $("#div_error").show();
-                }
-                $("#btn_bus_durcau").removeAttr('disabled');
-                $("#div_loading").hide();
+            }
+            $("#btn_bus_durcau").removeAttr('disabled');
+            $("#div_loading").hide();
                 //$("#div_error").hide();
                 //
             },
