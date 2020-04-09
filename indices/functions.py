@@ -246,7 +246,7 @@ def getCaudalFrec(estacion_id, inicio, fin, frecuencia):
     else:
         div = inf
     for anio in range(inicio.year,fin.year+1):
-        print( "procesar año ",anio ,"valor del div", div)
+        #print( "procesar año ",anio ,"valor del div", div)
         caudal = getCaudalanio(frecuencia,estacion_id,anio)
         if caudal is not None and len(caudal) > 30:
             df = pd.DataFrame(caudal)
