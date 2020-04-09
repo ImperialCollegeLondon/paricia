@@ -678,7 +678,7 @@ $(document).ready(function () {
             //type:'log'
           },
           yaxis: {
-            title: 'Caudal (l/s Km^2)',
+            title: 'Caudal (l/s)',
             showline: false,
             type:'log'
           }
