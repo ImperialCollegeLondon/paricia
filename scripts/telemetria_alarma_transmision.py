@@ -9,9 +9,9 @@ import time
 import daemon
 
 
-'''def run(*args):
+def run(*args):
     with daemon.DaemonContext():
-        activar_revision()'''
+        activar_revision()
 
 
 def activar_revision():
@@ -144,7 +144,7 @@ def revisar_transmision(lim_inf_horas, lim_sup_horas):
             }
             fallos.append(reporte)
 
-    print("fallos", fallos)
+    #print("fallos", fallos)
     return fallos
 
 
@@ -154,4 +154,4 @@ def registrar_log(mensaje):
     registro.close()
 
 
-activar_revision()
+#activar_revision()

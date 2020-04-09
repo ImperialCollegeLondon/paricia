@@ -47,7 +47,7 @@ def iniciar_lectura():
             registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
             pass
 
-        time.sleep(1500)
+        time.sleep(900)
 
 
 def respaldar_archivos(root_dir):

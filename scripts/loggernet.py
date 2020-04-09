@@ -39,7 +39,7 @@ def iniciar_lectura():
         except IOError as e:
             registrar_log('Error: ' + str(e.errno) + ' ' + e.strerror)
             pass
-        time.sleep(1500)
+        time.sleep(900)
 
 
 def registrar_log(mensaje):
