@@ -289,11 +289,11 @@ def getCaudalanio(frecuencia, estacion_id,anio):
     if frecuencia == 1:  # 'Horario':
         #print("entra en horario frecuencia ", frecuencia, estacion_id, inicio)
         return hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
-                                             fecha__lte=fin).values("valor")
+                                             fecha__lte=fin, valor__isnull=False).values("valor")
     if frecuencia == 2:  # 'Diario':
         #print("entra en diario ",frecuencia)
         return dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
-                                           fecha__lte=fin).values("valor")
+                                           fecha__lte=fin, valor__isnull=False).values("valor")
     return None
 
 def caudalEspecifico(caudal, estacion_id, frecuencia):
@@ -323,7 +323,7 @@ class IndicadoresPrecipitacion():
         print(self.inicio,self.fin)
         """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
         rranual = anio.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                   fecha__lte = self.fin).order_by('fecha')
+                                                   fecha__lte = self.fin, valor__isnull=False).order_by('fecha')
 
         if rranual is not None:
             return rranual
@@ -341,7 +341,7 @@ class IndicadoresPrecipitacion():
     def rr_max_hora(self):
         """calcula la precipitacion maxima acumulada en 24 horas"""
         rr_hora = hora.Precipitacion.objects.filter(estacion_id__exact=self.estacion, fecha__gte=self.inicio,
-                                          fecha__lte=self.fin).aggregate(Max('valor'))
+                                          fecha__lte=self.fin, valor__isnull=False).aggregate(Max('valor'))
         fhormax = hora.Precipitacion.objects.filter(estacion_id__exact=self.estacion, fecha__gte=self.inicio,
                                                     fecha__lte=self.fin, valor__exact=rr_hora["valor__max"]).values(
             'fecha')[:1]
