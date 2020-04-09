@@ -17,6 +17,12 @@ import json
 
 from django.core import serializers
 
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return {'__Decimal__': str(obj)}
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
 def periodos(i):
     switcher = {
@@ -230,49 +236,65 @@ def acumulaSimple(est1, frecuencia):
 #### calcula los datos para la curva de duracion sin la influencia de la estacion
 def getCaudalFrec(estacion_id, inicio, fin, frecuencia):
     """Calcula el caudal especifico de una estacion hidrológica"""
-    print("funcion caudal ")
-    const = 0.0
     est = Estacion.objects.get(est_id=estacion_id)
     inf = est.influencia_km
-    print("influencia ", inf, "fecha ini :", inicio, " fecha fin: ", fin)
-    # Qesp = Q / inf
-    if frecuencia == 1:  # 'Horario':
-        print("entra en horario frecuencia ", frecuencia, estacion_id, inicio, fin)
-        const = 1
-        caudal = hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
-                                            fecha__lte=fin).values("valor")
-    elif frecuencia == 2:  # 'Diario':
-        # print("entra en diario ",frecuencia)
-        const = 1
-        caudal = dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
-                                           fecha__lte=fin).values("valor")
-    else:  # 'Mensual':
-        # print("entra en mensuales ,frecuencia")
-        caudal = mes.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
-                                           fecha__lte=fin).values('fecha', 'valor')
-
-    if caudal is not None and len(caudal) > 0 :
-        if inf is None:
-            div = 1
-        else:
-            div = inf * decimal.Decimal(const)
-        df = pd.DataFrame(caudal)
-        df['CauEsp'] = df['valor'] / div
-        df = df.sort_values(by=['CauEsp'], ascending=[True])
-        td = len(df['CauEsp'])
-        df['rango'] = range(1, td + 1)
-        df['frecuencia'] = (df['rango'] / td) * 1
-        print(df)
-
-        dfsf = pd.DataFrame(caudal)
-        dfsf = dfsf.sort_values(by=['valor'], ascending=[True])
-        td = len(dfsf['valor'])
-        dfsf['rango'] = range(1, td + 1)
-        dfsf['frecuencia'] = (dfsf['rango'] / td) * 1
-        print(dfsf)
-        return df.to_json(orient='records')
+    #print("influencia ", inf, "fecha ini :", inicio.year, type(inicio), " fecha fin: ", fin.year)
+    dian=[]
+    dictTot = {};
+    if inf is None:
+        div = 1
     else:
-        return None
+        div = inf
+    for anio in range(inicio.year,fin.year+1):
+        print( "procesar año ",anio ,"valor del div", div)
+        caudal = getCaudalanio(frecuencia,estacion_id,anio)
+        if caudal is not None and len(caudal) > 30:
+            df = pd.DataFrame(caudal)
+            #df['anio'] = anio
+            df = df.sort_values(by=['valor'], ascending=[True])
+            td = len(df['valor'])
+            df['valor'] = df['valor'].astype(float)
+            df['rango'] = range(1, td + 1)
+            df['frecuencia'] = (df['rango'] / td) * 1
+            #valor  CauEsp  anio  rango  frecuencia
+            #df = df[['anio', 'valor', '1', '2', '3']]
+            #print(df.head(2))
+            #dftot = dftot.append(df)
+            #print(type(df['frecuencia'].tolist()[0]), type(df['valor'].tolist()[0]))
+            dian.append({'anio':anio,'frecuencias': df['frecuencia'].tolist(),'valores':df['valor'].tolist()})
+            #print(dian)
+            #dictTot.update(dian)
+    #print(dictTot)
+    return json.dumps(dian, allow_nan=True,cls=DecimalEncoder)
+    #return dftot.to_json(orient='records')
+    # if caudal is not None and len(caudal) > 0:
+    #     df = pd.DataFrame(caudal)
+    #     df['CauEsp'] = df['valor'] / div
+    #     df = df.sort_values(by=['CauEsp'], ascending=[True])
+    #     td = len(df['CauEsp'])
+    #     df['rango'] = range(1, td + 1)
+    #     df['frecuencia'] = (df['rango'] / td) * 1
+    #     print(df)
+    #     return dftot.to_json(orient='records')
+    # else:
+    #     return None
+
+def getCaudalanio(frecuencia, estacion_id,anio):
+    #print("frecuencia", "estacion_id","anio")
+    #print('   ',frecuencia,"   ", estacion_id,"   ","    ",anio)
+    fi=str(anio)+"-01-01"
+    ff = str(anio)+ "-12-31"
+    inicio = datetime.strptime(fi,'%Y-%m-%d')
+    fin = datetime.strptime(ff,'%Y-%m-%d')
+    if frecuencia == 1:  # 'Horario':
+        #print("entra en horario frecuencia ", frecuencia, estacion_id, inicio)
+        return hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
+                                             fecha__lte=fin).values("valor")
+    if frecuencia == 2:  # 'Diario':
+        #print("entra en diario ",frecuencia)
+        return dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
+                                           fecha__lte=fin).values("valor")
+    return None
 
 def caudalEspecifico(caudal, estacion_id, frecuencia):
     const = 0

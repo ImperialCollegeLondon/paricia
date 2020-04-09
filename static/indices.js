@@ -609,21 +609,36 @@ $(document).ready(function () {
             },
             success: function (data) {
             console.log("ya en el javascript")
-            console.log(data)
+            console.log(data," Longitud ");
                 if(data.length > 0){
-                    let x = []
-                    let y = []
-                    let ysf = []
-                    var con = data.length - 1;
-                    for (var i in data) {
-                        //console.log(con);
-                        x.push(data[i].frecuencia);
-                        y.push(data[con].CauEsp);
-                        ysf.push(data[con].valor);
-                        con = con - 1;
+                    var traces = [];
+                    console.log("valor del data"+ data.length)
+                    for (var aix = 0; aix < data.length; aix ++){
+                        let dx = []
+                        let dy = []
+                        var con = data[aix].frecuencias.length - 1
+                        for (var vin  = 0 ;vin < data[aix].frecuencias.length; vin++  ){
+                            //console.log("valor del data.frecuencias"+ data[aix].frecuencias[vin])
+                            dx.push(data[aix].frecuencias[vin]);
+                            dy.push(data[aix].valores[con]);
+                            con = con - 1;
+                        }
+                        let tra={
+                            x: dx,
+                            y: dy,
+                            mode: 'lines',
+                            name: ''+data[aix].anio,
+                            line: {
+                            //color: 'blue',
+                                width: 3
+                              },
+                            type: 'scatter'
+                        };
+                        traces.push(tra);
                     }
-                    $("#grfico").html(duracaudal(x,y));
-                    $("#grficosf").html(duracaudalsf(x,ysf));
+
+
+                    $("#grfico").html(duracaudal(traces));
                     $("#div_informacion").show();
                 }else{
                     $("#div_informacion").hide();
@@ -648,68 +663,25 @@ $(document).ready(function () {
     });
 
     /// grafica duracion de caudal
-    function duracaudal(xx,yy){
-       var trace1 = {
-          x: xx,
-          y: yy,
-          mode: 'lines',
-          name: 'CDC',
-          //text: ['United States', 'Canada'],
-          line: {
-              color: 'blue',
-              width: 3
-          },
-          type: 'scatter'
-        };
-
-        var data = [trace1];
+    function duracaudal(data){
 
         var layout = {
           title: 'Duración de caudal',
+          showlegend:true,
           xaxis: {
             title: 'Frecuencia',
             showgrid: true,
             zeroline: true
+            //type:'log'
           },
           yaxis: {
             title: 'Caudal (l/s Km^2)',
-            showline: false
+            showline: false,
+            type:'log'
           }
         };
-
+        //fig.update_layout(xaxis_type="log", yaxis_type="log")
         Plotly.newPlot('grfico', data, layout);
-    };
-    /// grafica duracion de caudal sin la influencia
-    function duracaudalsf(xx,yy){
-       var trace1 = {
-          x: xx,
-          y: yy,
-          mode: 'lines',
-          name: 'CDC',
-          //text: ['United States', 'Canada'],
-          line: {
-              color: 'green',
-              width: 3
-          },
-          type: 'scatter'
-        };
-
-        var data = [trace1];
-
-        var layout = {
-          title: 'Duración de caudal sin área de aporte',
-          xaxis: {
-            title: 'Frecuencia',
-            showgrid: true,
-            zeroline: true
-          },
-          yaxis: {
-            title: 'Caudal (l/s)',
-            showline: false
-          }
-        };
-
-        Plotly.newPlot('grficosf', data, layout);
     };
 
 });
