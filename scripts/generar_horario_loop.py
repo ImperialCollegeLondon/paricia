@@ -3,7 +3,7 @@ from variable.models import Variable
 
 def run():
     cursor = connection.cursor()
-    variables = Variable.objects.filter(reporte_automatico=True).filter(var_id=11)
+    variables = Variable.objects.filter(reporte_automatico=True)
     for variable in variables:
         print(variable.var_modelo)
         sql = "SELECT * FROM generar_horario_" + str(variable.var_modelo).lower() + "();"

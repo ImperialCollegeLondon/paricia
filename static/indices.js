@@ -614,11 +614,22 @@ $(document).ready(function () {
                 rows = "";
                 var traces = [];
                 console.log("valor del data"+ data.length)
+                //generar una matriz nxm
+                var matriz_periodos = generar_matriz(data);
+                //console.log(matriz_periodos);
+
+
                 for (var aix = 0; aix < data.length; aix ++){
                     let dx = [];
                     let dy = [];
                     var con = data[aix].frecuencias.length - 1;
                     rows+='<tr> <td colspan="2">'+data[aix].anio+'</td> </tr>';
+
+                    //generar los indices para frecuencias y valores
+                    var indice_par = 2*aix
+                    var indice_impar = 2*aix+1
+
+                    //
                     for (var vin  = 0 ;vin < data[aix].frecuencias.length; vin++  ){
                         //console.log("valor del data.frecuencias"+ data[aix].frecuencias[vin])
                         dx.push(data[aix].frecuencias[vin]);
@@ -626,7 +637,14 @@ $(document).ready(function () {
                         rows+='<tr> <td >'+data[aix].frecuencias[vin]+'</td>';
                         rows += '<td >'+data[aix].valores[con]+'</td> </tr>';
                         con = con - 1;
+
+                        //asignar frecuencias y valores
+                        matriz_periodos[indice_par][vin] = data[aix].frecuencias[vin];
+                        matriz_periodos[indice_impar][vin] = data[aix].valores[con];
+
+
                     }
+
                     let tra={
                         x: dx,
                         y: dy,
@@ -640,6 +658,10 @@ $(document).ready(function () {
                     };
                     traces.push(tra);
                 }
+
+
+                //console.log(matriz_periodos);
+                generar_tabla_html(matriz_periodos, data);
                     $("#tbody").html(rows);
                     $("#grfico").html(duracaudal(traces));
                     $("#div_informacion").show();
@@ -688,6 +710,98 @@ $(document).ready(function () {
         };
         //fig.update_layout(xaxis_type="log", yaxis_type="log")
         Plotly.newPlot('grfico', data, layout);
-    };
+    }
+    //Crear matriz multidimensional para tabla de datos
+    function generar_matriz(data){
+        var maximo = 0;
+        for (var aix = 0; aix < data.length; aix ++){
+            if (data[aix].frecuencias.length>maximo){
+                maximo = data[aix].frecuencias.length;
+            }
+
+        }
+
+        var matriz_periodos = new Array(data.length*2);
+        for (var i = 0; i< matriz_periodos.length; i++){
+            matriz_periodos[i]= new Array(maximo);
+        }
+
+        return matriz_periodos
+    }
+
+    function generar_tabla_html(matriz, datos){
+        var $table = $('#table');
+        $table.bootstrapTable('destroy');
+        var maximo = 0;
+        //for (var i = 0; i < matriz.length; ++i) {
+        for (var i = 0; i < matriz.length; i++) {
+            //console.log("filas",matriz[i].length);
+            if (matriz[i].length>maximo){
+                maximo = matriz[i].length;
+            }
+        }
+        //Crear una matriz de datos
+        var data = []
+        for (var j = 0; j < maximo; j++){
+            var fila = [];
+            for (var i = 0; i < matriz.length; i++) {
+                if (matriz[i][j]!== undefined){
+                    fila.push(matriz[i][j]);
+                }
+                else{
+                    fila.push('')
+                }
+            }
+            var fila_json = JSON.stringify(Object.assign({},fila));
+            var fila_str = JSON.parse(fila_json);
+            console.log(fila_str)
+            data.push(fila_str);
+        }
+
+        //Generar el encabezado
+        var columna = '<tr>';
+        var periodos = [];
+        //consultar los años de consulta
+        for (var i = 0; i < datos.length; i++) {
+            periodos.push(datos[i].anio);
+        }
+        console.log(periodos);
+
+        for (var i=0; i < periodos.length; i++){
+            columna += '<th colspan="2">'+periodos[i].toString() +'</th>';
+        }
+        columna += '</tr>';
+        columna += '<tr>'
+        for (var i = 0; i < matriz.length; i++) {
+            columna += '<th data-field="'+i.toString()+'">'+ get_titulo(i) +'</th>';
+        }
+        columna += '</tr>';
+        $("#table > thead").html(columna);
+
+        //agregar datos a la tabla
+        $table.bootstrapTable({data: data})
+
+        //console.log(columns);
+        //}
+    }
+
+    function get_titulo(indice){
+        var titulo = '';
+        if ((indice % 2)===0){
+            titulo = 'Frecuencia';
+        }
+        else{
+            titulo = 'Caudal';
+        }
+        return titulo;
+
+    }
+
+
+
+
+
+
+
 
 });

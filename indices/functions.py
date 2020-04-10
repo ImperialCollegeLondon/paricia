@@ -253,9 +253,9 @@ def getCaudalFrec(estacion_id, inicio, fin, frecuencia):
             #df['anio'] = anio
             df = df.sort_values(by=['valor'], ascending=[True])
             td = len(df['valor'])
-            df['valor'] = df['valor'].astype(float)
+            df['valor'] = round(df['valor'].astype(float),2)
             df['rango'] = range(1, td + 1)
-            df['frecuencia'] = (df['rango'] / td) * 1
+            df['frecuencia'] = round((df['rango'] / td) * 1,9)
             #valor  CauEsp  anio  rango  frecuencia
             #df = df[['anio', 'valor', '1', '2', '3']]
             #print(df.head(2))
