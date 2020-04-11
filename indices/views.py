@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from django.views import generic
-from .forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm
+from indices.forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm, CuvarCaudalMultiestacionForm, IntensidadDuracionMultiestacionForm
 from .functions import getVarValidado, acumularDoble, \
     intensidadDiracion, getCaudalFrec, indicaCaudal, consultaPeriodos
 from .functions import IndicadoresPrecipitacion
@@ -21,10 +21,12 @@ class DecimalEncoder(json.JSONEncoder):
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
+
 class Doblemasa(generic.FormView):
     template_name = "indices/doblemasa.html"
     form_class = SearchForm
     success_url = "indices/doblemasa"
+
     def post(self, request, *args, **kwargs):
         form = SearchForm(self.request.POST or None)
         #try:
@@ -51,12 +53,14 @@ class Doblemasa(generic.FormView):
         return HttpResponse(data, content_type='application/json')
         #return HttpResponse(intervalosSerial, content_type='application/json')
 
+
 class PeriodoDatos(generic.View):
     template_name = "indices/rangos.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
 
 class IndPrecip(generic.FormView):
     """Calcula los indices de precipitacion dispinibles para la estación selecionada"""
@@ -100,6 +104,7 @@ class IndCaudal(generic.FormView):
     template_name = "indices/caudal.html"
     form_class = IndCaudForm
     success_url = "indices/caudal.html"
+
     def post(self, request, *args, **kwargs):
         form = SelecEstForm(self.request.POST or None)
         # try:
@@ -139,6 +144,7 @@ class IntensidadRR(generic.FormView):
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
 
+
 class DuracionCaudal(generic.FormView):
     #duracioncaudal.html
     """Raliza la grafica para una estacion de la duracion del caudal"""
@@ -159,3 +165,13 @@ class DuracionCaudal(generic.FormView):
         #data = {"mensaje":"hola mundo "}
         #data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
+
+
+class DuracionCaudalMultiestacion(generic.FormView):
+    template_name = "indices/duracioncaudal_multiestacion.html"
+    form_class = CuvarCaudalMultiestacionForm
+
+
+class IntensidadRRMultiestacion(generic.FormView):
+    template_name = "indices/intendura_multiestacion.html"
+    form_class = IntensidadDuracionMultiestacionForm
