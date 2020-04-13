@@ -197,6 +197,8 @@ $(document).ready(function() {
         var row_success=''
         var row_warning=''
         var row_danger=''
+        var ultima_fecha = ''
+
         $.each(estaciones.features, function(i, item) {
             //console.log(item.properties.codigo);
             var objHTML = '';
@@ -216,11 +218,13 @@ $(document).ready(function() {
                 //$("#div_lista_danger").append(objHTML);
 
             }
+            ultima_fecha = item.properties.fecha_estado_actual.replace('T',' ');
         });
 
         //$("#div_lista_success").append('</ul>');
         //$("#div_lista_warning").append('</ul>');
         //$("#div_lista_danger").append('</ul>');
+        $("#div_ultima_fecha").html("Ultima revisión: " + ultima_fecha);
 
 
         if (num_normal == 0){
