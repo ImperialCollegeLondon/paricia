@@ -1,10 +1,14 @@
 {% extends "index.html" %}
 {% block content %}
 {% load bootstrap4 %}
-{% load humanize %}
 {% load static %}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+
+<link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+
+
 <script src="{% static 'js_ajax.js' %}"></script>
 <script src="{% static 'validacion_diaria.js' %}"></script>
 
@@ -90,10 +94,51 @@
     </div>
 </div>
 
-<div id="div_informacion">
+<div>
+    <table id="table_diario"
+    data-toggle="table_diario"
+    data-height="400"
+    data-virtual-scroll="true">
+    <thead>
+        <!--<tr>
+            <th data-field="dia">Fecha</th>
+            <th data-field="porcentaje">Porcentaje</th>
+            <th data-field="valor">Valor</th>
+            <th data-field="maximo">Maximo</th>
+            <th data-field="minimo">Minimo</th>
+        </tr>-->
+    </thead>
+    </table>
+
+</div>
+
+
+<div>
+    <table id="table_validado"
+    data-toggle="table_validado"
+    data-height="400"
+    data-virtual-scroll="true">
+    <thead>
+        <!--<tr>
+            <th data-field="dia">Fecha</th>
+            <th data-field="porcentaje">Porcentaje</th>
+            <th data-field="valor">Valor</th>
+            <th data-field="maximo">Maximo</th>
+            <th data-field="minimo">Minimo</th>
+        </tr>-->
+    </thead>
+    </table>
+
+</div>
+
+
+
+<div >
+
+
     <div class="row">
-        <div class="col-md-12">
-            <div class="table-responsive">
+        <div class="col-md-12" style="height:400px;">
+            <!--<div class="table-responsive">
                 <table id="tabla_diario" style="font-size: 12px" class="table table-scroll table-bordered">
                     <thead>
                         <tr>
@@ -107,13 +152,20 @@
                     </tbody>
                 </table>
 
-            </div>
+            </div>-->
+
+
+
+
+
         </div>
     </div>
 
+
+
     <div id="div_valor" class="row">
         <div class="col-md-12">
-            <div class="table-responsive">
+            <!--<div class="table-responsive">
                 <table id="tabla_valor" style="font-size: 12px" class="table table-scroll table-bordered">
                     <thead>
                         <tr>
@@ -127,7 +179,7 @@
                     </tbody>
                 </table>
 
-            </div>
+            </div>-->
         </div>
 
     </div>

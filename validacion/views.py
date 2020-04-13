@@ -85,7 +85,7 @@ class ValidacionDiaria(LoginRequiredMixin, FormView):
                 for fila in lista:
                     delattr(fila, '_state')
                     fila.dia = fila.dia.strftime("%Y-%m-%d")
-                    fila.porcentaje = round(fila.porcentaje)
+                    #fila.porcentaje = round(fila.porcentaje)
 
 
                 # lista_nueva = [dict(fila.__dict__) for fila in lista if fila['state']]
