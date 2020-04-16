@@ -84,7 +84,7 @@ $(document).ready(function () {
                     var y = [];
                     var ydate = []
                     for (var i = 0; i < cont - 1; i++ ) {
-                        //console.log(data[i].fecha);
+                        //console.log(data[i]foo fighters best of you.fecha);
                         rows += '<tr>';
                         rows += '<td class="col-sm-4">'+data[i].fecha+'</td>';
                         rows += '<td class="col-sm-2">'+data[i].valore1+'</td>';
@@ -217,7 +217,7 @@ $(document).ready(function () {
 
 /**********************************************
 ***********************************************
-        *indices de precipitación btn_ind_pre
+        *indices de precipitación
     */
 
     /*dado un valor de estacionalidad retorna la descriptiocn en texto*/
@@ -608,63 +608,92 @@ $(document).ready(function () {
                 $("#div_error").hide();
             },
             success: function (data) {
-            console.log("ya en el javascript")
-            console.log(data," Longitud ");
-            if(data.length > 0){
-                rows = "";
-                var traces = [];
-                console.log("valor del data"+ data.length)
-                //generar una matriz nxm
-                var matriz_periodos = generar_matriz(data);
-                //console.log(matriz_periodos);
-
-
-                for (var aix = 0; aix < data.length; aix ++){
-                    let dx = [];
-                    let dy = [];
-                    var con = data[aix].frecuencias.length - 1;
-                    rows+='<tr> <td colspan="2">'+data[aix].anio+'</td> </tr>';
-
-                    //generar los indices para frecuencias y valores
-                    var indice_par = 2*aix
-                    var indice_impar = 2*aix+1
-
-                    //
-                    for (var vin  = 0 ;vin < data[aix].frecuencias.length; vin++  ){
-                        //console.log("valor del data.frecuencias"+ data[aix].frecuencias[vin])
-                        dx.push(data[aix].frecuencias[vin]);
-                        dy.push(data[aix].valores[con]);
-                        rows+='<tr> <td >'+data[aix].frecuencias[vin]+'</td>';
-                        rows += '<td >'+data[aix].valores[con]+'</td> </tr>';
-                        con = con - 1;
-
-                        //asignar frecuencias y valores
-                        matriz_periodos[indice_par][vin] = data[aix].frecuencias[vin];
-                        matriz_periodos[indice_impar][vin] = data[aix].valores[con];
-
-
-                    }
-
-                    let tra={
-                        x: dx,
-                        y: dy,
-                        mode: 'lines',
-                        name: ''+data[aix].anio,
-                        line: {
-                        //color: 'blue',
-                            width: 3
-                        },
-                        type: 'scatter'
-                    };
-                    traces.push(tra);
+            var $table = $('#table');
+            $table.bootstrapTable('destroy');
+            var procesar = false
+            if ( data !== null ){
+                if( data.hasOwnProperty("anios") && data.anios.length > 0){
+                    procesar = true;
                 }
-
-
-                //console.log(matriz_periodos);
-                generar_tabla_html(matriz_periodos, data);
-                    $("#tbody").html(rows);
-                    $("#grfico").html(duracaudal(traces));
-                    $("#div_informacion").show();
+            }
+            console.log("Debo procesar " +  procesar)
+            if(procesar){
+                var traces = [];
+                var traces1 = [];
+                console.log("valor del data "+ data.mayor)
+                console.log(data);
+                console.log("propiedades "+Object.getOwnPropertyNames(data.anuales).length);
+                max = 0 ;
+                tht = "<tr>" //años
+                thl = "<tr>"// titulos
+                for (var idx = 0 ; idx < data.anios.length;idx++){
+                    var cau = "cau"+data.anios[idx];
+                    var caue = "cauEsp"+data.anios[idx];
+                    var fre = "fre"+data.anios[idx];
+                    console.log("agregando "+cau+" : "+caue+" : "+fre)
+                    tra={ x: data.anuales[fre], y: data.anuales[cau], mode: 'lines', name: ''+data.anios[idx], line: { width: 3 }, type: 'scatter' };
+                    traces.push(tra);
+                    tra1={x: data.anuales[fre], y: data.anuales[caue], mode: 'lines', name: ''+data.anios[idx], line: { width: 3 },type: 'scatter' };
+                    traces1.push(tra1);
+                    /// cabecera de la tabla
+                    if(data.aporte){
+                        tht += "<th colspan ="+3+" >"+data.anios[idx]+"</th>"
+                        thl += "<th data-field="+cau+"> Caudal </th>"
+                        thl += "<th data-field="+caue+"> Caudal Esp</th>"
+                        thl += "<th data-field="+fre+"> Frecuencia</th>"
+                    }else{
+                        tht += "<th colspan ="+2+" >"+data.anios[idx]+"</th>"
+                        thl += "<th data-field="+cau+"> Caudal </th>"
+                        thl += "<th data-field="+fre+"> Frecuencia</th>"
+                    }
+                }
+                tht += "</tr>"
+                thl += "</tr>"
+                tra ={ x: data.total.fre, y: data.total.cau, mode: 'lines', name: 'Periodo Compereto', line: { width: 3 }, type: 'scatter'};
+                traces.push(tra);
+                tra1={ x: data.total.fre, y: data.total.cauEsp, mode: 'lines', name: 'Periodo Compereto', line: { width: 3 }, type: 'scatter' };
+                traces1.push(tra1);
+                $("#grfico").html(duracaudal('grfico',traces,'Duración de caudal','Frecuencia','Caudal (l/s)'));
+                $("#grficosf").html('</br>');
+                if (data.aporte){
+                    $("#grficosf").html('</br>');
+                    $("#grficosf").html(duracaudal('grficosf',traces1,'Duración de caudal específico','Frecuencia','Caudal (l/s/km^2)'));//grficosf
+                }
+                //creacion de datos para la tabla
+                lact = data.anuales[cau].length
+                datatable = []
+                for(var lo = 0; lo < data.mayor ; lo ++ ){
+                    dic = {}
+                    for (var idx = 0 ; idx < data.anios.length;idx++){
+                        var cau = "cau"+data.anios[idx];
+                        var caue = "cauEsp"+data.anios[idx];
+                        var fre = "fre"+data.anios[idx];
+                        if (data.aporte){ ///comprueba si existe el area de aporte y agrega el caudal especifico alas columnas
+                            if(lo >= lact){ // mayor longitud de las series
+                                dic[cau] =  null;
+                                dic[caue] = null;
+                                dic[fre] = null;
+                            }else{
+                                dic[cau] =  data.anuales[cau][lo]
+                                dic[caue] =  data.anuales[caue][lo]
+                                dic[fre] =  data.anuales[fre][lo]
+                            }
+                        }else{
+                            if(lo >= lact){ // mayor longitud de las series
+                                dic[cau] =  null;
+                                dic[fre] = null;
+                            }else{
+                                dic[cau] =  data.anuales[cau][lo]
+                                dic[fre] =  data.anuales[fre][lo]
+                            }
+                        }
+                        datatable.push(dic);
+                    }
+                }
+                ///console.log(datatable)
+                $("#table > thead").html(tht+thl);
+                $table.bootstrapTable({data: datatable})
+                $("#div_informacion").show();
             }else{
                     $("#div_informacion").hide();
                     $("#div_error").html("No hay datos para Procesar")
@@ -672,11 +701,9 @@ $(document).ready(function () {
             }
             $("#btn_bus_durcau").removeAttr('disabled');
             $("#div_loading").hide();
-                //$("#div_error").hide();
-                //
             },
             error: function (xhr, status, error) {
-                console.log("Soy un error " + error)
+                console.log("Soy un error " + error+ "xhr "+xhr)
                 //$("#div_informacion").show();
                 $("#div_loading").hide();
                 $("#div_error").show();
@@ -688,28 +715,29 @@ $(document).ready(function () {
     });
 
     /// grafica duracion de caudal
-    function duracaudal(data){
+    function duracaudal(id_div,data, mtit,xtit,ytit){
+        $(id_div).html("");
         var width_graph = $(".container").width();
         console.log(width_graph);
 
         var layout = {
-          title: 'Duración de caudal',
+          title: mtit,
           showlegend:true,
           width: width_graph,
           xaxis: {
-            title: 'Frecuencia',
+            title: xtit,
             showgrid: true,
             zeroline: true
             //type:'log'
           },
           yaxis: {
-            title: 'Caudal (l/s)',
+            title: ytit,
             showline: false,
             type:'log'
           }
         };
         //fig.update_layout(xaxis_type="log", yaxis_type="log")
-        Plotly.newPlot('grfico', data, layout);
+        Plotly.newPlot(id_div, data, layout);
     }
     //Crear matriz multidimensional para tabla de datos
     function generar_matriz(data){
@@ -729,7 +757,7 @@ $(document).ready(function () {
         return matriz_periodos
     }
 
-    function generar_tabla_html(matriz, datos){
+    function generar_tabla_html(cabecera, datos){
         var $table = $('#table');
         $table.bootstrapTable('destroy');
         var maximo = 0;
@@ -754,7 +782,7 @@ $(document).ready(function () {
             }
             var fila_json = JSON.stringify(Object.assign({},fila));
             var fila_str = JSON.parse(fila_json);
-            console.log(fila_str)
+            //console.log(fila_str)
             data.push(fila_str);
         }
 
@@ -765,7 +793,7 @@ $(document).ready(function () {
         for (var i = 0; i < datos.length; i++) {
             periodos.push(datos[i].anio);
         }
-        console.log(periodos);
+        //console.log(periodos);
 
         for (var i=0; i < periodos.length; i++){
             columna += '<th colspan="2">'+periodos[i].toString() +'</th>';
@@ -779,6 +807,8 @@ $(document).ready(function () {
         $("#table > thead").html(columna);
 
         //agregar datos a la tabla
+        console.log("Data format :::::::::::::::::::::::::::::::::::::::::: ")
+        console.log(data)
         $table.bootstrapTable({data: data})
 
         //console.log(columns);
