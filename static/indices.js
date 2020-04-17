@@ -740,6 +740,34 @@ $(document).ready(function () {
         Plotly.newPlot(id_div, data, layout);
     }
 
+    ////// duracion caudal multiestacion
+    //visualizar
+    $("#btn_visualizar").click(function(){
+    console.log("click event btn_visualizar")
+        $(this).attr('disabled', true);
+        $.ajax({
+            url: $("#form_curva_descarga").attr('action'),
+            data: $("#form_curva_descarga").serialize(),
+            type: 'POST',
+            dataType: 'json',
+            cache: false,
+            beforeSend: function () {
+                $("#div_informacion").hide();
+                $("#div_loading").show();
+                $("#div_error").hide();
+            },
+            success: function (data) {
 
-
+                console.log(data);
+                $(this).attr('disabled', false);
+            },
+            error: function (xhr, status, error) {
+                console.log("Soy un error " + error+ "xhr "+xhr)
+                //$("#div_informacion").show();
+                $("#div_loading").hide();
+                $("#div_error").show();
+                $("#btn_consultar").removeAttr('disabled');
+            }
+        });
+    });
 });

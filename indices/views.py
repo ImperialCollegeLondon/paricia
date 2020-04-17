@@ -4,7 +4,8 @@ from datetime import datetime
 from django.views import generic
 from indices.forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm, CuvarCaudalMultiestacionForm, IntensidadDuracionMultiestacionForm
 from .functions import getVarValidado, acumularDoble, \
-    intensidadDiracion, getCaudalFrec, indicaCaudal, consultaPeriodos
+    intensidadDiracion, getCaudalFrec, indicaCaudal, consultaPeriodos, \
+    getCaudalFrecMulti
 from .functions import IndicadoresPrecipitacion
 from django.shortcuts import render
 # Create your views here.
@@ -170,7 +171,21 @@ class DuracionCaudal(generic.FormView):
 class DuracionCaudalMultiestacion(generic.FormView):
     template_name = "indices/duracioncaudal_multiestacion.html"
     form_class = CuvarCaudalMultiestacionForm
+    success_url = "indices/duracioncaudal_multiestacion.html"
+    def post(self, request, *args, **kwargs):
 
+        estacion_id = request.POST.getlist('estacion')
+        listEst = estacion_id
+
+        print("estaciones")
+        print(estacion_id)
+        tinicio = request.POST.get('inicio', None)
+        tfin = request.POST.get('fin', None)
+        print(tinicio, tfin)
+        getCaudalFrecMulti(listEst, tinicio, tfin)
+        dict =[{'data':"Caudales totales"}]
+        data = json.dumps(dict, allow_nan=True)
+        return HttpResponse(data, content_type='application/json')
 
 class IntensidadRRMultiestacion(generic.FormView):
     template_name = "indices/intendura_multiestacion.html"

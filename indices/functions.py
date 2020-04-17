@@ -311,16 +311,41 @@ def getCaudalanio(frecuencia, estacion_id,anio):
         return dq
     return None
 
-def caudalEspecifico(caudal, estacion_id, frecuencia):
-    const = 0
-    est = Estacion.objects.get(est_id=estacion_id)
-    inf = est.influencia_km
-    if frecuencia == 1:
-        const = 0.0036
-    elif frecuencia == 2:
-        const = 0.0864
-    if inf is not None:
-        caudal
+def getCaudalFrecMulti(listEst,fin,ffi):
+    print("getCaudalFrecMulti:")
+    if len(listEst) > 0 :
+        listanual = {}
+        for est in listEst:
+            print(est)
+            esta = Estacion.objects.get(est_id=est.est_id)
+            inf = esta.influencia_km
+            if inf is None:
+                div = 1
+            elif inf > 0:
+                div = inf
+            else:
+                div = 1
+            dq = dia.Caudal.objects.filter(estacion_id__exact=est, fecha__gte=fin,
+                                           fecha__lte=ffi, valor__isnull=False).values("valor")
+            if dq is not None and len(dq) > 30:
+                df = pd.DataFrame(dq)
+                totaldf = pd.concat([totaldf, df])
+                df['CauEsp'] = df['valor'] / div
+                df['CauEsp'] = round(df['CauEsp'].astype(float), 6)
+                df = df.sort_values(by=['valor'], ascending=[True])
+                td = len(df['valor'])
+                df['valor'] = round(df['valor'].astype(float), 2)
+                df['rango'] = range(1, td + 1)
+                df['frecuencia'] = round((df['rango'] / td) * 1, 9)
+                df['valor'] = df['valor'].values[::-1]
+                df['CauEsp'] = df['CauEsp'].values[::-1]
+                listanual['cau' + str(anio)] = df['valor'].fillna('null').tolist()
+                listanual['cauEsp' + str(anio)] = df['CauEsp'].fillna('null').tolist()
+                listanual['fre' + str(anio)] = df['frecuencia'].fillna('null').tolist()
+        return json.dumps(listanual, allow_nan=True,cls=DecimalEncoder)
+    return None
+
+
 
 
 """Esta clase se encarga de calcular los indicadores de precipitación,
