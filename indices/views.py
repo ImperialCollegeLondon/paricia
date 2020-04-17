@@ -158,8 +158,12 @@ class DuracionCaudal(generic.FormView):
         tinicio = request.POST.get('inicio', None)
         tfin = request.POST.get('fin', None)
         frecuencia = int(request.POST.get('frecuencia', None))
-        inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
-        fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
+        inicio = None
+        fin = None
+        if tinicio != '':
+            inicio = datetime.strptime(tinicio, '%d/%m/%Y')
+        if tfin != '':
+            fin = datetime.strptime(tfin, '%d/%m/%Y')
         data = getCaudalFrec(estacion_id,inicio,fin,frecuencia)
         if data is None:
             data = [{}]
@@ -176,16 +180,25 @@ class DuracionCaudalMultiestacion(generic.FormView):
 
         estacion_id = request.POST.getlist('estacion')
         listEst = estacion_id
-
-        print("estaciones")
-        print(estacion_id)
         tinicio = request.POST.get('inicio', None)
         tfin = request.POST.get('fin', None)
-        print(tinicio, tfin)
-        getCaudalFrecMulti(listEst, tinicio, tfin)
-        dict =[{'data':"Caudales totales"}]
-        data = json.dumps(dict, allow_nan=True)
-        return HttpResponse(data, content_type='application/json')
+        print("fechas => ", tinicio, tfin)
+        if len(estacion_id) <= 0:
+            mensaje = {'menjaseErr': '  Debe seleccionar por lo menos una estación de la lista'}
+            return HttpResponse(json.dumps(mensaje, allow_nan=True), content_type='application/json')
+        elif tinicio is None or tfin is None or tinicio == '' or tfin == '':
+            mensaje = {'menjaseErr':'Debe Seleccionar la fecha de inicio y la fecha de fin','Cualquir':'otracosa'}
+            return HttpResponse(json.dumps(mensaje, allow_nan=True), content_type='application/json')
+        else:
+            inicio = datetime.strptime(tinicio, '%d/%m/%Y')
+            fin = datetime.strptime(tfin, '%d/%m/%Y')
+            print("estaciones")
+            print(estacion_id)
+            tinicio = request.POST.get('inicio', None)
+            tfin = request.POST.get('fin', None)
+            print(tinicio, tfin)
+            dict = getCaudalFrecMulti(listEst, inicio, fin)
+            return HttpResponse(dict, content_type='application/json')
 
 class IntensidadRRMultiestacion(generic.FormView):
     template_name = "indices/intendura_multiestacion.html"
