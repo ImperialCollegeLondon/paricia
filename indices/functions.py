@@ -238,46 +238,57 @@ def getCaudalFrec(estacion_id, inicio, fin, frecuencia):
     """Calcula el caudal especifico de una estacion hidrológica"""
     est = Estacion.objects.get(est_id=estacion_id)
     inf = est.influencia_km
-    #print("influencia ", inf, "fecha ini :", inicio.year, type(inicio), " fecha fin: ", fin.year)
-    dian=[]
-    dictTot = {};
+    print(estacion_id ,"influencia ", inf, "fecha ini :", inicio.year, type(inicio), " fecha fin: ", fin.year)
+    anios=[]
+    totaldf = pd.DataFrame()
+    ainf = False;
+    long = 0;
     if inf is None:
         div = 1
-    else:
+    elif inf > 0:
         div = inf
+        ainf = True
+    else:
+        div = 1
+    listanual = {}
     for anio in range(inicio.year,fin.year+1):
-        #print( "procesar año ",anio ,"valor del div", div)
+        print( "procesar año ",anio ,"valor del div", div, "ainf ",ainf)
         caudal = getCaudalanio(frecuencia,estacion_id,anio)
         if caudal is not None and len(caudal) > 30:
+            anios.append(anio)
+            if len(caudal) > long:
+                long = len(caudal)
             df = pd.DataFrame(caudal)
-            #df['anio'] = anio
+            totaldf = pd.concat([totaldf, df])
+            df['CauEsp'] = df['valor'] / div
+            df['CauEsp'] = round(df['CauEsp'].astype(float),6)
             df = df.sort_values(by=['valor'], ascending=[True])
             td = len(df['valor'])
             df['valor'] = round(df['valor'].astype(float),2)
             df['rango'] = range(1, td + 1)
             df['frecuencia'] = round((df['rango'] / td) * 1,9)
-            #valor  CauEsp  anio  rango  frecuencia
-            #df = df[['anio', 'valor', '1', '2', '3']]
-            #print(df.head(2))
-            #dftot = dftot.append(df)
-            #print(type(df['frecuencia'].tolist()[0]), type(df['valor'].tolist()[0]))
-            dian.append({'anio':anio,'frecuencias': df['frecuencia'].tolist(),'valores':df['valor'].tolist()})
-            #print(dian)
-            #dictTot.update(dian)
-    #print(dictTot)
+            df['valor'] = df['valor'].values[::-1]
+            df['CauEsp'] = df['CauEsp'].values[::-1]
+            listanual['cau'+str(anio)] = df['valor'].fillna('null').tolist()
+            listanual['cauEsp'+str(anio)] = df['CauEsp'].fillna('null').tolist()
+            listanual['fre'+str(anio)] = df['frecuencia'].fillna('null').tolist()
+    if len(totaldf) > 30:
+        totaldf['CauEsp'] = totaldf['valor'] / div
+        totaldf['CauEsp'] = round(totaldf['CauEsp'].astype(float), 6)
+        totaldf = totaldf.sort_values(by=['valor'], ascending=[True])
+        td = len(totaldf['valor'])
+        totaldf['valor'] = round(totaldf['valor'].astype(float), 2)
+        totaldf['rango'] = range(1, td + 1)
+        totaldf['frecuencia'] = round((totaldf['rango'] / td) * 1, 9)
+        totaldf['valor'] = totaldf['valor'].values[::-1]
+        totaldf['CauEsp'] = totaldf['CauEsp'].values[::-1]
+        totdic={'cau':totaldf['valor'].fillna('null').tolist(),'cauEsp':totaldf['CauEsp'].fillna('null').tolist(),
+                'fre':totaldf['frecuencia'].fillna('null').tolist()}
+        dian = { 'mayor':long,'aporte':ainf,'anios': anios, 'anuales':listanual, 'total':totdic}
+    else:
+        dian = None
     return json.dumps(dian, allow_nan=True,cls=DecimalEncoder)
-    #return dftot.to_json(orient='records')
-    # if caudal is not None and len(caudal) > 0:
-    #     df = pd.DataFrame(caudal)
-    #     df['CauEsp'] = df['valor'] / div
-    #     df = df.sort_values(by=['CauEsp'], ascending=[True])
-    #     td = len(df['CauEsp'])
-    #     df['rango'] = range(1, td + 1)
-    #     df['frecuencia'] = (df['rango'] / td) * 1
-    #     print(df)
-    #     return dftot.to_json(orient='records')
-    # else:
-    #     return None
+
 
 def getCaudalanio(frecuencia, estacion_id,anio):
     #print("frecuencia", "estacion_id","anio")
@@ -288,24 +299,53 @@ def getCaudalanio(frecuencia, estacion_id,anio):
     fin = datetime.strptime(ff,'%Y-%m-%d')
     if frecuencia == 1:  # 'Horario':
         #print("entra en horario frecuencia ", frecuencia, estacion_id, inicio)
-        return hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
+        hq = hora.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
                                              fecha__lte=fin, valor__isnull=False).values("valor")
+        #print(hq.query)
+        return hq
     if frecuencia == 2:  # 'Diario':
         #print("entra en diario ",frecuencia)
-        return dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
+        dq = dia.Caudal.objects.filter(estacion_id__exact=estacion_id, fecha__gte=inicio,
                                            fecha__lte=fin, valor__isnull=False).values("valor")
+        #print(dq.query)
+        return dq
     return None
 
-def caudalEspecifico(caudal, estacion_id, frecuencia):
-    const = 0
-    est = Estacion.objects.get(est_id=estacion_id)
-    inf = est.influencia_km
-    if frecuencia == 1:
-        const = 0.0036
-    elif frecuencia == 2:
-        const = 0.0864
-    if inf is not None:
-        caudal
+def getCaudalFrecMulti(listEst,fin,ffi):
+    print("getCaudalFrecMulti:")
+    if len(listEst) > 0 :
+        listanual = {}
+        for est in listEst:
+            print(est)
+            esta = Estacion.objects.get(est_id=est.est_id)
+            inf = esta.influencia_km
+            if inf is None:
+                div = 1
+            elif inf > 0:
+                div = inf
+            else:
+                div = 1
+            dq = dia.Caudal.objects.filter(estacion_id__exact=est, fecha__gte=fin,
+                                           fecha__lte=ffi, valor__isnull=False).values("valor")
+            if dq is not None and len(dq) > 30:
+                df = pd.DataFrame(dq)
+                totaldf = pd.concat([totaldf, df])
+                df['CauEsp'] = df['valor'] / div
+                df['CauEsp'] = round(df['CauEsp'].astype(float), 6)
+                df = df.sort_values(by=['valor'], ascending=[True])
+                td = len(df['valor'])
+                df['valor'] = round(df['valor'].astype(float), 2)
+                df['rango'] = range(1, td + 1)
+                df['frecuencia'] = round((df['rango'] / td) * 1, 9)
+                df['valor'] = df['valor'].values[::-1]
+                df['CauEsp'] = df['CauEsp'].values[::-1]
+                listanual['cau' + str(anio)] = df['valor'].fillna('null').tolist()
+                listanual['cauEsp' + str(anio)] = df['CauEsp'].fillna('null').tolist()
+                listanual['fre' + str(anio)] = df['frecuencia'].fillna('null').tolist()
+        return json.dumps(listanual, allow_nan=True,cls=DecimalEncoder)
+    return None
+
+
 
 
 """Esta clase se encarga de calcular los indicadores de precipitación,
