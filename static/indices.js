@@ -744,7 +744,7 @@ $(document).ready(function () {
     //visualizar
     $("#btn_visualizar").click(function(){
     console.log("click event btn_visualizar")
-        $(this).attr('disabled', true);
+        //$(this).attr('disabled', true);
         $.ajax({
             url: $("#form_curva_descarga").attr('action'),
             data: $("#form_curva_descarga").serialize(),
@@ -757,9 +757,41 @@ $(document).ready(function () {
                 $("#div_error").hide();
             },
             success: function (data) {
+                //console.log(data)
+                console.log(data.hasOwnProperty('estaciones'))
+                if (data.hasOwnProperty('menjaseErr')){
+                    $("#div_error").show();
+                    $("#msjError").html(data.menjaseErr)
+                    $("#div_loading").hide();
+                    $("#div_informacion").hide();
+                }
+                if(data.hasOwnProperty('estaciones')){
+                    $(this).attr('disabled', false);
+                    var $table = $('#table');
+                    $table.bootstrapTable('destroy');
+                    console.log(data)
+                    var traces = [];
+                    console.log('estaciones con datos '+data.estaciones)
+                    for (e in data.estaciones){
+                        var fre = "fre"+data.codigos[e]
+                        var cau = "cauEsp"+data.codigos[e]
+                        console.log(data.estaciones[e])
+                        console.log(data.datos[cau])
+                        tra={ x: data.datos[fre], y: data.datos[cau], mode: 'lines', name: ''+data.estaciones[e].estacion, line: { width: 3 }, type: 'scatter' };
+                        traces.push(tra);
+                    }
+                    $("#tbtitle").html("Periodos por estación utilizados para el cálculo")
+                    thead="<tr> <th data-field='estacion'>Estacion </th> <th data-field='inicio'>Fecha de inicio</th> <th data-field='fin'>Fecha de fin</th> </tr>"
+                    $("#table > thead").html(thead)
+                    $table.bootstrapTable({data: data.estaciones})
+                    $("#grficosf").html(duracaudal('grficosf',traces,'Duración de caudal específico','Frecuencia','Caudal (l/s/km^2)'));//grficosf
+                    $("#div_error").hide();
+                    $("#div_loading").hide();
+                    $("#div_informacion").show();
+                    $(this).attr('disabled', false);
+                }
 
-                console.log(data);
-                $(this).attr('disabled', false);
+
             },
             error: function (xhr, status, error) {
                 console.log("Soy un error " + error+ "xhr "+xhr)

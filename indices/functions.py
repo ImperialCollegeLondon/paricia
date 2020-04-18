@@ -313,11 +313,13 @@ def getCaudalanio(frecuencia, estacion_id,anio):
 
 def getCaudalFrecMulti(listEst,fin,ffi):
     print("getCaudalFrecMulti:")
-    if len(listEst) > 0 :
-        listanual = {}
+    if len(listEst) > 0:
+        estaciones=[]
+        calculos = {}
+        codigos=[]
         for est in listEst:
             print(est)
-            esta = Estacion.objects.get(est_id=est.est_id)
+            esta = Estacion.objects.get(est_id=est)
             inf = esta.influencia_km
             if inf is None:
                 div = 1
@@ -326,10 +328,12 @@ def getCaudalFrecMulti(listEst,fin,ffi):
             else:
                 div = 1
             dq = dia.Caudal.objects.filter(estacion_id__exact=est, fecha__gte=fin,
-                                           fecha__lte=ffi, valor__isnull=False).values("valor")
+                                           fecha__lte=ffi, valor__isnull=False).values("valor",'fecha').order_by('fecha')
+
             if dq is not None and len(dq) > 30:
                 df = pd.DataFrame(dq)
-                totaldf = pd.concat([totaldf, df])
+                #print(df.head(10))
+                codigos.append(est)
                 df['CauEsp'] = df['valor'] / div
                 df['CauEsp'] = round(df['CauEsp'].astype(float), 6)
                 df = df.sort_values(by=['valor'], ascending=[True])
@@ -339,14 +343,16 @@ def getCaudalFrecMulti(listEst,fin,ffi):
                 df['frecuencia'] = round((df['rango'] / td) * 1, 9)
                 df['valor'] = df['valor'].values[::-1]
                 df['CauEsp'] = df['CauEsp'].values[::-1]
-                listanual['cau' + str(anio)] = df['valor'].fillna('null').tolist()
-                listanual['cauEsp' + str(anio)] = df['CauEsp'].fillna('null').tolist()
-                listanual['fre' + str(anio)] = df['frecuencia'].fillna('null').tolist()
-        return json.dumps(listanual, allow_nan=True,cls=DecimalEncoder)
-    return None
-
-
-
+                calculos['cau' + str(est)] = df['valor'].fillna('null').tolist()
+                calculos['cauEsp' + str(est)] = df['CauEsp'].fillna('null').tolist()
+                calculos['fre' + str(est)] = df['frecuencia'].fillna('null').tolist()
+                print("fecha inicio ",df['fecha'][0], "fecha fin ",df['fecha'][len(df)-1]  )
+                estaciones.append({'estacion':esta.est_codigo,'inicio':df['fecha'][0].strftime("%d/%m/%Y") ,'fin':df['fecha'][len(df)-1].strftime("%d/%m/%Y")})
+        #print(calculos)
+        dict = {'estaciones':estaciones,'codigos':codigos,'datos':calculos}
+        return json.dumps(dict, allow_nan=True,cls=DecimalEncoder)
+    else:
+        return None
 
 """Esta clase se encarga de calcular los indicadores de precipitación,
 Cada funcion de la clase calcula un indicador determinado"""

@@ -8,6 +8,14 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="{% static 'indices.js' %}"></script>
 
+<link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+
+<!--script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></--script>
+<script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js"></script>
+<script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/export/bootstrap-table-export.min.js"></script-->
 
 <div class="row">
     <div class="col-lg-10 col-sm-10">
@@ -32,7 +40,7 @@
             <div class="row">
                 <div class="col-lg-4 col-md-4 col-sm-6">
                     <label>Estaciones</label>
-                    <div style="height:430px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
+                    <div style="height:220px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
                         {% bootstrap_field form.estacion show_label=False %}
                     </div>
                 </div>
@@ -47,8 +55,20 @@
 
 
         <div id="div_informacion">
-            <!--<div class="row bloque-grafico">
-            </div>-->
+            <div id="grficosf">
+
+            </div>
+            <div class="row">
+                <p class="text-primary col-lg-3 col-md-3 col-sm-1"></p>
+                <p id="tbtitle" class="text-primary col-lg-6 col-md-6 col-sm-10"> </p>
+                <p class="text-primary col-lg-3 col-md-3 col-sm-1"></p>
+            </div>
+            <table id="table"
+                   data-height="400">
+                <thead>
+
+                </thead>
+            </table>
         </div>
 
         <div id="div_loading" class="row" style="display:none;">
@@ -59,8 +79,8 @@
             <div class="col-lg-3 col-md-2 col-sm-1">&nbsp;</div>
         </div>
 
-        <div id="div_error" class="row" style="display:none;">
-            <div class="alert alert-danger alert-dismissible" role="alert">
+        <div id="div_error" class="row col-lg-12 col-md-12 col-sm-12" style="display:none;">
+            <div id="msjError" class="alert alert-danger alert-dismissible" role="alert">
                 Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
             </div>
         </div>

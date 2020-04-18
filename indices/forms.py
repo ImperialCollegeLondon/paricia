@@ -55,11 +55,11 @@ class SelecCaudalForm(forms.Form):
 class CuvarCaudalMultiestacionForm(forms.Form):
     estacion = forms.MultipleChoiceField(choices=[], label="Estación", widget=forms.CheckboxSelectMultiple)
     inicio = forms.DateField(
-        input_formats=['%Y-%m-%d'], label="Inicio", required=False,
+        input_formats=['%d-%m-%Y'], label="Inicio", required=False,
         widget=forms.TextInput(attrs={'autocomplete': 'off'})
     )
     fin = forms.DateField(
-        input_formats=['%Y-%m-%d'], label="Fin", required=False,
+        input_formats=['%d-%m-%Y'], label="Fin", required=False,
         widget=forms.TextInput(attrs={'autocomplete': 'off'})
     )
 
