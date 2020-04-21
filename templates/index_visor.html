@@ -70,7 +70,7 @@
     <ul class="navbar-nav ml-auto">
         {% if user.is_authenticated %}
             <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'home:home' %}">Administración</a>
+                <a class="nav-link text-white" href="{% url 'home:admin' %}">Administración</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white" href="{% url 'logout'%}?next={{request.path}}">Logout</a>

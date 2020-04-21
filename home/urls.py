@@ -16,7 +16,9 @@ from django.contrib.auth.views import (
 
 app_name = 'home'
 urlpatterns = [
-    re_path(r'^$', HomePageView.as_view(), name='home'),
+    # re_path(r'^$', HomePageView.as_view(), name='home'),
+    path('', ConsultaVisor.as_view(), name="home"),
+    path('home/admin', HomePageView.as_view(), name="admin"),
     #re_path(r'^$', views.ConsultasPeriodo.as_view(), name='home'),
     # re_path(r'^$', LoginView.as_view(), name='login'),
     re_path(r'^login/$', LoginView.as_view(template_name='home/login.html'), name='login'),
