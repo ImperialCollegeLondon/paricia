@@ -6,8 +6,16 @@
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{% static 'indices.js' %}"></script>
 
+<link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
 
+<!--script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></--script>
+<script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js"></script>
+<script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/export/bootstrap-table-export.min.js"></script-->
 
 <div class="row">
     <div class="col-lg-10 col-sm-10">
@@ -17,38 +25,50 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <p class="text-info"><strong>Información: </strong>Comparar la curva de duración de caudal específico de las estaciones hidrológicas de la red integrada </p>
+        <p class="text-info"><strong>Información: </strong>Comparar la curva de duración de caudal específico de las
+            estaciones hidrológicas de la red integrada </p>
     </div>
 </div>
 
 
-
-
-
 <div class="row">
 
-    <div class="col-lg-2 col-md-2 col-sm-3" >
-        <label>Estaciones</label>
-        <div style="height:430px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">{% bootstrap_field form.estacion show_label=False %}</div>
-    </div>
 
     <div class="col-lg-10 col-md-10 col-sm-9">
-        <form id="form_curva_descarga" class="form" method="post">
+        <form id="form_curva_descarga" class="form" method="post" action="{% url 'indices:duracaudalmulti' %}">
             {% csrf_token %}
             <div class="row">
-                <div class="col-lg-5 col-md-5 col-sm-6">{% bootstrap_field form.inicio  layout='horizontal' %}</div>
-                <div class="col-lg-5 col-md-5 col-sm-6">{% bootstrap_field form.fin layout='horizontal' %}</div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <label>Estaciones</label>
+                    <div style="height:220px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">
+                        {% bootstrap_field form.estacion show_label=False %}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6">{% bootstrap_field form.inicio layout='horizontal' %}</div>
+                <div class="col-lg-3 col-md-3 col-sm-6">{% bootstrap_field form.fin layout='horizontal' %}</div>
                 <div class="col-lg-2 col-md-2 col-sm-6">
-                    <button id='visualizar' type='button' class='btn btn-success' >Visualizar</button>
+                    <button id='btn_visualizar' type='button' class='btn btn-success'>Visualizar</button>
                 </div>
             </div>
 
         </form>
 
 
-        <div id="div_informacion" >
-            <!--<div class="row bloque-grafico">
-            </div>-->
+        <div id="div_informacion">
+            <div id="grficosf">
+
+            </div>
+            <div class="row">
+                <p class="text-primary col-lg-3 col-md-3 col-sm-1"></p>
+                <p id="tbtitle" class="text-primary col-lg-6 col-md-6 col-sm-10"> </p>
+                <p class="text-primary col-lg-3 col-md-3 col-sm-1"></p>
+            </div>
+            <table id="table"
+                   data-height="400">
+                <thead>
+
+                </thead>
+            </table>
         </div>
 
         <div id="div_loading" class="row" style="display:none;">
@@ -59,17 +79,14 @@
             <div class="col-lg-3 col-md-2 col-sm-1">&nbsp;</div>
         </div>
 
-        <div id="div_error" class="row" style="display:none;">
-            <div class="alert alert-danger alert-dismissible" role="alert">
+        <div id="div_error" class="row col-lg-12 col-md-12 col-sm-12" style="display:none;">
+            <div id="msjError" class="alert alert-danger alert-dismissible" role="alert">
                 Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
             </div>
         </div>
 
     </div>
 </div>
-
-
-
 
 
 {% endblock %}

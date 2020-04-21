@@ -55,21 +55,21 @@ class SelecCaudalForm(forms.Form):
 class CuvarCaudalMultiestacionForm(forms.Form):
     estacion = forms.MultipleChoiceField(choices=[], label="Estación", widget=forms.CheckboxSelectMultiple)
     inicio = forms.DateField(
-        input_formats=['%Y-%m-%d'], label="Inicio", required=False,
+        input_formats=['%d-%m-%Y'], label="Inicio", required=False,
         widget=forms.TextInput(attrs={'autocomplete': 'off'})
     )
     fin = forms.DateField(
-        input_formats=['%Y-%m-%d'], label="Fin", required=False,
+        input_formats=['%d-%m-%Y'], label="Fin", required=False,
         widget=forms.TextInput(attrs={'autocomplete': 'off'})
     )
 
     def __init__(self, *args, **kwargs):
         super(CuvarCaudalMultiestacionForm, self).__init__(*args, **kwargs)
-        estaciones = Estacion.objects.exclude(influencia_km=None).filter(tipo_id__exact=3).order_by('est_codigo',
-                                                                                               '-est_externa')
+        estaciones = Estacion.objects.filter(tipo_id__exact=3, influencia_km__gt=0).order_by('est_codigo', '-est_externa')
         lista = []
         for e in estaciones:
             lista.append([e.est_id, e.est_codigo])
+            #print([e.est_id, e.est_codigo])
         self.fields['estacion'].choices = lista
 
 

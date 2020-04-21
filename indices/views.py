@@ -4,7 +4,8 @@ from datetime import datetime
 from django.views import generic
 from indices.forms import IndCaudForm,IndPrecipForm, SearchForm,SelecEstForm,SelecCaudalForm, CuvarCaudalMultiestacionForm, IntensidadDuracionMultiestacionForm
 from .functions import getVarValidado, acumularDoble, \
-    intensidadDiracion, getCaudalFrec, indicaCaudal, consultaPeriodos
+    intensidadDiracion, getCaudalFrec, indicaCaudal, consultaPeriodos, \
+    getCaudalFrecMulti
 from .functions import IndicadoresPrecipitacion
 from django.shortcuts import render
 # Create your views here.
@@ -157,8 +158,12 @@ class DuracionCaudal(generic.FormView):
         tinicio = request.POST.get('inicio', None)
         tfin = request.POST.get('fin', None)
         frecuencia = int(request.POST.get('frecuencia', None))
-        inicio = datetime.strptime(tinicio + " 00:00:00", '%d/%m/%Y %H:%M:%S')
-        fin = datetime.strptime(tfin + " 23:59:00", '%d/%m/%Y %H:%M:%S')
+        inicio = None
+        fin = None
+        if tinicio != '':
+            inicio = datetime.strptime(tinicio, '%d/%m/%Y')
+        if tfin != '':
+            fin = datetime.strptime(tfin, '%d/%m/%Y')
         data = getCaudalFrec(estacion_id,inicio,fin,frecuencia)
         if data is None:
             data = [{}]
@@ -170,7 +175,30 @@ class DuracionCaudal(generic.FormView):
 class DuracionCaudalMultiestacion(generic.FormView):
     template_name = "indices/duracioncaudal_multiestacion.html"
     form_class = CuvarCaudalMultiestacionForm
+    success_url = "indices/duracioncaudal_multiestacion.html"
+    def post(self, request, *args, **kwargs):
 
+        estacion_id = request.POST.getlist('estacion')
+        listEst = estacion_id
+        tinicio = request.POST.get('inicio', None)
+        tfin = request.POST.get('fin', None)
+        print("fechas => ", tinicio, tfin)
+        if len(estacion_id) <= 0:
+            mensaje = {'menjaseErr': '  Debe seleccionar por lo menos una estación de la lista'}
+            return HttpResponse(json.dumps(mensaje, allow_nan=True), content_type='application/json')
+        elif tinicio is None or tfin is None or tinicio == '' or tfin == '':
+            mensaje = {'menjaseErr':'Debe Seleccionar la fecha de inicio y la fecha de fin','Cualquir':'otracosa'}
+            return HttpResponse(json.dumps(mensaje, allow_nan=True), content_type='application/json')
+        else:
+            inicio = datetime.strptime(tinicio, '%d/%m/%Y')
+            fin = datetime.strptime(tfin, '%d/%m/%Y')
+            print("estaciones")
+            print(estacion_id)
+            tinicio = request.POST.get('inicio', None)
+            tfin = request.POST.get('fin', None)
+            print(tinicio, tfin)
+            dict = getCaudalFrecMulti(listEst, inicio, fin)
+            return HttpResponse(dict, content_type='application/json')
 
 class IntensidadRRMultiestacion(generic.FormView):
     template_name = "indices/intendura_multiestacion.html"
