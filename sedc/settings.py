@@ -69,7 +69,7 @@ INSTALLED_APPS = [
 
 ]
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/home/visor/'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

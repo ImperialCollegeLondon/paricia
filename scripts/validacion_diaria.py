@@ -14,8 +14,6 @@ def aplicar_validacion_diaria():
     file_validacion_acumulada = open("scripts/plpgsql/validacion_diaria_acu.sql", 'r')
     file_validacion_promedio = open("scripts/plpgsql/validacion_diaria_prom.sql", 'r')
 
-    print(file_validacion_promedio)
-
     sql_validacion_acumulada = file_validacion_acumulada.read()
     sql_validacion_promedio = file_validacion_promedio.read()
 
@@ -31,4 +29,27 @@ def aplicar_validacion_diaria():
     cursor.close()
 
 
+def aplicar_validacion_cruda():
+    cursor = connection.cursor()
+    print("Funcion Validacion Cruda")
+
+    file_validacion_acumulada = open("scripts/plpgsql/validacion_crudos_acu.sql", 'r')
+    file_validacion_promedio = open("scripts/plpgsql/validacion_crudos_prom.sql", 'r')
+
+    sql_validacion_acumulada = file_validacion_acumulada.read()
+    sql_validacion_promedio = file_validacion_promedio.read()
+
+    for index, var in enumerate(variables):
+        print("Variable ", var, "indice ", index + 1)
+        if index == 0:
+            cursor.execute(sql_validacion_acumulada)
+        else:
+            sql_validacion_promedio = sql_validacion_promedio.replace('%%modelo%%', var)
+            sql_validacion_promedio = sql_validacion_promedio.replace('%%var_id%%', str(index + 1))
+            cursor.execute(sql_validacion_promedio)
+
+    cursor.close()
+
+
 aplicar_validacion_diaria()
+#aplicar_validacion_cruda()

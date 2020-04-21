@@ -83,7 +83,8 @@ def consultar_horario(est_id, var_id, fecha_str):
 def consultar_diario(est_id, var_id, fecha_str):
     print(fecha_str)
     inicio = datetime.strptime(fecha_str, '%Y-%m-%d')
-    fin = inicio + timedelta(hours=24)
+    #fin = inicio + timedelta(hours=24)
+    fin = datetime.combine(inicio, time(23, 59, 59, 999999))
     variable = Variable.objects.get(var_id=var_id)
     query = "select * FROM reporte_validacion_" + str(variable.var_modelo).lower() + "(%s, %s, %s);"
     consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])

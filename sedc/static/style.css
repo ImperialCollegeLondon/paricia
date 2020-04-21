@@ -42,6 +42,18 @@ margin-bottom:0
 }
 
 
+.introduccion {
+
+    color: #555;
+    padding: 6px 8px;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    max-width: 300px;
+}
+
+
 .div-hiden{
     display:none  !important;
 }

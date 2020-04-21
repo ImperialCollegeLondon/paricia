@@ -6,7 +6,8 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 
 from telemetria.forms import *
-from .functions import *
+from telemetria.functions import *
+from home.functions import get_vista_usuario
 from .models import *
 from django.urls import reverse_lazy
 from home.functions import pagination, get_links
@@ -16,6 +17,11 @@ from home.views import AjaxableResponseMixin
 class ConsultaForm(FormView):
     template_name = 'telemetria/visualizar.html'
     form_class = ConsultaForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsultaForm, self).get_context_data(**kwargs)
+        context['base_template'] = get_vista_usuario(self.request)
+        return context
 
 
 def Consulta(request):
@@ -160,6 +166,11 @@ class ConfigAlarmaTransmisionLimites(FormView):
 class MapaTransmision(TemplateView):
     template_name = 'telemetria/mapa_transmision.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(MapaTransmision, self).get_context_data(**kwargs)
+        context['base_template'] = get_vista_usuario(self.request)
+        return context
+
 
 def MapaTransmisionConsulta(request):
     resultado = consulta_alarma_transmision()
@@ -171,6 +182,11 @@ def MapaTransmisionConsulta(request):
 class PrecipitacionView(FormView):
     template_name = 'telemetria/precipitacion.html'
     form_class = PrecipitacionForm
+
+    def get_context_data(self, **kwargs):
+        context = super(PrecipitacionView, self).get_context_data(**kwargs)
+        context['base_template'] = get_vista_usuario(self.request)
+        return context
 
 
 @login_required
@@ -201,6 +217,11 @@ def consulta_precipitacion(request):
 class PrecipitacionMultiestacionView(FormView):
     template_name = 'telemetria/precipitacion_multiestacion.html'
     form_class = PrecipitacionMultiestacionForm
+
+    def get_context_data(self, **kwargs):
+        context = super(PrecipitacionMultiestacionView, self).get_context_data(**kwargs)
+        context['base_template'] = get_vista_usuario(self.request)
+        return context
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)

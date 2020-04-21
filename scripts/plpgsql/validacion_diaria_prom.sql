@@ -3,10 +3,10 @@ CREATE OR REPLACE FUNCTION public.reporte_validacion_diario_modelo(
 	_estacion_id integer,
 	_fecha_inicio timestamp with time zone,
 	_fecha_fin timestamp with time zone)
-    RETURNS TABLE(numero_fila bigint, dia timestamp with time zone,
+    RETURNS TABLE(id bigint, dia timestamp with time zone,
     	valor numeric, maximo numeric, minimo numeric, porcentaje numeric,
         valor_error boolean, maximo_error boolean, minimo_error boolean,
-        valor_numero numeric, maximo_numero numeric, minimo_numero numeric)
+        valor_numero numeric, maximo_numero numeric, minimo_numero numeric, estado boolean)
     LANGUAGE 'plpgsql'
 
     COST 100
@@ -78,7 +78,7 @@ BEGIN
     ),
     reporte AS (
         SELECT
-        row_number() OVER (ORDER BY ta.dia ASC) as numero_fila,
+        row_number() OVER (ORDER BY ta.dia ASC) as id,
         ta.dia, ROUND(ta.valor,2)::numeric, ROUND(ta.maximo,2)::numeric, ROUND(ta.minimo,2)::numeric,
         (SELECT tc.porcentaje FROM tabla_calculo tc WHERE tc.dia = ta.dia) as porcentaje,
         ta.valor > (SELECT var_maximo FROM variable) OR ta.valor < (SELECT var_minimo FROM variable) AS valor_error,
@@ -86,8 +86,8 @@ BEGIN
         ta.minimo > (SELECT var_maximo FROM variable) OR ta.minimo < (SELECT var_minimo FROM variable) AS minimo_error,
         (SELECT tvs.numero_valor_sospechoso FROM tabla_valores_sos tvs WHERE tvs.dia = ta.dia) as valor_numero,
         (SELECT tvs.numero_maximo_sospechoso FROM tabla_valores_sos tvs WHERE tvs.dia = ta.dia) as maximo_numero,
-        (SELECT tvs.numero_minimo_sospechoso FROM tabla_valores_sos tvs WHERE tvs.dia = ta.dia) as minimo_numero
-        --(SELECT tc.porcentaje FROM tabla_calculo tc WHERE tc.dia = ta.dia) < (SELECT umbral_completo FROM variable) as porcentaje_error
+        (SELECT tvs.numero_minimo_sospechoso FROM tabla_valores_sos tvs WHERE tvs.dia = ta.dia) as minimo_numero,
+        TRUE as estado
         FROM tabla_acumulada ta
 
     )

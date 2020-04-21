@@ -35,7 +35,7 @@
                 {% endfor %}
                 <div class="form-group col-lg-12 col-md-12 mt-4">
 
-                    <button id="btn_buscar" type="button" class="btn btn-light btn-primary">Validar</button>
+                    <button id="btn_buscar" type="button" class="btn btn-primary">Cargar Datos</button>
                     <a id="id_limpiar" class="btn btn-light" href="{% url 'validacion:diaria' %}"><span>Limpiar</span></a>
                 </div>
             </div>
@@ -88,108 +88,86 @@
 
 </div>
 
+<div id="toolbar" class="form-inline" style="width:800px">
+
+    <button id="btn_seleccionar" name="diario" class="btn btn-warning mr-2">Marcar</button>
+
+    <input id="txt_seleccionar" name="diario" type="text" class="form-control mr-2" placeholder="1,5,7 or 1-10">
+    <button id="btn_desmarcar" name="diario" class="btn btn-warning mr-4">Desmarcar</button>
+    <button id="btn_eliminar" name="diario" class="btn btn-danger mr-2">Eliminar</button>
+    <button id="btn_mostrar" name="diario" class="btn btn-primary mr-2">Revertir</button>
+    <button id="btn_enviar" name="diario" class="btn btn-success">Validar</button>
+
+</div>
+
+
+<div>
+    <table id="table_diario"
+           data-toggle="table_diario"
+           data-height="400"
+           data-virtual-scroll="true"
+           data-show-footer="true"
+           data-toolbar="#toolbar"
+           data-unique-id="id">
+        <thead>
+            <!--<tr>
+                <th data-field="state"></th>
+                <th data-field="id">Id</th>
+                <th data-field="dia">Fecha</th>
+                <th data-field="porcentaje">Porcentaje</th>
+                <th data-field="valor">Valor</th>
+                <th data-field="maximo">Maximo</th>
+                <th data-field="minimo">Minimo</th>
+                <th data-field="accion">Acción</th>
+            </tr>-->
+        </thead>
+    </table>
+
+</div>
+
+
+
+
+<div id="toolbar_crudo" class="form-inline" style="width:900px">
+
+    <button id="btn_seleccionar_crudo" name="crudo" class="btn btn-warning mr-2">Marcar</button>
+    <input id="txt_seleccionar_crudo" type="text" class="form-control mr-2" placeholder="1,5,7 or 1-10">
+    <button id="btn_desmarcar_crudo" name="crudo" class="btn btn-warning mr-4">Desmarcar</button>
+    <button id="btn_eliminar_crudo" name="crudo" class="btn btn-danger mr-2">Eliminar</button>
+    <button id="btn_mostrar_crudo" name="crudo" class="btn btn-primary mr-2">Revertir</button>
+    <button id="btn_enviar_crudo" name="crudo" class="btn btn-success">Guardar Cambios</button>
+
+</div>
+<div>
+    <table id="table_crudo"
+    data-toggle="table_crudo"
+    data-height="400"
+    data-virtual-scroll="true"
+    data-show-footer="true"
+    data-toolbar="#toolbar_crudo"
+    data-unique-id="id">
+        <thead>
+            <!--<tr>
+                <th data-field="state"></th>
+                <th data-field="id">Id</th>
+                <th data-field="fecha">Fecha</th>
+                <th data-field="valor">Valor</th>
+                <th data-field="maximo">Máximo</th>
+                <th data-field="minimo">Mínimo</th>
+                <th data-field="stddev_error">Valores Atípicos</th>
+                <th data-field="comentario">Comentario</th>
+            </tr>-->
+    </thead>
+    </table>
+
+</div>
+
+
 <div class="row">
     <div class="col-12">
         <div id='div_grafico' style="height:400px;"><!-- Plotly chart will be drawn inside this DIV --></div>
     </div>
 </div>
-
-<div>
-    <table id="table_diario"
-    data-toggle="table_diario"
-    data-height="400"
-    data-virtual-scroll="true">
-    <thead>
-        <!--<tr>
-            <th data-field="dia">Fecha</th>
-            <th data-field="porcentaje">Porcentaje</th>
-            <th data-field="valor">Valor</th>
-            <th data-field="maximo">Maximo</th>
-            <th data-field="minimo">Minimo</th>
-        </tr>-->
-    </thead>
-    </table>
-
-</div>
-
-
-<div>
-    <table id="table_validado"
-    data-toggle="table_validado"
-    data-height="400"
-    data-virtual-scroll="true">
-    <thead>
-        <!--<tr>
-            <th data-field="dia">Fecha</th>
-            <th data-field="porcentaje">Porcentaje</th>
-            <th data-field="valor">Valor</th>
-            <th data-field="maximo">Maximo</th>
-            <th data-field="minimo">Minimo</th>
-        </tr>-->
-    </thead>
-    </table>
-
-</div>
-
-
-
-<div >
-
-
-    <div class="row">
-        <div class="col-md-12" style="height:400px;">
-            <!--<div class="table-responsive">
-                <table id="tabla_diario" style="font-size: 12px" class="table table-scroll table-bordered">
-                    <thead>
-                        <tr>
-                        </tr>
-
-                    </thead>
-                    <tbody>
-                        <tr>
-                        </tr>
-
-                    </tbody>
-                </table>
-
-            </div>-->
-
-
-
-
-
-        </div>
-    </div>
-
-
-
-    <div id="div_valor" class="row">
-        <div class="col-md-12">
-            <!--<div class="table-responsive">
-                <table id="tabla_valor" style="font-size: 12px" class="table table-scroll table-bordered">
-                    <thead>
-                        <tr>
-                        </tr>
-
-                    </thead>
-                    <tbody>
-                        <tr>
-                        </tr>
-
-                    </tbody>
-                </table>
-
-            </div>-->
-        </div>
-
-    </div>
-
-
-
-</div><!--end div informacion-->
-
-
-
 
 
 <div id="div_loading" class="row" style="display:none;">
@@ -223,6 +201,81 @@
 <div id="div_error_datos" class="row" style="display:none;">
     <div class="alert alert-danger alert-dismissible" role="alert">
         Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+    </div>
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="modal_acumulado" tabindex="-1" role="dialog" aria-labelledby="modal_label_promedio" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_label_acumulado">Modificar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_acumulado">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label class="col-form-label">Fecha:</label>
+                        <input type="text" class="form-control" name="fecha" placeholder="Disabled input">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Valor</label>
+                        <input type="text" class="form-control" name="valor">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn_modificar_acumulado" name="acumulado" type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="modal_promedio" tabindex="-1" role="dialog" aria-labelledby="modal_label_promedio" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_label_promedio">Modificar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_promedio">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label class="col-form-label">Fecha:</label>
+                        <input type="text" class="form-control" name="fecha">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Valor</label>
+                        <input type="text" class="form-control" name="valor">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Maximo</label>
+                        <input type="text" class="form-control" name="maximo">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Mínimo</label>
+                        <input type="text" class="form-control" name="minimo">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button id="btn_modificar_promedio" name="promedio" type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
     </div>
 </div>
 

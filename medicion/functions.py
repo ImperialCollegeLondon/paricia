@@ -13,8 +13,8 @@ from reportes.functions import get_elemento_data_json, get_layout_grafico, datos
 
 
 class ReporteValidacion(models.Model):
-    numero_fila = models.BigAutoField(primary_key=True)
-    seleccionado = models.BooleanField()
+    id = models.BigAutoField(primary_key=True)
+    estado = models.BooleanField()
     fecha = models.DateTimeField()
     valor_seleccionado = models.DecimalField(max_digits=14, decimal_places=6, null=True)
     valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)

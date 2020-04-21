@@ -62,3 +62,11 @@ def get_links(model, model_id):
     operate = link_view + link_edit + link_delete
 
     return operate
+
+
+def get_vista_usuario(request):
+    if request.user.is_authenticated:
+        template = "index.html"
+    else:
+        template = "index_invitado.html"
+    return template

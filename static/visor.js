@@ -1,7 +1,16 @@
 $(document).ready(function() {
 
     // crear la capa base del mapa
-    var mymap = L.map('mapid').setView([-0.25, -78.43], 10);
+    //var mymap = L.map('mapid').setView([-0.25, -78.43], 9);
+    var mymap = L.map('mapid',{
+        center: [-0.20, -78.35],
+        zoom: 9.50,
+        zoomControl:true,
+        scrollWheelZoom: false,
+        zoomDelta: 0.25,
+        zoomSnap: 0
+    });
+    mymap.zoomControl.setPosition('bottomleft');
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		    maxZoom: 18,
 		    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -28,17 +37,6 @@ $(document).ready(function() {
         }
     }).responseJSON;
 
-    //consultar la capa de estaciones del INAMHI en JSON
-    geojsonINAMHI = $.ajax({
-        type: 'GET',
-        url: '/estacion/getjsoninamhi',
-        async: false,
-        dataType: 'json',
-        done: function(results) {},
-        fail: function( jqXHR, textStatus, errorThrown ) {
-            console.log( 'Could not get posts, server response: ' + textStatus + ': ' + errorThrown );
-        }
-    }).responseJSON;
 
     //generar los iconos por estacion
     var hidro_icon = L.icon({
@@ -62,15 +60,12 @@ $(document).ready(function() {
 		popupAnchor: [0, -28]
 	});
     //cargar la capa de estaciones al mapa
-    L.geoJSON([geojsonFONAG, geojsonINAMHI], {
+    L.geoJSON(geojsonFONAG, {
 
         pointToLayer: function (feature, latlng) {
 
             switch(feature.properties.tipo){
                 case "Meteorológica":
-                return L.marker(latlng, {icon: meteo_icon});
-                break;
-                case "METEOROLOGICA":
                 return L.marker(latlng, {icon: meteo_icon});
                 break;
                 case "Pluviométrica":
@@ -79,9 +74,7 @@ $(document).ready(function() {
                 case "Hidrológica":
                 return L.marker(latlng, {icon: hidro_icon});
                 break
-                case "HIDROLOGICA":
-                return L.marker(latlng, {icon: hidro_icon});
-                break
+
             }
             //return L.marker(latlng, {icon: hidro_icon});
         },
@@ -107,6 +100,21 @@ $(document).ready(function() {
     };
 
     legend.addTo(mymap);
+
+
+
+    var titulo = L.control({position: 'topleft'});
+
+    titulo.onAdd = function (map){
+        //var div = L.DomUtil.create('div', 'px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center');
+        var div = L.DomUtil.create('div', 'introduccion w-100 text-center');
+        //div.innerHTML = '<h1 class="display-4 text-primary">SEDC</h1>';
+        //div.innerHTML = '<div class="d-flex justify-content-center">';
+        div.innerHTML = '<h2 style="color:#EB760A;">Red de Estaciones Hidroclimáticas</h2>';
+        //div.innerHTML += '</div>';
+        return div;
+    };
+    titulo.addTo(mymap);
 
 
     // llamar las variables por estaciones

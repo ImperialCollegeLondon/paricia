@@ -24,51 +24,70 @@
 {% bootstrap_messages %}
 
 <body>
-<nav class="navbar navbar-expand navbar-dark bg-info">
-    <a class="navbar-brand mr-md-auto" href="/">SEDC</a>
+
+
+<nav class="navbar navbar-expand navbar-light" style="background-color: #252C71;">
+    <a class="navbar-brand text-white" href="{% url 'home:visor' %}">Home</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
 
     <!-- Collect the nav links, forms, and other content for toggling -->
-
-        <ul class="navbar-nav mr-3">
-            <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'reportes:anuario' %}">Anuario Hidroclimático</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'reportes:consultas_usuario' %}">Consultas por Periodo</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'reportes:comparacion_reporte' %}">Comparar entre Estaciones</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'reportes:comparacion_variable' %}">Comparar entre Variables</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'reportes:reporte_inamhi' %}">Información INAMHI</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'login'%}?next={{request.path}}">Login<span class="sr-only">(current)</span></a>
-            </li>
-            <!--<li class="nav-item dropdown">
-
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"
-                   role="button" aria-haspopup="true" aria-expanded="false">
-                    Reportes<span class="caret"></span></a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle text-white" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">Consultas
+                    <span class="caret"></span></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 
 
-                    <a class="dropdown-item" href="{% url 'reportes:anuario' %}">Anuario</a>
+                    <a class="dropdown-item" href="{% url 'reportes:anuario' %}">Anuario Hidroclimático</a>
+                    <a class="dropdown-item" href="{% url 'reportes:consultas_usuario' %}">Consultas por Periodo</a>
+                    <a class="dropdown-item" href="{% url 'reportes:comparacion_reporte' %}">Comparar entre Estaciones</a>
+                    <a class="dropdown-item" href="{% url 'reportes:comparacion_variable' %}">Comparar entre Variables</a>
 
-                    <a class="dropdown-item" href="{% url 'reportes:consultas_periodo' %}">Consultas por Periodo</a>
-                    <a class="dropdown-item" href="{% url 'reportes:comparacion_reporte' %}">Comparar 3 estaciones</a>
-                    <a class="dropdown-item" href="{% url 'reportes:comparacion_variable' %}">Comparar 2 variables</a>
                 </div>
-            </li>-->
+            </li>
 
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle text-white" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">Tiempo Real
+                    <span class="caret"></span></a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'telemetria:visualizar' %}">Visualizar variables</a>
+                    <a class="dropdown-item" href="{% url 'telemetria:mapa_alarma_transmision' %}">Mapa transmisión</a>
+                    <a class="dropdown-item" href="{% url 'telemetria:precipitacion' %}">Precipitación</a>
+                    <a class="dropdown-item" href="{% url 'telemetria:multiestacion_precipitacion' %}">Precipitación Multiestación</a>
 
+                </div>
+            </li>
         </ul>
+    </div>
 
+
+    <ul class="navbar-nav ml-auto">
+        {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'home:home' %}">Administración</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'login'%}?next={{request.path}}">Login<span class="sr-only">(current)</span></a>
+            </li>
+        {% endif %}
+
+
+    </ul>
 
 </nav>
+
+
 {% block javascript %}{% endblock %}
 <div class="container" style="margin-top:20px;">
     {% block content %}

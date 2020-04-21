@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
+from home.functions import get_vista_usuario
 
 
 class AjaxableResponseMixin:
@@ -79,12 +80,13 @@ class HomePageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            context['base_template'] = "index.html"
-        else:
-            context['base_template'] = "index_invitado.html"
+        context['base_template'] = get_vista_usuario(self.request)
         return context
 
 
 class ConsultasView(TemplateView):
     template_name = "consultas_usuario.html"
+
+
+class ConsultaVisor(TemplateView):
+    template_name = "reportes/consultas_visor.html"
