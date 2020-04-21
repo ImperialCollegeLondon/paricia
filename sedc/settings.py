@@ -165,8 +165,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'paul.chicaiza@fonag.org.ec'
-EMAIL_HOST_PASSWORD = 'FONAG2018'
+EMAIL_HOST_USER = 'usuario'
+EMAIL_HOST_PASSWORD = 'password'
 
 # Settings for django-bootstrap4
 BOOTSTRAP4 = {
