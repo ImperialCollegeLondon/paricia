@@ -49,7 +49,7 @@ def iniciar_lectura():
     # Temperatura del Agua, Caudal, Nivel del Agua
     #filtro_estaciones = [17]
 
-    filtro_estaciones = [17]
+    filtro_estaciones = [32]
     #filtro_estaciones = [29, 30, 31, 32]
 
     #estaciones = Estacion.objects.filter(est_externa=False).exclude(est_id__in=filtro_estaciones)
@@ -58,7 +58,7 @@ def iniciar_lectura():
 
 
     #periodos = [2015, 2016, 2017, 2018]
-    periodos = [2013, 2014, 2015, 2016, 2017, 2018]
+    periodos = [2016, 2017, 2018, 2019]
 
 
 
@@ -71,9 +71,7 @@ def iniciar_lectura():
 
             modelo_medicion = get_modelo(fila_cru.var_id.var_id)
 
-
-            filtro = [9, 10, 11]
-
+            filtro = [10]
 
             if fila_cru.var_id.var_id in filtro:
 
