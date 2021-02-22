@@ -1,7 +1,7 @@
 .idea/
 *.pyc
 media/archivos
-#djangomain/settings.py
+djangomain/settings.py
 !*.gitkeep
 debug.log
 **/migrations/**

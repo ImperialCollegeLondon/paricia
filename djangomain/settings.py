@@ -133,7 +133,7 @@ WSGI_APPLICATION = 'djangomain.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'imhea',
+        'NAME': 'imheatest',
         'USER': 'imhea',
         'PASSWORD': 'imhea',
         'HOST': 'localhost',
