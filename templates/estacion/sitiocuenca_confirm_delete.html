@@ -1,0 +1,11 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Asociación Sitio-Cuenca{% endblock %}
+
+{% block table_rows %}
+<tr><th>Sitio</th><td>{{sitiocuenca.sitio}}</td></tr>
+<tr><th>Cuenca</th><td>{{sitiocuenca.cuenca}}</td></tr>
+<tr><th>Fotografía/Mapa</th><td>{{sitiocuenca.imagen}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'estacion:sitiocuenca_index' %}{% endblock %}

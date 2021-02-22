@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+{% load bootstrap4 %}
+{% load static %}
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{% static 'scripts/indices.js' %}"></script>
+<link rel="stylesheet" href="{% static 'styles/style.css' %}">
+
+<div class="titulo row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Curva de Intensidad Duración  Precipitación - Multiestación</h3>
+    </div>
+</div>
+
+<div class="filtro row">
+    <div class=" col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Comparar la curva de intensidad duración de las estaciones de la red integrada </p>
+    </div>
+</div>
+
+<div class="filtro row">
+
+    <div class="col-lg-10 col-md-10 col-sm-9">
+        <form id="form_curva_descarga" class="form" method="post" action="{% url 'indices:intensidadmulti' %}" >
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" >
+                    <label>Estaciones</label>
+                    <div style="height:200px; overflow-x:hidden ; overflow-y: scroll; padding-bottom:10px;">{% bootstrap_field form.estacion show_label=False %}</div>
+                </div>
+                <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                    <div class="col-lg-4 col-md-8 col-sm-12 col-xs-12">{% bootstrap_field form.anio  layout='horizontal' %}</div>
+                    <div class="col-lg-4 col-md-8 col-sm-12 col-xs-12">
+                        <button id='cau_multi' type='button' class='btn btn-success' >Visualizar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <br>
+        <br>
+        <br>
+        <div id="div_informacion" class="filtro">
+            <div id="graficoMul">
+
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div id="div_nota" class="alert alert-info alert-dismissible" hidden="true" role="alert">
+            Este es un cálculo que puede tomar varios minutos por favor espere mientras se procesan los datos.....
+        </div>
+        <div id="div_loading" class="row" style="display:none;">
+            <div class="col-lg-3 col-md-2 col-sm-1">&nbsp;</div>
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <img src="/static/images/loading6.gif"/>
+            </div>
+            <div class="col-lg-3 col-md-2 col-sm-1">&nbsp;</div>
+        </div>
+
+        <div id="div_error" class="row" hidden="true">
+            <div id="msjError" class="alert alert-danger alert-dismissible" role="alert">
+                Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

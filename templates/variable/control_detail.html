@@ -1,0 +1,19 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Instalación de sensores{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Variable</th><td>{{control.var_id}}</td></tr>
+    <tr><th>Sensor</th><td>{{control.sen_id}}</td></tr>
+    <tr><th>Estación</th><td>{{control.est_id}}</td></tr>
+    <tr><th>Inicio</th><td>{{control.con_fecha_ini}}</td></tr>
+    <tr><th>Fin</th><td>{{control.con_fecha_fin|default_if_none:""}}</td></tr>
+    <tr><th>Estado</th><td>{{control.con_estado|default_if_none:""}}</td></tr>
+{% endblock %}
+
+{% block url_change %}{% if perms.variable.change_control %}{% url 'variable:control_update' control.con_id %}{% endif %}{% endblock %}
+
+{% block url_delete %}{% if perms.variable.delete_control %}{% url 'variable:control_delete' control.con_id %}{% endif %}{% endblock %}
+
+{% block url_back %}{% url 'variable:control_index' %}{% endblock %}
+

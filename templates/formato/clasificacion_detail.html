@@ -1,0 +1,16 @@
+<table class="table table-hover table-sm">
+    <tr><th>Variable</th><td>{{clasificacion.var_id}}</td></tr>
+    <tr><th>¿Acumular a 5 minutos?</th><td>{% if clasificacion.acumular %}Sí{% else %}No{% endif %}</td></tr>
+    <tr><th>Incremental</th><td>{% if clasificacion.incremental %}Sí{% else %}No{% endif %}</td></tr>
+    <tr><th>Resolución</th><td>{{clasificacion.resolucion|default_if_none:"--" }}</td></tr>
+    <tr><th>Coma Decimal</th><td>{% if clasificacion.coma_decimal %}Sí{% else %}No{% endif %}</td></tr>
+    <tr><th>Valor / Columna</th><td>{{clasificacion.cla_valor|default_if_none:"--" }}</td></tr>
+    <tr><th>Valor / Columna validador</th><td>{{clasificacion.col_validador_valor|default_if_none:"--" }}</td></tr>
+    <tr><th>Valor / Texto validador</th><td>{{clasificacion.txt_validador_valor|default_if_none:"--" }}</td></tr>
+    <tr><th>Máximo / Columna</th><td>{{clasificacion.cla_maximo|default_if_none:"--" }}</td></tr>
+    <tr><th>Máximo / Columna validador</th><td>{{clasificacion.col_validador_maximo|default_if_none:"--" }}</td></tr>
+    <tr><th>Máximo / Texto validador</th><td>{{clasificacion.txt_validador_maximo|default_if_none:"--" }}</td></tr>    
+    <tr><th>Mínimo / Columna</th><td>{{clasificacion.cla_minimo|default_if_none:"--" }}</td></tr>
+    <tr><th>Mínimo / Columna validador</th><td>{{clasificacion.col_validador_minimo|default_if_none:"--" }}</td></tr>
+    <tr><th>Mínimo / Texto validador</th><td>{{clasificacion.txt_validador_minimo|default_if_none:"--" }}</td></tr>
+</table>

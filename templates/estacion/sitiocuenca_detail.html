@@ -1,0 +1,19 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Asociación Sitio-Cuenca{% endblock %}
+
+{% block table_rows %}
+<tr><th>Sitio</th><td>{{sitiocuenca.sitio}}</td></tr>
+<tr><th>Cuenca</th><td>{{sitiocuenca.cuenca}}</td></tr>
+<tr><th>Fotografía/Mapa</th><td>{{sitiocuenca.imagen}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.estacion.change_sitiocuenca %}{% url 'estacion:sitiocuenca_update' sitiocuenca.id %}{% endif %}
+{% endblock %}
+
+{% block url_delete %}
+{% if perms.estacion.delete_sitiocuenca %}{% url 'estacion:sitiocuenca_delete' sitiocuenca.id%}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:sitiocuenca_index' %}{% endblock %}

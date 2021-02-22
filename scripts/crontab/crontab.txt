@@ -1,0 +1,11 @@
+##root_crontab:0 3 *  *  *  reboot
+
+1 * * * * /home/program/desarrollo/venv_imhea/bin/python /home/program/desarrollo/venv_imhea/manage.py runscript telemetria_alarma_transmision
+5 0 * * * /home/program/desarrollo/venv_imhea/bin/python /home/program/desarrollo/venv_imhea/manage.py runscript generar_horario_loop
+5 1 * * * /home/program/desarrollo/venv_imhea/bin/python /home/program/desarrollo/venv_imhea/manage.py runscript generar_diario_loop
+5 2 * * * /home/program/desarrollo/venv_imhea/bin/python /home/program/desarrollo/venv_imhea/manage.py runscript generar_mensual_loop
+
+### sincronizacion con la base de datos del sedc en el fonag
+7 * * * * /home/program/desarrollo/xapi/scripts/runsync.sh
+00 8 1 * * /home/program/Documentos/repEstExter.sh
+

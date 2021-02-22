@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+{% load bootstrap4 %}
+{% load static %}
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{% static 'scripts/indices.js' %}"></script>
+<link rel="stylesheet" href="{% static 'styles/style.css' %}">
+
+
+
+
+<div class="border-top my-3"></div>
+
+<div id="div_informacion" class="filtro" >
+    <!--div class="table-responsive"-->
+        <table id="tableacum" class="table table-bordered table-hover table-fixed">
+            <thead >
+                <tr>
+                    <th id="est1lb" class="col-sm-6 col-md-6 col-md-6 text-center">estacion  1</th>
+                    <th id="est2lb" class="col-sm-6 col-md-6 col-md-6 text-center">estacion  2</th>
+                </tr>
+                <tr>
+                    <th class="col-sm-3 col-md-3 col-md-3">fecha inicio</th>
+                    <th class="col-sm-3 col-md-3 col-md-3">Fecha fin</th>
+                    <th class="col-sm-3 col-md-3 col-md-3">Fecha inicio</th>
+                    <th class="col-sm-3 col-md-3 col-md-3">Fecha fin</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbody" >
+                <tr>
+                    <td class="col-sm-3 col-md-3 col-md-3">fecha1 </td>
+                    <td class="col-sm-3 col-md-3 col-md-3">valor1 </td>
+                    <td class="col-sm-3 col-md-3 col-md-3">fecha2 </td>
+                    <td class="col-sm-3 col-md-3 col-md-3">valor2 </td>
+                </tr>
+            </tbody>
+        </table>
+</div>
+
+{% endblock %}

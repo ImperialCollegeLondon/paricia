@@ -1,0 +1,15 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Cuenca{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{cuenca.nombre}}</td></tr>
+<tr><th>Fotografía/Mapa</th><td>{{cuenca.imagen}}</td></tr>
+<tr><th>Ficha(PDF)</th><td>{{cuenca.ficha}}</td></tr>
+{% endblock %}
+
+{% block url_change %}{% if perms.estacion.change_cuenca %}{% url 'estacion:cuenca_update' cuenca.id %}{% endif %}{% endblock %}
+
+{% block url_delete %}{% if perms.estacion.delete_cuenca %}{% url 'estacion:cuenca_delete' cuenca.id%}{% endif %}{% endblock %}
+
+{% block url_back %}{% url 'estacion:cuenca_index' %}{% endblock %}

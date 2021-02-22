@@ -1,0 +1,76 @@
+{% extends "template_list.html" %}
+
+{% block javascript %}
+
+    {{ block.super }}
+
+    <script>
+
+    var btns = '';
+    var table;
+
+    {% if perms.formato.view_fecha %}
+    btns = btns + window.btn_detalle_html("{% url 'formato:fecha_detail' 0 %}");
+    {% endif %}
+
+    {% if perms.formato.change_fecha %}
+    btns = btns + "&nbsp;" + window.btn_editar_html("{% url 'formato:fecha_update' 0 %}");
+    {% endif %}
+
+    {% if perms.formato.delete_fecha %}
+    btns = btns + "&nbsp;" + window.btn_eliminar_html("{% url 'formato:fecha_delete' 0 %}");
+    {% endif %}
+
+
+    $(document).ready(function() {
+
+        table = $('#table_fecha').DataTable({
+            language: window.DATATABLES_LANGUAGE,
+            scrollX: true,
+            "dom": '<"top"f>rt<"bottom"p><"clear">',
+            fixedColumns: { leftColumns: 2,},
+            columnDefs: [
+                { "targets": 0, "visible" : false, "searchable": false },
+                { "targets": 1, "defaultOrder": true, "searchable": true,},
+                { "targets": 3, "render" : function(data, type, row){ return btns;}  },
+            ],
+        });
+
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+        table.columns.adjust().draw();
+
+    });
+
+    </script>
+
+{% endblock %}
+
+
+{% block titulo %}Fecha{% endblock %}
+
+
+{% block href_nuevo %}
+    {% if perms.formato.add_fecha %}{% url 'formato:fecha_create' %}{% endif %}
+{% endblock %}
+
+
+{% block div_informacion_content %}
+    <style>
+    tr>:nth-child(1) {min-width:  14em; max-width: 20em;}
+    </style>
+
+    <table id="table_fecha" class="table table-hover table-sm overflowtooltip" >
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Formato</th>
+            <th>Código</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+
+        <tbody>{{ fechas|safe }}</tbody>
+    </table>
+{% endblock %}

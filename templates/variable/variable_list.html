@@ -1,0 +1,106 @@
+{% extends "template_list.html" %}
+
+{% block javascript %}
+
+{{ block.super }}
+
+<script>
+var btns = '';
+var table;
+
+{% if perms.variable.view_variable %}
+btns = btns + window.btn_detalle_html("{% url 'variable:variable_detail' 0 %}");
+{% endif %}
+
+{% if perms.variable.change_variable %}
+btns = btns + "&nbsp;" + window.btn_editar_html("{% url 'variable:variable_update' 0 %}");
+{% endif %}
+
+
+$(document).ready(function() {
+
+    table = $('#table_variable').DataTable({
+        language: window.DATATABLES_LANGUAGE,
+        scrollX: true,
+        "dom": '<"top"f>rt<"bottom"p><"clear">',
+        fixedColumns: { leftColumns: 2,},
+
+        columnDefs: [
+            { "targets": 0, "visible" : false, "searchable": false },
+            { "targets": 1, },
+            { "targets": 2, "defaultOrder": true, "searchable": true, },
+            { "targets": 4, "className": 'text-right'},
+            { "targets": 5, "className": 'text-right'},
+            { "targets": 6, "className": 'text-right'},
+            { "targets": 7, "className": 'text-right'},
+            { "targets": 8, "className": 'text-right'},
+            { "targets": 9,
+                "render" : function(data, type, row){ if (row[9]) {return "Activo";} else { return "Inactivo";} }
+            },
+            { "targets": 10,
+                "render" : function(data, type, row){ if (row[10]) {return "Acum.";} else { return "Prom.";} }
+            },
+            { "targets": 11,
+                "render" : function(data, type, row){ if (row[11]) {return "Auto";} else { return "-";} }
+            },
+            { "targets": 12, "className": 'text-right'},
+            { "targets": 13, "render" : function(data, type, row){ return btns;}  },
+        ],
+    });
+
+
+    $('#div_loading').hide();
+    $('#div_informacion').show();
+    table.columns.adjust().draw();
+
+});
+
+</script>
+{% endblock %}
+
+
+{% block titulo %}Variable{% endblock %}
+
+{% block href_exportar %}
+    {% if perms.variable.view_variable %}{% url 'variable:variable_export' %}{% endif %}
+{% endblock %}
+
+{% block div_informacion_content %}
+    <style>
+    tr>:nth-child(1) {min-width: 3em; max-width: 6em;}
+    tr>:nth-child(2) {min-width: 6em; max-width: 14em;}
+    tr>:nth-child(3) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(4) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(5) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(6) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(7) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(8) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(9) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(10) {min-width: 4em; max-width: 6em;}
+    tr>:nth-child(11) {min-width: 5em; max-width: 6em;}
+    tr>:nth-child(12) {min-width: 4em; max-width: 5em;}
+    </style>
+
+    <table id="table_variable" class="table table-hover table-sm overflowtooltip" >
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Unidad</th>
+            <th>Máximo</th>
+            <th>Mínimo</th>
+            <th>Inc. sospechoso</th>
+            <th>Inc. error</th>
+            <th>Sigmas (outliers)</th>
+            <th>Estado</th>
+            <th>Acumulada/Promedio</th>
+            <th>Reporte automático</th>
+            <th>Umbral para completo</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+
+        <tbody>{{ variables|safe }}</tbody>
+    </table>
+{% endblock %}

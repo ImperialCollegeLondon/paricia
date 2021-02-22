@@ -1,0 +1,10 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Variable / Unidad{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Nombre</th><td>{{unidad.uni_nombre}}</td></tr>
+    <tr><th>Sigla</th><td>{{unidad.uni_sigla}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'variable:unidad_index' %}{% endblock %}

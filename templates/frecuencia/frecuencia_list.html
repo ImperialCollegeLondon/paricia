@@ -1,0 +1,129 @@
+{% extends "template_list.html" %}
+
+{% block javascript %}
+
+    {{ block.super }}
+    <script>
+
+    var btns = '';
+    var table;
+
+    {% if perms.frecuencia.change_frecuencia %}
+    btns = btns + "&nbsp;" + window.btn_editar_html("{% url 'frecuencia:frecuencia_update' 0 %}");
+    {% endif %}
+
+    {% if perms.frecuencia.delete_frecuencia %}
+    btns = btns + "&nbsp;" + window.btn_eliminar_html("{% url 'frecuencia:frecuencia_delete' 0 %}");
+    {% endif %}
+
+
+    $(document).ready(function() {
+
+        table = $('#table_frecuencia').DataTable({
+            language: window.DATATABLES_LANGUAGE,
+            scrollX: true,
+            "dom": '<"top"f>rt<"bottom"p><"clear">',
+            fixedColumns: { leftColumns: 2,},
+            columnDefs: [
+                { "targets": 0, "visible" : false, "searchable": false },
+                { "targets": 1, "defaultOrder": true,},
+                { "targets": 6, "render" : function(data, type, row){ return btns;}  },
+            ],
+        });
+
+
+        // Asociar búsqueda con caja de selección
+        table.columns(1).every( function(){
+            var column = this;
+            var select = $('#filtro_estacion').on( 'change', function () {
+                var val = $.fn.dataTable.util.escapeRegex(
+                    $(this).val()
+                );
+
+                column
+                    .search( val ? '^'+val+'$' : '', true, false )
+                    .draw();
+            } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            } );
+        } );
+
+
+        // Asociar búsqueda con caja de selección
+        table.columns(2).every( function(){
+            var column = this;
+            var select = $('#filtro_variable').on( 'change', function () {
+                var val = $.fn.dataTable.util.escapeRegex(
+                    $(this).val()
+                );
+
+                column
+                    .search( val ? '^'+val+'$' : '', true, false )
+                    .draw();
+            } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            } );
+        } );
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+        table.columns.adjust().draw();
+
+    });
+
+    </script>
+{% endblock %}
+
+
+{% block titulo %}Frecuencia{% endblock %}
+
+{% block cen %}
+
+    <div class="d-inline-block">
+        <label class="sr-only" >Filtrar por estacion</label>
+        <select id="filtro_estacion" class="form-control use-placeholder" style="max-width:14em;">
+            <option value="">---------</option>
+        </select>
+    </div>
+
+    <div class="d-inline-block">
+        <label class="sr-only" >Filtrar por variable</label>
+        <select id="filtro_variable" class="form-control use-placeholder" style="width:auto;">
+            <option value="">---------</option>
+        </select>
+    </div>
+
+{% endblock %}
+
+{% block href_nuevo %}
+        {% if perms.frecuencia.add_frecuencia %}{% url 'frecuencia:frecuencia_create' %}{% endif %}
+{% endblock %}
+
+
+
+{% block div_informacion_content %}
+    <style>
+    tr>:nth-child(1) {min-width: 6em; max-width: 12em;}
+    tr>:nth-child(2) {min-width: 6em; max-width: 12em;}
+    tr>:nth-child(3) {min-width: 6em; max-width: 12em;}
+    tr>:nth-child(4) {min-width: 6em; max-width: 10em;}
+    tr>:nth-child(5) {min-width: 6em; max-width: 10em;}
+    </style>
+    <table id="table_frecuencia" class="table table-hover table-sm overflowtooltip" >
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Estación</th>
+            <th>Variable</th>
+            <th>Frecuencia (minutos)</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+
+        <tbody>{{ frecuencia|safe }}</tbody>
+    </table>
+{% endblock %}

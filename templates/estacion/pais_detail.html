@@ -1,0 +1,17 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}País{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{pais.nombre}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.estacion.change_pais %}{% url 'estacion:pais_update' pais.id %}{% endif %}
+{% endblock %}
+
+{% block url_delete %}
+{% if perms.estacion.delete_pais %}{% url 'estacion:pais_delete' pais.id%}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:pais_index' %}{% endblock %}

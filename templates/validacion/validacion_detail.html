@@ -1,0 +1,14 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Validaciones{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Estación</th><td>{{validacion.est_id}}</td></tr>
+    <tr><th>Variable</th><td>{{validacion.var_id}}</td></tr>
+    <tr><th>Fecha de validación</th><td>{{validacion.fecha_validacion|date:"Y-m-d"}}</td></tr>
+    <tr><th>Inicio datos</th><td>{{validacion.fecha_inicio_datos}}</td></tr>
+    <tr><th>Fin datos</th><td>{{validacion.fecha_fin_datos}}</td></tr>
+    <tr><th>Comentario</th><td>{{validacion.comentario}}</td></tr>
+{% endblock %}
+
+{% block url_back %}{% url 'validacion:validacion_index' %}{% endblock %}

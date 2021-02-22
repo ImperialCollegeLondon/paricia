@@ -1,0 +1,10 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Variables por estación{% endblock %}
+
+{% block table_rows %}
+<tr><th>Estación</th><td>{{cruce.est_id}}</td></tr>
+<tr><th>Variable</th><td>{{cruce.var_id}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'cruce:cruce_index' %}{% endblock %}

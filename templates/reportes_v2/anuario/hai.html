@@ -1,0 +1,49 @@
+{% if 3_matriz %}
+<div class=" col-lg-5 col-md-5 col-sm-12">
+    <table style="font-size: 12px" class="table table-sm table-striped table-bordered table-sm">
+
+        <thead>
+        <tr>
+            <th align="center" colspan='6'>Humedad Relativa del Aire - Valores medios diarios, absolutos maximos y
+                mimimos
+            </th>
+        </tr>
+        <tr>
+            <th rowspan='2'>Mes</th>
+            <th colspan='5'>Humedad relativa del aire (%)</th>
+        </tr>
+        <tr>
+            <th>Max</th>
+            <th>Dia</th>
+            <th>Min</th>
+            <th>Dia</th>
+            <th>Media</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for item in 3_matriz %}
+
+        <tr>
+            <td>{{ item.hai_mes }}</td>
+            <td>{{ item.hai_maximo|floatformat:2 }}</td>
+            <td>{{ item.hai_maximo_dia }}</td>
+            <td>{{ item.hai_minimo|floatformat:2 }}</td>
+            <td>{{ item.hai_minimo_dia }}</td>
+            <td>{{ item.hai_promedio|floatformat:2 }}</td>
+        </tr>
+
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class=" col-lg-7 col-md-7 col-sm-12">
+    {% if 3_grafico %}
+    <div style="height:400">
+        {{ 3_grafico|safe }}
+    </div>
+    {% endif %}
+</div>

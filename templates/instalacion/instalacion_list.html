@@ -1,0 +1,145 @@
+{% extends "template_list.html" %}
+
+{% block javascript %}
+
+    {{ block.super }}
+    <script>
+
+    var btns = '';
+    var table;
+
+
+    {% if perms.instalacion.view_instalacion %}
+    btns = btns + window.btn_detalle_html("{% url 'instalacion:instalacion_detail' 0 %}");
+    {% endif %}
+
+    {% if perms.instalacion.change_instalacion %}
+    btns = btns + "&nbsp;" + window.btn_editar_html("{% url 'instalacion:instalacion_update' 0 %}");
+    {% endif %}
+
+    {% if perms.instalacion.delete_instalacion %}
+    btns = btns + "&nbsp;" + window.btn_eliminar_html("{% url 'instalacion:instalacion_delete' 0 %}");
+    {% endif %}
+
+
+    $(document).ready(function() {
+
+        table = $('#table_instalacion').DataTable({
+            language: window.DATATABLES_LANGUAGE,
+            scrollX: true,
+            "dom": '<"top"f>rt<"bottom"p><"clear">',
+            fixedColumns: { leftColumns: 2,},
+            columnDefs: [
+                { "targets": 0, "visible" : false, "searchable": false },
+                { "targets": 1, "defaultOrder": true},
+                { "targets": 5, "searchable": true,
+                   "render" : function(data, type, row){ if (row[5]) {return "Activo";} else { return "Inactivo";} }
+                },
+                { "targets": 7, "render" : function(data, type, row){ return btns;}  },
+            ],
+        });
+
+
+
+
+        // Asociar búsqueda con caja de selección
+        table.columns(1).every( function(){
+            var column = this;
+            var select = $('#filtro_estacion').on( 'change', function () {
+                var val = $.fn.dataTable.util.escapeRegex(
+                    $(this).val()
+                );
+
+                column
+                    .search( val ? '^'+val+'$' : '', true, false )
+                    .draw();
+            } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            } );
+        } );
+
+
+        // Asociar búsqueda con caja de selección
+        table.columns(2).every( function(){
+            var column = this;
+            var select = $('#filtro_datalogger').on( 'change', function () {
+                var val = $.fn.dataTable.util.escapeRegex(
+                    $(this).val()
+                );
+
+                column
+                    .search( val ? '^'+val+'$' : '', true, false )
+                    .draw();
+            } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            } );
+        } );
+
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+
+        table.columns.adjust().draw();
+
+    });
+
+    </script>
+{% endblock %}
+
+
+{% block titulo %}Instalacion datalogger{% endblock %}
+
+{% block cen %}
+
+    <div class="d-inline-block">
+        <label class="sr-only" >Filtrar por estacion</label>
+        <select id="filtro_estacion" class="form-control use-placeholder" style="max-width:14em;">
+            <option value="">---------</option>
+        </select>
+    </div>
+
+    <div class="d-inline-block">
+        <label class="sr-only" >Filtrar por datalogger</label>
+        <select id="filtro_datalogger" class="form-control use-placeholder" style="width:auto;">
+            <option value="">---------</option>
+        </select>
+    </div>
+
+{% endblock %}
+
+{% block href_nuevo %}
+        {% if perms.instalacion.add_instalacion %}{% url 'instalacion:instalacion_create' %}{% endif %}
+{% endblock %}
+
+
+{% block div_informacion_content %}
+
+    <style>
+    tr>:nth-child(1) { min-width: 6em; max-width: 15em;}
+    tr>:nth-child(2) { min-width: 6em; max-width: 10em;}
+    tr>:nth-child(3) { min-width: 6em; max-width: 14em;}
+    tr>:nth-child(4) { min-width: 6em; max-width: 7em;}
+    tr>:nth-child(5) { min-width: 6em; max-width: 8em;}
+    tr>:nth-child(6) { min-width: 6em; max-width: 10em;}
+    tr>:nth-child(7) { min-width: 6em; max-width: 5em;}
+    </style>
+
+    <table id="table_instalacion" class="table table-sm table-hover overflowtooltip" >
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Estación</th>
+            <th>Datalogger</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>En uso</th>
+            <th>Observación</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+
+        <tbody>{{ instalacion |safe }}</tbody>
+    </table>
+{% endblock %}

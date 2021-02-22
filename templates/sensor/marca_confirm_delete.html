@@ -1,0 +1,9 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Sensor / Marca{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{marca.mar_nombre|default_if_none:""}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'sensor:marca_index' %}{% endblock %}

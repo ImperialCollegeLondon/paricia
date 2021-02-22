@@ -1,0 +1,54 @@
+{% extends "template_list.html" %}
+
+{% block javascript %}
+
+    {{ block.super }}
+    <script>
+
+    $(document).ready(function() {
+
+        table = $('#table_extension').DataTable({
+            language: window.DATATABLES_LANGUAGE,
+            scrollX: true,
+            "dom": '<"top"f>rt<"bottom"p><"clear">',
+            fixedColumns: { leftColumns: 2,},
+            columnDefs: [
+                { "targets": 0, "visible" : false, "searchable": false },
+                { "targets": 1, "defaultOrder": true,},
+                { "targets": 2, "visible" : false, "searchable": false },
+            ],
+        });
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+        table.columns.adjust().draw();
+
+    });
+
+    </script>
+{% endblock %}
+
+
+{% block titulo %}Formato de importación / Extensión de archivo{% endblock %}
+
+{% block href_nuevo %}
+        {% if perms.formato.add_extension %}{% url 'formato:extension_create' %}{% endif %}
+{% endblock %}
+
+
+{% block div_informacion_content %}
+    <style>
+    tr>:nth-child(1) {min-width: 14em; max-width: 20em;}
+    </style>
+    <table id="table_extension" class="table table-hover table-sm overflowtooltip" >
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+
+        <tbody>{{ extension|safe }}</tbody>
+    </table>
+{% endblock %}

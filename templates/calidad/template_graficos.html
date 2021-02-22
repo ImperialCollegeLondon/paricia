@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block javascript %}
+    {{ block.super }}
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script>
+    $( document ).ready(function(){
+    });
+    </script>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row transp-blanco barra-sup">
+    <div class="col-md-auto align-self-start"><h5>{% block izq %}Calidad de agua / {% block titulo %}{% endblock %}{% endblock %}</h5></div>
+    <div class="col-md-auto align-self-center">{% block cen %}{% endblock %}</div>
+    <div class="col-md-auto align-self-end">{% block der %}{% endblock %}</div>
+</div>
+
+<style>
+    .flex-container {
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .flex-item {
+      min-height: 100%;
+    }
+</style>
+<div class="row">
+    <div class="flex-container">
+        <div class="flex-item m-2" style="min-width:175px; max-width:175px;">
+            <div class="formulario transp-blanco flex-item p-2" >{% block formulario %}{% endblock %}</div>
+        </div>
+
+        <div class="flex-item m-2" >
+
+            <div id="div_loading" style="display:none;">
+                <div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>
+            </div>
+
+            <div id="div_error" class="row" style="display:none;" >
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+                </div>
+            </div>
+
+            <div id="div_grafico" class="transp-blanco p-2" style="display:none;">
+                {% block graficos %}{% endblock %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}CALIDAD DE AGUA: Permisos de usuario para variables{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Usuario</th><td>{{usuariovariable.usuario.username}}</td></tr>
+    <tr>
+        <th>Variable(s)</th><td>
+            <table>
+                {% for usrvar in usuariovariable.variable.all %}
+                <tr><td>{{ usrvar }}</td></tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+{% endblock %}
+
+{% block url_change %}{% if perms.calidad.change_usuariovariable %}{% url 'calidad:usuariovariable_update' usuariovariable.pk %}{% endif %}{% endblock %}
+
+{% block url_delete %}{% if perms.calidad.delete_usuariovariable %}{% url 'calidad:usuariovariable_delete' usuariovariable.pk%}{% endif %}{% endblock %}
+
+{% block url_back %}{% url 'calidad:usuariovariable_index' %}{% endblock %}

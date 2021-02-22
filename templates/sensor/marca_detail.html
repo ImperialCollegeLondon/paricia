@@ -1,0 +1,13 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Sensor / Marca{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{marca.mar_nombre|default_if_none:""}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.Sensor.change_marca %}{% url 'sensor:marca_update' marca.mar_id %}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'sensor:marca_index' %}{% endblock %}

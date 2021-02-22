@@ -1,0 +1,9 @@
+<div class="col mx-0">
+    {% if grafico %}
+        <div>
+            {{ grafico|safe }}
+        </div>
+    {%else%}
+    <label>No hay información para los parametros ingresados</label>
+    {% endif %}
+</div>

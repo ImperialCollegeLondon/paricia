@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block content %}
+{% load bootstrap4 %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/style.css' %}">
+<style type="text/css">
+table>thead>tr>th{
+  text-align: center;vertical-align: middle;
+}
+table>tbody>tr>td{
+  text-align: center;vertical-align: middle;
+}
+</style>
+<script>
+    $( document ).ready(function(){
+        $(".form-control.is-valid").removeClass("is-valid");
+        $("select").addClass("use-placeholder");
+        window.mostrar_label_dentro_de_select();
+        $('.form-group').each(function() {
+            window.activar_tooltip($(this));
+        });
+
+        $("#id_estacion").change(function () {
+            $("#div_error").addClass("div-hiden").removeClass("div-show");
+            var estacion = $(this).val();
+            $("#btn_bus_inten").prop('disabled', false);
+            $("#id_anio").find('option').remove().end()
+            $.ajax({
+                url: '/anuarios/listar_anio/'+estacion,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function(index, value) {
+                        $("#id_anio").append('<option value="' + value + '">' + value + '</option>');
+                        if (value == "No existen datos") {
+                            $("#btn_bus_inten").prop('disabled', true);
+                        }
+                    });
+                }
+            }); 
+        });
+
+        
+
+    });
+</script>
+
+<div class="titulo row">
+    <div class="col-lg-6 col-sm-10">
+        <h3>Anuario Hidroclimático</h3>
+    </div>
+    <div class="col-lg-6 ">
+        <a class="btn btn-light"
+               href="{% url 'reportes_v2:anuario' %}">
+                Limpiar</a>
+    </div>
+</div>
+<div class="filtro row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Esta consulta muestra un resumen estadístico anual de las variables climáticas e hidrológicas organizadas por estación y año</p>
+    </div>
+</div>
+<form class="filtro form" method="post" action="{% url 'reportes_v2:anuario' %}">
+    <div class="row">
+        {% csrf_token %}
+        {% for field in form%}
+        {% bootstrap_field field form_group_class='col-lg-4 col-md-6 mt-3' show_label=False %}
+        {% endfor %}
+
+        <div class="form-group col-lg-4 col-md-6 mt-3">
+            <button id="btn_graficar" name="grafico" type="submit" class="btn btn-primary">
+                Buscar
+            </button>
+            <button id="btn_exportar" name="excel" type="submit" class="btn btn-success">
+                Exportar
+            </button>
+            
+        </div>
+    </div>
+</form>
+
+
+
+
+
+{% if 1_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/pre.html" %}
+</div>
+{% endif %}
+{% if 2_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/tai.html" %}
+</div>
+{% endif %}
+{% if 3_matriz %}
+<div class=" filtro row">
+    {% include "reportes_v2/anuario/hai.html" %}
+</div>
+{% endif %}
+{% if 8_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/pat.html" %}
+</div>
+{% endif %}
+{% if 4_matriz or 5_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/dvi.html" %}
+</div>
+{% endif %}
+{% if 6_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/hsu.html" %}
+</div>
+{% endif %}
+{% if 7_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/rad.html" %}
+</div>
+{% endif %}
+{% if 11_matriz %}
+<!--div class="filtro row">
+    {% include "reportes_v2/anuario/nag.html" %}
+</!--div-->
+{% endif %}
+{% if 10_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/cau.html" %}
+</div>
+{% endif %}
+{% if 9_matriz %}
+<div class="filtro row">
+    {% include "reportes_v2/anuario/tag.html" %}
+</div>
+{% endif %}
+
+{% if mensaje %}
+<div class="filtro row">
+    <div class="col-lg-6">
+        <div class="alert alert-success" role="alert">
+            {{mensaje}}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div id="espacio" style="padding-bottom:200px;">
+
+</div>
+{% endblock %}

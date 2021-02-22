@@ -1,0 +1,78 @@
+{% if datos %}
+<div class="col-md-5">
+    <table style="font-size: 12px" class="table table-sm table-striped table-bordered table-sm">
+        <thead>
+        <tr>
+            <th align="center" colspan='22'>Viento - Valores medios diarios de velocidad y direccion de viento</th>
+        </tr>
+        <tr>
+            <th rowspan='2'>Mes</th>
+            <th colspan='2'>N</th>
+            <th colspan='2'>NE</th>
+            <th colspan='2'>E</th>
+            <th colspan='2'>SE</th>
+            <th colspan='2'>S</th>
+            <th colspan='2'>SO</th>
+            <th colspan='2'>O</th>
+            <th colspan='2'>NO</th>
+            <th>Calma</th>
+            <th>Nº</th>
+            <th colspan='2'>Velocidad Mayor</th>
+            <th colspan='2'>Velocidad Media</th>
+        </tr>
+        <tr>
+            <th>m/s</th>
+            <th>%</th>
+            <th>m/s</th>
+            <th>%</th>
+            <th>m/s</th>
+            <th>%</th>
+            <th>m/s</th>
+            <th>%</th>
+            <th>m/s</th>
+            <th>%</th>
+            <th>m/s</th>
+            <th>%</th>
+            <th>m/s</th>
+            <th>%</th>
+            <th>m/s</th>
+            <th>%</th>
+            <th>%</th>
+            <th>Obs</th>
+            <th>m/s</th>
+            <th>DIR</th>
+            <th>km/h</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for item in datos %}
+
+        <tr>
+            {% for mes in item %}
+            <td>{{ mes }}</td>
+            {% endfor%}
+
+        </tr>
+
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{%else%}
+<div class="col-lg-5 col-md-5">
+    <div class="alert alert-primary" role="alert">
+        Información no Disponible
+    </div>
+</div>
+{% endif %}
+<!--
+<div class="col-md-6">
+  {% if 5_grafico %}
+  <div style="width:600;height:400">
+    {{ 5_grafico|safe }}
+  </div>
+  {% endif %}
+</div>
+-->

@@ -1,0 +1,90 @@
+{% if datos %}
+<div>
+    <table style="font-size: 12px" class="table table-sm table-striped table-bordered table-sm">
+        <thead>
+        <tr>
+            <th align="center" colspan='17' style="text-align: center">Radiacion Solar - Valores minimos, minimos medios
+                horarios
+            </th>
+        </tr>
+        <tr>
+            <th align="center" colspan='17' style="text-align: center">Radiacion Maxima Horaria W/m<sup>2</sup></th>
+        </tr>
+        <tr>
+            <th>Mes/Hora</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+            <th>13</th>
+            <th>14</th>
+            <th>15</th>
+            <th>16</th>
+            <th>17</th>
+            <th>18</th>
+            <th style="text-align: center;vertical-align: middle;">Max</th>
+            <th style="text-align: center;vertical-align: middle;">Hora</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for item in datos.maximo %}
+        <tr>
+            {%for valor in item %}
+            <td>{{valor}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor%}
+
+        </tbody>
+        <thead>
+        <tr>
+            <th align="center" colspan='17' style="text-align: center">Radiacion Minima Horaria W/m<sup>2</sup></th>
+        </tr>
+        <tr>
+            <th>Mes/Hora</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+            <th>13</th>
+            <th>14</th>
+            <th>15</th>
+            <th>16</th>
+            <th>17</th>
+            <th>18</th>
+            <th style="text-align: center;vertical-align: middle;">Min</th>
+            <th style="text-align: center;vertical-align: middle;">Hora</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in datos.minimo %}
+        <tr>
+            {%for valor in item %}
+            <td>{{valor}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- NO HAY GRAFICO PARA RADIACION
+<div class="col-md-6">
+  {% if 7_grafico %}
+  <div style="width:600;height:400">
+    {{ 4_grafico|safe }}
+  </div>
+  {% endif %}
+</div>
+-->

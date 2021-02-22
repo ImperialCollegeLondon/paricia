@@ -1,0 +1,231 @@
+{% load bootstrap4 %}
+{% load static %}
+
+<script src="{% static 'scripts/validacion.js' %}"></script>
+<link rel="stylesheet" href="{% static 'styles/validacion.css' %}">
+
+<input type="hidden" name="orig_estacion_id" value="{{estacion.est_id }}">
+<input type="hidden" name="orig_variable_id" value="{{variable.var_id}}">
+<input type="hidden" name="orig_variable_es_acumulada" value="{{variable.es_acumulada}}">
+<input type="hidden" name="orig_fecha_inicio" value="{{inicio|date:'Y-m-d'}}">
+<input type="hidden" name="orig_fecha_fin" value="{{fin|date:'Y-m-d'}}">
+<input type="hidden" name="orig_lim_sup" value="{{variable.var_maximo}}">
+<input type="hidden" name="orig_lim_inf" value="{{variable.var_minimo}}">
+<input type="hidden" name="orig_variacion_sos" value="{{variable.var_sos}}">
+<input type="hidden" name="orig_variacion_err" value="{{variable.var_err}}">
+
+
+<div id="comentario_overlay" class="popup-overlay"  >
+    <div id="comentario_content" class="popup-content">
+        <input type="hidden" name="row_id" value="">
+        <div id="id_comentario_dialog" class="dialog" title="Comentario por cambio de valor" >
+            <textarea name="nuevo_comentario" rows="10" cols="35"></textarea>
+            <br>
+            <button id="btn_guardar_comentario" type="button" class="btn btn-success btn-xs">Guardar comentario</button>
+            <button id="btn_sin_comentario" type="button" class="btn btn-danger btn-xs">Sin comentario</button>
+        </div>
+     </div>
+</div>
+
+<br>
+
+
+<div>
+    {% if grafico %}
+    <center>
+        <button id="resize_plot" class="btn btn-success btn-xs" onclick="resizePlot()"> &gt Un pixel por dato &lt </button>
+        <div id="grafico" style="overflow-x: scroll;">{{ grafico|safe }}</div>
+    </center>
+    {%else%}
+    <label>No hay información para los parametros ingresados</label>
+    {% endif %}
+</div>
+
+<div class="transp-blanco" style="text-align: center;" >
+<div class="" style="max-width:900px; display:inline-block;">
+<div class="row ml-5 mr-5">
+    <div class="col " style="border: 1px solid lightgrey;">
+        <div class="row">
+            <h6>Límites Dato crudo:
+            <button id="limites_cambiar" class="btn btn-primary btn-sm" style="background-color: #BFBFFF">Cambiar</button>
+            <button id="limites_reset" class="btn btn-secondary btn-sm">Reestablecer</button>
+            </h6>
+        </div>
+
+        <div class="row">
+            <div class="ml-1 mr-1" >Inferior:</div>
+            <div style="width:4em;">
+                <input name="lim_inf" type="number" class="form-control form-control-sm" step="0.1" >
+            </div>
+            <div class="ml-4 mr-1">Superior:</div>
+            <div style="width:4em;">
+                <input name="lim_sup" type="number" class="form-control form-control-sm" step="0.1" >
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <h6>Comentario general</h6>
+        <textarea name="comentario_general" rows="2" cols="50" class="form-control form-control-sm"></textarea>
+    </div>
+</div>
+</div>
+</div>
+
+<br>
+<center>
+    <button id="btn_validacion_enviar" type="button" class="btn btn-primary btn-space">Enviar validación</button>
+</center>
+
+<br>
+
+
+<table id="table_validacion" class="table table-sm table-bordered table-hover">
+    <thead>
+        <tr>
+
+            <th class="col1">
+                <div class="row" >
+                    <div class="col  d-flex justify-content-center text-center">
+                        <h6>Fecha</h6>
+                    </div>
+                </div>
+
+                <div class="row" >
+                    <div class="col">
+                        <br>
+                    </div>
+                </div>
+
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <button id="btn_fec_error" type="button" class="btn btn-danger btn-xs">Error<br/>-</button>
+                        <button id="btn_fec_normal" type="button" class="btn btn-success btn-xs">Normal<br/>-</button>
+                        <button id="btn_fec_salto" type="button" class="btn btn-warning btn-xs">Salto<br/>-</button>
+                    </div>
+                </div>
+            </th>
+
+            <th class="col2">
+
+                <div class="row" >
+                    <div class="col  d-flex justify-content-center text-center">
+                        <h6>Validación</h6>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col  d-flex justify-content-center text-center">
+                        <small>
+                            <b><div class="operacion_tipo" style="display:inline;"></div></b>
+                            <div class="operacion_valor" style="display:inline;"></div>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <button id="btn_val_nuevo" type="button" class="btn btn-light btn-xs" title="No Validado">No Val.<br/>-</button>
+                        <button id="btn_val_ya_validado" type="button" class="btn btn-success btn-xs" title="Validado">Val.<br/>-</button>
+                        <button id="btn_val_cambio" type="button" class="btn btn-xs btn-info" title="Cambio realizado">Cambio<br/>-</button>
+                    </div>
+                </div>
+            </th>
+
+            <th class="col3">
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <h6>Valor</h6>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col  d-flex justify-content-center text-center">
+                        <small><b>Norm:</b> [{{variable.var_minimo}} , {{variable.var_maximo}}]</small>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col  d-flex justify-content-center text-center">
+                        <button id="btn_med_normal" type="button" class="btn btn-success btn-xs">Normal</button>
+                        <button id="btn_med_error" type="button" class="btn btn-danger btn-xs">Error</button>
+                    </div>
+                </div>
+            </th>
+
+
+            <th class="col4">
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <h6>Variación consecutiva</h6>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <small>
+                            <b>Sosp:</b> [{{variable.var_sos}} ; {{variable.var_err}}]
+                            <br/>
+                            <b>Err >= </b>{{variable.var_err}}
+                        </small>
+
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <button id="btn_var_normal" type="button" class="btn btn-success btn-xs">Norm.<br/>-</button>
+                        <button id="btn_var_sospechoso" type="button" class="btn btn-warning btn-xs">Sosp.<br/>-</button>
+                        <button id="btn_var_error" type="button" class="btn btn-danger btn-xs">Error<br/>-</button>
+                    </div>
+                </div>
+            </th>
+
+
+            <th class="col5">
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <h6>Valores atípicos</h6>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <small>
+                        Fuera de {{variable.var_min | floatformat:1}} sigmas
+                        </small>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <button id="btn_dev_normal" type="button" class="btn btn-success btn-xs">Normal<br/>-</button>
+                        <button id="btn_dev_error" type="button" class="btn btn-danger btn-xs">Extr.<br/>-</button>
+                    </div>
+                </div>
+            </th>
+
+
+            <th class="col6">
+                <div class="row" >
+                    <div class="col d-flex justify-content-center text-center">
+                        <h6>Comentario</h6>
+                    </div>
+                </div>
+            </th>
+
+        </tr>
+    </thead>
+
+
+
+    <tbody>
+
+    {% for item in lista %}
+    <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
+        <td class="col1 {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s.u"}}</td>
+        <td class="col2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"" }}</td>
+        <td class="col3 {{item.class_valor}}">{{item.valor|default_if_none:"" }}</td>
+        <td class="col4 {{item.class_variacion_consecutiva}}">{{item.variacion_consecutiva|default_if_none:"" }}</td>
+        <td class="col5 {{item.class_stddev_error}}"></td>
+        <td class="col6 comentario" >{{item.comentario|default_if_none:""}}</td>
+    </tr>
+    {% endfor%}
+
+    </tbody>
+
+</table>
+

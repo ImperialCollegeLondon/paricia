@@ -1,0 +1,130 @@
+{% extends "template_list.html" %}
+{% block content %}
+{% load bootstrap4 %}
+{% load static %}
+
+
+<script src="{% static 'scripts/indices.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'styles/style.css' %}">
+
+<div class="titulo row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Indices para precipitación</h3>
+    </div>
+</div>
+<div class="transp-blanco row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong>Información: </strong>Muestra los índices de precipitación para una estación
+            selecionada</p>
+    </div>
+</div>
+
+<form id="IndPrecipForm" class="transp-blanco form" method="post" action="{% url 'indices:precipitacion' %}">
+    <div class="row">
+        {% csrf_token %}
+        {% for field in form%}
+        {% bootstrap_field field   show_label=False  form_group_class='col-lg-3  col-md-6  my-3' %}
+        {% endfor %}
+
+        <div class="col-lg-3 col-md-6  my-3 ">
+            <button id="btn_ind_pre"   type="button" class="btn btn-primary" > <!--disabled="true"-->
+                Buscar
+            </button>
+            <!--a class="btn btn-light" href="{% url 'indices:doblemasa' %}">Limpiar</a-->
+        </div>
+    </div>
+</form>
+
+<div class="transp-blanco">
+
+    <!--div class="row">
+        <div class="col"><hr></div>
+        <div class="col-auto">OR</div>
+        <div class="col"><hr></div>
+    </div-->
+
+    <div id="div_informacion" hidden="true"  >
+        <table id="tableacum" class=" table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="col-sm-4">Indicador</th>
+                <th class="col-sm-4">Valor</th>
+                <th class="col-sm-4">Fecha</th>
+            </tr>
+            </thead>
+
+            <tbody id="tbody">
+
+            </tbody>
+        </table>
+        <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center"
+             style="min-height: 200px;">
+            <h3>Valores de precipitación por mes</h3>
+        </div>
+        <table id="tbmensual" class="transp-blanco table table-bordered table-hover ">
+            <thead>
+            <tr>
+                <th class="col-sm-1" style="width: 7%">Año/mes</th>
+                <th class="col-sm-1" style="width: 7%">Ene</th>
+                <th class="col-sm-1" style="width: 7%">Feb</th>
+                <th class="col-sm-1" style="width: 7%">Mar</th>
+                <th class="col-sm-1" style="width: 7%">Abr</th>
+                <th class="col-sm-1" style="width: 7%">May</th>
+                <th class="col-sm-1" style="width: 7%">Jun</th>
+                <th class="col-sm-1" style="width: 7%">Jul</th>
+                <th class="col-sm-1" style="width: 7%">Ago</th>
+                <th class="col-sm-1" style="width: 7%">Sep</th>
+                <th class="col-sm-1" style="width: 7%">Oct</th>
+                <th class="col-sm-1" style="width: 7%">Nov</th>
+                <th class="col-sm-1" style="width: 7%">Dic</th>
+                <th class="col-sm-1" style="width: 7%">Acum</th>
+            </tr>
+            </thead>
+
+            <tbody id="tbodymen">
+
+            </tbody>
+        </table>
+         <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center"
+             style="min-height: 200px;">
+            <h3>Indicadores por año </h3>
+        </div>
+        <table id="tbanual" class="transp-blanco table table-bordered table-hover ">
+            <thead>
+            <tr>
+                <th style="white-space: normal !important;">Año</th>
+                <th style="white-space: normal !important;">Mes más seco</th>
+                <th style="white-space: normal !important;">Valor mes seco</th>
+                <th style="white-space: normal !important;">Mes más húmedo</th>
+                <th style="white-space: normal !important;">Valor mes húmedo</th>
+                <th style="white-space: normal !important;">Días consecutivos con lluvia</th>
+                <th style="white-space: normal !important;" >Días consecutivos sin lluvia</th>
+                <th style="white-space: normal !important;">Indice de estacionalidad</th>
+            </tr>
+            </thead>
+
+            <tbody id="tbodyanu">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="espacio" style="padding-bottom:200px;">
+
+</div>
+<div id="div_loading" class="transp-blanco row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/static/images/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+
+<div id="div_error" class="transp-blanco alert alert-danger alert-dismissible div-hiden" role="alert">
+    Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+</div>
+
+
+{% endblock %}

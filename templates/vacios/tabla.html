@@ -1,0 +1,40 @@
+
+<style>
+table {
+  background: rgba(255,255,255,0.4);
+}
+
+.vacio {
+    background: rgba(120,120,255,0.4);
+}
+
+tr>:nth-child(1) {width: 60px;}
+tr>:nth-child(2) {width: 250px;}
+tr>:nth-child(3) {width: 250px;}
+tr>:nth-child(4) {width: 200px;}
+</style>
+
+
+<table class="table table-hover table-sm" style="width:auto;">
+    <thead>
+        <tr>
+            <th><center>Tipo</center></th>
+            <th><center>Inicio</center></th>
+            <th><center>Fin</center></th>
+            <th>Intervalo vacío (horas)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for item in lista %}
+    <tr class="{{item.tipo}}">
+        <td ><center>{{item.tipo}}</center></td>
+        <td ><center>{{item.fecha_inicio|date:"Y-m-d H:i:s.u"}}</center></td>
+        <td ><center>{{item.fecha_fin|date:"Y-m-d H:i:s.u"}}</center></td>
+        <td >{{item.intervalo_horas|floatformat:1}}</td>
+    </tr>
+    {% endfor%}
+    </tbody>
+
+</table>
+

@@ -1,0 +1,22 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}CALIDAD DE AGUA: Asociación de estaciones de Calidad de Agua con estaciones de Hidrología{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Estación Calidad</th><td>{{asociacionhidro.estacion_calidad}}</td></tr>
+    <tr>
+        <th>Estaciones Hidro</th><td>
+            <table>
+                {% for est_hidro in asociacionhidro.estaciones_hidro.all %}
+                <tr><td>{{ est_hidro }}</td></tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+{% endblock %}
+
+{% block url_change %}{% if perms.calidad.change_asociacionhidro %}{% url 'calidad:asociacionhidro_update' asociacionhidro.id %}{% endif %}{% endblock %}
+
+{% block url_delete %}{% if perms.calidad.delete_asociacionhidro %}{% url 'calidad:asociacionhidro_delete' asociacionhidro.id%}{% endif %}{% endblock %}
+
+{% block url_back %}{% url 'calidad:asociacionhidro_index' %}{% endblock %}

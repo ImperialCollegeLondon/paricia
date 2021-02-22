@@ -1,0 +1,23 @@
+<div class="row">
+    <div class="col">
+        <br>
+        <table class="table table-hover table-sm">
+            <tr><th>Variable</th><td>{{clasificacion.var_id}}</td></tr>
+            <tr><th>Columna valor</th><td>{{clasificacion.cla_valor}}</td></tr>
+            <tr><th>Columna máximo valor</th><td>{{clasificacion.cla_maximo|default_if_none:"--" }}</td></tr>
+            <tr><th>Columna mínimo valor</th><td>{{clasificacion.cla_minimo|default_if_none:"--" }}</td></tr>
+            <tr><th>¿Incremental?</th><td>{% if clasificacion.incremental %}Sí{% else %}No{% endif %}</td></tr>
+            <tr><th>¿Acumular a 5 minutos?</th><td>{% if clasificacion.acumular %}Sí{% else %}No{% endif %}</td></tr>
+            <tr><th>Resolución</th><td>{{clasificacion.resolucion|default_if_none:"--"}}</td></tr>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <form method="post" class="form" enctype="multipart/form-data" action="{% url 'formato:clasificacion_delete' clasificacion.cla_id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Confirmar</button>
+            <button type="button" class="btn btn-default">Cancelar</button>
+        </form>
+    </div>
+</div>

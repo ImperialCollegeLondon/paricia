@@ -1,0 +1,9 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Socio{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{socio.nombre}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'estacion:socio_index' %}{% endblock %}

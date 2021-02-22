@@ -1,0 +1,50 @@
+{% if hai %}
+<div class="col">
+    <table style="font-size: 12px" class="table table-sm transp-blanco">
+
+        <thead>
+        <tr>
+            <th align="center" colspan='6'>Humedad Relativa del Aire - Valores medios diarios, absolutos máximos y
+                mímimos
+            </th>
+        </tr>
+        <tr>
+            <th rowspan='2'>Mes</th>
+            <th colspan='5'>Humedad relativa del aire (%)</th>
+        </tr>
+        <tr>
+            <th>Máx</th>
+            <th>Día</th>
+            <th>Mín</th>
+            <th>Día</th>
+            <th>Media</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- "año", "mes", "vmes", "max", "min", "max_abs", "dmax_abs", "min_abs", "dmin_abs" -->
+
+        {% for h in hai %}
+
+        <tr>
+            <td>{{ h.fecha |date:"M"  }}</td>
+            <td>{{ h.max_p|floatformat:2 }}</td>
+            <td>{{ h.dmax_p|floatformat:0 }}</td>
+            <td>{{ h.min_p|floatformat:2 }}</td>
+            <td>{{ h.dmin_p|floatformat:0 }}</td>
+            <td>{{ h.vmes|floatformat:2 }}</td>
+        </tr>
+
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="col">
+    {% if 3_grafico %}
+    <div >
+        {{ 3_grafico|safe }}
+    </div>
+    {% endif %}
+</div>

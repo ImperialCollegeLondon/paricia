@@ -1,0 +1,49 @@
+
+.fit {
+    max-width: 85%;
+    max-height: 85%;
+}
+
+.sistema-cuenca{ display:none;}
+
+#imagemodal, #mapa_grande {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#imagemodal {
+    width: 100%;
+    height: 100vh;
+    overflow-x: auto;
+}
+
+#mapa_grande {
+    z-index: 100;
+    height: 100%;
+}
+
+#imagemodal .close {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: auto;
+    z-index: 200;
+}
+
+#imagemodal label {
+    position: absolute;
+    top: 50vh;
+    left: 25vw;
+    background: white;
+}
+
+.form-group {margin-bottom: 0rem;}
+
+#barra_sup .row {width:1000px;}
+#barra_sup .row>:nth-child(1) {min-width:360px;}
+#barra_sup .row>:nth-child(2) {min-width:220px;}
+#barra_sup .row>:nth-child(3) {min-width:110px; }
+#div_tabla {max-width:100vw;}
+#div_grafico {max-width:100vw;}
+#mapid{position: sticky !important;}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% load static %}
+
+
+{% block javascript %}
+{{ super }}
+<script>
+    $( document ).ready(function(){
+        window.iniciar_datepicker_generic("#id_inicio");
+        window.iniciar_datepicker_generic("#id_fin");
+        
+        $(".form-control.is-valid").removeClass("is-valid");
+        $("select").addClass("use-placeholder");
+        window.mostrar_label_dentro_de_select();
+
+        $("#btn_graficar").click(function(){
+            $.ajax({
+              url: '{% url 'reportes:comparacion_variables' %}',
+              data: $("#form_consulta").serialize(),
+              type:'POST',
+              beforeSend: function () {
+                $("#div_informacion").hide();
+                $('#div_loading').css('visibility', 'visible');
+                $("#div_error").hide();
+              },
+              success: function (data) {
+                $('#div_loading').css('visibility', 'hidden');
+                if (typeof data.mensaje !== 'undefined') {
+                    $('#div_error label').text(data.mensaje);
+                    $('#div_error').show();
+                }else{
+                    $('#div_informacion').html(data);
+                    $('#div_informacion').show();
+                }
+
+              },
+              error: function () {
+                $('#div_loading').css('visibility', 'hidden');
+                $("#div_error").css('visibility', 'visible');
+              }
+            });
+        });
+
+        $('#err_mensaje').each(function() {
+            $('#div_error').css('visibility', 'visible');
+        });
+
+        $('#div_loading').css('visibility', 'hidden');
+    });
+</script>
+{% endblock %}
+
+
+
+{% block content %}
+<style>
+    #barra_sup .row {width:1000px;}
+    #barra_sup .row>:nth-child(1) {min-width:220px;}
+    #barra_sup .row>:nth-child(2) {min-width:210px;}
+
+    #formulario .row .col {min-width:220px;}
+    #formulario label {
+        margin-bottom: 0;
+        font-size: x-small;
+    }
+
+    #div_informacion .col {
+        display: block !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    #div_informacion { width:95vw !important;}
+
+</style>
+
+<form id="form_consulta" class="form" method="post">
+    {% csrf_token %}
+    <div id="barra_sup" class="row transp-azul mt-0 mx-0"  >
+        <div class="row align-items-center p-1">
+
+            <div class="col"><h5>Reportes / Comparación dos variables</h5></div>
+            <div class="col">
+                <button id="btn_graficar" type="button" class="btn btn-primary">Ver comparación</button>
+                <a class="btn btn-outline-secondary" href="{% url 'reportes:comparacion_variables' %}">Limpiar</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="formulario" class="row transp-blanco mt-2 mx-0"  >
+        <div class="row align-items-center">
+            {% for field in form %}
+                <div class="col">{% bootstrap_field field show_label=False  %}</div>
+            {% endfor %}
+        </div>
+    </div>
+</form>
+
+
+<div id="resultados" class="row m-2">
+    <div class="row">
+        <div id="div_loading" class="d-flex justify-content-center" style="display:none;" >
+            <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+        </div>
+
+        <div id="div_error" class="w-100" style="display:none;">
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <label>Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente.</label>
+            </div>
+        </div>
+
+        <div id="div_informacion" class="row">
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

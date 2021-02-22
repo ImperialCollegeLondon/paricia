@@ -1,0 +1,10 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Sitio{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{sitio.nombre}}</td></tr>
+<tr><th>Fotografía/Mapa</th><td>{{sitio.imagen}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'estacion:sitio_index' %}{% endblock %}

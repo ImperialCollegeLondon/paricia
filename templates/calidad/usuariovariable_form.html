@@ -1,0 +1,5 @@
+{% extends "template_form.html" %}
+
+{% block titulo %}{{ form.media.css }}{{ form.media.js }}CALIDAD DE AGUA / Permisos de usuario para variables{% endblock %}
+
+{% block url_back %}{% url 'calidad:usuariovariable_index' %}{% endblock %}
