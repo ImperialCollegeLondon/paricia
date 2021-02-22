@@ -81,7 +81,10 @@ Instalación
    El script **crear.sh** crea una base de datos (Si ya existe, la elimina y la vuelve a crear), genera las tablas (proceso de migración) y crea un usuario administrativo.
    En caso de usar esta opción ya no deberá ejecutar el paso del numeral **12)** y deberá continuar con el paso **13)**.
    Para ejecutar este script, ubicarse en la raíz del proyecto:
+
    **IMPORTANTE:** Tómese en cuenta que el script solicitará el ingreso de clave de usuario administrador **postgres**.
+
+   Para ejecutar el script debe haber activado el entorno virtual.
 
    .. code-block:: bash
 
