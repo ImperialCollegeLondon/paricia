@@ -7,6 +7,7 @@ Instalación
 1) **Actualizar paquetes de servidor/sistema operativo**
 
 
+   Este sistema fue exitosamente probado en Ubuntu Server 20.04.
 
 2) **Instalar framework DJANGO ver. 3.x**
 
@@ -67,7 +68,7 @@ Instalación
       DATABASES = {
           'default': {
               'ENGINE': 'django.db.backends.postgresql',
-              'NAME': 'imheatest',
+              'NAME': 'imhea',
               'USER': 'imhea',
               'PASSWORD': 'imhea',
               'HOST': 'localhost',
@@ -76,10 +77,39 @@ Instalación
       }
 
 
-11) **Usar script de ayuda para creación inicial**
+11) **Crear el usuario en la base de datos**
 
-   El script **crear.sh** crea una base de datos (Si ya existe, la elimina y la vuelve a crear), genera las tablas (proceso de migración) y crea un usuario administrativo.
-   En caso de usar esta opción ya no deberá ejecutar el paso del numeral **12)** y deberá continuar con el paso **13)**.
+   Este paso es importante hacerlo en este momento de la instalación, aún más si se va a utilizar el script instalador que se describe en el numeral **12)**.
+   Se deberá usar el usuario administrativo: 'postgres'
+   
+   .. code-block:: bash
+
+      sudo -u postgres psql
+      
+      
+
+   Suponiendo que nombre de usuario es 'imhea'. Este nombre debe coincidir con la configuración en el archivo **djangomain/settings.py**
+      
+   .. code-block:: sql
+
+      DROP USER imhea;
+      DROP ROLE imhea;
+      \password imhea;
+      \q
+      
+      
+      
+   Finalmente salir de la línea de comandos del usuario linux 'postgres':      
+
+   .. code-block:: bash
+
+      exit     
+
+         
+
+12) **Usar script de ayuda para creación inicial**
+
+   El script **crear.sh** crea una base de datos (Si ya existe, la elimina y la vuelve a crear), genera las tablas (proceso de migración) y crea un usuario administrativo para el interfaz web.
    Para ejecutar este script, ubicarse en la raíz del proyecto:
 
    **IMPORTANTE:** Tómese en cuenta que el script solicitará el ingreso de clave de usuario administrador **postgres**.
@@ -93,26 +123,9 @@ Instalación
       ./crear.sh
 
 
-12) **Ejecutar las migraciones Django**
-
-   Use esta opción si no ejecutó el paso del numeral **11)**.
-
-   .. code-block:: bash
-   
-      (venv) python manage.py makemigrations
-      (venv) python manage.py migrate
-      
-
-13) **Copiar funciones de la base de datos**
-
-   Estas son las funciones y disparadores (triggers) necesarios para el sistema realice actividades tales como: consultas de datos, insercción de datos por archivo y ejecución automática de cálculos de reportería (generación de horarios, diarios y mensuales).
-
-   .. code-block:: bash
-   
-      (venv) python manage.py runscript instalar_funciones_postgres
       
       
-14) **Programar ejecución de cálculo automático de reportes faltantes**
+13) **Programar ejecución de cálculo automático de reportes faltantes**
    Esto script tiene como finalidad desencadenar el cálculo de reportes horario, diario y mensual en caso de que se haya generado un problema en el flujo normal de cálculo.
    
 
