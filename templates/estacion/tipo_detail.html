@@ -1,0 +1,17 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Tipo{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{tipo.nombre}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.estacion.change_tipo %}{% url 'estacion:tipo_update' tipo.id %}{% endif %}
+{% endblock %}
+
+{% block url_delete %}
+{% if perms.estacion.delete_tipo %}{% url 'estacion:tipo_delete' tipo.id%}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:tipo_index' %}{% endblock %}

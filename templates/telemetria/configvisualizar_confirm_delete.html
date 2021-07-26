@@ -1,0 +1,12 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Telemetría / Configurar estaciones a visualizar{% endblock %}
+
+{% block table_rows %}
+<tr><th>Estación</th><td>{{configvisualizar.estacion}}</td></tr>
+<tr><th>Variable</th><td>{{configvisualizar.variable}}</td></tr>
+<tr><th>Umbral superior</th><td>{{configvisualizar.umbral_superior}}</td></tr>
+<tr><th>Umbral inferior</th><td>{{configvisualizar.umbral_inferior}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'telemetria:configvisualizar_list' %}{% endblock %}

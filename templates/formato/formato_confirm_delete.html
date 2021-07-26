@@ -1,0 +1,36 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Formato de importación{% endblock %}
+
+{% block table_rows %}
+
+<thead>
+    <tr>
+        <th>Nombre</th><td>{{formato.for_nombre}}</td>
+        <th>Descripción</th><td>{{formato.for_descripcion}}</td>
+    </tr>
+    <tr>
+        <th>Extensión</th><td>{{formato.ext_id}}</td>
+        <th>Delimitador</th><td>{{formato.del_id}}</td>
+    </tr>
+    <tr>
+        <th>Fila de inicio</th><td>{{formato.for_fil_ini}}</td>
+        <th>Fila de cola</th><td>{{formato.for_fil_cola|default_if_none:""}}</td>
+    </tr>
+    <tr>
+        <th>Formato de Fecha</th><td>{{formato.fec_id}}</td>
+        <th>Columna fecha</th><td>{{formato.for_col_fecha}}</td>
+    </tr>
+    <tr>
+        <th>¿Es fecha UTC? (Resta 5 horas)</th><td>{% if  formato.es_fecha_utc == True %}Sí{%else%}No{% endif %}</td>
+        <th></th><td></td>
+    </tr>
+    <tr>
+        <th>Formato de Hora</th><td>{{formato.hor_id}}</td>
+        <th>Columna hora</th><td>{{formato.for_col_hora}}</td>
+    </tr>
+</thead>
+
+{% endblock %}
+
+{% block cancelar_url %}{% url 'formato:formato_index' %}{% endblock %}

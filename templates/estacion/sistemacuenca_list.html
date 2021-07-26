@@ -1,0 +1,76 @@
+{% extends "template_list.html" %}
+
+{% block javascript %}
+
+    {{ block.super }}
+    <script>
+
+    var btns = '';
+    var table;
+
+    {% if perms.estacion.view_sistemacuenca %}
+    btns = btns + window.btn_detalle_html("{% url 'estacion:sistemacuenca_detail' 0 %}");
+    {% endif %}
+
+    {% if perms.estacion.change_sistemacuenca %}
+    btns = btns + "&nbsp;" + window.btn_editar_html("{% url 'estacion:sistemacuenca_update' 0 %}");
+    {% endif %}
+
+    {% if perms.estacion.delete_sistemacuenca %}
+    btns = btns + "&nbsp;" + window.btn_eliminar_html("{% url 'estacion:sistemacuenca_delete' 0 %}");
+    {% endif %}
+
+
+    $(document).ready(function() {
+
+        table = $('#table_sistemacuenca').DataTable({
+            language: window.DATATABLES_LANGUAGE,
+            scrollX: true,
+            "dom": '<"top"f>rt<"bottom"p><"clear">',
+            fixedColumns: { leftColumns: 2,},
+            columnDefs: [
+                { "targets": 0, "visible" : false, "searchable": false },
+                { "targets": 1, "defaultOrder": true, "searchable": true,},
+                { "targets": 2, "searchable": true,},
+                { "targets": 3, "render" : function(data, type, row){ return btns;}  },
+            ],
+        });
+
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+        table.columns.adjust().draw();
+
+    });
+
+    </script>
+
+{% endblock %}
+
+
+{% block titulo %}Asociación Sistema-Cuenca{% endblock %}
+
+{% block href_nuevo %}
+    {% if perms.estacion.delete_sistemacuenca %}{% url 'estacion:sistemacuenca_create' %}{% endif %}
+{% endblock %}
+
+
+{% block div_informacion_content %}
+    <style>
+    tr>:nth-child(1) {min-width: 8em; max-width: 20em;}
+    tr>:nth-child(2) {min-width: 8em; max-width: 20em;}
+    </style>
+    <table id="table_sistemacuenca" class="table table-hover table-sm overflowtooltip" >
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Sistema</th>
+            <th>Cuenca</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+
+        <tbody>{{ sistema_cuenca|safe }}</tbody>
+    </table>
+
+{% endblock %}

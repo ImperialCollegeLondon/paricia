@@ -1,0 +1,10 @@
+.idea/
+*.pyc
+media/archivos
+#djangomain/settings.py
+!*.gitkeep
+debug.log
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+

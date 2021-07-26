@@ -1,0 +1,13 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Frecuencia{% endblock %}
+
+{% block table_rows %}
+<tr><th>Estación</th><td>{{frecuencia.est_id|default_if_none:""}}</td></tr>
+<tr><th>Variable</th><td>{{frecuencia.var_id|default_if_none:""}}</td></tr>
+<tr><th>Frecuencia (minutos)</th><td>{{frecuencia.fre_valor|default_if_none:""}}</td></tr>
+<tr><th>Fecha inicio</th><td>{{frecuencia.fre_fecha_ini|default_if_none:""}}</td></tr>
+<tr><th>Fecha fin</th><td>{{frecuencia.fre_fecha_fin|default_if_none:""}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'frecuencia:frecuencia_index' %}{% endblock %}

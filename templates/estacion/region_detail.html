@@ -1,0 +1,18 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Región/Provincia/Departamento{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{region.nombre}}</td></tr>
+<tr><th>País</th><td>{{region.pais}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.estacion.change_region %}{% url 'estacion:region_update' region.id %}{% endif %}
+{% endblock %}
+
+{% block url_delete %}
+{% if perms.estacion.delete_region %}{% url 'estacion:region_delete' region.id%}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:region_index' %}{% endblock %}

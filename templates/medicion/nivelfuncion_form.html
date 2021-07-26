@@ -1,0 +1,9 @@
+{% load bootstrap4 %}
+
+<form method="post" class="form" enctype="multipart/form-data" action="{{ url }}">
+    {% csrf_token %}
+    <input type="hidden" id="curvadescarga_id" name="curvadescarga_id" value="{{ curvadescarga_id }}">
+    {% bootstrap_form form exclude='id' size='small' layout='horizontal' horizontal_label_class='col-md-6' horizontal_field_class='col-md-6'%}
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+

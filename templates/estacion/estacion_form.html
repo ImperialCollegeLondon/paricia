@@ -1,0 +1,29 @@
+{% extends "template_form.html" %}
+{% load bootstrap4 %}
+
+{% block titulo %}Estación{% endblock %}
+
+{% block form_fields %}
+<div class="col-6">
+    {% bootstrap_field form.est_codigo %}
+    {% bootstrap_field form.est_nombre %}
+    {% bootstrap_field form.tipo %}
+    {% bootstrap_field form.pais %}
+    {% bootstrap_field form.region %}
+    {% bootstrap_field form.sitiocuenca %}
+    {% bootstrap_field form.ecosistema %}
+
+</div>
+<div class="col-6">
+    {% bootstrap_field form.socio %}
+    {% bootstrap_field form.est_estado %}
+    {% bootstrap_field form.est_latitud %}
+    {% bootstrap_field form.est_longitud %}
+    {% bootstrap_field form.est_altura %}
+    {% bootstrap_field form.est_ficha %}
+    {% bootstrap_field form.est_externa %}
+    {% bootstrap_field form.influencia_km %}
+</div>
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:estacion_index' %}{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Curva de descarga{% endblock %}
+
+{% block table_rows %}
+<tr><th>Estación</th><td>{{curvadescarga.estacion|default_if_none:""}}</td></tr>
+<tr><th>Fecha</th><td>{{curvadescarga.fecha|default_if_none:""}}</td></tr>
+<tr><th>Función</th><td>{{curvadescarga.funcion|default_if_none:""}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'medicion:curvadescarga_index' %}{% endblock %}

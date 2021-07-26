@@ -1,0 +1,10 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Formato de importación / Delimitador{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{delimitador.del_nombre}}</td></tr>
+<tr><th>Caracter</th><td>{{delimitador.del_caracter}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'formato:delimitador_index' %}{% endblock %}

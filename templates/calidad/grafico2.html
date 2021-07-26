@@ -1,0 +1,214 @@
+{% extends "calidad/template_graficos.html" %}
+{% load bootstrap4 %}
+
+{% block javascript %}
+
+{{ block.super }}
+
+
+<script>
+
+var graf = 1;
+
+var colores = [
+    "rgb(159, 0, 0)",
+    "rgb(0, 159, 0)",
+    "rgb(0, 0, 159)",
+    "rgb(159, 159, 0)",
+    "rgb(0, 159, 159)",
+    "rgb(159, 0, 159)",
+    "rgb(96, 48, 0)"
+];
+
+
+
+function cargar_datos(data){
+    var graf = 1;
+    $("#graf1").empty();
+    var graficos = [];
+
+    var step_border = 0.07;
+    var n_variables = Object.keys(data).length;
+    var layout_xaxis_domain_left = (parseInt((n_variables + 1)/2) - 1) * step_border ;
+    var layout_xaxis_domain_right = 1 - Math.max(0, (parseInt((n_variables)/2) - 1) * step_border) ;
+
+    var layout = {
+        showlegend: true,
+        width: 1150,
+        height: 500,
+        xaxis: {
+            domain: [layout_xaxis_domain_left, layout_xaxis_domain_right],
+            title: {
+                text: "Hora",
+                standoff: 20
+            }
+        },
+        legend: {
+            x: 0,
+            y: -0.12,
+            xanchor: 'left',
+            yanchor: 'top',
+            orientation: "h"
+        },
+        //margin: {
+//            autoexpand: true,
+//            l: 10, r: 0, t: 10, b: 10
+//        },
+
+    };
+
+    for (const var_id in data){
+        var v = data[var_id];
+        var trace = {
+            name: v.var_codigo,
+            x: v.datos.fecha,
+            y: v.datos.valor,
+            line: {shape: 'spline', color: colores[graf - 1]},
+            type: 'scatter',
+        };
+
+        if (graf == 1){
+
+            layout['title'] = v.estacion + '<br>Promedio horario.';
+            //trace['yaxis'] = 'y';
+            layout['yaxis'] = {
+                title: v.var_codigo + ' [' + v.var_unidad + ']',
+                titlefont: {color: colores[graf - 1]},
+                tickfont: {color: colores[graf - 1]},
+            };
+        }else if(graf == 2){
+            trace['yaxis'] = 'y' + graf;
+            layout['yaxis' + graf ] = {
+                title: v.var_codigo + ' [' + v.var_unidad + ']',
+                titlefont: {color: colores[graf - 1]},
+                tickfont: {color: colores[graf - 1]},
+                anchor: 'x',
+                overlaying: 'y',
+                side: 'right',
+            };
+        } else {
+
+            trace['yaxis'] = 'y' + graf;
+
+            if ((graf % 2) == 0) {
+                var layout_side = 'right';
+                var layout_position = 1 - parseInt((n_variables - graf)/2) * step_border;
+            }else{
+                var layout_side = 'left';
+                var layout_position = parseInt((n_variables - graf)/2) * step_border;
+            }
+
+
+
+            layout['yaxis' + graf ] = {
+                title: v.var_codigo + ' [' + v.var_unidad + ']',
+                titlefont: {color: colores[graf - 1]},
+                tickfont: {color: colores[graf - 1]},
+                anchor: 'free',
+                overlaying: 'y',
+                side: layout_side,
+                position: layout_position,
+
+            };
+        }
+
+
+        graficos.push(trace);
+        graf = graf + 1;
+    }
+
+    Plotly.newPlot('graf1', graficos, layout, {showSendToCloud: false, responsive: true});
+}
+
+
+
+function enviar_consulta(){
+    $.ajax({
+        url: "{% url 'calidad:consulta_grafico2' %}",
+        data: $("#form_calidad").serialize(),
+        type:'POST',
+        success: function (data) {
+            $("#div_loading").hide();
+            cargar_datos(data);
+            $("#div_grafico").show();
+        },
+        error: function () {
+            $("#div_grafico").hide();
+            $("#div_loading").hide();
+            $("#div_error").show();
+        }
+    });
+};
+
+
+$(document).ready(function() {
+    $("select").addClass("use-placeholder");
+    window.mostrar_label_dentro_de_select();
+
+    $("#id_inicio").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "yy-mm-dd",
+        showButtonPanel: true,
+        yearRange:  ((new Date).getFullYear()-1) + ':'+(new Date).getFullYear()
+    });
+
+    $("#id_inicio").datepicker().focus(function () {
+        $("#ui-datepicker-div").position({ my: "right top", at: "center bottom", of: $("#id_inicio")});
+    })
+    $("#id_inicio").datepicker().datepicker("setDate", new Date());
+
+
+    $("#id_fin").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "yy-mm-dd",
+        showButtonPanel: true,
+        yearRange:  ((new Date).getFullYear()-1) + ':'+(new Date).getFullYear()
+    });
+
+    $("#id_fin").datepicker().focus(function () {
+        $("#ui-datepicker-div").position({ my: "right top", at: "center bottom", of: $("#id_fin")});
+    })
+    $("#id_fin").datepicker().datepicker("setDate", new Date());
+
+    $("#visualizar").click(function(){
+        $("input[name='estacion']").val($('#id_estacion').val() );
+        $("input[name='fecha']").val($('#id_fecha').val() );
+        $("#div_error").hide();
+        $("#graf1").empty();
+        $("#div_grafico").hide();
+        $("#div_loading").show();
+        enviar_consulta();
+    });
+
+
+});
+
+
+</script>
+{% endblock %}
+
+{% block titulo %}Gráfico de promedio por cada hora{% endblock %}
+
+{% block cen %}
+<button id='visualizar' type='button' class='btn btn-primary' >Visualizar</button>
+<a class="btn btn-secondary" href="{% url 'calidad:grafico2' %}">Limpiar</a>
+{% endblock %}
+
+{% block formulario %}
+    <form id="form_calidad" class="form" method="post">
+        {% csrf_token %}
+        <input type="hidden" value="" name="estacion"/>
+        <input type="hidden" value="" name="fecha"/>
+        {% bootstrap_field form.estacion show_label='sr-only'%}
+        {% bootstrap_field form.profundidad show_label='sr-only' %}
+        {% bootstrap_field form.inicio show_label='sr-only' %}
+        {% bootstrap_field form.fin show_label='sr-only' %}
+        {% bootstrap_field form.variables %}
+    </form>
+{% endblock %}
+
+{% block graficos %}
+    <div id="graf1"></div>
+{% endblock %}

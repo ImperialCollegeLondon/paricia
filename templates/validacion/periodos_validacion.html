@@ -1,0 +1,64 @@
+
+<style type="text/css">
+.validado > td {background: rgba(127,255,127,0.6);}
+.no-validado > td {background: rgba(190,190,190,0.6);}
+.div-table thead {background: rgba(255,255,255,0.6);}
+
+.div-table tr>:nth-child(1) {width: 14em;}
+.div-table tr>:nth-child(2) {width: 14em;}
+.div-table tr>:nth-child(3) {width: 5em;}
+
+div.dataTables_scrollBody {
+    background: rgba(255, 255, 255, 0) !important;
+}
+
+.DTFC_LeftBodyLiner {
+    overflow-x: hidden;
+}
+</style>
+
+<script>
+$(document).ready(function() {
+    table = $('#intervalos').DataTable({
+        scrollX: true,
+        scrollY: true,
+        "dom": 't',
+        //fixedColumns: { leftColumns: 1,},
+    });
+
+    table.columns.adjust().draw();
+});
+
+</script>
+
+{% if intervalos %}
+
+<div class="div-table" style="width:auto;">
+    <table id="intervalos" class="table table-sm table-hover" style="width:auto;">
+        <thead>
+            <tr>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Validado</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in intervalos %}
+        <tr class="{% if item.validado %}validado{% else %}no-validado{% endif %}">
+            <td class="inicio" >{{item.fecha_inicio | date:"Y-m-d H:i:s.u"}}</td>
+            <td class="fin">{{item.fecha_fin | date:"Y-m-d H:i:s.u"}}</td>
+            <td class="validado">{% if item.validado %}Sí{% else %}No{% endif %}</td>
+        </tr>
+        {% endfor%}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<div class="row" style="background-color: #FFBFBF">
+    <div class="col">
+        <center><h2>No hay datos de mediciones!</h2></center>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,14 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Sensor{% endblock %}
+
+{% block table_rows %}
+<tr><th>Código</th><td>{{sensor.sen_codigo|default_if_none:""}}</td></tr>
+<tr><th>Tipo</th><td>{{sensor.tip_id|default_if_none:""}}</td></tr>
+<tr><th>Marca</th><td>{{sensor.mar_id|default_if_none:""}}</td></tr>
+<tr><th>Modelo</th><td>{{sensor.sen_modelo|default_if_none:""}}</td></tr>
+<tr><th>Serial</th><td>{{sensor.sen_serial|default_if_none:""}}</td></tr>
+<tr><th>Estado</th><td>{% if sensor.sen_estado == True %}Activo{% else %}Inactivo{% endif %}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'sensor:sensor_index' %}{% endblock %}

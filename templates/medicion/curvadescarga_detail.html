@@ -1,0 +1,381 @@
+{% extends "template_list.html" %}
+{% load bootstrap4 %}
+
+{% block javascript %}
+
+    {{ block.super }}
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script>
+
+    function graficar_curva(table){
+        var data = [];
+        table.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+            var row = this.data();
+            x = [];
+            y = [];
+            for (i = 1; i < 8; i++){
+                y.push(row[i]);
+                x.push(row[i+7]);
+            }
+
+            var curva = {
+                x: x,
+                y: y,
+                type: 'scatter',
+                name: 'tramo' + String(data.length + 1),
+            };
+            data.push(curva);
+        } );
+
+
+        var layout = {
+            title: {
+                text:'Curva de descarga: '+ '<b>{{curvadescarga.estacion}}</b>',
+            },
+            xaxis: {
+                title: {
+                    text: 'Caudal (lts/s)',
+                },
+            },
+            yaxis: {
+                title: {
+                    text: 'Nivel (cm)',
+                }
+            }
+        };
+        Plotly.newPlot('grafico_curva', data, layout);
+    }
+
+    function add_nivelfuncion(e){
+        $.ajax({
+            url: $(e).attr('href'),
+            type:'GET',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                $('.modal-title').html('Agregar nivel-función');
+                $(".modal .modal-body").html(data);
+                $(".modal").modal();
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function view_nivelfuncion(e){
+        $.ajax({
+            url: $(e).attr('href'),
+            type:'GET',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                $('.modal-title').html('Detalle de Nivel-Función');
+                $(".modal .modal-body").html(data);
+                $(".modal").modal();
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function delete_nivelfuncion(e){
+        $.ajax({
+            url: $(e).attr('href'),
+            type:'GET',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                $('.modal-title').html('Eliminar nivel-función');
+                $(".modal .modal-body").html(data);
+                $(".modal").modal();
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function update_nivelfuncion(e){
+        $.ajax({
+            url: $(e).attr('href'),
+            type:'GET',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                $('.modal-title').html('Editar nivel-función');
+                $(".modal .modal-body").html(data);
+                $(".modal").modal();
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function recalcular_caudal(){
+        $('.modal-title').html('Recalculando caudal');
+        $(".modal").modal();
+        $("button.close").prop("disabled",true);
+        $.ajax({
+            url: "{% url 'medicion:recalcular_caudal' %}",
+            data: {
+                'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val(),
+                'curvadescarga_id' : '{{curvadescarga.id}}',
+            },
+            type:'POST',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                if(data.res){
+                    $('.msj_recalcular').remove();
+                    $("button.close").prop("disabled",false);
+                    $(".modal").modal('hide');
+                    $('.modal-title').html('');
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    }
+
+    $(document).ready(function() {
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+
+        $("#btn_add_nivelfuncion").click(function(){
+            add_nivelfuncion(this);
+            return false;
+        });
+
+        $(".btn-vie-nivelfuncion").click(function(){
+            view_nivelfuncion(this);
+            return false;
+        });
+
+
+        $(".btn-del-nivelfuncion").click(function(){
+            delete_nivelfuncion(this);
+            return false;
+        });
+
+
+        $(".btn-upd-nivelfuncion").click(function(){
+            update_nivelfuncion(this);
+            return false;
+        });
+
+
+        tablecd = $("#table_curvadescarga").DataTable({
+            scrollX: true,
+            "dom": 'rt',
+            language: {
+                "zeroRecords": " ",
+                "infoEmpty": "",
+                },
+        });
+
+        tablenf = $("#table_nivelfuncion").DataTable({
+            "order": [[ 2, "asc" ]],
+            scrollX: true,
+            "dom": 'rt',
+            language: {
+                "zeroRecords": " ",
+                "infoEmpty": "",
+                },
+            columnDefs: [
+                {"targets": [2,3,4,5,6,9,10,11,12,13], "visible": false},
+            ],
+        });
+
+        $('#div_informacion').show();
+        tablecd.columns.adjust().draw();
+        tablenf.columns.adjust().draw();
+        graficar_curva(tablenf);
+
+        // Si tiene texto dentro del modal, entonces mostrar modal (Recibió Error de valor)
+        if ( $(".modal .modal-body").html().length > 0){
+            $('.modal-title').html('Agregar nivel-función');
+            $(".modal").modal();
+        }
+
+        $('#btn_recalcular').click(function() {
+            recalcular_caudal();
+        });
+    });
+
+    </script>
+
+{% endblock %}
+
+{% block titulo %}Curva de descarga {% endblock %}
+
+{% block der %}
+    <a class="btn btn-primary float-right" id="btn_add_nivelfuncion" href="{% url 'medicion:nivelfuncion_create' curvadescarga.id %}">
+        Agregar nivel</a>
+{% endblock %}
+
+
+{% block div_informacion_content %}
+    <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">{{ new_nivelfuncion|safe }}</div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+
+{% csrf_token %}
+
+<div class="row">
+    <div class="col">
+        <table id="table_curvadescarga" class="table table-hover table-sm display nowrap">
+            <thead style="display:none;">
+                <tr><td>1</td><td>2</td></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Estación</th><td>{{curvadescarga.estacion}}</td>
+                </tr>
+                <tr>
+                    <th>Fecha</th><td>{{curvadescarga.fecha}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        {% if curvadescarga.requiere_recalculo_caudal %}
+        <div class="row  msj_recalcular">
+            <script>
+                var color = true;
+                function cambiar(){
+                    if (color){
+                        $(".msj_recalcular").css('background-color', 'rgba(255,0,0,0.25)');
+                        color = false;
+                        setTimeout(cambiar, 1000);
+                    }else{
+                        $(".msj_recalcular").css('background-color', 'rgba(255,255,255,0.25)');
+                        color = true;
+                        setTimeout(cambiar, 1000);
+                    }
+                }
+
+                $(document).ready(function() {
+                    setTimeout(cambiar, 1000);
+                });
+            </script>
+            <div class="col p-2">
+                <b>Atención! Se han realizado cambios en la curva de descarga.
+                    Dar click en el botón "Recalcular" para que los cambios se vean reflejados
+                    en los datos de caudal.
+                </b>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                        <a class="btn btn-warning centr-v" id="btn_recalcular" href="#">Recalcular!</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
+    </div>
+
+    <div class="col p-2">
+        <b>Importante:</b>
+        </br>
+        <b>1)</b> La ecuación de la curva de descarga debe usar la letra <b>H</b>
+        como parámetro que refiere al nivel de agua en centímetros.
+        Revise el siguiente enlace:
+        <a href="https://www.postgresql.org/docs/12/functions-math.html">Funciones y operaciones matemáticas.</a>
+        </br>
+        <b>2)</b> Se recomienda anidar operaciones con paréntesis () para separar entre distintos grupos.
+    </div>
+
+</div>
+
+
+
+<div class="row">
+    <div class="col">
+
+        <style>
+            .alnright {text-align: right;}
+            .table thead tr>:nth-child(1) {width: 30em;}
+            .table thead tr>:nth-child(2) {width: 6em;}
+            .table thead tr>:nth-child(3) {width: 6em;}
+            .table thead tr>:nth-child(4) {width: 7em;}
+            .table thead tr>:nth-child(5) {width: 7em;}
+            .table thead tr>:nth-child(6) {width: 5em;}
+        </style>
+
+        <table id="table_nivelfuncion" class="table table-hover table-sm mt-2 display nowrap">
+            <thead>
+                <tr>
+                    <th>Función</th>
+                    <th>Nivel inf. <br> (cm)</th>
+                    <th>Nivel 1</th><th>Nivel 2</th><th>Nivel 3</th><th>Nivel 4</th><th>Nivel 5</th>
+                    <th>Nivel sup. <br> (cm)</th>
+                    <th>Caudal inf. </th>
+                    <th>Caudal 1</th><th>Caudal 2</th><th>Caudal 3</th><th>Caudal 4</th><th>Caudal 5</th>
+                    <th>Caudal sup. </th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for item in nivelfunciontabla %}
+            <tr>
+                <td>{{ item.funcion }}</td>
+                <td class="alnright">{{ item.nivel_inf|floatformat:1}}</td>
+                <td>{{ item.nivel1|floatformat:1 }}</td>
+                <td>{{ item.nivel2|floatformat:1 }}</td>
+                <td>{{ item.nivel3|floatformat:1 }}</td>
+                <td>{{ item.nivel4|floatformat:1 }}</td>
+                <td>{{ item.nivel5|floatformat:1 }}</td>
+                <td class="alnright">{{ item.nivel_sup|floatformat:1}}</td>
+                <td class="alnright">{{ item.caudal_inf|floatformat:2}}</td>
+                <td>{{ item.caudal1|floatformat:2 }}</td>
+                <td>{{ item.caudal2|floatformat:2 }}</td>
+                <td>{{ item.caudal3|floatformat:2 }}</td>
+                <td>{{ item.caudal4|floatformat:2 }}</td>
+                <td>{{ item.caudal5|floatformat:2 }}</td>
+                <td class="alnright">{{ item.caudal_sup|floatformat:2}}</td>
+                <td>
+                    <a class="btn-vie-nivelfuncion" href="{% url 'medicion:nivelfuncion_detail' item.pk %}">
+                        <i class='fas fa-eye fa-sm fa-fw'></i></a>
+                    {% if perms.medicion.change_curvadescarga %}
+                    <a class="btn-del-nivelfuncion" href="{% url 'medicion:nivelfuncion_delete' item.pk %}">
+                        <i class='fas fa-trash fa-sm fa-fw'></i></a>
+                    <a class="btn-upd-nivelfuncion" href="{% url 'medicion:nivelfuncion_update' item.pk %}">
+                        <i class='fas fa-pen fa-sm fa-fw'></i></a>
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row p-4">
+    <div class="col">
+            <div id="grafico_curva" class="p-6"></div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+

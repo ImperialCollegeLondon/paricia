@@ -1,0 +1,43 @@
+{% if 6_matriz %}
+<div class="col">
+    <table style="font-size: 12px" class="table table-sm transp-blanco">
+
+        <thead>
+        <tr>
+            <th align="center" colspan='5'>Humedad del Suelo - Valores medios diarios, absolutos máximos y mímimos</th>
+        </tr>
+        <tr>
+            <th rowspan='2'>Mes</th>
+            <th colspan='3'>Contenido volumétrico H20 (%)</th>
+        </tr>
+        <tr>
+            <th>Máx</th>
+            <th>Mín</th>
+            <th>Media</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for item in 6_matriz %}
+
+        <tr>
+            <td>{{ item.fecha |date:"M"  }}</td>
+            <td>{{ item.hsu_maximo }}</td>
+            <td>{{ item.hsu_minimo }}</td>
+            <td>{{ item.hsu_promedio }}</td>
+        </tr>
+
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="col">
+    {% if 6_grafico %}
+    <div >
+        {{ 6_grafico|safe }}
+    </div>
+    {% endif %}
+</div>

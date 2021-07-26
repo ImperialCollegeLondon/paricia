@@ -1,0 +1,573 @@
+{% extends "base.html" %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block javascript %}
+{{ super }}
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+
+var table;
+var map;
+var refrescar;
+var puntos = [];
+var graf_width;
+var graf_height;
+var graf_margin_right = 5;
+var graf_margin_top = 40;
+var graf_margin_bottom = 45;
+var graf_margin_left = 35;
+var legends = {};
+var _punto = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": []
+                },
+                "properties": {
+                    "tipo": "",
+                    "description": "",
+                    "estacion_id": "",
+                },
+            };
+
+var tipos = {
+            "Climatológica": {"color": "#007c00",},
+            "Hidrométrica": {"color": "#7c007c",},
+            "Pluviométrica": {"color": "#ffff00",},
+            };
+
+var modebar = {
+            "displaylogo": false,
+            "modeBarButtonsToRemove": ['showSendToCloud', 'editInChartStudio', 'zoom2d', 'pan2d', 'select2d', 'lasso2d',
+                'drawclosepath', 'drawopenpath', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'hoverClosestCartesian',
+                'hoverCompareCartesian', 'toggleSpikelines',
+            ]
+        };
+
+
+function iniciar_mapa(){
+    mapboxgl.accessToken = 'pk.eyJ1IjoicGFibG8tdWlvMjAyMCIsImEiOiJjazU5cG1ncDIwcnd4M2xvMXNkaHlhNDEyIn0.hNSx3eMIBzAVuoftwdvQPg';
+    map = new mapboxgl.Map({
+        container: 'map',
+        zoom: 4,
+        center: [-74, -10],
+        style: 'mapbox://styles/mapbox/outdoors-v11'
+        //style: 'mapbox://styles/mapbox/satellite-v9'
+    });
+}
+
+function dibujar_estacion(){
+
+    table.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+        var data = this.data();
+        var punto = JSON.parse(JSON.stringify(_punto));
+        punto.geometry.coordinates = [data[4], data[5]];
+        punto.properties.description = data[1] + '<br>' + data[2];
+        punto.properties.tipo = data[3];
+        punto.properties.estacion_id = data[0];
+        puntos.push(punto);
+    });
+
+
+
+    map.on('style.load', function (e) {
+        map.addSource('markers', {
+            "type": "geojson",
+            "data": {
+                "type": "FeatureCollection",
+                "features": puntos
+            }
+        });
+
+
+        var maplayer = {
+            "id": "estaciones",
+            "source": "markers",
+            "type": "circle",
+            "paint": {
+                "circle-radius": 12,
+                "circle-color": ["case",
+                                      ["==", ["get", "tipo"], "Hidrométrica"], tipos["Hidrométrica"].color,
+                                      ["==", ["get", "tipo"], "Climatológica"], tipos["Climatológica"].color,
+                                      ["==", ["get", "tipo"], "Pluviométrica"], tipos["Pluviométrica"].color,
+                                      "#0000ff"
+                                        ],
+                "circle-opacity": 0.8,
+                "circle-stroke-width": 1,
+            },
+        };
+
+        map.addLayer(maplayer);
+        
+        map.on('mousemove', "estaciones", (e) => {
+            map.getCanvas().style.cursor = 'pointer';
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.description;
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;}
+            $(".mapboxgl-popup").remove();
+            new mapboxgl.Popup().setLngLat(coordinates).setHTML(description).addTo(map);
+        });
+
+        map.on('mouseleave', "estaciones",  function() {
+            $(".mapboxgl-popup").remove();
+            map.getCanvas().style.cursor = '';
+        });
+
+        map.on('click', 'estaciones', function(e) {
+            var estacion_id = e.features[0].properties.estacion_id;
+            $("input[name='estacion']").val(estacion_id);
+            mostrar_graficas();
+        });
+
+    });
+
+}
+
+
+
+
+function maximo(datos, fechas){
+    var valor = -Infinity;
+    var fecha = '';
+    var tmp;
+    for (const i in datos){
+        tmp = parseFloat(datos[i]);
+        if (! isNaN(tmp)){
+            if (tmp > valor){
+                valor = tmp;
+                fecha = fechas[i];
+            }
+        }
+    }
+    return {'valor': valor, 'fecha': fecha};
+}
+
+
+function minimo(datos, fechas){
+    var valor = Infinity;
+    var fecha = '';
+    var tmp;
+    for (const i in datos){
+        tmp = parseFloat(datos[i]);
+        if (! isNaN(tmp)){
+            if (tmp < valor){
+                valor = tmp;
+                fecha = fechas[i];
+            }
+        }
+    };
+    return {'valor': valor, 'fecha': fecha};
+}
+
+
+function mostrar_graficas(){
+    enviar_consulta();
+    refrescar = setInterval(enviar_consulta, 150000);
+}
+
+
+function limpiar_graficos(){
+    $("#rowgraf").html("");
+    clearInterval(refrescar);
+}
+
+function enviar_consulta(){
+    var inicio = $('#id_inicio').val() ;
+    $("input[name='inicio']").val(inicio);
+    $.ajax({
+        url: "{% url 'telemetria:calidad_consulta' %}",
+        data: $("#form_telemetria").serialize(),
+        type:'POST',
+        beforeSend: function () {
+            $(".modal").modal();
+        },
+        success: function (result) {
+            cargar_datos(result);
+        },
+        error: function () {
+        }
+    });
+};
+
+
+function cargar_datos(data){
+    calcular_tamaño();
+    $('#rowgraf').html("");
+    var graf = 0;
+    for (const var_id in data){
+        graf = graf + 1;
+        $('#rowgraf').append("<div id='graf"+ graf+ "' class='grafico col' ></div>");
+        var graf_ok = grafico_serie_lineas_multinivel(data[var_id], graf);
+        if (graf_ok == false){
+            continue;
+        }
+        $("#graf"+ graf).show();
+    }
+
+}
+
+function calcular_tamaño(){
+    if ( $(window).width() < 600 ){
+        graf_width = Math.floor( $(window).width() ) - 20;
+    }else if ( $(window).width() < 1000 ){
+        graf_width = Math.floor( $(window).width() /2) - 20;
+    }else{
+        graf_width = Math.floor( $(window).width() /3) - 10;
+    }
+
+    if ( $(window).height() < 500 ){
+        graf_height = Math.floor( $(window).height()) - 20;
+    }else{
+        graf_height = Math.floor( $(window).height() / 2) - 10;
+    }
+};
+
+function reestablecer_tamaño(){
+    $( ".grafico" ).each( function () {
+        var gid = $(this).attr('id');
+        Plotly.relayout(gid, {width:graf_width , height:graf_height});
+    });
+
+}
+
+function grafico_serie_lineas_multinivel(data, graf){
+    var graf_class = 'graf'+graf;
+    var gdata = [];
+    colores = [];
+    colores.push("rgb(113, 113, 0)");
+    colores.push("rgb(160, 0, 0)");
+    colores.push("rgb(0, 160, 0)");
+    colores.push("rgb(0, 0, 160)");
+
+    var tabla_ini ="<div id='div_" + graf_class + "' class='detalle'><a class='btn btn-danger btn-xs'>&times;</a>";
+    tabla_ini += "<table><thead><th>Prof.</th>";
+    tabla_ini += "<th colspan=2>Máximo</th><th colspan=2>Mínimo</th><th>Último</th></thead><tbody>";
+    var tbody = '';
+    var tabla_fin = "</tbody></table></div>";
+    for (const n in data.datos_niveles){
+        var color = colores.pop();
+        var prof_lbl = n/100 + ' m';
+        var datos = data.datos_niveles[n];
+        try {
+            if (datos.fecha.length < 1){
+                continue;
+            }
+        } catch (error) {
+            continue;
+        }
+        var max = maximo(datos.valor, datos.fecha);
+        var min = minimo(datos.valor, datos.fecha);
+        var fecha_fin = datos.fecha[datos.fecha.length-1];
+        var valor_fin = parseFloat(datos.valor[datos.fecha.length-1]);
+
+        var trace = {
+            name: prof_lbl,
+            x: datos.fecha,
+            y: datos.valor,
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: {
+                color: color,
+                width: 2
+            },
+            marker: {size: 2, color: color,},
+            connectgaps: false
+        };
+        gdata.push(trace);
+        tbody += '<tr><th rowspan=2>'+ prof_lbl +'</th>';
+
+        var alerta = '';
+        if (max.valor >= datos.umbral_superior){ alerta="class='alerta'";}
+        tbody += "<td rowspan=2 "+alerta+">" + max.valor + '<br><small>' + max.fecha.replace("T", " ") +'</small></td><th><small>Umbral</small></th>';
+
+        var alerta = '';
+        if (min.valor <= datos.umbral_inferior){ alerta="class='alerta'";}
+        tbody += "<td rowspan=2 "+alerta+">" + min.valor + '<br><small>' + min.fecha.replace("T", " ") +'</small></td><th><small>Umbral</small></th>';
+
+        tbody += "<td rowspan=2 >" + valor_fin + '<br><small>' + fecha_fin.replace("T", " ") +'</small></td>';
+        tbody += '</tr>';
+        tbody += '<tr><td>' + datos.umbral_superior + '</td><td>' + datos.umbral_inferior + '</td></tr>';
+
+    }
+
+    if ( gdata.length === undefined || gdata.length < 1){
+        return false;
+    }
+    tabla = tabla_ini + tbody + tabla_fin;
+
+    var layout = {
+        title: data.estacion + ': ' + data.var_nombre + ' (' + data.var_unidad + ')',
+        width: graf_width,
+        height: graf_height,
+        margin: {
+            r: graf_margin_right,
+            t: graf_margin_top,
+            b: graf_margin_bottom,
+            l: graf_margin_left,
+            pad: 0
+        },
+    };
+
+    layout.annotations = [
+        {
+            align: 'left',
+            text: '<a>Detalle</a>',
+            xref: 'paper',
+            x: 1.05,
+            xanchor: 'left',
+            yref: 'paper',
+            y: 0.35,
+            yanchor: 'top',
+            showarrow: false,
+            captureevents: 'plotly_clickannotation',
+        }
+    ];
+
+
+    Plotly.newPlot(graf_class, gdata, layout, modebar);
+    $('#'+ graf_class).prepend(tabla);
+
+
+    $('#'+ graf_class).on('plotly_clickannotation', function(event, data) {
+        var div = '#div_'+ this.id;
+        var z = $(div).css('z-index');
+        if ( z == -1){
+            $(div).css('z-index', 1);
+         } else{
+            $(div).css('z-index', -1);
+         }
+
+         //$(div).show();
+    });
+
+    $('.detalle .btn').click(function() {
+        var div = $(this).parent();
+        var id=div.attr("id");
+        $("#"+ id).css('z-index', -1);
+        //$("#"+ id).hide();
+    });
+
+}
+
+
+
+$(document).ready(function() {
+
+    $("select").addClass("use-placeholder");
+    window.mostrar_label_dentro_de_select();
+
+    iniciar_datepicker_generic("#id_inicio");
+    $("#id_inicio").datepicker().datepicker("setDate", new Date());
+
+    table = $('#table_estacion').DataTable({
+        language: window.DATATABLES_LANGUAGE,
+        "scrollY":        "440px",
+        "scrollCollapse": true,
+        "paging":         false,
+        "dom": 'rt',
+        columnDefs: [
+            { "targets": 0, "visible" : false, "searchable": false },
+            { "targets": 1, "defaultOrder": true, "searchable": true },
+            { "targets": 2, "defaultOrder": true, "searchable": true },
+            { "targets": 3, "visible" : false, "searchable": true },
+            { "targets": 4, "visible" : false, "searchable": false },
+            { "targets": 5, "visible" : false, "searchable": false },
+        ],
+    });
+
+    // Asociar búsqueda con caja de selección
+    table.columns(3).every( function(){
+        var column = this;
+        var select = $('#filtro_tipo').on( 'change', function () {
+            var val = $.fn.dataTable.util.escapeRegex(
+                $(this).val()
+            );
+
+            column
+                .search( val ? '^'+val+'$' : '', true, false )
+                .draw();
+        } );
+        column.data().unique().sort().each( function ( d, j ) {
+            select.append( '<option value="'+d+'">'+d+'</option>' )
+        } );
+    } );
+
+    iniciar_mapa();
+    $("#table_estacion").show();
+    dibujar_estacion();
+
+    $( "#filtro_tipo" ).on('change', function (e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        if (valueSelected == ""){
+            map.setFilter('estaciones', null);
+        }else{
+            map.setFilter('estaciones', ['==', 'tipo', valueSelected]);
+        };
+    });
+
+
+    $("#table_estacion").on('click', 'tr', function (e) {
+        var data = table.row( this ).data();
+        var estacion_id = data[0];
+        $("input[name='estacion']").val(estacion_id);
+        mostrar_graficas();
+    });
+
+    $("#table_estacion").on('mouseenter', 'tr', function (e) {
+        var data = table.row( this ).data();
+        var estacion_id = data[0];
+        var coordinates = [Number(data[4]), Number(data[5])];
+        var description = data[1] + '<br>' + data[2];
+        //while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;}
+        $(".mapboxgl-popup").remove();
+        new mapboxgl.Popup().setLngLat(coordinates).setHTML(description).addTo(map);
+    });
+
+    $("#table_estacion").on('mouseleave', 'tr', function (e) {
+        $(".mapboxgl-popup").remove();
+    });
+
+    $(".modal-dialog .close").on("click", function(){
+        limpiar_graficos();
+    });
+
+});
+
+
+$(document).keyup(function(e) {
+    if (e.key === "Escape") {
+        limpiar_graficos();
+    }
+});
+
+$( window ).resize(function() {
+    calcular_tamaño();
+    reestablecer_tamaño();
+});
+
+</script>
+
+<style>
+    .panel-menu {max-width: 270px;}
+    #map { position: relative; top: 0; bottom: 0; width: 100%; height: 88vh; }
+    #table_estacion tbody tr { cursor: pointer; }
+
+    #rowgraf { margin-left: 0px; margin-right: 0px; }
+    .grafico.col {margin-top: 5px; padding: 0px; }
+
+    .modal-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: auto;
+        z-index: 200;
+        margin: 0px;
+    }
+
+    .detalle {
+        z-index:-1;
+        position:absolute;
+        background-color: rgba(240,240,240,0.9);
+        bottom:0;
+        left:0;
+    }
+
+    .detalle th, .detalle td {
+      border: 1px solid black;
+    }
+
+    small{
+        font-size: x-small;
+    }
+
+
+    .alerta {
+        background-color: rgba(255,127,127,0.9);
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="row transp-blanco">
+    <div class="col transp-blanco panel-menu">
+        <div class="row"><div class="col"><h5>Telemetría - Calidad de Agua</h5></div></div>
+
+        <form id="form_telemetria" class="form" method="post">
+        {% csrf_token %}
+            <div class="row"><div class="col fecha">
+                <div class="form-group mb-0">
+                    <label class="sr-only" for="id_inicio">Fecha de inicio</label>
+                    <input type="text" name="inicio" autocomplete="off" class="form-control"
+                           placeholder="Fecha de inicio" title="" id="id_inicio">
+                </div>
+            </div></div>
+
+            <input type="hidden" value="" name="estacion"/>
+            <input type="hidden" value="" name="inicio"/>
+        </form>
+
+        <div class="row mt-3 mb-1"><div class="col tipo">
+            <label class="sr-only" >Filtrar por tipo</label>
+                <select id="filtro_tipo" class="form-control use-placeholder" >
+                    <option value="">---------</option>
+                </select>
+        </div></div>
+
+        <div class="row"><div class="col lista">
+            <table id="table_estacion" class="table table-hover table-sm overflowtooltip" style="display:none;">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Cod.</th>
+                    <th>Estación</th>
+                    <th>Tipo</th>
+                    <th>Latitud</th>
+                    <th>Longitud</th>
+                </tr>
+                </thead>
+
+                <tbody>{{ estacion|safe }}</tbody>
+            </table>
+        </div></div>
+
+    </div>
+
+    <div class="col panel-mapa">
+        <div id="map"></div>
+
+        <div id="div_loading" class="centr-h mt-5" style="display:none;" >
+            <div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>
+        </div>
+
+        <div id="div_error" class="centr-h mt-5" style="display:none;" >
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" style="display:none;">
+
+    <div class="modal-dialog" role="document">
+        <a class="btn btn-danger btn-xs close" data-dismiss="modal">&times; Cerrar</a>
+    </div>
+
+    <div id="rowgraf" class="row">
+
+    </div>
+</div>
+
+{% endblock %}

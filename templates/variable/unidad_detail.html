@@ -1,0 +1,15 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Variable / Unidad{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Nombre</th><td>{{unidad.uni_nombre}}</td></tr>
+    <tr><th>Sigla</th><td>{{unidad.uni_sigla}}</td></tr>
+{% endblock %}
+
+{% block url_change %}{% if perms.variable.change_unidad %}{% url 'variable:unidad_update' unidad.uni_id %}{% endif %}{% endblock %}
+
+{% block url_delete %}{% if perms.variable.delete_unidad %}{% url 'variable:unidad_delete' unidad.uni_id %}{% endif %}{% endblock %}
+
+{% block url_back %}{% url 'variable:unidad_index' %}{% endblock %}
+

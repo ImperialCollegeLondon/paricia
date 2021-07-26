@@ -1,0 +1,13 @@
+{% extends "template_confirm_delete.html" %}
+
+{% block titulo %}Bitácora{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Estación</th><td>{{bitacora.est_id}}</td></tr>
+    <tr><th>Variable</th><td>{{bitacora.var_id}}</td></tr>
+    <tr><th>Inicio</th><td>{{bitacora.bit_fecha_ini}}</td></tr>
+    <tr><th>Fin</th><td>{{bitacora.bit_fecha_fin}}</td></tr>
+    <tr><th>Observación</th><td>{{bitacora.bit_observacion}}</td></tr>
+{% endblock %}
+
+{% block cancelar_url %}{% url 'bitacora:bitacora_index' %}{% endblock %}

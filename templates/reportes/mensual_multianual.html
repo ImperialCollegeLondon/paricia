@@ -1,0 +1,53 @@
+{% extends "reportes/template_reportes.html" %}
+{% load bootstrap4 %}
+
+
+{% block javascript %}
+    {{ block.super }}
+
+    <style>
+        #formulario .row {max-width:1300px;}
+        #formulario .row>:nth-child(1) {min-width:210px;}
+        #formulario .row>:nth-child(2) {min-width:220px;}
+        #formulario .row>:nth-child(3) {min-width:220px;}
+        #formulario .row>:nth-child(4) {min-width:220px;}
+        #formulario .row>:nth-child(5) {min-width:360px;}
+        #formulario .row>:nth-child(5) .row .col {min-width:180px;}
+    </style>
+
+    <script>
+    btn_descargar = "<button name='descargar' type='button' class='btn btn-info btn-xs reporte' onclick='accion_click(this)'>Descargar</button>";
+    var botones = btn_descargar;
+    </script>
+{% endblock %}
+
+
+{% block dr_top %}
+    $("#id_variable").prepend('<option value>---------</option>');
+    $('#id_variable').attr("required", true);
+    $("#id_año_inicio").prepend('<option value>---------</option>');
+    $("#id_año_inicio").attr("required", true);
+    $("#id_año_fin").prepend('<option value>---------</option>');
+    $("#id_año_fin").attr("required", true);
+{% endblock %}
+
+
+{% block titulo %}Mensual multianual{% endblock %}
+
+{% block centro %}<a class="btn btn-outline-secondary" href="{% url 'reportes:mensual_multianual' %}">Limpiar</a>{% endblock %}
+
+
+{% block formulario %}
+<div class="col">{% bootstrap_field form.filtro show_label='sr-only' %}</div>
+<div class="col">{% bootstrap_field form.variable show_label='sr-only' %}</div>
+<div class="col sitio-cuenca" style="display:none;">{% bootstrap_field form.sitio show_label='sr-only' %}</div>
+<div class="col sitio-cuenca" style="display:none;">{% bootstrap_field form.cuenca show_label='sr-only' %}</div>
+<div class="col" >
+    <div class="row" style="flex-wrap:nowrap;">
+        <div class="col" >{% bootstrap_field form.año_inicio show_label='sr-only' %}</div>
+        <div class="col" >{% bootstrap_field form.año_fin show_label='sr-only' %}</div>
+    </div>
+</div>
+<input type="hidden" value="" name="accion"/>
+{{ form.estacion_id }}
+{% endblock %}

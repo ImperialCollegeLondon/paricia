@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+
+{% block content %}
+<style>
+    .col {
+        max-width:400px;
+    }
+</style>
+
+
+<div class="row transp-blanco barra-sup">
+    <div class="col align-self-start"><h5>Telemetría / Alarma / Añadir correo</h5></div>
+</div>
+
+<div class="row mt-2 transp-blanco">
+    <div class="col">
+        <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a class="btn btn-default" href="{% url 'telemetria:config_alarma_list' %}">Regresar</a>
+        </form>
+    </div>
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+
+{% block content %}
+<style>
+    .col {max-width:400px;}
+</style>
+
+
+<div class="row transp-blanco barra-sup">
+    <div class="col align-self-start"><h5>Telemetría / Alarma / Eliminar correo</h5></div>
+</div>
+
+<div class="row mt-2 transp-blanco">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <table class="table table-hover table-sm" style="width:auto;">
+                    <tr><th>Email:</th><td>{{object.email}}</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <form method="post" class="form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">Confirmar</button>
+                    <a class="btn btn-secondary" href="{% url 'telemetria:config_alarma_list' %}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

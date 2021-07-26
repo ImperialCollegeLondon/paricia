@@ -1,0 +1,18 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Fecha{% endblock %}
+
+{% block table_rows %}
+<tr><th>Formato</th><td>{{fecha.fec_formato}}</td></tr>
+<tr><th>Código</th><td>{{fecha.fec_codigo}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.formato.change_fecha %}{% url 'formato:fecha_update' fecha.fec_id %}{% endif %}
+{% endblock %}
+
+{% block url_delete %}
+{% if perms.formato.delete_fecha %}{% url 'formato:fecha_delete' fecha.fec_id%}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'formato:fecha_index' %}{% endblock %}

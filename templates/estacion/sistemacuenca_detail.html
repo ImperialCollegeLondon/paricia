@@ -1,0 +1,19 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Asociación Sistema-Cuenca{% endblock %}
+
+{% block table_rows %}
+<tr><th>Sistema</th><td>{{sistemacuenca.sistema}}</td></tr>
+<tr><th>Cuenca</th><td>{{sistemacuenca.cuenca}}</td></tr>
+<tr><th>Imagen</th><td>{{sistemacuenca.imagen}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.estacion.change_sistemacuenca %}{% url 'estacion:sistemacuenca_update' sistemacuenca.id %}{% endif %}
+{% endblock %}
+
+{% block url_delete %}
+{% if perms.estacion.delete_sistemacuenca %}{% url 'estacion:sistemacuenca_delete' sistemacuenca.id%}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:sistemacuenca_index' %}{% endblock %}

@@ -1,0 +1,43 @@
+{% if 11_matriz %}
+<div class="col">
+    <table style="font-size: 12px" class="table table-sm transp-blanco">
+
+        <thead>
+        <tr>
+            <th align="center" colspan='5'>Nivel del agua - Valores medios diarios, medios máximos y mímimos</th>
+        </tr>
+        <tr>
+            <th rowspan='2'>Mes</th>
+            <th colspan='3'>Nivel (m)</th>
+        </tr>
+        <tr>
+            <th>Máx</th>
+            <th>Mín</th>
+            <th>Media</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for item in 11_matriz %}
+
+        <tr>
+            <td>{{ item.fecha |date:"M"  }}</td>
+            <td>{{ item.nag_maximo }}</td>
+            <td>{{ item.nag_minimo }}</td>
+            <td>{{ item.nag_promedio }}</td>
+        </tr>
+
+        {% endfor%}
+
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="col">
+    {% if 11_grafico %}
+    <div >
+        {{ 11_grafico|safe }}
+    </div>
+    {% endif %}
+</div>

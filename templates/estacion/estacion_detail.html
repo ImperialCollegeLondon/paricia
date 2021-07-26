@@ -1,0 +1,31 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Estación{% endblock %}
+
+{% block table_rows %}
+<tr><th>Código</th><td>{{estacion.est_codigo|default_if_none:""}}</td></tr>
+<tr><th>Descripción</th><td>{{estacion.est_nombre|default_if_none:""}}</td></tr>
+<tr><th>Tipo</th><td>{{estacion.tipo|default_if_none:""}}</td></tr>
+<tr><th>Estado</th><td>{% if  estacion.est_estado == True %}Operativa{%else%}No operativa{% endif %}</td></tr>
+<tr><th>País</th><td>{{estacion.pais|default_if_none:""}}</td></tr>
+<tr><th>Región/Prov./Depto.</th><td>{{estacion.region|default_if_none:""}}</td></tr>
+<tr><th>Sitio-Cuenca</th><td>{{estacion.sitiocuenca.cuenca|default_if_none:""}}</td></tr>
+<tr><th>Ecosistema</th><td>{{estacion.ecosistema|default_if_none:""}}</td></tr>
+<tr><th>Socio</th><td>{{estacion.socio|default_if_none:""}}</td></tr>
+<tr><th>Latitud</th><td>{{estacion.est_latitud|default_if_none:""}}</td></tr>
+<tr><th>Longitud</th><td>{{estacion.est_longitud|default_if_none:""}}</td></tr>
+<tr><th>Altura</th><td>{{estacion.est_altura|default_if_none:""}}</td></tr>
+<tr><th>Ubicación</th><td>{% if estacion.est_externa %}Externa{% else %}Interna{% endif %}</td></tr>
+<tr>
+    <th>Fotografía/Archivo</th>
+    <td>{% if estacion.est_ficha.url != None %}
+        <a target="_blank" href="{{ estacion.est_ficha.url }}">Descargar</a>{% else %}NO HAY FOTOGRAFÍA/ARCHIVO.{% endif %}
+    </td>
+</tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.Estacion.change_estacion %}{% url 'estacion:estacion_update' estacion.est_id %}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:estacion_index' %}{% endblock %}

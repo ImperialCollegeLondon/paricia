@@ -1,0 +1,13 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Datalogger / Marca{% endblock %}
+
+{% block table_rows %}
+    <tr><th>Nombre</th><td>{{marca.mar_nombre}}</td></tr>
+{% endblock %}
+
+{% block url_change %}{% if perms.datalogger.change_marca %}{% url 'datalogger:marca_update' marca.mar_id %}{% endif %}{% endblock %}
+
+{% block url_delete %}{% if perms.datalogger.delete_marca %}{% url 'datalogger:marca_delete' marca.mar_id%}{% endif %}{% endblock %}
+
+{% block url_back %}{% url 'datalogger:marca_index' %}{% endblock %}

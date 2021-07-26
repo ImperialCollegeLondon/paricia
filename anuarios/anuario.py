@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+
+################################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
+# basada en los desarrollos realizados por:
+#     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
+#         Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
+#         Contacto: paramh2o@aguaquito.gob.ec
+#
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
+#              ya sea en uso total o parcial del código.
+
+from variable.models import Variable
+
+from anuarios.models import Var1Anuarios
+
+
+class Anuarios:
+    @staticmethod
+    def promedio(dict):
+        for k,v in dict.items():
+            print(k, v)

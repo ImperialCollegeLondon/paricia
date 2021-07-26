@@ -1,0 +1,126 @@
+{% extends "template_list.html" %}
+
+{% block javascript %}
+
+    {{ block.super }}
+    <script>
+
+    var btns = '';
+    var table;
+
+    {% if perms.formato.view_asociacion %}
+    btns = btns + window.btn_detalle_html("{% url 'formato:asociacion_detail' 0 %}");
+    {% endif %}
+
+    {% if perms.formato.change_asociacion %}
+    btns = btns + "&nbsp;" + window.btn_editar_html("{% url 'formato:asociacion_update' 0 %}");
+    {% endif %}
+
+    {% if perms.formato.delete_asociacion %}
+    btns = btns + "&nbsp;" + window.btn_eliminar_html("{% url 'formato:asociacion_delete' 0 %}");
+    {% endif %}
+
+
+    $(document).ready(function() {
+
+        table = $('#table_asociacion').DataTable({
+            language: window.DATATABLES_LANGUAGE,
+            scrollX: true,
+            "dom": '<"top"f>rt<"bottom"p><"clear">',
+            fixedColumns: { leftColumns: 2,},
+            columnDefs: [
+                { "targets": 0, "visible" : false, "searchable": false },
+                { "targets": 1, "defaultOrder": true,},
+                { "targets": 3, "render" : function(data, type, row){ return btns;}  },
+            ],
+        });
+
+        // Asociar búsqueda con caja de selección
+        table.columns(1).every( function(){
+            var column = this;
+            var select = $('#filtro_formato').on( 'change', function () {
+                var val = $.fn.dataTable.util.escapeRegex(
+                    $(this).val()
+                );
+
+                column
+                    .search( val ? '^'+val+'$' : '', true, false )
+                    .draw();
+            } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            } );
+        } );
+
+
+        // Asociar búsqueda con caja de selección
+        table.columns(2).every( function(){
+            var column = this;
+            var select = $('#filtro_estacion').on( 'change', function () {
+                var val = $.fn.dataTable.util.escapeRegex(
+                    $(this).val()
+                );
+
+                column
+                    .search( val ? '^'+val+'$' : '', true, false )
+                    .draw();
+            } );
+            column.data().unique().sort().each( function ( d, j ) {
+                select.append( '<option value="'+d+'">'+d+'</option>' )
+            } );
+        } );
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+        table.columns.adjust().draw();
+    });
+
+    </script>
+{% endblock %}
+
+
+{% block titulo %}Formato de importación / Asociación formato-estación{% endblock %}
+
+{% block href_nuevo %}
+        {% if perms.formato.add_asociacion %}{% url 'formato:asociacion_create' %}{% endif %}
+{% endblock %}
+
+
+{% block cen %}
+<div class="d-inline-block">
+    <label class="sr-only" >Filtrar por formato</label>
+    <select id="filtro_formato" class="form-control use-placeholder" style="width:auto;">
+        <option value="">---------</option>
+    </select>
+</div>
+<div class="d-inline-block w-5"></div>
+<div class="d-inline-block">
+    <label class="sr-only" >Filtrar por estación</label>
+    <select id="filtro_estacion" class="form-control use-placeholder" style="max-width:15em;">
+        <option value="">---------</option>
+    </select>
+</div>
+{% endblock %}
+
+
+
+{% block div_informacion_content %}
+
+    <style>
+    tr>:nth-child(1) {min-width: 10em; max-width: 15em;}
+    tr>:nth-child(2) {min-width: 10em; max-width: 20em;}
+
+    </style>
+    <table id="table_asociacion" class="table table-hover table-sm overflowtooltip" >
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Formato</th>
+            <th>Estación</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+
+        <tbody>{{ asociacion|safe }}</tbody>
+    </table>
+{% endblock %}

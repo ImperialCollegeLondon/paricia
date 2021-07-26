@@ -1,0 +1,17 @@
+{% extends "template_detail.html" %}
+
+{% block titulo %}Ecosistema{% endblock %}
+
+{% block table_rows %}
+<tr><th>Nombre</th><td>{{ecosistema.nombre}}</td></tr>
+{% endblock %}
+
+{% block url_change %}
+{% if perms.estacion.change_ecosistema %}{% url 'estacion:ecosistema_update' ecosistema.id %}{% endif %}
+{% endblock %}
+
+{% block url_delete %}
+{% if perms.estacion.delete_ecosistema %}{% url 'estacion:ecosistema_delete' ecosistema.id%}{% endif %}
+{% endblock %}
+
+{% block url_back %}{% url 'estacion:ecosistema_index' %}{% endblock %}

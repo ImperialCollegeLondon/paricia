@@ -1,0 +1,77 @@
+{% extends "template_list.html" %}
+{% load bootstrap4 %}
+
+{% block javascript %}
+
+    {{ block.super }}
+    <script>
+
+    function actualizar_lista(enlace){
+      $("#btn_filtrar").attr('disabled',true);
+      $.ajax({
+        url: enlace,
+        data: $("#form_consulta").serialize(),
+        type:'POST',
+        beforeSend: function () {
+          $("#div_informacion").hide();
+          $("#div_loading").show();
+          $("#div_error").hide();
+        },
+        success: function (data) {
+          $("#div_informacion").show();
+          $("#div_informacion").html(data);
+
+          $("#div_loading").hide();
+          $("#div_error").hide();
+          $("#btn_filtrar").removeAttr('disabled');
+        },
+        error: function () {
+          $("#div_loading").hide();
+          $("#div_error").show();
+          $("#btn_filtrar").removeAttr('disabled');
+        }
+      });
+    }
+
+
+    $(document).ready(function() {
+
+        actualizar_lista($("#form_consulta").attr('action'));
+
+        $("#btn_filtrar").click(function(){
+            actualizar_lista($("#form_consulta").attr('action'));
+        });
+
+        $("select").addClass("use-placeholder");
+        window.mostrar_label_dentro_de_select();
+
+        $('#div_loading').hide();
+        $('#div_informacion').show();
+
+    });
+
+
+
+    </script>
+{% endblock %}
+
+
+{% block titulo %}Validaciones{% endblock %}
+
+{% block cen %}
+    <style>
+    .form-group .form-control {
+        width: 200px;
+    }
+    </style>
+
+    <form id="form_consulta" class="form form-inline" method="post" action="{% url 'validacion:validacion_index'%}">
+        {% csrf_token %}
+        {% bootstrap_form form layout='inline' show_label='sr-only' %}
+        <div>
+            <button id="btn_filtrar" type="button" class="btn btn-primary">Buscar</button>
+            <a class="btn btn-secondary" href="{% url 'validacion:validacion_index' %}">Limpiar</a>
+        </div>
+    </form>
+{% endblock %}
+

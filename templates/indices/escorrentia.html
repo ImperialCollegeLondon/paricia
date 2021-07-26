@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block content %}
+{% load bootstrap4 %}
+{% load static %}
+
+<style type="text/css">
+    .popup-overlay {
+        visibility:hidden;
+        position:fixed;
+        background-size:100% 100%;
+        height: 100%;
+        width: 100% ;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .popup-content {
+        position:relative;
+        margin:0 auto;
+        visibility:hidden;
+        height:20%;
+        width:40%;
+        vertical-align: middle;
+    }
+    .mensaje{
+        vertical-align: middle;
+        text-align: center;
+    }
+    .popup-overlay.active{visibility:visible;}
+    .popup-content.active{visibility:visible;}
+
+    .filtro{
+    background: rgba(255,255,255,0.6);
+    }
+
+    .titulo{
+    background: rgba(185,185,185,0.6);
+    }
+    
+    table td {width: 5em;}
+
+
+</style>
+
+
+
+<script>
+    radio_template = '<div class="form-check"><label class="form-check-label" for="id_est_caudal_*idx*"><input class="form-check-input" id="id_est_caudal_*idx*" name="est_caudal" required="" title="" type="radio" value="*est_id*">*est_codigo*</label></div>';
+    checkbox_template = '<div class="form-check"><label class="form-check-label" for="id_est_precipitacion_*idx*"><input class="form-check-input" id="id_est_precipitacion_*idx*" name="est_precipitacion" title="" type="checkbox" value="*est_id*">*est_codigo*</label></div>';
+
+
+    function cargar_estaciones(data){
+
+        total_html = "";
+        idx = 0;
+        for (const est of data["caudal"]) {
+            est_html = radio_template.replaceAll("*idx*", idx);
+            est_html = est_html.replaceAll("*est_id*", est[0]);
+            est_html = est_html.replaceAll("*est_codigo*", est[1]);
+            total_html = total_html + est_html;
+            idx = idx + 1;
+        }
+        $("#id_est_caudal").html(total_html);
+
+
+        total_html = "";
+        idx = 0;
+        for (const est of data["precipitacion"]) {
+            est_html = checkbox_template.replaceAll("*idx*", idx);
+            est_html = est_html.replaceAll("*est_id*", est[0]);
+            est_html = est_html.replaceAll("*est_codigo*", est[1]);
+            total_html = total_html + est_html;
+            idx = idx + 1;
+        }
+        $("#id_est_precipitacion").html(total_html);
+
+        $(".form-check-input").prop('checked',true);
+    }
+
+    function enviar(){
+        $.ajax({
+            url: "{% url 'indices:escorrentia' %}",
+            data: $("#EscorrentiaForm").serialize(),
+            type:'POST',
+            success: function (data) {
+                cargar_resultado(data);
+                $('#div_informacion').show();
+            },
+            error: function () {
+                debugger;
+            }
+        });
+    };
+
+    function cargar_resultado(data){
+        $('#result_escorrentia').html(data.escorrentia);
+        $('#result_area').html(data.area);
+
+        caudal = "<h4>" + data.caudal.nombre_estacion + "</h4>";
+        caudal += data.caudal.tabla_html;
+        $('#result_caudal').html(caudal);
+
+        html_precip="";
+        for (i=0; i < data.precipitacion.length; i++){
+            _html = "<h4>" + data.precipitacion[i].nombre_estacion + "</h4>";
+            _html = _html + data.precipitacion[i].tabla_html;
+            html_precip += _html;
+        }
+        $('#result_precipitacion').html(html_precip);
+    }
+
+
+    $(document).ready(function() {
+
+        $("#id_sitiocuenca").change(function () {
+            var sitiocuenca_id = $(this).val();
+            $("#btn_escorrentia_calcular").prop('disabled', false);
+            $.ajax({
+                url: "{% url 'indices:estaciones_en_cuenca' 0 %}".replace('0', sitiocuenca_id) ,
+                dataType: 'json',
+                success: function (data) {
+                    cargar_estaciones(data);
+                }
+            });
+        });
+
+
+        $("#btn_escorrentia_calcular").click(function(){
+            $('#div_informacion').hide();
+            enviar();
+        });
+
+        $("#id_inicio,#id_fin").datepicker( {
+            dateFormat: "yy-mm",
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            yearRange: '2000:'+(new Date).getFullYear(),
+            onClose: function(dateText, inst) {
+                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).val($.datepicker.formatDate('yy-mm', new Date(year, month, 1)));
+            }
+        });
+
+        $("#id_inicio,#id_fin").focus(function () {
+            $(".ui-datepicker-calendar").hide();
+            $("#ui-datepicker-div").position({
+                my: "center top",
+                at: "center bottom",
+                of: $(this)
+            });
+        });
+
+        $('#div_informacion').hide();
+
+    });
+
+
+</script>
+
+<div class="titulo row">
+    <div class="col-lg-10 col-sm-10">
+        <h3>Coeficiente de escorrentía</h3>
+    </div>
+</div>
+<div class="filtro row">
+    <div class="col-lg-12">
+        <p class="text-info"><strong> </strong></p>
+    </div>
+</div>
+
+
+<form id="EscorrentiaForm" class="filtro form p-2 mt-2" method="post" action="{% url 'indices:escorrentia' %}">
+    <div class="row">
+        {% csrf_token %}
+        {% for field in form %}
+            {% bootstrap_field field show_label=True form_group_class='col-2' %}
+        {% endfor %}
+
+        <div class="col-lg-4 col-md-6 my-3">
+            <button id="btn_escorrentia_calcular" type="button" class="btn btn-primary">Calcular</button>
+        </div>
+    </div>
+</form>
+
+
+
+<div id="div_informacion" class="transp-blanco mt-2">
+
+    <div class="row">
+        <div class="col p-4" id="escorrentia">
+            <h3>Coeficiente escorrentía:</h3>
+            <span>
+                <div id="result_escorrentia" style="display: inline-block;"></div>
+                <div style="display: inline-block;"> %</div>
+            </span>
+        </div>
+        <div class="col p-4" id="area">
+            <h3>Área de influencia (km2):</h3>
+            <div id="result_area"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col p-4" id="data_caudal">
+            <h3>Datos de caudal (L/s):</h3>
+            <div id="result_caudal"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col p-4" id="data_precipitacion">
+            <h3>Datos de precipitación (mm/mes):</h3>
+            <div id="result_precipitacion"></div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<div id="div_loading" class="row" style="display:none;">
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <img src="/static/images/loading6.gif"/>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;</div>
+</div>
+
+
+<div id="div_error" class="alert alert-danger alert-dismissible" style="display:none;" role="alert">
+    Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+</div>
+
+
+{% endblock %}

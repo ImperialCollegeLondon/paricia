@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% load static %}
+
+{% block javascript %}
+{{ super }}
+<script>
+    $( document ).ready(function(){
+        $(".form-control.is-valid").removeClass("is-valid");
+        $("select").addClass("use-placeholder");
+        window.mostrar_label_dentro_de_select();
+        $('.form-group').each(function() {
+            window.activar_tooltip($(this));
+        });
+
+        $("#id_estacion").change(function () {
+            $("#div_error").addClass("div-hiden").removeClass("div-show");
+        var estacion = $(this).val();
+        var action = $(".form").attr('action');
+            var estacion = $(this).val(); 
+            $("#btn_bus_inten").prop('disabled', false);
+            $("#id_anio").find('option').remove().end()
+            $.ajax({
+                url: '/indices/listar_anio/'+estacion,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function(index, value) {
+                        $("#id_anio").append('<option value="' + value + '">' + value + '</option>');
+                        if (value == "No existen datos") {
+                            $("#btn_bus_inten").prop('disabled', true);
+                        }
+                    });
+                }
+            }); 
+        });
+
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<style>
+    #barra_sup .row {width:1000px;}
+    #barra_sup .row>:nth-child(1) {min-width:220px;}
+    #barra_sup .row>:nth-child(2) {min-width:210px;}
+    #resultados .row .row>:nth-child(2) {min-width:360px;}
+    #resultados .row .row>:nth-child(2) div {min-width:400px;}
+    #resultados .row {width:100vw;}
+    #resultados table, #resultados .row .row>:nth-child(2){
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+</style>
+
+<form class="form" method="post">
+    {% csrf_token %}
+    <div id="barra_sup" class="row transp-azul mt-0 mx-0"  >
+        <div class="row align-items-center p-1">
+            <div class="col"><h5>Reportes / Anuario</h5></div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Ver reporte</button>
+                <a class="btn btn-outline-secondary" href="{% url 'reportes:anuario' %}">Limpiar</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="formulario" class="row transp-blanco mt-2 mx-0"  >
+        <div class="row align-items-center">
+            <div class="col">{% bootstrap_field form.estacion show_label='sr-only' %}</div>
+            <div class="col">{% bootstrap_field form.anio show_label='sr-only' %}</div>
+        </div>
+    </div>
+</form>
+
+<div id="resultados" class="row m-2">
+    <div class="row">
+
+        <div class="row mt-3">
+        {% if pre %}
+            {% include "reportes/anuario/pre.html" %}
+        {% elif pre_msg %}
+            <div class="alert alert-warning"><strong>{{pre_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if tai %}
+            {% include "reportes/anuario/tai.html" %}
+        {% elif tai_msg %}
+            <div class="alert alert-warning"><strong>{{tai_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if hai %}
+            {% include "reportes/anuario/hai.html" %}
+        {% elif hai_msg %}
+            <div class="alert alert-warning"><strong>{{hai_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if dvi or vvi %}
+            {% include "reportes/anuario/dvi.html" %}
+        {% elif dvi_msg %}
+             <div class="alert alert-warning"><strong>{{dvi_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if hsu %}
+            {% include "reportes/anuario/hsu.html" %}
+        {% elif hsu_msg %}
+            <div class="alert alert-warning"><strong>{{hsu_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+
+        <div class="row mt-3">
+        {% if rad %}
+            {% include "reportes/anuario/rad.html" %}
+        {% elif rad_msg %}
+            <div class="alert alert-warning"><strong>{{rad_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if pat %}
+            {% include "reportes/anuario/pat.html" %}
+        {% elif pat_msg %}
+            <div class="alert alert-warning"><strong>{{pat_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if tag %}
+            {% include "reportes/anuario/tag.html" %}
+        {% elif tag_msg %}
+            <div class="alert alert-warning"><strong>{{tag_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if cau %}
+            {% include "reportes/anuario/cau.html" %}
+        {% elif cau_msg %}
+            <div class="alert alert-warning"><strong>{{cau_msg}}!</strong></div>
+        {% endif %}
+        </div>
+
+        <div class="row mt-3">
+        {% if nag %}
+            {% include "reportes/anuario/nag.html" %}
+        {% elif nag_msg %}
+            <div class="alert alert-warning"><strong>{{nag_msg}}!</strong></div>
+        {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
