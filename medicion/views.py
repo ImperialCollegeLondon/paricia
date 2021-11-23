@@ -39,12 +39,9 @@ class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = CurvaDescarga.objects.annotate(
-            est_codigo_nombre=Concat('estacion__est_codigo', Value(' - '), 'estacion__est_nombre')
-        )
-        campos = ['id', 'est_codigo_nombre', 'fecha', 'requiere_recalculo_caudal']
-        modelo = _modelo.values_list(*campos)
-        context['curvadescarga'] = modelo_a_tabla_html(modelo, col_extra=True)
+        campos = ['id', 'estacion__est_codigo', 'fecha', 'requiere_recalculo_caudal']
+        curvadescarga = CurvaDescarga.objects.all().values_list(*campos)
+        context['curvadescarga'] = modelo_a_tabla_html(curvadescarga, col_extra=True)
         return context
 
 

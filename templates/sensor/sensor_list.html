@@ -33,7 +33,7 @@
                 { "targets": 0, "visible" : false, "searchable": false },
                 { "targets": 1, "defaultOrder": true,},
                 { "targets": 6, "searchable": true,
-                   "render" : function(data, type, row){ if (row[6]) {return "Activo";} else { return "Inactivo";} }
+                   "render" : function(data, type, row){ if (row[6]==="True") {return "Activo";} else { return "Inactivo";} }
                 },
                 { "targets": 7, "render" : function(data, type, row){ return btns;}  },
             ],

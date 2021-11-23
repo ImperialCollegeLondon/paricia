@@ -32,20 +32,11 @@ class ConsultaForm(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         tel_est=ConfigVisualizar.objects.values('estacion_id').distinct()
         _modelo = Estacion.objects.filter(pk__in=tel_est)
-        campos = ['est_id', 'est_codigo', 'est_nombre', 'tipo_id__nombre', 'est_longitud', 'est_latitud']
+        campos = ['est_id', 'est_codigo', 'tipo_id__nombre', 'est_longitud', 'est_latitud']
         df = pd.DataFrame.from_records(
             _modelo.values_list(*campos),
-            columns=['id', 'Cod.', 'Estación', 'Tipo', 'Longitud', 'Latitud']
+            columns=['id', 'Estación', 'Tipo', 'Longitud', 'Latitud']
         )
-
-        ## El código a continuación se utilizó para convertir de TMQ a Latitud y Longitud
-        # lon_col = 'Longitud'
-        # lat_col = 'Latitud'
-        # df[lat_col], df[lon_col] = df.apply(
-        #     lambda row: utm.to_latlon(float(row[lon_col]), float(row[lat_col]), 17.41666, 'M') ,
-        #     axis=1, result_type='expand'
-        # ).T.values
-
         context['estacion'] = df.to_html(header=False, index=False)[47:-18]
         return context
 
@@ -76,20 +67,11 @@ class ConsultaCalidadForm(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         tel_est=ConfigCalidad.objects.values('estacion_id').distinct()
         _modelo = Estacion.objects.filter(pk__in=tel_est)
-        campos = ['est_id', 'est_codigo', 'est_nombre', 'tipo_id__nombre', 'est_longitud', 'est_latitud']
+        campos = ['est_id', 'est_codigo', 'tipo_id__nombre', 'est_longitud', 'est_latitud']
         df = pd.DataFrame.from_records(
             _modelo.values_list(*campos),
-            columns=['id', 'Cod.', 'Estación', 'Tipo', 'Longitud', 'Latitud']
+            columns=['id', 'Estación', 'Tipo', 'Longitud', 'Latitud']
         )
-
-        ## Este código se usaba para cambiar coordenadas TMQ a LAt Lon
-        # lon_col = 'Longitud'
-        # lat_col = 'Latitud'
-        # df[lat_col], df[lon_col] = df.apply(
-        #     lambda row: utm.to_latlon(float(row[lon_col]), float(row[lat_col]), 17.41666, 'M') ,
-        #     axis=1, result_type='expand'
-        # ).T.values
-
         context['estacion'] = df.to_html(header=False, index=False)[47:-18]
         return context
 
@@ -122,12 +104,9 @@ class ConfigVisualizarList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = ConfigVisualizar.objects.annotate(
-            est_cod_nom = Concat('estacion__est_codigo', Value(' - '), 'estacion__est_nombre')
-        )
-        campos = ['id', 'est_cod_nom', 'variable__var_nombre', 'umbral_superior', 'umbral_inferior']
-        modelo = _modelo.values_list(*campos)
-        context['configvisualizar'] = modelo_a_tabla_html(modelo, col_extra=True)
+        campos = ['id', 'estacion__est_codigo', 'variable__var_nombre', 'umbral_superior', 'umbral_inferior']
+        configvisualizar = ConfigVisualizar.objects.all().values_list(*campos)
+        context['configvisualizar'] = modelo_a_tabla_html(configvisualizar, col_extra=True)
         return context
 
 
@@ -172,11 +151,8 @@ class ConfigCalidadList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = ConfigCalidad.objects.annotate(
-            est_cod_nom=Concat('estacion__est_codigo', Value(' - '), 'estacion__est_nombre')
-        )
-        campos = ['id', 'est_cod_nom', 'variable__var_nombre', 'profundidad', 'umbral_superior', 'umbral_inferior']
-        modelo = _modelo.values_list(*campos)
+        campos = ['id', 'estacion__est_codigo', 'variable__var_nombre', 'profundidad', 'umbral_superior', 'umbral_inferior']
+        modelo = ConfigCalidad.objects.all().values_list(*campos)
         context['configcalidad'] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
 

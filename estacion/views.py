@@ -519,7 +519,7 @@ def estacion_consulta(request):
     for row in estaciones:
         #print(row.est_longitud)
         #print(row.est_altura)
-        lista['estaciones'][row.est_id] = row.est_codigo + " - " + row.est_nombre
+        lista['estaciones'][row.est_id] = row.est_codigo
     return JsonResponse(lista)
 
 

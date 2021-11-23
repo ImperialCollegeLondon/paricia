@@ -33,11 +33,11 @@
                 { "targets": 0, "visible" : false, "searchable": false },
                 { "targets": 1, "defaultOrder": true,},
                 { "targets": 10, "searchable": true,
-                   "render" : function(data, type, row){ if (row[10]) {return "Activa";} else { return "Inactiva";} }
+                   "render" : function(data, type, row){ if (row[10]==="True") {return "Activa";} else { return "Inactiva";} }
                 },
                 { "targets": 14, visible : false, searchable: false },
                 { "targets": 15,
-                   "render" : function(data, type, row){ if (row[15]) {return "Externa";} else { return "Interna";}}
+                   "render" : function(data, type, row){ if (row[15]==="True") {return "Externa";} else { return "Interna";}}
                 },
                 { "targets": 16, "render" : function(data, type, row){ return btns;}  },
             ],

@@ -82,13 +82,11 @@ class Var1Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v1.max_dig, decimal_places=DigVar.v1.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),  #Al hacer unique together se crea un INDEX
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -102,13 +100,11 @@ class Var2Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -122,13 +118,11 @@ class Var3Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -142,13 +136,11 @@ class Var4Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -162,13 +154,11 @@ class Var5Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -182,13 +172,11 @@ class Var6Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -202,13 +190,11 @@ class Var7Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -222,13 +208,11 @@ class Var8Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -242,13 +226,11 @@ class Var9Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -262,13 +244,11 @@ class Var10Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -282,13 +262,11 @@ class Var11Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -302,13 +280,11 @@ class Var12Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -322,13 +298,11 @@ class Var13Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v13.max_dig, decimal_places=DigVar.v13.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v13.max_dig, decimal_places=DigVar.v13.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -342,13 +316,11 @@ class Var14Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v14.max_dig, decimal_places=DigVar.v14.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v14.max_dig, decimal_places=DigVar.v14.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -362,13 +334,11 @@ class Var15Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v15.max_dig, decimal_places=DigVar.v15.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v15.max_dig, decimal_places=DigVar.v15.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -382,13 +352,11 @@ class Var16Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v16.max_dig, decimal_places=DigVar.v16.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v16.max_dig, decimal_places=DigVar.v16.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -402,13 +370,11 @@ class Var17Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v17.max_dig, decimal_places=DigVar.v17.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v17.max_dig, decimal_places=DigVar.v17.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -422,13 +388,11 @@ class Var18Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v18.max_dig, decimal_places=DigVar.v18.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v18.max_dig, decimal_places=DigVar.v18.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -442,13 +406,11 @@ class Var19Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v19.max_dig, decimal_places=DigVar.v19.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v19.max_dig, decimal_places=DigVar.v19.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -462,13 +424,11 @@ class Var20Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v20.max_dig, decimal_places=DigVar.v20.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v20.max_dig, decimal_places=DigVar.v20.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -482,13 +442,11 @@ class Var21Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v21.max_dig, decimal_places=DigVar.v21.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v21.max_dig, decimal_places=DigVar.v21.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -502,13 +460,11 @@ class Var22Validado(models.Model):
     maximo = models.DecimalField("Máximo", max_digits=DigVar.v22.max_dig, decimal_places=DigVar.v22.dec_pla, null=True)
     minimo = models.DecimalField("Mínimo", max_digits=DigVar.v22.max_dig, decimal_places=DigVar.v22.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -520,13 +476,11 @@ class Var23Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v23.max_dig, decimal_places=DigVar.v23.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -538,13 +492,11 @@ class Var24Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField("Valor", max_digits=DigVar.v24.max_dig, decimal_places=DigVar.v24.dec_pla, null=True)
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
-    validacion = models.PositiveSmallIntegerField("Validación")
 
     class Meta:
         default_permissions = ()
-        unique_together = ('estacion_id', 'fecha', 'validacion')
+        unique_together = ('estacion_id', 'fecha')
         indexes = [
-            #models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -696,7 +648,6 @@ class Viento(models.Model):
     class Meta:
         unique_together = ('estacion_id', 'fecha')
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]
@@ -713,7 +664,6 @@ class Agua(models.Model):
     class Meta:
         unique_together = ('estacion_id', 'fecha')
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
             models.Index(fields=['fecha', 'estacion_id']),
             models.Index(fields=['usado_para_horario', 'id']),
         ]

@@ -370,9 +370,6 @@ function validacion_enviar(){
         });
     }
 
-
-
-
     if (cambios.length == 0){
         $("#mensaje_overlay, #mensaje_content").addClass("active");
         $("#mensaje_content").css("background", "rgba(210, 210, 210, 0.8)");

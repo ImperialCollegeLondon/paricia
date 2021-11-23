@@ -12,11 +12,12 @@
 from django.db import connection
 from variable.models import Variable
 
-cursor = connection.cursor()
-variables = Variable.objects.filter(reporte_automatico=True)
-for variable in variables:
-    sql = "SELECT * FROM generar_horario_var" + str(variable.var_id) + "();"
-    res = True
-    while res:
-        cursor.execute(sql)
-        res = cursor.fetchone()[0]
+def run():
+    cursor = connection.cursor()
+    variables = Variable.objects.filter(reporte_automatico=True)
+    for variable in variables:
+        sql = "SELECT * FROM generar_horario_var" + str(variable.var_id) + "();"
+        res = True
+        while res:
+            cursor.execute(sql)
+            res = cursor.fetchone()[0]

@@ -80,7 +80,7 @@ class ConfigVisualizar(models.Model):
     umbral_inferior = models.DecimalField("Umbral inferior", max_digits=14, decimal_places=6, blank=True, null=True)
 
     def __str__(self):
-        return str(self.estacion.est_nombre + ' - ' + self.variable.var_nombre)
+        return str(self.estacion.est_codigo + ' - ' + self.variable.var_nombre)
 
     def get_absolute_url(self):
         return reverse('telemetria:configvisualizar_detail', kwargs={'pk':self.pk})
@@ -101,7 +101,7 @@ class ConfigCalidad(models.Model):
     umbral_inferior = models.DecimalField("Umbral inferior", max_digits=14, decimal_places=6, blank=True, null=True)
 
     def __str__(self):
-        return str(self.estacion.est_nombre + ' - ' + self.variable.var_nombre + ' - ' + str(self.profundidad/10.0) + '[m]' )
+        return str(self.estacion.est_codigo + ' - ' + self.variable.var_nombre + ' - ' + str(self.profundidad/10.0) + '[m]' )
 
     def get_absolute_url(self):
         return reverse('telemetria:configcalidad_detail', kwargs={'pk':self.pk})

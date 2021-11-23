@@ -6,14 +6,9 @@ DECLARE _resultado boolean;
 BEGIN
 
     WITH
-	variable AS (
-		SELECT umbral_completo AS umbral FROM variable_variable v WHERE var_id = 2 LIMIT 1
-	),
     dato AS (
-        SELECT id, estacion_id, fecha
-        FROM horario_var2horario h
-        WHERE h.usado_para_diario = FALSE
-        LIMIT 1
+        SELECT id, estacion_id, fecha FROM horario_var2horario h
+        WHERE h.usado_para_diario = FALSE LIMIT 1
     ),
     dia_inicio AS (
         SELECT date_trunc('day', (SELECT d.fecha FROM dato d)) AS dia_inicio LIMIT 1
@@ -22,7 +17,7 @@ BEGIN
         SELECT (SELECT di.dia_inicio FROM dia_inicio di) + interval '1 day' AS dia_fin LIMIT 1
     ),
 	bloque AS (
-        SELECT id, estacion_id, fecha, valor, max_abs, min_abs, completo_mediciones
+        SELECT id, estacion_id, fecha, valor, max_abs, min_abs, vacios
         FROM horario_var2horario h
         WHERE h.estacion_id = (SELECT d.estacion_id FROM dato d)
             AND h.fecha >= (SELECT dia_inicio FROM dia_inicio) AND h.fecha < (SELECT dia_fin FROM dia_fin)
@@ -36,14 +31,12 @@ BEGIN
 			(SELECT MIN(b.min_abs) FROM bloque b) AS min_abs,
 			(SELECT MAX(b.valor) FROM bloque b) AS max_del_prom,
 			(SELECT MIN(b.valor) FROM bloque b) AS min_del_prom,
-            (SELECT SUM(b.completo_mediciones)::decimal/24 FROM bloque b) AS completo_mediciones,
-            (SELECT COUNT(*)::decimal/24 * 100 FROM bloque b
-			 	WHERE b.completo_mediciones >= (SELECT umbral FROM variable) ) AS completo_umbral,
+            (SELECT 100.0 - (SUM(100.0-b.vacios)::decimal/24) FROM bloque b) AS vacios,
             FALSE AS usado_para_mensual
     ),
     es_valido AS (
         SELECT
-        (estacion_id IS NOT NULL) AND (fecha IS NOT NULL) AND (completo_umbral >= 0)
+           (fecha IS NOT NULL) AND (vacios >= 0.0) AND (vacios <= 100.0)
         AS es_valido
         FROM calculo
     ),
@@ -54,16 +47,17 @@ BEGIN
 			min_abs = (SELECT c.min_abs FROM calculo c),
 			max_del_prom = (SELECT c.max_del_prom FROM calculo c),
 			min_del_prom = (SELECT c.min_del_prom FROM calculo c),
-            completo_mediciones = (SELECT c.completo_mediciones FROM calculo c),
-			completo_umbral = (SELECT c.completo_umbral FROM calculo c),
+            vacios = (SELECT c.vacios FROM calculo c),
             usado_para_mensual = (SELECT c.usado_para_mensual FROM calculo c)
         WHERE estacion_id = (SELECT c.estacion_id FROM calculo c) AND fecha = (SELECT c.fecha FROM calculo c)
         AND (SELECT es_valido FROM es_valido)
         RETURNING *
     ),
     insert_diario AS (
-        INSERT INTO diario_var2diario(estacion_id, fecha, valor, max_abs, min_abs, max_del_prom, min_del_prom, completo_mediciones, completo_umbral, usado_para_mensual)
-        SELECT estacion_id, fecha, valor, max_abs, min_abs, max_del_prom, min_del_prom, completo_mediciones, completo_umbral, usado_para_mensual
+        INSERT INTO diario_var2diario(estacion_id, fecha, valor, max_abs, min_abs, max_del_prom, min_del_prom,
+            vacios, usado_para_mensual)
+        SELECT estacion_id, fecha, valor, max_abs, min_abs, max_del_prom, min_del_prom,
+            vacios, usado_para_mensual
         FROM calculo
         WHERE NOT EXISTS (SELECT 1 FROM update_diario)
         AND (SELECT es_valido FROM es_valido)

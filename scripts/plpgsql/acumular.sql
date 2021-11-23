@@ -27,7 +27,8 @@ DECLARE
 	counta integer;
 BEGIN
 	
-/*Solo se controlaran para frecuencias de  5 10 y 15 minutos para estacioens estaciones automaticas*/
+    /*Solo se controlaran para frecuencias de  5 10 y 15 minutos para estacioens estaciones automaticas*/
+
 	maximo = 0;
 	--fechaMax = fecha1 + ( anios || ' year')::interval;
 	fechaMax = fecha1 + interval '1 years';
@@ -37,14 +38,16 @@ BEGIN
 		raise notice 'fecha2 nueva %', fecha2;
 	end if;
 		
-	execute 'select count(*) from validacion_var1validado where estacion_id = $1 and fecha >= $2 and fecha <= $3;' into counta using estacionid, fecha1,fecha2;
+	execute 'select count(*) from validacion_var1validado where estacion_id = $1 and fecha >= $2 and fecha <= $3;'
+	    into counta using estacionid, fecha1, fecha2;
+
 	if counta > 360 then
-		execute 'Select fre_valor, fre_fecha_ini from frecuencia_frecuencia where est_id_id = 1  and var_id_id = 1 
-		 and fre_fecha_ini <= $2 order by fre_fecha_ini desc limit 1;' 
-		into frecuen using estacionid, fecha2, frec;
+		execute 'Select fre_valor, fre_fecha_ini from frecuencia_frecuencia where est_id_id = $1  and var_id_id = 1'
+		    ' and fre_fecha_ini <= $2 order by fre_fecha_ini desc limit 1;'
+		    into frecuen using estacionid, fecha2;
 		/*compara si las frecuencias dentro del periodo de fechas existen para ejecutar
 		sin no es es asi cambiar la frecuencia del periodo de inico y la de fin segun las frecuencias */
-		raise notice 'valor de f %',frecuen.fre_valor;
+		raise notice 'valor de f %', frecuen.fre_valor;
 		if frecuen.fre_valor <= frec then	
 			if frecuen.fre_valor = 5 and frec = 5 then -- para frecuencias de 5 minutos
 				execute 'select max(valor) from validacion_var1validado 

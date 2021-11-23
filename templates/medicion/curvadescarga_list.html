@@ -32,9 +32,8 @@
             columnDefs: [
                 { "targets": 0, "visible" : false, "searchable": false },
                 { "targets": 1, "defaultOrder": true,},
-                { "targets": 3, "render" : function(data, type, row){
-                    if(row[3] === "") return "";
-                    if(row[3]=="True") return "Sí";}
+                { "targets": 3,
+                    "render" : function(data, type, row){if(row[3]==="True"){return "Sí";}else{return "";}}
                 },
                 { "targets": 4, "render" : function(data, type, row){ return btns;}  },
             ],

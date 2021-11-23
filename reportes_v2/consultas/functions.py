@@ -97,7 +97,7 @@ def reporte_excel(form):
     ws['F4'] = 'Variable'
     ws['F4'].font = font_bold
     ws['G4'] = variable.var_nombre
-    ws['B6'] = 'Coordenadas Geográfica TMQ WGS84'
+    ws['B6'] = 'Coordenadas Geográficas'
     ws['B6'].font = font_bold
     ws.merge_cells('B6:G6')
     ws['A7'] = 'Latitud'

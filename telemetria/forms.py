@@ -31,7 +31,7 @@ class ConsultaForm(forms.Form):
 
     @staticmethod
     def label_from_instance(obj):
-        return obj.est_codigo + str(" ") + obj.est_nombre
+        return obj.est_codigo
 
 
 class AlarmaTransmisionLimitesForm(forms.Form):
@@ -68,7 +68,7 @@ class PrecipitacionForm(forms.Form):
 
     @staticmethod
     def label_from_instance(obj):
-        return obj.est_codigo + str(" ") + obj.est_nombre
+        return obj.est_codigo
 
 
 class PrecipitacionMultiestacionForm(forms.Form):

@@ -146,7 +146,7 @@ class Titulos:
 
         ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col_fin)
         title = ws.cell(row=fila, column=col)
-        title.value = 'Coordenadas Geográfica TMQ WGS84'
+        title.value = 'Coordenadas Geográficas'
         self.set_style(cell=title, font='font_bold_11', alignment='center',
                        border='border_thin')
 

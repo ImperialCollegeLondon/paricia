@@ -31,8 +31,10 @@ class ReportesPermisos(models.Model):
         managed = False
 
 
+# Para usar en: Mediciones(crudos) y validados
 class ConsultaGenericaFechaHora(models.Model):
-    fecha = models.DateTimeField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
+    fecha = models.DateTimeField()
     valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)
 
     class Meta:
@@ -41,9 +43,10 @@ class ConsultaGenericaFechaHora(models.Model):
         default_permissions = ()
 
 
-class ConsultaGenericaFechaHora_Grafico(models.Model):
-    fila = models.AutoField(primary_key=True)
-    id = models.IntegerField()
+# Para usar en: Mediciones(crudos) y validados. Con el indicador de saltos temporales
+# Salto temporal se define cuando entre dato y dato pasa más tiempo del esperado
+class ConsultaGenericaFechaHora_Saltos(models.Model):
+    id = models.IntegerField(primary_key=True)
     fecha = models.DateTimeField()
     valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)
     salto = models.BooleanField()
@@ -54,12 +57,25 @@ class ConsultaGenericaFechaHora_Grafico(models.Model):
         default_permissions = ()
 
 
-class ConsultaGenericaFecha(models.Model):
-    fecha = models.DateField(primary_key=True)
+# Para consulta datos: Horarios
+class ConsultaReporteFechaHora(models.Model):
+    fecha = models.DateTimeField(primary_key=True)
     valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)
+    vacios = models.DecimalField(max_digits=4, decimal_places=1, null=True)
 
     class Meta:
         ### Para que no se cree en la migracion
         managed = False
         default_permissions = ()
 
+
+# Para consulta datos: Diarios, Mensuales
+class ConsultaReporteFecha(models.Model):
+    fecha = models.DateField(primary_key=True)
+    valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)
+    vacios = models.DecimalField(max_digits=4, decimal_places=1, null=True)
+
+    class Meta:
+        ### Para que no se cree en la migracion
+        managed = False
+        default_permissions = ()

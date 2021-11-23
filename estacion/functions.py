@@ -14,7 +14,7 @@
 from excel_response import ExcelResponse
 
 def excel_estacion(estaciones):
-    cabecera = [['Código', 'Nombre', 'Tipo', 'País', 'Región', 'Ecosistema', 'Socio', 'Sitio', 'Cuenca',
+    cabecera = [['Código', 'Descripción', 'Tipo', 'País', 'Región', 'Ecosistema', 'Socio', 'Sitio', 'Cuenca',
                  'Latitud', 'Longitud', 'Altura', 'Estado'], ]
     cuerpo = []
     for objeto in estaciones:

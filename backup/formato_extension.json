@@ -1,0 +1,1 @@
+[{"model": "formato.extension", "pk": 1, "fields": {"ext_valor": "txt"}}, {"model": "formato.extension", "pk": 2, "fields": {"ext_valor": "csv"}}, {"model": "formato.extension", "pk": 3, "fields": {"ext_valor": "xlsx"}}, {"model": "formato.extension", "pk": 4, "fields": {"ext_valor": "asc"}}, {"model": "formato.extension", "pk": 5, "fields": {"ext_valor": "dat"}}]

@@ -107,17 +107,17 @@ menu_struct = [
             {"nombre": "<small>LIMNO. - </small>Borrar datos", "url_name": "validacion:calidad_borrar_datos", "permiso": "validacion.calidad_validar"},
         ]
     },
-    {
-        "pestaña": "Validación_v2",
-        "permiso": "",
-        "items": [
-            {"nombre": "<small>HIDRO - </small>Validar Datos Crudos", "url_name": "validacion_v2:v2_diaria",
-             "permiso": "validacion.hidro_validar"},
-            {"nombre": "<small>HIDRO - </small>Historial validaciones", "url_name": "validacion:validacion_index",
-             "permiso": "validacion.view_validacion"},
-            {"nombre": "", },
-        ]
-    },
+    # {
+    #     "pestaña": "Validación_v2",
+    #     "permiso": "",
+    #     "items": [
+    #         {"nombre": "<small>HIDRO - </small>Validar Datos Crudos", "url_name": "validacion_v2:v2_diaria",
+    #          "permiso": "validacion.hidro_validar"},
+    #         {"nombre": "<small>HIDRO - </small>Historial validaciones", "url_name": "validacion:validacion_index",
+    #          "permiso": "validacion.view_validacion"},
+    #         {"nombre": "", },
+    #     ]
+    # },
     {
         "pestaña": "Indices",
         "permiso": "",

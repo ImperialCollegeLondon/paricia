@@ -1,0 +1,1 @@
+[{"model": "formato.hora", "pk": 1, "fields": {"hor_formato": "HH:MM:SS AM/PM", "hor_codigo": "%I:%M:%S %p"}}, {"model": "formato.hora", "pk": 2, "fields": {"hor_formato": "HH:MM:SS 24H", "hor_codigo": "%H:%M:%S"}}, {"model": "formato.hora", "pk": 3, "fields": {"hor_formato": "HH:MM 24H", "hor_codigo": "%H:%M"}}]

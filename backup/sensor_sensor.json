@@ -1,0 +1,1 @@
+[{"model": "sensor.sensor", "pk": 1, "fields": {"sen_codigo": "PIU_01_POO", "tip_id": 1, "mar_id": 2, "sen_modelo": "TexE", "sen_serial": "010129024819", "sen_estado": true}}]

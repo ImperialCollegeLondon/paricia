@@ -128,7 +128,6 @@ def reporte_validacion(form):
     fin = datetime.datetime.combine(form.cleaned_data['fin'], datetime.time(23, 59, 59, 999999))
     query = "select * FROM reporte_validacion_var" + str(var_id) + "(%s, %s, %s);"
     consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
-    print(consulta)
     return consulta
 
 
@@ -198,7 +197,7 @@ def grafico(consulta, variable, estacion):
         layout = go.Layout(autosize=True,
                         width=160 + int(ndatos_esperado * pixels_por_dato),
                         height=300,
-                        title=estacion.est_codigo + " -- " + estacion.est_nombre,
+                        title=estacion.est_codigo,
                         yaxis=dict(title=variable.var_nombre + " [" + variable.uni_id.uni_sigla + "]"),
                         shapes=shapes,
                             margin=dict(
@@ -271,7 +270,7 @@ def grafico2(consulta, variable, estacion):
         layout = go.Layout(autosize=True,
                         width=160 + int(ndatos_esperado * pixels_por_dato),
                         height=300,
-                        title=estacion.est_codigo + " -- " + estacion.est_nombre,
+                        title=estacion.est_codigo,
                         yaxis=dict(title=variable.var_nombre + " [" + variable.uni_id.uni_sigla + "]"),
                         shapes=shapes,
                             margin=dict(

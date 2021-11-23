@@ -15,6 +15,7 @@
 import datetime
 import plotly.offline as opy
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
 from .models import *
@@ -35,11 +36,22 @@ from django.conf import settings
 import os
 import matplotlib.pyplot as plt
 import random
+from django.db import connection
 from calendar import monthrange
+
 
 # usados en: datos_horarios_json
 from django.db.models import Max, Min, Avg, Count, Sum
 from django.db.models.functions import ExtractYear, ExtractMonth, ExtractDay, ExtractHour
+
+__frecuencia__ = {
+    "Subhorario crudo": "",
+    "Subhorario validado": "",
+    "Horario": "Hora",
+    "Diario": "Día",
+    "Mensual": "Mes",
+}
+
 
 
 def max_min(lista):
@@ -72,36 +84,48 @@ def dataScala(escalaTemp, codEst, codVar, fi, ff):
     framed = pd.DataFrame()
     print("Data Scala ",type(codVar),codVar)
     print("fecha inici", str(fi)," - fecha de fin ",ff)
+    variable = Variable.objects.get(pk=codVar)
+    vacios = variable.vacios
     if et == 2:
         sub = 'Horario'
-        dataD = globals()['Var' + str(codVar) + 'Horario'].objects.filter(estacion_id=codEst, fecha__gte=fi,fecha__lte=ff
-                                                                          ).order_by('fecha')
+        dataD = globals()['Var' + str(codVar) + 'Horario'].objects.filter(
+            estacion_id=codEst, fecha__gte=fi, fecha__lte=ff, vacios__lt=vacios
+        ).order_by('fecha')
         if codVar in varBar:
-            dataD = dataD.values("fecha",  "valor")
-            framed = pd.DataFrame.from_records(dataD)
+            dataD = dataD.values_list("fecha",  "valor")
+            # framed = pd.DataFrame.from_records(dataD)
+            # ldataD = list(dataD)
+            framed = pd.DataFrame(list(dataD), columns=["fecha", "valor"])
         elif codVar in varLine:
             dataD = dataD.values("fecha",  "valor", "max_abs", "min_abs")
-            framed = pd.DataFrame.from_records(dataD)
+            # framed = pd.DataFrame.from_records(dataD)
+            framed = pd.DataFrame(list(dataD))
     elif et == 3:
         sub = 'Diario'
-        dataD = globals()['Var' + str(codVar) + 'Diario'].objects.filter(estacion_id=codEst,fecha__gte=fi,fecha__lte=ff
-                                                                       ).order_by('fecha')
+        dataD = globals()['Var' + str(codVar) + 'Diario'].objects.filter(
+            estacion_id=codEst,fecha__gte=fi, fecha__lte=ff, vacios__lt=vacios
+        ).order_by('fecha')
         if codVar in varBar:
             dataD = dataD.values("fecha", "valor")
-            framed = pd.DataFrame.from_records(dataD)
+            # framed = pd.DataFrame.from_records(dataD)
+            framed = pd.DataFrame(list(dataD))
         elif codVar in varLine:
             dataD = dataD.values("fecha", "valor",  "max_del_prom", "min_del_prom")
-            framed = pd.DataFrame.from_records(dataD)
+            # framed = pd.DataFrame.from_records(dataD)
+            framed = pd.DataFrame(list(dataD))
     elif et == 4:
         sub = 'Mensual'
-        dataD = globals()['Var' + str(codVar) + 'Mensual'].objects.filter(estacion_id=codEst, fecha__gte=fi,fecha__lte=ff,
-                                                                          ).order_by('fecha')
+        dataD = globals()['Var' + str(codVar) + 'Mensual'].objects.filter(
+            estacion_id=codEst, fecha__gte=fi, fecha__lte=ff, vacios__lt=vacios
+        ).order_by('fecha')
         if codVar in varBar:
             dataD = dataD.values("fecha",  "valor")
-            framed = pd.DataFrame.from_records(dataD)
+            # framed = pd.DataFrame.from_records(dataD)
+            framed = pd.DataFrame(list(dataD))
         elif codVar in varLine:
             dataD = dataD.values("fecha", "valor", "max_del_prom", "min_del_prom")
-            framed = pd.DataFrame.from_records(dataD)
+            # framed = pd.DataFrame.from_records(dataD)
+            framed = pd.DataFrame(list(dataD))
     #print(framed)
     return framed,sub
 
@@ -225,7 +249,8 @@ def trace_graph(variable, estacion, tiempo, valor):
     return trace
 
 
-def consulta_crudos(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_crudos(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -233,16 +258,16 @@ def consulta_crudos(estacion_id, variable_id, inicio, fin, profundidad):
         fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
 
     sql = """
-    SELECT m.fecha, m.valor
+    SELECT m.id, m.fecha, m.valor
     FROM medicion_var101medicion m
     WHERE m.estacion_id = %s
     """
     if profundidad:
-        sql = sql + '        AND m.profundidad = ' + str(profundidad)
+        sql += '        AND m.profundidad = ' + str(profundidad)
     if inicio:
-        sql = sql + '        AND m.fecha>=\'' + str(inicio) + '\''
+        sql += '        AND m.fecha>=\'' + str(inicio) + '\''
     if fin:
-        sql = sql + '        AND m.fecha<=\'' + str(fin) + '\''
+        sql += '        AND m.fecha<=\'' + str(fin) + '\''
     sql = sql + """
     ORDER BY m.fecha ASC, m.id ASC;
     """
@@ -251,7 +276,8 @@ def consulta_crudos(estacion_id, variable_id, inicio, fin, profundidad):
     return consulta
 
 
-def consulta_crudos_vectores(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_crudos__columnas(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
     consulta = consulta_crudos(estacion_id, variable_id, inicio, fin, profundidad)
     fecha = []
     valor = []
@@ -262,7 +288,8 @@ def consulta_crudos_vectores(estacion_id, variable_id, inicio, fin, profundidad)
     return datos
 
 
-def consulta_crudos_gaps_vectores(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_crudos_saltos(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -270,101 +297,52 @@ def consulta_crudos_gaps_vectores(estacion_id, variable_id, inicio, fin, profund
         fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
 
     sql = """
-    with
-    estacion AS (SELECT * FROM estacion_estacion est WHERE est.est_id = %s),
-    variable AS (SELECT * FROM variable_variable var WHERE var.var_id = %s),
+    WITH
+    estacion AS (SELECT * FROM estacion_estacion e WHERE e.est_id = %s),
+    variable AS (SELECT * FROM variable_variable v WHERE v.var_id = %s),
     medicion AS (
         SELECT m.id, m.fecha, m.valor
         FROM medicion_var101medicion m
-        WHERE m.estacion_id = (SELECT est_id FROM estacion)
+        WHERE m.estacion_id = (SELECT e.est_id FROM estacion e)
     """
     if profundidad:
-        sql = sql + '        AND profundidad = ' + str(profundidad)
+        sql = sql + '        AND m.profundidad = ' + str(profundidad)
     if inicio:
-        sql = sql + '        AND fecha>=\'' + str(inicio) + '\''
+        sql = sql + '        AND m.fecha>=\'' + str(inicio) + '\''
     if fin:
-        sql = sql + '        AND fecha<=\'' + str(fin) + '\''
+        sql = sql + '        AND m.fecha<=\'' + str(fin) + '\''
     sql = sql + """
-        ORDER BY fecha ASC
+        ORDER BY m.fecha ASC
     ),
     fechas AS (
         SELECT 
-            row_number() OVER (ORDER BY mm.fecha ASC, mm.id ASC) as fila,
-            mm.id, mm.fecha, mm.valor, 
-            EXTRACT(EPOCH FROM mm.fecha - lag(mm.fecha) OVER (ORDER BY mm.fecha ASC))/60  as lapso_tiempo,
-            (SELECT fre.fre_valor FROM frecuencia_frecuencia fre
-                    WHERE fre.var_id_id = (SELECT var_id FROM variable) AND fre.est_id_id = (SELECT est_id FROM estacion) AND fre.fre_fecha_ini < mm.fecha
-                    ORDER BY fre.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
-        FROM medicion mm ORDER BY mm.fecha ASC
+            m.id, m.fecha, m.valor, 
+            EXTRACT(EPOCH FROM m.fecha - lag(m.fecha) OVER (ORDER BY m.fecha ASC))/60  as lapso_tiempo,
+            (SELECT f.fre_valor FROM frecuencia_frecuencia f
+                    WHERE f.var_id_id = (SELECT v.var_id FROM variable v) 
+                    AND f.est_id_id = (SELECT e.est_id FROM estacion e) AND f.fre_fecha_ini < m.fecha
+                    ORDER BY f.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
+        FROM medicion m ORDER BY m.fecha ASC, m.id ASC
     ),
     tabla AS (
         SELECT 
-            ff.fila, 
-            ff.id, 
-            ff.fecha, ff.valor, 
-            --ff.lapso_tiempo, ff.periodo_esperado, 
-            CASE WHEN ff.fila = 1 THEN FALSE ELSE 
-                CASE WHEN ff.lapso_tiempo > ff.periodo_esperado * 1.005 THEN TRUE ELSE FALSE END
+            f.id, 
+            f.fecha, f.valor, 
+            --f.lapso_tiempo, f.periodo_esperado, 
+            CASE WHEN f.fecha = (SELECT m.fecha FROM medicion m ORDER BY m.fecha ASC LIMIT 1) THEN FALSE ELSE 
+                CASE WHEN f.lapso_tiempo > (f.periodo_esperado * 1.05) THEN TRUE ELSE FALSE END
             END AS salto
-        FROM fechas ff ORDER BY fecha
+        FROM fechas f ORDER BY f.fecha, f.id
     )
-    select * from tabla;    
+    SELECT t.id, t.fecha, t.valor, t.salto FROM tabla t ORDER BY t.fecha ASC, t.id ASC;    
     """
     sql = sql.replace("var101", "var" + str(variable_id))
-    consulta = ConsultaGenericaFechaHora_Grafico.objects.raw(sql, [estacion_id, variable_id])
-
-    fecha = []
-    valor = []
-    for fila in consulta:
-        if fila.salto is True:
-            fecha_intermedia = fecha_anterior + (fila.fecha - fecha_anterior)/2
-            fecha.append(fecha_intermedia)
-            valor.append(None)
-        fecha.append(fila.fecha)
-        valor.append(fila.valor)
-        fecha_anterior = fila.fecha
-    datos = {"fecha": fecha, "valor": valor}
-    return datos
-
-
-def consulta_validados(estacion_id, variable_id, inicio, fin):
-    if inicio:
-        inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
-
-    if fin:
-        fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
-
-    sql = """
-        SELECT DISTINCT ON (fecha)
-        fecha, validacion, valor
-        FROM validacion_var%var_id%validado v
-        WHERE estacion_id = %s
-    """
-    if inicio:
-        sql = sql + '        AND v.fecha>=\'' + str(inicio) + '\''
-    if fin:
-        sql = sql + '        AND v.fecha<=\'' + str(fin) + '\''
-    sql = sql + """
-        ORDER  BY fecha, validacion DESC;
-    """
-
-    sql = sql.replace("%var_id%", str(variable_id))
-    consulta = ConsultaGenericaFechaHora.objects.raw(sql, [estacion_id, ])
+    consulta = ConsultaGenericaFechaHora_Saltos.objects.raw(sql, [estacion_id, variable_id])
     return consulta
 
 
-def consulta_validados_vectores(estacion_id, variable_id, inicio, fin):
-    consulta = consulta_validados(estacion_id, variable_id, inicio, fin)
-    fecha = []
-    valor = []
-    for fila in consulta:
-        fecha.append(fila.fecha)
-        valor.append(fila.valor)
-    datos = {"fecha": fecha, "valor": valor}
-    return datos
-
-
-def consulta_validados_gaps_vectores(estacion_id, variable_id, inicio, fin):
+def consulta_crudos_saltos__lista(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -372,59 +350,60 @@ def consulta_validados_gaps_vectores(estacion_id, variable_id, inicio, fin):
         fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
 
     sql = """
-    WITH 
-    estacion AS (SELECT * FROM estacion_estacion est WHERE est.est_id = %s),
-    variable AS (SELECT * FROM variable_variable var WHERE var.var_id = %s),    
-    seleccion AS (
-        SELECT id, fecha, valor, validacion 
-        FROM validacion_var%var_id%validado v 
-        WHERE estacion_id = (SELECT est_id FROM estacion)
+    WITH
+    estacion AS (SELECT * FROM estacion_estacion e WHERE e.est_id = %s),
+    variable AS (SELECT * FROM variable_variable v WHERE v.var_id = %s),
+    medicion AS (
+        SELECT m.id, m.fecha, m.valor
+        FROM medicion_var101medicion m
+        WHERE m.estacion_id = (SELECT e.est_id FROM estacion e)
     """
+    if profundidad:
+        sql = sql + '        AND m.profundidad = ' + str(profundidad)
     if inicio:
-        sql = sql + '        AND v.fecha>=\'' + str(inicio) + '\''
+        sql = sql + '        AND m.fecha>=\'' + str(inicio) + '\''
     if fin:
-        sql = sql + '        AND v.fecha<=\'' + str(fin) + '\''
+        sql = sql + '        AND m.fecha<=\'' + str(fin) + '\''
     sql = sql + """
-    ),
-    validados AS (
-        SELECT ss.id, ss.fecha, ss.valor FROM (
-            SELECT fecha, MAX(validacion) AS validacion FROM seleccion GROUP BY fecha
-        ) AS tbl_max
-        INNER JOIN seleccion ss
-        ON ss.fecha = tbl_max.fecha AND ss.validacion = tbl_max.validacion
-        ORDER BY ss.fecha
+        ORDER BY m.fecha ASC
     ),
     fechas AS (
         SELECT 
-            row_number() OVER (ORDER BY vv.fecha ASC, vv.id ASC) as fila,
-            vv.id, vv.fecha, vv.valor, 
-            EXTRACT(EPOCH FROM vv.fecha - lag(vv.fecha) OVER (ORDER BY vv.fecha ASC))/60  as lapso_tiempo,
-            (SELECT fre.fre_valor FROM frecuencia_frecuencia fre
-                    WHERE fre.var_id_id = (SELECT var_id FROM variable) AND fre.est_id_id = (SELECT est_id FROM estacion) AND fre.fre_fecha_ini < vv.fecha
-                    ORDER BY fre.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
-        FROM validados vv ORDER BY vv.fecha ASC
+            m.id, m.fecha, m.valor, 
+            EXTRACT(EPOCH FROM m.fecha - lag(m.fecha) OVER (ORDER BY m.fecha ASC))/60  as lapso_tiempo,
+            (SELECT f.fre_valor FROM frecuencia_frecuencia f
+                    WHERE f.var_id_id = (SELECT v.var_id FROM variable v) 
+                    AND f.est_id_id = (SELECT e.est_id FROM estacion e) AND f.fre_fecha_ini < m.fecha
+                    ORDER BY f.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
+        FROM medicion m ORDER BY m.fecha ASC, m.id ASC
     ),
     tabla AS (
         SELECT 
-            ff.fila, 
-            ff.id, 
-            ff.fecha, ff.valor, 
-            --ff.lapso_tiempo, ff.periodo_esperado, 
-            CASE WHEN ff.fila = 1 THEN FALSE ELSE 
-                CASE WHEN ff.lapso_tiempo > ff.periodo_esperado * 1.005 THEN TRUE ELSE FALSE END
+            f.id, 
+            f.fecha, f.valor, 
+            --f.lapso_tiempo, f.periodo_esperado, 
+            CASE WHEN f.fecha = (SELECT m.fecha FROM medicion m ORDER BY m.fecha ASC LIMIT 1) THEN FALSE ELSE 
+                CASE WHEN f.lapso_tiempo > (f.periodo_esperado * 1.05) THEN TRUE ELSE FALSE END
             END AS salto
-        FROM fechas ff ORDER BY fecha
+        FROM fechas f ORDER BY f.fecha, f.id
     )
-    select * from tabla;      
+    --SELECT t.id, t.fecha, t.valor, t.salto FROM tabla t ORDER BY t.fecha ASC, t.id ASC;    
+    SELECT t.fecha, t.valor, t.salto FROM tabla t ORDER BY t.fecha ASC, t.id ASC;
     """
+    sql = sql.replace("var101", "var" + str(variable_id))
+    with connection.cursor() as cursor:
+        cursor.execute(sql, [estacion_id, variable_id])
+        consulta = cursor.fetchall()
+    return consulta
 
-    sql = sql.replace("%var_id%", str(variable_id))
-    consulta = ConsultaGenericaFechaHora_Grafico.objects.raw(sql, [estacion_id, variable_id])
+
+
+def consulta_crudos_saltos__columnas(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    consulta = consulta_crudos_saltos(estacion_id, variable_id, inicio, fin, profundidad=profundidad)
     fecha = []
     valor = []
     for fila in consulta:
-        # if fila.valor is not None:
-        #     resultado.append([fila.fecha, fila.valor])
         if fila.salto is True:
             fecha_intermedia = fecha_anterior + (fila.fecha - fecha_anterior)/2
             fecha.append(fecha_intermedia)
@@ -436,8 +415,8 @@ def consulta_validados_gaps_vectores(estacion_id, variable_id, inicio, fin):
     return datos
 
 
-
-def consulta_validadosV2(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_validados(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -445,26 +424,27 @@ def consulta_validadosV2(estacion_id, variable_id, inicio, fin, profundidad):
         fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
 
     sql = """
-    SELECT v.fecha, v.valor
+    SELECT v.id, v.fecha, v.valor
     FROM validacion_var101validado v
     WHERE v.estacion_id = %s
     """
     if profundidad:
-        sql = sql + '        AND v.profundidad = ' + str(profundidad)
+        sql += '        AND v.profundidad = ' + str(profundidad)
     if inicio:
-        sql = sql + '        AND v.fecha>=\'' + str(inicio) + '\''
+        sql += '        AND v.fecha>=\'' + str(inicio) + '\''
     if fin:
-        sql = sql + '        AND v.fecha<=\'' + str(fin) + '\''
+        sql += '        AND v.fecha<=\'' + str(fin) + '\''
     sql = sql + """
-    ORDER BY v.fecha ASC;
+    ORDER BY v.fecha ASC, v.id ASC;
     """
     sql = sql.replace("var101", "var" + str(variable_id))
     consulta = ConsultaGenericaFechaHora.objects.raw(sql, [estacion_id, ])
     return consulta
 
 
-def consulta_validadosV2_vectores(estacion_id, variable_id, inicio, fin, profundidad):
-    consulta = consulta_validadosV2(estacion_id, variable_id, inicio, fin, profundidad)
+def consulta_validados__columnas(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    consulta = consulta_validados(estacion_id, variable_id, inicio, fin, profundidad)
     fecha = []
     valor = []
     for fila in consulta:
@@ -474,8 +454,8 @@ def consulta_validadosV2_vectores(estacion_id, variable_id, inicio, fin, profund
     return datos
 
 
-
-def consulta_validadosV2_gaps_vectores(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_validados_saltos(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -483,48 +463,52 @@ def consulta_validadosV2_gaps_vectores(estacion_id, variable_id, inicio, fin, pr
         fin = datetime.datetime(fin.year, fin.month, fin.day, 23, 59, 59, 999999)
 
     sql = """
-    with
-    estacion AS (SELECT * FROM estacion_estacion est WHERE est.est_id = %s),
-    variable AS (SELECT * FROM variable_variable var WHERE var.var_id = %s),
+    WITH
+    estacion AS (SELECT * FROM estacion_estacion e WHERE e.est_id = %s),
+    variable AS (SELECT * FROM variable_variable v WHERE v.var_id = %s),
     validados AS (
-        SELECT m.id, m.fecha, m.valor
-        FROM validacion_var101validado m
-        WHERE m.estacion_id = (SELECT est_id FROM estacion)
+        SELECT v.id, v.fecha, v.valor
+        FROM validacion_var101validado v
+        WHERE v.estacion_id = (SELECT e.est_id FROM estacion e)
     """
     if profundidad:
-        sql = sql + '        AND profundidad = ' + str(profundidad)
+        sql += '        AND v.profundidad = ' + str(profundidad)
     if inicio:
-        sql = sql + '        AND fecha>=\'' + str(inicio) + '\''
+        sql += '        AND v.fecha>=\'' + str(inicio) + '\''
     if fin:
-        sql = sql + '        AND fecha<=\'' + str(fin) + '\''
+        sql += '        AND v.fecha<=\'' + str(fin) + '\''
     sql = sql + """
-        ORDER BY fecha ASC
+        ORDER BY v.fecha ASC, v.id
     ),
     fechas AS (
         SELECT 
-            row_number() OVER (ORDER BY vv.fecha ASC, vv.id ASC) as fila,
-            vv.id, vv.fecha, vv.valor, 
-            EXTRACT(EPOCH FROM vv.fecha - lag(vv.fecha) OVER (ORDER BY vv.fecha ASC))/60  as lapso_tiempo,
-            (SELECT fre.fre_valor FROM frecuencia_frecuencia fre
-                    WHERE fre.var_id_id = (SELECT var_id FROM variable) AND fre.est_id_id = (SELECT est_id FROM estacion) AND fre.fre_fecha_ini < vv.fecha
-                    ORDER BY fre.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
-        FROM validados vv ORDER BY vv.fecha ASC
+            v.id, v.fecha, v.valor, 
+            EXTRACT(EPOCH FROM v.fecha - lag(v.fecha) OVER (ORDER BY v.fecha ASC))/60  as lapso_tiempo,
+            (SELECT f.fre_valor FROM frecuencia_frecuencia f
+                    WHERE f.var_id_id = (SELECT var.var_id FROM variable var) 
+                    AND f.est_id_id = (SELECT e.est_id FROM estacion e) AND f.fre_fecha_ini < v.fecha
+                    ORDER BY f.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
+        FROM validados v ORDER BY v.fecha ASC
     ),
     tabla AS (
         SELECT 
-            ff.fila, 
-            ff.id, 
-            ff.fecha, ff.valor, 
-            --ff.lapso_tiempo, ff.periodo_esperado, 
-            CASE WHEN ff.fila = 1 THEN FALSE ELSE 
-                CASE WHEN ff.lapso_tiempo > ff.periodo_esperado * 1.005 THEN TRUE ELSE FALSE END
+            f.id, f.fecha, f.valor, 
+            --f.lapso_tiempo, f.periodo_esperado, 
+            CASE WHEN f.fecha = (SELECT v.fecha FROM validados v ORDER BY v.fecha ASC LIMIT 1) THEN FALSE ELSE
+                CASE WHEN f.lapso_tiempo > (f.periodo_esperado * 1.05) THEN TRUE ELSE FALSE END
             END AS salto
-        FROM fechas ff ORDER BY fecha
+        FROM fechas f ORDER BY f.fecha, f.id ASC
     )
-    select * from tabla;    
+    SELECT t.id, t.fecha, t.valor, t.salto FROM tabla t ORDER BY t.fecha ASC, t.id ASC;
     """
     sql = sql.replace("var101", "var" + str(variable_id))
-    consulta = ConsultaGenericaFechaHora_Grafico.objects.raw(sql, [estacion_id, variable_id])
+    consulta = ConsultaGenericaFechaHora_Saltos.objects.raw(sql, [estacion_id, variable_id])
+    return consulta
+
+
+def consulta_validados_saltos__columnas(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    consulta = consulta_validados_saltos(estacion_id, variable_id, inicio, fin, profundidad=profundidad)
     fecha = []
     valor = []
     for fila in consulta:
@@ -541,7 +525,10 @@ def consulta_validadosV2_gaps_vectores(estacion_id, variable_id, inicio, fin, pr
     return datos
 
 
-def consulta_horario(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_horario(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -550,13 +537,16 @@ def consulta_horario(estacion_id, variable_id, inicio, fin, profundidad):
     sql = """
     WITH 
     variable AS (
-        SELECT * FROM variable_variable vv WHERE vv.var_id = %%var_id%%
+        SELECT * FROM variable_variable v WHERE v.var_id = %%var_id%%
     ),
     consulta AS (
-        select * from horario_var%%var_id%%horario c 
-        WHERE c.estacion_id = %%est_id%% 
+        SELECT 
+            h.fecha 
+            , h.valor 
+            , h.vacios 
+        FROM horario_var%%var_id%%horario h 
+        WHERE h.estacion_id = %%est_id%% 
         %%filtro%%
-        AND c.completo_mediciones >= (SELECT vv.umbral_completo FROM variable vv)
     ),
     secuencia AS (
         SELECT * FROM generate_series( 
@@ -564,36 +554,46 @@ def consulta_horario(estacion_id, variable_id, inicio, fin, profundidad):
             (SELECT c.fecha FROM consulta c ORDER BY c.fecha DESC LIMIT 1 ),
             '1 hour'::interval) fecha
     )
-    select fecha, valor from secuencia s LEFT JOIN consulta c USING (fecha) ORDER BY fecha ASC;    
+    SELECT s.fecha, c.valor, c.vacios
+        FROM secuencia s LEFT JOIN consulta c USING (fecha) ORDER BY fecha ASC;    
     """
     filtro = ""
     if profundidad:
-        filtro += ' AND c.profundidad = ' + str(profundidad)
+        filtro += '    AND h.profundidad = ' + str(profundidad)
     if inicio:
-        filtro += ' AND c.fecha >=\'' + str(inicio) + '\''
+        filtro += '    AND h.fecha >=\'' + str(inicio) + '\''
     if fin:
-        filtro += ' AND c.fecha <=\'' + str(fin) + '\''
+        filtro += '    AND h.fecha <=\'' + str(fin) + '\''
+    if excluir_vacios:
+        filtro += '\n        AND h.vacios < (SELECT v.vacios FROM variable v)'
 
     sql = sql.replace('%%est_id%%', str(estacion_id))
     sql = sql.replace('%%var_id%%', str(variable_id))
     sql = sql.replace('%%filtro%%', filtro)
 
-    consulta = ConsultaGenericaFechaHora.objects.raw(sql)
+    consulta = ConsultaReporteFechaHora.objects.raw(sql)
     return consulta
 
 
-def consulta_horario_vectores(estacion_id, variable_id, inicio, fin, profundidad):
-    consulta = consulta_horario(estacion_id, variable_id, inicio, fin, profundidad)
+def consulta_horario__columnas(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+    consulta = consulta_horario(estacion_id, variable_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
     fecha = []
     valor = []
+    vacios = []
     for fila in consulta:
         fecha.append(fila.fecha)
         valor.append(fila.valor)
-    datos = {"fecha": fecha, "valor": valor}
+        vacios.append(fila.vacios)
+    datos = {"fecha": fecha, "valor": valor, "vacios": vacios}
     return datos
 
 
-def consulta_diario(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_diario(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -602,13 +602,12 @@ def consulta_diario(estacion_id, variable_id, inicio, fin, profundidad):
     sql = """
     WITH 
     variable AS (
-        SELECT * FROM variable_variable vv WHERE vv.var_id = %%var_id%%
+        SELECT * FROM variable_variable v WHERE v.var_id = %%var_id%%
     ),
     consulta AS (
-        select * from diario_var%%var_id%%diario c 
-        WHERE c.estacion_id = %%est_id%% 
+        SELECT d.fecha, d.valor, d.vacios FROM diario_var%%var_id%%diario d 
+        WHERE d.estacion_id = %%est_id%% 
         %%filtro%%
-        AND c.completo_umbral >= (SELECT vv.umbral_completo FROM variable vv)
     ),
     secuencia AS (
         SELECT * FROM generate_series( 
@@ -616,37 +615,47 @@ def consulta_diario(estacion_id, variable_id, inicio, fin, profundidad):
             (SELECT c.fecha FROM consulta c ORDER BY c.fecha DESC LIMIT 1),
             '1 day'::interval) fecha
     )
-    select fecha, valor from secuencia s LEFT JOIN consulta c USING (fecha) ORDER BY fecha ASC;    
+    SELECT s.fecha, c.valor, c.vacios 
+     FROM secuencia s LEFT JOIN consulta c USING (fecha) ORDER BY fecha ASC;
     """
     filtro = ""
     if profundidad:
-        filtro += '        AND profundidad = ' + str(profundidad)
+        filtro += '        AND d.profundidad = ' + str(profundidad)
     if inicio:
-        filtro += ' AND c.fecha >=\'' + str(inicio) + '\''
+        filtro += ' AND d.fecha >=\'' + str(inicio) + '\''
     if fin:
-        filtro += ' AND c.fecha <=\'' + str(fin) + '\''
+        filtro += ' AND d.fecha <=\'' + str(fin) + '\''
+    if excluir_vacios:
+        filtro += '\n        AND d.vacios < (SELECT v.vacios FROM variable v)'
 
     sql = sql.replace('%%est_id%%', str(estacion_id))
     sql = sql.replace('%%var_id%%', str(variable_id))
     sql = sql.replace('%%filtro%%', filtro)
 
-    consulta = ConsultaGenericaFecha.objects.raw(sql)
+    consulta = ConsultaReporteFecha.objects.raw(sql)
     return consulta
 
 
 
-def consulta_diario_vectores(estacion_id, variable_id, inicio, fin, profundidad):
-    consulta = consulta_diario(estacion_id, variable_id, inicio, fin, profundidad)
+def consulta_diario__columnas(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+    consulta = consulta_diario(estacion_id, variable_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
     fecha = []
     valor = []
+    vacios = []
     for fila in consulta:
         fecha.append(fila.fecha)
         valor.append(fila.valor)
-    datos = {"fecha": fecha, "valor": valor}
+        vacios.append(fila.vacios)
+    datos = {"fecha": fecha, "valor": valor, "vacios":vacios}
     return datos
 
 
-def consulta_mensual(estacion_id, variable_id, inicio, fin, profundidad):
+def consulta_mensual(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+
     if inicio:
         inicio = datetime.datetime(inicio.year, inicio.month, inicio.day, 0, 0, 0)
 
@@ -655,13 +664,12 @@ def consulta_mensual(estacion_id, variable_id, inicio, fin, profundidad):
     sql = """
     WITH 
     variable AS (
-        SELECT * FROM variable_variable vv WHERE vv.var_id = %%var_id%%
+        SELECT * FROM variable_variable v WHERE v.var_id = %%var_id%%
     ),
     consulta AS (
-        select * from mensual_var%%var_id%%mensual c 
-        WHERE c.estacion_id = %%est_id%% 
+        select * from mensual_var%%var_id%%mensual m 
+        WHERE m.estacion_id = %%est_id%% 
         %%filtro%%
-        AND c.completo_umbral >= (SELECT vv.umbral_completo FROM variable vv)
     ),
     secuencia AS (
         SELECT * FROM generate_series( 
@@ -669,32 +677,39 @@ def consulta_mensual(estacion_id, variable_id, inicio, fin, profundidad):
             (SELECT c.fecha FROM consulta c ORDER BY c.fecha DESC LIMIT 1),
             '1 month'::interval) fecha
     )
-    select fecha, valor from secuencia s LEFT JOIN consulta c USING (fecha) ORDER BY fecha ASC;    
+    SELECT s.fecha, c.valor, c.vacios 
+     FROM secuencia s LEFT JOIN consulta c USING (fecha) ORDER BY fecha ASC;    
     """
     filtro = ""
     if profundidad:
-        filtro += '        AND profundidad = ' + str(profundidad)
+        filtro += '        AND m.profundidad = ' + str(profundidad)
     if inicio:
-        filtro += ' AND c.fecha >=\'' + str(inicio) + '\''
+        filtro += ' AND m.fecha >=\'' + str(inicio) + '\''
     if fin:
-        filtro += ' AND c.fecha <=\'' + str(fin) + '\''
+        filtro += ' AND m.fecha <=\'' + str(fin) + '\''
+    if excluir_vacios:
+        filtro += '\n        AND m.vacios < (SELECT v.vacios FROM variable v)'
 
     sql = sql.replace('%%est_id%%', str(estacion_id))
     sql = sql.replace('%%var_id%%', str(variable_id))
     sql = sql.replace('%%filtro%%', filtro)
 
-    consulta = ConsultaGenericaFecha.objects.raw(sql)
+    consulta = ConsultaReporteFecha.objects.raw(sql)
     return consulta
 
 
-def consulta_mensual_vectores(estacion_id, variable_id, inicio, fin, profundidad):
-    consulta = consulta_mensual(estacion_id, variable_id, inicio, fin, profundidad)
+def consulta_mensual__columnas(estacion_id, variable_id, inicio, fin, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+    consulta = consulta_mensual(estacion_id, variable_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
     fecha = []
     valor = []
+    vacios = []
     for fila in consulta:
         fecha.append(fila.fecha)
         valor.append(fila.valor)
-    datos = {"fecha": fecha, "valor": valor}
+        vacios.append(fila.vacios)
+    datos = {"fecha": fecha, "valor": valor, "vacios": vacios}
     return datos
 
 
@@ -816,70 +831,181 @@ def lineChart(title, xlabel, ymax, ymin, ymed):
     return div
 
 
-def getGrafico(estacion, variable, inicio, fin, frecuencia, profundidad):
-    titulo = estacion.est_codigo + " " + estacion.est_nombre + " - " + variable.var_nombre
+def getGrafico(estacion, variable, inicio, fin, frecuencia, *args, **kwargs):
+    est_id = estacion.est_id
+    var_id = variable.var_id
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+
+    titulo = estacion.est_codigo + " - " + variable.var_nombre
     if profundidad:
         titulo = titulo + " a " + str(profundidad / 100.0) + " [m]"
     titulo = titulo + "<br>(" + frecuencia.nombre + ")"
 
     if frecuencia.nombre == "Subhorario crudo":
-        # datos = consulta_crudos_vectores(estacion.est_id, variable.var_id, inicio, fin, profundidad)
-        datos = consulta_crudos_gaps_vectores(estacion.est_id, variable.var_id, inicio, fin, profundidad)
+        datos = consulta_crudos_saltos__columnas(est_id, var_id, inicio, fin, profundidad=profundidad)
         graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True)
     elif frecuencia.nombre == "Subhorario validado":
-        if variable.var_id < 100:
-            # datos = consulta_validados_vectores(estacion.est_id, variable.var_id, inicio, fin)
-            datos = consulta_validados_gaps_vectores(estacion.est_id, variable.var_id, inicio, fin)
-            graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True)
-        else:
-            datos = consulta_validadosV2_gaps_vectores(estacion.est_id, variable.var_id, inicio, fin, profundidad)
-            graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True)
+        datos = consulta_validados_saltos__columnas(est_id, var_id, inicio, fin, profundidad=profundidad)
+        graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True)
     elif frecuencia.nombre == "Horario":
-        datos = consulta_horario_vectores(estacion.est_id, variable.var_id, inicio, fin, profundidad)
-        graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True)
+        datos = consulta_horario__columnas(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+        graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True, excluir_vacios=excluir_vacios)
     elif frecuencia.nombre == "Diario":
-        datos = consulta_diario_vectores(estacion.est_id, variable.var_id, inicio, fin, profundidad)
-        graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True)
+        datos = consulta_diario__columnas(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+        graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True, excluir_vacios=excluir_vacios)
     else:
-        datos = consulta_mensual_vectores(estacion.est_id, variable.var_id, inicio, fin, profundidad)
-        graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True)
+        datos = consulta_mensual__columnas(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+        graf = grafico_simple(datos, variable, estacion, titulo, unir_puntos=True, excluir_vacios=excluir_vacios)
 
     return graf
 
 
-def getDatos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad):
-    nombre_archivo = estacion.est_codigo + "-" + estacion.est_nombre + " " + variable.var_nombre
+def getDatos_grafico(estacion, variable, inicio, fin, frecuencia, *args, **kwargs):
+    est_id = estacion.est_id
+    var_id = variable.var_id
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+
+    if frecuencia.nombre == "Subhorario crudo":
+        datos = consulta_crudos_saltos__columnas(est_id, var_id, inicio, fin, profundidad=profundidad)
+    elif frecuencia.nombre == "Subhorario validado":
+        datos = consulta_validados_saltos__columnas(est_id, var_id, inicio, fin, profundidad=profundidad)
+    elif frecuencia.nombre == "Horario":
+        datos = consulta_horario__columnas(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+    elif frecuencia.nombre == "Diario":
+        datos = consulta_diario__columnas(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+    elif frecuencia.nombre == "Mensual":
+        datos = consulta_mensual__columnas(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+
+    if len(datos['fecha']) == 0:
+        return None
+
+    periodo = 1440
+    for i in range(0, int(len(datos['fecha'])/4)):
+        periodoi = datos['fecha'][i+1] - datos['fecha'][i]
+        periodoi = round(periodoi.days*1440 + periodoi.seconds / 60.0)
+        periodoN_i = datos['fecha'][-(i+1)] - datos['fecha'][-(i+2)]
+        periodoN_i = round(periodoN_i.days*1440 + periodoN_i.seconds / 60.0)
+        if periodoi == periodoN_i:
+            periodo = periodoi
+            break
+        periodo = min(periodo, periodoi, periodoN_i)
+
+    intervalo = datos['fecha'][-1] - datos['fecha'][0]
+    ndatos_esperado = ((intervalo.days * 1440 + intervalo.seconds / 60.0) / periodo) + 1
+    if ndatos_esperado < 1000:
+        ndatos_esperado = 1000
+
+    res = {}
+    res['estacion'] = {}
+    res['estacion']['codigo'] = estacion.est_codigo
+    res['variable'] = {}
+    res['variable']['nombre'] = variable.var_nombre
+    res['variable']['unidad_sigla'] = variable.uni_id.uni_sigla
+    res['variable']['es_acumulada'] = variable.es_acumulada
+    res['frecuencia'] = __frecuencia__[frecuencia.nombre]
+    res['fecha'] = datos['fecha']
+    res['valor'] = datos['valor']
+    if (not excluir_vacios):
+        res['vacios'] = datos['vacios']
+    res['periodo'] = periodo
+    res['ndatos_esperado'] = ndatos_esperado
+    res['profundidad'] = profundidad
+    res['excluir_vacios'] = excluir_vacios
+    return res
+
+
+def getDatos_grafico2(estacion, variable, inicio, fin, frecuencia, *args, **kwargs):
+    est_id = estacion.est_id
+    var_id = variable.var_id
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+
+    if frecuencia.nombre == "Subhorario crudo":
+        datos = consulta_crudos_saltos__lista(est_id, var_id, inicio, fin, profundidad=profundidad)
+    elif frecuencia.nombre == "Subhorario validado":
+        datos = consulta_validados_saltos(est_id, var_id, inicio, fin, profundidad=profundidad)
+    elif frecuencia.nombre == "Horario":
+        datos = consulta_horario(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+    elif frecuencia.nombre == "Diario":
+        datos = consulta_diario(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+    elif frecuencia.nombre == "Mensual":
+        datos = consulta_mensual(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
+
+    if len(datos['fecha']) == 0:
+        return None
+
+    # periodo = 1440
+    # for i in range(0, int(len(datos['fecha'])/4)):
+    #     periodoi = datos['fecha'][i+1] - datos['fecha'][i]
+    #     periodoi = round(periodoi.days*1440 + periodoi.seconds / 60.0)
+    #     periodoN_i = datos['fecha'][-(i+1)] - datos['fecha'][-(i+2)]
+    #     periodoN_i = round(periodoN_i.days*1440 + periodoN_i.seconds / 60.0)
+    #     if periodoi == periodoN_i:
+    #         periodo = periodoi
+    #         break
+    #     periodo = min(periodo, periodoi, periodoN_i)
+
+    # intervalo = datos['fecha'][-1] - datos['fecha'][0]
+    # ndatos_esperado = ((intervalo.days * 1440 + intervalo.seconds / 60.0) / periodo) + 1
+    # if ndatos_esperado < 1000:
+    #     ndatos_esperado = 1000
+
+    res = {}
+    res['estacion'] = {}
+    res['estacion']['codigo'] = estacion.est_codigo
+    res['variable'] = {}
+    res['variable']['nombre'] = variable.var_nombre
+    res['variable']['unidad_sigla'] = variable.uni_id.uni_sigla
+    res['variable']['es_acumulada'] = variable.es_acumulada
+    res['frecuencia'] = __frecuencia__[frecuencia.nombre]
+    res['datos'] = datos
+    # if (not excluir_vacios):
+    #     res['vacios'] = datos['vacios']
+    # res['periodo'] = periodo
+    # res['ndatos_esperado'] = ndatos_esperado
+    res['profundidad'] = profundidad
+    res['excluir_vacios'] = excluir_vacios
+    return res
+
+
+
+def getDatos_exportar(estacion, variable, inicio, fin, frecuencia, *args, **kwargs):
+    est_id = estacion.est_id
+    var_id = variable.var_id
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+
+    nombre_archivo = estacion.est_codigo.replace(" ", "_") + "-" + variable.var_nombre
     if profundidad:
         nombre_archivo = nombre_archivo + " a " + str(profundidad/100.0) + "[m]"
     nombre_archivo = nombre_archivo + " " + frecuencia.nombre
     nombre_archivo = nombre_archivo.replace(" ", "_")
 
     if frecuencia.nombre == "Subhorario crudo":
-        datos = consulta_crudos(estacion.est_id, variable.var_id, inicio, fin, profundidad)
+        datos = consulta_crudos(est_id, var_id, inicio, fin, profundidad=profundidad)
         formato_fecha = 'yyyy/mm/dd hh:mm:ss'
     elif frecuencia.nombre == "Subhorario validado":
-        if variable.var_id < 100:
-            datos = consulta_validados(estacion.est_id, variable.var_id, inicio, fin)
-        else:
-            datos = consulta_validadosV2(estacion.est_id, variable.var_id, inicio, fin, profundidad)
+        datos = consulta_validados(est_id, var_id, inicio, fin, profundidad=profundidad)
         formato_fecha = 'yyyy/mm/dd hh:mm:ss'
     elif frecuencia.nombre == "Horario":
-        datos = consulta_horario(estacion.est_id, variable.var_id, inicio, fin, profundidad)
+        datos = consulta_horario(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
         formato_fecha = 'yyyy/mm/dd hh:mm:ss'
     elif frecuencia.nombre == "Diario":
-        datos = consulta_diario(estacion.est_id, variable.var_id, inicio, fin, profundidad)
+        datos = consulta_diario(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
         formato_fecha = 'yyyy/mm/dd'
     else:
-        datos = consulta_mensual(estacion.est_id, variable.var_id, inicio, fin, profundidad)
+        datos = consulta_mensual(est_id, var_id, inicio, fin, profundidad=profundidad, excluir_vacios=excluir_vacios)
         formato_fecha = 'yyyy/mm'
 
     return datos, nombre_archivo, formato_fecha
 
 
+def grafico_simple(datos, variable, estacion, titulo, *args, **kwargs):
+    unir_puntos = kwargs.get('unir_puntos', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
 
-
-
-def grafico_simple(datos, variable, estacion, titulo, unir_puntos=False):
     if len(datos['fecha']) == 0:
         return None
 
@@ -897,6 +1023,16 @@ def grafico_simple(datos, variable, estacion, titulo, unir_puntos=False):
     intervalo = datos['fecha'][-1] - datos['fecha'][0]
     ndatos_esperado = ((intervalo.days * 1440 + intervalo.seconds / 60.0) / periodo) + 1
 
+    fig = None
+    if excluir_vacios:
+        fig = make_subplots(rows=1, cols=1)
+        total_height = 500
+    else:
+        fig = make_subplots(rows=2, cols=1, row_heights=[0.8, 0.2])
+        total_height = 600
+
+
+    trace = None
     if variable.es_acumulada:
         trace = go.Bar(
             x=datos['fecha'],
@@ -908,7 +1044,6 @@ def grafico_simple(datos, variable, estacion, titulo, unir_puntos=False):
                 line=dict(width=0.3, color='rgb(0,0,0)'),
             )
         )
-        data = [trace]
     else:
         if unir_puntos:
             trace = go.Scatter(
@@ -940,17 +1075,33 @@ def grafico_simple(datos, variable, estacion, titulo, unir_puntos=False):
                 ),
                 showlegend=False
             )
-        data = [trace]
+    fig.add_trace(trace, row=1, col=1)
+
+    if not excluir_vacios:
+        vacios = go.Bar(
+            x=datos['fecha'],
+            y=datos['vacios'],
+            name='% Vacios',
+            showlegend=False,
+            width=60000 * periodo,
+            marker=dict(
+                line=dict(width=0.3, color='rgb(255,0,0)'),
+            ),
+            marker_color='indianred'
+        )
+        fig.add_trace(vacios, row=2, col=1)
+        fig.update_yaxes(title_text="% Vacíos", row=2, col=1)
+
 
     if titulo is None:
-        titulo = estacion.est_codigo + " " + estacion.est_nombre
+        titulo = estacion.est_codigo
 
     pixels_por_dato = 1.2
     if ndatos_esperado < 1000:
         ndatos_esperado = 1000
     layout = go.Layout(autosize=False,
                        width=160 + int(ndatos_esperado * pixels_por_dato),
-                       height=500,
+                       height=total_height,
                        title=titulo,
                         yaxis=dict(title=variable.var_nombre + ' [' + variable.uni_id.uni_sigla + ']',),
                         xaxis=dict(
@@ -963,8 +1114,8 @@ def grafico_simple(datos, variable, estacion, titulo, unir_puntos=False):
                             type='date',
                         ),
                     )
-    figure = go.Figure(data=data, layout=layout)
-    figure.update_layout(
+    fig.update_layout(layout)
+    fig.update_layout(
         title={
             'y': 0.93,
             'x': 0,
@@ -972,84 +1123,15 @@ def grafico_simple(datos, variable, estacion, titulo, unir_puntos=False):
             'yanchor': 'top',
             'pad' : {'l': 65,},
         })
-    div = opy.plot(figure, auto_open=False, output_type='div')
+    div = opy.plot(fig, auto_open=False, output_type='div')
     return div
 
 
-
-#
-# def grafico_con_barras(datos, variable, estacion, titulo):
-#     if len(datos['fecha']) == 0:
-#         return None
-#
-#     if variable.es_acumulada:
-#         trace = go.Bar(
-#             x=datos['fecha'],
-#             y=datos['valor'],
-#             name= variable.uni_id.uni_sigla,
-#             showlegend=False,
-#         )
-#         data = [trace]
-#     else:
-#         trace_bar = go.Bar(
-#             x=datos['fecha'],
-#             y=datos['valor'],
-#             name='',
-#             marker=dict(
-#                color='rgba(50, 171, 96, 0.3)',
-#                # line=dict(color='rgba(50, 171, 96, 0.2)',width=1,)
-#             ),
-#             showlegend=False,
-#             hoverinfo='skip'
-#         )
-#
-#         trace_line = go.Scatter(
-#             x=datos['fecha'],
-#             y=datos['valor'],
-#             name=variable.uni_id.uni_sigla,
-#             mode='lines+markers',
-#             connectgaps=False,
-#             line=dict(
-#                 shape='spline',
-#                 color=('rgb(63, 63, 220)'),
-#             ),
-#             marker=dict(
-#                 size=3,
-#                 color='rgb(32, 32, 110)',
-#             ),
-#             showlegend=False
-#             # fill = 'tonexty'
-#         )
-#         data = [trace_bar, trace_line]
-#
-#     if titulo is None:
-#         titulo = estacion.est_codigo + " " + estacion.est_nombre
-#
-#     max_val, min_val = max_min(datos['valor'])
-#     amplitud = max_val - min_val
-#     espacio = amplitud * decimal.Decimal(0.02)
-#
-#     layout = go.Layout(autosize=False, width=1200, height=700, title=titulo,
-#             yaxis=dict(
-#                 title=variable.var_nombre + ' [' + variable.uni_id.uni_sigla + ']',
-#                 range=[min_val - espacio, max_val + espacio],
-#                 # autorange=True,
-#                 # showgrid=True,
-#                 # zeroline=False,
-#             ),
-#             xaxis=dict(
-#                 rangeslider=dict(visible=True)
-#             ),
-#            bargap=0,
-#         )
-#     figure = go.Figure(data=data, layout=layout)
-#
-#     div = opy.plot(figure, auto_open=False, output_type='div')
-#     return div
-
-
-def export_csv(estacion, variable, inicio, fin, frecuencia, profundidad):
-    datos, nombre_archivo, formato_fecha = getDatos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad)
+def export_csv(estacion, variable, inicio, fin, frecuencia, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+    datos, nombre_archivo, formato_fecha = getDatos_exportar(estacion, variable, inicio, fin, frecuencia,
+                                                             profundidad=profundidad, excluir_vacios=excluir_vacios)
     hay_datos = False
     for fila in datos:
         hay_datos = True
@@ -1059,16 +1141,26 @@ def export_csv(estacion, variable, inicio, fin, frecuencia, profundidad):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="' + nombre_archivo + '.csv"'
     writer = csv.writer(response)
-    writer.writerow(['Fecha', 'Valor (' + variable.uni_id.uni_sigla + ')'])
+    if excluir_vacios:
+        writer.writerow(['Fecha', 'Valor (' + variable.uni_id.uni_sigla + ')'])
+    else:
+        writer.writerow(['Fecha', 'Valor (' + variable.uni_id.uni_sigla + ')', '% Vacíos'])
     formato_fecha = formato_fecha.replace("yyyy", "%Y").replace("/mm", "/%m").replace("dd", "%d")
     formato_fecha = formato_fecha.replace("hh", "%H").replace(":mm", ":%M").replace("ss", "%S")
-    for fila in datos:
-        writer.writerow([fila.fecha.strftime(formato_fecha), fila.valor])
+    if excluir_vacios:
+        for fila in datos:
+            writer.writerow([fila.fecha.strftime(formato_fecha), fila.valor])
+    else:
+        for fila in datos:
+            writer.writerow([fila.fecha.strftime(formato_fecha), fila.valor, fila.vacios])
     return response
 
 
-def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
-    datos, nombre_archivo, formato_fecha = getDatos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad)
+def export_excel(estacion, variable, inicio, fin, frecuencia, *args, **kwargs):
+    profundidad = kwargs.get('profundidad', False)
+    excluir_vacios = kwargs.get('excluir_vacios', True)
+    datos, nombre_archivo, formato_fecha = getDatos_exportar(estacion, variable, inicio, fin, frecuencia,
+                                                             profundidad=profundidad, excluir_vacios=excluir_vacios)
     hay_datos = False
     for fila in datos:
         hay_datos = True
@@ -1083,13 +1175,24 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
     ws.col(0).width = len(formato_fecha) * 256
     ws.write(0, 0, 'Fecha')
     ws.write(0, 1, 'Valor (' + variable.uni_id.uni_sigla + ')')
+    if not excluir_vacios:
+        ws.write(0, 2, '% Vacíos')
+
     date_format = xlwt.XFStyle()
     date_format.num_format_str = formato_fecha
     row_num = 1
-    for fila in datos:
-        ws.write(row_num, 0, fila.fecha, date_format)
-        ws.write(row_num, 1, fila.valor)
-        row_num = row_num + 1
+    if excluir_vacios:
+        for fila in datos:
+            ws.write(row_num, 0, fila.fecha, date_format)
+            ws.write(row_num, 1, fila.valor)
+            row_num = row_num + 1
+    else:
+        for fila in datos:
+            ws.write(row_num, 0, fila.fecha, date_format)
+            ws.write(row_num, 1, fila.valor)
+            ws.write(row_num, 2, fila.vacios)
+            row_num = row_num + 1
+
     wb.save(response)
     return response
 
@@ -1098,37 +1201,30 @@ def export_diario(estacion, variable, año):
     # REQUERIMIENTOS: pip install pillow        ## pil image
     wb = Workbook()
     ws = wb.active
-    tableD = globals()['Var' + str(variable.var_id) + 'Diario']
-    umbral_completo = variable.umbral_completo
-    dataD = tableD.objects.filter(estacion_id=estacion.est_id,
-                                  fecha__gte=datetime.datetime(año,1,1),
-                                  fecha__lt=datetime.datetime((año+1), 1, 1),
-                                  completo_umbral__gte=umbral_completo
-                                  ).order_by('fecha')
-    dataList = dataD.values("fecha","valor",)
-    df=pd.DataFrame.from_records(dataList)
-    if df.shape[0] < 1:
-        return None
+
+    fecha_ini = datetime.datetime(año, 1, 1, 0, 0, 0)
+    fecha_fin = datetime.datetime(año, 12, 31, 23, 59,59)
+    dataD = consulta_diario(estacion.est_id, variable.var_id, fecha_ini, fecha_fin, excluir_vacios=True)
     año=[]
     mes=[]
     dia=[]
-    for index, row in df.iterrows():
+    valor=[]
+    for row in dataD:
         año.extend([row.fecha.year])
         mes.extend([row.fecha.month])
         dia.extend([row.fecha.day])
-    dfe={"año":año,"dia":dia,"mes":mes,"valor":df.valor.values}
+        valor.extend([row.valor])
+    dfe={"año":año,"dia":dia,"mes":mes,"valor":valor}
     df=pd.DataFrame(dfe)
     img_path = os.path.join(settings.BASE_DIR, 'static/images/imhea_logo_20210419.png')
     img = Image(img_path)
-    ws.add_image(img, 'L2')
+    ws.add_image(img, 'L3')
 
     etiMes = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]
     colnames = ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"]
     #llenamos Cabecera
-    ws['A2'] = "PRECIPITACIÓN DIARIA ESTACIÓN " + estacion.est_codigo + " " + estacion.est_nombre.upper()
+    ws['A2'] = "PRECIPITACIÓN DIARIA ESTACIÓN " + estacion.est_codigo
     ws['A2'].font = Font(name='Arial', size=12, color="0066b3")
-    ws['A3'] = "DEPARTAMENTO DE GESTIÓN DE LOS RECURSOS HÍDRICOS"
-    ws['A3'].font = Font(name='Arial', size=9, color="0066b3")
     ws.merge_cells('B5:N5')
     ws['B5'] = "AÑO "+str(año[0])
     ws['B5'].font = Font(name='Arial',size=12,bold=True)
@@ -1211,7 +1307,7 @@ def export_diario(estacion, variable, año):
             ws[mes_col + str(38)].font = Font(bold=True, size=10, color='ed1c24')
 
     ## nombre del archivo
-    nf=estacion.est_codigo + "_" + estacion.est_nombre.upper().replace(" ", "_") + "_Diarios.xlsx"
+    nf=estacion.est_codigo.replace(" ", "_") + "__Diarios.xlsx"
     response = HttpResponse(content_type="application/ms-excel")
     contenido = "attachment; filename={0}".format(nf)
     response["Content-Disposition"] = contenido
@@ -1231,10 +1327,10 @@ def export_mensual_multianual(estacion, variable, año_inicio, año_fin):
     ws.cell(row=3, column=1, value="CÓDIGO:").font=Font(name="Arial",size=10, bold=True)
     ws.cell(row=4, column=1, value="COORDENADAS:").font=Font(name="Arial",size=10, bold=True)
     ws.cell(row=6, column=1, value="ELEVACIÓN:").font=Font(name="Arial",size=10, bold=True)
-    ws.cell(row=2, column=3, value=estacion.est_nombre.upper()).font=Font(name="Arial",size=10)
+    ws.cell(row=2, column=3, value='').font=Font(name="Arial",size=10)
     ws.cell(row=3, column=3, value=estacion.est_codigo).font=Font(name="Arial",size=10)
-    ws.cell(row=4, column=3, value="Latitud (WGS84 TMQ): "+str(round(estacion.est_latitud,0))).font=Font(name="Arial",size=10)
-    ws.cell(row=5, column=3, value="Longitud (WGS84 TMQ): "+str(round(estacion.est_longitud,0))).font=Font(name="Arial",size=10)
+    ws.cell(row=4, column=3, value="Latitud (°): "+str(round(estacion.est_latitud,8))).font=Font(name="Arial",size=10)
+    ws.cell(row=5, column=3, value="Longitud (°): "+str(round(estacion.est_longitud,8))).font=Font(name="Arial",size=10)
     ws.cell(row=6, column=3, value=str(estacion.est_altura)+" msnm.").font=Font(name="Arial",size=10)
     ws['A8'].alignment = Alignment(horizontal='center')
     ws.cell(row=8, column=1, value="PRECIPITACIÓN MENSUAL").font=Font(name="Arial",size=12, bold=True)
@@ -1257,21 +1353,19 @@ def export_mensual_multianual(estacion, variable, año_inicio, año_fin):
         ws.cell(row=10, column=e, value=etiMes[e-1]).style = stTabla
         ws.column_dimensions[colnames[e-1]].width = float(6.5)
 
-    completo_umbral = Variable.objects.get(var_id=variable.var_id).umbral_completo
-    tableD = globals()['Var' + str(variable.var_id) + 'Mensual']
-    dataD = tableD.objects.filter(estacion_id=estacion.est_id,
-                                  fecha__gte=datetime.date(año_inicio,1,1),
-                                  fecha__lte=datetime.date(año_fin,12,31),
-                                  completo_umbral__gte = completo_umbral).order_by('fecha')
-    dataList = dataD.values("fecha","valor")
-    df=pd.DataFrame.from_records(dataList)
+    # completo_mediciones = Variable.objects.get(var_id=variable.var_id).umbral_completo
+    fecha_ini = datetime.datetime(año_inicio, 1, 1, 0, 0, 0)
+    fecha_fin = datetime.datetime(año_fin, 12, 31, 23, 59, 59)
+    dataD = consulta_mensual(estacion.est_id, variable.var_id, fecha_ini, fecha_fin, excluir_vacios=True)
     año = []
     mes = []
-    for index, row in df.iterrows():
+    valor = []
+    for row in dataD:
         año.extend([row.fecha.year])
         mes.extend([row.fecha.month])
+        valor.extend([row.valor])
     try:
-        dfe = {"año": año,  "mes": mes, "valor": df.valor.values}
+        dfe = {"año": año,  "mes": mes, "valor": valor}
     except:
         return None
     df = pd.DataFrame(dfe)
@@ -1344,7 +1438,7 @@ def export_mensual_multianual(estacion, variable, año_inicio, año_fin):
     ws.add_image(img, 'B'+str(fil + 6))
 
     ## nombre del archivo
-    nf=estacion.est_codigo+"_"+estacion.est_nombre.upper().replace(" ", "_")+"_Mensual-Multianual.xlsx"
+    nf = estacion.est_codigo.replace(" ", "_") + "__Mensual-Multianual.xlsx"
     response = HttpResponse(content_type="application/ms-excel")
     contenido = "attachment; filename={0}".format(nf)
     response["Content-Disposition"] = contenido

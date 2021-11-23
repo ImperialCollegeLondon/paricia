@@ -43,7 +43,25 @@
 
 {% block titulo %}Consultas por período{% endblock %}
 
-{% block centro %}{% bootstrap_field form.frecuencia show_label='sr-only' %}{% endblock %}
+{% block centro %}
+{% bootstrap_field form.frecuencia show_label='sr-only' %}
+<style>
+    #barra_sup .row>:nth-child(2) {min-width:360px;}
+</style>
+{% bootstrap_field form.excluir_vacios show_label='sr-only' %}
+<script>
+    $("#id_excluir_vacios").parent().css("visibility", "hidden");
+    $( document ).ready(function(){
+        $("#id_frecuencia").change(function () {
+            if ( $(this).val() >= 3){
+                $("#id_excluir_vacios").parent().css("visibility", "visible");
+            }else{
+                $("#id_excluir_vacios").parent().css("visibility", "hidden");
+            }
+        });
+    });
+</script>
+{% endblock %}
 
 {% block derecha %}<a class="btn btn-outline-secondary" href="{% url 'reportes:consultas_periodo' %}">Limpiar</a>{% endblock %}
 

@@ -62,7 +62,7 @@ __frecuencia__dict = {
 
 # consultar datos crudos, validados, horarios, diarios y mensuales
 def get_datos_graficar(estacion, variable, inicio, fin, frecuencia, profundidad):
-    titulo = estacion.est_codigo + " " + estacion.est_nombre + " - " + variable.var_nombre
+    titulo = estacion.est_codigo + " - " + variable.var_nombre
     titulo_grafico = titulo + "<br>(" + __frecuencia__dict[frecuencia] + ")"
 
     if frecuencia == "subhorario-crudo":
@@ -124,7 +124,7 @@ def get_datos_graficar(estacion, variable, inicio, fin, frecuencia, profundidad)
 
 
 def get_datos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad):
-    nombre_archivo = estacion.est_codigo + "-" + estacion.est_nombre + " " + variable.var_nombre
+    nombre_archivo = estacion.est_codigo + "-" + variable.var_nombre
     if profundidad:
         nombre_archivo = nombre_archivo + " a " + str(profundidad/100.0) + "[m]"
     nombre_archivo = nombre_archivo + " " + __frecuencia__dict[frecuencia]
@@ -242,7 +242,7 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
     ws['F7'] = 'Variable'
     ws['F7'].font = font_bold
     ws['G7'] = variable.var_nombre
-    ws['B9'] = 'Coordenadas Geográfica TMQ WGS84'
+    ws['B9'] = 'Coordenadas Geográficas'
     ws['B9'].font = font_bold
     ws.merge_cells('B6:G6')
     ws['A10'] = 'Latitud'

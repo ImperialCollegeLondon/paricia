@@ -13,181 +13,217 @@
 # (venv)  $ python manage.py shell <  ./scripts/instalar_funciones_postgres.py
 
 
+##################################################################################################################
+# Estas variables se van acorde con los modelos establecidos en: Medicion, Validacion, Horario, Diario y Mensual
+#          Si modificó los modelos anteriormente mencionados, deberá modificar 'vars' y 'vars_profundidad'
+
+
+vars = [
+    # id, nombre, es_acumulada(True)/es_promediada(False)
+    [1, "precipitacion", True],
+    [2, "temperaturaambiente", False],
+    [3, "humedadrelativa", False],
+    [4, "velocidadviento", False],
+    [5, "direccionviento", False],
+    [6, "humedadsuelo", False],
+    [7, "radiacionsolar", False],
+    [8, "presionatmosferica", False],
+    [9, "temperaturaagua", False],
+    [10, "caudal", False],
+    [11, "nivelagua", False],
+    [12, "voltajebateria", False],
+    [13, "caudalaforo", False],
+    [14, "nivelregleta", False],
+    [15, "direccionvientorafaga", True],
+    [16, "recorridoviento", False],
+    [17, "gustdir", False],
+    [18, "gusth", False],
+    [19, "gustm", False],
+    [20, "temperaturasuelo", False],
+    [21, "radiacionindirecta", False],
+    [22, "radiacionsolarsuma", True],
+]
+
+vars_profundidad = [
+    [101, "temperaturaaguaprofundidad", False],
+    [102, "ph", False],
+    [103, "potencialredox", False],
+    [104, "turbidez", False],
+    [105, "clorofila", False],
+    [106, "oxigenodisuelto", False],
+    [107, "porcentajeoxigenodisuelto", False],
+    [108, "ficocianina", False],
+]
+
+
 from django.db import connection
 
 
 ######################################################################
 ##  Tipos de datos para inserccion
-def inserccion_validacion():
-    print("Funciones para inserccion datos a VALIDACION ")
-    file_inserccion0 = open("scripts/plpgsql/inserccion0.sql", 'r')
-    sql_inserccion0 = file_inserccion0.read()
+def insercion_validacion():
+    print("Funciones para insercion datos a VALIDACION ")
+    file0 = open("scripts/plpgsql/insertar_validacion_requisitos.sql", 'r')
+    sql0 = file0.read()
     with connection.cursor() as cursor:
-        cursor.execute(sql_inserccion0)
+        cursor.execute(sql0)
 
-    file_inserccion1 = open("scripts/plpgsql/inserccion1.sql", 'r')
-    funcion_inserccion1 = file_inserccion1.read()
-    for var_id in range(1, 23):
-        sql_inserccion = funcion_inserccion1.replace('1', str(var_id))
+    file = open("scripts/plpgsql/insertar_1validacion.sql", 'r')
+    funcion = file.read()
+    for var in vars:
+        var_id = str(var[0])
+        sql = funcion.replace('1', var_id)
         with connection.cursor() as cursor:
-            cursor.execute(sql_inserccion)
+            cursor.execute(sql)
 
 
 def inserccion_validacion_profundidad():
-    print("Funciones para inserccion datos a VALIDACION con profundidad ")
-    file_inserccion0 = open("scripts/plpgsql/inserccion0.sql", 'r')
-    sql_inserccion0 = file_inserccion0.read()
+    print("Funciones para insercion datos a VALIDACION con profundidad ")
+    file0 = open("scripts/plpgsql/insertar_validacion_requisitos.sql", 'r')
+    sql0 = file0.read()
     with connection.cursor() as cursor:
-        cursor.execute(sql_inserccion0)
+        cursor.execute(sql0)
 
-    file_inserccion1 = open("scripts/plpgsql/inserccion1_profundidad.sql", 'r')
-    funcion_inserccion1 = file_inserccion1.read()
-    for var_id in range(101, 108):
-        sql_inserccion = funcion_inserccion1.replace('101', str(var_id))
+    file = open("scripts/plpgsql/insertar_101validacion_profundidad.sql", 'r')
+    funcion = file.read()
+    for var in vars_profundidad:
+        var_id = str(var[0])
+        sql = funcion.replace('101', var_id)
         with connection.cursor() as cursor:
-            cursor.execute(sql_inserccion)
+            cursor.execute(sql)
 
 
 ####################################################################
-# Crear funcion trigger: aplicar_curvadescarga      ## Esta función se aplica en la validación de NIVEL DE AGUA
+# Crear funcion trigger: aplicar_curvadescarga
+# ## Esta función se aplica en la validación de NIVEL DE AGUA
+# caudal__var_id = 10
+# nivelagua__var_id = 11
+
 def aplicar_curvadescarga():
     print("Trigger curva de descarga")
-    file_curva_descarga = open("scripts/plpgsql/aplicar_curva_descarga.sql", 'r')
-    sql_curva_descarga = file_curva_descarga.read()
+    file = open("scripts/plpgsql/aplicar_curva_descarga.sql", 'r')
+    sql = file.read()
     with connection.cursor() as cursor:
-        cursor.execute(sql_curva_descarga)
+        cursor.execute(sql)
 
 
 ####################################################################
-# Crear funcion trigger: aplicar_curvadescarga_crudos      ## Esta función se aplica inserccion de datos en tabla NIVEL AGUA CRUDOS
+# Crear funcion trigger: aplicar_curvadescarga_crudos
+# ## Esta función se aplica inserccion de datos en tabla NIVEL AGUA CRUDOS
+# caudal__var_id = 10
+# nivelagua__var_id = 11
 def aplicar_curvadescarga_crudos():
     print("Trigger curva de descarga crudos")
-    file_curva_descarga_crudos = open("scripts/plpgsql/aplicar_curva_descarga_crudos.sql", 'r')
-    sql_curva_descarga_crudos = file_curva_descarga_crudos.read()
+    file = open("scripts/plpgsql/aplicar_curva_descarga_crudos.sql", 'r')
+    sql = file.read()
     with connection.cursor() as cursor:
-        cursor.execute(sql_curva_descarga_crudos)
+        cursor.execute(sql)
 
 
 
 ####################################################################
-# Crear funcion trigger: calculo_caudal             ## Esta función se aplica cada vez que se cambia o actuliza un curva de descarga
+# Crear funcion trigger: calculo_caudal
+# ## Esta función se aplica cada vez que se cambia o actuliza un curva de descarga
+# caudal__var_id = 10
+# nivelagua__var_id = 11
 def calculo_caudal():
     print("Trigger Cálculo caudal")
-    file_calculo_caudal = open("scripts/plpgsql/calculo_caudal.sql", 'r')
-    sql_calculo_caudal = file_calculo_caudal.read()
+    file = open("scripts/plpgsql/calculo_caudal.sql", 'r')
+    sql = file.read()
     with connection.cursor() as cursor:
-        cursor.execute(sql_calculo_caudal)
+        cursor.execute(sql)
 
 
 def reporte_validacion():
     print("Funciones Reporte validacion")
-    file_reporte_validacion = open("scripts/plpgsql/reporte_validacion.sql", 'r')
-    sql_reporte_validacion = file_reporte_validacion.read()
-    for var_id in range(1, 23):
-        sql = sql_reporte_validacion.replace('%%var_id%%', str(var_id))
+    file = open("scripts/plpgsql/reporte_validacion.sql", 'r')
+    sql_base = file.read()
+    for var in vars:
+        var_id = str(var[0])
+        sql = sql_base.replace('%%var_id%%', var_id)
         with connection.cursor() as cursor:
             cursor.execute(sql)
 
 
 def reporte_validacion_profundidad():
     print("Funciones Reporte validacion para variables con profundidad")
-    file_reporte_validacion = open("scripts/plpgsql/reporte_validacion_profundidad.sql", 'r')
-    sql_reporte_validacion = file_reporte_validacion.read()
-    for var_id in range(101, 108):
-        sql = sql_reporte_validacion.replace('var101', 'var' + str(var_id))
-        sql = sql.replace('var_id = 101', 'var_id = ' + str(var_id))
+    file = open("scripts/plpgsql/reporte_validacion_profundidad.sql", 'r')
+    sql_base = file.read()
+    for var in vars_profundidad:
+        var_id = str(var[0])
+        sql = sql_base.replace('var101', 'var' + var_id)
+        sql = sql.replace('var_id = 101', 'var_id = ' + var_id)
         with connection.cursor() as cursor:
             cursor.execute(sql)
 
 
 
+#######################################
+
 
 def generar_horario():
     print("Funciones generar Horario")
-    file_horario_acum = open("scripts/plpgsql/generar_horario_acum.sql", 'r')
-    sql_horario_acum = file_horario_acum.read()
-    file_horario_prom = open("scripts/plpgsql/generar_horario_prom.sql", 'r')
-    sql_horario_prom = file_horario_prom.read()
+    file_acum = open("scripts/plpgsql/generar_horario_acum.sql", 'r')
+    sql_acum = file_acum.read()
+    file_prom = open("scripts/plpgsql/generar_horario_prom.sql", 'r')
+    sql_prom = file_prom.read()
 
-    for var_id in range(1, 23):
-        sql1 = "SELECT es_acumulada FROM variable_variable WHERE var_id = %s;"
-        with connection.cursor() as cursor:
-            cursor.execute(sql1, (var_id,))
-            es_acumulada = cursor.fetchone()
-        try:
-            es_acumulada = es_acumulada[0]
-        except:
-            continue
+    for var in vars:
+        var_id = str(var[0])
+        es_acumulada = var[2]
 
-        var_id = str(var_id)
         if es_acumulada:
-            sql_horario = sql_horario_acum
-            sql_horario = sql_horario.replace('var1', 'var' + var_id)
-            sql_horario = sql_horario.replace('f.var_id_id = 1', 'f.var_id_id = ' + var_id)
-            sql_horario = sql_horario.replace('var_id = 1', 'var_id = ' + var_id)
+            sql = sql_acum
+            sql = sql.replace('var1', 'var' + var_id)
+            sql = sql.replace('f.var_id_id = 1', 'f.var_id_id = ' + var_id)
+            sql = sql.replace('var_id = 1', 'var_id = ' + var_id)
         else:
-            sql_horario = sql_horario_prom
-            sql_horario = sql_horario.replace('var2', 'var' + var_id)
-            sql_horario = sql_horario.replace('f.var_id_id = 2', 'f.var_id_id = ' + var_id)
-            sql_horario = sql_horario.replace('var_id = 2', 'var_id = ' + var_id)
+            sql = sql_prom
+            sql = sql.replace('var2', 'var' + var_id)
+            sql = sql.replace('f.var_id_id = 2', 'f.var_id_id = ' + var_id)
+            sql = sql.replace('var_id = 2', 'var_id = ' + var_id)
 
         with connection.cursor() as cursor:
-            cursor.execute(sql_horario)
+            cursor.execute(sql)
 
 
 def generar_horario_profundidad():
     print("Funciones generar Horario profundidad")
-    # file_horario_acum = open("scripts/plpgsql/generar_horario_acum_profundidad.sql", 'r')
-    # sql_horario_acum = file_horario_acum.read()
-    file_horario_prom = open("scripts/plpgsql/generar_horario_prom_profundidad.sql", 'r')
-    sql_horario_prom = file_horario_prom.read()
+    file_prom = open("scripts/plpgsql/generar_horario_prom_profundidad.sql", 'r')
+    sql_prom = file_prom.read()
 
-    for var_id in range(101, 108):
-        sql1 = "SELECT es_acumulada FROM variable_variable WHERE var_id = %s;"
-        with connection.cursor() as cursor:
-            cursor.execute(sql1, (var_id,))
-            es_acumulada = cursor.fetchone()
-        try:
-            es_acumulada = es_acumulada[0]
-        except:
-            continue
+    for var in vars_profundidad:
+        var_id = str(var[0])
+        es_acumulada = var[2]
 
-        var_id = str(var_id)
         if es_acumulada:
             continue
-            # sql_horario = sql_horario_acum.replace('var_id_id = 1', 'var_id_id = ' + var_id)
-            # sql_horario = sql_horario.replace('var1', 'var' + var_id)
+            # sql = sql_acum.replace('var_id_id = 1', 'var_id_id = ' + var_id)
+            # sql = sql.replace('var1', 'var' + var_id)
         else:
-            sql_horario = sql_horario_prom.replace('101', str(var_id))
+            sql = sql_prom.replace('101', var_id)
 
         with connection.cursor() as cursor:
-            cursor.execute(sql_horario)
+            cursor.execute(sql)
 
 
 
 def generar_diario():
     print("Funciones Generar Diario")
-    file_diario_acum = open("scripts/plpgsql/generar_diario_acum.sql", 'r')
-    sql_diario_acum = file_diario_acum.read()
-    file_diario_prom = open("scripts/plpgsql/generar_diario_prom.sql", 'r')
-    sql_diario_prom = file_diario_prom.read()
+    file_acum = open("scripts/plpgsql/generar_diario_acum.sql", 'r')
+    sql_acum = file_acum.read()
+    file_prom = open("scripts/plpgsql/generar_diario_prom.sql", 'r')
+    sql_prom = file_prom.read()
 
-    for var_id in range(1, 23):
-        sql1 = "SELECT es_acumulada FROM variable_variable WHERE var_id = %s;"
-        with connection.cursor() as cursor:
-            cursor.execute(sql1, (var_id,))
-            es_acumulada = cursor.fetchone()
-        try:
-            es_acumulada = es_acumulada[0]
-        except:
-            continue
+    for var in vars:
+        var_id = str(var[0])
+        es_acumulada = var[2]
 
-        var_id = str(var_id)
         if es_acumulada:
-            sql = sql_diario_acum.replace('var_id = 1', 'var_id = ' + var_id)
+            sql = sql_acum.replace('var_id = 1', 'var_id = ' + var_id)
             sql = sql.replace('var1', 'var' + var_id)
         else:
-            sql = sql_diario_prom.replace('var_id_id = 2', 'var_id_id = ' + var_id)
+            sql = sql_prom.replace('var_id = 2', 'var_id = ' + var_id)
             sql = sql.replace('var2', 'var' + var_id)
 
         with connection.cursor() as cursor:
@@ -197,57 +233,43 @@ def generar_diario():
 
 def generar_diario_profundidad():
     print("Funciones Generar Diario Profundidad")
-    # file_diario_acum = open("scripts/plpgsql/generar_diario_acum.sql", 'r')
-    # sql_diario_acum = file_diario_acum.read()
-    file_diario_prom = open("scripts/plpgsql/generar_diario_prom_profundidad.sql", 'r')
-    sql_diario_prom = file_diario_prom.read()
+    # file_acum = open("scripts/plpgsql/generar_acum.sql", 'r')
+    # sql_acum = file_acum.read()
+    file_prom = open("scripts/plpgsql/generar_diario_prom_profundidad.sql", 'r')
+    sql_prom = file_prom.read()
 
-    for var_id in range(101, 108):
-        sql1 = "SELECT es_acumulada FROM variable_variable WHERE var_id = %s;"
-        with connection.cursor() as cursor:
-            cursor.execute(sql1, (var_id,))
-            es_acumulada = cursor.fetchone()
-        try:
-            es_acumulada = es_acumulada[0]
-        except:
-            continue
+    for var in vars_profundidad:
+        var_id = str(var[0])
+        es_acumulada = var[2]
 
-        var_id = str(var_id)
         if es_acumulada:
             continue
-            # sql = sql_diario_acum.replace('var_id = 1', 'var_id = ' + var_id)
+            # sql = sql_acum.replace('var_id = 1', 'var_id = ' + var_id)
             # sql = sql.replace('var1', 'var' + var_id)
         else:
-            sql_diario = sql_diario_prom.replace('101', str(var_id))
+            sql = sql_prom.replace('101', var_id)
 
         with connection.cursor() as cursor:
-            cursor.execute(sql_diario)
+            cursor.execute(sql)
 
 
 
 def generar_mensual():
     print("Generar Mensual")
-    file_mensual_acum = open("scripts/plpgsql/generar_mensual_acum.sql", 'r')
-    sql_mensual_acum = file_mensual_acum.read()
-    file_mensual_prom = open("scripts/plpgsql/generar_mensual_prom.sql", 'r')
-    sql_mensual_prom = file_mensual_prom.read()
+    file_acum = open("scripts/plpgsql/generar_mensual_acum.sql", 'r')
+    sql_acum = file_acum.read()
+    file_prom = open("scripts/plpgsql/generar_mensual_prom.sql", 'r')
+    sql_prom = file_prom.read()
 
-    for var_id in range(1, 23):
-        sql1 = "SELECT es_acumulada FROM variable_variable WHERE var_id = %s;"
-        with connection.cursor() as cursor:
-            cursor.execute(sql1, (var_id,))
-            es_acumulada = cursor.fetchone()
-        try:
-            es_acumulada = es_acumulada[0]
-        except:
-            continue
+    for var in vars:
+        var_id = str(var[0])
+        es_acumulada = var[2]
 
-        var_id = str(var_id)
         if es_acumulada:
-            sql = sql_mensual_acum.replace('var_id = 1', 'var_id = ' + var_id)
+            sql = sql_acum.replace('var_id = 1', 'var_id = ' + var_id)
             sql = sql.replace('var1', 'var' + var_id)
         else:
-            sql = sql_mensual_prom.replace('var_id_id = 2', 'var_id_id = ' + var_id)
+            sql = sql_prom.replace('var_id = 2', 'var_id = ' + var_id)
             sql = sql.replace('var2', 'var' + var_id)
 
         with connection.cursor() as cursor:
@@ -257,45 +279,39 @@ def generar_mensual():
 
 def generar_mensual_profundidad():
     print("Generar Mensual Profundidad")
-    # file_mensual_acum = open("scripts/plpgsql/generar_mensual_acum.sql", 'r')
-    # sql_mensual_acum = file_mensual_acum.read()
-    file_mensual_prom = open("scripts/plpgsql/generar_mensual_prom_profundidad.sql", 'r')
-    sql_mensual_prom = file_mensual_prom.read()
+    # file_acum = open("scripts/plpgsql/generar_mensual_acum.sql", 'r')
+    # sql_acum = file_acum.read()
+    file_prom = open("scripts/plpgsql/generar_mensual_prom_profundidad.sql", 'r')
+    sql_prom = file_prom.read()
 
-    for var_id in range(101, 108):
-        sql1 = "SELECT es_acumulada FROM variable_variable WHERE var_id = %s;"
-        with connection.cursor() as cursor:
-            cursor.execute(sql1, (var_id,))
-            es_acumulada = cursor.fetchone()
-        try:
-            es_acumulada = es_acumulada[0]
-        except:
-            continue
+    for var in vars_profundidad:
+        var_id = str(var[0])
+        es_acumulada = var[2]
 
-        var_id = str(var_id)
         if es_acumulada:
             continue
-            # sql = sql_mensual_acum.replace('var_id = 1', 'var_id = ' + var_id)
+            # sql = sql_acum.replace('var_id = 1', 'var_id = ' + var_id)
             # sql = sql.replace('var1', 'var' + var_id)
         else:
-            sql = sql_mensual_prom.replace('101', str(var_id))
+            sql = sql_prom.replace('101', var_id)
 
         with connection.cursor() as cursor:
             cursor.execute(sql)
 
 
-reporte_validacion()
-reporte_validacion_profundidad()
-inserccion_validacion()
-inserccion_validacion_profundidad()
-aplicar_curvadescarga()
-aplicar_curvadescarga_crudos()
-calculo_caudal()
-generar_horario()
-generar_diario()
-generar_mensual()
-generar_horario_profundidad()
-generar_diario_profundidad()
-generar_mensual_profundidad()
+def run():
+    reporte_validacion()
+    reporte_validacion_profundidad()
+    insercion_validacion()
+    inserccion_validacion_profundidad()
+    aplicar_curvadescarga()
+    aplicar_curvadescarga_crudos()
+    calculo_caudal()
+    generar_horario()
+    generar_diario()
+    generar_mensual()
+    generar_horario_profundidad()
+    generar_diario_profundidad()
+    generar_mensual_profundidad()
 
 

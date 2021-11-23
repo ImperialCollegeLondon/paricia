@@ -9,7 +9,8 @@ CREATE OR REPLACE FUNCTION public.reporte_validacion_diario_precipitacion(
     RETURNS TABLE(id bigint, fecha timestamp with time zone,fecha_error numeric, fecha_numero numeric,
         valor numeric,porcentaje numeric, porcentaje_error boolean,
         --valor_error boolean, maximo_error boolean, minimo_error boolean,
-        valor_numero numeric, valor_error boolean, media_historica numeric, estado boolean, validado boolean,c_varia_err numeric)
+        valor_numero numeric, valor_error boolean, media_historica numeric, estado boolean,
+        validado boolean,c_varia_err numeric)
     LANGUAGE 'plpgsql'
 
     COST 100
@@ -23,14 +24,16 @@ BEGIN
 	estacion AS (SELECT * FROM estacion_estacion est WHERE est.est_id = _estacion_id),
 	variable AS (SELECT * FROM variable_variable var WHERE var.var_id = 1),
 	validacion AS (
-        SELECT v.id, v.fecha, 0 AS tipo, v.valor, v.validacion, TRUE AS existe_en_validacion, FALSE as valor_vacio
-        FROM validacion_var1validado v WHERE v.estacion_id = (SELECT est_id FROM estacion) AND v.fecha >= _fecha_inicio AND v.fecha <= _fecha_fin
+        SELECT v.id, v.fecha, 0 AS tipo, v.valor, TRUE AS existe_en_validacion, FALSE as valor_vacio
+        FROM validacion_var1validado v WHERE v.estacion_id = (SELECT est_id FROM estacion)
+        AND v.fecha >= _fecha_inicio AND v.fecha <= _fecha_fin
     ),
     medicion AS (
-        SELECT m.id, m.fecha, 1 AS tipo, m.valor, CAST(NULL AS smallint) AS validacion,
+        SELECT m.id, m.fecha, 1 AS tipo, m.valor,
             EXISTS(SELECT * FROM validacion v WHERE v.fecha = m.fecha AND v.valor = m.valor) AS existe_en_validacion,
             EXISTS(SELECT * FROM validacion v WHERE v.fecha = m.fecha ) AS valor_vacio
-        FROM medicion_var1medicion m WHERE m.estacion_id = (SELECT est_id FROM estacion) AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
+        FROM medicion_var1medicion m WHERE m.estacion_id = (SELECT est_id FROM estacion)
+        AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
     ),
     --unir las tablas medicion y validacion en una tabla
     union_med_val AS (
@@ -42,7 +45,8 @@ BEGIN
 			row_number() OVER (ORDER BY ff.fecha ASC) as fecha_grupo,
 			EXTRACT(EPOCH FROM ff.fecha - lag(ff.fecha) OVER (ORDER BY ff.fecha ASC))/60  as lapso_tiempo,
 			(SELECT fre.fre_valor FROM frecuencia_frecuencia fre
-					WHERE fre.var_id_id = (SELECT var_id FROM variable) AND fre.est_id_id = (SELECT est_id FROM estacion) AND fre.fre_fecha_ini < ff.fecha
+					WHERE fre.var_id_id = (SELECT var_id FROM variable)
+					AND fre.est_id_id = (SELECT est_id FROM estacion) AND fre.fre_fecha_ini < ff.fecha
 					ORDER BY fre.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
 		FROM (SELECT DISTINCT(umv.fecha) FROM union_med_val umv) ff ORDER BY fecha ASC
 	),
@@ -112,8 +116,8 @@ BEGIN
     ),
     tabla_calculo AS (
         SELECT tde.dia, tde.numero_datos, tde.numero_datos_esperado,
-        ROUND((tde.numero_datos::decimal/tde.numero_datos_esperado)*100,2) as porcentaje,
-        CASE WHEN ROUND((tde.numero_datos::decimal/tde.numero_datos_esperado)*100,2) < (SELECT umbral_completo FROM variable)
+            ROUND((tde.numero_datos::decimal/tde.numero_datos_esperado)*100,2) as porcentaje,
+        CASE WHEN ROUND((tde.numero_datos::decimal/tde.numero_datos_esperado)*100,2) < (SELECT 100.0 - vacios FROM variable)
         OR ROUND((tde.numero_datos::decimal/tde.numero_datos_esperado)*100,2) > 100
         THEN TRUE ELSE FALSE END AS porcentaje_error
         FROM tabla_datos_esperados tde
@@ -160,9 +164,11 @@ BEGIN
         (SELECT tc.porcentaje FROM tabla_calculo tc WHERE tc.dia = ta.dia) as porcentaje,
         (SELECT tc.porcentaje_error FROM tabla_calculo tc WHERE tc.dia = ta.dia) as porcentaje_error,
         (SELECT tvs.numero_valor_sospechoso FROM tabla_valores_sos tvs WHERE tvs.dia = ta.dia) as valor_numero,
-        CASE WHEN (SELECT tvs.numero_valor_sospechoso FROM tabla_valores_sos tvs WHERE tvs.dia = ta.dia)>0 THEN true ELSE false END AS valor_error,
-        ROUND((SELECT AVG(dp.valor) FROM diario_var1diario dp WHERE dp.estacion_id = (SELECT est_id FROM estacion) AND
-            date_part('day',dp.fecha)= date_part('day', ta.dia) AND date_part('month',dp.fecha)= date_part('month',ta.dia)),2) as media_historica,
+        CASE WHEN (SELECT tvs.numero_valor_sospechoso FROM tabla_valores_sos tvs WHERE tvs.dia = ta.dia) > 0
+            THEN true ELSE false END AS valor_error,
+        ROUND((SELECT AVG(dp.valor) FROM diario_var1diario dp WHERE dp.estacion_id = (SELECT est_id FROM estacion)
+            AND date_part('day',dp.fecha)= date_part('day', ta.dia)
+            AND date_part('month',dp.fecha)= date_part('month',ta.dia)),2) as media_historica,
 
         TRUE as estado,
         ta.existe_en_validacion as validado,
@@ -178,5 +184,3 @@ BEGIN
 END;
 $BODY$;
 
---ALTER FUNCTION public.reporte_validacion_diario_precipitacion(integer, timestamp with time zone, timestamp with time zone, numeric, numeric)
---    OWNER TO usuario1;

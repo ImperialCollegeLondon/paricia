@@ -665,15 +665,14 @@ $(document).ready(function() {
         columnDefs: [
             { "targets": 0, "visible" : false, "searchable": false },
             { "targets": 1, "defaultOrder": true, "searchable": true },
-            { "targets": 2, "defaultOrder": true, "searchable": true },
-            { "targets": 3, "visible" : false, "searchable": true },
+            { "targets": 2, "visible" : false, "searchable": true },
+            { "targets": 3, "visible" : false, "searchable": false },
             { "targets": 4, "visible" : false, "searchable": false },
-            { "targets": 5, "visible" : false, "searchable": false },
         ],
     });
 
     // Asociar búsqueda con caja de selección
-    table.columns(3).every( function(){
+    table.columns(2).every( function(){
         var column = this;
         var select = $('#filtro_tipo').on( 'change', function () {
             var val = $.fn.dataTable.util.escapeRegex(
@@ -714,8 +713,8 @@ $(document).ready(function() {
     $("#table_estacion").on('mouseenter', 'tr', function (e) {
         var data = table.row( this ).data();
         var estacion_id = data[0];
-        var coordinates = [Number(data[4]), Number(data[5])];
-        var description = data[1] + '<br>' + data[2];
+        var coordinates = [Number(data[3]), Number(data[4])];
+        var description = data[1];
         //while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) { coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;}
         $(".mapboxgl-popup").remove();
         new mapboxgl.Popup().setLngLat(coordinates).setHTML(description).addTo(map);
@@ -801,7 +800,6 @@ $( window ).resize(function() {
                 <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Cod.</th>
                     <th>Estación</th>
                     <th>Tipo</th>
                     <th>Latitud</th>

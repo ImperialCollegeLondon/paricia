@@ -13,7 +13,7 @@
 <tr><th>Sigmas (outliers)</th><td>{{variable.var_min|default_if_none:""}}</td></tr>
 <tr><th>Acumulada/Promedio</th><td>{% if variable.es_acumulada %}Acum.{% else %}Prom.{% endif %}</td></tr>
 <tr><th>Reporte automático</th><td>{% if variable.reporte_automatico %}Si{% else %}No{% endif %}</td></tr>
-<tr><th>Umbral para completo</th><td>{{variable.umbral_completo|default_if_none:""}}</td></tr>
+<tr><th>Vacíos %</th><td>{{variable.vacios|default_if_none:""}}</td></tr>
 {% endblock %}
 
 {% block cancelar_url %}{% url 'variable:variable_index' %}{% endblock %}

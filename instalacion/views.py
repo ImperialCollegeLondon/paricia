@@ -40,12 +40,9 @@ class InstalacionList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = Instalacion.objects.annotate(
-            est_codigo_nombre=Concat('est_id__est_codigo', Value(' - '), 'est_id__est_nombre')
-        )
-        campos = ['ins_id', 'est_codigo_nombre', 'dat_id__dat_codigo', 'ins_fecha_ini', 'ins_fecha_fin', 'ins_en_uso', 'ins_observacion']
-        modelo = _modelo.values_list(*campos)
-        context['instalacion'] = modelo_a_tabla_html(modelo, col_extra=True)
+        campos = ['ins_id', 'est_id__est_codigo', 'dat_id__dat_codigo', 'ins_fecha_ini', 'ins_fecha_fin', 'ins_en_uso', 'ins_observacion']
+        instalacion = Instalacion.objects.all().values_list(*campos)
+        context['instalacion'] = modelo_a_tabla_html(instalacion, col_extra=True)
         return context
 
 

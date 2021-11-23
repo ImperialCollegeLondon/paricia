@@ -29,7 +29,7 @@ class VariableCreate(PermissionRequiredMixin, CreateView):
     model = Variable
     permission_required = 'variable.__super__add_variable'
     fields = ['var_codigo', 'var_nombre', 'uni_id', 'var_maximo', 'var_minimo', 'var_sos', 'var_err', 'var_min',
-              'var_estado', 'es_acumulada', 'reporte_automatico', 'umbral_completo']
+              'var_estado', 'es_acumulada', 'reporte_automatico', 'vacios']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,7 +44,7 @@ class VariableList(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         campos = ['var_id', 'var_codigo', 'var_nombre', 'uni_id__uni_sigla', 'var_maximo', 'var_minimo', 'var_sos',
-                  'var_err', 'var_min', 'var_estado', 'es_acumulada', 'reporte_automatico', 'umbral_completo']
+                  'var_err', 'var_min', 'var_estado', 'es_acumulada', 'reporte_automatico', 'vacios']
         modelo = Variable.objects.values_list(*campos)
         context['variables'] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
@@ -59,7 +59,7 @@ class VariableUpdate(PermissionRequiredMixin, UpdateView):
     model = Variable
     permission_required = 'variable.change_variable'
     fields = ['var_codigo', 'var_nombre', 'uni_id', 'var_maximo', 'var_minimo', 'var_sos', 'var_err', 'var_min',
-              'var_estado', 'es_acumulada', 'reporte_automatico', 'umbral_completo']
+              'var_estado', 'es_acumulada', 'reporte_automatico', 'vacios']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -156,12 +156,10 @@ class ControlList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = Control.objects.annotate(
-            est_codigo_nombre=Concat('est_id__est_codigo', Value(' - '), 'est_id__est_nombre')
-        )
-        campos = ['con_id', 'var_id__var_nombre', 'sen_id__sen_codigo', 'est_codigo_nombre', 'con_fecha_ini', 'con_fecha_fin', 'con_estado' ]
-        modelo = _modelo.values_list(*campos)
-        context['control'] = modelo_a_tabla_html(modelo, col_extra=True)
+        campos = ['con_id', 'var_id__var_nombre', 'sen_id__sen_codigo', 'est_id__est_codigo', 'con_fecha_ini',
+                  'con_fecha_fin', 'con_estado' ]
+        control = Control.objects.all().values_list(*campos)
+        context['control'] = modelo_a_tabla_html(control, col_extra=True)
         return context
 
 

@@ -159,8 +159,8 @@ from time import time
 def intensidadDiracion(estacion_id, fechaini, fechafin):
     tiempo_inicial = time()
     periodos = [5, 10, 15, 30, 60, 120, 1440, 2880]
-    print(estacion_id, fechaini, fechafin)
-    est = Estacion.objects.get(pk = estacion_id)
+    # print(estacion_id, fechaini, fechafin)
+    est = Estacion.objects.get(pk=estacion_id)
     c = connection.cursor()
     fechas =[]
     valores = []
@@ -320,19 +320,21 @@ def getCaudalFrecMulti(listEst,fin,ffi):
 """Esta clase se encarga de calcular los indicadores de precipitación,
 Cada funcion de la clase calcula un indicador determinado"""
 
-
 class IndicadoresPrecipitacion():
     def __init__(self, estacion_id, inicio, fin, completo):
         self.estacion = estacion_id
         self.inicio = inicio
         self.fin = fin + timedelta(hours=23, minutes=59, seconds=59)
         self.completo = completo
+        variable = Variable.objects.get(pk=1)
+        self.vacios = variable.vacios
 
     def rr_anual(self):
         print(self.inicio,self.fin)
         """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
-        rranual = anio.Var1Anual.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                   fecha__lte = self.fin, valor__isnull=False).order_by('fecha')
+        rranual = anio.Var1Anual.objects.filter(estacion_id__exact=self.estacion, fecha__gte=self.inicio,
+                                                   fecha__lte=self.fin, valor__isnull=False, vacios__lt=self.vacios
+                                                ).order_by('fecha')
 
         if rranual is not None:
             return rranual
@@ -341,8 +343,9 @@ class IndicadoresPrecipitacion():
 
     def rr_mensual(self):
         """ devuelve la tabla de datos mensuales para la fecha seleccionadas"""
-        rrmensual = mes.Var1Mensual.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
-                                                    fecha__lte = self.fin).order_by('fecha')
+        rrmensual = mes.Var1Mensual.objects.filter(estacion_id__exact=self.estacion, fecha__gte=self.inicio,
+                                                    fecha__lte=self.fin, vacios__lt=self.vacios
+                                                   ).order_by('fecha')
         if rrmensual is not None:
             return rrmensual
         else:
@@ -380,8 +383,8 @@ class IndicadoresPrecipitacion():
     def percentilesDiarios(self):
         """Calcula los percentelies en base a los datos diarios"""
         diarios = list(dia.Var1Diario.objects.filter(
-            estacion_id__exact=self.estacion,fecha__gte=self.inicio,
-            fecha__lte=self.fin, valor__isnull=False, valor__gt=0
+            estacion_id__exact=self.estacion,fecha__gte=self.inicio, fecha__lte=self.fin,
+            valor__isnull=False, valor__gt=0, vacios__lt=self.vacios
         ).values_list('valor'))
         # print("typo de datos en percentiles ", type(diarios))
         # print(diarios)
@@ -393,8 +396,8 @@ class IndicadoresPrecipitacion():
     def percentilesHorarios(self):
         """Calcula los percentelies en base a los horarios"""
         horarios = list(hora.Var1Horario.objects.filter(
-            estacion_id__exact=self.estacion,fecha__gte=self.inicio,
-            fecha__lte=self.fin, valor__isnull=False, valor__gt=0
+            estacion_id__exact=self.estacion,fecha__gte=self.inicio, fecha__lte=self.fin,
+            valor__isnull=False, valor__gt=0, vacios__lt=self.vacios
         ).values_list('valor'))
         a = np.array(horarios, dtype=object)
         q10 = round(np.percentile(a, 10, interpolation='lower'), 1)
@@ -404,16 +407,17 @@ class IndicadoresPrecipitacion():
     def calcular_dias_sin_precipitacion(self):
         sql = """
         SELECT COUNT(*) FROM diario_var1diario 
-        WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s AND valor = 0.0;
+        WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s AND valor = 0.0
+            AND vacios < %s;
         """
         with connection.cursor() as cursor:
-            cursor.execute(sql, [self.estacion, self.inicio, self.fin])
+            cursor.execute(sql, [self.estacion, self.inicio, self.fin, self.vacios])
             resultado = cursor.fetchall()
         return resultado[0][0]
 
     def makeDic(self):
         anuales = self.rr_anual()
-        print(anuales)
+        # print(anuales)
 
         anioSecoMin = 1000000
         anioHumedoMax = 0
@@ -421,16 +425,16 @@ class IndicadoresPrecipitacion():
         fechaMin = None
         fechaMax = None
         promedio = 0
-        print("años consultados ",anuales.count())
+        # print("años consultados ",anuales.count())
         if anuales.count() == 0:
             return None
 
         for an in anuales:# controla que el año tenga mas de 11 meses
-            print("fecha anual =>  ",an.fecha, "valor", an.valor," completoHumbral ",an.completo_umbral)
+            # print("fecha anual =>  ",an.fecha, "valor", an.valor," completoHumbral ",an.completo_umbral)
             #mescontado = mes.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
             #                                        fecha__lte = self.fin, valor__isnull=False)
 
-            if an.completo_umbral > 50.0:
+            if an.vacios < self.vacios:
                 promedio += an.valor
                 if an.valor < anioSecoMin:
                     anioSecoMin = an.valor;
@@ -439,7 +443,7 @@ class IndicadoresPrecipitacion():
                     anioHumedoMax = an.valor
                     fechaMax = an.fecha
                 iter += 1
-            print("promedio ",promedio)
+            # print("promedio ",promedio)
 
         if promedio > 0:
             promedio =  str(round((promedio/iter), 1))
@@ -456,9 +460,9 @@ class IndicadoresPrecipitacion():
         percentiles_horarios = self.percentilesHorarios()
         percentiles_diarios = self.percentilesDiarios()
 
-        print("****************************dict *******************")
-        anual2json = serializers.serialize('json', anuales,fields=('fecha', 'valor',
-        'completo_mediciones', 'completo_umbral', 'dias_con_lluvia', 'dias_sin_lluvia', 'mes_lluvioso', 'mes_seco',
+        # print("****************************dict *******************")
+        anual2json = serializers.serialize('json', anuales, fields=('fecha', 'valor', 'vacios',
+        'dias_con_lluvia', 'dias_sin_lluvia', 'mes_lluvioso', 'mes_seco',
         'mes_lluvioso_valor', 'mes_seco_valor', 'estacionalidad'))
         anuales = json.loads(anual2json)
         mes2json = serializers.serialize('json', mensuales,fields=('fecha','valor'))
@@ -467,9 +471,165 @@ class IndicadoresPrecipitacion():
         dict={'prom_anual': promedio, 'secHum': secHum, 'mes':mensuales, 'anios':anuales,
               'percentiles_diarios':percentiles_diarios, 'percentiles_horarios':percentiles_horarios,
               'max_hora':max_hora, 'dias_sin_precipitacion':dias_sin_precipitacion}
-        print(dict)
+        # print(dict)
 
         return dict
+
+
+# """Esta clase se encarga de calcular los indicadores de precipitación,
+# Cada funcion de la clase calcula un indicador determinado"""
+#
+# class IndicadoresPrecipitacion_orig():
+#     def __init__(self, estacion_id, inicio, fin, completo):
+#         self.estacion = estacion_id
+#         self.inicio = inicio
+#         self.fin = fin + timedelta(hours=23, minutes=59, seconds=59)
+#         self.completo = completo
+#
+#     def rr_anual(self):
+#         print(self.inicio,self.fin)
+#         """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
+#         rranual = anio.Var1Anual.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+#                                                    fecha__lte = self.fin, valor__isnull=False).order_by('fecha')
+#
+#         if rranual is not None:
+#             return rranual
+#         else:
+#             return None
+#
+#     def rr_mensual(self):
+#         """ devuelve la tabla de datos mensuales para la fecha seleccionadas"""
+#         rrmensual = mes.Var1Mensual.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+#                                                     fecha__lte = self.fin).order_by('fecha')
+#         if rrmensual is not None:
+#             return rrmensual
+#         else:
+#             return None
+#
+#     def rr_max_hora(self):
+#         """calcula la precipitacion maxima acumulada en 24 horas"""
+#         datos = vali.Var1Validado.objects.filter(estacion_id__exact=self.estacion, fecha__gte=self.inicio,
+#                                 fecha__lte=self.fin, valor__isnull=False).order_by('fecha').values('fecha', 'valor')
+#         df = pd.DataFrame.from_records(datos)
+#         df['valor'] = pd.to_numeric(df['valor'])
+#         minutos_inicio = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+#         maximos = []
+#         fechas = []
+#         for i in minutos_inicio:
+#             df['offset'] = df['fecha'] - timedelta(minutes=i)
+#             df2 = df[df['offset'] >= self.inicio]
+#             df2['offset'] = df['offset'].dt.floor('h')
+#             dfr = df2.groupby('offset').agg({'valor': 'sum'})
+#             idx = dfr['valor'].idxmax()
+#             val = dfr['valor'][idx]
+#             maximos.append(val)
+#             fechas.append(idx)
+#         maximo = max(maximos)
+#         max_idx = maximos.index(maximo)
+#         offset = minutos_inicio[max_idx]
+#         fecha_ini = fechas[max_idx] + timedelta(minutes=offset) - timedelta(minutes=5)
+#         fecha_fin = fecha_ini + timedelta(hours=1)
+#         return {
+#             'valor_max':maximo,
+#             'fecha_ini':fecha_ini.strftime("%Y/%m/%d %H:%M:%S"),
+#             'fecha_fin': fecha_fin.strftime("%Y/%m/%d %H:%M:%S"),
+#         }
+#
+#     def percentilesDiarios(self):
+#         """Calcula los percentelies en base a los datos diarios"""
+#         diarios = list(dia.Var1Diario.objects.filter(
+#             estacion_id__exact=self.estacion,fecha__gte=self.inicio,
+#             fecha__lte=self.fin, valor__isnull=False, valor__gt=0
+#         ).values_list('valor'))
+#         # print("typo de datos en percentiles ", type(diarios))
+#         # print(diarios)
+#         a = np.array(diarios, dtype=object)
+#         q10 = round(np.percentile(a, 10,  interpolation='lower'), 1)
+#         q95 = round(np.percentile(a, 95, interpolation='lower'), 1)
+#         return {'q10': q10, 'q95': q95}
+#
+#     def percentilesHorarios(self):
+#         """Calcula los percentelies en base a los horarios"""
+#         horarios = list(hora.Var1Horario.objects.filter(
+#             estacion_id__exact=self.estacion,fecha__gte=self.inicio,
+#             fecha__lte=self.fin, valor__isnull=False, valor__gt=0
+#         ).values_list('valor'))
+#         a = np.array(horarios, dtype=object)
+#         q10 = round(np.percentile(a, 10, interpolation='lower'), 1)
+#         q95 = round(np.percentile(a, 95, interpolation='lower'), 1)
+#         return {'q10': q10, 'q95': q95}
+#
+#     def calcular_dias_sin_precipitacion(self):
+#         sql = """
+#         SELECT COUNT(*) FROM diario_var1diario
+#         WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s AND valor = 0.0;
+#         """
+#         with connection.cursor() as cursor:
+#             cursor.execute(sql, [self.estacion, self.inicio, self.fin])
+#             resultado = cursor.fetchall()
+#         return resultado[0][0]
+#
+#     def makeDic(self):
+#         anuales = self.rr_anual()
+#         print(anuales)
+#
+#         anioSecoMin = 1000000
+#         anioHumedoMax = 0
+#         iter = 0
+#         fechaMin = None
+#         fechaMax = None
+#         promedio = 0
+#         print("años consultados ",anuales.count())
+#         if anuales.count() == 0:
+#             return None
+#
+#         for an in anuales:# controla que el año tenga mas de 11 meses
+#             print("fecha anual =>  ",an.fecha, "valor", an.valor," completoHumbral ",an.completo_umbral)
+#             #mescontado = mes.Precipitacion.objects.filter(estacion_id__exact = self.estacion,fecha__gte=self.inicio,
+#             #                                        fecha__lte = self.fin, valor__isnull=False)
+#
+#             if an.completo_umbral > 50.0:
+#                 promedio += an.valor
+#                 if an.valor < anioSecoMin:
+#                     anioSecoMin = an.valor;
+#                     fechaMin = an.fecha
+#                 if an.valor > anioHumedoMax:
+#                     anioHumedoMax = an.valor
+#                     fechaMax = an.fecha
+#                 iter += 1
+#             print("promedio ",promedio)
+#
+#         if promedio > 0:
+#             promedio =  str(round((promedio/iter), 1))
+#             secHum = {'anio_seco': str(round(anioSecoMin,1)), 'fechsec': fechaMin.strftime("%Y"), 'anio_humedo': str(round(anioHumedoMax,1)),
+#                       'fechhum': fechaMax.strftime("%Y")}
+#         else:
+#             promedio="S/D"
+#             secHum = {'anio_seco': 'S/D', 'fechsec': 'S/D', 'anio_humedo': 'S/D',
+#                       'fechhum': 'S/D'}
+#
+#         max_hora= self.rr_max_hora()
+#
+#         mensuales = self.rr_mensual()
+#         percentiles_horarios = self.percentilesHorarios()
+#         percentiles_diarios = self.percentilesDiarios()
+#
+#         print("****************************dict *******************")
+#         anual2json = serializers.serialize('json', anuales,fields=('fecha', 'valor',
+#         'completo_mediciones', 'completo_umbral', 'dias_con_lluvia', 'dias_sin_lluvia', 'mes_lluvioso', 'mes_seco',
+#         'mes_lluvioso_valor', 'mes_seco_valor', 'estacionalidad'))
+#         anuales = json.loads(anual2json)
+#         mes2json = serializers.serialize('json', mensuales,fields=('fecha','valor'))
+#         mensuales= json.loads(mes2json)
+#         dias_sin_precipitacion = self.calcular_dias_sin_precipitacion()
+#         dict={'prom_anual': promedio, 'secHum': secHum, 'mes':mensuales, 'anios':anuales,
+#               'percentiles_diarios':percentiles_diarios, 'percentiles_horarios':percentiles_horarios,
+#               'max_hora':max_hora, 'dias_sin_precipitacion':dias_sin_precipitacion}
+#         print(dict)
+#
+#         return dict
+
+
 
 ##### funcion de calculo de indicadores de caudal
 def indicaCaudal(estacion_id, inicio, fin, completo):

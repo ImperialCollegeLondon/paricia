@@ -88,7 +88,7 @@ for est_var in configvisualizar:
     if estado_actual == 'FALLO':
         # enviar correo
         reporte = {
-            'estacion': est_var.estacion.est_codigo + ' - ' + est_var.estacion.est_nombre,
+            'estacion': est_var.estacion.est_codigo,
             'ultimo_dato': fecha_dato,
         }
         fallos.append(reporte)

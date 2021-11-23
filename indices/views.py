@@ -162,13 +162,13 @@ class IntensidadRR(generic.FormView):
 
     def post(self, request, *args, **kwargs):
         estacion_id = int(request.POST.get('estacion', None))
-        print("Estacion a buscar " , estacion_id)
+        # print("Estacion a buscar " , estacion_id)
         tinicio = int(request.POST.get('anio', None))
-        print(type(tinicio))
+        # print(type(tinicio))
         inicio = datetime(tinicio,1,1)
         fin = datetime(tinicio,12,31,23,59,59)
-        print(inicio, fin)
-        data = intensidadDiracion(estacion_id,inicio,fin)
+        # print(inicio, fin)
+        data = intensidadDiracion(estacion_id, inicio, fin)
         data = json.dumps(data, allow_nan=True, cls=DecimalEncoder)
         return HttpResponse(data, content_type='application/json')
 
@@ -286,12 +286,12 @@ class DuracionCaudalExport(generic.FormView):
             ws['A7'] = 'Estación'
             ws['A7'].font = font_bold
             ws['B7'] = est.est_codigo
-            ws['C7'] = est.est_nombre
+            ws['C7'] = ''
             ws.merge_cells('C4:E4')
             ws['F7'] = 'Variable'
             ws['F7'].font = font_bold
             ws['G7'] = "Caudal"
-            ws['B9'] = 'Coordenadas Geográfica TMQ WGS84'
+            ws['B9'] = 'Coordenadas Geográfica '
             ws['B9'].font = font_bold
             ws.merge_cells('B6:G6')
             ws['A10'] = 'Latitud'

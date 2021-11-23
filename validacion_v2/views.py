@@ -24,8 +24,10 @@ from django.db import connection
 from datetime import datetime,time
 from medicion.models import *
 from django.db.models import Min, Max
+from reportes import functions as functions1
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from estacion.views import listar_anio
+
 # Create your views here.
 # Consulta de datos diarios por reporte
 class ValidacionDiaria(LoginRequiredMixin, FormView):
@@ -51,29 +53,31 @@ class ValidacionDiaria(LoginRequiredMixin, FormView):
                     fin = datetime.combine(fin, time(23, 59, 59, 999999))
                 else:
                     fin = datetime.combine(form.cleaned_data['fin'], time(23, 59, 59, 999999))
+                variable = form.cleaned_data['variable']
+                estacion = form.cleaned_data['estacion']
                 if form.data['variable'] == '5' or form.data['variable'] == '4' :
                     lista = funcvariable.reporte_validacion(form)
-                    variable = form.cleaned_data['variable']
-                    estacion = form.cleaned_data['estacion']
                     _grafico = funcvariable.grafico2(lista, variable,  estacion)
                 else:
-                    lista = functions.reporte_validacion(form,inicio,fin)
-                    variable = form.cleaned_data['variable']
-                    estacion = form.cleaned_data['estacion']
-                    _grafico = functions.grafico(lista, variable,  estacion,inicio,fin)
+                    # lista = functions.reporte_validacion(form,inicio,fin)
+                    # _grafico = functions.grafico(lista, variable,  estacion,inicio,fin)
+                    consulta = functions1.consulta_crudos(estacion.est_id, variable.var_id, inicio, fin)
+                    data = []
+                    for row in consulta:
+                        data.append([row.fecha, row.valor])
+
                 #_grafico = functions.grafico(lista, variable,  estacion,inicio,fin)
                 maximo = form.cleaned_data['limite_superior']
                 minimo = form.cleaned_data['limite_inferior']
                 #data = functions.reporte_diario(estacion, variable, inicio, fin, maximo, minimo)
-                if type(_grafico) == type('str'):
-                    pass
-                else:
-                    _grafico = 'No Hay Datos'
-                data = functions.reporte_diario(estacion, variable, inicio, fin, maximo, minimo, _grafico)
-                data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
-
+                # if type(_grafico) == type('str'):
+                #     pass
+                # else:
+                #     _grafico = 'No Hay Datos'
+                lista = functions.reporte_diario(estacion, variable, inicio, fin, maximo, minimo, data)
+                lista_json = json.dumps(lista, allow_nan=True, cls=DjangoJSONEncoder)
                 #return JsonResponse(data, safe=False)
-                return HttpResponse(data_json, content_type='application/json')
+                return HttpResponse(lista_json, content_type='application/json')
 
         # return self.render_to_response(self.get_context_data(form=form))
         return render(request, 'home/form_error.html', {'form': form})

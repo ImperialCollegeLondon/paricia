@@ -73,7 +73,7 @@ class CalidadBorrarDatosForm(Form):
 
     @staticmethod
     def label_from_instance(obj):
-        return obj.est_codigo + str(" -- ") + obj.est_nombre
+        return obj.est_codigo
 
 
 class ValidacionForm(Form):
@@ -101,4 +101,4 @@ class ValidacionCalidadForm(Form):
 
     @staticmethod
     def label_from_instance(obj):
-        return obj.est_codigo + str(" -- ") + obj.est_nombre
+        return obj.est_codigo

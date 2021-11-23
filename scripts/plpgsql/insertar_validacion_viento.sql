@@ -1,6 +1,6 @@
 -- FUNCTION: public.insertar_precipitacion_validacion(bigint, json)
 
---DROP FUNCTION public.insertar_viento_validacion(bigint, json);
+DROP FUNCTION IF EXISTS public.insertar_viento_validacion(bigint, json);
 
 CREATE OR REPLACE FUNCTION public.insertar_viento_validacion(
 	_estacion_id bigint,

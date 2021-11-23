@@ -4,8 +4,6 @@
 
 {% block javascript %}
     {{ block.super }}
-    
-    
     <script script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="{% static 'scripts/js_ajax.js' %}"></script>
@@ -14,8 +12,7 @@
     <script src="{% static 'leaflet/leaflet.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'leaflet/leaflet.css' %}">
 
-<!--    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
-    <script src="{% static 'scripts/reporte.js' %}"></script>
+    <script src="{% static 'scripts/reporte_211122.js' %}"></script>
     <link rel="stylesheet" href="{% static 'styles/reporte.css' %}">
 
     <script>
@@ -54,24 +51,19 @@
     </div>
 </form>
 
-
 <div id="resultados" class="row ">
-    <!--div class="row"-->
-
-        <div id="div_tabla" class="col-xl-5 col-lg-5 col-md-12 col-sm-12">
+    <div class="col">
+        <div id="div_tabla">
             <table id="table_reporte" class="table table-sm transp-blanco">
                 <thead><tr><th><h6>Estación</h6></th><th><h6>Acción</h6></th></tr></thead>
                 <tbody id="data_reporte"></tbody>
             </table>
         </div>
-        <div class="col-xl-7 col-lg-6 col-md-12 col-sm-12">
-            <div class="row" style="
-            padding-top: 43px;">
-                  
-            </div>
-            <div id="mapid" style="height: 435px"></div>
-            
-        </div>
+    </div>
+
+    <div class="col">
+        <div id="mapid" style="height: 435px"></div>
+    </div>
             
 </div>
 
@@ -113,7 +105,8 @@
 
     <img id="mapa_grande" src="">
 
-    <div id="grafico" class="mt-5"></div>
+    <div id="grafico" class="pt-2"></div>
+
 
     {% if mensaje %}<label>{{ mensaje }}</label>{% endif %}
 

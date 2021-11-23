@@ -31,7 +31,7 @@ $(document).ready(function() {
             { "targets": 0, "visible" : false, "searchable": false },
             { "targets": 1, "defaultOrder": true, "searchable": true,},
             { "targets": 4,
-                "render" : function(data, type, row){ if (row[4]) {return "Activo";} else { return "Inactivo";} }
+                "render" : function(data, type, row){ if (row[4]==="True") {return "Activo";} else { return "Inactivo";} }
             },
             { "targets": 6, "render" : function(data, type, row){ return btns;}  },
         ],

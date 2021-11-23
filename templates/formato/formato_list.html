@@ -35,7 +35,7 @@
             columnDefs: [
                 { "targets": 0, "visible" : false, "searchable": false },
                 { "targets": 9,
-                   "render" : function(data, type, row){ if (row[9]) {return "Sí";} else { return "-";}}
+                   "render" : function(data, type, row){ if (row[9]==="True") {return "Sí";} else { return "-";}}
                 },
                 { "targets": 12, "render" : function(data, type, row){ return btns;}  },
             ],

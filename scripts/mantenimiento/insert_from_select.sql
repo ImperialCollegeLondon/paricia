@@ -1,0 +1,2 @@
+INSERT INTO validacion_var10validado(estacion_id, fecha, valor, usado_para_horario)
+SELECT m.estacion_id, m.fecha, m.valor, FALSE FROM medicion_var10medicion m where m.estacion_id = 12 order by m.fecha;

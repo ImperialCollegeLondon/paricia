@@ -96,8 +96,9 @@ def verficar_anuario(estacion, variable, periodo):
     print(verficar_anuario)
     result = False
     if variable == 1:
-        result = models.Var1Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(pre_periodo=periodo).exists()
+        result = models.Var1Anuarios.objects.filter(est_id=estacion.est_id, pre_periodo=periodo).exists()
+        # result = models.Var1Anuarios.objects.filter(est_id=estacion.est_id) \
+        #     .filter(pre_periodo=periodo).exists()
     elif variable == 2:
         result = models.Var2Anuarios.objects.filter(est_id=estacion.est_id) \
             .filter(tai_periodo=periodo).exists()

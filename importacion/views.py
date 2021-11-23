@@ -39,12 +39,9 @@ class ImportacionList(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # TODO: aparentemente cargar el select estaciones en javascript no genera retardo considerable
-        _modelo = Importacion.objects.annotate(
-            est_codigo_nombre=Concat('est_id__est_codigo', Value(' - '), 'est_id__est_nombre')
-        )
         campos = [
             'imp_id',
-            'est_codigo_nombre',
+            'est_id__est_codigo',
             'for_id__for_nombre',
             'imp_fecha',
             'imp_fecha_ini',
@@ -53,8 +50,8 @@ class ImportacionList(PermissionRequiredMixin, TemplateView):
             'imp_observacion',
             'usuario__username',
         ]
-        modelo = _modelo.values_list(*campos)
-        context['importacion'] = modelo_a_tabla_html(modelo, col_extra=True)
+        importacion = Importacion.objects.all().values_list(*campos)
+        context['importacion'] = modelo_a_tabla_html(importacion, col_extra=True)
         return context
 
 

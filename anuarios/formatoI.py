@@ -65,7 +65,7 @@ def matrizI(estacion, variable, periodo, tipo):
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80"
+    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
     # if variable == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable == 6 or variable == 8:
@@ -82,7 +82,7 @@ def matrizI(estacion, variable, periodo, tipo):
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80"
+    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
     # if variable == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable == 6 or variable == 8:
@@ -97,7 +97,7 @@ def matrizI(estacion, variable, periodo, tipo):
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80"
+    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
     # if variable == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable == 6 and variable == 8:

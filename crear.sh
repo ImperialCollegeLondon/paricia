@@ -6,7 +6,7 @@
 #           2) Contraseña de usuario 'postgres' de base de datos y usuario 'postgres' de linux
 #           3) Usuario de base de datos no administrativo para dueño de datos, con su clave. Esta información debe
 #                     estar configurada en : djangomain/settings.py
-#           4) Instalar entorno virtual y ACTIVARLO
+#           4) Instalar entorno virtual y activarlo
 #           5) Instalar previamente requeriments.txt (OK en versión ubuntu 20.04)
 #                   para versiones inferiores ej. ubuntu 18.04 comentar las siguiente líneas:
 #                                                                              #pkg-resources==0.0.0
@@ -18,7 +18,7 @@
 # 1. En caso de existir la base de datos, este script la elimina y crea una nueva (vacía)
 # 2. Se eliminarán las migraciones anteriores. Se generarán nuevamente migraciones iniciales.
 
-echo "IP/hostname del servidor BDD. Deberá coincidir con djangomain/settings.py: ('ENTER' Default: localhost)"
+echo "IP/hostname del servidor BDD: ('ENTER' Default: localhost)"
 read db_host
 if [[ ${db_host} == ""  ]]; then
     db_host='localhost'
@@ -33,7 +33,7 @@ chmod 600 ~/.pgpass
 
 #
 echo ""
-echo "Nombre de usuario de base de datos. Deberá coincidir con djangomain/settings.py: ('ENTER' Default: postgres)"
+echo "Nombre de usuario de base de datos. Se asociará con la BDD a crear: ('ENTER' Default: postgres)"
 read db_user
 if [[ ${db_user} == ""  ]]; then
     db_user='postgres'
@@ -41,7 +41,7 @@ fi
 
 
 echo ""
-echo "Nombre de Base de datos a crear. Deberá coincidir con djangomain/settings.py: ('ENTER' Default: testdb)"
+echo "Nombre de Base de datos a crear: ('ENTER' Default: testdb)"
 read db_name
 if [[ ${db_name} == ""  ]]; then
     db_name='testdb'
@@ -75,16 +75,11 @@ echo ""
 echo "Borrando migraciones ..."
 find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc" -delete
-find . -path "*/__pycache__/*" -delete
-find . -path "*/__pycache__" -delete
-
 
 #### Generando nuevas migraciones
 echo ""
 echo "Creando migraciones ..."
-python manage.py makemigrations anual anuarios bitacora calidad cruce datalogger diario estacion formato \
- frecuencia home horario importacion indices instalacion medicion mensual reportes reportes_v2 sensor \
- telemetria vacios validacion validacion_v2 variable
+python manage.py makemigrations
 
 echo " "
 echo "Migrando ..."
@@ -93,12 +88,3 @@ python manage.py migrate
 echo " "
 echo "Creando usuario 'admin' ..."
 python manage.py createsuperuser --username admin
-
-echo " "
-echo "Instalando funciones POSTGRESQL ..."
-python manage.py runscript instalar_funciones_postgres
-
-
-echo " "
-echo "Instalando funciones POSTGRESQL parte 2 (reportes y nuevo módulo de validación)..."
-python manage.py runscript instalar_funciones_postgres_part2

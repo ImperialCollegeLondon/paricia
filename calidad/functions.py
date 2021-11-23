@@ -32,7 +32,7 @@ _model = {
 def datos_grafico1(estacion_id, variables_id, profundidad, inicio, fin):
     variables = Variable.objects.filter(pk__in=variables_id)
     estacion = Estacion.objects.get(pk=estacion_id)
-    estacion = estacion.est_codigo + ' - ' + estacion.est_nombre
+    estacion = estacion.est_codigo
 
     if inicio is None:
         inicio = datetime.datetime.now()
@@ -86,7 +86,7 @@ def datos_grafico1(estacion_id, variables_id, profundidad, inicio, fin):
 def datos_crudos_grafico1(estacion_id, variables_id, profundidad, inicio, fin):
     variables = Variable.objects.filter(pk__in=variables_id)
     estacion = Estacion.objects.get(pk=estacion_id)
-    estacion = estacion.est_codigo + ' - ' + estacion.est_nombre
+    estacion = estacion.est_codigo
 
     if inicio is None:
         inicio = datetime.datetime.now()
@@ -140,7 +140,7 @@ def datos_crudos_grafico1(estacion_id, variables_id, profundidad, inicio, fin):
 def datos_grafico2(estacion_id, variables_id, profundidad, inicio, fin):
     variables = Variable.objects.filter(pk__in=variables_id)
     estacion = Estacion.objects.get(pk=estacion_id)
-    estacion = estacion.est_codigo + ' - ' + estacion.est_nombre
+    estacion = estacion.est_codigo
 
     if inicio is None:
         inicio = datetime.datetime.now()

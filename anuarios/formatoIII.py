@@ -15,6 +15,7 @@ from anuarios.models import Var2Anuarios as TemperaturaAire
 from django.db import connection
 from home.functions import dictfetchall
 from math import isnan
+from variable.models import Variable
 
 
 def matrizIII(estacion, variable, periodo, tipo):
@@ -31,9 +32,11 @@ def matrizIII(estacion, variable, periodo, tipo):
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80 "
+    sql += "and vacios < %s "
     sql += "GROUP BY mes ORDER BY mes"
-    cursor.execute(sql)
+    variable_obj = Variable.objects.get(pk=variable)
+    vacios = variable_obj.vacios
+    cursor.execute(sql, [vacios,])
     med_avg = dictfetchall(cursor)
 
     # datos diarios máximos
@@ -45,9 +48,9 @@ def matrizIII(estacion, variable, periodo, tipo):
     sql += "FROM diario_var" + str(variable) + "diario "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80 "
+    sql += "and vacios < %s "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
-    cursor.execute(sql)
+    cursor.execute(sql, [vacios,])
     datos_diarios_max = dictfetchall(cursor)
 
     # mínimos absolutos
@@ -59,9 +62,9 @@ def matrizIII(estacion, variable, periodo, tipo):
     sql += "FROM diario_var" + str(variable) + "diario "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80 "
+    sql += "and vacios < %s  "
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
-    cursor.execute(sql)
+    cursor.execute(sql, [vacios, ])
 
     datos_diarios_min = dictfetchall(cursor)
     max_abs, max_dia, maximo = maximostai(datos_diarios_max)

@@ -42,7 +42,7 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     # sql += "AND date_part('month',fecha)=9 "
     sql += "and date_part('year',fecha)=" + str(periodo)
-    sql += "and completo_mediciones >= 80"
+    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)

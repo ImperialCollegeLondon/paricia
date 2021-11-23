@@ -63,7 +63,7 @@ class AnuarioForm(forms.Form):
 
     @staticmethod
     def label_from_instance(obj):
-        return obj.est_codigo + str(" - ") + obj.est_nombre
+        return obj.est_codigo
 
 
 class DiarioForm(forms.Form):
@@ -89,7 +89,7 @@ class MensualMultianualForm(forms.Form):
 
 class ConsultasForm(forms.Form):
     frecuencia = forms.ModelChoiceField(queryset=TipoFrecuencia.objects.none(), label="Frecuencia", required=True)
-    filtro = forms.ChoiceField(choices=FILTRO, widget=forms.RadioSelect(), initial=FILTRO[0][0], label="Filtro", required=False)
+    filtro = forms.ChoiceField(choices=FILTRO, widget=forms.RadioSelect(), initial=FILTRO[0][0], label="Filtro Tipo Estación", required=False)
     estacion_id = forms.IntegerField(required=False, widget=forms.HiddenInput())
     sitio = forms.ModelChoiceField(queryset=Sitio.objects.order_by('id').all(), label="Sitio", required=False)
     cuenca = forms.ModelChoiceField(queryset=Cuenca.objects.none(), label="Cuenca", required=False)
@@ -107,6 +107,7 @@ class ConsultasForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'autocomplete': 'off'})
     )
+    excluir_vacios = forms.BooleanField(label="Excluir vacíos que no cumplan el umbral.", initial=True, required=False)
 
     def __init__(self, *args, **kwargs):
         if len(kwargs):

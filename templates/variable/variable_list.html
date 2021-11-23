@@ -35,13 +35,13 @@ $(document).ready(function() {
             { "targets": 7, "className": 'text-right'},
             { "targets": 8, "className": 'text-right'},
             { "targets": 9,
-                "render" : function(data, type, row){ if (row[9]) {return "Activo";} else { return "Inactivo";} }
+                "render" : function(data, type, row){ if (row[9]==="True") {return "Activo";} else { return "Inactivo";} }
             },
             { "targets": 10,
-                "render" : function(data, type, row){ if (row[10]) {return "Acum.";} else { return "Prom.";} }
+                "render" : function(data, type, row){ if (row[10]==="True") {return "Acum.";} else { return "Prom.";} }
             },
             { "targets": 11,
-                "render" : function(data, type, row){ if (row[11]) {return "Auto";} else { return "-";} }
+                "render" : function(data, type, row){ if (row[11]==="True") {return "Auto";} else { return "-";} }
             },
             { "targets": 12, "className": 'text-right'},
             { "targets": 13, "render" : function(data, type, row){ return btns;}  },
@@ -96,7 +96,7 @@ $(document).ready(function() {
             <th>Estado</th>
             <th>Acumulada/Promedio</th>
             <th>Reporte automático</th>
-            <th>Umbral para completo</th>
+            <th>Vacíos %</th>
             <th>Acción</th>
         </tr>
         </thead>

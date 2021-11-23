@@ -193,8 +193,12 @@ def consulta_calidad(estacion_id, inicio, usuario):
 
 def consulta_alarma_transmision():
     resultado = {}
-    lim_inf_horas = TeleVariables.objects.get(nombre='ALAR_TRAN_LIMI_INFE').valor
-    lim_sup_horas = TeleVariables.objects.get(nombre='ALAR_TRAN_LIMI_SUPE').valor
+    try:
+        lim_inf_horas = TeleVariables.objects.get(nombre='ALAR_TRAN_LIMI_INFE').valor
+        lim_sup_horas = TeleVariables.objects.get(nombre='ALAR_TRAN_LIMI_SUPE').valor
+    except:
+        lim_inf_horas = ''
+        lim_sup_horas = ''
     resultado['limites'] = {'lim1':lim_inf_horas, 'lim2':lim_sup_horas}
 
     estaciones = AlarmaEstado.objects.filter(
@@ -207,7 +211,7 @@ def consulta_alarma_transmision():
         northing = float(e.estacion.est_latitud)
         coordenadas = utm.to_latlon(easting, northing, 17.41666, 'M')
         estacion = {
-            'codigo': e.estacion.est_codigo + ' - ' + e.estacion.est_nombre,
+            'codigo': e.estacion.est_codigo,
             'latitud': coordenadas[0],
             'longitud': coordenadas[1],
             'estado': e.estado.nombre,
@@ -229,7 +233,7 @@ def dia_hoy():
 
 def datos_precipitacion(estacion_id, inicio, fin):
     estacion = Estacion.objects.get(pk=estacion_id)
-    estacion = estacion.est_codigo + ' - ' + estacion.est_nombre
+    estacion = estacion.est_codigo
 
     if inicio is None:
         inicio = datetime.datetime.now()
@@ -410,7 +414,7 @@ def datos_precipitacion_multiestacion(estaciones_list, inicio, fin):
     resultado AS (
         select 
             acum.estacion_id,
-            (SELECT e.est_codigo || ' - ' || e.est_nombre AS cod_nombre FROM estacion_estacion e 
+            (SELECT e.est_codigo AS cod_nombre FROM estacion_estacion e 
                 WHERE e.est_id = acum.estacion_id) AS codnombre,
             acum.acumulado,
             (SELECT e2.est_latitud FROM estacion_estacion e2 WHERE e2.est_id = acum.estacion_id) AS latitud

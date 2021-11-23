@@ -22,7 +22,6 @@ from django.urls import reverse_lazy
 import os
 import mimetypes
 import matplotlib
-
 import urllib
 matplotlib.use('Agg')
 
@@ -97,18 +96,20 @@ class ConsultasPeriodo(PermissionRequiredMixin, FormView):
         inicio = form.cleaned_data['inicio']
         fin = form.cleaned_data['fin']
         frecuencia = form.cleaned_data["frecuencia"]
+        excluir_vacios = form.cleaned_data["excluir_vacios"]
 
         if self.request.is_ajax():
-            graf1 = getGrafico(estacion, variable, inicio, fin, frecuencia, None)
-            return render(request, 'reportes/porPeriodo.html', {'grafico': graf1})
+            # data_graf = getDatos_grafico2(estacion, variable, inicio, fin, frecuencia, excluir_vacios=excluir_vacios)
+            data_graf = getDatos_grafico(estacion, variable, inicio, fin, frecuencia, excluir_vacios=excluir_vacios)
+            return JsonResponse(data_graf)
 
         response = None
         if 'accion' not in request.POST:
             return
         if request.POST['accion'] == 'csv':
-            response = export_csv(estacion, variable, inicio, fin, frecuencia, None)
+            response = export_csv(estacion, variable, inicio, fin, frecuencia, excluir_vacios=excluir_vacios)
         elif request.POST['accion'] == 'excel':
-            response = export_excel(estacion, variable, inicio, fin, frecuencia, None)
+            response = export_excel(estacion, variable, inicio, fin, frecuencia, excluir_vacios=excluir_vacios)
 
         if response:
             return response
@@ -143,17 +144,17 @@ class CalidadConsultasPeriodo(PermissionRequiredMixin, FormView):
         fin = form.cleaned_data['fin']
         frecuencia = form.cleaned_data["frecuencia"]
         if self.request.is_ajax():
-            graf1 = getGrafico(estacion, variable, inicio, fin, frecuencia, profundidad)
+            graf1 = getGrafico(estacion, variable, inicio, fin, frecuencia, profundidad=profundidad)
             return render(request, 'reportes/porPeriodo.html',    {'grafico': graf1})
 
         response = None
         if 'accion' not in request.POST:
             return
         if request.POST['accion'] == 'csv':
-            response = export_csv(estacion, variable, inicio, fin, frecuencia, profundidad)
+            response = export_csv(estacion, variable, inicio, fin, frecuencia, profundidad=profundidad)
             if response: return response
         elif request.POST['accion'] == 'excel':
-            response = export_excel(estacion, variable, inicio, fin, frecuencia, profundidad)
+            response = export_excel(estacion, variable, inicio, fin, frecuencia, profundidad=profundidad)
         if response:
             return response
         mensaje = "No hay datos (" + frecuencia.nombre + ") en estación " +\

@@ -59,7 +59,7 @@ class Grafico1Form(forms.Form):
 
     @staticmethod
     def label_from_instance(obj):
-        return obj.est_codigo + str(" - ") + obj.est_nombre
+        return obj.est_codigo
 
 
 
@@ -158,7 +158,7 @@ class CompararHidroForm(forms.Form):
 
     @staticmethod
     def label_from_instance(obj):
-        return obj.est_codigo + str(" - ") + obj.est_nombre
+        return obj.est_codigo
 
 
 class UsuarioVariableForm(forms.ModelForm):

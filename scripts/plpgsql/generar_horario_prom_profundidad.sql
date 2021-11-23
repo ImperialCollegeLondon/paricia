@@ -7,8 +7,7 @@ BEGIN
     WITH
     dato AS (
         SELECT id, estacion_id, profundidad, fecha FROM validacion_var101validado v
-        WHERE v.usado_para_horario = FALSE
-        LIMIT 1
+        WHERE v.usado_para_horario = FALSE LIMIT 1
     ),
     hora_inicio AS (
         SELECT date_trunc('hour', (SELECT d.fecha FROM dato d)) AS hora_inicio
@@ -38,13 +37,13 @@ BEGIN
             (SELECT AVG(v.valor) FROM validados v) AS valor,
 			(SELECT MAX(v.valor) FROM validados v) AS max_abs,
 			(SELECT MIN(v.valor) FROM validados v) AS min_abs,
-            (SELECT COUNT(v.valor)::decimal/(SELECT nde.ndatos FROM numero_datos_esperado nde) * 100
-                FROM validados v WHERE v.valor IS NOT NULL) AS completo_mediciones,
+            (SELECT 100.0 - (COUNT(v.valor)::decimal/(SELECT nde.ndatos FROM numero_datos_esperado nde) * 100)
+                FROM validados v WHERE v.valor IS NOT NULL) AS vacios,
             FALSE AS usado_para_diario
     ),
     es_valido AS (
         SELECT
-        (estacion_id IS NOT NULL) AND (fecha IS NOT NULL) AND (completo_mediciones >= 0)
+            (fecha IS NOT NULL) AND (vacios <= 100.0) AND (vacios >= 0.0)
         AS es_valido
         FROM calculo
     ),
@@ -53,7 +52,7 @@ BEGIN
             valor = (SELECT c.valor FROM calculo c),
 			max_abs = (SELECT c.max_abs FROM calculo c),
 			min_abs = (SELECT c.min_abs FROM calculo c),
-            completo_mediciones = (SELECT c.completo_mediciones FROM calculo c),
+            vacios = (SELECT c.vacios FROM calculo c),
             usado_para_diario = (SELECT c.usado_para_diario FROM calculo c)
         WHERE estacion_id = (SELECT c.estacion_id FROM calculo c)
 		    AND profundidad = (SELECT c.profundidad FROM calculo c)
@@ -62,8 +61,8 @@ BEGIN
         RETURNING *
     ),
     insert_horario AS (
-        INSERT INTO horario_var101horario(estacion_id, profundidad, fecha, valor, max_abs, min_abs, completo_mediciones, usado_para_diario)
-        SELECT estacion_id, profundidad, fecha, valor, max_abs, min_abs, completo_mediciones, usado_para_diario FROM calculo
+        INSERT INTO horario_var101horario(estacion_id, profundidad, fecha, valor, max_abs, min_abs, vacios, usado_para_diario)
+        SELECT estacion_id, profundidad, fecha, valor, max_abs, min_abs, vacios, usado_para_diario FROM calculo
         WHERE NOT EXISTS (SELECT 1 FROM update_horario)
         AND (SELECT es_valido FROM es_valido)
         RETURNING *
@@ -84,4 +83,3 @@ BEGIN
     return _resultado;
 END
 $BODY$  LANGUAGE plpgsql;
-

@@ -1,6 +1,6 @@
 -- FUNCTION: public.insertar_agua_validacion(bigint, json)
 
---DROP FUNCTION public.insertar_agua_validacion(bigint, json);
+DROP FUNCTION IF EXISTS public.insertar_agua_validacion(bigint, json);
 
 CREATE OR REPLACE FUNCTION public.insertar_agua_validacion(
 	_estacion_id bigint,

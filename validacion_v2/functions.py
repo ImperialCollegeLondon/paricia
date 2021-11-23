@@ -22,6 +22,7 @@ from django.db import models
 import plotly.graph_objs as go
 import plotly.offline as opy
 from django.http import HttpResponse
+from decimal import Decimal
 
 class ReporteValidaciong(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -61,7 +62,7 @@ class Consulta(models.Model):
 
 # consultar datos diarios en un rango de fechas
 #def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo):
-def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo, grafico):
+def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo, data):
     est_id = estacion.est_id
     modelo = normalize(variable.var_nombre).replace(" de ", "") 
     modelo = modelo.replace(" ", "")
@@ -121,7 +122,9 @@ def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo, gr
             num_fecha += 1
         if fila.fecha_error == 0:
             num_fecha += 1
-        if fila.porcentaje < variable.umbral_completo:
+        # if fila.porcentaje < variable.umbral_completo:
+        #     num_porcentaje += 1
+        if fila.porcentaje < Decimal(100.0) - variable.vacios:
             num_porcentaje += 1
         #if var_id == 10 or var_id == 11:
         #    if fila.nivel_numero > 0:
@@ -141,7 +144,7 @@ def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo, gr
 
         # lista_nueva = [dict(fila.__dict__) for fila in lista if fila['state']]
 
-    data = {'estacion': [{
+    result = {'estacion': [{
         'est_id': estacion.est_id,
         'est_nombre': estacion.est_nombre,
 
@@ -163,11 +166,9 @@ def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo, gr
             'num_dias': (final - inicio).days + 1
 
         }],
-        'grafico' : grafico,
-        'curva':mensaje
+        'data': data,
+        'curva': mensaje
     }
-    #print("data ____")
-    #print(data)
     return data
 
 # Consultar datos crudos y/o validados por estacion, variable y fecha de un día en específico
@@ -583,7 +584,7 @@ def grafico(consulta, variable, estacion,inicio, fin):
         layout = go.Layout(autosize=True,
                            width=160 + int(ndatos_esperado * pixels_por_dato),
                            height=300,
-                           title=estacion.est_codigo + " -- " + estacion.est_nombre,
+                           title=estacion.est_codigo,
                            yaxis=dict(title=variable.var_nombre + " [" + variable.uni_id.uni_sigla + "]"),
                            shapes=shapes,
                             margin=dict(

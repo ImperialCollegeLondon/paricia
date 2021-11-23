@@ -1,0 +1,1 @@
+[{"model": "medicion.curvadescarga", "pk": 1, "fields": {"estacion": 2, "fecha": "2010-05-01T10:00:00", "requiere_recalculo_caudal": false}}]

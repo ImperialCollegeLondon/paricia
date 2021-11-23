@@ -34,8 +34,8 @@ BEGIN
         END IF;
 
         IF row_datos.seleccionado is TRUE THEN
-            INSERT INTO validacion_var%%var_id%%validado(estacion_id, fecha, valor, maximo, minimo, usado_para_horario, validacion)
-                VALUES (_estacion_id, row_datos.fecha, valor, maximo, minimo, FALSE, 0)
+            INSERT INTO validacion_var%%var_id%%validado(estacion_id, fecha, valor, maximo, minimo, usado_para_horario)
+                VALUES (_estacion_id, row_datos.fecha, valor, maximo, minimo, FALSE)
                 RETURNING id INTO id_insertado;
 
             IF row_datos.comentario IS NOT NULL THEN

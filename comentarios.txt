@@ -1,0 +1,122 @@
+nuevos cambios: añadió columna vacios
+- Se comprobó:
+    generar_horario_acum, generar_horario_prom, generar_horario_prom_profundidad
+    generar_diario_acum, generar_diario_prom, generar_diario_prom_profundidad
+    generar_mensual_acum, generar_mensual_prom, generar_diario_mensual_profundidad
+    generar_anual
+
+    por revisar: generar anuarios, acumular, dias_cons_igua_lluvia, dias_cons_mayor, estacionalidad
+    por revisar: graficas
+
+
+------------------------------------------
+Modificaciones: eliminacion campo 'validacion':
+
+# Hecho: Reportes, Diario, Mensual-Multianual
+
+# Haciendo: Reportes -> Hidro ANUARIO
+        * Se debe aumentar columna: completo mediciones y modificar el cálculo
+
+TODO:
+    * Comparar (VALIDADOSSALTOSCOLUMNAS en adelante) (f.periodo_esperado + 0.8)   vs f.periodo_esperado * 1.005
+    * Se puede optimizar que cuando la consulta lo amerite no devuelva columna VACIOS
+    * Por cuestiones de tiempo se implementa el generar_diario calculando desde el horarios (el pedido inicial fue
+          de calcular desde las validaciones) sin embargo la implementacion es equivalente.
+    * revisar generar _horario diario mensual  de var acum y prome
+    * No se desencadena automáticamente generar_reportes después de validación
+    * Comentar que el max_abs y min_abs salen a partir del promedio de cada medición
+    1) probar multiples datos con misma hora para validar
+    2) Probar validaciones a profundidad
+    3) Probar con el esquema validacion_v2
+    4) ¿tiene la validación una busqueda de anterior validaciones para generar la nueva?
+    5) poner unique_together (estacion_id, fecha) horario, diario, mensual
+        5.1) Si fuera posible hacer constraint en valor de fecha
+    6) El cálculo de la fecha debe ser con minutos truncados (o hora)
+
+
+1 -> reporte_validacion.sql (cambiado y funcionando)
+    cambiando reporte validación:
+        medicion AS (
+            --ORDER BY v.fecha  -> m.fecha
+
+2 -> ((insercion_1validacion))
+        insertar_1validacion.sql    (probado, funciona OK)
+        ¿? insertar_1validacion_profundidad.sql (No se cambió, porque ya notiene campo VALIDACION)
+        ¿? insertar_validacion_acu.sql /   insertar_precipitacion_validacion
+        ¿? insertar_validacion_pro.sql /   insertar_%%modelo%%_validacion
+
+3 -> generar_horario_var
+        generar_horario_acum.sql    (probado OK, ¿funciona varios casos?)
+            generar_diario_acum.sql     (probado OK, ¿funciona varios casos?)
+                generar_mensual_acum.sql    (probado OK, ¿funciona varios casos?)
+                    generar_anual_var1.sql      (se actualizó script, problemas, requiere funciones scripts2)
+        generar_horario_prom.sql    (probado OK, ¿funciona varios casos?)
+            generar_diario_prom.sql     (probado OK, ¿funciona varios casos?)
+                generar_mensual_prom.sql    (probado OK, ¿funciona varios casos?)
+        generar_horario_prom_profundidad.sql    (falta verificar con datos)
+            generar_diario_prom_profundidad.sql     (falta verificar con datos)
+                generar_mensual_prom_profundidad.sql
+
+4 ->    ConsultasPeriodo(View)
+            getGrafico                          corregido
+                consulta_horario_vectores       corregido
+                    consulta_horario            corregido
+                consulta_diario__columnas        corregido
+                    consulta_diario             corregido
+                consulta_mensual_vectores       corregido
+                    consulta_mensual            corregido
+                consulta_validados_gaps_vectores   corregido        ***** falta a continuación
+
+            expor_csv       corregido
+                getDatos_exportar               corregido
+                    consulta_horario            corregido
+                    consulta_diario             corregido
+                    consulta_mensual            corregido
+
+            export_excel                        corregido
+                getDatos_exportar               corregido
+
+5 -> Reportes/ Diario    corregido
+6 -> Reportes/ Mensual Multianual   corregido
+7 -> Anuarios
+__________________________________________________________________
+Inquietudes:
+
+2) A futuro mejorar el procedimiento de instalación porque por el momento se ajusta a las variables de epmaps
+
+
+1) ¿Se utilizará (max_abs,min_abs) o (max_del_prom,min_del_prom)?
+
+    class Var2Diario(models.Model):
+        id = models.AutoField("Id", primary_key=True)
+        estacion_id = models.PositiveIntegerField("estacion_id")
+        fecha = models.DateField("Fecha")
+        valor = models.DecimalField("Valor", max_digits=DigVar.v2.max_dig + 1, decimal_places=DigVar.v2.dec_pla + 1, null=True)
+        max_abs = models.DecimalField("Máximo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
+        min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
+        max_del_prom = models.DecimalField("Máximo del promedio", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla + 1, null=True)
+        min_del_prom = models.DecimalField("Mínimo del promedio", max_digits=Di
+
+2) ¿Se utilizará (max_abs,min_abs) o (max_del_prom,min_del_prom)?
+class Var2Mensual(models.Model):
+    estacion_id = models.PositiveIntegerField("estacion_id", db_index=True)
+    fecha = models.DateField("Fecha", db_index=True)
+    valor = models.DecimalField("Valor", max_digits=DigVar.v2.max_dig + 1, decimal_places=DigVar.v2.dec_pla + 1, null=True)
+    max_abs = models.DecimalField("Máximo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
+    min_abs = models.DecimalField("Mínimo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
+    max_del_prom = models.DecimalField("Máximo del promedio", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla + 1, null=True)
+    min_del_prom = models.DecimalField("Mínimo del promedio", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla + 1, null=True)
+    completo_mediciones = models.DecimalField("Completo mediciones %", max_digits=4, decimal_places=1)
+
+
+3) Generar una tabla default de:
+    a) países
+    b) region/provincia/departamento
+    c) Sitio- Cuenca
+    d) Ecosistema
+    e) Socios
+
+4) comparar en busqueda de normalización reporte_validacion.sql  Vs.  reporte_validacion_profundidad.sql
+
+5) Para la validación se elimina la anterior validación y se carga la nueva
+

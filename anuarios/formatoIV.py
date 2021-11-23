@@ -15,6 +15,7 @@ from anuarios.models import Var3Anuarios as HumedadAire
 from django.db import connection
 from home.functions import dictfetchall
 from math import isnan
+from variable.models import Variable
 
 
 def matrizIV(estacion, variable, periodo, tipo):
@@ -25,15 +26,17 @@ def matrizIV(estacion, variable, periodo, tipo):
     else:
         tabla = 'medicion_var' + str(variable)+ 'medicion'
     cursor = connection.cursor()
+    variable_obj = Variable.objects.get(pk=variable)
+    vacios = variable_obj.vacios
     # promedio mensual
     sql = "SELECT avg(valor) as media, date_part('month',fecha) as mes "
     #sql += "FROM " + tabla + " "
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80"
+    sql += "and vacios < %s"
     sql += "GROUP BY mes ORDER BY mes"
-    cursor.execute(sql)
+    cursor.execute(sql, [vacios, ])
     med_avg = dictfetchall(cursor)
     # datos diarios máximos
     #sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
@@ -44,9 +47,9 @@ def matrizIV(estacion, variable, periodo, tipo):
     sql += "FROM diario_var" + str(variable) + "diario "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 80"
+    sql += "and vacios < %s"
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
-    cursor.execute(sql)
+    cursor.execute(sql, [vacios,])
     datos_diarios_max = dictfetchall(cursor)
     # mínimos absolutos
     sql = "SELECT min(min_abs) as minimo,  min(valor) as valor, "
@@ -58,9 +61,9 @@ def matrizIV(estacion, variable, periodo, tipo):
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo)+" "
     sql += "and valor > 0 "
-    sql += "and completo_mediciones >= 80"
+    sql += "and vacios < %s"
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
-    cursor.execute(sql)
+    cursor.execute(sql, [vacios,])
     datos_diarios_min = dictfetchall(cursor)
 
     maximo, maximo_dia = maximoshai(datos_diarios_max)

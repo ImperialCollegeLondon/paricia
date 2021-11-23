@@ -343,12 +343,9 @@ class AsociacionList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = Asociacion.objects.annotate(
-            est_codigo_nombre=Concat('est_id__est_codigo', Value(' - '), 'est_id__est_nombre')
-        )
-        campos = ['aso_id', 'for_id__for_nombre', 'est_codigo_nombre']
-        modelo = _modelo.values_list(*campos)
-        context['asociacion'] = modelo_a_tabla_html(modelo, col_extra=True)
+        campos = ['aso_id', 'for_id__for_nombre', 'est_id__est_codigo']
+        asociacion = Asociacion.objects.all().values_list(*campos)
+        context['asociacion'] = modelo_a_tabla_html(asociacion, col_extra=True)
         return context
 
 

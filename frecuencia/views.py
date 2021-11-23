@@ -45,12 +45,9 @@ class FrecuenciaList(TemplateView, PermissionRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = Frecuencia.objects.annotate(
-            est_codigo_nombre=Concat('est_id__est_codigo', Value(' - '), 'est_id__est_nombre')
-        )
-        campos = ['fre_id', 'est_codigo_nombre', 'var_id__var_nombre', 'fre_valor', 'fre_fecha_ini',
+        campos = ['fre_id', 'est_id__est_codigo', 'var_id__var_nombre', 'fre_valor', 'fre_fecha_ini',
                   'fre_fecha_fin' ]
-        modelo = _modelo.values_list(*campos)
+        modelo = Frecuencia.objects.all().values_list(*campos)
         context['frecuencia'] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
 

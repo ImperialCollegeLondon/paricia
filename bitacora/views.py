@@ -39,12 +39,9 @@ class BitacoraList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = Bitacora.objects.annotate(
-            est_codigo_nombre=Concat('est_id__est_codigo', Value(' - '), 'est_id__est_nombre')
-        )
-        campos = ['bit_id', 'est_codigo_nombre', 'var_id__var_nombre', 'bit_fecha_ini', 'bit_fecha_fin', 'bit_observacion']
-        modelo = _modelo.values_list(*campos)
-        context['bitacora'] = modelo_a_tabla_html(modelo, col_extra=True)
+        campos = ['bit_id', 'est_id__est_codigo', 'var_id__var_nombre', 'bit_fecha_ini', 'bit_fecha_fin', 'bit_observacion']
+        bitacora = Bitacora.objects.all().values_list(*campos)
+        context['bitacora'] = modelo_a_tabla_html(bitacora, col_extra=True)
         return context
 
 
