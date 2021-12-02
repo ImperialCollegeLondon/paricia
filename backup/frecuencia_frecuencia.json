@@ -1,1 +1,0 @@
-[{"model": "frecuencia.frecuencia", "pk": 1, "fields": {"est_id": 10, "var_id": 1, "fre_valor": 5, "fre_fecha_ini": "2013-11-19T00:00:00", "fre_fecha_fin": null}}, {"model": "frecuencia.frecuencia", "pk": 2, "fields": {"est_id": 12, "var_id": 10, "fre_valor": 5, "fre_fecha_ini": "2013-11-14T00:00:00", "fre_fecha_fin": null}}]

@@ -754,5 +754,68 @@
     "for_tipo": "",
     "for_estado": true
   }
+},
+{
+  "model": "formato.formato",
+  "pk": 45,
+  "fields": {
+    "ext_id": 2,
+    "del_id": 6,
+    "for_nombre": "iMHEA nivel y flujo peri\u00f3dico",
+    "for_descripcion": "iMHEA nivel y flujo peri\u00f3dico",
+    "for_ubicacion": null,
+    "for_archivo": null,
+    "for_fil_ini": 2,
+    "for_fil_cola": null,
+    "fec_id": 4,
+    "es_fecha_utc": false,
+    "for_col_fecha": 1,
+    "hor_id": 2,
+    "for_col_hora": 1,
+    "for_tipo": "",
+    "for_estado": true
+  }
+},
+{
+  "model": "formato.formato",
+  "pk": 46,
+  "fields": {
+    "ext_id": 2,
+    "del_id": 6,
+    "for_nombre": "iMHEA precipitaci\u00f3n eventos",
+    "for_descripcion": "iMHEA precipitaci\u00f3n eventos",
+    "for_ubicacion": null,
+    "for_archivo": null,
+    "for_fil_ini": 2,
+    "for_fil_cola": null,
+    "fec_id": 4,
+    "es_fecha_utc": false,
+    "for_col_fecha": 1,
+    "hor_id": 2,
+    "for_col_hora": 1,
+    "for_tipo": "",
+    "for_estado": true
+  }
+},
+{
+  "model": "formato.formato",
+  "pk": 47,
+  "fields": {
+    "ext_id": 2,
+    "del_id": 6,
+    "for_nombre": "iMHEA flujo peri\u00f3dico",
+    "for_descripcion": "iMHEA flujo peri\u00f3dico",
+    "for_ubicacion": null,
+    "for_archivo": null,
+    "for_fil_ini": 2,
+    "for_fil_cola": null,
+    "fec_id": 4,
+    "es_fecha_utc": false,
+    "for_col_fecha": 1,
+    "hor_id": 2,
+    "for_col_hora": 1,
+    "for_tipo": "",
+    "for_estado": true
+  }
 }
 ]

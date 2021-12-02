@@ -98,7 +98,7 @@ class Formato(models.Model):
         return reverse('formato:formato_detail', kwargs={'pk': self.pk})
 
     class Meta:
-        ordering = ('for_id',)
+        ordering = ('-for_id',)
 
 
 class Clasificacion(models.Model):

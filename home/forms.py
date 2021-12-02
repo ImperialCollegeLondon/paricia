@@ -22,7 +22,6 @@ class LoginForm(forms.Form):
 OPCIONES_CARGA = [
     ('variable_unidad.json', 'VARIABLE: Unidades'),
     ('variable_variable.json', 'VARIABLE: Lista de variables'),
-    ('estacion_tipo.json', 'ESTACIÓN: Tipo'),
     ('formato_delimitador.json', 'FORMATO: Delimitadores'),
     ('formato_extension.json', 'FORMATO: Extensiones de archivo'),
     ('formato_fecha.json', 'FORMATO: Fecha'),
@@ -34,6 +33,18 @@ OPCIONES_CARGA = [
     ('sensor_marca.json', 'SENSOR: Marca'),
     ('sensor_tipo.json', 'SENSOR: Tipo'),
     ('datalogger_marca.json', 'DATALOGGER: Marca'),
+    ('estacion_tipo.json', 'ESTACIÓN: Tipo'),
+    ('estacion_ecosistema.json', 'ESTACIÓN: Ecosistema'),
+    ('estacion_pais.json', 'ESTACIÓN: País'),
+    ('estacion_region.json', 'ESTACIÓN: Región'),
+    ('estacion_sitio.json', 'ESTACIÓN: Sitio'),
+    ('estacion_cuenca.json', 'ESTACIÓN: Cuenca'),
+    ('estacion_sitiocuenca.json', 'ESTACIÓN: Asociación Sitio-Cuenca'),
+    ('estacion_socio.json', 'ESTACIÓN: Socio'),
+    ('estacion_estacion.json', 'ESTACIÓN: Estación'),
+    ('formato_asociacion.json', 'FORMATO/ESTACION: Asociación de Formato con Estación'),
+    ('cruce_cruce.json', 'VARIABLE/ESTACION: Asociación Variable por Estación'),
+    ('frecuencia_frecuencia.json', 'FRECUENCIA/VARIABLE/ESTACION: Frecuencias por variable y por estación'),
     ]
 
 class CargaInicialForm(forms.Form):

@@ -2518,5 +2518,68 @@
     "resolucion": "1.00",
     "coma_decimal": false
   }
+},
+{
+  "model": "formato.clasificacion",
+  "pk": 175,
+  "fields": {
+    "for_id": 45,
+    "var_id": 11,
+    "cla_valor": 2,
+    "cla_maximo": null,
+    "cla_minimo": null,
+    "col_validador_valor": null,
+    "txt_validador_valor": null,
+    "col_validador_maximo": null,
+    "txt_validador_maximo": null,
+    "col_validador_minimo": null,
+    "txt_validador_minimo": null,
+    "acumular": false,
+    "incremental": false,
+    "resolucion": null,
+    "coma_decimal": false
+  }
+},
+{
+  "model": "formato.clasificacion",
+  "pk": 176,
+  "fields": {
+    "for_id": 45,
+    "var_id": 10,
+    "cla_valor": 3,
+    "cla_maximo": null,
+    "cla_minimo": null,
+    "col_validador_valor": null,
+    "txt_validador_valor": null,
+    "col_validador_maximo": null,
+    "txt_validador_maximo": null,
+    "col_validador_minimo": null,
+    "txt_validador_minimo": null,
+    "acumular": false,
+    "incremental": false,
+    "resolucion": null,
+    "coma_decimal": false
+  }
+},
+{
+  "model": "formato.clasificacion",
+  "pk": 177,
+  "fields": {
+    "for_id": 46,
+    "var_id": 1,
+    "cla_valor": 2,
+    "cla_maximo": null,
+    "cla_minimo": null,
+    "col_validador_valor": null,
+    "txt_validador_valor": null,
+    "col_validador_maximo": null,
+    "txt_validador_maximo": null,
+    "col_validador_minimo": null,
+    "txt_validador_minimo": null,
+    "acumular": true,
+    "incremental": false,
+    "resolucion": "1.00",
+    "coma_decimal": false
+  }
 }
 ]

@@ -1,0 +1,72 @@
+[
+{
+  "model": "estacion.ecosistema",
+  "pk": 1,
+  "fields": {
+    "nombre": "Bosque h\u00famedo"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 2,
+  "fields": {
+    "nombre": "Puna"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 3,
+  "fields": {
+    "nombre": "P\u00e1ramo"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 4,
+  "fields": {
+    "nombre": "Puna seca"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 5,
+  "fields": {
+    "nombre": "Puna h\u00fameda"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 6,
+  "fields": {
+    "nombre": "Bosque montano alto"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 7,
+  "fields": {
+    "nombre": "Bosque de neblina"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 8,
+  "fields": {
+    "nombre": "Pajonal"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 9,
+  "fields": {
+    "nombre": "Bosque tropical"
+  }
+},
+{
+  "model": "estacion.ecosistema",
+  "pk": 10,
+  "fields": {
+    "nombre": "Jalca"
+  }
+}
+]

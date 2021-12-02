@@ -195,7 +195,7 @@ def generar_horario_profundidad():
     for var in vars_profundidad:
         var_id = str(var[0])
         es_acumulada = var[2]
-
+        
         if es_acumulada:
             continue
             # sql = sql_acum.replace('var_id_id = 1', 'var_id_id = ' + var_id)
@@ -218,7 +218,7 @@ def generar_diario():
     for var in vars:
         var_id = str(var[0])
         es_acumulada = var[2]
-
+        
         if es_acumulada:
             sql = sql_acum.replace('var_id = 1', 'var_id = ' + var_id)
             sql = sql.replace('var1', 'var' + var_id)
@@ -241,7 +241,7 @@ def generar_diario_profundidad():
     for var in vars_profundidad:
         var_id = str(var[0])
         es_acumulada = var[2]
-
+        
         if es_acumulada:
             continue
             # sql = sql_acum.replace('var_id = 1', 'var_id = ' + var_id)
@@ -264,7 +264,7 @@ def generar_mensual():
     for var in vars:
         var_id = str(var[0])
         es_acumulada = var[2]
-
+        
         if es_acumulada:
             sql = sql_acum.replace('var_id = 1', 'var_id = ' + var_id)
             sql = sql.replace('var1', 'var' + var_id)

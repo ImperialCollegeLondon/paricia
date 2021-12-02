@@ -61,5 +61,12 @@
   "fields": {
     "mar_nombre": "(No aplica)"
   }
+},
+{
+  "model": "datalogger.marca",
+  "pk": 10,
+  "fields": {
+    "mar_nombre": "INW"
+  }
 }
 ]

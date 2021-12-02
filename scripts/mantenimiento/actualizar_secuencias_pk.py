@@ -310,6 +310,7 @@ list_tabla = [
 ]
 
 def run():
+    print("Inicio de actualizacion de secuencias...")
     try:
         actualizar_secuencias_pk()
     except Exception as e:

@@ -31,7 +31,7 @@ def get_precipitacion(estacion, variable, periodo, tipo):
     sql += "FROM mensual_var1mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and completo_mediciones >= 70"
+    sql += "and vacios < (SELECT vacios FROM variable_variable v WHERE v.var_id = 1)"
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_mensual = dictfetchall(cursor)
@@ -42,6 +42,7 @@ def get_precipitacion(estacion, variable, periodo, tipo):
     sql += "FROM diario_var1diario "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo)+ " "
+    sql += "and vacios < (SELECT vacios FROM variable_variable v WHERE v.var_id = 1) "
     #sql += "and completo_mediciones >= 70"
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)

@@ -1,0 +1,1421 @@
+[
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 1,
+  "fields": {
+    "est_id": 9,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-07-07T14:25:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 2,
+  "fields": {
+    "est_id": 10,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-07-07T13:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 3,
+  "fields": {
+    "est_id": 12,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-06-26T14:25:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 4,
+  "fields": {
+    "est_id": 13,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-07-07T11:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 5,
+  "fields": {
+    "est_id": 16,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-02-27T00:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 6,
+  "fields": {
+    "est_id": 17,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-02-27T00:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 7,
+  "fields": {
+    "est_id": 18,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-02-27T00:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 8,
+  "fields": {
+    "est_id": 21,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-02-25T14:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 9,
+  "fields": {
+    "est_id": 22,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-02-25T13:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 10,
+  "fields": {
+    "est_id": 23,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-02-25T13:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 11,
+  "fields": {
+    "est_id": 25,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-20T10:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 12,
+  "fields": {
+    "est_id": 26,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-20T10:40:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 13,
+  "fields": {
+    "est_id": 28,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-01-19T16:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 14,
+  "fields": {
+    "est_id": 29,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-01-19T16:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 15,
+  "fields": {
+    "est_id": 31,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-19T13:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 16,
+  "fields": {
+    "est_id": 32,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-01-05T18:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 17,
+  "fields": {
+    "est_id": 34,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-19T11:55:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 18,
+  "fields": {
+    "est_id": 35,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-19T13:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 19,
+  "fields": {
+    "est_id": 37,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T14:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 20,
+  "fields": {
+    "est_id": 38,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T11:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 21,
+  "fields": {
+    "est_id": 40,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T11:40:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 22,
+  "fields": {
+    "est_id": 41,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T12:10:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 23,
+  "fields": {
+    "est_id": 43,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2001-05-24T00:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 24,
+  "fields": {
+    "est_id": 44,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2001-05-24T00:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 25,
+  "fields": {
+    "est_id": 45,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2001-05-24T00:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 26,
+  "fields": {
+    "est_id": 47,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2004-05-29T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 27,
+  "fields": {
+    "est_id": 48,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2004-05-29T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 28,
+  "fields": {
+    "est_id": 50,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2004-05-29T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 29,
+  "fields": {
+    "est_id": 51,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2004-05-29T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 30,
+  "fields": {
+    "est_id": 53,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2002-02-05T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 31,
+  "fields": {
+    "est_id": 54,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2001-10-27T16:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 32,
+  "fields": {
+    "est_id": 55,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2001-10-27T16:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 33,
+  "fields": {
+    "est_id": 56,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2002-02-27T09:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 34,
+  "fields": {
+    "est_id": 57,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2002-03-05T08:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 35,
+  "fields": {
+    "est_id": 58,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2002-03-05T08:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 36,
+  "fields": {
+    "est_id": 60,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-06T00:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 37,
+  "fields": {
+    "est_id": 61,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-06T00:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 38,
+  "fields": {
+    "est_id": 62,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-06T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 39,
+  "fields": {
+    "est_id": 64,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-06T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 40,
+  "fields": {
+    "est_id": 65,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-06T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 41,
+  "fields": {
+    "est_id": 66,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-06T12:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 42,
+  "fields": {
+    "est_id": 67,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-04-23T13:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 43,
+  "fields": {
+    "est_id": 69,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-04-11T14:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 44,
+  "fields": {
+    "est_id": 70,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-04-11T14:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 45,
+  "fields": {
+    "est_id": 71,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-04-11T14:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 46,
+  "fields": {
+    "est_id": 72,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-04-09T13:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 47,
+  "fields": {
+    "est_id": 74,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-11T15:55:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 48,
+  "fields": {
+    "est_id": 75,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-11T16:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 49,
+  "fields": {
+    "est_id": 76,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-11T15:50:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 50,
+  "fields": {
+    "est_id": 77,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-08-21T09:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 51,
+  "fields": {
+    "est_id": 78,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-02-19T11:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 52,
+  "fields": {
+    "est_id": 79,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-02-19T11:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 53,
+  "fields": {
+    "est_id": 80,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2015-06-18T12:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 54,
+  "fields": {
+    "est_id": 82,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-11T15:40:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 55,
+  "fields": {
+    "est_id": 83,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-11T16:05:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 56,
+  "fields": {
+    "est_id": 85,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-12T15:50:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 57,
+  "fields": {
+    "est_id": 86,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-13T09:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 58,
+  "fields": {
+    "est_id": 87,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-13T10:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 59,
+  "fields": {
+    "est_id": 89,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-12T12:25:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 60,
+  "fields": {
+    "est_id": 90,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-12T13:35:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 61,
+  "fields": {
+    "est_id": 91,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-12T14:25:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 62,
+  "fields": {
+    "est_id": 93,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-04-02T15:25:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 63,
+  "fields": {
+    "est_id": 94,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-04-02T14:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 64,
+  "fields": {
+    "est_id": 96,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-04-02T12:55:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 65,
+  "fields": {
+    "est_id": 97,
+    "var_id": 1,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-04-02T12:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 66,
+  "fields": {
+    "est_id": 8,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-06-28T00:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 67,
+  "fields": {
+    "est_id": 11,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-06-26T13:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 68,
+  "fields": {
+    "est_id": 14,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-04-18T14:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 69,
+  "fields": {
+    "est_id": 15,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-09-27T08:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 70,
+  "fields": {
+    "est_id": 19,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-04-18T14:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 71,
+  "fields": {
+    "est_id": 20,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-09-16T11:43:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 72,
+  "fields": {
+    "est_id": 24,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-14T13:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 73,
+  "fields": {
+    "est_id": 27,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-15T13:50:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 74,
+  "fields": {
+    "est_id": 30,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-13T16:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 75,
+  "fields": {
+    "est_id": 33,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-01-16T16:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 76,
+  "fields": {
+    "est_id": 36,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T13:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 77,
+  "fields": {
+    "est_id": 39,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T13:10:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 78,
+  "fields": {
+    "est_id": 42,
+    "var_id": 10,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2001-09-04T15:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 79,
+  "fields": {
+    "est_id": 42,
+    "var_id": 10,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2002-02-04T11:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 80,
+  "fields": {
+    "est_id": 42,
+    "var_id": 10,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2002-11-29T11:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 81,
+  "fields": {
+    "est_id": 42,
+    "var_id": 10,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2003-08-13T16:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 82,
+  "fields": {
+    "est_id": 42,
+    "var_id": 10,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2003-12-12T14:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 83,
+  "fields": {
+    "est_id": 42,
+    "var_id": 10,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2004-06-05T09:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 84,
+  "fields": {
+    "est_id": 46,
+    "var_id": 10,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2004-02-29T17:32:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 85,
+  "fields": {
+    "est_id": 49,
+    "var_id": 10,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2004-05-29T13:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 86,
+  "fields": {
+    "est_id": 52,
+    "var_id": 10,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2001-10-29T12:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 87,
+  "fields": {
+    "est_id": 52,
+    "var_id": 10,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2002-05-11T12:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 88,
+  "fields": {
+    "est_id": 52,
+    "var_id": 10,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2002-12-11T13:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 89,
+  "fields": {
+    "est_id": 59,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-05T15:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 90,
+  "fields": {
+    "est_id": 63,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-07T11:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 91,
+  "fields": {
+    "est_id": 68,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-06-23T12:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 92,
+  "fields": {
+    "est_id": 73,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-06-23T16:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 93,
+  "fields": {
+    "est_id": 81,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-16T00:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 94,
+  "fields": {
+    "est_id": 84,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-13T10:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 95,
+  "fields": {
+    "est_id": 88,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-12T14:50:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 96,
+  "fields": {
+    "est_id": 92,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-03-20T12:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 97,
+  "fields": {
+    "est_id": 95,
+    "var_id": 10,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-02-18T14:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 98,
+  "fields": {
+    "est_id": 8,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-06-28T00:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 99,
+  "fields": {
+    "est_id": 11,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-06-26T13:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 100,
+  "fields": {
+    "est_id": 14,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-04-18T14:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 101,
+  "fields": {
+    "est_id": 15,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-09-27T08:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 102,
+  "fields": {
+    "est_id": 19,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2011-04-18T14:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 103,
+  "fields": {
+    "est_id": 20,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-09-16T11:43:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 104,
+  "fields": {
+    "est_id": 24,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-14T13:20:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 105,
+  "fields": {
+    "est_id": 27,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-15T13:50:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 106,
+  "fields": {
+    "est_id": 30,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-11-13T16:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 107,
+  "fields": {
+    "est_id": 33,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-01-16T16:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 108,
+  "fields": {
+    "est_id": 36,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T13:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 109,
+  "fields": {
+    "est_id": 39,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-01-10T13:10:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 110,
+  "fields": {
+    "est_id": 42,
+    "var_id": 11,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2001-09-04T15:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 111,
+  "fields": {
+    "est_id": 42,
+    "var_id": 11,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2002-02-04T11:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 112,
+  "fields": {
+    "est_id": 42,
+    "var_id": 11,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2002-11-29T11:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 113,
+  "fields": {
+    "est_id": 42,
+    "var_id": 11,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2003-08-13T16:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 114,
+  "fields": {
+    "est_id": 42,
+    "var_id": 11,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2003-12-12T14:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 115,
+  "fields": {
+    "est_id": 42,
+    "var_id": 11,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2004-06-05T09:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 116,
+  "fields": {
+    "est_id": 46,
+    "var_id": 11,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2004-02-29T17:32:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 117,
+  "fields": {
+    "est_id": 49,
+    "var_id": 11,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2004-05-29T13:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 118,
+  "fields": {
+    "est_id": 52,
+    "var_id": 11,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2001-10-29T12:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 119,
+  "fields": {
+    "est_id": 52,
+    "var_id": 11,
+    "fre_valor": 15,
+    "fre_fecha_ini": "2002-05-11T12:45:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 120,
+  "fields": {
+    "est_id": 52,
+    "var_id": 11,
+    "fre_valor": 30,
+    "fre_fecha_ini": "2002-12-11T13:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 121,
+  "fields": {
+    "est_id": 59,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-05T15:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 122,
+  "fields": {
+    "est_id": 63,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-07T11:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 123,
+  "fields": {
+    "est_id": 68,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-06-23T12:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 124,
+  "fields": {
+    "est_id": 73,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-06-23T16:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 125,
+  "fields": {
+    "est_id": 81,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-07-16T00:00:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 126,
+  "fields": {
+    "est_id": 84,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-13T10:30:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 127,
+  "fields": {
+    "est_id": 88,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2012-04-12T14:50:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 128,
+  "fields": {
+    "est_id": 92,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2014-03-20T12:15:00",
+    "fre_fecha_fin": null
+  }
+},
+{
+  "model": "frecuencia.frecuencia",
+  "pk": 129,
+  "fields": {
+    "est_id": 95,
+    "var_id": 11,
+    "fre_valor": 5,
+    "fre_fecha_ini": "2013-02-18T14:00:00",
+    "fre_fecha_fin": null
+  }
+}
+]

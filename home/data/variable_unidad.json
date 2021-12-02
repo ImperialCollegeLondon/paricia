@@ -166,5 +166,13 @@
     "uni_nombre": "parts-per-billion 10^-9",
     "uni_sigla": "ppb"
   }
+},
+{
+  "model": "variable.unidad",
+  "pk": 22,
+  "fields": {
+    "uni_nombre": "Litros por segundo",
+    "uni_sigla": "L/s"
+  }
 }
 ]

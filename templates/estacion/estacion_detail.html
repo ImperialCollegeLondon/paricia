@@ -16,6 +16,7 @@
 <tr><th>Longitud</th><td>{{estacion.est_longitud|default_if_none:""}}</td></tr>
 <tr><th>Altura</th><td>{{estacion.est_altura|default_if_none:""}}</td></tr>
 <tr><th>Ubicación</th><td>{% if estacion.est_externa %}Externa{% else %}Interna{% endif %}</td></tr>
+<tr><th>Influencia Km2</th><td>{{estacion.influencia_km|default_if_none:""}}</td></tr>
 <tr>
     <th>Fotografía/Archivo</th>
     <td>{% if estacion.est_ficha.url != None %}

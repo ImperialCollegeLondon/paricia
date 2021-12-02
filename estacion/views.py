@@ -272,7 +272,7 @@ class EstacionList(PermissionRequiredMixin, TemplateView):
         campos = ['est_id', 'est_codigo', 'est_nombre', 'tipo_id__nombre', 'pais_id__nombre', 'region_id__nombre',
                   'sitiocuenca_id__sitio__nombre', 'sitiocuenca_id__cuenca__nombre', 'ecosistema_id__nombre',
                   'socio_id__nombre', 'est_estado', 'est_latitud', 'est_longitud', 'est_altura', 'est_ficha',
-                  'est_externa']
+                  'est_externa', 'influencia_km']
         modelo = Estacion.objects.values_list(*campos)
         context['estaciones'] = modelo_a_tabla_html(modelo, col_extra=True)
         context['tipos_estacion'] = Tipo.objects.all()
@@ -283,7 +283,7 @@ class EstacionCreate(PermissionRequiredMixin, CreateView):
     model = Estacion
     permission_required = 'estacion.add_estacion'
     fields = ['est_codigo', 'est_nombre', 'tipo', 'pais', 'region', 'ecosistema', 'socio', 'sitiocuenca',  'est_estado',
-              'est_latitud', 'est_longitud', 'est_altura', 'est_ficha', 'est_externa','influencia_km']
+              'est_latitud', 'est_longitud', 'est_altura', 'est_ficha', 'est_externa', 'influencia_km']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -300,7 +300,7 @@ class EstacionUpdate(PermissionRequiredMixin, UpdateView):
     model = Estacion
     permission_required = 'estacion.change_estacion'
     fields = ['est_codigo', 'est_nombre', 'tipo', 'pais', 'region', 'ecosistema', 'socio', 'sitiocuenca',
-              'est_estado', 'est_latitud', 'est_longitud', 'est_altura', 'est_ficha', 'est_externa','influencia_km']
+              'est_estado', 'est_latitud', 'est_longitud', 'est_altura', 'est_ficha', 'est_externa', 'influencia_km']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

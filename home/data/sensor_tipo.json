@@ -61,5 +61,12 @@
   "fields": {
     "tip_nombre": "Velocidad del viento"
   }
+},
+{
+  "model": "sensor.tipo",
+  "pk": 10,
+  "fields": {
+    "tip_nombre": "Sensor de presi\u00f3n"
+  }
 }
 ]

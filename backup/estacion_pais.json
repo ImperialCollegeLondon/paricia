@@ -1,1 +1,0 @@
-[{"model": "estacion.pais", "pk": 1, "fields": {"nombre": "Per\u00fa"}}, {"model": "estacion.pais", "pk": 2, "fields": {"nombre": "Ecuador"}}, {"model": "estacion.pais", "pk": 3, "fields": {"nombre": "Colombia"}}, {"model": "estacion.pais", "pk": 4, "fields": {"nombre": "Chile"}}, {"model": "estacion.pais", "pk": 5, "fields": {"nombre": "Bolivia"}}]

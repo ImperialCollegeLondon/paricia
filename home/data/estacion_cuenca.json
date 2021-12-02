@@ -1,0 +1,398 @@
+[
+{
+  "model": "estacion.cuenca",
+  "pk": 4,
+  "fields": {
+    "nombre": "Shigual",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Shigual.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 5,
+  "fields": {
+    "nombre": "Anduy",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Anduy.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 7,
+  "fields": {
+    "nombre": "El Carmen",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_-_El_Carmen.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 8,
+  "fields": {
+    "nombre": "M\u00f3nica",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_-_Monica.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 9,
+  "fields": {
+    "nombre": "Huagrahuma",
+    "imagen": "",
+    "ficha": ""
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 10,
+  "fields": {
+    "nombre": "Marianza",
+    "imagen": "",
+    "ficha": ""
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 11,
+  "fields": {
+    "nombre": "Pinos_PAU",
+    "imagen": "",
+    "ficha": ""
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 12,
+  "fields": {
+    "nombre": "Soroche",
+    "imagen": "",
+    "ficha": ""
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 13,
+  "fields": {
+    "nombre": "Kachiyaku",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Kachiyaku.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 14,
+  "fields": {
+    "nombre": "El Volc\u00e1n",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_El_Volcan.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 15,
+  "fields": {
+    "nombre": "Jatunhuaycu 1",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_01.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 16,
+  "fields": {
+    "nombre": "Jatunhuaycu 2",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_02.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 17,
+  "fields": {
+    "nombre": "Jatunhuaycu 3",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_03.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 18,
+  "fields": {
+    "nombre": "Jatunhuaycu 4",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_SUBCUENCA.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 19,
+  "fields": {
+    "nombre": "Tungurahua",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA-Tungurahua.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 20,
+  "fields": {
+    "nombre": "Chamilco",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA-Chamilco.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 21,
+  "fields": {
+    "nombre": "Carachas",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Carachas.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 22,
+  "fields": {
+    "nombre": "Dique Sur",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Dique_Sur.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 23,
+  "fields": {
+    "nombre": "P\u00e1ramo",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Paramo.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 24,
+  "fields": {
+    "nombre": "Chames",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Chames.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 25,
+  "fields": {
+    "nombre": "La Prieta",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Prieta.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 26,
+  "fields": {
+    "nombre": "Chumucos",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Chumucos.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 27,
+  "fields": {
+    "nombre": "Bosque Chames",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Bosque_de_Chames.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 28,
+  "fields": {
+    "nombre": "Palo Blanco",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Palo_Blanco.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 29,
+  "fields": {
+    "nombre": "Las Pircas",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA_-_Pircas.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 30,
+  "fields": {
+    "nombre": "Ramoncillo",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Ramoncillo.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 31,
+  "fields": {
+    "nombre": "Cerro Urco",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Cerco_Urco.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 32,
+  "fields": {
+    "nombre": "Pocco",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Pocco.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 33,
+  "fields": {
+    "nombre": "Matoc",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Matoc.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 34,
+  "fields": {
+    "nombre": "Alto del gritadero",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Alto_del_gritadero.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 35,
+  "fields": {
+    "nombre": "Bel\u00e9n Sur",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Belen_Sur.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 36,
+  "fields": {
+    "nombre": "Boquemonte",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Boquemonte.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 37,
+  "fields": {
+    "nombre": "Ci\u00e9naga",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Cienaga.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 38,
+  "fields": {
+    "nombre": "La Rusia",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_La_Rusia.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 39,
+  "fields": {
+    "nombre": "Laguna de los Patos",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Laguna_de_los_Patos.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 40,
+  "fields": {
+    "nombre": "Olla grande",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Olla_grande.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 41,
+  "fields": {
+    "nombre": "Ture",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Ture.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 42,
+  "fields": {
+    "nombre": "Rontoccocha",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Rontoccocha.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 43,
+  "fields": {
+    "nombre": "Alterada",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Alterada.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 44,
+  "fields": {
+    "nombre": "Conservada",
+    "imagen": "",
+    "ficha": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Conservada.pdf"
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 45,
+  "fields": {
+    "nombre": "Capillas",
+    "imagen": "",
+    "ficha": ""
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 46,
+  "fields": {
+    "nombre": "Pinos_TAM",
+    "imagen": "",
+    "ficha": ""
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 47,
+  "fields": {
+    "nombre": "Laymes",
+    "imagen": "",
+    "ficha": ""
+  }
+},
+{
+  "model": "estacion.cuenca",
+  "pk": 48,
+  "fields": {
+    "nombre": "PAU_05",
+    "imagen": "",
+    "ficha": ""
+  }
+}
+]
