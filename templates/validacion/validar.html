@@ -31,10 +31,14 @@
     }
     .popup-overlay.active{visibility:visible;}
     .popup-content.active{visibility:visible;}
-
-    
-
 </style>
+
+
+<link rel="stylesheet" href="{% static 'ext/dygraph-2.1.0/dygraph.css' %}"/>
+<script crossorigin="anonymous" src="{% static 'ext/dygraph-2.1.0/dygraph.min.js' %}"></script>
+
+
+
 <script>
 
 var error_validacion = false;
@@ -98,7 +102,6 @@ function periodos_validacion(){
 }
 
 function tabla_validacion(){
-
     $.ajax({
         url: '{% url 'validacion:validar' %}',
         data: $("#form_filter").serialize(),
@@ -106,16 +109,14 @@ function tabla_validacion(){
         beforeSend: function () {
             activar_espera();
             $("#div_error").hide();
-
         },
         success: function (data) {
             $("#btn_validacion_enviar").attr("disabled", false);
-            $("#div_informacion").html(data)
-            window.gid = $('.plotly-graph-div,.js-plotly-plot').attr('id');
-            window.plot_orig_width = $("#" + window.gid).width();
+            $("#div_informacion").html(data);
             desactivar_espera();
             $("#div_error").hide();
-            plot_adjust();
+            //plot_adjust();
+            graficar();
         },
         error: function () {
             $("#div_informacion").hide();
@@ -125,6 +126,84 @@ function tabla_validacion(){
     });
 
 }
+
+
+
+
+function graficar(){
+
+    table = $("#table_validacion").DataTable({
+        //language: window.DATATABLES_LANGUAGE,
+        "scrollY":        "400px",
+        "scrollCollapse": true,
+        "paging":         false,
+        "dom": '<"top">rt<"bottom"><"clear">',
+        columnDefs: [],
+    });
+
+    var fecha = table.column(0).data().toArray();
+    var valor1 = table.column(1).data().toArray();
+    var datos = [];
+    for (var i=0; i<fecha.length; i++) {
+        datos.push([ new Date(fecha[i]), parseFloat(valor1[i]) ]);
+    }
+
+    var es_acumulada = $("input[name='orig_variable_es_acumulada']").val();
+
+    if (es_acumulada === "True"){
+        grafico_barras(datos);
+    }else{
+        grafico_dispersion(datos);
+    }
+}
+
+function grafico_barras(data){
+    var var_nombre = $("input[name='orig_variable_nombre']").val();
+    var var_unidad = $("input[name='orig_variable_unidad']").val();
+    var g = new Dygraph(
+        document.getElementById('grafico'),
+        data,
+        {
+            title:  var_nombre + '  (' + var_unidad + ')',
+            labels: ['fecha', 'valor'],
+            drawPoints:true,
+            drawPointCallback : bargraph,
+            strokeWidth: 0.0
+        }
+    );
+}
+
+var bargraph = function(g, series, ctx, cx, cy, color, radius) {
+    ctx.lineWidth = 2.0; // Change as needed. Could use radius
+    ctx.strokeStyle = 'blue';
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx, g.toDomYCoord(0));
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+};
+
+
+function grafico_dispersion(data){
+    var var_nombre = $("input[name='orig_variable_nombre']").val();
+    var var_unidad = $("input[name='orig_variable_unidad']").val();
+    var g = new Dygraph(
+        document.getElementById('grafico'),
+        data,
+        {
+            title: var_nombre + '  (' + var_unidad + ')',
+            labels: ['fecha', 'valor'],
+            drawPoints: true,
+            strokeWidth: 0,
+            pointSize: 1.5
+        }
+    );
+
+}
+
+
 
 
 
@@ -230,7 +309,7 @@ $(document).ready(function() {
         </div></div>
 
         <div class="row"><div class="col">
-{% bootstrap_form_errors form %}
+        {% bootstrap_form_errors form %}
         </div></div>
 
 

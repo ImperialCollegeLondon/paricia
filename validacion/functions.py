@@ -102,7 +102,7 @@ def periodos_validacion_profundidad(est_id, var_id, profundidad):
 
 class ReporteValidacion(models.Model):
     numero_fila = models.BigAutoField(primary_key=True)
-    seleccionado = models.BooleanField()
+    seleccionado = models.BigIntegerField()
     fecha = models.DateTimeField()
     valor_seleccionado = models.DecimalField(max_digits=14, decimal_places=6, null=True)
     valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)
@@ -121,6 +121,9 @@ class ReporteValidacion(models.Model):
         managed = False
 
 
+def xstr(s):
+    return '' if s is None else str(s)
+
 def reporte_validacion(form):
     est_id = form.cleaned_data['estacion'].est_id
     var_id = form.cleaned_data['variable'].var_id
@@ -128,7 +131,17 @@ def reporte_validacion(form):
     fin = datetime.datetime.combine(form.cleaned_data['fin'], datetime.time(23, 59, 59, 999999))
     query = "select * FROM reporte_validacion_var" + str(var_id) + "(%s, %s, %s);"
     consulta = ReporteValidacion.objects.raw(query, [est_id, inicio, fin])
-    return consulta
+    html = ''
+    for row in consulta:
+        html += '<tr id="' + str(row.numero_fila) + '" class="' + str(row.class_fila) + '" >'
+        html += '    <td class="col1 ' + str(row.class_fecha) + '">' + str(row.fecha) + '</td>'
+        html += '    <td class="col2 ' + str(row.class_validacion) + '">' + xstr(row.valor_seleccionado) + '</td>'
+        html += '    <td class="col3 ' + str(row.class_valor) + '">' + xstr(row.valor) + '</td>'
+        html += '    <td class="col4 ' + str(row.class_variacion_consecutiva) + '">' + xstr(row.variacion_consecutiva) + '</td>'
+        html += '    <td class="col5 ' + str(row.class_stddev_error) + '"></td>'
+        html += '    <td class="col6 comentario" >' + xstr(row.comentario) + '</td>'
+        html += '</tr>'
+    return html
 
 
 def reporte_validacion_profundidad(variable_id, estacion_id, profundidad, inicio, fin):

@@ -22,11 +22,25 @@ BEGIN
 	WITH
 	estacion AS (SELECT * FROM estacion_estacion est WHERE est.est_id = _estacion_id),
 	variable AS (SELECT * FROM variable_variable var WHERE var.var_id = %%var_id%%),
+	validacion AS (
+		SELECT v.id, v.fecha, 0 AS tipo, v.valor, TRUE AS existe_en_validacion
+		FROM validacion_var%%var_id%%validado v WHERE v.estacion_id = (SELECT est_id FROM estacion)
+		AND v.fecha >= _fecha_inicio AND v.fecha <= _fecha_fin
+		ORDER BY v.fecha
+	),
 	medicion AS (
-		SELECT m.id, m.fecha, m.valor,
+		SELECT m.id, m.fecha, 1 AS tipo, m.valor,
+			EXISTS(SELECT * FROM validacion v WHERE v.fecha = m.fecha
+			---
+			    AND v.valor = m.valor
+            ---
+			    ) AS existe_en_validacion
 		FROM medicion_var%%var_id%%medicion m WHERE m.estacion_id = (SELECT est_id FROM estacion)
 		AND m.fecha >= _fecha_inicio AND m.fecha <= _fecha_fin
-		ORDER BY m.fecha, m.id
+		ORDER BY m.fecha
+	),
+	union_med_val AS (
+		SELECT * FROM validacion UNION SELECT * FROM medicion
 	),
 	fechas0 AS (
 		SELECT
@@ -37,13 +51,13 @@ BEGIN
 					WHERE fre.var_id_id = (SELECT var_id FROM variable)
 					AND fre.est_id_id = (SELECT est_id FROM estacion) AND fre.fre_fecha_ini < ff.fecha
 					ORDER BY fre.fre_fecha_ini DESC LIMIT 1) AS periodo_esperado
-		FROM (SELECT DISTINCT(mm.fecha) FROM medicion mm) ff ORDER BY fecha ASC
+		FROM (SELECT DISTINCT(umv.fecha) FROM union_med_val umv) ff ORDER BY fecha ASC
 	),
 	fechas AS (
 		SELECT *,
 			CASE WHEN fecha_grupo = 1 THEN 1 ELSE
-			CASE WHEN lapso_tiempo < periodo_esperado - 0.5 THEN 0
-				 WHEN lapso_tiempo > periodo_esperado + 0.5 THEN 2
+			CASE WHEN lapso_tiempo < periodo_esperado - 0.13 THEN 0
+				 WHEN lapso_tiempo > periodo_esperado + 0.13 THEN 2
 				ELSE 1
 			END
 		END AS fecha_valida
@@ -51,9 +65,9 @@ BEGIN
 	),
 	tabla_base AS (
 		SELECT
-			row_number() OVER (ORDER BY mm.fecha ASC, mm.id DESC) as numero_fila,
-			mm.id, mm.fecha, mm.valor
-		FROM medicion mm
+			row_number() OVER (ORDER BY umv.fecha ASC, umv.tipo ASC, umv.id DESC) as numero_fila,
+			*
+		FROM union_med_val umv WHERE NOT (umv.existe_en_validacion = TRUE AND umv.tipo = 1)
 	),
 	tabla1 AS (
 		SELECT *,

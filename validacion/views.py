@@ -27,7 +27,6 @@ from validacion.forms import *
 from validacion.models import Validacion
 from validacion.functions import *
 from variable.models import Variable
-
 import time
 from threading import Thread
 import json
@@ -258,19 +257,20 @@ class Validar(PermissionRequiredMixin, FormView):
     def post(self, request, *args, **kwargs):
         form = ValidacionForm(self.request.POST or None)
         if form.is_valid():
-            lista = reporte_validacion(form)
+            tabla = reporte_validacion(form)
             variable = form.cleaned_data['variable']
             estacion = form.cleaned_data['estacion']
-            _grafico = grafico(lista, variable,  estacion)
             inicio = form.cleaned_data['inicio']
             fin = form.cleaned_data['fin']
             return render(request, 'validacion/validar_tabla.html',
-                          {'lista': lista,
-                           'variable': variable,
-                           'estacion': estacion,
-                           'grafico': _grafico,
-                           'inicio': inicio,
-                           'fin': fin}
+                          {
+                              'hay_datos': True,
+                            'tabla': tabla,
+                            'variable': variable,
+                            'estacion': estacion,
+                            'inicio': inicio,
+                            'fin': fin
+                          }
                           )
         return ""
 

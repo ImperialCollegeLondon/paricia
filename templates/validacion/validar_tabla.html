@@ -1,11 +1,13 @@
 {% load bootstrap4 %}
 {% load static %}
 
-<script src="{% static 'scripts/validacion.js' %}"></script>
+<script src="{% static 'scripts/validacion220131.js' %}"></script>
 <link rel="stylesheet" href="{% static 'styles/validacion.css' %}">
 
 <input type="hidden" name="orig_estacion_id" value="{{estacion.est_id }}">
 <input type="hidden" name="orig_variable_id" value="{{variable.var_id}}">
+<input type="hidden" name="orig_variable_nombre" value="{{variable.var_nombre}}">
+<input type="hidden" name="orig_variable_unidad" value="{{variable.uni_id.uni_sigla}}">
 <input type="hidden" name="orig_variable_es_acumulada" value="{{variable.es_acumulada}}">
 <input type="hidden" name="orig_fecha_inicio" value="{{inicio|date:'Y-m-d'}}">
 <input type="hidden" name="orig_fecha_fin" value="{{fin|date:'Y-m-d'}}">
@@ -30,37 +32,54 @@
 <br>
 
 
-<div>
-    {% if grafico %}
-    <center>
-        <button id="resize_plot" class="btn btn-success btn-xs" onclick="resizePlot()"> &gt Un pixel por dato &lt </button>
-        <div id="grafico" style="overflow-x: scroll;">{{ grafico|safe }}</div>
-    </center>
-    {%else%}
-    <label>No hay información para los parametros ingresados</label>
+<div class="row">
+    <div class="col">
+    {% if hay_datos %}
+<!--        <div class="row">-->
+<!--            <div class="col text-center">-->
+<!--                <button id="resize_plot" class="btn btn-success btn-xs" onclick="resizePlot()"> &gt Un pixel por dato &lt </button>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="row">
+            <div class="col text-center">
+                <div id="grafico" style="overflow-x: scroll; width:100%; height:300px;"></div>
+            </div>
+        </div>
+        {%else%}
+        <div class="row">
+            <div class="col text-center">
+                <label>No hay información para los parametros ingresados</label>
+            </div>
+        </div>
     {% endif %}
+    </div>
 </div>
 
 <div class="transp-blanco" style="text-align: center;" >
 <div class="" style="max-width:900px; display:inline-block;">
-<div class="row ml-5 mr-5">
+<div class="row mx-5">
     <div class="col " style="border: 1px solid lightgrey;">
         <div class="row">
-            <h6>Límites Dato crudo:
-            <button id="limites_cambiar" class="btn btn-primary btn-sm" style="background-color: #BFBFFF">Cambiar</button>
-            <button id="limites_reset" class="btn btn-secondary btn-sm">Reestablecer</button>
-            </h6>
+
+                <h6>Límites Dato crudo:
+                <button id="limites_cambiar" class="btn btn-primary btn-sm" style="background-color: #BFBFFF">Cambiar</button>
+                <button id="limites_reset" class="btn btn-secondary btn-sm">Reestablecer</button>
+                </h6>
+
         </div>
 
         <div class="row">
-            <div class="ml-1 mr-1" >Inferior:</div>
-            <div style="width:4em;">
-                <input name="lim_inf" type="number" class="form-control form-control-sm" step="0.1" >
-            </div>
-            <div class="ml-4 mr-1">Superior:</div>
-            <div style="width:4em;">
-                <input name="lim_sup" type="number" class="form-control form-control-sm" step="0.1" >
-            </div>
+
+                <div class="ml-1 mr-1" >Inferior:</div>
+                <div style="width:4em;">
+                    <input name="lim_inf" type="number" class="form-control form-control-sm" step="0.1" >
+                </div>
+                <div class="ml-4 mr-1">Superior:</div>
+                <div style="width:4em;">
+                    <input name="lim_sup" type="number" class="form-control form-control-sm" step="0.1" >
+                </div>
+
         </div>
     </div>
 
@@ -210,22 +229,7 @@
         </tr>
     </thead>
 
-
-
-    <tbody>
-
-    {% for item in lista %}
-    <tr id="{{item.numero_fila}}" class="{{item.class_fila}}" >
-        <td class="col1 {{item.class_fecha}}">{{item.fecha|date:"Y-m-d H:i:s.u"}}</td>
-        <td class="col2 {{item.class_validacion}}">{{item.valor_seleccionado|default_if_none:"" }}</td>
-        <td class="col3 {{item.class_valor}}">{{item.valor|default_if_none:"" }}</td>
-        <td class="col4 {{item.class_variacion_consecutiva}}">{{item.variacion_consecutiva|default_if_none:"" }}</td>
-        <td class="col5 {{item.class_stddev_error}}"></td>
-        <td class="col6 comentario" >{{item.comentario|default_if_none:""}}</td>
-    </tr>
-    {% endfor%}
-
-    </tbody>
+    <tbody>{{ tabla|safe }}</tbody>
 
 </table>
 

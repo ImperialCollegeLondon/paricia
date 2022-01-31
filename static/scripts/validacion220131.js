@@ -4,15 +4,23 @@ var gid = 0;
 
 function plot_adjust(){
     var window_width = $("#grafico").width();
-    Plotly.relayout(gid, {width: window_width });
-    $("#" + gid).css("width", "");
+    /// Usa antiguo plotly
+    //Plotly.relayout(gid, {width: window_width });
+//    $("#" + gid).css("width", "");
+//    plot_adjusted = true;
+//    $('#resize_plot').html("&gt Un pixel por dato &lt");
+    $("#grafico").css("width", "2000px");
     plot_adjusted = true;
     $('#resize_plot').html("&gt Un pixel por dato &lt");
 }
 
 function plot_orig(){
-    Plotly.relayout(gid, {width: plot_orig_width });
-    $("#" + gid).css("width", plot_orig_width + "px");
+    // Usa antiguo plotly
+    //Plotly.relayout(gid, {width: plot_orig_width });
+//    $("#" + gid).css("width", plot_orig_width + "px");
+//    plot_adjusted = false;
+//    $('#resize_plot').html("&gt Ajustar a pantalla &lt");
+    $("#grafico").css("width", "100%");
     plot_adjusted = false;
     $('#resize_plot').html("&gt Ajustar a pantalla &lt");
 }
