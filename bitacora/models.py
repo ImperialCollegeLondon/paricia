@@ -18,9 +18,20 @@ from django.urls import reverse
 
 
 class Bitacora(models.Model):
+    """Possibly similar to a log entry? An observation made about some variable
+    at some station between some dates. Appears under "Maintenance" on frontend
+    alongside sensor installations.
+    DELETE? - Unsure how useful this is.
+    NEWNAME: LogEntry
+    """
+
     bit_id = models.AutoField("Id", primary_key=True)
-    var_id = models.ForeignKey(Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable")
-    est_id = models.ForeignKey(Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estacion")
+    var_id = models.ForeignKey(
+        Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"
+    )
+    est_id = models.ForeignKey(
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estacion"
+    )
     bit_fecha_ini = models.DateField("Fecha de inicio")
     bit_fecha_fin = models.DateField("fecha de fin", blank=True, null=True)
     bit_observacion = models.CharField("Observacion", max_length=500, blank=True)
@@ -29,7 +40,11 @@ class Bitacora(models.Model):
         return str(self.bit_id)
 
     def get_absolute_url(self):
-        return reverse('bitacora:bitacora_index')
+        return reverse("bitacora:bitacora_index")
 
     class Meta:
-        ordering = ('bit_id', 'est_id', 'var_id',)
+        ordering = (
+            "bit_id",
+            "est_id",
+            "var_id",
+        )
