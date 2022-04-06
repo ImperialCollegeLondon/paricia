@@ -13,9 +13,29 @@
 
 from excel_response import ExcelResponse
 
+
 def excel_estacion(estaciones):
-    cabecera = [['Código', 'Descripción', 'Tipo', 'País', 'Región', 'Ecosistema', 'Socio', 'Sitio', 'Cuenca',
-                 'Latitud', 'Longitud', 'Altura', 'Estado'], ]
+    """Returns an Excel Spreadsheet given a queryset of Stations. Used to export
+    information on stations in views.
+    NEWNAME: excel_station
+    """
+    cabecera = [
+        [
+            "Código",
+            "Descripción",
+            "Tipo",
+            "País",
+            "Región",
+            "Ecosistema",
+            "Socio",
+            "Sitio",
+            "Cuenca",
+            "Latitud",
+            "Longitud",
+            "Altura",
+            "Estado",
+        ],
+    ]
     cuerpo = []
     for objeto in estaciones:
         fila = []
@@ -26,6 +46,7 @@ def excel_estacion(estaciones):
         fila.append(objeto.region.nombre if objeto.region is not None else None)
         fila.append(objeto.ecosistema.nombre if objeto.ecosistema is not None else None)
         fila.append(objeto.socio.nombre if objeto.socio is not None else None)
+        # FIXME: Bare except statements
         try:
             fila.append(objeto.sitiocuenca.sitio.nombre)
         except:
@@ -37,7 +58,7 @@ def excel_estacion(estaciones):
         fila.append(objeto.est_latitud)
         fila.append(objeto.est_longitud)
         fila.append(objeto.est_altura)
-        fila.append('Operativa' if objeto.est_estado else 'No operativa')
+        fila.append("Operativa" if objeto.est_estado else "No operativa")
         cuerpo.append(fila)
-    response = ExcelResponse(cabecera + cuerpo, 'Estaciones_iMHEA')
+    response = ExcelResponse(cabecera + cuerpo, "Estaciones_iMHEA")
     return response
