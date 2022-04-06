@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  web:
+    build: .
+    environment:
+      - LOGGING_FILE=/usr/src/app/log/paricia
+    volumes:
+      - .:/usr/src/app
+      - ./log:/usr/src/app/log
+    ports:
+      - 8000:8000
+      - 2222:2222
+    depends_on:
+      db:
+        condition: service_healthy
