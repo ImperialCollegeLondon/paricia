@@ -7,6 +7,12 @@ db.sqlite3
 media
 */db/*
 
+# Migrations 
+# Probably want to ignore _for now_ but not after refactoring of code
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+
 # Backup files # 
 *.bak 
 
