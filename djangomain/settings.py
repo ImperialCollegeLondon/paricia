@@ -34,13 +34,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'mj7(ja+=@-xxx&(t)_2um%y^khe17txt&^_ydw0d168%+so#yd'
+SECRET_KEY = "mj7(ja+=@-xxx&(t)_2um%y^khe17txt&^_ydw0d168%+so#yd"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-#DEBUG = False
+# DEBUG = False
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 # ALLOWED_HOSTS = ['127.0.0.1', ]
 
 # DEBUG = False
@@ -49,41 +49,40 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'home.apps.HomeConfig',
-    'estacion.apps.EstacionConfig',
-    'datalogger.apps.DataloggerConfig',
-    'sensor.apps.SensorConfig',
-    'variable.apps.VariableConfig',
-    'bitacora.apps.BitacoraConfig',
-    'cruce.apps.CruceConfig',
-    'formato.apps.FormatoConfig',
-    'frecuencia.apps.FrecuenciaConfig',
-    'instalacion.apps.InstalacionConfig',
-    'medicion.apps.MedicionConfig',
-    'validacion.apps.ValidacionConfig',
-    'validacion_v2.apps.ValidacionV2Config',
-    'horario.apps.HorarioConfig',
-    'diario.apps.DiarioConfig',
-    'mensual.apps.MensualConfig',
-    'importacion.apps.ImportacionConfig',
-    'vacios.apps.VaciosConfig',
-    'calidad.apps.CalidadConfig',
-    'reportes.apps.ReportesConfig',
-    'reportes_v2.apps.Reportes_v2Config',
-    'telemetria.apps.TelemetriaConfig',
-    'anual.apps.AnualConfig',
-    'indices.apps.IndicesConfig',
-    'anuarios.apps.AnuariosConfig',
-    'bootstrap4',
-    'django_extensions',
-    'django.contrib.humanize',
-
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "home.apps.HomeConfig",
+    "estacion.apps.EstacionConfig",
+    "datalogger.apps.DataloggerConfig",
+    "sensor.apps.SensorConfig",
+    "variable.apps.VariableConfig",
+    "bitacora.apps.BitacoraConfig",
+    "cruce.apps.CruceConfig",
+    "formato.apps.FormatoConfig",
+    "frecuencia.apps.FrecuenciaConfig",
+    "instalacion.apps.InstalacionConfig",
+    "medicion.apps.MedicionConfig",
+    "validacion.apps.ValidacionConfig",
+    "validacion_v2.apps.ValidacionV2Config",
+    "horario.apps.HorarioConfig",
+    "diario.apps.DiarioConfig",
+    "mensual.apps.MensualConfig",
+    "importacion.apps.ImportacionConfig",
+    "vacios.apps.VaciosConfig",
+    "calidad.apps.CalidadConfig",
+    "reportes.apps.ReportesConfig",
+    "reportes_v2.apps.Reportes_v2Config",
+    "telemetria.apps.TelemetriaConfig",
+    "anual.apps.AnualConfig",
+    "indices.apps.IndicesConfig",
+    "anuarios.apps.AnuariosConfig",
+    "bootstrap4",
+    "django_extensions",
+    "django.contrib.humanize",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     #
     # 'debug_toolbar',
     #
@@ -93,51 +92,50 @@ MIDDLEWARE = [
     ##
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     ##
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'djangomain.urls'
+ROOT_URLCONF = "djangomain.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
                 # 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
                 ##
-                'home.context_processor.menu',
+                "home.context_processor.menu",
                 ##
-
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'djangomain.wsgi.application'
+WSGI_APPLICATION = "djangomain.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'imhea',
-        'USER': 'imhea',
-        'PASSWORD': 'imhea',
-        'HOST': 'localhost',
-        'PORT': '5432'
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "db",
+        "PORT": "5432",
     }
 }
 
@@ -146,16 +144,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -168,37 +166,37 @@ AUTH_PASSWORD_VALIDATORS = [
 # USE_L10N = True
 # USE_TZ = True
 
-LANGUAGE_CODE = 'es-EC'
-TIME_ZONE = 'America/Bogota'
+LANGUAGE_CODE = "es-EC"
+TIME_ZONE = "America/Bogota"
 USE_I18N = True
 USE_L10N = False
-DECIMAL_SEPARATOR = '.'
+DECIMAL_SEPARATOR = "."
 USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [  # Directorios adicionales static
     os.path.join(BASE_DIR, "static"),
 ]
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ("127.0.0.1",)
 
 
 ########################################################################
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
 
 ########################################################################
 # Requerido para enviar mensajes de correo a través de servidor SMTP
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '10.1.1.18'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "10.1.1.18"
 EMAIL_PORT = 25
 #
 #########################################################################
@@ -208,6 +206,6 @@ EMAIL_PORT = 25
 #
 # Reemplaza a:
 #              AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
-AUTHENTICATION_BACKENDS = ['home.auth_backend.AnonymousPermissions']
+AUTHENTICATION_BACKENDS = ["home.auth_backend.AnonymousPermissions"]
 #
 #########################################################################
