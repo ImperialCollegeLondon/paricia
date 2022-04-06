@@ -14,8 +14,12 @@
 from excel_response import ExcelResponse
 from .models import Datalogger
 
+
 def excel_datalogger():
-    cabecera = [['Código', 'Marca', 'Modelo', 'Serial'], ]
+    """Returns an excel spreadsheet given a QuerySet of DataLoggers."""
+    cabecera = [
+        ["Código", "Marca", "Modelo", "Serial"],
+    ]
     cuerpo = []
     objetos = Datalogger.objects.all()
     for objeto in objetos:
@@ -26,5 +30,5 @@ def excel_datalogger():
         fila.append(objeto.dat_serial)
 
         cuerpo.append(fila)
-    response = ExcelResponse(cabecera + cuerpo, 'Dataloggeres_iMHEA')
+    response = ExcelResponse(cabecera + cuerpo, "Dataloggeres_iMHEA")
     return response
