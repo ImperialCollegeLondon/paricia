@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libmagic1 && rm
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /usr/src/app
 WORKDIR /usr/src/app
-RUN mkdir log
+RUN mkdir log ; exit 0
 RUN python manage.py collectstatic --no-input
 
 # 8000 for the web and 2222 for ssh
