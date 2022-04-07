@@ -12,28 +12,25 @@
 #              ya sea en uso total o parcial del código.
 
 
-from anuarios.models import Var3Anuarios
-import plotly.offline as opy
-import plotly.graph_objs as go
-from reportes_v2.titulos import Titulos
 import calendar
-from django.db.models import Avg
 
-from openpyxl.chart import (
-    ScatterChart,
-    Reference,
-    Series,
-)
+import plotly.graph_objs as go
+import plotly.offline as opy
+from django.db.models import Avg
+from openpyxl.chart import Reference, ScatterChart, Series
+
+from anuarios.models import Var3Anuarios
+from reportes_v2.titulos import Titulos
 
 
 # clase para anuario de la variable HAI
 class TypeIV(Titulos):
 
-    '''@staticmethod
+    """@staticmethod
     def consulta(estacion, periodo):
         # annotate agrupa los valores en base a un campo y a una operacion
         informacion = list(Var3Anuarios.objects.filter(est_id=estacion).filter(hai_periodo=periodo))
-        return informacion'''
+        return informacion"""
 
     def matriz(self, estacion, variable, periodo):
         datos = self.consulta(estacion, variable, periodo)
@@ -55,44 +52,47 @@ class TypeIV(Titulos):
             trace0 = go.Scatter(
                 x=meses,
                 y=max_simple,
-                name='Max',
-                line=dict(
-                    color='rgb(22, 96, 167)',
-                    width=4)
+                name="Max",
+                line=dict(color="rgb(22, 96, 167)", width=4),
             )
             trace1 = go.Scatter(
                 x=meses,
                 y=min_simple,
-                name='Min',
+                name="Min",
                 line=dict(
-                    color='rgb(205, 12, 24)',
-                    width=4, )
+                    color="rgb(205, 12, 24)",
+                    width=4,
+                ),
             )
             trace2 = go.Scatter(
                 x=meses,
                 y=avg_simple,
-                name='Media',
+                name="Media",
                 line=dict(
-                    color='rgb(50, 205, 50)',
-                    width=4, )
+                    color="rgb(50, 205, 50)",
+                    width=4,
+                ),
             )
-           #"""  trace3 = go.Scatter(
-           #     x=meses,
-           #     y=historico,
-           #     name='Media',
-           #     line=dict(
-           #         color='rgb(125, 96, 160)',
-           #         width=4, )
-           # )
+            # """  trace3 = go.Scatter(
+            #     x=meses,
+            #     y=historico,
+            #     name='Media',
+            #     line=dict(
+            #         color='rgb(125, 96, 160)',
+            #         width=4, )
+            # )
 
-           #data = [trace0, trace1, trace2, trace3] """
+            # data = [trace0, trace1, trace2, trace3] """
             data = [trace0, trace1, trace2]
             layout = go.Layout(
-                title=str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(") ")
+                title=str(variable.var_nombre)
+                + str(" (")
+                + str(variable.uni_id.uni_sigla)
+                + str(") ")
             )
             figure = go.Figure(data=data, layout=layout)
             figure.update_layout(legend_orientation="h")
-            div = opy.plot(figure, auto_open=False, output_type='div')
+            div = opy.plot(figure, auto_open=False, output_type="div")
             return div
         return False
 
@@ -100,74 +100,96 @@ class TypeIV(Titulos):
         fila = 5
         col_fin = 11
         col = 1
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col_fin)
+        ws.merge_cells(
+            start_row=fila, start_column=col, end_row=fila, end_column=col_fin
+        )
         subtitle = ws.cell(row=fila, column=col)
-        subtitle.value = "Humedad Relativa del Aire - Valores medios mensuales, " \
-                         "absolutos maximos y mimimos "
-        self.set_style(cell=subtitle, font='font_bold_10', alignment='center',
-                       border='border_thin', fill='light_salmon')
+        subtitle.value = (
+            "Humedad Relativa del Aire - Valores medios mensuales, "
+            "absolutos maximos y mimimos "
+        )
+        self.set_style(
+            cell=subtitle,
+            font="font_bold_10",
+            alignment="center",
+            border="border_thin",
+            fill="light_salmon",
+        )
 
         fila += 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
+        ws.merge_cells(
+            start_row=fila, start_column=col, end_row=fila + 1, end_column=col
+        )
         cell = ws.cell(row=fila, column=col)
         cell.value = "MES"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col + 5)
+        ws.merge_cells(
+            start_row=fila, start_column=col, end_row=fila, end_column=col + 5
+        )
         cell = ws.cell(row=fila, column=col)
         cell_final = ws.cell(row=fila, column=col + 5)
         cell.value = "Humedad Relativa del Aire (%)"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
-        self.set_style(cell=cell_final, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
+        self.set_style(
+            cell=cell_final, font="font_10", alignment="center", border="border_thin"
+        )
 
         fila += 1
         col = 2
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Max"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Día"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Min"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Día"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Mensual"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Histórica"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         matriz = self.matriz(estacion, variable, periodo)
         media_historica = self.datos_historicos(estacion, variable, periodo)
@@ -177,48 +199,60 @@ class TypeIV(Titulos):
         for item in matriz:
             cell = ws.cell(row=fila, column=col)
             cell.value = self.get_mes_anio(item.hai_mes)
-            self.set_style(cell=cell, font='font_10', alignment='left',
-                           border='border_thin')
-            cell = ws.cell(row=fila, column=col+1)
+            self.set_style(
+                cell=cell, font="font_10", alignment="left", border="border_thin"
+            )
+            cell = ws.cell(row=fila, column=col + 1)
             cell.value = item.hai_maximo
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
 
-            cell = ws.cell(row=fila, column=col+2)
+            cell = ws.cell(row=fila, column=col + 2)
             cell.value = item.hai_maximo_dia
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
 
-            cell = ws.cell(row=fila, column=col+3)
+            cell = ws.cell(row=fila, column=col + 3)
             cell.value = item.hai_minimo
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
 
-            cell = ws.cell(row=fila, column=col+4)
+            cell = ws.cell(row=fila, column=col + 4)
             cell.value = item.hai_minimo_dia
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
 
             cell = ws.cell(row=fila, column=col + 5)
             cell.value = item.hai_promedio
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
             if len(media_historica) > 0 and len(media_historica) > item.hai_mes:
                 cell = ws.cell(row=fila, column=col + 6)
-                cell.value = round(media_historica[item.hai_mes-1], 2)
-                self.set_style(cell=cell, font='font_10', alignment='center',
-                               border='border_thin')
+                cell.value = round(media_historica[item.hai_mes - 1], 2)
+                self.set_style(
+                    cell=cell, font="font_10", alignment="center", border="border_thin"
+                )
 
             fila += 1
 
     @staticmethod
     def grafico_excel(ws, variable, periodo):
         c1 = ScatterChart()
-        c1.title = str(variable.var_nombre) + str(" (") + \
-            str(variable.uni_id.uni_sigla) + str(") ") + str(periodo)
+        c1.title = (
+            str(variable.var_nombre)
+            + str(" (")
+            + str(variable.uni_id.uni_sigla)
+            + str(") ")
+            + str(periodo)
+        )
         # c1.style = 13
         # c1.y_axis.title = str(variable.uni_id.uni_sigla)
-        c1.x_axis.title = 'Meses'
+        c1.x_axis.title = "Meses"
 
         xvalues = Reference(ws, min_col=1, min_row=8, max_row=19)
         cols_data = [2, 4, 6, 7]

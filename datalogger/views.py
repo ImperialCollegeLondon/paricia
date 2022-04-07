@@ -13,65 +13,74 @@
 
 from __future__ import unicode_literals
 
-from datalogger.models import Datalogger, Marca
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import JsonResponse
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib.auth.decorators import permission_required
-from django.http import JsonResponse
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from datalogger.models import Datalogger, Marca
 from home.functions import *
+
 from .functions import *
 
 
 class DataloggerList(PermissionRequiredMixin, TemplateView):
-    template_name = 'datalogger/datalogger_list.html'
-    permission_required = 'datalogger.view_datalogger'
+    template_name = "datalogger/datalogger_list.html"
+    permission_required = "datalogger.view_datalogger"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ['dat_id', 'dat_codigo', 'dat_modelo', 'dat_serial', 'dat_estado', 'mar_id__mar_nombre']
+        campos = [
+            "dat_id",
+            "dat_codigo",
+            "dat_modelo",
+            "dat_serial",
+            "dat_estado",
+            "mar_id__mar_nombre",
+        ]
         modelo = Datalogger.objects.values_list(*campos)
-        context['dataloggers'] = modelo_a_tabla_html(modelo, col_extra=True)
-        context['marcas'] = Marca.objects.all()
+        context["dataloggers"] = modelo_a_tabla_html(modelo, col_extra=True)
+        context["marcas"] = Marca.objects.all()
         return context
 
 
 class DataloggerCreate(PermissionRequiredMixin, CreateView):
     model = Datalogger
-    permission_required = 'datalogger.add_datalogger'
-    fields = ['dat_codigo', 'mar_id', 'dat_modelo', 'dat_serial', 'dat_estado']
+    permission_required = "datalogger.add_datalogger"
+    fields = ["dat_codigo", "mar_id", "dat_modelo", "dat_serial", "dat_estado"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Crear"
+        context["title"] = "Crear"
         return context
 
 
 class DataloggerDetail(DetailView):
     model = Datalogger
-    permission_required = 'datalogger.view_datalogger'
+    permission_required = "datalogger.view_datalogger"
 
 
 class DataloggerUpdate(PermissionRequiredMixin, UpdateView):
     model = Datalogger
-    permission_required = 'datalogger.change_datalogger'
-    fields = ['dat_codigo', 'mar_id', 'dat_modelo', 'dat_serial', 'dat_estado']
+    permission_required = "datalogger.change_datalogger"
+    fields = ["dat_codigo", "mar_id", "dat_modelo", "dat_serial", "dat_estado"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Modificar"
+        context["title"] = "Modificar"
         return context
 
 
 class DataloggerDelete(PermissionRequiredMixin, DeleteView):
     model = Datalogger
-    permission_required = 'datalogger.delete_datalogger'
-    success_url = reverse_lazy('datalogger:datalogger_index')
+    permission_required = "datalogger.delete_datalogger"
+    success_url = reverse_lazy("datalogger:datalogger_index")
 
 
-@permission_required('datalogger.view_datalogger')
+@permission_required("datalogger.view_datalogger")
 def DataloggerExport(request):
     response = excel_datalogger()
     return response
@@ -91,48 +100,50 @@ def DataloggerExport(request):
 
 #################################################################################
 
+
 class MarcaList(PermissionRequiredMixin, TemplateView):
-    template_name = 'datalogger/marca_list.html'
-    permission_required = 'datalogger.view_marca'
+    template_name = "datalogger/marca_list.html"
+    permission_required = "datalogger.view_marca"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ['mar_id', 'mar_nombre', ]
+        campos = [
+            "mar_id",
+            "mar_nombre",
+        ]
         modelo = Marca.objects.values_list(*campos)
-        context['marcas'] = modelo_a_tabla_html(modelo, col_extra=True)
+        context["marcas"] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
 
 
 class MarcaCreate(PermissionRequiredMixin, CreateView):
     model = Marca
-    permission_required = 'datalogger.add_marca'
-    fields = ['mar_nombre']
+    permission_required = "datalogger.add_marca"
+    fields = ["mar_nombre"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Crear"
+        context["title"] = "Crear"
         return context
 
 
 class MarcaDetail(DetailView):
     model = Marca
-    permission_required = 'datalogger.view_marca'
+    permission_required = "datalogger.view_marca"
 
 
 class MarcaUpdate(PermissionRequiredMixin, UpdateView):
     model = Marca
-    permission_required = 'datalogger.change_marca'
-    fields = ['mar_nombre']
+    permission_required = "datalogger.change_marca"
+    fields = ["mar_nombre"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Modificar"
+        context["title"] = "Modificar"
         return context
 
 
 class MarcaDelete(PermissionRequiredMixin, DeleteView):
     model = Marca
-    permission_required = 'datalogger.delete_marca'
-    success_url = reverse_lazy('datalogger:marca_index')
-
-
+    permission_required = "datalogger.delete_marca"
+    success_url = reverse_lazy("datalogger:marca_index")

@@ -10,14 +10,32 @@
 #              ya sea en uso total o parcial del código.
 
 from django.urls import re_path
+
 from instalacion import views
 
-app_name = 'instalacion'
+app_name = "instalacion"
 urlpatterns = [
-    re_path(r'instalacion/$', views.InstalacionList.as_view(), name='instalacion_index'),
-    re_path(r'instalacion/create/$', views.InstalacionCreate.as_view(), name='instalacion_create'),
-    re_path(r'instalacion/detail/(?P<pk>[0-9]+)/$', views.InstalacionDetail.as_view(), name='instalacion_detail'),
-    re_path(r'instalacion/edit/(?P<pk>[0-9]+)/$', views.InstalacionUpdate.as_view(), name='instalacion_update'),
-    re_path(r'instalacion/(?P<pk>[0-9]+)/delete/$', views.InstalacionDelete.as_view(), name='instalacion_delete'),
-
+    re_path(
+        r"instalacion/$", views.InstalacionList.as_view(), name="instalacion_index"
+    ),
+    re_path(
+        r"instalacion/create/$",
+        views.InstalacionCreate.as_view(),
+        name="instalacion_create",
+    ),
+    re_path(
+        r"instalacion/detail/(?P<pk>[0-9]+)/$",
+        views.InstalacionDetail.as_view(),
+        name="instalacion_detail",
+    ),
+    re_path(
+        r"instalacion/edit/(?P<pk>[0-9]+)/$",
+        views.InstalacionUpdate.as_view(),
+        name="instalacion_update",
+    ),
+    re_path(
+        r"instalacion/(?P<pk>[0-9]+)/delete/$",
+        views.InstalacionDelete.as_view(),
+        name="instalacion_delete",
+    ),
 ]

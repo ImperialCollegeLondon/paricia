@@ -12,85 +12,86 @@
 #              ya sea en uso total o parcial del código.
 
 from __future__ import unicode_literals
-from medicion.models import CurvaDescarga, NivelFuncion
-from .forms import NivelFuncionForm
-from .functions import *
+
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db import connection
+from django.db.models import F, Prefetch, Value, Window
+from django.db.models.functions import Concat, Lag
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from home.functions import *
-from django.contrib.auth.decorators import permission_required
-from variable.models import Variable
-from django.db.models import Prefetch
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
 from cruce.models import Cruce
-from django.http import JsonResponse
-from django.db.models import Value, Window, F
-from django.db.models.functions import Concat,Lag
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.db import connection
+from home.functions import *
+from medicion.models import CurvaDescarga, NivelFuncion
+from variable.models import Variable
+
+from .forms import NivelFuncionForm
+from .functions import *
 
 
 class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
-    template_name = 'medicion/curvadescarga_list.html'
-    permission_required = 'medicion.view_curvadescarga'
+    template_name = "medicion/curvadescarga_list.html"
+    permission_required = "medicion.view_curvadescarga"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ['id', 'estacion__est_codigo', 'fecha', 'requiere_recalculo_caudal']
+        campos = ["id", "estacion__est_codigo", "fecha", "requiere_recalculo_caudal"]
         curvadescarga = CurvaDescarga.objects.all().values_list(*campos)
-        context['curvadescarga'] = modelo_a_tabla_html(curvadescarga, col_extra=True)
+        context["curvadescarga"] = modelo_a_tabla_html(curvadescarga, col_extra=True)
         return context
 
 
 class CurvaDescargaCreate(PermissionRequiredMixin, CreateView):
     model = CurvaDescarga
-    fields = ['estacion', 'fecha']
-    permission_required = 'medicion.add_curvadescarga'
+    fields = ["estacion", "fecha"]
+    permission_required = "medicion.add_curvadescarga"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Crear"
+        context["title"] = "Crear"
         return context
 
 
 class CurvaDescargaDetail(PermissionRequiredMixin, DetailView):
     model = CurvaDescarga
-    permission_required = 'medicion.view_curvadescarga'
+    permission_required = "medicion.view_curvadescarga"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         curvadescarga_id = self.object.pk
-        context['nivelfunciontabla'] = nivelfunciontabla(curvadescarga_id)
+        context["nivelfunciontabla"] = nivelfunciontabla(curvadescarga_id)
         return context
 
 
 class CurvaDescargaUpdate(PermissionRequiredMixin, UpdateView):
     model = CurvaDescarga
-    permission_required = 'medicion.change_curvadescarga'
-    fields = ['estacion', 'fecha']
+    permission_required = "medicion.change_curvadescarga"
+    fields = ["estacion", "fecha"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Modificar"
+        context["title"] = "Modificar"
         return context
 
 
 class CurvaDescargaDelete(PermissionRequiredMixin, DeleteView):
     model = CurvaDescarga
-    permission_required = 'medicion.delete_curvadescarga'
-    success_url = reverse_lazy('medicion:curvadescarga_index')
+    permission_required = "medicion.delete_curvadescarga"
+    success_url = reverse_lazy("medicion:curvadescarga_index")
 
 
 class NivelFuncionCreate(PermissionRequiredMixin, CreateView):
-    permission_required = 'medicion.add_curvadescarga'
+    permission_required = "medicion.add_curvadescarga"
     model = NivelFuncion
     form_class = NivelFuncionForm
 
     def post(self, request, *args, **kwargs):
-        curvadescarga_id = kwargs.get('id')
+        curvadescarga_id = kwargs.get("id")
         curvadescarga = CurvaDescarga.objects.get(pk=curvadescarga_id)
         form = NivelFuncionForm(self.request.POST or None)
         try:
@@ -99,54 +100,66 @@ class NivelFuncionCreate(PermissionRequiredMixin, CreateView):
         except:
             ## Si no está correcto se envía un mensaje de Error
             _nivelfunciontabla = nivelfunciontabla(curvadescarga_id)
-            new_nivelfuncion = render(request, 'medicion/nivelfuncion_form.html',
-                                      {'form': NivelFuncionForm(self.request.POST or None)})
+            new_nivelfuncion = render(
+                request,
+                "medicion/nivelfuncion_form.html",
+                {"form": NivelFuncionForm(self.request.POST or None)},
+            )
             return render(
                 request,
-                'medicion/curvadescarga_detail.html',
-                {'curvadescarga': curvadescarga,
-                 'nivelfunciontabla': _nivelfunciontabla,
-                 'new_nivelfuncion':new_nivelfuncion.content.decode("utf-8")})
+                "medicion/curvadescarga_detail.html",
+                {
+                    "curvadescarga": curvadescarga,
+                    "nivelfunciontabla": _nivelfunciontabla,
+                    "new_nivelfuncion": new_nivelfuncion.content.decode("utf-8"),
+                },
+            )
         nivelfuncion.curvadescarga = curvadescarga
         nivelfuncion.save()
         curvadescarga.requiere_recalculo_caudal = True
         curvadescarga.save()
-        url = reverse('medicion:curvadescarga_detail', kwargs={'pk': curvadescarga_id})
+        url = reverse("medicion:curvadescarga_detail", kwargs={"pk": curvadescarga_id})
         return HttpResponseRedirect(url)
 
     def get_context_data(self, **kwargs):
         context = super(NivelFuncionCreate, self).get_context_data(**kwargs)
-        context['title'] = 'Crear'
-        curvadescarga_id = self.kwargs.get('id')
-        context['url'] = reverse('medicion:nivelfuncion_create', kwargs={'id':curvadescarga_id})
+        context["title"] = "Crear"
+        curvadescarga_id = self.kwargs.get("id")
+        context["url"] = reverse(
+            "medicion:nivelfuncion_create", kwargs={"id": curvadescarga_id}
+        )
         return context
 
 
 class NivelFuncionUpdate(PermissionRequiredMixin, UpdateView):
-    permission_required = 'medicion.change_curvadescarga'
+    permission_required = "medicion.change_curvadescarga"
     model = NivelFuncion
-    fields = ['nivel', 'funcion']
+    fields = ["nivel", "funcion"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Modificar'
-        nivelfuncion_pk = self.kwargs.get('pk')
-        context['url'] = reverse('medicion:nivelfuncion_update', kwargs={'pk': nivelfuncion_pk})
-        context['curvadescarga_id'] = self.object.curvadescarga.id
+        context["title"] = "Modificar"
+        nivelfuncion_pk = self.kwargs.get("pk")
+        context["url"] = reverse(
+            "medicion:nivelfuncion_update", kwargs={"pk": nivelfuncion_pk}
+        )
+        context["curvadescarga_id"] = self.object.curvadescarga.id
         return context
 
     def post(self, request, *args, **kwargs):
         data = request.POST.copy()
-        curvadescarga_id = data.get('curvadescarga_id')
+        curvadescarga_id = data.get("curvadescarga_id")
         curvadescarga = CurvaDescarga.objects.get(pk=curvadescarga_id)
         curvadescarga.requiere_recalculo_caudal = True
         curvadescarga.save()
-        self.success_url = reverse('medicion:curvadescarga_detail', kwargs={'pk': curvadescarga_id})
+        self.success_url = reverse(
+            "medicion:curvadescarga_detail", kwargs={"pk": curvadescarga_id}
+        )
         return super().post(data, **kwargs)
 
 
 class NivelFuncionDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = 'medicion.delete_curvadescarga'
+    permission_required = "medicion.delete_curvadescarga"
     model = NivelFuncion
 
     def delete(self, request, *args, **kwargs):
@@ -156,42 +169,42 @@ class NivelFuncionDelete(PermissionRequiredMixin, DeleteView):
         curvadescarga.save()
         self.object.delete()
         return HttpResponseRedirect(
-            reverse('medicion:curvadescarga_detail', kwargs={'pk': curvadescarga.id})
+            reverse("medicion:curvadescarga_detail", kwargs={"pk": curvadescarga.id})
         )
 
 
 class NivelFuncionDetail(PermissionRequiredMixin, DetailView):
-    permission_required = 'medicion.view_curvadescarga'
+    permission_required = "medicion.view_curvadescarga"
     model = NivelFuncion
 
 
-@permission_required('medicion.add_curvadescarga')
+@permission_required("medicion.add_curvadescarga")
 def recalcular_caudal(request):
-    curvadescarga_id = int(request.POST.get('curvadescarga_id', None))
+    curvadescarga_id = int(request.POST.get("curvadescarga_id", None))
     sql = "SELECT calcular_caudal(%s);"
     try:
         with connection.cursor() as cursor:
             cursor.execute(sql, [curvadescarga_id])
             res = cursor.fetchone()
     except:
-        lista = {'res': False}
+        lista = {"res": False}
         return JsonResponse(lista)
     curvadescarga = CurvaDescarga.objects.get(pk=curvadescarga_id)
     curvadescarga.requiere_recalculo_caudal = False
     curvadescarga.save()
-    lista = {'res': True}
+    lista = {"res": True}
     return JsonResponse(lista)
 
 
-@permission_required('medicion.validar')
+@permission_required("medicion.validar")
 def variables(request):
     try:
-        estacion_id = int(request.GET.get('estacion_id', None))
+        estacion_id = int(request.GET.get("estacion_id", None))
     except ValueError:
         estacion_id = None
     if estacion_id is not None:
         variables = Cruce.objects.prefetch_related(
-            Prefetch('var_id', queryset=Variable.objects.all())
+            Prefetch("var_id", queryset=Variable.objects.all())
         ).filter(est_id=estacion_id)
     else:
         variables = Variable.objects.all()

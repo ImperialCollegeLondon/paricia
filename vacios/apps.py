@@ -17,4 +17,4 @@ from django.apps import AppConfig
 
 
 class VaciosConfig(AppConfig):
-    name = 'vacios'
+    name = "vacios"

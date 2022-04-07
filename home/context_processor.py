@@ -11,5 +11,6 @@
 
 from .functions import get_menu
 
+
 def menu(request):
-    return {'menu': get_menu(request.user)}
+    return {"menu": get_menu(request.user)}

@@ -17,4 +17,4 @@ from django.apps import AppConfig
 
 
 class CruceConfig(AppConfig):
-    name = 'cruce'
+    name = "cruce"

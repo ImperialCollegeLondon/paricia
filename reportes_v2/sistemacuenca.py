@@ -1,43 +1,38 @@
 # -*- coding: utf-8 -*-
 
 # Modelos
-from reportes_v2.models import (
-    ConsultaGenericaFechaHoraGrafico,
-    ConsultaGenericaFechaHora,
-    ConsultaGenericaFecha)
-
-# Funcionalidades Comunes
-from reportes_v2.functions import (
-    get_layout_grafico,
-    get_layout_grafico_viento,
-    get_layout_grafico_agua,
-    get_elemento_data_json,
-    get_error_valor,
-    get_segundo_eje,
-    get_data_graph,
-    get_radar_chart
-)
-from estacion.models import Estacion
+import csv
 
 # Funciones de django
 from datetime import datetime
-from django.http import HttpResponse
-import csv
 
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.chart import BarChart, LineChart, Reference, Series
+from openpyxl.drawing.image import Image
 
 # librerias para manejar los archivos EXCEL
 from openpyxl.styles import Font
-from openpyxl import Workbook
-from openpyxl.drawing.image import Image
-
-from openpyxl.chart import (
-    BarChart,
-    LineChart,
-    Reference,
-    Series
-)
 
 from djangomain.settings import BASE_DIR
+from estacion.models import Estacion
+
+# Funcionalidades Comunes
+from reportes_v2.functions import (
+    get_data_graph,
+    get_elemento_data_json,
+    get_error_valor,
+    get_layout_grafico,
+    get_layout_grafico_agua,
+    get_layout_grafico_viento,
+    get_radar_chart,
+    get_segundo_eje,
+)
+from reportes_v2.models import (
+    ConsultaGenericaFecha,
+    ConsultaGenericaFechaHora,
+    ConsultaGenericaFechaHoraGrafico,
+)
 
 __frecuencia__dict = {
     "subhorario-crudo": "Dato crudo",
@@ -54,15 +49,25 @@ def get_datos_graficar(estacion, variable, inicio, fin, frecuencia, profundidad)
     titulo_grafico = titulo + "<br>(" + __frecuencia__dict[frecuencia] + ")"
 
     if frecuencia == "subhorario-crudo":
-        datos = consulta_crudos_graficar(estacion.est_id, variable, inicio, fin, profundidad)
+        datos = consulta_crudos_graficar(
+            estacion.est_id, variable, inicio, fin, profundidad
+        )
     elif frecuencia == "subhorario-validado":
-        datos = consulta_validados_graficar(estacion.est_id, variable, inicio, fin, profundidad)
+        datos = consulta_validados_graficar(
+            estacion.est_id, variable, inicio, fin, profundidad
+        )
     elif frecuencia == "horario":
-        datos = consulta_horario_graficar(estacion.est_id, variable, inicio, fin, profundidad)
+        datos = consulta_horario_graficar(
+            estacion.est_id, variable, inicio, fin, profundidad
+        )
     elif frecuencia == "diario":
-        datos = consulta_diario_graficar(estacion.est_id, variable, inicio, fin, profundidad)
+        datos = consulta_diario_graficar(
+            estacion.est_id, variable, inicio, fin, profundidad
+        )
     else:
-        datos = consulta_mensual_graficar(estacion.est_id, variable, inicio, fin, profundidad)
+        datos = consulta_mensual_graficar(
+            estacion.est_id, variable, inicio, fin, profundidad
+        )
 
     titulo_yaxis = variable.var_nombre + " (" + variable.uni_id.uni_sigla + ")"
     hay_datos = False
@@ -77,25 +82,47 @@ def get_datos_graficar(estacion, variable, inicio, fin, frecuencia, profundidad)
         response = True
         if variable.var_id == 1:
             layout = get_layout_grafico(titulo_grafico, titulo_yaxis, inicio, fin)
-            data_valor = get_elemento_data_json('bar', datos['fecha'], datos['valor'], 'Suma', '#1660A7')
+            data_valor = get_elemento_data_json(
+                "bar", datos["fecha"], datos["valor"], "Suma", "#1660A7"
+            )
             data = [data_valor]
-            if frecuencia == "horario" or frecuencia == "diario" or frecuencia == "mensual":
-                data_error = get_error_valor(datos['fecha_error'], datos['valor_error'],
-                                             datos['text_error'], variable)
+            if (
+                frecuencia == "horario"
+                or frecuencia == "diario"
+                or frecuencia == "mensual"
+            ):
+                data_error = get_error_valor(
+                    datos["fecha_error"],
+                    datos["valor_error"],
+                    datos["text_error"],
+                    variable,
+                )
                 data.append(data_error)
         elif variable.var_id == 4 or variable.var_id == 5:
             layout = get_layout_grafico_viento(titulo_grafico)
             data = []
             for item in datos.values():
-                data_graph = get_radar_chart(item['datos'], item['color'], item['nombre'], item['hovertext'])
+                data_graph = get_radar_chart(
+                    item["datos"], item["color"], item["nombre"], item["hovertext"]
+                )
                 data.append(data_graph)
         else:
             layout = get_layout_grafico(titulo_grafico, titulo_yaxis, inicio, fin)
-            data_valor = get_elemento_data_json('scatter', datos['fecha'], datos['valor'], 'Valor', '#1660A7')
+            data_valor = get_elemento_data_json(
+                "scatter", datos["fecha"], datos["valor"], "Valor", "#1660A7"
+            )
             data = [data_valor]
-            if frecuencia == "horario" or frecuencia == "diario" or frecuencia == "mensual":
-                data_error = get_error_valor(datos['fecha_error'], datos['valor_error'],
-                                             datos['text_error'], variable)
+            if (
+                frecuencia == "horario"
+                or frecuencia == "diario"
+                or frecuencia == "mensual"
+            ):
+                data_error = get_error_valor(
+                    datos["fecha_error"],
+                    datos["valor_error"],
+                    datos["text_error"],
+                    variable,
+                )
                 data.append(data_error)
 
         grafico = dict(
@@ -106,7 +133,7 @@ def get_datos_graficar(estacion, variable, inicio, fin, frecuencia, profundidad)
         response = False
         grafico = {}
 
-    data = {'response': response, 'grafico': grafico}
+    data = {"response": response, "grafico": grafico}
 
     return data
 
@@ -114,7 +141,7 @@ def get_datos_graficar(estacion, variable, inicio, fin, frecuencia, profundidad)
 def get_datos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad):
     nombre_archivo = estacion.est_codigo + "-" + variable.var_nombre
     if profundidad:
-        nombre_archivo = nombre_archivo + " a " + str(profundidad/100.0) + "[m]"
+        nombre_archivo = nombre_archivo + " a " + str(profundidad / 100.0) + "[m]"
     nombre_archivo = nombre_archivo + " " + __frecuencia__dict[frecuencia]
     nombre_archivo = nombre_archivo.replace(" ", "_")
 
@@ -123,72 +150,110 @@ def get_datos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad)
             datos = consulta_crudos_viento(estacion.est_id, inicio, fin)
         else:
             datos = consulta_crudos(estacion.est_id, variable, inicio, fin, profundidad)
-        formato_fecha = 'yyyy/mm/dd hh:mm:ss'
+        formato_fecha = "yyyy/mm/dd hh:mm:ss"
     elif frecuencia == "subhorario-validado":
         if variable.var_id == 4 or variable.var_id == 5:
             datos = consulta_validados_viento(estacion.est_id, inicio, fin)
         else:
-            datos = consulta_validados(estacion.est_id, variable, inicio, fin, profundidad)
-        formato_fecha = 'yyyy/mm/dd hh:mm:ss'
+            datos = consulta_validados(
+                estacion.est_id, variable, inicio, fin, profundidad
+            )
+        formato_fecha = "yyyy/mm/dd hh:mm:ss"
     elif frecuencia == "horario":
         if variable.var_id == 4 or variable.var_id == 5:
             datos = consulta_horario_viento(estacion.est_id, inicio, fin)
         else:
-            datos = consulta_horario(estacion.est_id, variable, inicio, fin, profundidad)
-        formato_fecha = 'yyyy/mm/dd hh:mm:ss'
+            datos = consulta_horario(
+                estacion.est_id, variable, inicio, fin, profundidad
+            )
+        formato_fecha = "yyyy/mm/dd hh:mm:ss"
     elif frecuencia == "diario":
         if variable.var_id == 4 or variable.var_id == 5:
             datos = consulta_diario_viento(estacion.est_id, inicio, fin)
         else:
             datos = consulta_diario(estacion.est_id, variable, inicio, fin, profundidad)
-        formato_fecha = 'yyyy/mm/dd'
+        formato_fecha = "yyyy/mm/dd"
     else:
         if variable.var_id == 4 or variable.var_id == 5:
             datos = consulta_mensual_viento(estacion.est_id, inicio, fin)
         else:
-            datos = consulta_mensual(estacion.est_id, variable, inicio, fin, profundidad)
-        formato_fecha = 'yyyy/mm'
+            datos = consulta_mensual(
+                estacion.est_id, variable, inicio, fin, profundidad
+            )
+        formato_fecha = "yyyy/mm"
 
     return datos, nombre_archivo, formato_fecha
 
 
 def export_csv(estacion, variable, inicio, fin, frecuencia, profundidad):
-    datos, nombre_archivo, formato_fecha = get_datos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad)
+    datos, nombre_archivo, formato_fecha = get_datos_exportar(
+        estacion, variable, inicio, fin, frecuencia, profundidad
+    )
     for fila in datos:
         hay_datos = True
         break
     if not hay_datos:
         return None
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="' + nombre_archivo + '.csv"'
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = (
+        'attachment; filename="' + nombre_archivo + '.csv"'
+    )
     writer = csv.writer(response)
     if frecuencia == "horario" or frecuencia == "diario" or frecuencia == "mensual":
         if variable.var_id == 4 or variable.var_id == 5:
-            writer.writerow(['Fecha', 'Velocidad (' + variable.uni_id.uni_sigla + ')', 'Dirección',
-                             'Punto Cardinal', 'Predomninancia', 'Porcentaje'])
+            writer.writerow(
+                [
+                    "Fecha",
+                    "Velocidad (" + variable.uni_id.uni_sigla + ")",
+                    "Dirección",
+                    "Punto Cardinal",
+                    "Predomninancia",
+                    "Porcentaje",
+                ]
+            )
         else:
-            writer.writerow(['Fecha', 'Valor (' + variable.uni_id.uni_sigla + ')', 'Porcentaje'])
+            writer.writerow(
+                ["Fecha", "Valor (" + variable.uni_id.uni_sigla + ")", "Porcentaje"]
+            )
     else:
         if variable.var_id == 4 or variable.var_id == 5:
-            writer.writerow(['Fecha', 'Velocidad (' + variable.uni_id.uni_sigla + ')', 'Dirección'])
+            writer.writerow(
+                ["Fecha", "Velocidad (" + variable.uni_id.uni_sigla + ")", "Dirección"]
+            )
         else:
-            writer.writerow(['Fecha', 'Valor (' + variable.uni_id.uni_sigla + ')'])
-    formato_fecha = formato_fecha.replace("yyyy", "%Y").replace("/mm", "/%m").replace("dd", "%d")
-    formato_fecha = formato_fecha.replace("hh", "%H").replace(":mm", ":%M").replace("ss", "%S")
+            writer.writerow(["Fecha", "Valor (" + variable.uni_id.uni_sigla + ")"])
+    formato_fecha = (
+        formato_fecha.replace("yyyy", "%Y").replace("/mm", "/%m").replace("dd", "%d")
+    )
+    formato_fecha = (
+        formato_fecha.replace("hh", "%H").replace(":mm", ":%M").replace("ss", "%S")
+    )
 
     if frecuencia == "horario" or frecuencia == "diario" or frecuencia == "mensual":
         if variable.var_id == 4 or variable.var_id == 5:
             for fila in datos:
-                writer.writerow([fila.fecha.strftime(formato_fecha), fila.valor, fila.direccion, fila.categoria,
-                                 fila.predominancia, fila.porcentaje])
+                writer.writerow(
+                    [
+                        fila.fecha.strftime(formato_fecha),
+                        fila.valor,
+                        fila.direccion,
+                        fila.categoria,
+                        fila.predominancia,
+                        fila.porcentaje,
+                    ]
+                )
         else:
             for fila in datos:
-                writer.writerow([fila.fecha.strftime(formato_fecha), fila.valor, fila.porcentaje])
+                writer.writerow(
+                    [fila.fecha.strftime(formato_fecha), fila.valor, fila.porcentaje]
+                )
     else:
         if variable.var_id == 4 or variable.var_id == 5:
             for fila in datos:
-                writer.writerow([fila.fecha.strftime(formato_fecha), fila.valor, fila.direccion])
+                writer.writerow(
+                    [fila.fecha.strftime(formato_fecha), fila.valor, fila.direccion]
+                )
         else:
             for fila in datos:
                 writer.writerow([fila.fecha.strftime(formato_fecha), fila.valor])
@@ -197,7 +262,9 @@ def export_csv(estacion, variable, inicio, fin, frecuencia, profundidad):
 
 
 def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
-    datos, nombre_archivo, formato_fecha = get_datos_exportar(estacion, variable, inicio, fin, frecuencia, profundidad)
+    datos, nombre_archivo, formato_fecha = get_datos_exportar(
+        estacion, variable, inicio, fin, frecuencia, profundidad
+    )
     for fila in datos:
         hay_datos = True
         break
@@ -205,8 +272,8 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
         return None
 
     # ruta de la imagen
-    ruta_fonag = str(BASE_DIR) + '/media/logo_fonag.jpg'
-    ruta_imhea = str(BASE_DIR) + '/media/imhea_logo2.jpg'
+    ruta_fonag = str(BASE_DIR) + "/media/logo_fonag.jpg"
+    ruta_imhea = str(BASE_DIR) + "/media/imhea_logo2.jpg"
     img_fonag = Image(ruta_fonag)
     img_imhea = Image(ruta_imhea)
     # estilo de negrita
@@ -215,47 +282,47 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
     wb = Workbook()
     # Definimos como nuestra hoja de trabajo, la hoja activa, por defecto la primera del libro
     ws = wb.active
-    ws.add_image(img_fonag, 'A1')
-    ws.add_image(img_imhea, 'G1')
+    ws.add_image(img_fonag, "A1")
+    ws.add_image(img_imhea, "G1")
 
-    ws['B4'] = 'Reporte de Datos Hidrometerológicos'
-    ws['B4'].font = font_bold
+    ws["B4"] = "Reporte de Datos Hidrometerológicos"
+    ws["B4"].font = font_bold
 
-    ws.merge_cells('B4:F4')
-    ws['A7'] = 'Estación'
-    ws['A7'].font = font_bold
-    ws['B7'] = estacion.est_codigo
-    ws['C7'] = estacion.est_nombre
-    ws.merge_cells('C4:E4')
-    ws['F7'] = 'Variable'
-    ws['F7'].font = font_bold
-    ws['G7'] = variable.var_nombre
-    ws['B9'] = 'Coordenadas Geográficas'
-    ws['B9'].font = font_bold
-    ws.merge_cells('B6:G6')
-    ws['A10'] = 'Latitud'
-    ws['A10'].font = font_bold
-    ws['B10'] = estacion.est_latitud
-    ws['F10'] = 'Longitud'
-    ws['F10'].font = font_bold
-    ws['G10'] = estacion.est_longitud
+    ws.merge_cells("B4:F4")
+    ws["A7"] = "Estación"
+    ws["A7"].font = font_bold
+    ws["B7"] = estacion.est_codigo
+    ws["C7"] = estacion.est_nombre
+    ws.merge_cells("C4:E4")
+    ws["F7"] = "Variable"
+    ws["F7"].font = font_bold
+    ws["G7"] = variable.var_nombre
+    ws["B9"] = "Coordenadas Geográficas"
+    ws["B9"].font = font_bold
+    ws.merge_cells("B6:G6")
+    ws["A10"] = "Latitud"
+    ws["A10"].font = font_bold
+    ws["B10"] = estacion.est_latitud
+    ws["F10"] = "Longitud"
+    ws["F10"].font = font_bold
+    ws["G10"] = estacion.est_longitud
 
     # Creamos los encabezados desde la celda B9 hasta la E9
-    ws['A12'] = 'Fecha'
-    ws['B12'] = 'Valor'
+    ws["A12"] = "Fecha"
+    ws["B12"] = "Valor"
     if frecuencia == "horario" or frecuencia == "diario" or frecuencia == "mensual":
         if variable.var_id == 4 or variable.var_id == 5:
-            ws['B12'] = 'Velocidad'
-            ws['C12'] = 'Dirección'
-            ws['D12'] = 'Punto Cardinal'
-            ws['E12'] = 'Predominancia'
-            ws['F12'] = 'Porcentaje'
+            ws["B12"] = "Velocidad"
+            ws["C12"] = "Dirección"
+            ws["D12"] = "Punto Cardinal"
+            ws["E12"] = "Predominancia"
+            ws["F12"] = "Porcentaje"
         else:
-            ws['C12'] = 'Porcentaje'
+            ws["C12"] = "Porcentaje"
     else:
         if variable.var_id == 4 or variable.var_id == 5:
-            ws['B12'] = 'Velocidad'
-            ws['C12'] = 'Direccion'
+            ws["B12"] = "Velocidad"
+            ws["C12"] = "Direccion"
 
     cont = 13
 
@@ -284,21 +351,18 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
         chart_pre.style = 11
         chart_pre.title = variable.var_nombre
         chart_pre.y_axis.title = variable.var_nombre
-        chart_pre.x_axis.title = 'Tiempo'
+        chart_pre.x_axis.title = "Tiempo"
 
-        data = Reference(ws, min_col=2, min_row=12, max_row=final-1, max_col=2)
+        data = Reference(ws, min_col=2, min_row=12, max_row=final - 1, max_col=2)
         cats = Reference(ws, min_col=1, min_row=13, max_row=final - 1)
         chart_pre.add_data(data, titles_from_data=True)
         chart_pre.set_categories(cats)
 
-
-
-
-        '''labels = Reference(ws, min_col=1, min_row=13, max_row=final - 1)
+        """labels = Reference(ws, min_col=1, min_row=13, max_row=final - 1)
         data = Reference(ws, min_col=2, min_row=13, max_row=final - 1)
         
         chart_pre.series = (Series(data),)
-        chart_pre.title = variable.var_nombre'''
+        chart_pre.title = variable.var_nombre"""
         chart_pre.shape = 4
 
         # Change bar filling and line color
@@ -314,9 +378,9 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
         chart = LineChart()
         chart.title = variable.var_nombre
         chart.style = 12
-        chart.x_axis.title = 'Tiempo(dias)'
-        chart.x_axis.number_format = 'dd-mm-yyyy'
-        chart.x_axis.majorTimeUnit = 'days'
+        chart.x_axis.title = "Tiempo(dias)"
+        chart.x_axis.number_format = "dd-mm-yyyy"
+        chart.x_axis.majorTimeUnit = "days"
         chart.y_axis.title = variable.var_nombre
 
         data = Reference(ws, min_col=2, min_row=12, max_col=2, max_row=final - 1)
@@ -329,7 +393,7 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
         chart.set_categories(dates)
         ws.add_chart(chart, "H9")
 
-    nombre_archivo = nombre_archivo + str('.xlsx')
+    nombre_archivo = nombre_archivo + str(".xlsx")
 
     # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
     response = HttpResponse(content_type="application/ms-excel")
@@ -349,7 +413,9 @@ def consulta_crudos_viento(estacion_id, inicio, fin):
 
     query = "select * FROM reporte_crudos_subhorario_viento_export(%s, %s, %s);"
 
-    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(query, [estacion_id, inicio, fin])
+    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(
+        query, [estacion_id, inicio, fin]
+    )
 
     return consulta
 
@@ -369,7 +435,9 @@ def consulta_crudos(estacion_id, variable, inicio, fin, profundidad):
     else:
         query = "select * FROM reporte_crudos_subhorario_" + modelo + "(%s, %s, %s);"
 
-    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(query, [estacion_id, inicio, fin])
+    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(
+        query, [estacion_id, inicio, fin]
+    )
     return consulta
 
 
@@ -386,7 +454,7 @@ def consulta_crudos_graficar(estacion_id, variable, inicio, fin, profundidad):
             # if fila.valor is not None:
             #     resultado.append([fila.fecha, fila.valor])
             if fila.salto is True:
-                fecha_intermedia = fecha_anterior + (fila.fecha - fecha_anterior)/2
+                fecha_intermedia = fecha_anterior + (fila.fecha - fecha_anterior) / 2
                 fecha.append(fecha_intermedia)
                 valor.append(None)
             fecha.append(fila.fecha)
@@ -410,9 +478,7 @@ def get_matriz_viento(consulta, variable):
     grupo4 = []
     lim_sup = []
     lim_min = []
-    hovertext = dict(
-        grupo1=[], grupo2=[], grupo3=[], grupo4=[]
-    )
+    hovertext = dict(grupo1=[], grupo2=[], grupo3=[], grupo4=[])
     for fila in consulta:
         if fila.grupo == 1:
             grupo1.append(fila.por_acum)
@@ -443,27 +509,35 @@ def get_matriz_viento(consulta, variable):
         grupo4=dict(
             datos=grupo4,
             hovertext=hovertext.get("grupo4"),
-            color='#0080ff',
-            nombre='> ' + str(lim_min[3]) + ' ' + variable.uni_id.uni_sigla
+            color="#0080ff",
+            nombre="> " + str(lim_min[3]) + " " + variable.uni_id.uni_sigla,
         ),
         grupo3=dict(
             datos=grupo3,
             hovertext=hovertext.get("grupo3"),
-            color='#3399ff',
-            nombre=str(lim_min[2]) + ' - ' + str(lim_sup[2]) + ' ' + variable.uni_id.uni_sigla
+            color="#3399ff",
+            nombre=str(lim_min[2])
+            + " - "
+            + str(lim_sup[2])
+            + " "
+            + variable.uni_id.uni_sigla,
         ),
         grupo2=dict(
             datos=grupo2,
             hovertext=hovertext.get("grupo2"),
-            color='#66b3ff',
-            nombre=str(lim_min[1]) + ' - ' + str(lim_sup[1]) + ' ' + variable.uni_id.uni_sigla
+            color="#66b3ff",
+            nombre=str(lim_min[1])
+            + " - "
+            + str(lim_sup[1])
+            + " "
+            + variable.uni_id.uni_sigla,
         ),
         grupo1=dict(
             datos=grupo1,
             hovertext=hovertext.get("grupo1"),
-            color='#99ccff',
-            nombre='0 - ' + str(lim_sup[0]) + ' ' + variable.uni_id.uni_sigla
-        )
+            color="#99ccff",
+            nombre="0 - " + str(lim_sup[0]) + " " + variable.uni_id.uni_sigla,
+        ),
     )
     return datos
 
@@ -483,9 +557,10 @@ def consulta_validados_viento(estacion_id, inicio, fin):
         AND v.fecha >= '%%fecha_inicio%%' AND v.fecha <= '%%fecha_fin%%'
     """
 
-    sql = sql.replace('%%fecha_inicio%%', str(inicio))\
-        .replace('%%fecha_fin%%', str(fin))
-    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(sql,[str(estacion_id)])
+    sql = sql.replace("%%fecha_inicio%%", str(inicio)).replace(
+        "%%fecha_fin%%", str(fin)
+    )
+    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(sql, [str(estacion_id)])
 
     return consulta
 
@@ -506,7 +581,9 @@ def consulta_validados(estacion_id, variable, inicio, fin, profundidad):
     else:
         query = "select * FROM reporte_validados_subhorario_" + modelo + "(%s, %s, %s);"
 
-    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(query, [estacion_id, inicio, fin])
+    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(
+        query, [estacion_id, inicio, fin]
+    )
     return consulta
 
 
@@ -522,7 +599,7 @@ def consulta_validados_graficar(estacion_id, variable, inicio, fin, profundidad)
             # if fila.valor is not None:
             #     resultado.append([fila.fecha, fila.valor])
             if fila.salto is True:
-                fecha_intermedia = fecha_anterior + (fila.fecha - fecha_anterior)/2
+                fecha_intermedia = fecha_anterior + (fila.fecha - fecha_anterior) / 2
                 fecha.append(fecha_intermedia)
                 valor.append(None)
             fecha.append(fila.fecha)
@@ -566,7 +643,9 @@ def consulta_horario(estacion_id, variable, inicio, fin, profundidad):
     else:
         query = "select * FROM reporte_validados_horario_" + modelo + "(%s, %s, %s);"
 
-    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(query, [estacion_id, inicio, fin])
+    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(
+        query, [estacion_id, inicio, fin]
+    )
     return consulta
 
 
@@ -589,12 +668,17 @@ def consulta_horario_graficar(estacion_id, variable, inicio, fin, profundidad):
             if fila.error:
                 fecha_error.append(fila.fecha)
                 valor_error.append(fila.valor)
-                text_error.append(str(fila.porcentaje)+'%')
+                text_error.append(str(fila.porcentaje) + "%")
     if variable.var_id == 4 or variable.var_id == 5:
         datos = get_matriz_viento(consulta, variable)
     else:
-        datos = {"fecha": fecha, "valor": valor, "fecha_error": fecha_error, "valor_error": valor_error,
-                 "text_error": text_error}
+        datos = {
+            "fecha": fecha,
+            "valor": valor,
+            "fecha_error": fecha_error,
+            "valor_error": valor_error,
+            "text_error": text_error,
+        }
 
     return datos
 
@@ -628,7 +712,9 @@ def consulta_diario(estacion_id, variable, inicio, fin, profundidad):
     else:
         query = "select * FROM reporte_validados_diario_" + modelo + "(%s, %s, %s);"
 
-    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(query, [estacion_id, inicio, fin])
+    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(
+        query, [estacion_id, inicio, fin]
+    )
     return consulta
 
 
@@ -652,12 +738,17 @@ def consulta_diario_graficar(estacion_id, variable, inicio, fin, profundidad):
             if fila.error:
                 fecha_error.append(fila.fecha)
                 valor_error.append(fila.valor)
-                text_error.append(str(fila.porcentaje)+'%')
+                text_error.append(str(fila.porcentaje) + "%")
     if variable.var_id == 4 or variable.var_id == 5:
         datos = get_matriz_viento(consulta, variable)
     else:
-        datos = {"fecha": fecha, "valor": valor, "fecha_error": fecha_error, "valor_error": valor_error,
-                 "text_error": text_error}
+        datos = {
+            "fecha": fecha,
+            "valor": valor,
+            "fecha_error": fecha_error,
+            "valor_error": valor_error,
+            "text_error": text_error,
+        }
     return datos
 
 
@@ -689,7 +780,9 @@ def consulta_mensual(estacion_id, variable, inicio, fin, profundidad):
     else:
         query = "select * FROM reporte_validados_mensual_" + modelo + "(%s, %s, %s);"
 
-    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(query, [estacion_id, inicio, fin])
+    consulta = ConsultaGenericaFechaHoraGrafico.objects.raw(
+        query, [estacion_id, inicio, fin]
+    )
     return consulta
 
 
@@ -711,11 +804,16 @@ def consulta_mensual_graficar(estacion_id, variable, inicio, fin, profundidad):
             if fila.error:
                 fecha_error.append(fila.fecha)
                 valor_error.append(fila.valor)
-                text_error.append(str(fila.porcentaje)+'%')
+                text_error.append(str(fila.porcentaje) + "%")
 
     if variable.var_id == 4 or variable.var_id == 5:
         datos = get_matriz_viento(consulta, variable)
     else:
-        datos = {"fecha": fecha, "valor": valor, "fecha_error": fecha_error, "valor_error": valor_error,
-                 "text_error": text_error}
+        datos = {
+            "fecha": fecha,
+            "valor": valor,
+            "fecha_error": fecha_error,
+            "valor_error": valor_error,
+            "text_error": text_error,
+        }
     return datos

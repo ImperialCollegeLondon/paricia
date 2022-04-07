@@ -13,56 +13,58 @@
 
 from __future__ import unicode_literals
 
-from cruce.models import Cruce
-from django.views.generic import TemplateView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Value
 from django.db.models.functions import Concat
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from cruce.models import Cruce
 from home.functions import *
+
 
 class CruceCreate(PermissionRequiredMixin, CreateView):
     model = Cruce
-    fields = ['cru_id', 'est_id', 'var_id']
-    permission_required = 'cruce.add_cruce'
+    fields = ["cru_id", "est_id", "var_id"]
+    permission_required = "cruce.add_cruce"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Crear"
+        context["title"] = "Crear"
         return context
 
 
 class CruceList(PermissionRequiredMixin, TemplateView):
-    template_name = 'cruce/cruce_list.html'
-    permission_required = 'cruce.view_cruce'
+    template_name = "cruce/cruce_list.html"
+    permission_required = "cruce.view_cruce"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ['cru_id', 'est_id__est_codigo', 'var_id__var_nombre']
+        campos = ["cru_id", "est_id__est_codigo", "var_id__var_nombre"]
         cruce = Cruce.objects.all().values_list(*campos)
-        context['cruce'] = modelo_a_tabla_html(cruce, col_extra=True)
+        context["cruce"] = modelo_a_tabla_html(cruce, col_extra=True)
         return context
 
 
 class CruceDetail(PermissionRequiredMixin, DetailView):
     model = Cruce
-    permission_required = 'cruce.view_cruce'
+    permission_required = "cruce.view_cruce"
 
 
 class CruceUpdate(PermissionRequiredMixin, UpdateView):
     model = Cruce
-    fields = ['cru_id', 'est_id', 'var_id']
-    permission_required = 'cruce.change_cruce'
+    fields = ["cru_id", "est_id", "var_id"]
+    permission_required = "cruce.change_cruce"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Modificar"
+        context["title"] = "Modificar"
         return context
 
 
 class CruceDelete(PermissionRequiredMixin, DeleteView):
     model = Cruce
-    success_url = reverse_lazy('cruce:cruce_index')
-    permission_required = 'cruce.delete_cruce'
+    success_url = reverse_lazy("cruce:cruce_index")
+    permission_required = "cruce.delete_cruce"

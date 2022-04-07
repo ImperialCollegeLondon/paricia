@@ -12,12 +12,15 @@
 #              ya sea en uso total o parcial del código.
 
 from django import forms
+
 from estacion.models import Estacion
 from importacion.models import Importacion
 
 
 class ImportacionForm(forms.Form):
-    imp_observacion = forms.CharField(label="Observación", required=False, widget=forms.Textarea(attrs={'rows': '3'}))
+    imp_observacion = forms.CharField(
+        label="Observación", required=False, widget=forms.Textarea(attrs={"rows": "3"})
+    )
 
 
 # class ImportacionSearchForm(forms.Form):

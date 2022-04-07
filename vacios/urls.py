@@ -10,9 +10,10 @@
 #              ya sea en uso total o parcial del código.
 
 from django.urls import re_path
+
 from . import views
 
-app_name = 'vacios'
+app_name = "vacios"
 urlpatterns = [
-    re_path(r'vacios/$', views.Vacios.as_view(), name='vacios'),
+    re_path(r"vacios/$", views.Vacios.as_view(), name="vacios"),
 ]

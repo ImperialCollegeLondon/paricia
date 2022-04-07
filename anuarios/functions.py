@@ -9,15 +9,14 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from cruce.models import Cruce
 from anuarios import models
-
 from anuarios.formatoI import matrizI
 from anuarios.formatoII import get_precipitacion
 from anuarios.formatoIII import matrizIII
 from anuarios.formatoIV import matrizIV
 from anuarios.formatoV import datos_viento, matrizV_mensual
-from anuarios.formatoVI import matrizVI, datos_radiacion_maxima, datos_radiacion_minimo
+from anuarios.formatoVI import datos_radiacion_maxima, datos_radiacion_minimo, matrizVI
+from cruce.models import Cruce
 
 
 def consultar_variables(estacion):
@@ -27,9 +26,14 @@ def consultar_variables(estacion):
         lista[item.var_id.var_id] = item.var_id.var_nombre
     return lista
 
-#def calcular(form):
-def calcular(estacion,variable,periodo,):
-    print('calcular')
+
+# def calcular(form):
+def calcular(
+    estacion,
+    variable,
+    periodo,
+):
+    print("calcular")
     datos = []
     valid = False
     # humedadsuelo,presionatmosferica,temperaturaagua,caudal,nivelagua
@@ -47,7 +51,7 @@ def calcular(estacion,variable,periodo,):
     estacion = estacion
     variable = variable
     periodo = periodo
-    tipo = 'validado'
+    tipo = "validado"
 
     if variable in typeI:
         datos = matrizI(estacion, variable, periodo, tipo)
@@ -63,78 +67,111 @@ def calcular(estacion,variable,periodo,):
         datos = matrizVI(estacion, variable, periodo, tipo)
     return datos
 
-def template(variable):
-    print('template')
-    template = ''
-    if variable == 1:
-        template = 'anuarios/pre.html'
-    elif variable == 2:
-        template = 'anuarios/tai.html'
-    elif variable == 3:
-        template = 'anuarios/hai.html'
-    elif variable == 4:
-        template = 'anuarios/vvi.html'
-    elif variable == 5:
-        template = 'anuarios/dvi.html'
-    elif variable == 6:
-        template = 'anuarios/hsu.html'
-    elif variable == 7:
-        template = 'anuarios/rad.html'
-    elif variable == 8:
-        template = 'anuarios/pat.html'
-    elif variable == 9:
-        template = 'anuarios/tag.html'
-    elif variable == 10:
-        template = 'anuarios/cau.html'
-    elif variable == 11:
-        template = 'anuarios/nag.html'
-    return template
 
+def template(variable):
+    print("template")
+    template = ""
+    if variable == 1:
+        template = "anuarios/pre.html"
+    elif variable == 2:
+        template = "anuarios/tai.html"
+    elif variable == 3:
+        template = "anuarios/hai.html"
+    elif variable == 4:
+        template = "anuarios/vvi.html"
+    elif variable == 5:
+        template = "anuarios/dvi.html"
+    elif variable == 6:
+        template = "anuarios/hsu.html"
+    elif variable == 7:
+        template = "anuarios/rad.html"
+    elif variable == 8:
+        template = "anuarios/pat.html"
+    elif variable == 9:
+        template = "anuarios/tag.html"
+    elif variable == 10:
+        template = "anuarios/cau.html"
+    elif variable == 11:
+        template = "anuarios/nag.html"
+    return template
 
 
 def verficar_anuario(estacion, variable, periodo):
     print(verficar_anuario)
     result = False
     if variable == 1:
-        result = models.Var1Anuarios.objects.filter(est_id=estacion.est_id, pre_periodo=periodo).exists()
+        result = models.Var1Anuarios.objects.filter(
+            est_id=estacion.est_id, pre_periodo=periodo
+        ).exists()
         # result = models.Var1Anuarios.objects.filter(est_id=estacion.est_id) \
         #     .filter(pre_periodo=periodo).exists()
     elif variable == 2:
-        result = models.Var2Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(tai_periodo=periodo).exists()
+        result = (
+            models.Var2Anuarios.objects.filter(est_id=estacion.est_id)
+            .filter(tai_periodo=periodo)
+            .exists()
+        )
     elif variable == 3:
-        result = models.Var3Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(hai_periodo=periodo).exists()
+        result = (
+            models.Var3Anuarios.objects.filter(est_id=estacion.est_id)
+            .filter(hai_periodo=periodo)
+            .exists()
+        )
     elif variable == 4 or variable == 5:
-        result = models.Viento.objects.filter(est_id=estacion.est_id) \
-            .filter(vie_periodo=periodo).exists()
+        result = (
+            models.Viento.objects.filter(est_id=estacion.est_id)
+            .filter(vie_periodo=periodo)
+            .exists()
+        )
     elif variable == 6:
-        result = models.Var6Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(hsu_periodo=periodo).exists()
+        result = (
+            models.Var6Anuarios.objects.filter(est_id=estacion.est_id)
+            .filter(hsu_periodo=periodo)
+            .exists()
+        )
     elif variable == 7:
-        result = models.RadiacionMaxima.objects.filter(est_id=estacion.est_id) \
-            .filter(rad_periodo=periodo).exists()
-        result = models.RadiacionMinima.objects.filter(est_id=estacion.est_id) \
-            .filter(rad_periodo=periodo).exists()
+        result = (
+            models.RadiacionMaxima.objects.filter(est_id=estacion.est_id)
+            .filter(rad_periodo=periodo)
+            .exists()
+        )
+        result = (
+            models.RadiacionMinima.objects.filter(est_id=estacion.est_id)
+            .filter(rad_periodo=periodo)
+            .exists()
+        )
     elif variable == 8:
-        result = models.Var8Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(pat_periodo=periodo).exists()
+        result = (
+            models.Var8Anuarios.objects.filter(est_id=estacion.est_id)
+            .filter(pat_periodo=periodo)
+            .exists()
+        )
     elif variable == 9:
-        result = models.Var9Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(tag_periodo=periodo).exists()
+        result = (
+            models.Var9Anuarios.objects.filter(est_id=estacion.est_id)
+            .filter(tag_periodo=periodo)
+            .exists()
+        )
     elif variable == 10:
-        result = models.Var10Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(cau_periodo=periodo).exists()
+        result = (
+            models.Var10Anuarios.objects.filter(est_id=estacion.est_id)
+            .filter(cau_periodo=periodo)
+            .exists()
+        )
     elif variable == 11:
-        result = models.Var11Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(nag_periodo=periodo).exists()
+        result = (
+            models.Var11Anuarios.objects.filter(est_id=estacion.est_id)
+            .filter(nag_periodo=periodo)
+            .exists()
+        )
     return result
 
+
 def guardar_variable(datos, estacion, variable, periodo):
-    #estacion = form.cleaned_data['estacion']
-    #variable = form.cleaned_data['variable']
-    #periodo = form.cleaned_data['periodo']
-    print('guardar_variable')
+    # estacion = form.cleaned_data['estacion']
+    # variable = form.cleaned_data['variable']
+    # periodo = form.cleaned_data['periodo']
+    print("guardar_variable")
     if verficar_anuario(estacion, variable, periodo):
         borrar_datos(estacion, variable, periodo)
     if variable == 7:
@@ -149,36 +186,48 @@ def guardar_variable(datos, estacion, variable, periodo):
         for obj_variable in datos:
             obj_variable.save()
 
+
 def borrar_datos(estacion, variable, periodo):
     if variable == 1:
-        models.Var1Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(pre_periodo=periodo).delete()
+        models.Var1Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            pre_periodo=periodo
+        ).delete()
     elif variable == 2:
-        models.Var2Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(tai_periodo=periodo).delete()
+        models.Var2Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            tai_periodo=periodo
+        ).delete()
     elif variable == 3:
-        models.Var3Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(hai_periodo=periodo).delete()
+        models.Var3Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            hai_periodo=periodo
+        ).delete()
     elif variable == 4 or variable == 5:
-        models.Viento.objects.filter(est_id=estacion.est_id) \
-            .filter(vie_periodo=periodo).delete()
+        models.Viento.objects.filter(est_id=estacion.est_id).filter(
+            vie_periodo=periodo
+        ).delete()
     elif variable == 6:
-        models.Var6Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(hsu_periodo=periodo).delete()
+        models.Var6Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            hsu_periodo=periodo
+        ).delete()
     elif variable == 7:
-        models.RadiacionMaxima.objects.filter(est_id=estacion.est_id) \
-            .filter(rad_periodo=periodo).delete()
-        models.RadiacionMinima.objects.filter(est_id=estacion.est_id) \
-            .filter(rad_periodo=periodo).delete()
+        models.RadiacionMaxima.objects.filter(est_id=estacion.est_id).filter(
+            rad_periodo=periodo
+        ).delete()
+        models.RadiacionMinima.objects.filter(est_id=estacion.est_id).filter(
+            rad_periodo=periodo
+        ).delete()
     elif variable == 8:
-        models.Var8Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(pat_periodo=periodo).delete()
+        models.Var8Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            pat_periodo=periodo
+        ).delete()
     elif variable == 9:
-        models.Var9Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(tag_periodo=periodo).delete()
+        models.Var9Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            tag_periodo=periodo
+        ).delete()
     elif variable == 10:
-        models.Var10Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(cau_periodo=periodo).delete()
+        models.Var10Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            cau_periodo=periodo
+        ).delete()
     elif variable == 11:
-        models.Var11Anuarios.objects.filter(est_id=estacion.est_id) \
-            .filter(nag_periodo=periodo).delete()
+        models.Var11Anuarios.objects.filter(est_id=estacion.est_id).filter(
+            nag_periodo=periodo
+        ).delete()

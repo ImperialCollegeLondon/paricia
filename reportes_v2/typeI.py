@@ -11,28 +11,23 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-'''from anuarios.models import HumedadSuelo
+"""from anuarios.models import HumedadSuelo
 from anuarios.models import PresionAtmosferica
 from anuarios.models import TemperaturaAgua
 from anuarios.models import Caudal
 from anuarios.models import NivelAgua
-from django.db.models import Avg'''
-import plotly.offline as opy
-import plotly.graph_objs as go
-from reportes_v2.titulos import Titulos
+from django.db.models import Avg"""
 import calendar
 
-from openpyxl.chart import (
-    ScatterChart,
-    LineChart,
-    Reference,
-    Series,
-)
+import plotly.graph_objs as go
+import plotly.offline as opy
+from openpyxl.chart import LineChart, Reference, ScatterChart, Series
+
+from reportes_v2.titulos import Titulos
 
 
 # clase para anuario de las las variables HSU, PAT, TAG, CAU, NAG
 class TypeI(Titulos):
-
     def matriz(self, estacion, variable, periodo):
         datos = self.consulta(estacion, variable, periodo)
         return datos
@@ -74,43 +69,46 @@ class TypeI(Titulos):
             trace0 = go.Scatter(
                 x=meses,
                 y=max_simple,
-                name='Max',
-                line=dict(
-                    color='rgb(22, 96, 167)',
-                    width=4)
+                name="Max",
+                line=dict(color="rgb(22, 96, 167)", width=4),
             )
             trace1 = go.Scatter(
                 x=meses,
                 y=min_simple,
-                name='Min',
+                name="Min",
                 line=dict(
-                    color='rgb(205, 12, 24)',
-                    width=4, )
+                    color="rgb(205, 12, 24)",
+                    width=4,
+                ),
             )
             trace2 = go.Scatter(
                 x=meses,
                 y=avg_simple,
-                name='Media',
+                name="Media",
                 line=dict(
-                    color='rgb(50, 205, 50)',
-                    width=4, )
+                    color="rgb(50, 205, 50)",
+                    width=4,
+                ),
             )
-            #trace3 = go.Scatter(
+            # trace3 = go.Scatter(
             #    x=meses,
             #    y=historico,
             #    name='Media',
             #    line=dict(
             #        color='rgb(125, 96, 160)',
             #        width=4, )
-            #)
+            # )
             data = [trace0, trace1, trace2]
-            #data = [trace0, trace1, trace2, trace3]
+            # data = [trace0, trace1, trace2, trace3]
             layout = go.Layout(
-                title=str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(") ")
+                title=str(variable.var_nombre)
+                + str(" (")
+                + str(variable.uni_id.uni_sigla)
+                + str(") ")
             )
             figure = go.Figure(data=data, layout=layout)
             figure.update_layout(legend_orientation="h")
-            div = opy.plot(figure, auto_open=False, output_type='div')
+            div = opy.plot(figure, auto_open=False, output_type="div")
             return div
         return False
 
@@ -119,60 +117,88 @@ class TypeI(Titulos):
         col_fin = 11
         col = 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col_fin)
+        ws.merge_cells(
+            start_row=fila, start_column=col, end_row=fila, end_column=col_fin
+        )
         subtitle = ws.cell(row=fila, column=col)
         subtitle_end = ws.cell(row=fila, column=col_fin)
         subtitle.value = self.get_titulo(variable.var_id)
-        self.set_style(cell=subtitle, font='font_bold_10', alignment='center',
-                       border='border_thin', fill='light_salmon')
-        self.set_style(cell=subtitle_end, font='font_bold_10', alignment='center',
-                       border='border_thin', fill='light_salmon')
+        self.set_style(
+            cell=subtitle,
+            font="font_bold_10",
+            alignment="center",
+            border="border_thin",
+            fill="light_salmon",
+        )
+        self.set_style(
+            cell=subtitle_end,
+            font="font_bold_10",
+            alignment="center",
+            border="border_thin",
+            fill="light_salmon",
+        )
 
         fila += 1
         col = 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila + 1, end_column=col)
+        ws.merge_cells(
+            start_row=fila, start_column=col, end_row=fila + 1, end_column=col
+        )
         cell = ws.cell(row=fila, column=col)
         cell.value = "MES"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
         col += 1
 
-        ws.merge_cells(start_row=fila, start_column=col, end_row=fila, end_column=col+3)
+        ws.merge_cells(
+            start_row=fila, start_column=col, end_row=fila, end_column=col + 3
+        )
         cell = ws.cell(row=fila, column=col)
-        cell_final = ws.cell(row=fila, column=col+3)
-        cell.value = str(variable.var_nombre) + str(" (") + str(variable.uni_id.uni_sigla) + str(")")
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
-        self.set_style(cell=cell_final, font='font_10', alignment='center',
-                       border='border_thin')
+        cell_final = ws.cell(row=fila, column=col + 3)
+        cell.value = (
+            str(variable.var_nombre)
+            + str(" (")
+            + str(variable.uni_id.uni_sigla)
+            + str(")")
+        )
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
+        self.set_style(
+            cell=cell_final, font="font_10", alignment="center", border="border_thin"
+        )
         fila += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Máximo"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Mínimo"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Media"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         col += 1
 
         cell = ws.cell(row=fila, column=col)
         cell.value = "Media His"
-        self.set_style(cell=cell, font='font_10', alignment='center',
-                       border='border_thin')
+        self.set_style(
+            cell=cell, font="font_10", alignment="center", border="border_thin"
+        )
 
         matriz = self.matriz(estacion, variable, periodo)
         fila += 1
@@ -184,40 +210,50 @@ class TypeI(Titulos):
             mes = self.get_item_mes(variable.var_id, item)
             cell = ws.cell(row=fila, column=col)
             cell.value = self.get_mes_anio(mes)
-            self.set_style(cell=cell, font='font_10', alignment='left',
-                           border='border_thin')
-            cell = ws.cell(row=fila, column=col+1)
+            self.set_style(
+                cell=cell, font="font_10", alignment="left", border="border_thin"
+            )
+            cell = ws.cell(row=fila, column=col + 1)
             cell.value = self.get_item_maximo(variable.var_id, item)
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
 
-            cell = ws.cell(row=fila, column=col+2)
+            cell = ws.cell(row=fila, column=col + 2)
             cell.value = self.get_item_minimo(variable.var_id, item)
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
 
-            cell = ws.cell(row=fila, column=col+3)
+            cell = ws.cell(row=fila, column=col + 3)
             cell.value = self.get_item_promedio(variable.var_id, item)
-            self.set_style(cell=cell, font='font_10', alignment='center',
-                           border='border_thin')
-            if len(media_historica) > 0  and len(media_historica) >= mes:
-                cell = ws.cell(row=fila, column=col+4)
-                #print('pruebaaaa')
-                #print('prueba',media_historica)
-                cell.value = round(media_historica[mes-1], 1)
-                self.set_style(cell=cell, font='font_10', alignment='center',
-                               border='border_thin')
+            self.set_style(
+                cell=cell, font="font_10", alignment="center", border="border_thin"
+            )
+            if len(media_historica) > 0 and len(media_historica) >= mes:
+                cell = ws.cell(row=fila, column=col + 4)
+                # print('pruebaaaa')
+                # print('prueba',media_historica)
+                cell.value = round(media_historica[mes - 1], 1)
+                self.set_style(
+                    cell=cell, font="font_10", alignment="center", border="border_thin"
+                )
 
             fila += 1
 
     @staticmethod
     def grafico_excel(ws, variable, periodo):
         c1 = ScatterChart()
-        c1.title = str(variable.var_nombre) + str(" (") + \
-            str(variable.uni_id.uni_sigla) + str(") ") + str(periodo)
+        c1.title = (
+            str(variable.var_nombre)
+            + str(" (")
+            + str(variable.uni_id.uni_sigla)
+            + str(") ")
+            + str(periodo)
+        )
         # c1.style = 13
         # c1.y_axis.title = str(variable.uni_id.uni_sigla)
-        c1.x_axis.title = 'Meses'
+        c1.x_axis.title = "Meses"
 
         xvalues = Reference(ws, min_col=1, min_row=8, max_row=19)
 
@@ -257,19 +293,21 @@ class TypeI(Titulos):
 
     @staticmethod
     def get_titulo(variable):
-        titulo = ''
+        titulo = ""
         if variable == 6:
-            titulo = 'Humedad del Suelo - Valores medios diarios, absolutos maximos y mimimos'
+            titulo = "Humedad del Suelo - Valores medios diarios, absolutos maximos y mimimos"
         elif variable == 8:
-            titulo = 'Presion Atomsferica - Valores medios diarios, absolutos maximos y mimimos'
+            titulo = "Presion Atomsferica - Valores medios diarios, absolutos maximos y mimimos"
         elif variable == 9:
-            titulo = 'Temperatura de Agua - Valores medios diarios, medios maximos y mimimos'
+            titulo = (
+                "Temperatura de Agua - Valores medios diarios, medios maximos y mimimos"
+            )
         elif variable == 10:
-            titulo = 'Caudal - Valores medios diarios, medios maximos y mimimos'
+            titulo = "Caudal - Valores medios diarios, medios maximos y mimimos"
         elif variable == 11:
-            titulo = 'Nivel del agua - Valores medios diarios, medios maximos y mimimos'
+            titulo = "Nivel del agua - Valores medios diarios, medios maximos y mimimos"
         return titulo
-    
+
     @staticmethod
     def get_item_promedio(variable, item):
         promedio = None

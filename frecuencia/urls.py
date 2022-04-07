@@ -10,12 +10,25 @@
 #              ya sea en uso total o parcial del código.
 
 from django.urls import re_path
+
 from . import views
 
-app_name = 'frecuencia'
+app_name = "frecuencia"
 urlpatterns = [
-    re_path(r'frecuencia/$', views.FrecuenciaList.as_view(), name='frecuencia_index'),
-    re_path(r'frecuencia/create/$', views.FrecuenciaCreate.as_view(), name='frecuencia_create'),
-    re_path(r'frecuencia/edit/(?P<pk>[0-9]+)/$', views.FrecuenciaUpdate.as_view(), name='frecuencia_update'),
-    re_path(r'frecuencia/(?P<pk>[0-9]+)/delete/$', views.FrecuenciaDelete.as_view(), name='frecuencia_delete'),
+    re_path(r"frecuencia/$", views.FrecuenciaList.as_view(), name="frecuencia_index"),
+    re_path(
+        r"frecuencia/create/$",
+        views.FrecuenciaCreate.as_view(),
+        name="frecuencia_create",
+    ),
+    re_path(
+        r"frecuencia/edit/(?P<pk>[0-9]+)/$",
+        views.FrecuenciaUpdate.as_view(),
+        name="frecuencia_update",
+    ),
+    re_path(
+        r"frecuencia/(?P<pk>[0-9]+)/delete/$",
+        views.FrecuenciaDelete.as_view(),
+        name="frecuencia_delete",
+    ),
 ]

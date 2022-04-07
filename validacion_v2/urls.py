@@ -9,17 +9,36 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from django.urls import re_path, path
+from django.urls import path, re_path
+
 from validacion_v2 import views
 
-app_name = 'validacion_v2'
+app_name = "validacion_v2"
 urlpatterns = [
-    path('validacion_v2/periodos_validacion/', views.PeriodosValidacion.as_view(), name='v2_periodos_validacion'),
-    path('validacion_v2/borrar/', views.ValidacionBorrar.as_view(), name='v2_borrar'),
-    path('validacion_v2/diaria/', views.ValidacionDiaria.as_view(), name='v2_diaria'),
-    path('validacion_v2/guardarcrudos/', views.guardar_crudos, name='v2_guardar_crudos'),
-    path('validacion_v2/guardarvalidados/', views.guardar_validados, name='v2_guardar_validados'),
-    path('validacion_v2/eliminarvalidados/', views.eliminar_validados, name='v2_eliminar_validados'),
-    path('validacion_v2/lista/<int:estacion>/<int:variable>/<str:fecha>/<str:maximo>/<str:minimo>/', views.ListaValidacion.as_view(), name='v2_horario'),
-    path('validacion_v2/', views.ValidacionList.as_view(), name='validacion_v2_index'),
+    path(
+        "validacion_v2/periodos_validacion/",
+        views.PeriodosValidacion.as_view(),
+        name="v2_periodos_validacion",
+    ),
+    path("validacion_v2/borrar/", views.ValidacionBorrar.as_view(), name="v2_borrar"),
+    path("validacion_v2/diaria/", views.ValidacionDiaria.as_view(), name="v2_diaria"),
+    path(
+        "validacion_v2/guardarcrudos/", views.guardar_crudos, name="v2_guardar_crudos"
+    ),
+    path(
+        "validacion_v2/guardarvalidados/",
+        views.guardar_validados,
+        name="v2_guardar_validados",
+    ),
+    path(
+        "validacion_v2/eliminarvalidados/",
+        views.eliminar_validados,
+        name="v2_eliminar_validados",
+    ),
+    path(
+        "validacion_v2/lista/<int:estacion>/<int:variable>/<str:fecha>/<str:maximo>/<str:minimo>/",
+        views.ListaValidacion.as_view(),
+        name="v2_horario",
+    ),
+    path("validacion_v2/", views.ValidacionList.as_view(), name="validacion_v2_index"),
 ]

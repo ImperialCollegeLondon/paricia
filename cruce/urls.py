@@ -10,14 +10,24 @@
 #              ya sea en uso total o parcial del código.
 
 from django.urls import re_path
+
 from cruce import views
 
-app_name = 'cruce'
+app_name = "cruce"
 urlpatterns = [
-    re_path(r'cruce/$', views.CruceList.as_view(), name='cruce_index'),
-    re_path(r'cruce/create/$', views.CruceCreate.as_view(), name='cruce_create'),
-    re_path(r'cruce/detail/(?P<pk>[0-9]+)/$', views.CruceDetail.as_view(), name='cruce_detail'),
-    re_path(r'cruce/edit/(?P<pk>[0-9]+)/$', views.CruceUpdate.as_view(), name='cruce_update'),
-    re_path(r'cruce/(?P<pk>[0-9]+)/delete/$', views.CruceDelete.as_view(), name='cruce_delete'),
-
+    re_path(r"cruce/$", views.CruceList.as_view(), name="cruce_index"),
+    re_path(r"cruce/create/$", views.CruceCreate.as_view(), name="cruce_create"),
+    re_path(
+        r"cruce/detail/(?P<pk>[0-9]+)/$",
+        views.CruceDetail.as_view(),
+        name="cruce_detail",
+    ),
+    re_path(
+        r"cruce/edit/(?P<pk>[0-9]+)/$", views.CruceUpdate.as_view(), name="cruce_update"
+    ),
+    re_path(
+        r"cruce/(?P<pk>[0-9]+)/delete/$",
+        views.CruceDelete.as_view(),
+        name="cruce_delete",
+    ),
 ]

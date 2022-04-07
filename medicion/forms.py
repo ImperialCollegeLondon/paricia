@@ -12,29 +12,29 @@
 #              ya sea en uso total o parcial del código.
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db import connection
 
-from .models import NivelFuncion
 from estacion.models import Estacion, Tipo
 from variable.models import Variable
-from django.core.exceptions import ValidationError
+
+from .models import NivelFuncion
 
 
 class NivelFuncionForm(forms.ModelForm):
-
     class Meta:
         model = NivelFuncion
-        fields = ['nivel', 'funcion']
+        fields = ["nivel", "funcion"]
 
     def clean_funcion(self):
-        funcion = self.cleaned_data['funcion']
+        funcion = self.cleaned_data["funcion"]
 
         ## Verifica si tiene letra H
-        if 'H' not in funcion:
+        if "H" not in funcion:
             raise ValidationError("Debe incluir el parámetro H (nivel de agua)")
 
         ## Verifica si la función devuelve resultado
-        test_func = funcion.replace('H', '10')
+        test_func = funcion.replace("H", "10")
         sql = "SELECT eval_math('" + test_func + "');"
         try:
             with connection.cursor() as cursor:
@@ -48,16 +48,34 @@ class NivelFuncionForm(forms.ModelForm):
         return funcion
 
 
-
-
 class ValidacionSearchForm(forms.Form):
-    estacion = forms.ModelChoiceField(queryset=Estacion.objects.order_by('est_codigo').filter(est_externa=False, tipo__in=(1,2,3)), empty_label="Estación")
-    variable = forms.ModelChoiceField(queryset=Variable.objects.order_by('var_id').exclude(var_id='10'), empty_label="Variable")
-    inicio = forms.DateField(widget=forms.TextInput(attrs={'autocomplete': 'off'}), input_formats=['%Y-%m-%d'], label="Fecha de Inicio", required=True)
-    fin = forms.DateField(widget=forms.TextInput(attrs={'autocomplete': 'off'}), input_formats=['%Y-%m-%d'], label="Fecha de Fin", required=True)
+    estacion = forms.ModelChoiceField(
+        queryset=Estacion.objects.order_by("est_codigo").filter(
+            est_externa=False, tipo__in=(1, 2, 3)
+        ),
+        empty_label="Estación",
+    )
+    variable = forms.ModelChoiceField(
+        queryset=Variable.objects.order_by("var_id").exclude(var_id="10"),
+        empty_label="Variable",
+    )
+    inicio = forms.DateField(
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+        input_formats=["%Y-%m-%d"],
+        label="Fecha de Inicio",
+        required=True,
+    )
+    fin = forms.DateField(
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+        input_formats=["%Y-%m-%d"],
+        label="Fecha de Fin",
+        required=True,
+    )
     limite_inferior = forms.IntegerField(required=False)
     limite_superior = forms.IntegerField(required=False)
-    #revalidar = forms.BooleanField(label="Revalidar", help_text='Marcar si deseas borrar la última validacion')
+    # revalidar = forms.BooleanField(label="Revalidar", help_text='Marcar si deseas borrar la última validacion')
     def __init__(self, *args, **kwargs):
         super(ValidacionSearchForm, self).__init__(*args, **kwargs)
-        self.fields['estacion'].widget.attrs['placeholder'] = self.fields['estacion'].label
+        self.fields["estacion"].widget.attrs["placeholder"] = self.fields[
+            "estacion"
+        ].label
