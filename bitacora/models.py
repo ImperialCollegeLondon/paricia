@@ -20,7 +20,7 @@ from django.urls import reverse
 class Bitacora(models.Model):
     """Possibly similar to a log entry? An observation made about some variable
     at some station between some dates. Appears under "Maintenance" on frontend
-    alongside sensor installations.
+    alongside sensor installations. Perhaps intended for more general notes.
     DELETE? - Unsure how useful this is.
     NEWNAME: LogEntry
     """
