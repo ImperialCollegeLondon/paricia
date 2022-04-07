@@ -20,16 +20,32 @@ from django.urls import reverse
 
 
 class Cruce(models.Model):
+    """This model associates a Variable (e.g. Precipitation) with a Station. This is used in various
+    places to filter for stations based on a specific variable, and vice versa. 
+    NEWNAME: StationVariable
+    """
+
     cru_id = models.AutoField("Id", primary_key=True)
-    est_id = models.ForeignKey(Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación")
-    var_id = models.ForeignKey(Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable")
+    est_id = models.ForeignKey(
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+    )
+    var_id = models.ForeignKey(
+        Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"
+    )
 
     def __str__(self):
         return str(self.cru_id)
 
     def get_absolute_url(self):
-        return reverse('cruce:cruce_index')
+        return reverse("cruce:cruce_index")
 
     class Meta:
-        ordering = ('cru_id', 'est_id', 'var_id',)
-        unique_together = ('est_id', 'var_id',)
+        ordering = (
+            "cru_id",
+            "est_id",
+            "var_id",
+        )
+        unique_together = (
+            "est_id",
+            "var_id",
+        )
