@@ -15,7 +15,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+
 from estacion.models import Estacion
+
 # Create your models here.
 
 # constante para los label de la velocidad promedio por dirección
@@ -23,14 +25,11 @@ LBL_VEL = "Promedio de Velocidad(m/s) al "
 # constante para los label del porcentaje de velocidad promedio por dirección
 LBL_POR = "Porcentaje de velocidad(m/s) al "
 
+
 class Var1Anuarios(models.Model):
     pre_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     pre_periodo = models.IntegerField("Año")
     pre_mes = models.IntegerField("Mes")
@@ -40,44 +39,42 @@ class Var1Anuarios(models.Model):
     pre_dias = models.IntegerField("Total de días con precipitacion")
 
     class Meta:
-        ordering = ('pre_mes',)
+        ordering = ("pre_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'pre_periodo']),
+            models.Index(fields=["est_id", "pre_periodo"]),
         ]
+
 
 class Var2Anuarios(models.Model):
     tai_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     tai_periodo = models.IntegerField("Año", default=2000)
     tai_mes = models.IntegerField("Mes")
-    tai_maximo_abs = models.DecimalField("Máximo Absoluto", max_digits=7, decimal_places=2)
+    tai_maximo_abs = models.DecimalField(
+        "Máximo Absoluto", max_digits=7, decimal_places=2
+    )
     tai_maximo_dia = models.IntegerField("Día")
-    tai_minimo_abs = models.DecimalField("Mínimo Absoluto", max_digits=7, decimal_places=2)
+    tai_minimo_abs = models.DecimalField(
+        "Mínimo Absoluto", max_digits=7, decimal_places=2
+    )
     tai_minimo_dia = models.IntegerField("Día")
     tai_maximo = models.DecimalField("Máximo", max_digits=7, decimal_places=2)
     tai_minimo = models.DecimalField("Mínimo", max_digits=7, decimal_places=2)
     tai_promedio = models.DecimalField("Promedio", max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ('tai_mes',)
+        ordering = ("tai_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'tai_periodo']),
+            models.Index(fields=["est_id", "tai_periodo"]),
         ]
+
 
 class Var3Anuarios(models.Model):
     hai_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     hai_periodo = models.IntegerField("Año", default=2000)
     hai_mes = models.IntegerField("Mes")
@@ -85,61 +82,75 @@ class Var3Anuarios(models.Model):
     hai_maximo_dia = models.IntegerField("Día")
     hai_minimo = models.DecimalField("Máximo Absoluto", max_digits=7, decimal_places=2)
     hai_minimo_dia = models.IntegerField("Día")
-    hai_promedio = models.DecimalField("Máximo Absoluto", max_digits=7, decimal_places=2)
+    hai_promedio = models.DecimalField(
+        "Máximo Absoluto", max_digits=7, decimal_places=2
+    )
 
     class Meta:
-        ordering = ('hai_mes',)
+        ordering = ("hai_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'hai_periodo']),
+            models.Index(fields=["est_id", "hai_periodo"]),
         ]
-    
+
+
 class Viento(models.Model):
     vie_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     vie_periodo = models.IntegerField("Año", default=2000)
     vie_mes = models.IntegerField("Mes")
     vie_vel_N = models.DecimalField(LBL_VEL + "Norte", max_digits=7, decimal_places=2)
     vie_por_N = models.DecimalField(LBL_POR + "Norte", max_digits=7, decimal_places=2)
-    vie_vel_NE = models.DecimalField(LBL_VEL + "Noreste", max_digits=7, decimal_places=2)
-    vie_por_NE = models.DecimalField(LBL_POR + "Noreste", max_digits=7, decimal_places=2)
+    vie_vel_NE = models.DecimalField(
+        LBL_VEL + "Noreste", max_digits=7, decimal_places=2
+    )
+    vie_por_NE = models.DecimalField(
+        LBL_POR + "Noreste", max_digits=7, decimal_places=2
+    )
     vie_vel_E = models.DecimalField(LBL_VEL + "Este", max_digits=7, decimal_places=2)
     vie_por_E = models.DecimalField(LBL_POR + "Este", max_digits=7, decimal_places=2)
-    vie_vel_SE = models.DecimalField(LBL_VEL + "Sureste", max_digits=7, decimal_places=2)
-    vie_por_SE = models.DecimalField(LBL_POR + "Sureste", max_digits=7, decimal_places=2)
+    vie_vel_SE = models.DecimalField(
+        LBL_VEL + "Sureste", max_digits=7, decimal_places=2
+    )
+    vie_por_SE = models.DecimalField(
+        LBL_POR + "Sureste", max_digits=7, decimal_places=2
+    )
     vie_vel_S = models.DecimalField(LBL_VEL + "Sur", max_digits=7, decimal_places=2)
     vie_por_S = models.DecimalField(LBL_POR + "Sur", max_digits=7, decimal_places=2)
-    vie_vel_SO = models.DecimalField(LBL_VEL + "Suroeste", max_digits=7, decimal_places=2)
-    vie_por_SO = models.DecimalField(LBL_POR + "Suroeste", max_digits=7, decimal_places=2)
+    vie_vel_SO = models.DecimalField(
+        LBL_VEL + "Suroeste", max_digits=7, decimal_places=2
+    )
+    vie_por_SO = models.DecimalField(
+        LBL_POR + "Suroeste", max_digits=7, decimal_places=2
+    )
     vie_vel_O = models.DecimalField(LBL_VEL + "Oeste", max_digits=7, decimal_places=2)
     vie_por_O = models.DecimalField(LBL_POR + "Oeste", max_digits=7, decimal_places=2)
-    vie_vel_NO = models.DecimalField(LBL_VEL + "Noroeste", max_digits=7, decimal_places=2)
+    vie_vel_NO = models.DecimalField(
+        LBL_VEL + "Noroeste", max_digits=7, decimal_places=2
+    )
     vie_por_NO = models.DecimalField("Noroeste", max_digits=7, decimal_places=2)
     vie_calma = models.DecimalField("Calma", max_digits=7, decimal_places=2)
     vie_obs = models.IntegerField("Numero de Observaciones", default=2000)
-    vie_vel_max = models.DecimalField("Velocidad Mayor m/s", max_digits=7, decimal_places=2)
+    vie_vel_max = models.DecimalField(
+        "Velocidad Mayor m/s", max_digits=7, decimal_places=2
+    )
     vie_vel_dir = models.CharField("Dirección Velocidad Mayor", max_length=2)
-    vie_vel_med = models.DecimalField("Velocidad Media Km/h", max_digits=7, decimal_places=2)
+    vie_vel_med = models.DecimalField(
+        "Velocidad Media Km/h", max_digits=7, decimal_places=2
+    )
 
     class Meta:
-        ordering = ('vie_mes',)
+        ordering = ("vie_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'vie_periodo']),
+            models.Index(fields=["est_id", "vie_periodo"]),
         ]
+
 
 class Var6Anuarios(models.Model):
     hsu_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     hsu_periodo = models.IntegerField("Año", default=2000)
     hsu_mes = models.IntegerField("Mes")
@@ -148,19 +159,16 @@ class Var6Anuarios(models.Model):
     hsu_promedio = models.DecimalField("Promedio", max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ('hsu_mes',)
+        ordering = ("hsu_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'hsu_periodo']),
+            models.Index(fields=["est_id", "hsu_periodo"]),
         ]
+
 
 class Var7Anuarios(models.Model):
     rad_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     rad_periodo = models.IntegerField("Año", default=2000)
     rad_mes = models.IntegerField("Mes")
@@ -168,14 +176,11 @@ class Var7Anuarios(models.Model):
     rad_maximo = models.DecimalField("Máximo", max_digits=7, decimal_places=2)
     rad_minimo = models.DecimalField("Mínimo", max_digits=7, decimal_places=2)
 
+
 class RadiacionMaxima(models.Model):
     rad_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     rad_periodo = models.IntegerField("Año", default=2000)
     rad_mes = models.IntegerField("Mes")
@@ -197,19 +202,16 @@ class RadiacionMaxima(models.Model):
     rad_hora = models.DecimalField("Hora", max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ('rad_mes',)
+        ordering = ("rad_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'rad_periodo']),
+            models.Index(fields=["est_id", "rad_periodo"]),
         ]
+
 
 class RadiacionMinima(models.Model):
     rad_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     rad_periodo = models.IntegerField("Año", default=2000)
     rad_mes = models.IntegerField("Mes")
@@ -229,20 +231,18 @@ class RadiacionMinima(models.Model):
     rad_18 = models.DecimalField("18", max_digits=7, decimal_places=2)
     rad_max = models.DecimalField("Mínima", max_digits=7, decimal_places=2)
     rad_hora = models.DecimalField("Hora", max_digits=7, decimal_places=2)
+
     class Meta:
-        ordering = ('rad_mes',)
+        ordering = ("rad_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'rad_periodo']),
+            models.Index(fields=["est_id", "rad_periodo"]),
         ]
+
 
 class Var8Anuarios(models.Model):
     pat_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     pat_periodo = models.IntegerField("Año", default=2000)
     pat_mes = models.IntegerField("Mes")
@@ -251,19 +251,16 @@ class Var8Anuarios(models.Model):
     pat_promedio = models.DecimalField("Promedio", max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ('pat_mes',)
+        ordering = ("pat_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'pat_periodo']),
+            models.Index(fields=["est_id", "pat_periodo"]),
         ]
+
 
 class Var9Anuarios(models.Model):
     tag_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     tag_periodo = models.IntegerField("Año", default=2000)
     tag_mes = models.IntegerField("Mes")
@@ -272,19 +269,16 @@ class Var9Anuarios(models.Model):
     tag_promedio = models.DecimalField("Promedio", max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ('tag_mes',)
+        ordering = ("tag_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'tag_periodo']),
+            models.Index(fields=["est_id", "tag_periodo"]),
         ]
+
 
 class Var10Anuarios(models.Model):
     cau_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     cau_periodo = models.IntegerField("Año", default=2000)
     cau_mes = models.IntegerField("Mes")
@@ -293,19 +287,16 @@ class Var10Anuarios(models.Model):
     cau_promedio = models.DecimalField("Promedio", max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ('cau_mes',)
+        ordering = ("cau_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'cau_periodo']),
+            models.Index(fields=["est_id", "cau_periodo"]),
         ]
+
 
 class Var11Anuarios(models.Model):
     nag_id = models.AutoField(primary_key=True)
     est_id = models.ForeignKey(
-        Estacion,
-        models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="Estación"
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     nag_periodo = models.IntegerField("Año", default=2000)
     nag_mes = models.IntegerField("Mes")
@@ -314,7 +305,7 @@ class Var11Anuarios(models.Model):
     nag_promedio = models.DecimalField("Promedio", max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ('nag_mes',)
+        ordering = ("nag_mes",)
         indexes = [
-            models.Index(fields=['est_id', 'nag_periodo']),
+            models.Index(fields=["est_id", "nag_periodo"]),
         ]

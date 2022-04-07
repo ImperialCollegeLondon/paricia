@@ -11,5 +11,6 @@
 
 from django.apps import AppConfig
 
+
 class ValidacionV2Config(AppConfig):
-    name = 'validacion_v2'
+    name = "validacion_v2"

@@ -11,11 +11,13 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
+
 from estacion.models import Estacion
 from variable.models import Variable
-from django.contrib.auth.models import User
-from django.urls import reverse
+
 
 class CalidadPermisos(models.Model):
     class Meta:
@@ -23,17 +25,19 @@ class CalidadPermisos(models.Model):
         permissions = [
             ("view_graficos", "Ver gráficos VALIDADOS del módulo Calidad"),
             ("view_graficoscrudos", "Ver gráficos CRUDOS del módulo Calidad"),
-            ("view_comparar_hidro", "Ver comparación datos CALIDAD vs HIDRO")
+            ("view_comparar_hidro", "Ver comparación datos CALIDAD vs HIDRO"),
         ]
         managed = False
 
 
 class AsociacionHidro(models.Model):
-    estacion_calidad = models.OneToOneField(Estacion, related_name='estacion_calidad', on_delete=models.SET_NULL, null=True)
-    estaciones_hidro = models.ManyToManyField(Estacion, related_name='estaciones_hidro')
+    estacion_calidad = models.OneToOneField(
+        Estacion, related_name="estacion_calidad", on_delete=models.SET_NULL, null=True
+    )
+    estaciones_hidro = models.ManyToManyField(Estacion, related_name="estaciones_hidro")
 
     def get_absolute_url(self):
-        return reverse('calidad:asociacionhidro_index')
+        return reverse("calidad:asociacionhidro_index")
 
 
 class UsuarioVariable(models.Model):
@@ -41,4 +45,4 @@ class UsuarioVariable(models.Model):
     variable = models.ManyToManyField(Variable)
 
     def get_absolute_url(self):
-        return reverse('calidad:usuario_variable_index')
+        return reverse("calidad:usuario_variable_index")

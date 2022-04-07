@@ -18,7 +18,9 @@ class ReporteValidacion(models.Model):
     fecha = models.DateTimeField()
     valor_seleccionado = models.DecimalField(max_digits=14, decimal_places=6, null=True)
     valor = models.DecimalField(max_digits=14, decimal_places=6, null=True)
-    variacion_consecutiva = models.DecimalField(max_digits=14, decimal_places=6, null=True)
+    variacion_consecutiva = models.DecimalField(
+        max_digits=14, decimal_places=6, null=True
+    )
     comentario = models.CharField(max_length=350)
     class_fila = models.CharField(max_length=30)
     class_fecha = models.CharField(max_length=30)
@@ -26,8 +28,9 @@ class ReporteValidacion(models.Model):
     class_valor = models.CharField(max_length=30)
     class_variacion_consecutiva = models.CharField(max_length=30)
     class_stddev_error = models.CharField(max_length=30)
+
     class Meta:
-        managed = False ### Para que no se cree en la migracion
+        managed = False  ### Para que no se cree en la migracion
 
     class Meta:
         ### Para que no se cree en la migracion
@@ -44,18 +47,22 @@ class NivelFuncionTabla(models.Model):
     nivel_4 = models.DecimalField("Nivel 4", max_digits=5, decimal_places=1)
     nivel_5 = models.DecimalField("Nivel 5", max_digits=5, decimal_places=1)
     nivel_sup = models.DecimalField("Nivel Sup. (cm)", max_digits=5, decimal_places=1)
-    caudal_inf = models.DecimalField("Caudal Inf. (cm)", max_digits=10, decimal_places=5)
+    caudal_inf = models.DecimalField(
+        "Caudal Inf. (cm)", max_digits=10, decimal_places=5
+    )
     caudal_1 = models.DecimalField("Caudal 1", max_digits=10, decimal_places=5)
     caudal_2 = models.DecimalField("Caudal 2", max_digits=10, decimal_places=5)
     caudal_3 = models.DecimalField("Caudal 3", max_digits=10, decimal_places=5)
     caudal_4 = models.DecimalField("Caudal 4", max_digits=10, decimal_places=5)
     caudal_5 = models.DecimalField("Caudal 5", max_digits=10, decimal_places=5)
-    caudal_sup = models.DecimalField("Caudal Sup. (cm)", max_digits=10, decimal_places=5)
+    caudal_sup = models.DecimalField(
+        "Caudal Sup. (cm)", max_digits=10, decimal_places=5
+    )
 
     class Meta:
         managed = False
         default_permissions = ()
-        ordering = ('nivel_inf',)
+        ordering = ("nivel_inf",)
 
 
 def nivelfunciontabla(curvadescarga_id):

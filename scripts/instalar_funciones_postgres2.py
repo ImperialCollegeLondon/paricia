@@ -15,26 +15,47 @@ from django.db import connection
 def aplicar_reportes_generar_anual():
     cursor = connection.cursor()
     print("Función generar anual var1")
-    file = open("scripts/plpgsql/generar_anual_var1.sql", 'r')
+    file = open("scripts/plpgsql/generar_anual_var1.sql", "r")
     sql = file.read()
     cursor.execute(sql)
     cursor.close()
 
 
-#2 temperaturaambiente; 3 humedadrelativa, temperaturaaire,humedadaire
+# 2 temperaturaambiente; 3 humedadrelativa, temperaturaaire,humedadaire
 
-variables = ["precipitacion", "temperaturaambiente", "humedadrelativa", "velocidadviento", "direccionviento", "humedadsuelo",
-             "radiacionsolar", "presionatmosferica", "temperaturaagua", "caudal", "nivelagua", "voltajebateria", "caudalaforo",
-             "nivelregleta","direccionvientorafaga","recorridoviento","gustdir","gusth","gustm","temperaturasuelo","radiacionsolarsuma",]
+variables = [
+    "precipitacion",
+    "temperaturaambiente",
+    "humedadrelativa",
+    "velocidadviento",
+    "direccionviento",
+    "humedadsuelo",
+    "radiacionsolar",
+    "presionatmosferica",
+    "temperaturaagua",
+    "caudal",
+    "nivelagua",
+    "voltajebateria",
+    "caudalaforo",
+    "nivelregleta",
+    "direccionvientorafaga",
+    "recorridoviento",
+    "gustdir",
+    "gusth",
+    "gustm",
+    "temperaturasuelo",
+    "radiacionsolarsuma",
+]
+
 
 def aplicar_validacion_diaria():
     cursor = connection.cursor()
     print("Funcion de validacion diaria")
 
-    file_validacion_acumulada = open("scripts/plpgsql/validacion_diaria_acu.sql", 'r')
-    file_validacion_promedio = open("scripts/plpgsql/validacion_diaria_prom.sql", 'r')
-    file_validacion_viento = open("scripts/plpgsql/validacion_diaria_viento.sql", 'r')
-    file_validacion_agua = open("scripts/plpgsql/validacion_diaria_agua.sql", 'r')
+    file_validacion_acumulada = open("scripts/plpgsql/validacion_diaria_acu.sql", "r")
+    file_validacion_promedio = open("scripts/plpgsql/validacion_diaria_prom.sql", "r")
+    file_validacion_viento = open("scripts/plpgsql/validacion_diaria_viento.sql", "r")
+    file_validacion_agua = open("scripts/plpgsql/validacion_diaria_agua.sql", "r")
 
     sql_validacion_acumulada = file_validacion_acumulada.read()
     sql_validacion_promedio = file_validacion_promedio.read()
@@ -53,12 +74,12 @@ def aplicar_validacion_diaria():
         elif index == 9:
             print("Caudal")
             cursor.execute(sql_validacion_agua)
-        #elif index == 10:
+        # elif index == 10:
         #    pass
         else:
-            funcion_sql = sql_validacion_promedio.replace('modelo', var)
-            funcion_sql = funcion_sql.replace('%%variable%%','var'+str(index + 1))
-            funcion_sql = funcion_sql.replace('%%var_id%%', str(index + 1))
+            funcion_sql = sql_validacion_promedio.replace("modelo", var)
+            funcion_sql = funcion_sql.replace("%%variable%%", "var" + str(index + 1))
+            funcion_sql = funcion_sql.replace("%%var_id%%", str(index + 1))
             cursor.execute(funcion_sql)
 
     cursor.close()
@@ -68,10 +89,10 @@ def aplicar_validacion_cruda():
     cursor = connection.cursor()
     print("Funcion Validacion Cruda")
 
-    file_validacion_acumulada = open("scripts/plpgsql/validacion_crudos_acu.sql", 'r')
-    file_validacion_promedio = open("scripts/plpgsql/validacion_crudos_prom.sql", 'r')
-    file_validacion_viento = open("scripts/plpgsql/validacion_crudos_viento.sql", 'r')
-    file_validacion_agua = open("scripts/plpgsql/validacion_crudos_agua.sql", 'r')
+    file_validacion_acumulada = open("scripts/plpgsql/validacion_crudos_acu.sql", "r")
+    file_validacion_promedio = open("scripts/plpgsql/validacion_crudos_prom.sql", "r")
+    file_validacion_viento = open("scripts/plpgsql/validacion_crudos_viento.sql", "r")
+    file_validacion_agua = open("scripts/plpgsql/validacion_crudos_agua.sql", "r")
 
     sql_validacion_acumulada = file_validacion_acumulada.read()
     sql_validacion_promedio = file_validacion_promedio.read()
@@ -90,15 +111,14 @@ def aplicar_validacion_cruda():
         elif index == 9:
             print("Caudal")
             cursor.execute(sql_validacion_agua)
-        #elif index == 10:
+        # elif index == 10:
         #    pass
         else:
-            funcion_sql = sql_validacion_promedio.replace('%%modelo%%',var)
-            funcion_sql = funcion_sql.replace('%%variable%%','var'+str(index + 1))
-            funcion_sql = funcion_sql.replace('%%var_id%%', str(index + 1))
+            funcion_sql = sql_validacion_promedio.replace("%%modelo%%", var)
+            funcion_sql = funcion_sql.replace("%%variable%%", "var" + str(index + 1))
+            funcion_sql = funcion_sql.replace("%%var_id%%", str(index + 1))
             cursor.execute(funcion_sql)
 
-    
     cursor.close()
 
 
@@ -107,10 +127,10 @@ def aplicar_reporte_crudos():
     cursor = connection.cursor()
     print("Funcion Reporte Crudos")
 
-    file_reporte_acumulada = open("scripts/plpgsql/reporte_crudos_acu.sql", 'r')
-    file_reporte_promedio = open("scripts/plpgsql/reporte_crudos_prom.sql", 'r')
-    file_reporte_viento = open("scripts/plpgsql/reporte_crudos_viento.sql", 'r')
-    file_reporte_agua = open("scripts/plpgsql/reporte_crudos_agua.sql", 'r')
+    file_reporte_acumulada = open("scripts/plpgsql/reporte_crudos_acu.sql", "r")
+    file_reporte_promedio = open("scripts/plpgsql/reporte_crudos_prom.sql", "r")
+    file_reporte_viento = open("scripts/plpgsql/reporte_crudos_viento.sql", "r")
+    file_reporte_agua = open("scripts/plpgsql/reporte_crudos_agua.sql", "r")
 
     sql_reporte_acumulada = file_reporte_acumulada.read()
     sql_reporte_promedio = file_reporte_promedio.read()
@@ -127,11 +147,13 @@ def aplicar_reporte_crudos():
             pass
         elif index == 9:
             cursor.execute(sql_reporte_agua)
-        #elif index == 10:
+        # elif index == 10:
         #    pass
         else:
-            funcion_sql = sql_reporte_promedio.replace('%%modelo%%', var).replace('%%var_id%%',str(index + 1))
-            funcion_sql = funcion_sql.replace('%%variable%%','var'+str(index + 1))
+            funcion_sql = sql_reporte_promedio.replace("%%modelo%%", var).replace(
+                "%%var_id%%", str(index + 1)
+            )
+            funcion_sql = funcion_sql.replace("%%variable%%", "var" + str(index + 1))
             cursor.execute(funcion_sql)
 
     cursor.close()
@@ -141,10 +163,10 @@ def aplicar_insert_crudos():
     cursor = connection.cursor()
     print("Funcion Insertar Datos Crudos")
 
-    file_validacion_acumulada = open("scripts/plpgsql/insertar_validacion_acu.sql", 'r')
-    file_validacion_promedio = open("scripts/plpgsql/insertar_validacion_pro.sql", 'r')
-    file_validacion_viento = open("scripts/plpgsql/insertar_validacion_viento.sql", 'r')
-    file_validacion_agua = open("scripts/plpgsql/insertar_validacion_agua.sql", 'r')
+    file_validacion_acumulada = open("scripts/plpgsql/insertar_validacion_acu.sql", "r")
+    file_validacion_promedio = open("scripts/plpgsql/insertar_validacion_pro.sql", "r")
+    file_validacion_viento = open("scripts/plpgsql/insertar_validacion_viento.sql", "r")
+    file_validacion_agua = open("scripts/plpgsql/insertar_validacion_agua.sql", "r")
 
     sql_validacion_acumulada = file_validacion_acumulada.read()
     sql_validacion_promedio = file_validacion_promedio.read()
@@ -154,21 +176,23 @@ def aplicar_insert_crudos():
     for index, var in enumerate(variables):
         print("Variable ", var, "indice ", index + 1)
         if index == 0:
-             cursor.execute(sql_validacion_acumulada)
+            cursor.execute(sql_validacion_acumulada)
         elif index == 3:
             print("**********-*")
             print("insertar_viento_validacion")
-            #print(sql_validacion_viento)
+            # print(sql_validacion_viento)
             print("**********-*")
             cursor.execute(sql_validacion_viento)
         elif index == 4:
             pass
-        #elif index == 10:
+        # elif index == 10:
         #    cursor.execute(sql_validacion_agua)
-        #elif index == 11:
+        # elif index == 11:
         #    pass
         else:
-            funcion_sql = sql_validacion_promedio.replace('%%modelo%%', var).replace('%%var_id%%', str(index + 1))
+            funcion_sql = sql_validacion_promedio.replace("%%modelo%%", var).replace(
+                "%%var_id%%", str(index + 1)
+            )
             cursor.execute(funcion_sql)
     cursor.close()
 
@@ -176,27 +200,26 @@ def aplicar_insert_crudos():
 def cargar_type():
     cursor = connection.cursor()
     print("Insertar types")
-    sqla = open("scripts/plpgsql/tipos_dato.sql", 'r')
+    sqla = open("scripts/plpgsql/tipos_dato.sql", "r")
     cursor.execute(sqla.read())
     cursor.close()
-
-
 
 
 # Funciones desarrolladas por Darwin Rosero para: nuevo módulo de validación, y otras funciones
 def funciones_indices():
     indices = [
-        'acumular.sql',
-        'dias_cons_igua_lluvia.sql',
-        'dias_cons_mayor_lluvia.sql',
-        'estacionalidad.sql',
+        "acumular.sql",
+        "dias_cons_igua_lluvia.sql",
+        "dias_cons_mayor_lluvia.sql",
+        "estacionalidad.sql",
     ]
     print("Insertar nuevas funciones (Nuevo módulo de validación, y otras)")
     for archivo in indices:
-        file = open("scripts/plpgsql/" + archivo, 'r')
+        file = open("scripts/plpgsql/" + archivo, "r")
         sql = file.read()
         with connection.cursor() as cursor:
             cursor.execute(sql)
+
 
 def run():
     aplicar_reportes_generar_anual()

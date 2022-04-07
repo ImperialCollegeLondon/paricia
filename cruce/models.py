@@ -14,14 +14,15 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.urls import reverse
+
 from estacion.models import Estacion
 from variable.models import Variable
-from django.urls import reverse
 
 
 class Cruce(models.Model):
     """This model associates a Variable (e.g. Precipitation) with a Station. This is used in various
-    places to filter for stations based on a specific variable, and vice versa. 
+    places to filter for stations based on a specific variable, and vice versa.
     NEWNAME: StationVariable
     """
 

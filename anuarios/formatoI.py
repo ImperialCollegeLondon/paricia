@@ -11,12 +11,17 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from anuarios.models import Var8Anuarios as PresionAtmosferica, Var6Anuarios as HumedadSuelo, Var9Anuarios as TemperaturaAgua, Var10Anuarios as Caudal, Var11Anuarios as NivelAgua
+from math import isnan
 
 from django.db import connection
-from home.functions import dictfetchall
+
 from anuarios.anuario import Anuarios
-from math import isnan
+from anuarios.models import Var6Anuarios as HumedadSuelo
+from anuarios.models import Var8Anuarios as PresionAtmosferica
+from anuarios.models import Var9Anuarios as TemperaturaAgua
+from anuarios.models import Var10Anuarios as Caudal
+from anuarios.models import Var11Anuarios as NivelAgua
+from home.functions import dictfetchall
 
 
 class FormatoI(Anuarios):
@@ -24,20 +29,22 @@ class FormatoI(Anuarios):
     minimo = 0
     promedio = 0
 
-    def consulta(self, estacion, variable, periodo,tipo):
+    def consulta(self, estacion, variable, periodo, tipo):
         cursor = connection.cursor()
-        tabla =  'validacion_var' + str(variable) + 'validado'
+        tabla = "validacion_var" + str(variable) + "validado"
         sql = "SELECT "
-        if tipo == 'maixmo':
+        if tipo == "maixmo":
             sql += "max(valor) as valor, "
-        elif tipo == 'minimo':
+        elif tipo == "minimo":
             sql += "min(valor) as valor, "
         else:
             sql += "avg(valor) as valor, "
 
         sql += "date_part('month',fecha) as mes "
         sql += "FROM " + tabla + " "
-        sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+        sql += (
+            "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
+        )
         sql += "and date_part('year',fecha)=" + str(periodo)
         # if variable == 8:
         # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
@@ -45,6 +52,7 @@ class FormatoI(Anuarios):
             sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
         sql += "GROUP BY mes ORDER BY mes"
         cursor.close()
+
     def matriz(self, estacion, variable, periodo):
         pass
 
@@ -53,62 +61,74 @@ def matrizI(estacion, variable, periodo, tipo):
     datos = []
     cursor = connection.cursor()
     # tabla = variable.var_codigo + '.m' + periodo
-    if tipo == 'validado':
-        tabla = 'validacion_var' + str(variable) + 'validado'
+    if tipo == "validado":
+        tabla = "validacion_var" + str(variable) + "validado"
     else:
-        tabla = 'medicion_var' + str(variable)+ 'medicion'
+        tabla = "medicion_var" + str(variable) + "medicion"
     # máximos absolutos y máximos promedio
     sql = "SELECT max(max_abs) as maximo,  max(valor) as valor, "
-    #sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
+    # sql = "SELECT max(maximo) as maximo,  max(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
-    #sql += "FROM " + tabla + " "
+    # sql += "FROM " + tabla + " "
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
+    sql += (
+        "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = "
+        + str(variable)
+        + ") "
+    )
     # if variable == 8:
-        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
+    # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable == 6 or variable == 8:
-        #sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
+        # sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
         sql += " and (max_abs!=0 or min_abs!=0 or valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_max = dictfetchall(cursor)
     # mínimos absolutos y mínimos promedio
-    #sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
+    # sql = "SELECT min(minimo) as minimo,  min(valor) as valor, "
     sql = "SELECT min(min_abs) as minimo,  min(valor) as valor, "
     sql += "date_part('month',fecha) as mes "
-    #sql += "FROM " + tabla + " "
+    # sql += "FROM " + tabla + " "
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
+    sql += (
+        "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = "
+        + str(variable)
+        + ") "
+    )
     # if variable == 8:
-        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
+    # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable == 6 or variable == 8:
-        #sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
+        # sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
         sql += " and (max_abs!=0 or min_abs!=0 or valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_min = dictfetchall(cursor)
     # valores promedio mensuales
     sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
-    #sql += "FROM " + tabla + " "
+    # sql += "FROM " + tabla + " "
     sql += "FROM mensual_var" + str(variable) + "mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
-    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
+    sql += (
+        "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = "
+        + str(variable)
+        + ") "
+    )
     # if variable == 8:
-        # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
+    # sql += " and maximo!=0 and minimo!=0 and valor!=0 "
     if variable == 6 and variable == 8:
-        #sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
+        # sql += " and (maximo!=0 or minimo!=0 or valor!=0) "
         sql += " and (max_abs!=0 or min_abs!=0 or valor!=0) "
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     med_avg = dictfetchall(cursor)
 
     for item_max, item_min, item_avg in zip(med_max, med_min, med_avg):
-        mes = int(item_avg.get('mes'))
+        mes = int(item_avg.get("mes"))
         if variable == 6:
             obj_hsu = HumedadSuelo()
             obj_hsu.est_id = estacion
@@ -161,39 +181,39 @@ def matrizI(estacion, variable, periodo, tipo):
 def get_maximo(item_max):
     try:
 
-        if isnan(item_max.get('maximo')):
-            if isnan(item_max.get('valor')):
+        if isnan(item_max.get("maximo")):
+            if isnan(item_max.get("valor")):
                 return 0
             else:
-                return round(item_max.get('valor'), 2)
-        return round(item_max.get('maximo'), 2)
+                return round(item_max.get("valor"), 2)
+        return round(item_max.get("maximo"), 2)
     except TypeError:
-        if item_max.get('maximo') is None:
-            if item_max.get('valor') is None:
+        if item_max.get("maximo") is None:
+            if item_max.get("valor") is None:
                 return 0
             else:
-                return round(item_max.get('valor'), 2)
-        return round(item_max.get('maximo'), 2)
+                return round(item_max.get("valor"), 2)
+        return round(item_max.get("maximo"), 2)
 
 
 def get_minimo(item_min):
     try:
-        if isnan(item_min.get('minimo')):
-            if isnan(item_min.get('valor')):
+        if isnan(item_min.get("minimo")):
+            if isnan(item_min.get("valor")):
                 return 0
             else:
-                return round(item_min.get('valor'), 2)
-        return round(item_min.get('minimo'), 2)
+                return round(item_min.get("valor"), 2)
+        return round(item_min.get("minimo"), 2)
     except TypeError:
-        if item_min.get('minimo') is None:
-            if item_min.get('valor') is None:
+        if item_min.get("minimo") is None:
+            if item_min.get("valor") is None:
                 return 0
             else:
-                return round(item_min.get('valor'), 2)
-        return round(item_min.get('minimo'), 2)
+                return round(item_min.get("valor"), 2)
+        return round(item_min.get("minimo"), 2)
 
 
 def get_promedio(item_avg):
-    if item_avg.get('valor') is None:
+    if item_avg.get("valor") is None:
         return 0
-    return round(item_avg.get('valor'), 2)
+    return round(item_avg.get("valor"), 2)

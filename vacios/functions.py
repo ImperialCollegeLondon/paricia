@@ -11,6 +11,7 @@
 
 from .models import consulta
 
+
 def consultar_vacios(estacion_id, variable_id):
     sql = """
     WITH 

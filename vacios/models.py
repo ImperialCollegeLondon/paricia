@@ -15,6 +15,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+
 class VaciosPermisos(models.Model):
     class Meta:
         default_permissions = ()

@@ -11,14 +11,23 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from django.urls import re_path, path
+from django.urls import path, re_path
+
 from anuarios import views
 
-app_name = 'anuarios'
+app_name = "anuarios"
 urlpatterns = [
     # url(r'^anuarios/$',views.ValidacionList.as_view(),name='validacion_index'),
-    path('anuarios/procesar/', views.ProcesarVariables.as_view(), name='anuarios_procesar'),
+    path(
+        "anuarios/procesar/",
+        views.ProcesarVariables.as_view(),
+        name="anuarios_procesar",
+    ),
     # path('anuarios/variables/', views.lista_variables, name='anuarios_variables'),
-    path('anuarios/variables/<int:estacion>', views.lista_variables, name='anuarios_variables'),
-    path('anuarios/listar_anio/<int:estacion>/', views.listar_anio, name='listar_anio'),
+    path(
+        "anuarios/variables/<int:estacion>",
+        views.lista_variables,
+        name="anuarios_variables",
+    ),
+    path("anuarios/listar_anio/<int:estacion>/", views.listar_anio, name="listar_anio"),
 ]

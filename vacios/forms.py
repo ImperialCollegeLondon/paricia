@@ -13,10 +13,15 @@
 
 
 from django import forms
+
 from estacion.models import Estacion
 from formato.models import Variable
 
 
 class VaciosSearchForm(forms.Form):
-    estacion = forms.ModelChoiceField(required=False, queryset=Estacion.objects.order_by('est_id').all())
-    variable = forms.ModelChoiceField(required=False, queryset=Variable.objects.order_by('var_id').all())
+    estacion = forms.ModelChoiceField(
+        required=False, queryset=Estacion.objects.order_by("est_id").all()
+    )
+    variable = forms.ModelChoiceField(
+        required=False, queryset=Variable.objects.order_by("var_id").all()
+    )

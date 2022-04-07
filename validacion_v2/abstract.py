@@ -13,6 +13,7 @@
 
 from django.db import models
 
+
 class ReporteDiarioPrecipitacion(models.Model):
     id = models.BigAutoField(primary_key=True)
     fecha = models.DateField()
@@ -28,7 +29,6 @@ class ReporteDiarioPrecipitacion(models.Model):
 
     class Meta:
         managed = False
-
 
 
 class ReporteDiario(models.Model):

@@ -10,13 +10,13 @@
 #              ya sea en uso total o parcial del código.
 
 from django.db import models
+
 from medicion.models import DigVar
+
+
 # Create your models here.
 class PermisosIndices(models.Model):
-
     class Meta:
         managed = False
         default_permissions = ()
-        permissions = (
-            ('view_indices', 'Permite visualizar el módulo de índices'),
-        )
+        permissions = (("view_indices", "Permite visualizar el módulo de índices"),)

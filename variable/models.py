@@ -14,9 +14,10 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from sensor.models import Sensor
-from estacion.models import Estacion
 from django.urls import reverse
+
+from estacion.models import Estacion
+from sensor.models import Sensor
 
 
 class Unidad(models.Model):

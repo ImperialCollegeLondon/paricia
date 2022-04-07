@@ -14,15 +14,16 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.urls import reverse
+
 from datalogger.models import Datalogger
 from estacion.models import Estacion
-from django.urls import reverse
 
 
 class Instalacion(models.Model):
-    """Very similar to variable.Control, but instead of a sensor installation it is 
-    a datalogger installation. Associates DataLogger with station with metadata for 
-    installation and finishing date, as well as status (in use). 
+    """Very similar to variable.Control, but instead of a sensor installation it is
+    a datalogger installation. Associates DataLogger with station with metadata for
+    installation and finishing date, as well as status (in use).
     NEWNAME: DataLoggerInstallation
     """
 

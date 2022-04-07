@@ -9,6 +9,10 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+from django.http import HttpResponse
+from openpyxl import Workbook
+
+from cruce.models import Cruce
 from reportes_v2.typeI import TypeI
 from reportes_v2.typeII import TypeII
 from reportes_v2.typeIII import TypeIII
@@ -17,20 +21,10 @@ from reportes_v2.typeV import TypeV
 from reportes_v2.typeVI import TypeVI
 
 
-from cruce.models import Cruce
-
-from django.http import HttpResponse
-
-from openpyxl import Workbook
-
-
 def reporte_excel_anuario(estacion, periodo):
-    #estacion = form.cleaned_data['estacion']
-    #periodo = form.cleaned_data['anio']
-    variables = list(Cruce.objects
-                     .filter(est_id=estacion)
-
-                     )
+    # estacion = form.cleaned_data['estacion']
+    # periodo = form.cleaned_data['anio']
+    variables = list(Cruce.objects.filter(est_id=estacion))
 
     # Creamos el libro de trabajo
     wb = Workbook()
@@ -103,8 +97,8 @@ def reporte_excel_anuario(estacion, periodo):
                 ws_rad = wb.create_sheet(str(variable.var_nombre), -1)
 
             obj_typevi.set_encabezado_excel(ws_rad, estacion, periodo)
-            obj_typevi.tabla_excel(ws_rad, estacion, variable, periodo, 'maxima')
-            obj_typevi.tabla_excel(ws_rad, estacion, variable, periodo, 'minima')
+            obj_typevi.tabla_excel(ws_rad, estacion, variable, periodo, "maxima")
+            obj_typevi.tabla_excel(ws_rad, estacion, variable, periodo, "minima")
             # obj_typei.grafico_excel(ws_hsu, variable, periodo)
 
         elif variable.var_id == 8:
@@ -147,11 +141,10 @@ def reporte_excel_anuario(estacion, periodo):
             obj_typei.tabla_excel(ws_nag, estacion, variable, periodo)
             obj_typei.grafico_excel(ws_nag, variable, periodo)
 
-
-
-
     # Establecemos el nombre del archivo
-    nombre_archivo = str('"') + str(estacion.est_codigo) + str("_") + str(periodo) + str('.xlsx"')
+    nombre_archivo = (
+        str('"') + str(estacion.est_codigo) + str("_") + str(periodo) + str('.xlsx"')
+    )
     # Definimos que el tipo de respuesta a devolver es un archivo de microsoft excel
     response = HttpResponse(content_type="application/ms-excel")
     contenido = "attachment; filename={0}".format(nombre_archivo)

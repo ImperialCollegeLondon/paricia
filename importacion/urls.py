@@ -10,15 +10,33 @@
 #              ya sea en uso total o parcial del código.
 
 from django.urls import re_path
+
 from importacion import views
 
-app_name = 'importacion'
+app_name = "importacion"
 urlpatterns = [
-    re_path(r'importacion_temp/create/$', views.ImportacionTempCreate.as_view(), name='importacion_temp_create'),
-    re_path(r'importacion_temp/detail/(?P<pk>[0-9]+)/$', views.ImportacionTempDetail.as_view(),
-            name='importacion_temp_detail'),
-    re_path(r'^importacion/$', views.ImportacionList.as_view(), name='importacion_index'),
-    re_path(r'importacion/detail/(?P<pk>[0-9]+)/$', views.ImportacionDetail.as_view(), name='importacion_detail'),
-    re_path(r'importacion/descarga/(?P<pk>[0-9]+)/$', views.ImportacionDescarga, name='importacion_descarga'),
-    re_path(r'^ajax/importacion/formatos', views.lista_formatos, name='formatos'),
+    re_path(
+        r"importacion_temp/create/$",
+        views.ImportacionTempCreate.as_view(),
+        name="importacion_temp_create",
+    ),
+    re_path(
+        r"importacion_temp/detail/(?P<pk>[0-9]+)/$",
+        views.ImportacionTempDetail.as_view(),
+        name="importacion_temp_detail",
+    ),
+    re_path(
+        r"^importacion/$", views.ImportacionList.as_view(), name="importacion_index"
+    ),
+    re_path(
+        r"importacion/detail/(?P<pk>[0-9]+)/$",
+        views.ImportacionDetail.as_view(),
+        name="importacion_detail",
+    ),
+    re_path(
+        r"importacion/descarga/(?P<pk>[0-9]+)/$",
+        views.ImportacionDescarga,
+        name="importacion_descarga",
+    ),
+    re_path(r"^ajax/importacion/formatos", views.lista_formatos, name="formatos"),
 ]

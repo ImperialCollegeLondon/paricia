@@ -12,11 +12,13 @@
 #              ya sea en uso total o parcial del código.
 
 from excel_response import ExcelResponse
+
 from .models import Datalogger
 
 
 def excel_datalogger():
     """Returns an excel spreadsheet given a QuerySet of DataLoggers."""
+
     cabecera = [
         ["Código", "Marca", "Modelo", "Serial"],
     ]

@@ -11,23 +11,25 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from anuarios.models import Var1Anuarios as Precipitacion
-from django.db import connection
-from home.functions import dictfetchall
 from math import isnan
+
+from django.db import connection
+
+from anuarios.models import Var1Anuarios as Precipitacion
+from home.functions import dictfetchall
 
 
 def get_precipitacion(estacion, variable, periodo, tipo):
 
-    if tipo == 'validado':
-        tabla = 'validacion_var' + str(variable) + 'validado'
+    if tipo == "validado":
+        tabla = "validacion_var" + str(variable) + "validado"
     else:
-        tabla = 'medicion_var' + str(variable)+ 'medicion'
+        tabla = "medicion_var" + str(variable) + "medicion"
     cursor = connection.cursor()
     datos = []
     # valores de precipitación mensual
     sql = "SELECT sum(valor) as suma, date_part('month',fecha) as mes  "
-    #sql += "FROM " + tabla + " "
+    # sql += "FROM " + tabla + " "
     sql += "FROM mensual_var1mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
     sql += "and date_part('year',fecha)=" + str(periodo) + " "
@@ -38,24 +40,24 @@ def get_precipitacion(estacion, variable, periodo, tipo):
     # datos diarios
     sql = "SELECT sum(valor) as valor, date_part('month',fecha) as mes, "
     sql += "date_part('day',fecha) as dia "
-    #sql += "FROM " + tabla + " "
+    # sql += "FROM " + tabla + " "
     sql += "FROM diario_var1diario "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
-    sql += "and date_part('year',fecha)=" + str(periodo)+ " "
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
     sql += "and vacios < (SELECT vacios FROM variable_variable v WHERE v.var_id = 1) "
-    #sql += "and completo_mediciones >= 70"
+    # sql += "and completo_mediciones >= 70"
     sql += "GROUP BY mes,dia ORDER BY mes,dia"
     cursor.execute(sql)
     datos_diarios = dictfetchall(cursor)
     max24h, maxdia, totdias = maximospre(datos_diarios)
     for item in med_mensual:
-        mes = int(item.get('mes'))
+        mes = int(item.get("mes"))
         obj_precipitacion = Precipitacion()
         obj_precipitacion.est_id = estacion
         obj_precipitacion.pre_periodo = periodo
         obj_precipitacion.pre_mes = mes
-        if item.get('suma') is not None:
-            obj_precipitacion.pre_suma = item.get('suma')
+        if item.get("suma") is not None:
+            obj_precipitacion.pre_suma = item.get("suma")
         else:
             obj_precipitacion.pre_suma = 0
         obj_precipitacion.pre_maximo = max24h[mes - 1]
@@ -77,10 +79,10 @@ def maximospre(datos_diarios):
         val_maxdia = []
         # val_totdias = []
         for fila in datos_diarios:
-            mes = int(fila.get('mes'))
+            mes = int(fila.get("mes"))
             if mes == i:
                 val_max24h.append(get_valor(fila))
-                val_maxdia.append(int(fila.get('dia')))
+                val_maxdia.append(int(fila.get("dia")))
         # contar dias con lluvia en la variable count
         count = 0
         for j in val_max24h:
@@ -98,10 +100,10 @@ def maximospre(datos_diarios):
 
 def get_valor(fila):
     try:
-        if isnan(fila.get('valor')):
+        if isnan(fila.get("valor")):
             return 0
-        return fila.get('valor')
+        return fila.get("valor")
     except TypeError:
-        if fila.get('valor') is None:
+        if fila.get("valor") is None:
             return 0
-        return fila.get('valor')
+        return fila.get("valor")

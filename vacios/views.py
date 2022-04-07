@@ -13,25 +13,33 @@
 
 from __future__ import unicode_literals
 
-from django.shortcuts import render
-from django.views.generic import FormView
-from .forms import VaciosSearchForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views.generic import FormView
+
 from vacios.functions import consultar_vacios
+
+from .forms import VaciosSearchForm
 
 
 class Vacios(PermissionRequiredMixin, FormView):
-    permission_required = 'vacios.view_vacios'
-    template_name = 'vacios/form.html'
+    permission_required = "vacios.view_vacios"
+    template_name = "vacios/form.html"
     form_class = VaciosSearchForm
-    success_url = reverse_lazy('vacios:vacios')
+    success_url = reverse_lazy("vacios:vacios")
 
     def post(self, request, *args, **kwargs):
         form = VaciosSearchForm(self.request.POST or None)
         if form.is_valid():
             if self.request.is_ajax():
-                variable = form.cleaned_data['variable']
-                estacion = form.cleaned_data['estacion']
-                lista = consultar_vacios( estacion.est_id, variable.var_id)
-                return render(request, 'vacios/tabla.html', {'lista': lista ,})
+                variable = form.cleaned_data["variable"]
+                estacion = form.cleaned_data["estacion"]
+                lista = consultar_vacios(estacion.est_id, variable.var_id)
+                return render(
+                    request,
+                    "vacios/tabla.html",
+                    {
+                        "lista": lista,
+                    },
+                )

@@ -15,13 +15,14 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.urls import reverse
-from variable.models import Variable
+
 from estacion.models import Estacion
+from variable.models import Variable
 
 
 class Extension(models.Model):
     """The file extension associated with the Format.
-    GENERALISE: Could be replaced with simpler MIME type checks.     
+    GENERALISE: Could be replaced with simpler MIME type checks.
     """
 
     ext_id = models.AutoField("Id", primary_key=True)
@@ -36,7 +37,7 @@ class Extension(models.Model):
 
 class Delimitador(models.Model):
     """Delimiter associated with the Format.
-    GENERALISE: Probably doesn't need to be its own model, could be simplified. 
+    GENERALISE: Probably doesn't need to be its own model, could be simplified.
     """
 
     del_id = models.AutoField("Id", primary_key=True)
@@ -52,7 +53,7 @@ class Delimitador(models.Model):
 
 class Fecha(models.Model):
     """Date format associated with the Format, e.g. MM/DD/YYYY, DD.MM.YYYY etc.
-    GENERALISE: similar to above. 
+    GENERALISE: similar to above.
     """
 
     fec_id = models.AutoField("Id", primary_key=True)
@@ -71,7 +72,7 @@ class Fecha(models.Model):
 
 class Hora(models.Model):
     """Time format associated with the Format, e.g. HH/MM/SS 24H etc.
-    GENERALISE: similar to above. 
+    GENERALISE: similar to above.
     """
 
     hor_id = models.AutoField("Id", primary_key=True)
@@ -91,7 +92,7 @@ class Hora(models.Model):
 class Formato(models.Model):
     """Defines a format (of a file, time-series data) in terms of its extension,
     first data row etc. Used when importing data files in importacion.functions.
-    GENERALISE: Some of the FK models (date format etc.) may be simple charfield etc. 
+    GENERALISE: Some of the FK models (date format etc.) may be simple charfield etc.
     NEWNAME: Format
     """
 
@@ -144,7 +145,10 @@ class Formato(models.Model):
     for_tipo = models.CharField(
         "Tipo de Formato",
         max_length=25,
-        choices=(("automatico", "automático"), ("convencional", "convencional"),),
+        choices=(
+            ("automatico", "automático"),
+            ("convencional", "convencional"),
+        ),
     )
     for_estado = models.BooleanField("Estado", default=True)
 
@@ -159,10 +163,10 @@ class Formato(models.Model):
 
 
 class Clasificacion(models.Model):
-    """ Classification linking Format and Variable with metadata for column value, 
-    column value max/min etc. Used in import app to check if data already exists 
+    """Classification linking Format and Variable with metadata for column value,
+    column value max/min etc. Used in import app to check if data already exists
     for a certain date range-Station-Value cobination and in some other function.
-    HELPWANTED: Unclear exactly what this is doing, seems quite abstract. 
+    HELPWANTED: Unclear exactly what this is doing, seems quite abstract.
     """
 
     cla_id = models.AutoField("Id", primary_key=True)
@@ -211,7 +215,7 @@ class Clasificacion(models.Model):
 
 
 class Asociacion(models.Model):
-    """ Associates a Format with a Station. Used to return a list of formats associated
+    """Associates a Format with a Station. Used to return a list of formats associated
     with a station.
     HELPWANTED: Unclear what the use case for this is.
     """
@@ -233,4 +237,3 @@ class Asociacion(models.Model):
             "est_id",
             "for_id",
         )
-

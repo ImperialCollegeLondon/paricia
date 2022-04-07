@@ -12,7 +12,9 @@
 #              ya sea en uso total o parcial del código.
 
 from __future__ import unicode_literals
+
 from django.db import models
+
 
 class ReportesPermisos(models.Model):
     class Meta:
@@ -22,7 +24,10 @@ class ReportesPermisos(models.Model):
             ("view_comparacionvalores", "Ver Comparación de valores"),
             ("view_comparacionvariables", "Ver Comparación de variables"),
             ("view_consultasperiodo", "Ver Consultas por períodos"),
-            ("view_calidadconsultasperiodo", "Ver Consultas por períodos módulo de Calidad"),
+            (
+                "view_calidadconsultasperiodo",
+                "Ver Consultas por períodos módulo de Calidad",
+            ),
             ("reportes_general", "Reportes general esencial"),
             ("view_diario", "Ver Diario"),
             ("view_mensualmultianual", "Ver Mensual Multianual"),

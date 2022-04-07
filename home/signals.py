@@ -9,33 +9,34 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from django.db.models.signals import pre_save, m2m_changed
+from django.contrib.auth.models import Group, User
+from django.db.models.signals import m2m_changed, pre_save
 from django.dispatch import receiver
-from django.contrib.auth.models import User, Group
+
 from home.functions import actualizar_menu_grupo, actualizar_menu_usuario
 
 
 @receiver(pre_save, sender=Group)
 def group_changed(sender, **kwargs):
-    grupo = kwargs['instance']
-    if grupo.name == 'Anonymous':
+    grupo = kwargs["instance"]
+    if grupo.name == "Anonymous":
         # dont save
         pass
 
 
 @receiver(m2m_changed, sender=Group.permissions.through)
 def group_permissions_changed(sender, **kwargs):
-    action = kwargs['action']
-    if action not in ['post_add', 'post_remove', 'post_clear']:
+    action = kwargs["action"]
+    if action not in ["post_add", "post_remove", "post_clear"]:
         return None
-    grupo = kwargs['instance']
+    grupo = kwargs["instance"]
     actualizar_menu_grupo(grupo)
 
 
 @receiver(m2m_changed, sender=User.user_permissions.through)
 def user_permissions_changed(sender, **kwargs):
-    action = kwargs['action']
-    if action not in ['post_add', 'post_remove', 'post_clear']:
+    action = kwargs["action"]
+    if action not in ["post_add", "post_remove", "post_clear"]:
         return None
-    usuario = kwargs['instance']
+    usuario = kwargs["instance"]
     actualizar_menu_usuario(usuario)

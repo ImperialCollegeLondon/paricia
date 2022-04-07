@@ -12,9 +12,10 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from variable.models import Variable
-from estacion.models import Estacion
 from django.urls import reverse
+
+from estacion.models import Estacion
+from variable.models import Variable
 
 
 class Bitacora(models.Model):

@@ -12,15 +12,26 @@
 #              ya sea en uso total o parcial del código.
 
 from django.forms import ModelForm
+
 from formato.models import Clasificacion
+
 
 class ClasificacionForm(ModelForm):
     class Meta:
         model = Clasificacion
-        fields = ['var_id', 'coma_decimal', 'cla_valor', 'cla_maximo', 'cla_minimo',
-                  'acumular', 'incremental', 'resolucion',
-                  'col_validador_valor', 'txt_validador_valor',
-                  'col_validador_maximo', 'txt_validador_maximo',
-                  'col_validador_minimo', 'txt_validador_minimo'
-                  ]
-
+        fields = [
+            "var_id",
+            "coma_decimal",
+            "cla_valor",
+            "cla_maximo",
+            "cla_minimo",
+            "acumular",
+            "incremental",
+            "resolucion",
+            "col_validador_valor",
+            "txt_validador_valor",
+            "col_validador_maximo",
+            "txt_validador_maximo",
+            "col_validador_minimo",
+            "txt_validador_minimo",
+        ]
