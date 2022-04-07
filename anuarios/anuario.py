@@ -11,13 +11,12 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from variable.models import Variable
-
 from anuarios.models import Var1Anuarios
+from variable.models import Variable
 
 
 class Anuarios:
     @staticmethod
     def promedio(dict):
-        for k,v in dict.items():
+        for k, v in dict.items():
             print(k, v)

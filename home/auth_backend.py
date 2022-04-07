@@ -12,7 +12,9 @@
 #              ya sea en uso total o parcial del código.
 
 from django.contrib.auth.backends import ModelBackend
+
 from .functions import get_anonymous_user
+
 
 class AnonymousPermissions(ModelBackend):
     """
@@ -23,9 +25,11 @@ class AnonymousPermissions(ModelBackend):
     def has_perm(self, user_obj, perm, obj=None):
 
         if not user_obj.is_anonymous:
-            return user_obj.is_active and super(ModelBackend, self).has_perm(user_obj, perm, obj=obj)
+            return user_obj.is_active and super(ModelBackend, self).has_perm(
+                user_obj, perm, obj=obj
+            )
 
-        if hasattr(user_obj, '_perm_cache'):
+        if hasattr(user_obj, "_perm_cache"):
             return perm in user_obj._perm_cache
 
         anon_user = get_anonymous_user()
@@ -33,5 +37,5 @@ class AnonymousPermissions(ModelBackend):
             return False
 
         perms = anon_user.get_all_permissions()
-        setattr(user_obj, '_perm_cache', perms)
+        setattr(user_obj, "_perm_cache", perms)
         return perm in user_obj._perm_cache

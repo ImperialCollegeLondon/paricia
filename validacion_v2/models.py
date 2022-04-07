@@ -10,4 +10,5 @@
 #              ya sea en uso total o parcial del código.
 
 from django.db import models
+
 from medicion.models import DigVar

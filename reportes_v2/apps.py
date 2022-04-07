@@ -17,4 +17,4 @@ from django.apps import AppConfig
 
 
 class Reportes_v2Config(AppConfig):
-    name = 'reportes_v2'
+    name = "reportes_v2"

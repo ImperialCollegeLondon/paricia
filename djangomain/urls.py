@@ -24,35 +24,35 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include ,re_path
-from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path, re_path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('django.contrib.auth.urls')),
-    path('', include('home.urls', namespace='home')),
-    path('', include('estacion.urls', namespace='estacion')),
-    path('', include('datalogger.urls', namespace='datalogger')),
-    path('', include('sensor.urls', namespace='sensor')),
-    path('', include('variable.urls', namespace='variable')),
-    path('', include('bitacora.urls', namespace='bitacora')),
-    path('', include('cruce.urls', namespace='cruce')),
-    path('', include('formato.urls', namespace='formato')),
-    path('', include('frecuencia.urls', namespace='frecuencia')),
-    path('', include('instalacion.urls', namespace='instalacion')),
-    path('', include('medicion.urls', namespace='medicion')),
-    path('', include('validacion.urls', namespace='validacion')),
-    path('', include('importacion.urls', namespace='importacion')),
-    path('', include('vacios.urls', namespace='vacios')),
-    path('', include('calidad.urls', namespace='calidad')),
-    path('', include('reportes.urls', namespace='reportes')),
-    path('', include('reportes_v2.urls', namespace='reportes_v2')),
-    path('', include('telemetria.urls', namespace='telemetria')),
-    path('', include('indices.urls', namespace='indices')),    
-    path('', include('validacion_v2.urls', namespace='validacion_v2')), 
-    path('', include('anuarios.urls', namespace='anuarios')), 
+    path("admin/", admin.site.urls),
+    path("", include("django.contrib.auth.urls")),
+    path("", include("home.urls", namespace="home")),
+    path("", include("estacion.urls", namespace="estacion")),
+    path("", include("datalogger.urls", namespace="datalogger")),
+    path("", include("sensor.urls", namespace="sensor")),
+    path("", include("variable.urls", namespace="variable")),
+    path("", include("bitacora.urls", namespace="bitacora")),
+    path("", include("cruce.urls", namespace="cruce")),
+    path("", include("formato.urls", namespace="formato")),
+    path("", include("frecuencia.urls", namespace="frecuencia")),
+    path("", include("instalacion.urls", namespace="instalacion")),
+    path("", include("medicion.urls", namespace="medicion")),
+    path("", include("validacion.urls", namespace="validacion")),
+    path("", include("importacion.urls", namespace="importacion")),
+    path("", include("vacios.urls", namespace="vacios")),
+    path("", include("calidad.urls", namespace="calidad")),
+    path("", include("reportes.urls", namespace="reportes")),
+    path("", include("reportes_v2.urls", namespace="reportes_v2")),
+    path("", include("telemetria.urls", namespace="telemetria")),
+    path("", include("indices.urls", namespace="indices")),
+    path("", include("validacion_v2.urls", namespace="validacion_v2")),
+    path("", include("anuarios.urls", namespace="anuarios")),
 ]
 
 if settings.DEBUG:

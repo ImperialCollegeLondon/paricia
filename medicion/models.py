@@ -14,18 +14,16 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from estacion.models import Estacion
 from django.urls import reverse
+
+from estacion.models import Estacion
 
 
 class PermisosMedicion(models.Model):
-
     class Meta:
         managed = False
         default_permissions = ()
-        permissions = (
-            ('validar', 'usar interfaz de validación'),
-        )
+        permissions = (("validar", "usar interfaz de validación"),)
 
 
 # # Este modelo posiblemente se lo usaría para compatibilidad con SEDC
@@ -54,8 +52,12 @@ class PermisosMedicion(models.Model):
 
 class VientoPolar(models.Model):
     fecha = models.DateTimeField("Fecha")
-    velocidad = models.DecimalField("Velocidad", max_digits=14, decimal_places=6, null=True)
-    direccion = models.DecimalField("Direccion", max_digits=14, decimal_places=6, null=True)
+    velocidad = models.DecimalField(
+        "Velocidad", max_digits=14, decimal_places=6, null=True
+    )
+    direccion = models.DecimalField(
+        "Direccion", max_digits=14, decimal_places=6, null=True
+    )
 
     class Meta:
         ### Para que no se cree en la migracion
@@ -65,45 +67,58 @@ class VientoPolar(models.Model):
 
 class CaudalViaEstacion(models.Model):
     id = models.AutoField("Id", primary_key=True)
-    est_id = models.ForeignKey(Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación")
+    est_id = models.ForeignKey(
+        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+    )
     fecha_inicio = models.DateTimeField("Fecha inicio")
     fecha_fin = models.DateTimeField("Fecha fin")
-    valor = models.DecimalField("Valor", max_digits=14, decimal_places=6, blank=True, null=True)
+    valor = models.DecimalField(
+        "Valor", max_digits=14, decimal_places=6, blank=True, null=True
+    )
     calibracion_regleta_sensor = models.NullBooleanField("Calibracion", default=False)
 
 
 class CurvaDescarga(models.Model):
     id = models.AutoField("Id", primary_key=True)
-    estacion = models.ForeignKey(Estacion, on_delete=models.SET_NULL, null=True, verbose_name="Estación")
+    estacion = models.ForeignKey(
+        Estacion, on_delete=models.SET_NULL, null=True, verbose_name="Estación"
+    )
     fecha = models.DateTimeField("Fecha")
-    requiere_recalculo_caudal = models.BooleanField(verbose_name="Requiere recaldular Caudal", default=False)
+    requiere_recalculo_caudal = models.BooleanField(
+        verbose_name="Requiere recaldular Caudal", default=False
+    )
 
     def __str__(self):
         return self.id
 
     def get_absolute_url(self):
-        return reverse('medicion:curvadescarga_detail', kwargs={'pk': self.pk})
+        return reverse("medicion:curvadescarga_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ('estacion', 'fecha')
-        unique_together = ('estacion', 'fecha')
+        ordering = ("estacion", "fecha")
+        unique_together = ("estacion", "fecha")
 
 
 class NivelFuncion(models.Model):
     curvadescarga = models.ForeignKey(CurvaDescarga, on_delete=models.CASCADE)
-    nivel = models.DecimalField("Nivel (cm)", max_digits=5, decimal_places=1, db_index=True)
+    nivel = models.DecimalField(
+        "Nivel (cm)", max_digits=5, decimal_places=1, db_index=True
+    )
     funcion = models.CharField("Función", max_length=80)
 
     def __str__(self):
         return str(self.pk)
 
     def get_absolute_url(self):
-        return reverse('medicion:nivelfuncion_detail', kwargs={'pk': self.pk})
+        return reverse("medicion:nivelfuncion_detail", kwargs={"pk": self.pk})
 
     class Meta:
         default_permissions = ()
-        ordering = ('curvadescarga', 'nivel',)
-        
+        ordering = (
+            "curvadescarga",
+            "nivel",
+        )
+
 
 class CursorDbclima(models.Model):
     estacion_id = models.IntegerField(primary_key=True)
@@ -116,7 +131,9 @@ class CursorEmaaphidro(models.Model):
     est_codigo = models.CharField(max_length=4)
     fecha = models.DateTimeField()
 
+
 ##############################################################
+
 
 class ValorDecimal:
     max_dig = 6
@@ -168,13 +185,18 @@ class Var1Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v1.max_dig, decimal_places=DigVar.v1.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v1.max_dig,
+        decimal_places=DigVar.v1.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -182,15 +204,30 @@ class Var2Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v2.max_dig, decimal_places=DigVar.v2.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v2.max_dig,
+        decimal_places=DigVar.v2.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v2.max_dig,
+        decimal_places=DigVar.v2.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v2.max_dig,
+        decimal_places=DigVar.v2.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -198,15 +235,30 @@ class Var3Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v3.max_dig, decimal_places=DigVar.v3.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v3.max_dig,
+        decimal_places=DigVar.v3.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v3.max_dig,
+        decimal_places=DigVar.v3.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v3.max_dig,
+        decimal_places=DigVar.v3.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -214,15 +266,30 @@ class Var4Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v4.max_dig, decimal_places=DigVar.v4.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v4.max_dig,
+        decimal_places=DigVar.v4.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v4.max_dig,
+        decimal_places=DigVar.v4.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v4.max_dig,
+        decimal_places=DigVar.v4.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -230,15 +297,30 @@ class Var5Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v5.max_dig, decimal_places=DigVar.v5.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v5.max_dig,
+        decimal_places=DigVar.v5.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v5.max_dig,
+        decimal_places=DigVar.v5.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v5.max_dig,
+        decimal_places=DigVar.v5.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -246,15 +328,30 @@ class Var6Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v6.max_dig, decimal_places=DigVar.v6.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v6.max_dig,
+        decimal_places=DigVar.v6.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v6.max_dig,
+        decimal_places=DigVar.v6.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v6.max_dig,
+        decimal_places=DigVar.v6.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -262,15 +359,30 @@ class Var7Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v7.max_dig, decimal_places=DigVar.v7.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v7.max_dig,
+        decimal_places=DigVar.v7.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v7.max_dig,
+        decimal_places=DigVar.v7.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v7.max_dig,
+        decimal_places=DigVar.v7.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -278,15 +390,30 @@ class Var8Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v8.max_dig, decimal_places=DigVar.v8.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v8.max_dig,
+        decimal_places=DigVar.v8.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v8.max_dig,
+        decimal_places=DigVar.v8.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v8.max_dig,
+        decimal_places=DigVar.v8.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -294,15 +421,30 @@ class Var9Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v9.max_dig, decimal_places=DigVar.v9.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v9.max_dig,
+        decimal_places=DigVar.v9.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v9.max_dig,
+        decimal_places=DigVar.v9.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v9.max_dig,
+        decimal_places=DigVar.v9.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -310,15 +452,30 @@ class Var10Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v10.max_dig, decimal_places=DigVar.v10.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v10.max_dig,
+        decimal_places=DigVar.v10.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v10.max_dig,
+        decimal_places=DigVar.v10.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v10.max_dig,
+        decimal_places=DigVar.v10.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -326,15 +483,30 @@ class Var11Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v11.max_dig, decimal_places=DigVar.v11.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v11.max_dig,
+        decimal_places=DigVar.v11.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v11.max_dig,
+        decimal_places=DigVar.v11.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v11.max_dig,
+        decimal_places=DigVar.v11.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -342,15 +514,30 @@ class Var12Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v12.max_dig, decimal_places=DigVar.v12.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v12.max_dig,
+        decimal_places=DigVar.v12.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v12.max_dig,
+        decimal_places=DigVar.v12.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v12.max_dig,
+        decimal_places=DigVar.v12.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -358,13 +545,18 @@ class Var13Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v13.max_dig, decimal_places=DigVar.v13.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v13.max_dig,
+        decimal_places=DigVar.v13.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -375,16 +567,26 @@ class Var14Medicion(models.Model):
     fecha_inicio = models.DateTimeField("Fecha inicio datos")
     fecha = models.DateTimeField("Fecha fin datos")
     calibrado = models.BooleanField("Calibrado")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v14.max_dig, decimal_places=DigVar.v14.dec_pla, null=True)
-    incertidumbre = models.DecimalField("Incertidumbre", max_digits=DigVar.v14.max_dig, decimal_places=DigVar.v14.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v14.max_dig,
+        decimal_places=DigVar.v14.dec_pla,
+        null=True,
+    )
+    incertidumbre = models.DecimalField(
+        "Incertidumbre",
+        max_digits=DigVar.v14.max_dig,
+        decimal_places=DigVar.v14.dec_pla,
+        null=True,
+    )
     comentario = models.CharField("Comentario", null=True, max_length=250)
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha_importacion']),
-            models.Index(fields=['estacion_id', 'fecha_inicio', 'fecha']),
-            models.Index(fields=['fecha_importacion']),
+            models.Index(fields=["estacion_id", "fecha_importacion"]),
+            models.Index(fields=["estacion_id", "fecha_inicio", "fecha"]),
+            models.Index(fields=["fecha_importacion"]),
         ]
 
 
@@ -392,15 +594,30 @@ class Var15Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v15.max_dig, decimal_places=DigVar.v15.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v15.max_dig, decimal_places=DigVar.v15.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v15.max_dig, decimal_places=DigVar.v15.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v15.max_dig,
+        decimal_places=DigVar.v15.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v15.max_dig,
+        decimal_places=DigVar.v15.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v15.max_dig,
+        decimal_places=DigVar.v15.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -408,15 +625,30 @@ class Var16Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v16.max_dig, decimal_places=DigVar.v16.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v16.max_dig, decimal_places=DigVar.v16.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v16.max_dig, decimal_places=DigVar.v16.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v16.max_dig,
+        decimal_places=DigVar.v16.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v16.max_dig,
+        decimal_places=DigVar.v16.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v16.max_dig,
+        decimal_places=DigVar.v16.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -424,15 +656,30 @@ class Var17Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v17.max_dig, decimal_places=DigVar.v17.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v17.max_dig, decimal_places=DigVar.v17.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v17.max_dig, decimal_places=DigVar.v17.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v17.max_dig,
+        decimal_places=DigVar.v17.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v17.max_dig,
+        decimal_places=DigVar.v17.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v17.max_dig,
+        decimal_places=DigVar.v17.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -440,15 +687,30 @@ class Var18Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v18.max_dig, decimal_places=DigVar.v18.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v18.max_dig, decimal_places=DigVar.v18.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v18.max_dig, decimal_places=DigVar.v18.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v18.max_dig,
+        decimal_places=DigVar.v18.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v18.max_dig,
+        decimal_places=DigVar.v18.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v18.max_dig,
+        decimal_places=DigVar.v18.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -456,47 +718,92 @@ class Var19Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v19.max_dig, decimal_places=DigVar.v19.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v19.max_dig, decimal_places=DigVar.v19.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v19.max_dig, decimal_places=DigVar.v19.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v19.max_dig,
+        decimal_places=DigVar.v19.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v19.max_dig,
+        decimal_places=DigVar.v19.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v19.max_dig,
+        decimal_places=DigVar.v19.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
-    
+
 class Var20Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v20.max_dig, decimal_places=DigVar.v20.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v20.max_dig, decimal_places=DigVar.v20.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v20.max_dig, decimal_places=DigVar.v20.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v20.max_dig,
+        decimal_places=DigVar.v20.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v20.max_dig,
+        decimal_places=DigVar.v20.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v20.max_dig,
+        decimal_places=DigVar.v20.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
-    
+
 class Var21Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v21.max_dig, decimal_places=DigVar.v21.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v21.max_dig, decimal_places=DigVar.v21.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v21.max_dig, decimal_places=DigVar.v21.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v21.max_dig,
+        decimal_places=DigVar.v21.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v21.max_dig,
+        decimal_places=DigVar.v21.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v21.max_dig,
+        decimal_places=DigVar.v21.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -504,15 +811,30 @@ class Var22Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v22.max_dig, decimal_places=DigVar.v22.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v22.max_dig, decimal_places=DigVar.v22.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v22.max_dig, decimal_places=DigVar.v22.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v22.max_dig,
+        decimal_places=DigVar.v22.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v22.max_dig,
+        decimal_places=DigVar.v22.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v22.max_dig,
+        decimal_places=DigVar.v22.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -520,15 +842,30 @@ class Var23Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v23.max_dig, decimal_places=DigVar.v23.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v23.max_dig, decimal_places=DigVar.v23.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v23.max_dig, decimal_places=DigVar.v23.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v23.max_dig,
+        decimal_places=DigVar.v23.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v23.max_dig,
+        decimal_places=DigVar.v23.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v23.max_dig,
+        decimal_places=DigVar.v23.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
 
 
@@ -536,16 +873,32 @@ class Var24Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v24.max_dig, decimal_places=DigVar.v24.dec_pla, null=True)
-    maximo = models.DecimalField("Máximo", max_digits=DigVar.v24.max_dig, decimal_places=DigVar.v24.dec_pla, null=True)
-    minimo = models.DecimalField("Mínimo", max_digits=DigVar.v24.max_dig, decimal_places=DigVar.v24.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v24.max_dig,
+        decimal_places=DigVar.v24.dec_pla,
+        null=True,
+    )
+    maximo = models.DecimalField(
+        "Máximo",
+        max_digits=DigVar.v24.max_dig,
+        decimal_places=DigVar.v24.dec_pla,
+        null=True,
+    )
+    minimo = models.DecimalField(
+        "Mínimo",
+        max_digits=DigVar.v24.max_dig,
+        decimal_places=DigVar.v24.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'fecha']),
-            models.Index(fields=['fecha', 'estacion_id']),
+            models.Index(fields=["estacion_id", "fecha"]),
+            models.Index(fields=["fecha", "estacion_id"]),
         ]
+
 
 ## Variables creadas para boya con diferentes profundidades
 
@@ -557,12 +910,17 @@ class Var101Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v101.max_dig, decimal_places=DigVar.v101.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v101.max_dig,
+        decimal_places=DigVar.v101.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]
 
 
@@ -574,12 +932,17 @@ class Var102Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v102.max_dig, decimal_places=DigVar.v102.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v102.max_dig,
+        decimal_places=DigVar.v102.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]
 
 
@@ -591,12 +954,17 @@ class Var103Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v103.max_dig, decimal_places=DigVar.v103.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v103.max_dig,
+        decimal_places=DigVar.v103.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]
 
 
@@ -608,12 +976,17 @@ class Var104Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v104.max_dig, decimal_places=DigVar.v104.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v104.max_dig,
+        decimal_places=DigVar.v104.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]
 
 
@@ -625,12 +998,17 @@ class Var105Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v105.max_dig, decimal_places=DigVar.v105.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v105.max_dig,
+        decimal_places=DigVar.v105.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]
 
 
@@ -642,12 +1020,17 @@ class Var106Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v106.max_dig, decimal_places=DigVar.v106.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v106.max_dig,
+        decimal_places=DigVar.v106.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]
 
 
@@ -659,12 +1042,17 @@ class Var107Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v107.max_dig, decimal_places=DigVar.v107.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v107.max_dig,
+        decimal_places=DigVar.v107.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]
 
 
@@ -676,10 +1064,15 @@ class Var108Medicion(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField("Valor", max_digits=DigVar.v108.max_dig, decimal_places=DigVar.v108.dec_pla, null=True)
+    valor = models.DecimalField(
+        "Valor",
+        max_digits=DigVar.v108.max_dig,
+        decimal_places=DigVar.v108.dec_pla,
+        null=True,
+    )
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=['estacion_id', 'profundidad', 'fecha']),
+            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
         ]

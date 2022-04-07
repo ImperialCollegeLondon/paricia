@@ -13,4 +13,4 @@ from django.apps import AppConfig
 
 
 class AnuariosConfig(AppConfig):
-    name = 'anuarios'
+    name = "anuarios"

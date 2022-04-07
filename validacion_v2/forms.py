@@ -11,15 +11,19 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from django.forms import ModelForm, Form, ModelChoiceField, DateTimeField
-from django.forms import ModelForm
-from validacion.models import Validacion
+from django.forms import DateTimeField, Form, ModelChoiceField, ModelForm
+
 from estacion.models import Estacion
+from validacion.models import Validacion
 from variable.models import Variable
 
 
 class BorrarForm(Form):
-    estacion = ModelChoiceField(queryset=Estacion.objects.order_by('est_id').all(), empty_label="Estación")
-    variable = ModelChoiceField(queryset=Variable.objects.order_by('var_id').all(), empty_label="Variable")
-    inicio = DateTimeField(input_formats=['%Y-%m-%d %H:%M:%S'], label="Fecha de Inicio")
-    fin = DateTimeField(input_formats=['%Y-%m-%d %H:%M:%S'], label="Fecha de Fin")
+    estacion = ModelChoiceField(
+        queryset=Estacion.objects.order_by("est_id").all(), empty_label="Estación"
+    )
+    variable = ModelChoiceField(
+        queryset=Variable.objects.order_by("var_id").all(), empty_label="Variable"
+    )
+    inicio = DateTimeField(input_formats=["%Y-%m-%d %H:%M:%S"], label="Fecha de Inicio")
+    fin = DateTimeField(input_formats=["%Y-%m-%d %H:%M:%S"], label="Fecha de Fin")

@@ -9,11 +9,11 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from variable.models import Variable, Unidad
 from estacion.models import Estacion
+from variable.models import Unidad, Variable
 
 
-class Titulos():
+class Titulos:
     def titulo_grafico(self, variable):
         # returns var_nombre given var_id
         consulta = list(Variable.objects.filter(var_id=variable))
@@ -21,5 +21,5 @@ class Titulos():
         return consulta[0]
 
     def titulo_unidad(self, variable):
-        var=Variable.objects.get(var_id=variable)
+        var = Variable.objects.get(var_id=variable)
         return var.uni_id.uni_sigla

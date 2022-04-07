@@ -11,13 +11,15 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from anuarios.models import Viento
-from django.db import connection
-import numpy as np
 from math import isnan
 
+import numpy as np
+from django.db import connection
 
-class VelocidaDireccion():
+from anuarios.models import Viento
+
+
+class VelocidaDireccion:
     velocidad = 0
     velocidad_max = 0
     direccion = 0
@@ -27,7 +29,7 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
     tabla_velocidad = "medicion_var4medicion"
     tabla_direccion = "medicion_var5medicion"
 
-    if tipo == 'validado':
+    if tipo == "validado":
         tabla_velocidad = "validacion_var4validado"
         tabla_direccion = "validacion_var5validado"
     else:
@@ -37,12 +39,16 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
     cursor = connection.cursor()
     # velocidad media en m/s
     sql = "SELECT avg(valor) as valor, date_part('month',fecha) as mes "
-    #sql += "FROM " + tabla_velocidad + " "
+    # sql += "FROM " + tabla_velocidad + " "
     sql += "FROM mensual_var4mensual "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor!='NaN'::numeric "
     # sql += "AND date_part('month',fecha)=9 "
     sql += "and date_part('year',fecha)=" + str(periodo)
-    sql += "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = " + str(variable) + ") "
+    sql += (
+        "and vacios < (SELECT v.vacios FROM variable_variable v WHERE v.var_id = "
+        + str(variable)
+        + ") "
+    )
     sql += "GROUP BY mes ORDER BY mes"
     print(sql)
     cursor.execute(sql)
@@ -51,11 +57,11 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
     # numero de registros menores a 0.5 en velocidad
     sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
     sql += "FROM " + tabla_velocidad + " "
-    #sql += "FROM validacion_var4validado "
+    # sql += "FROM validacion_var4validado "
     sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<0.5 "
     # sql += "AND date_part('month',fecha)=9 "
-    sql += "and date_part('year',fecha)=" + str(periodo)+ " "
-    #sql += "and completo_mediciones >= 80"
+    sql += "and date_part('year',fecha)=" + str(periodo) + " "
+    # sql += "and completo_mediciones >= 80"
     sql += "GROUP BY mes ORDER BY mes"
     cursor.execute(sql)
     calma = dictfetchall(cursor)
@@ -63,10 +69,10 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
         # numero de registros menores o igual a 0.5 en velocidad
         sql = "SELECT count(valor) as calma, date_part('month',fecha) as mes "
         sql += "FROM " + tabla_velocidad + " "
-        #sql += "FROM validacion_var4validado "
+        # sql += "FROM validacion_var4validado "
         sql += "WHERE estacion_id=" + str(estacion.est_id) + " and valor<0.6"
-        sql += "and date_part('year',fecha)=" + str(periodo)+ " "
-        #sql += "and completo_mediciones >= 80"
+        sql += "and date_part('year',fecha)=" + str(periodo) + " "
+        # sql += "and completo_mediciones >= 80"
         sql += "GROUP BY mes ORDER BY mes"
 
         cursor.execute(sql)
@@ -75,31 +81,31 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
     valores = [[] for y in range(12)]
 
     for item_calma, item_velocidad in zip(calma, vel_media):
-        mes = int(item_velocidad.get('mes'))
+        mes = int(item_velocidad.get("mes"))
         # lista de datos de la dirección de viento
         sql = "SELECT valor, fecha "
         sql += "FROM " + tabla_direccion + " "
-        #sql += "FROM validacion_var5mensual "
+        # sql += "FROM validacion_var5mensual "
         sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
-        sql += "AND date_part('month',fecha)=" + str(mes)+" "
+        sql += "AND date_part('month',fecha)=" + str(mes) + " "
         sql += "AND valor is not null AND valor<=360 "
         sql += "AND valor >=0 "
-        sql += "and date_part('year',fecha)=" + str(periodo)+" "
-        #sql += "and completo_mediciones >= 80"
+        sql += "and date_part('year',fecha)=" + str(periodo) + " "
+        # sql += "and completo_mediciones >= 80"
         sql += "ORDER BY fecha"
         print(sql)
         cursor.execute(sql)
         dat_dvi = dictfetchall(cursor)
         # lista de datos de velocidad del viento
         sql = "SELECT valor,maximo, fecha "
-        #sql = "SELECT valor,max_abs as maximo, fecha "
+        # sql = "SELECT valor,max_abs as maximo, fecha "
         sql += "FROM " + tabla_velocidad + " "
-        #sql += "FROM validacion_var4mensual "
+        # sql += "FROM validacion_var4mensual "
         sql += "WHERE estacion_id=" + str(estacion.est_id) + " "
-        sql += "AND date_part('month',fecha)=" + str(mes)+" "
+        sql += "AND date_part('month',fecha)=" + str(mes) + " "
         sql += "AND valor is not null "
-        sql += "and date_part('year',fecha)=" + str(periodo)+" "
-        #sql += "and completo_mediciones >= 80"
+        sql += "and date_part('year',fecha)=" + str(periodo) + " "
+        # sql += "and completo_mediciones >= 80"
         sql += "ORDER BY fecha"
         cursor.execute(sql)
         print(sql)
@@ -153,10 +159,10 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
             else:
                 maximos.append(float(0))
         # velocidad media en km/h
-        vel_media = item_velocidad.get('valor')*36/10
+        vel_media = item_velocidad.get("valor") * 36 / 10
         # porcentaje de calma
         if len(datos) > 0:
-            valor_calma = round(float(item_calma.get('calma')) / len(datos) * 100, 2)
+            valor_calma = round(float(item_calma.get("calma")) / len(datos) * 100, 2)
         else:
             valor_calma = 0
         valores[mes - 1].append(valor_calma)
@@ -174,7 +180,7 @@ def matrizV_mensual(estacion, variable, periodo, tipo):
 
 def get_maximo(item):
     if item.velocidad_max is not None:
-        #print(item)
+        # print(item)
         if isnan(item.velocidad_max):
             if isnan(item.velocidad):
                 return 0
@@ -183,7 +189,6 @@ def get_maximo(item):
         return item.velocidad_max
     else:
         return 0
-
 
 
 def get_promedio(item):
@@ -197,13 +202,15 @@ def get_promedio(item):
 
 
 def agrupar_viento(dat_dvi, dat_vvi):
-    dvi_fecha = convertir_lista(dat_dvi, 'fecha')
-    dvi_valor = convertir_lista(dat_dvi, 'valor')
-    vvi_fecha = convertir_lista(dat_vvi, 'fecha')
-    vvi_valor = convertir_lista(dat_vvi, 'valor')
-    vvi_maximo = convertir_lista(dat_vvi, 'maximo')
+    dvi_fecha = convertir_lista(dat_dvi, "fecha")
+    dvi_valor = convertir_lista(dat_dvi, "valor")
+    vvi_fecha = convertir_lista(dat_vvi, "fecha")
+    vvi_valor = convertir_lista(dat_vvi, "valor")
+    vvi_maximo = convertir_lista(dat_vvi, "maximo")
     datos = []
-    for item_fecha_vvi, item_valor_vvi, item_maximo_vvi in zip(vvi_fecha, vvi_valor, vvi_maximo):
+    for item_fecha_vvi, item_valor_vvi, item_maximo_vvi in zip(
+        vvi_fecha, vvi_valor, vvi_maximo
+    ):
         obj_viento = VelocidaDireccion()
         if item_fecha_vvi in dvi_fecha:
             item_fecha_dvi = dvi_fecha.index(item_fecha_vvi)
@@ -215,7 +222,7 @@ def agrupar_viento(dat_dvi, dat_vvi):
 
 
 def convertir_lista(datos, indice):
-    lista=[]
+    lista = []
     for item in datos:
         lista.append(item.get(indice))
     return lista
@@ -257,7 +264,4 @@ def datos_viento(datos, estacion, periodo):
 def dictfetchall(cursor):
     # Return all rows from a cursor as a dict
     columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]

@@ -9,22 +9,38 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-from django.db import connection
-from medicion.models import *
 import random
-from datetime import datetime, date, time, timedelta
+from datetime import date, datetime, time, timedelta
+
+from django.db import connection
+
+from medicion.models import *
+
 
 def llenarPrecipitacion():
-    date_inicio =  datetime(2020, 6, 1, 0, 0, 0)
-    date_fin =  datetime(2020, 8,1, 0, 0, 0)
+    date_inicio = datetime(2020, 6, 1, 0, 0, 0)
+    date_fin = datetime(2020, 8, 1, 0, 0, 0)
     date = date_inicio
     while date <= date_fin:
-         date = date + timedelta(seconds=300)
-         var4 = Var4Medicion( fecha=date,valor=random.randrange(0,100),estacion_id=1,maximo=100,minimo=0)
-         var4.save()
-         var5 = Var5Medicion( fecha=date,valor=random.randrange(0,360),estacion_id=1,maximo=360,minimo=0)
-         var5.save()
+        date = date + timedelta(seconds=300)
+        var4 = Var4Medicion(
+            fecha=date,
+            valor=random.randrange(0, 100),
+            estacion_id=1,
+            maximo=100,
+            minimo=0,
+        )
+        var4.save()
+        var5 = Var5Medicion(
+            fecha=date,
+            valor=random.randrange(0, 360),
+            estacion_id=1,
+            maximo=360,
+            minimo=0,
+        )
+        var5.save()
+
 
 def run():
     llenarPrecipitacion()
-    print ('Datos Generados e Ingresados')
+    print("Datos Generados e Ingresados")

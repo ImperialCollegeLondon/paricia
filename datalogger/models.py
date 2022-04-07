@@ -25,16 +25,18 @@ class Marca(models.Model):
         return self.mar_nombre
 
     def get_absolute_url(self):
-        return reverse('datalogger:marca_detail', kwargs={'pk': self.pk})
+        return reverse("datalogger:marca_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ('mar_id',)
+        ordering = ("mar_id",)
 
 
 class Datalogger(models.Model):
     dat_id = models.AutoField("Id", primary_key=True)
     dat_codigo = models.CharField("Código", max_length=32)
-    mar_id = models.ForeignKey(Marca, models.SET_NULL, blank=True, null=True, verbose_name="Marca")
+    mar_id = models.ForeignKey(
+        Marca, models.SET_NULL, blank=True, null=True, verbose_name="Marca"
+    )
     dat_modelo = models.CharField("Modelo", max_length=25, null=True, blank=True)
     dat_serial = models.CharField("Serial", max_length=25, null=True, blank=True)
     dat_estado = models.BooleanField("Estado (Activo)", default=True)
@@ -43,7 +45,7 @@ class Datalogger(models.Model):
         return self.dat_codigo
 
     def get_absolute_url(self):
-        return reverse('datalogger:datalogger_detail', kwargs={'pk': self.pk})
+        return reverse("datalogger:datalogger_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ('mar_id',)
+        ordering = ("mar_id",)

@@ -11,22 +11,49 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+import io
+import os
+import shutil
+import time
 from datetime import datetime, timedelta
-from medicion.models import Var1Medicion, Var2Medicion, Var3Medicion, Var4Medicion, Var5Medicion, Var6Medicion
-from medicion.models import Var7Medicion, Var8Medicion, Var9Medicion, Var10Medicion, Var11Medicion, Var12Medicion
-from medicion.models import Var13Medicion, Var14Medicion, Var15Medicion, Var16Medicion, Var17Medicion, Var18Medicion
-from medicion.models import Var19Medicion, Var20Medicion, Var21Medicion, Var22Medicion, Var23Medicion, Var24Medicion
-from formato.models import Clasificacion, Asociacion, Fecha, Hora
-from django.db import connection, transaction
-from importacion.models import Importacion, ImportacionTemp
-from djangomain.settings import BASE_DIR
 from numbers import Number
-import pandas as pd
-import numpy as np
-import shutil, os, io, time
 
-unix_epoch = np.datetime64(0, 's')
-one_second = np.timedelta64(1, 's')
+import numpy as np
+import pandas as pd
+from django.db import connection, transaction
+
+from djangomain.settings import BASE_DIR
+from formato.models import Asociacion, Clasificacion, Fecha, Hora
+from importacion.models import Importacion, ImportacionTemp
+from medicion.models import (
+    Var1Medicion,
+    Var2Medicion,
+    Var3Medicion,
+    Var4Medicion,
+    Var5Medicion,
+    Var6Medicion,
+    Var7Medicion,
+    Var8Medicion,
+    Var9Medicion,
+    Var10Medicion,
+    Var11Medicion,
+    Var12Medicion,
+    Var13Medicion,
+    Var14Medicion,
+    Var15Medicion,
+    Var16Medicion,
+    Var17Medicion,
+    Var18Medicion,
+    Var19Medicion,
+    Var20Medicion,
+    Var21Medicion,
+    Var22Medicion,
+    Var23Medicion,
+    Var24Medicion,
+)
+
+unix_epoch = np.datetime64(0, "s")
+one_second = np.timedelta64(1, "s")
 
 # verificar si existen los datos
 def validar_fechas(importacion):
@@ -45,11 +72,11 @@ def validar_fechas(importacion):
         existe = existe_fechas(fecha_ini, fecha_fin, est_id, var_id)
         sobrescribe = sobrescribe or existe
         resumen = {
-            'var_id': fila.var_id.var_id,
-            'var_cod': fila.var_id.var_codigo,
-            'var_nombre': fila.var_id.var_nombre,
-            'ultima_fecha': ultima_fecha,
-            'existe': existe
+            "var_id": fila.var_id.var_id,
+            "var_cod": fila.var_id.var_codigo,
+            "var_nombre": fila.var_id.var_nombre,
+            "ultima_fecha": ultima_fecha,
+            "existe": existe,
         }
         result.append(resumen)
     return result, sobrescribe
@@ -57,13 +84,13 @@ def validar_fechas(importacion):
 
 def ultima_fecha_cargada(est_id, var_id):
     print("ultima_fecha: " + str(time.ctime()))
-    sql = 'SELECT  fecha FROM medicion_var' + str(int(var_id)) + 'medicion '
-    sql += ' WHERE estacion_id=' + str(int(est_id))
-    sql += ' ORDER BY fecha DESC LIMIT 1'
+    sql = "SELECT  fecha FROM medicion_var" + str(int(var_id)) + "medicion "
+    sql += " WHERE estacion_id=" + str(int(est_id))
+    sql += " ORDER BY fecha DESC LIMIT 1"
     with connection.cursor() as cursor:
         cursor.execute(sql)
         consulta = cursor.fetchone()
-    if consulta :
+    if consulta:
         informacion = consulta[0]
     else:
         informacion = "No existen datos"
@@ -71,10 +98,12 @@ def ultima_fecha_cargada(est_id, var_id):
 
 
 def existe_fechas(ini, fin, est_id, var_id):
-    sql = 'SELECT id FROM medicion_var' + str(var_id) + 'medicion '
-    sql += ' WHERE fecha >= %s  AND fecha <= %s AND estacion_id = %s '
-    sql += ' LIMIT 1;'
-    query = globals()['Var'+ str(var_id) + 'Medicion'].objects.raw(sql, (ini, fin, est_id))
+    sql = "SELECT id FROM medicion_var" + str(var_id) + "medicion "
+    sql += " WHERE fecha >= %s  AND fecha <= %s AND estacion_id = %s "
+    sql += " LIMIT 1;"
+    query = globals()["Var" + str(var_id) + "Medicion"].objects.raw(
+        sql, (ini, fin, est_id)
+    )
     consulta = list(query)
     if len(consulta) > 0:
         return True
@@ -85,61 +114,106 @@ def preformato_matriz(archivo_src, formato):
     firstline = formato.for_fil_ini if formato.for_fil_ini else 0
     skipfooter = formato.for_fil_cola if formato.for_fil_cola else 0
 
-    if formato.ext_id.ext_valor in ['xlsx', 'xlx']:
+    if formato.ext_id.ext_valor in ["xlsx", "xlx"]:
         # Es formato excel
-        archivo = pd.read_excel(archivo_src, header=None, skiprows=firstline-1, skipfooter=skipfooter, engine=None,
-                                error_bad_lines=False, index_col=None)
+        archivo = pd.read_excel(
+            archivo_src,
+            header=None,
+            skiprows=firstline - 1,
+            skipfooter=skipfooter,
+            engine=None,
+            error_bad_lines=False,
+            index_col=None,
+        )
     else:
         # No es formato excel
-        engine = 'c'
+        engine = "c"
         if not isinstance(archivo_src, str):
             # El archivo se cargó como binario
             lines = len(archivo_src.readlines())
             archivo_src.seek(0)
-            skiprows = [i - 1 for i in range(1, firstline)] + [i - 1 for i in range(lines, lines - skipfooter, -1)]
+            skiprows = [i - 1 for i in range(1, firstline)] + [
+                i - 1 for i in range(lines, lines - skipfooter, -1)
+            ]
             skipfooter = 0
         else:
             # El archivo es pasado como una cadena de texto
             skiprows = firstline - 1
             if skipfooter > 0:
-                engine = 'python'
+                engine = "python"
 
         delimitador = formato.del_id.del_caracter
-        if '\\x' in delimitador:
-            delim_hexcode = delimitador.replace('\\x', '')
-            delim_intcode = eval('0x' + delim_hexcode)
+        if "\\x" in delimitador:
+            delim_hexcode = delimitador.replace("\\x", "")
+            delim_intcode = eval("0x" + delim_hexcode)
             delimitador = chr(delim_intcode)
 
-        if delimitador == ' ':
-            archivo = pd.read_csv(archivo_src, delim_whitespace=True, header=None, index_col=False,
-                                  skiprows=skiprows, skipfooter=skipfooter, engine=engine,
-                                  encoding="ISO-8859-1", error_bad_lines=False)
+        if delimitador == " ":
+            archivo = pd.read_csv(
+                archivo_src,
+                delim_whitespace=True,
+                header=None,
+                index_col=False,
+                skiprows=skiprows,
+                skipfooter=skipfooter,
+                engine=engine,
+                encoding="ISO-8859-1",
+                error_bad_lines=False,
+            )
         else:
-            archivo = pd.read_csv(archivo_src, sep=delimitador, header=None, index_col=False,
-                                  skiprows=skiprows, skipfooter=skipfooter, engine=engine,
-                                  encoding="ISO-8859-1", error_bad_lines=False)
+            archivo = pd.read_csv(
+                archivo_src,
+                sep=delimitador,
+                header=None,
+                index_col=False,
+                skiprows=skiprows,
+                skipfooter=skipfooter,
+                engine=engine,
+                encoding="ISO-8859-1",
+                error_bad_lines=False,
+            )
 
-
-    formatofechahora = formato.fec_id.fec_codigo + ' ' + formato.hor_id.hor_codigo
+    formatofechahora = formato.fec_id.fec_codigo + " " + formato.hor_id.hor_codigo
     if formato.for_col_fecha == formato.for_col_hora:
         # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
-        archivo['fecha'] = pd.Series([verificar_fechahora(row, formatofechahora) for row in archivo[formato.for_col_fecha - 1].values], index=archivo.index)
+        archivo["fecha"] = pd.Series(
+            [
+                verificar_fechahora(row, formatofechahora)
+                for row in archivo[formato.for_col_fecha - 1].values
+            ],
+            index=archivo.index,
+        )
     else:
         items_fecha = formato.fec_id.fec_codigo.split(delimitador)
-        cols_fecha = list(range(formato.for_col_fecha - 1, formato.for_col_fecha - 1 + len(items_fecha)))
+        cols_fecha = list(
+            range(
+                formato.for_col_fecha - 1, formato.for_col_fecha - 1 + len(items_fecha)
+            )
+        )
         items_hora = formato.hor_id.hor_codigo.split(delimitador)
-        cols_hora = list(range(formato.for_col_hora - 1, formato.for_col_hora - 1 + len(items_hora)))
+        cols_hora = list(
+            range(formato.for_col_hora - 1, formato.for_col_hora - 1 + len(items_hora))
+        )
         cols = cols_fecha + cols_hora
         # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
-        archivo['fechahora_str'] = pd.Series([' '.join(row.astype(str)) for row in archivo[cols].values], index=archivo.index)
-        archivo['fecha'] = pd.Series([verificar_fechahora(row, formatofechahora) for row in archivo['fechahora_str'].values], index=archivo.index)
+        archivo["fechahora_str"] = pd.Series(
+            [" ".join(row.astype(str)) for row in archivo[cols].values],
+            index=archivo.index,
+        )
+        archivo["fecha"] = pd.Series(
+            [
+                verificar_fechahora(row, formatofechahora)
+                for row in archivo["fechahora_str"].values
+            ],
+            index=archivo.index,
+        )
 
-    archivo = archivo.sort_values('fecha')
+    archivo = archivo.sort_values("fecha")
     archivo = archivo.reset_index(drop=True)
 
     ### Conversión en caso de formato de fecha UTC
-    if formato.es_fecha_utc == True :
-        archivo['fecha'] = archivo['fecha'] - timedelta(hours=5)
+    if formato.es_fecha_utc == True:
+        archivo["fecha"] = archivo["fecha"] - timedelta(hours=5)
     return archivo
 
 
@@ -156,14 +230,13 @@ def verificar_fechahora(fechahora, formatofechahora):
         # fechahora_str = valores[0].strip('\"') + ' ' + valores[1].strip('\"')
 
     elif isinstance(fechahora, list):
-        fechahora = ' '.join(fechahora)
+        fechahora = " ".join(fechahora)
 
     elif isinstance(fechahora, pd.Series):
-        fechahora = ' '.join([str(val) for val in list(fechahora[:])])
+        fechahora = " ".join([str(val) for val in list(fechahora[:])])
 
     else:
-        fechahora = ''
-
+        fechahora = ""
 
     try:
         _fechahora = datetime.strptime(fechahora, formatofechahora)
@@ -177,7 +250,7 @@ def guardar_datos__temp_a_final(imp_id, form):
     importaciontemp = ImportacionTemp.objects.get(imp_id=imp_id)
     formato = importaciontemp.for_id
     estacion = importaciontemp.est_id
-    ruta=str(BASE_DIR) + '/media/' + str(importaciontemp.imp_archivo)
+    ruta = str(BASE_DIR) + "/media/" + str(importaciontemp.imp_archivo)
 
     datos = construir_matriz(ruta, formato, estacion)
     for var_id, tabla in datos.items():
@@ -202,17 +275,26 @@ SELECT d.fecha, d.valor, d.estacion_id
 FROM data d
 ;
 """
-        sql = sql.replace('var1', 'var' + str(var_id))
-        sql = sql.replace('u.fecha, u.valor, u.estacion_id', 'u.' + ', u.'.join(tabla.columns))
-        sql = sql.replace('fecha__valor__estacion_id', '__'.join(tabla.columns))
-        sql = sql.replace('fecha, valor, estacion_id', ', '.join(tabla.columns))
-        sql = sql.replace('d.fecha, d.valor, d.estacion_id',  'd.' + ', d.'.join(tabla.columns))
+        sql = sql.replace("var1", "var" + str(var_id))
+        sql = sql.replace(
+            "u.fecha, u.valor, u.estacion_id", "u." + ", u.".join(tabla.columns)
+        )
+        sql = sql.replace("fecha__valor__estacion_id", "__".join(tabla.columns))
+        sql = sql.replace("fecha, valor, estacion_id", ", ".join(tabla.columns))
+        sql = sql.replace(
+            "d.fecha, d.valor, d.estacion_id", "d." + ", d.".join(tabla.columns)
+        )
 
         with connection.cursor() as cursor:
-            cursor.execute(sql, [data,])
+            cursor.execute(
+                sql,
+                [
+                    data,
+                ],
+            )
 
-    ruta_final = str(importaciontemp.imp_archivo).replace('archivos/tmp/','archivos/')
-    ruta_final_full = str(BASE_DIR) + '/media/' + ruta_final
+    ruta_final = str(importaciontemp.imp_archivo).replace("archivos/tmp/", "archivos/")
+    ruta_final_full = str(BASE_DIR) + "/media/" + ruta_final
     shutil.copy(ruta, ruta_final_full)
     importacion = Importacion(
         est_id=importaciontemp.est_id,
@@ -222,9 +304,9 @@ FROM data d
         imp_fecha_fin=importaciontemp.imp_fecha_fin,
         imp_archivo=ruta_final,
         imp_observacion=importaciontemp.imp_observacion,
-        usuario=importaciontemp.usuario
+        usuario=importaciontemp.usuario,
     )
-    ruta_original_full = str(BASE_DIR) + '/media/' + str(importaciontemp.imp_archivo)
+    ruta_original_full = str(BASE_DIR) + "/media/" + str(importaciontemp.imp_archivo)
     with transaction.atomic():
         importacion.save()
         importaciontemp.delete()
@@ -235,78 +317,111 @@ FROM data d
 def construir_matriz(matriz_src, formato, estacion):
     # TODO : Eliminar validar_datalogger, validar acumulado
     # determinar si debemos restar 5 horas a la fecha del archivo
-    #cambiar_fecha = validar_datalogger(formato.mar_id)
+    # cambiar_fecha = validar_datalogger(formato.mar_id)
     cambiar_fecha = False
 
     # Preformato entrega matriz ordenada por fecha
     matriz = preformato_matriz(matriz_src, formato)
-    fecha_ini = matriz.loc[0, 'fecha']
-    fecha_fin = matriz.loc[matriz.shape[0] - 1, 'fecha']
+    fecha_ini = matriz.loc[0, "fecha"]
+    fecha_fin = matriz.loc[matriz.shape[0] - 1, "fecha"]
 
     clasificacion = list(Clasificacion.objects.filter(for_id=formato.for_id))
     datos_variables = {}
     for var in clasificacion:
         columnas = []
-        columnas.append(('fecha', 'fecha'))
+        columnas.append(("fecha", "fecha"))
         ##
-        columnas.append((var.cla_valor - 1, 'valor'))
+        columnas.append((var.cla_valor - 1, "valor"))
         if var.col_validador_valor:
-            #matriz[var.cla_valor - 1][matriz[var.col_validador_valor - 1] != var.txt_validador_valor] = np.nan
-            matriz.loc[matriz[var.col_validador_valor - 1] != var.txt_validador_valor, var.cla_valor - 1] = np.nan
+            # matriz[var.cla_valor - 1][matriz[var.col_validador_valor - 1] != var.txt_validador_valor] = np.nan
+            matriz.loc[
+                matriz[var.col_validador_valor - 1] != var.txt_validador_valor,
+                var.cla_valor - 1,
+            ] = np.nan
         ##
-        if var.cla_maximo: columnas.append((var.cla_maximo - 1, 'maximo'))
+        if var.cla_maximo:
+            columnas.append((var.cla_maximo - 1, "maximo"))
         if var.col_validador_maximo:
-            #matriz[var.cla_maximo - 1][matriz[var.col_validador_maximo - 1] != var.txt_validador_maximo] = np.nan
-            matriz.loc[matriz[var.col_validador_maximo - 1] != var.txt_validador_maximo, var.cla_maximo - 1] = np.nan
+            # matriz[var.cla_maximo - 1][matriz[var.col_validador_maximo - 1] != var.txt_validador_maximo] = np.nan
+            matriz.loc[
+                matriz[var.col_validador_maximo - 1] != var.txt_validador_maximo,
+                var.cla_maximo - 1,
+            ] = np.nan
         ##
-        if var.cla_minimo: columnas.append((var.cla_minimo - 1, 'minimo'))
+        if var.cla_minimo:
+            columnas.append((var.cla_minimo - 1, "minimo"))
         if var.col_validador_minimo:
-            #matriz[var.cla_minimo - 1][matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo] = np.nan
-            matriz.loc[matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo, var.cla_minimo - 1] = np.nan
+            # matriz[var.cla_minimo - 1][matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo] = np.nan
+            matriz.loc[
+                matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo,
+                var.cla_minimo - 1,
+            ] = np.nan
         ##
 
         datos = matriz.loc[:, [v[0] for v in columnas]]
         datos.rename(columns=dict(columnas), inplace=True)
 
         for col in datos:
-            if col == 'fecha':
+            if col == "fecha":
                 continue
 
             if var.coma_decimal:
-                datos[col] = pd.Series([numero_coma_decimal(val) for val in datos[col].values], index=matriz.index)
+                datos[col] = pd.Series(
+                    [numero_coma_decimal(val) for val in datos[col].values],
+                    index=matriz.index,
+                )
             else:
-                datos[col] = pd.Series([numero_punto_decimal(val) for val in datos[col].values], index=matriz.index)
+                datos[col] = pd.Series(
+                    [numero_punto_decimal(val) for val in datos[col].values],
+                    index=matriz.index,
+                )
 
         ## Eliminar NAs
-        columnas_datos = [columna[1] for columna in columnas if columna[1]!='fecha']
-        datos = datos.dropna(axis=0, how='all', subset=columnas_datos)
+        columnas_datos = [columna[1] for columna in columnas if columna[1] != "fecha"]
+        datos = datos.dropna(axis=0, how="all", subset=columnas_datos)
 
         if var.acumular:
             # Se asume que si es incremental solo trabaja con VALOR (Se excluye MAXIMO y MINIMO)
             if var.incremental:
-                datos['valor'] = datos['valor'].diff()
+                datos["valor"] = datos["valor"].diff()
                 # datos['valor'][datos['valor'] < 0] = np.nan
-                datos.loc[datos['valor'] < 0, 'valor'] = np.nan
-                datos=datos.dropna()
-            datos['fecha']=datos['fecha'].apply(lambda x: x.replace(minute=int(x.minute/5) * 5, second=0, microsecond=0, nanosecond=0) )
-            datos['fecha'] = datos['fecha'] + pd.Timedelta(minutes=5)
-            cuenta = datos.groupby('fecha')['valor'].sum().to_frame()
-            datos = cuenta['valor'] * float(var.resolucion)
+                datos.loc[datos["valor"] < 0, "valor"] = np.nan
+                datos = datos.dropna()
+            datos["fecha"] = datos["fecha"].apply(
+                lambda x: x.replace(
+                    minute=int(x.minute / 5) * 5, second=0, microsecond=0, nanosecond=0
+                )
+            )
+            datos["fecha"] = datos["fecha"] + pd.Timedelta(minutes=5)
+            cuenta = datos.groupby("fecha")["valor"].sum().to_frame()
+            datos = cuenta["valor"] * float(var.resolucion)
 
-            fecha_ini = fecha_ini.replace(minute=int(fecha_ini.minute/5) * 5, second=0, microsecond=0, nanosecond=0) + pd.Timedelta(minutes=5)
-            fecha_fin = fecha_fin.replace(minute=int(fecha_fin.minute/5) * 5, second=0, microsecond=0, nanosecond=0) + pd.Timedelta(minutes=5)
-            tabla = pd.date_range(fecha_ini, fecha_fin, freq='5min', name='fecha').to_frame()
+            fecha_ini = fecha_ini.replace(
+                minute=int(fecha_ini.minute / 5) * 5,
+                second=0,
+                microsecond=0,
+                nanosecond=0,
+            ) + pd.Timedelta(minutes=5)
+            fecha_fin = fecha_fin.replace(
+                minute=int(fecha_fin.minute / 5) * 5,
+                second=0,
+                microsecond=0,
+                nanosecond=0,
+            ) + pd.Timedelta(minutes=5)
+            tabla = pd.date_range(
+                fecha_ini, fecha_fin, freq="5min", name="fecha"
+            ).to_frame()
             datos = pd.concat([tabla, datos], axis=1)
             datos = datos.fillna(0)
         else:
             if var.incremental:
-                datos['valor'] = datos['valor'].diff()
+                datos["valor"] = datos["valor"].diff()
                 # datos['valor'][datos['valor'] < 0] = np.nan
-                datos.loc[datos['valor'] < 0, 'valor'] = np.nan
-                datos=datos.dropna()
+                datos.loc[datos["valor"] < 0, "valor"] = np.nan
+                datos = datos.dropna()
             if var.resolucion:
-                datos['valor'] = datos['valor'] * float(var.resolucion)
-        datos['estacion_id'] = estacion.est_id
+                datos["valor"] = datos["valor"] * float(var.resolucion)
+        datos["estacion_id"] = estacion.est_id
         datos_variables[var.var_id_id] = datos
     return datos_variables
 
@@ -335,25 +450,27 @@ def numero_coma_decimal(val_str):
 
 
 def insertar_nivel_regleta(importacion, nivelregleta):
-    nivelagua_mediciones = Var11Medicion.objects.filter(estacion_id=importacion.est_id_id, fecha=importacion.imp_fecha_fin)
+    nivelagua_mediciones = Var11Medicion.objects.filter(
+        estacion_id=importacion.est_id_id, fecha=importacion.imp_fecha_fin
+    )
     nivelagua = None
     for i in nivelagua_mediciones:
         nivelagua = i
     if nivelagua is None:
         return False
     try:
-        incertidumbre = float(nivelregleta['valor']) - float(nivelagua.valor)
+        incertidumbre = float(nivelregleta["valor"]) - float(nivelagua.valor)
     except:
         return False
     Var14Medicion(
-        estacion_id = importacion.est_id_id,
-        fecha_importacion = importacion.imp_fecha,
-        fecha_inicio = importacion.imp_fecha_ini,
-        fecha = importacion.imp_fecha_fin,
-        calibrado = nivelregleta['calibrado'],
-        valor = float(nivelregleta['valor']),
-        incertidumbre = incertidumbre,
-        comentario = nivelregleta['comentario']
+        estacion_id=importacion.est_id_id,
+        fecha_importacion=importacion.imp_fecha,
+        fecha_inicio=importacion.imp_fecha_ini,
+        fecha=importacion.imp_fecha_fin,
+        calibrado=nivelregleta["calibrado"],
+        valor=float(nivelregleta["valor"]),
+        incertidumbre=incertidumbre,
+        comentario=nivelregleta["comentario"],
     ).save()
 
 
@@ -364,7 +481,6 @@ def consultar_formatos(estacion):
     for item in asociacion:
         lista[item.for_id.for_id] = item.for_id.for_nombre
     return lista
-
 
 
 #
@@ -591,6 +707,7 @@ def consultar_formatos(estacion):
 #     return val_num
 #
 #
+
 
 def get_modelo(var_id):
     variable = Variable.objects.get(var_id=var_id)

@@ -12,57 +12,73 @@
 #              ya sea en uso total o parcial del código.
 
 from __future__ import unicode_literals
-from bitacora.models import Bitacora
-from django.views.generic import TemplateView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Value
 from django.db.models.functions import Concat
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from bitacora.models import Bitacora
 from home.functions import *
+
 
 class BitacoraCreate(PermissionRequiredMixin, CreateView):
     model = Bitacora
-    fields = ['est_id', 'var_id', 'bit_fecha_ini', 'bit_fecha_fin', 'bit_observacion']
-    permission_required = 'bitacora.add_bitacora'
+    fields = ["est_id", "var_id", "bit_fecha_ini", "bit_fecha_fin", "bit_observacion"]
+    permission_required = "bitacora.add_bitacora"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Crear"
+        context["title"] = "Crear"
         return context
 
 
 class BitacoraList(PermissionRequiredMixin, TemplateView):
-    template_name = 'bitacora/bitacora_list.html'
-    permission_required = 'bitacora.view_bitacora'
+    template_name = "bitacora/bitacora_list.html"
+    permission_required = "bitacora.view_bitacora"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ['bit_id', 'est_id__est_codigo', 'var_id__var_nombre', 'bit_fecha_ini', 'bit_fecha_fin', 'bit_observacion']
+        campos = [
+            "bit_id",
+            "est_id__est_codigo",
+            "var_id__var_nombre",
+            "bit_fecha_ini",
+            "bit_fecha_fin",
+            "bit_observacion",
+        ]
         bitacora = Bitacora.objects.all().values_list(*campos)
-        context['bitacora'] = modelo_a_tabla_html(bitacora, col_extra=True)
+        context["bitacora"] = modelo_a_tabla_html(bitacora, col_extra=True)
         return context
 
 
 class BitacoraDetail(PermissionRequiredMixin, DetailView):
     model = Bitacora
-    permission_required = 'bitacora.view_bitacora'
+    permission_required = "bitacora.view_bitacora"
 
 
 class BitacoraUpdate(PermissionRequiredMixin, UpdateView):
     model = Bitacora
-    permission_required = 'bitacora.change_bitacora'
-    fields = ['bit_id', 'est_id', 'var_id', 'bit_fecha_ini', 'bit_fecha_fin', 'bit_observacion']
+    permission_required = "bitacora.change_bitacora"
+    fields = [
+        "bit_id",
+        "est_id",
+        "var_id",
+        "bit_fecha_ini",
+        "bit_fecha_fin",
+        "bit_observacion",
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Modificar"
+        context["title"] = "Modificar"
         return context
 
 
 class BitacoraDelete(PermissionRequiredMixin, DeleteView):
     model = Bitacora
-    permission_required = 'bitacora.delete_bitacora'
-    success_url = reverse_lazy('bitacora:bitacora_index')
-
+    permission_required = "bitacora.delete_bitacora"
+    success_url = reverse_lazy("bitacora:bitacora_index")

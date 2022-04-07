@@ -13,41 +13,50 @@
 
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.models import User
+
 from estacion.models import Estacion
 from variable.models import Variable
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Frecuencia(models.Model):
     fre_id = models.AutoField("Id", primary_key=True)
-    est_id = models.ForeignKey(Estacion, on_delete=models.SET_NULL, verbose_name="Estación", null=True)
-    var_id = models.ForeignKey(Variable, on_delete=models.SET_NULL, verbose_name="Variable", null=True)
-    fre_valor = models.IntegerField("Frecuencia (minutos)", validators=[MaxValueValidator(1500), MinValueValidator(0)])
+    est_id = models.ForeignKey(
+        Estacion, on_delete=models.SET_NULL, verbose_name="Estación", null=True
+    )
+    var_id = models.ForeignKey(
+        Variable, on_delete=models.SET_NULL, verbose_name="Variable", null=True
+    )
+    fre_valor = models.IntegerField(
+        "Frecuencia (minutos)",
+        validators=[MaxValueValidator(1500), MinValueValidator(0)],
+    )
     fre_fecha_ini = models.DateTimeField("Fecha inicio")
     fre_fecha_fin = models.DateTimeField("Fecha fin", blank=True, null=True)
 
     class Meta:
         indexes = [
-            models.Index(fields=['est_id', 'var_id', 'fre_fecha_ini']),
-            models.Index(fields=['var_id', 'est_id', 'fre_fecha_ini']),
-            models.Index(fields=['fre_fecha_ini', 'est_id', 'var_id']),
+            models.Index(fields=["est_id", "var_id", "fre_fecha_ini"]),
+            models.Index(fields=["var_id", "est_id", "fre_fecha_ini"]),
+            models.Index(fields=["fre_fecha_ini", "est_id", "var_id"]),
         ]
 
     def get_absolute_url(self):
-        return reverse('frecuencia:frecuencia_detail', kwargs={'pk': self.pk})
+        return reverse("frecuencia:frecuencia_detail", kwargs={"pk": self.pk})
 
 
 ##
 
+
 class TipoFrecuencia(models.Model):
-    nombre = models.CharField(max_length=25, verbose_name='Frecuencia')
+    nombre = models.CharField(max_length=25, verbose_name="Frecuencia")
 
     class Meta:
         indexes = [
-            models.Index(fields=['nombre']),
+            models.Index(fields=["nombre"]),
         ]
 
     def __str__(self):
@@ -56,10 +65,12 @@ class TipoFrecuencia(models.Model):
 
 class UsuarioTipoFrecuencia(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.PROTECT)
-    tipofrecuencia = models.ForeignKey(TipoFrecuencia, on_delete=models.PROTECT, verbose_name='Frecuencia')
+    tipofrecuencia = models.ForeignKey(
+        TipoFrecuencia, on_delete=models.PROTECT, verbose_name="Frecuencia"
+    )
 
     class Meta:
-        unique_together = ['usuario', 'tipofrecuencia']
+        unique_together = ["usuario", "tipofrecuencia"]
 
     def __str__(self):
-        return str(self.usuario.username + ' - ' + self.tipofrecuencia.nombre)
+        return str(self.usuario.username + " - " + self.tipofrecuencia.nombre)

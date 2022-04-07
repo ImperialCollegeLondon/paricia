@@ -12,14 +12,14 @@
 #              ya sea en uso total o parcial del código.
 
 from __future__ import unicode_literals
+
 from django.db import models
 
 
 class PermisosHome(models.Model):
-
     class Meta:
         managed = False
         default_permissions = ()
         permissions = (
-            ('carga_inicial', 'Carga de datos ejemplo: formatos, marcas datalogger.'),
+            ("carga_inicial", "Carga de datos ejemplo: formatos, marcas datalogger."),
         )

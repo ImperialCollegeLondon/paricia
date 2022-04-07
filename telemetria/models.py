@@ -13,8 +13,10 @@
 
 from django.db import models
 from django.urls import reverse
+
 from estacion.models import Estacion
 from variable.models import Variable
+
 
 class TelemetriaPermisos(models.Model):
     class Meta:
@@ -65,57 +67,74 @@ class PrecipitacionAnual(models.Model):
         default_permissions = ()
         managed = False
 
+
 ############################################################################################
 class TeleVariables(models.Model):
     nombre = models.CharField(primary_key=True, max_length=20)
-    valor = models.DecimalField("valor", max_digits=14, decimal_places=6, blank=True, null=True)
+    valor = models.DecimalField(
+        "valor", max_digits=14, decimal_places=6, blank=True, null=True
+    )
 
 
 ###########################################################################################
 
+
 class ConfigVisualizar(models.Model):
     estacion = models.ForeignKey(Estacion, on_delete=models.SET_NULL, null=True)
     variable = models.ForeignKey(Variable, on_delete=models.SET_NULL, null=True)
-    umbral_superior = models.DecimalField("Umbral superior", max_digits=14, decimal_places=6, blank=True, null=True)
-    umbral_inferior = models.DecimalField("Umbral inferior", max_digits=14, decimal_places=6, blank=True, null=True)
+    umbral_superior = models.DecimalField(
+        "Umbral superior", max_digits=14, decimal_places=6, blank=True, null=True
+    )
+    umbral_inferior = models.DecimalField(
+        "Umbral inferior", max_digits=14, decimal_places=6, blank=True, null=True
+    )
 
     def __str__(self):
-        return str(self.estacion.est_codigo + ' - ' + self.variable.var_nombre)
+        return str(self.estacion.est_codigo + " - " + self.variable.var_nombre)
 
     def get_absolute_url(self):
-        return reverse('telemetria:configvisualizar_detail', kwargs={'pk':self.pk})
+        return reverse("telemetria:configvisualizar_detail", kwargs={"pk": self.pk})
 
     class Meta:
         indexes = [
-            models.Index(fields=['variable', 'estacion']),
+            models.Index(fields=["variable", "estacion"]),
         ]
-        unique_together = ('estacion', 'variable')
-
+        unique_together = ("estacion", "variable")
 
 
 class ConfigCalidad(models.Model):
     estacion = models.ForeignKey(Estacion, on_delete=models.SET_NULL, null=True)
     variable = models.ForeignKey(Variable, on_delete=models.SET_NULL, null=True)
     profundidad = models.PositiveSmallIntegerField("Profundidad")
-    umbral_superior = models.DecimalField("Umbral superior", max_digits=14, decimal_places=6, blank=True, null=True)
-    umbral_inferior = models.DecimalField("Umbral inferior", max_digits=14, decimal_places=6, blank=True, null=True)
+    umbral_superior = models.DecimalField(
+        "Umbral superior", max_digits=14, decimal_places=6, blank=True, null=True
+    )
+    umbral_inferior = models.DecimalField(
+        "Umbral inferior", max_digits=14, decimal_places=6, blank=True, null=True
+    )
 
     def __str__(self):
-        return str(self.estacion.est_codigo + ' - ' + self.variable.var_nombre + ' - ' + str(self.profundidad/10.0) + '[m]' )
+        return str(
+            self.estacion.est_codigo
+            + " - "
+            + self.variable.var_nombre
+            + " - "
+            + str(self.profundidad / 10.0)
+            + "[m]"
+        )
 
     def get_absolute_url(self):
-        return reverse('telemetria:configcalidad_detail', kwargs={'pk':self.pk})
+        return reverse("telemetria:configcalidad_detail", kwargs={"pk": self.pk})
 
     class Meta:
         indexes = [
-            models.Index(fields=['variable', 'estacion']),
+            models.Index(fields=["variable", "estacion"]),
         ]
-        unique_together = ('estacion', 'variable', 'profundidad')
-
-
+        unique_together = ("estacion", "variable", "profundidad")
 
 
 ###########################################################################################
+
 
 class AlarmaEmail(models.Model):
     email = models.EmailField(unique=True)
@@ -137,10 +156,10 @@ class AlarmaEstado(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['estacion', 'estado', 'fecha']),
-            models.Index(fields=['estacion', 'fecha', 'estado']),
-            models.Index(fields=['estado', 'estacion', 'fecha']),
-            models.Index(fields=['estado', 'fecha', 'estacion']),
-            models.Index(fields=['fecha', 'estacion', 'estado']),
-            models.Index(fields=['fecha', 'estado', 'estacion']),
+            models.Index(fields=["estacion", "estado", "fecha"]),
+            models.Index(fields=["estacion", "fecha", "estado"]),
+            models.Index(fields=["estado", "estacion", "fecha"]),
+            models.Index(fields=["estado", "fecha", "estacion"]),
+            models.Index(fields=["fecha", "estacion", "estado"]),
+            models.Index(fields=["fecha", "estado", "estacion"]),
         ]
