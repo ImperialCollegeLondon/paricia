@@ -23,6 +23,10 @@ from variable.models import Variable
 
 
 class Frecuencia(models.Model):
+    """A frequency (in minutes) of a Variable at a Station, between two dates.
+    NEWNAME: Frequency
+    """
+
     fre_id = models.AutoField("Id", primary_key=True)
     est_id = models.ForeignKey(
         Estacion, on_delete=models.SET_NULL, verbose_name="Estación", null=True
@@ -52,6 +56,11 @@ class Frecuencia(models.Model):
 
 
 class TipoFrecuencia(models.Model):
+    """Type of Frequency e.g. monthly, daily. Used to filter reports.
+    HELPWANTED: Not clear how these are actually related to the data.
+    NEWNAME: FrequencyType
+    """
+
     nombre = models.CharField(max_length=25, verbose_name="Frecuencia")
 
     class Meta:
@@ -64,6 +73,8 @@ class TipoFrecuencia(models.Model):
 
 
 class UsuarioTipoFrecuencia(models.Model):
+    """Similar to TipoFrecuencia but with a specific user."""
+
     usuario = models.ForeignKey(User, on_delete=models.PROTECT)
     tipofrecuencia = models.ForeignKey(
         TipoFrecuencia, on_delete=models.PROTECT, verbose_name="Frecuencia"
