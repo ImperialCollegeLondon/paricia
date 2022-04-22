@@ -14,6 +14,11 @@ from django.db import models
 from estacion.models import Estacion
 from medicion.models import DigVar
 
+## Models here link a station (id), date, value (medicion.models.DigVar).
+## Most also have max, min (DigVar).
+## Var1Mensual and Var10Mensual are used in indices.functions.
+## The rest are unused.
+
 
 class Var1Mensual(models.Model):
     estacion_id = models.PositiveIntegerField("estacion_id")

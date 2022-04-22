@@ -18,6 +18,11 @@ from medicion.models import DigVar
 
 # Create your models here.
 class Var1Anual(models.Model):
+    """Only Var1Anual in this module (differs from horario, diario, mensual).
+    Used once in indices.functions to calculate average annual precip.
+    of selected date range.
+    """
+
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateField("Fecha")
     valor = models.DecimalField(

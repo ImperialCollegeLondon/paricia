@@ -13,8 +13,15 @@ from django.db import models
 
 from medicion.models import DigVar
 
-
 ###############################
+
+## Models here link a station (id), date, value (medicion.models.DigVar).
+## Most also have max, min (DigVar).
+## Var1Horario is used in indices.functions (e.g. in IndicadoresPrecipitacion).
+## Var10Horario is used in indices.functions.getCaudalanio.
+## The rest are unused.
+
+
 class Var1Horario(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")

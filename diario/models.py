@@ -13,6 +13,11 @@ from django.db import models
 
 from medicion.models import DigVar
 
+## Models here link a station (id), date, value (medicion.models.DigVar).
+## Most also have max, min (DigVar).
+## Var1Diario and Var10Diario are used in indices.functions.
+## The rest are unused.
+
 
 class Var1Diario(models.Model):
     id = models.AutoField("Id", primary_key=True)
