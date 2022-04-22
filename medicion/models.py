@@ -20,6 +20,10 @@ from estacion.models import Estacion
 
 
 class PermisosMedicion(models.Model):
+    """Measurement permissions.
+    DELETE?: Unused
+    """
+
     class Meta:
         managed = False
         default_permissions = ()
@@ -51,6 +55,10 @@ class PermisosMedicion(models.Model):
 
 
 class VientoPolar(models.Model):
+    """Polar Wind measurement with a velocity and direction at a specific date.
+    NEWNAME: PolarWind
+    """
+
     fecha = models.DateTimeField("Fecha")
     velocidad = models.DecimalField(
         "Velocidad", max_digits=14, decimal_places=6, null=True
@@ -66,6 +74,11 @@ class VientoPolar(models.Model):
 
 
 class CaudalViaEstacion(models.Model):
+    """Flow via station. Unused. Relates a float value to a station, between two dates.
+    Also a bool field to do with calibration.
+    DELETE?: Unused.
+    """
+
     id = models.AutoField("Id", primary_key=True)
     est_id = models.ForeignKey(
         Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
@@ -79,6 +92,11 @@ class CaudalViaEstacion(models.Model):
 
 
 class CurvaDescarga(models.Model):
+    """Discharge Curve relates a station and a date and a bool as to whether a flow
+    recalculation is required. No other info, but it is used in Function Level below.
+    NEWNAME: DischargeCurve
+    """
+
     id = models.AutoField("Id", primary_key=True)
     estacion = models.ForeignKey(
         Estacion, on_delete=models.SET_NULL, null=True, verbose_name="Estación"
@@ -100,6 +118,12 @@ class CurvaDescarga(models.Model):
 
 
 class NivelFuncion(models.Model):
+    """Function Level. Relates a dischage curve to a level (in cm) to a function.
+    HELPWANTED: It is unclear what this function is supposed to represent - a
+    mathematical function for the shape of the discharge curve? eval_math (SQL?)
+    is applied to the function in forms.py.
+    """
+
     curvadescarga = models.ForeignKey(CurvaDescarga, on_delete=models.CASCADE)
     nivel = models.DecimalField(
         "Nivel (cm)", max_digits=5, decimal_places=1, db_index=True
@@ -121,11 +145,19 @@ class NivelFuncion(models.Model):
 
 
 class CursorDbclima(models.Model):
+    """Database cursor, unused.
+    DELETE?
+    """
+
     estacion_id = models.IntegerField(primary_key=True)
     fecha = models.DateTimeField(null=True)
 
 
 class CursorEmaaphidro(models.Model):
+    """Database cursor, unused.
+    DELETE?
+    """
+
     est_id_paramh2o = models.IntegerField(primary_key=True)
     est_id_emaaphidro = models.SmallIntegerField()
     est_codigo = models.CharField(max_length=4)
@@ -136,6 +168,11 @@ class CursorEmaaphidro(models.Model):
 
 
 class ValorDecimal:
+    """Class representing a decimal value used in DigVar below. Control
+    over max number of digits and decimal places.
+    NEWNAME: DecimalValue
+    """
+
     max_dig = 6
     dec_pla = 2
 
@@ -145,6 +182,16 @@ class ValorDecimal:
 
 
 class DigVar:
+    """Variable digits. Class representing different numbers of decimal places
+    and digits (using DecimalValue above). Used heavily in the annual, monthly,
+    daily, hourly apps to specify the format of a DecimalField e.g.
+        value = models.DecimalField(
+            "Value",
+            max_digits=DigVar.v2.max_dig,
+            decimal_places=DigVar.v2.dec_pla,
+    NEWNAME: DecimalFormat ??
+    """
+
     v1 = ValorDecimal(max_dig=6, dec_pla=2)
     v2 = ValorDecimal(max_dig=5, dec_pla=2)
     v3 = ValorDecimal(max_dig=14, dec_pla=6)
@@ -181,7 +228,16 @@ class DigVar:
     v108 = ValorDecimal(max_dig=6, dec_pla=2)
 
 
+## Below are variables using the Decimal Format class above. It's not clear what
+## all are for, except for those with depth which are labeled.
+## FIXME: What is the fundamental reason that these classes are not labeled
+## intuitively? If they all relate to one specific type of measurement, e.g.
+## precipitation, they should be labeled as such.
+
+
 class Var1Medicion(models.Model):
+    """Precipitation."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -201,6 +257,8 @@ class Var1Medicion(models.Model):
 
 
 class Var2Medicion(models.Model):
+    """Air temperature."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -232,6 +290,8 @@ class Var2Medicion(models.Model):
 
 
 class Var3Medicion(models.Model):
+    """Humidity."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -263,6 +323,8 @@ class Var3Medicion(models.Model):
 
 
 class Var4Medicion(models.Model):
+    """Wind velocity."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -294,6 +356,8 @@ class Var4Medicion(models.Model):
 
 
 class Var5Medicion(models.Model):
+    """Wind direction."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -325,6 +389,8 @@ class Var5Medicion(models.Model):
 
 
 class Var6Medicion(models.Model):
+    """Soil moisture."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -356,6 +422,8 @@ class Var6Medicion(models.Model):
 
 
 class Var7Medicion(models.Model):
+    """Solar radiation."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -387,6 +455,8 @@ class Var7Medicion(models.Model):
 
 
 class Var8Medicion(models.Model):
+    """Atmospheric pressure."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -418,6 +488,8 @@ class Var8Medicion(models.Model):
 
 
 class Var9Medicion(models.Model):
+    """Water temperature."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -449,6 +521,8 @@ class Var9Medicion(models.Model):
 
 
 class Var10Medicion(models.Model):
+    """Flow."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -480,6 +554,8 @@ class Var10Medicion(models.Model):
 
 
 class Var11Medicion(models.Model):
+    """Water level."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -901,11 +977,14 @@ class Var24Medicion(models.Model):
 
 
 ## Variables creadas para boya con diferentes profundidades
+## Variables created for buoy with different depths
 
 ## Temperatura agua
 ##      Profundidad en centimetros
 ##      Unidad : grados Celcius
 class Var101Medicion(models.Model):
+    """Water temperature (degrees celcius), depth in cm."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -928,6 +1007,8 @@ class Var101Medicion(models.Model):
 ##      Profundidad en centimetros
 ##      Unidad : pH
 class Var102Medicion(models.Model):
+    """Water acidity (pH), depth in cm."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -950,6 +1031,8 @@ class Var102Medicion(models.Model):
 ##      Profundidad en centimetros
 ##      Unidad : mV
 class Var103Medicion(models.Model):
+    """Redox potential (mV), depth in cm."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -972,6 +1055,8 @@ class Var103Medicion(models.Model):
 ##      Profundidad en centimetros
 ##      Unidad : NTU
 class Var104Medicion(models.Model):
+    """Water turbidity (NTU), depth in cm."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -994,6 +1079,8 @@ class Var104Medicion(models.Model):
 ##      Profundidad en centimetros
 ##      Unidad : ug/l
 class Var105Medicion(models.Model):
+    """Chlorine concentration (ug/l), depth in cm."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -1016,6 +1103,8 @@ class Var105Medicion(models.Model):
 ##      Profundidad en centimetros
 ##      Unidad : mg/l
 class Var106Medicion(models.Model):
+    """Oxygen concentration (mg/l), depth in cm."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -1038,6 +1127,11 @@ class Var106Medicion(models.Model):
 ##      Profundidad en centimetros
 ##      Unidad : mg/l
 class Var107Medicion(models.Model):
+    """Percentage oxygen concentration (mg/l), depth in cm.
+    HELPWANTED: Is this wrong? It's teh same as above, perhaps units should
+    be %?
+    """
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
@@ -1060,6 +1154,8 @@ class Var107Medicion(models.Model):
 ##      Profundidad en centimetros
 ##      Unidad :
 class Var108Medicion(models.Model):
+    """Phycocyanin (?), depth in cm."""
+
     id = models.BigAutoField("Id", primary_key=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     fecha = models.DateTimeField("Fecha")
