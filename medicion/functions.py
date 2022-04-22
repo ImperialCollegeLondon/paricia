@@ -32,12 +32,17 @@ class ReporteValidacion(models.Model):
     class Meta:
         managed = False  ### Para que no se cree en la migracion
 
+    # FIXME Duplicated Meta Class
     class Meta:
         ### Para que no se cree en la migracion
         managed = False
 
 
 class NivelFuncionTabla(models.Model):
+    """Table of function and flow 1-5. Used below in nivelfunctiontabla.
+    HELPWANTED: Unsure exatly what this does.
+    """
+
     id = models.SmallIntegerField(primary_key=True)
     funcion = models.CharField("Función", max_length=80)
     nivel_inf = models.DecimalField("Nivel Inf. (cm)", max_digits=5, decimal_places=1)
