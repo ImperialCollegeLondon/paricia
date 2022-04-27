@@ -15,7 +15,8 @@ from medicion.models import DigVar
 
 ## Models here link a station (id), date, value (medicion.models.DigVar).
 ## Most also have max, min (DigVar).
-## Var1Diario and Var10Diario are used in indices.functions.
+## Var1Diario and Var10Diario are used in indices.functions. These relate
+## to the key variables of precipitation and flow.
 ## The rest are unused.
 
 

@@ -9,6 +9,9 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+"""These functions are used in the views to calculate various hydrological indices. 
+"""
+
 import decimal
 import json
 
@@ -77,6 +80,9 @@ def periodos(i):
 
 # retorna la lista de datos validado, dado el id de variable, la estacion, fecha inicio y fecha fin
 def getVarValidado(varid, estacion_id, inicio, fin, frecuencia):
+    """Returns the list of validated data, given the variable id,
+    the station, start date and end date.
+    """
     try:
         var = Variable.objects.get(var_id__exact=varid)
         tabla = var.var_codigo  # varcodigo
@@ -134,6 +140,8 @@ def getVarValidado(varid, estacion_id, inicio, fin, frecuencia):
 
 # Doblemasa
 def acumularDoble(est1, est2, frecuencia):
+    """Used in DoubleMass calculation in views."""
+
     # print("metodo acumular")
     data = []
     """ fechas = []
@@ -179,6 +187,7 @@ def acumularDoble(est1, est2, frecuencia):
 
 # doblemasa
 def consultaPeriodos(estacion_id, frecuencia):
+    """Used in views.DoubleMass calculation to get max and min dates for period."""
     fmax = None
     fmin = None
     estacion = None
@@ -238,6 +247,7 @@ from time import time
 
 
 def intensidadDiracion(estacion_id, fechaini, fechafin):
+    """Used to calculate the intensity-duration index."""
     tiempo_inicial = time()
     periodos = [5, 10, 15, 30, 60, 120, 1440, 2880]
     # print(estacion_id, fechaini, fechafin)
@@ -289,7 +299,9 @@ def intensidadDiracion(estacion_id, fechaini, fechafin):
 
 #### calcula los datos para la curva de duracion sin la influencia de la estacion
 def getCaudalFrec(estacion_id, inicio, fin, frecuencia):
-    """Calcula el caudal especifico de una estacion hidrológica"""
+    """Calculate the specific flow of a hydrological station. Used to calculate
+    the duration flow index."""
+
     est = Estacion.objects.get(est_id=estacion_id)
     inf = est.influencia_km
     print(
@@ -364,6 +376,7 @@ def getCaudalFrec(estacion_id, inicio, fin, frecuencia):
 
 
 def getCaudalanio(frecuencia, estacion_id, anio):
+    """Get flow for a specific year at a specific station."""
     # print("frecuencia", "estacion_id","anio")
     # print('   ',frecuencia,"   ", estacion_id,"   ","    ",anio)
     fi = str(anio) + "-01-01"
@@ -398,6 +411,9 @@ def getCaudalanio(frecuencia, estacion_id, anio):
 
 
 def getCaudalFrecMulti(listEst, fin, ffi):
+    """Calculate the flow at multiple hydrological stations. Used to calculate
+    the duration flow index.
+    """
     print("getCaudalFrecMulti:")
     if len(listEst) > 0:
         estaciones = []
@@ -465,6 +481,10 @@ Cada funcion de la clase calcula un indicador determinado"""
 
 
 class IndicadoresPrecipitacion:
+    """This class is responsible for calculating precipitation indicators,
+    each method of the class calculates a certain indicator.
+    """
+
     def __init__(self, estacion_id, inicio, fin, completo):
         self.estacion = estacion_id
         self.inicio = inicio
@@ -475,7 +495,9 @@ class IndicadoresPrecipitacion:
 
     def rr_anual(self):
         print(self.inicio, self.fin)
-        """precipitacion media anual precipitacion promedio del rango de fechas seleccionada"""
+        """precipitacion media anual precipitacion promedio del rango de fechas seleccionada.
+        average annual precipitation average precipitation of the selected date range.
+        """
         rranual = anio.Var1Anual.objects.filter(
             estacion_id__exact=self.estacion,
             fecha__gte=self.inicio,
@@ -490,7 +512,9 @@ class IndicadoresPrecipitacion:
             return None
 
     def rr_mensual(self):
-        """devuelve la tabla de datos mensuales para la fecha seleccionadas"""
+        """devuelve la tabla de datos mensuales para la fecha seleccionadas.
+        returns the monthly data table for the selected date.
+        """
         rrmensual = mes.Var1Mensual.objects.filter(
             estacion_id__exact=self.estacion,
             fecha__gte=self.inicio,
@@ -503,7 +527,9 @@ class IndicadoresPrecipitacion:
             return None
 
     def rr_max_hora(self):
-        """calcula la precipitacion maxima acumulada en 24 horas"""
+        """calcula la precipitacion maxima acumulada en 24 horas.
+        calculates the maximum accumulated precipitation in 24 hours.
+        """
         datos = (
             vali.Var1Validado.objects.filter(
                 estacion_id__exact=self.estacion,
@@ -540,7 +566,9 @@ class IndicadoresPrecipitacion:
         }
 
     def percentilesDiarios(self):
-        """Calcula los percentelies en base a los datos diarios"""
+        """Calcula los percentelies en base a los datos diarios.
+        Calculate percentelies based on daily data.
+        """
         diarios = list(
             dia.Var1Diario.objects.filter(
                 estacion_id__exact=self.estacion,
@@ -559,7 +587,8 @@ class IndicadoresPrecipitacion:
         return {"q10": q10, "q95": q95}
 
     def percentilesHorarios(self):
-        """Calcula los percentelies en base a los horarios"""
+        """Calcula los percentelies en base a los horarios.
+        Calculates hourly percentiles."""
         horarios = list(
             hora.Var1Horario.objects.filter(
                 estacion_id__exact=self.estacion,
@@ -576,6 +605,7 @@ class IndicadoresPrecipitacion:
         return {"q10": q10, "q95": q95}
 
     def calcular_dias_sin_precipitacion(self):
+        """Calculates days without precipitation."""
         sql = """
         SELECT COUNT(*) FROM diario_var1diario 
         WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s AND valor = 0.0
@@ -587,6 +617,7 @@ class IndicadoresPrecipitacion:
         return resultado[0][0]
 
     def makeDic(self):
+        """HELPWANTED: What does this do?"""
         anuales = self.rr_anual()
         # print(anuales)
 
@@ -831,6 +862,8 @@ class IndicadoresPrecipitacion:
 
 ##### funcion de calculo de indicadores de caudal
 def indicaCaudal(estacion_id, inicio, fin, completo):
+    """Function to calculate flow indicators."""
+
     amax = None
     amin = None
     datos = 0
@@ -1061,6 +1094,8 @@ def calcular_escorrentia(sitiocuenca, est_caudal, est_precipitacion, inicio, fin
 
 
 def calcular_dias_sin_caudal(estacion_id, inicio, fin):
+    """Calculate days without flow."""
+
     sql = """
     SELECT COUNT(*) FROM diario_var10diario 
     WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s AND valor = 0.0;
