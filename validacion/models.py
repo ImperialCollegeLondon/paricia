@@ -20,6 +20,10 @@ from estacion.models import Estacion
 from medicion.models import DigVar
 from variable.models import Variable
 
+## Models here are very similar to those found in horario, diaro, mensual etc.
+## Probably pertain to validated versions of those variables? Unsure where these
+## are created though (where does the validation happen?) <-- HELPWANTED
+
 
 class PermisosValidacion(models.Model):
     class Meta:
@@ -38,6 +42,11 @@ class PermisosValidacion(models.Model):
 
 
 class Validacion(models.Model):
+    """Validation model. Used in views and forms to see list and details of these
+    objects but not used anywhere else?
+    DELETE ?
+    """
+
     val_id = models.AutoField("Id", primary_key=True)
     var_id = models.ForeignKey(
         Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"
@@ -75,6 +84,8 @@ class Validacion(models.Model):
 
 ########################################################################################################################
 class ComentarioValidacion(models.Model):
+    """Unused. DELETE?"""
+
     variable_id = models.SmallIntegerField(db_index=True)
     estacion_id = models.PositiveIntegerField("estacion_id")
     validado_id = models.PositiveIntegerField("Validación")

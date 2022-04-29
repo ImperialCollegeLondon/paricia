@@ -70,6 +70,7 @@ class Consulta(models.Model):
 # consultar datos diarios en un rango de fechas
 # def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo):
 def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo, data):
+    """query daily data in a date range."""
     est_id = estacion.est_id
     modelo = normalize(variable.var_nombre).replace(" de ", "")
     modelo = modelo.replace(" ", "")
@@ -205,6 +206,7 @@ def reporte_diario(estacion, variable, inicio, final, var_maximo, var_minimo, da
 
 
 def consultar_diario(est_id, var_id, fecha_str, var_maximo, var_minimo):
+    """Query raw and/or validated data by station, variable and date of a specific day."""
     inicio = datetime.strptime(fecha_str, "%Y-%m-%d")
 
     fin = datetime.combine(inicio.date(), time(23, 59, 59, 999999))
@@ -281,6 +283,8 @@ def consultar_diario(est_id, var_id, fecha_str, var_maximo, var_minimo):
 
 # Obtener el número de datos esperados en un día
 def numero_datos_esperados(est_id, var_id, fecha_str):
+    """Get the expected number of data points in a day."""
+
     sql = """SELECT CAST(1440/f.fre_valor AS INT) ndatos FROM frecuencia_frecuencia f WHERE f.fre_valor <= 60
         and f.est_id_id = %%est_id%% AND f.var_id_id = %%var_id%%
         AND f.fre_fecha_ini <= '%%fecha%%'
@@ -319,6 +323,8 @@ def normalize(s):
 
 # generar las condiciones para eliminar y/o anular los datos validados
 def get_condiciones(cambios_lista):
+    """generate the conditions to eliminate and/or annul the validated data."""
+
     fechas_condicion = []
     fechas_eliminar = []
     for fila in cambios_lista:
@@ -341,6 +347,7 @@ def get_condiciones(cambios_lista):
 def pasar_crudos_validados(
     cambios_lista, variable, estacion_id, condiciones, limite_superior, limite_inferior
 ):
+    """Convert raw data to validated data."""
     modelo = normalize(variable.var_nombre).replace(" de ", "")
     modelo = modelo.replace(" ", "")
     variable_nombre = modelo
@@ -436,6 +443,8 @@ def pasar_crudos_validados(
 
 # Eliminar los datos de validados con basse a un rango de fechas
 def eliminar_datos_validacion(cambios_lista, variable, estacion_id, condiciones):
+    """Remove validated data based on a date range."""
+
     fecha_inicio_dato = cambios_lista[0]["fecha"]
     fecha_fin_dato = cambios_lista[-1]["fecha"]
     modelo = normalize(variable.var_nombre).replace(" de ", "")
