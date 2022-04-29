@@ -52,11 +52,16 @@ from medicion.models import (
     Var24Medicion,
 )
 
+print(globals())
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
 
 # verificar si existen los datos
 def validar_fechas(importacion):
+    """Check whether data exists already.
+    HELPWANTED: Unsure exactly what this returns and how Classification is used.
+    """
+
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
     for_id_id = importacion.for_id_id
@@ -83,6 +88,8 @@ def validar_fechas(importacion):
 
 
 def ultima_fecha_cargada(est_id, var_id):
+    """Gets the last date loaded for a station and type of variable."""
+
     print("ultima_fecha: " + str(time.ctime()))
     sql = "SELECT  fecha FROM medicion_var" + str(int(var_id)) + "medicion "
     sql += " WHERE estacion_id=" + str(int(est_id))
@@ -98,6 +105,10 @@ def ultima_fecha_cargada(est_id, var_id):
 
 
 def existe_fechas(ini, fin, est_id, var_id):
+    """Returns whether there is data existing between two dates for a
+    variable id and station.
+    """
+
     sql = "SELECT id FROM medicion_var" + str(var_id) + "medicion "
     sql += " WHERE fecha >= %s  AND fecha <= %s AND estacion_id = %s "
     sql += " LIMIT 1;"
@@ -111,6 +122,13 @@ def existe_fechas(ini, fin, est_id, var_id):
 
 
 def preformato_matriz(archivo_src, formato):
+    """Determines the file format and therefore how it should be read in.
+    Uses pandas to read excel, csv, etc. depending on format.
+    Somehow sorts out the datetime column and sorts the data by this column.
+    Returns:
+        pandas.DataFrame.
+    """
+
     firstline = formato.for_fil_ini if formato.for_fil_ini else 0
     skipfooter = formato.for_fil_cola if formato.for_fil_cola else 0
 
@@ -218,6 +236,10 @@ def preformato_matriz(archivo_src, formato):
 
 
 def verificar_fechahora(fechahora, formatofechahora):
+    """Handles the various formats a datetime can be.
+    Returns a datetime object.
+    """
+
     if isinstance(fechahora, datetime):
         return fechahora
     elif isinstance(fechahora, np.datetime64):
@@ -247,6 +269,9 @@ def verificar_fechahora(fechahora, formatofechahora):
 
 # Esta funcion pasa la importación temporal a final
 def guardar_datos__temp_a_final(imp_id, form):
+    """Saves data from temporary to permanent. Gets a ImportacionTemp object
+    based on an ID then creates a new Importacion object and saves it.
+    """
     importaciontemp = ImportacionTemp.objects.get(imp_id=imp_id)
     formato = importaciontemp.for_id
     estacion = importaciontemp.est_id
@@ -315,6 +340,12 @@ FROM data d
 
 
 def construir_matriz(matriz_src, formato, estacion):
+    """Does some further manipulation after preformato_matriz to return data
+    based on that dataframe.
+    HELPWANTED: Lots going on here, not sure exactly the distinction between
+    this and preformato_matriz.
+    """
+
     # TODO : Eliminar validar_datalogger, validar acumulado
     # determinar si debemos restar 5 horas a la fecha del archivo
     # cambiar_fecha = validar_datalogger(formato.mar_id)
@@ -427,6 +458,11 @@ def construir_matriz(matriz_src, formato, estacion):
 
 
 def numero_punto_decimal(val_str):
+    """Returns a float of a value, eliminating commas if necessary.
+    Otherwise returns None.
+    FIXME: bare try and except.
+    """
+
     if isinstance(val_str, Number):
         return float(val_str)
     try:
@@ -438,6 +474,11 @@ def numero_punto_decimal(val_str):
 
 
 def numero_coma_decimal(val_str):
+    """Returns a float of a value, replacing eliminating decimal points
+    and replacing commas with decimal points. Otherwise returns None.
+    FIXME: bare try and except.
+    """
+
     if isinstance(val_str, Number):
         return float(val_str)
     try:
@@ -450,6 +491,10 @@ def numero_coma_decimal(val_str):
 
 
 def insertar_nivel_regleta(importacion, nivelregleta):
+    """Gets the water level measurements at a station on a date.
+    HELPWANTED: This is something to do with calibrating water levels with a
+    strip level / rule level. Saving a calibrated water level?
+    """
     nivelagua_mediciones = Var11Medicion.objects.filter(
         estacion_id=importacion.est_id_id, fecha=importacion.imp_fecha_fin
     )
@@ -476,6 +521,7 @@ def insertar_nivel_regleta(importacion, nivelregleta):
 
 # consultar formatos por datalogger y estacion
 def consultar_formatos(estacion):
+    """Get list of (file) formats associated with a station."""
     asociacion = list(Asociacion.objects.filter(est_id=estacion))
     lista = {}
     for item in asociacion:
@@ -710,6 +756,9 @@ def consultar_formatos(estacion):
 
 
 def get_modelo(var_id):
+    """FIXME: broken. Variable not imported and
+    variable.Variable has no var_modelo anyway.
+    """
     variable = Variable.objects.get(var_id=var_id)
     modelo = globals()[variable.var_modelo]
     return modelo
