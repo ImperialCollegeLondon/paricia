@@ -23,6 +23,10 @@ from formato.models import Formato
 
 
 class ImportacionBase(models.Model):
+    """Base import class used to import temporarily and permanently in functions.
+    NEWNAME: ImportBase.
+    """
+
     imp_id = models.AutoField("Id", primary_key=True)
     est_id = models.ForeignKey(
         Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
@@ -46,6 +50,10 @@ class ImportacionBase(models.Model):
 
 
 class Importacion(ImportacionBase):
+    """Used in functions to save data.
+    NEWNAME: ImportData
+    """
+
     imp_archivo = models.FileField(
         "Archivo", upload_to="archivos/", blank=True, null=True
     )
@@ -64,6 +72,10 @@ class Importacion(ImportacionBase):
 
 
 class ImportacionTemp(ImportacionBase):
+    """Used in functions to save data to tmp.
+    NEWNAME: ImportDataTmp
+    """
+
     imp_archivo = models.FileField("Archivo", upload_to="archivos/tmp/")
 
     def get_absolute_url(self):
