@@ -167,6 +167,7 @@ class Clasificacion(models.Model):
     column value max/min etc. Used in import app to check if data already exists
     for a certain date range-Station-Value cobination and in some other function.
     HELPWANTED: Unclear exactly what this is doing, seems quite abstract.
+        --> DIEGO: Question for Pablo
     """
 
     cla_id = models.AutoField("Id", primary_key=True)
@@ -217,7 +218,7 @@ class Clasificacion(models.Model):
 class Asociacion(models.Model):
     """Associates a Format with a Station. Used to return a list of formats associated
     with a station.
-    HELPWANTED: Unclear what the use case for this is.
+    HELPWANTED: Unclear what the use case for this is. --> DIEGO: Question for Pablo
     """
 
     aso_id = models.AutoField("Id", primary_key=True)

@@ -1129,7 +1129,7 @@ class Var106Medicion(models.Model):
 class Var107Medicion(models.Model):
     """Percentage oxygen concentration (mg/l), depth in cm.
     HELPWANTED: Is this wrong? It's teh same as above, perhaps units should
-    be %?
+    be %? --> DIEGO: Looks identical to the previous one to me. It might be an error.
     """
 
     id = models.BigAutoField("Id", primary_key=True)

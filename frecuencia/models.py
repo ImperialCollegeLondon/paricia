@@ -57,7 +57,9 @@ class Frecuencia(models.Model):
 
 class TipoFrecuencia(models.Model):
     """Type of Frequency e.g. monthly, daily. Used to filter reports.
-    HELPWANTED: Not clear how these are actually related to the data.
+    HELPWANTED: Not clear how these are actually related to the data. --> DIEGO: I don't
+    see this being used in any meaningful way. Maybe is a feature not fully implemented
+    or some sort of placeholder? Maybe a question for Pablo.
     NEWNAME: FrequencyType
     """
 

@@ -137,7 +137,8 @@ class Cuenca(models.Model):
     """Basin associated with a site via SiteBasin.
     Has an image for an image/map of the basin, and a file.
     NEWNAME: Basin
-    HELPWANTED: What is the file for if not an image?
+    HELPWANTED: What is the file for if not an image? --> DIEGO: I think it is an image
+    + some metadata in PDF form about the station. Not sure if that was your question.
     """
 
     id = models.AutoField("Id", primary_key=True)
