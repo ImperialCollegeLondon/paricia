@@ -68,13 +68,13 @@ def insercion_validacion():
     with connection.cursor() as cursor:
         cursor.execute(sql0)
 
-    file = open("scripts/plpgsql/insertar_1validacion.sql", "r")
-    funcion = file.read()
-    for var in vars:
-        var_id = str(var[0])
-        sql = funcion.replace("1", var_id)
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
+    # file = open("scripts/plpgsql/insertar_1validacion.sql", "r")
+    # funcion = file.read()
+    # for var in vars:
+    #    var_id = str(var[0])
+    #    sql = funcion.replace("1", var_id)
+    #    with connection.cursor() as cursor:
+    #        cursor.execute(sql)
 
 
 def inserccion_validacion_profundidad():
@@ -295,16 +295,16 @@ def generar_mensual_profundidad():
 
 
 def run():
-    reporte_validacion()
-    reporte_validacion_profundidad()
+    # reporte_validacion()
+    # reporte_validacion_profundidad()
     insercion_validacion()
-    inserccion_validacion_profundidad()
-    aplicar_curvadescarga()
-    aplicar_curvadescarga_crudos()
-    calculo_caudal()
-    generar_horario()
-    generar_diario()
-    generar_mensual()
-    generar_horario_profundidad()
-    generar_diario_profundidad()
-    generar_mensual_profundidad()
+    # inserccion_validacion_profundidad()
+    # aplicar_curvadescarga()
+    # aplicar_curvadescarga_crudos()
+    # calculo_caudal()
+    # generar_horario()
+    # generar_diario()
+    # generar_mensual()
+    # generar_horario_profundidad()
+    # generar_diario_profundidad()
+    # generar_mensual_profundidad()
