@@ -14,7 +14,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, re_path, reverse_lazy
 
-from home.views import HomePageView, CargaInicialView
+from home.views import CargaInicialView, HomePageView
 
 app_name = "home"
 urlpatterns = [
