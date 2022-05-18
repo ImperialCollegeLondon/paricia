@@ -18,8 +18,9 @@ from .functions import get_anonymous_user
 
 class AnonymousPermissions(ModelBackend):
     """
-    Función que permite dar permisos a usuario AnonymousUser por medio de permisos de usuario
-    Solamente debe hacer override  a método has_perm de ModelBackend
+    Enable AnonymousUser to be granted permissions.
+
+    Should only overwrite 'has_perm' method from the parent model 'ModelBackend'
     """
 
     def has_perm(self, user_obj, perm, obj=None):
