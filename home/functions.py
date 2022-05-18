@@ -64,7 +64,7 @@ def get_menu(user: User) -> str:
         items = ""
         last_is_divider = True
         i = 0
-        
+
         for elements in tab.items:
             if elements.name == "":
                 if last_is_divider:
