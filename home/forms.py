@@ -28,11 +28,11 @@ OPCIONES_CARGA = [
     ("formato_hora.json", "FORMATO: Hora"),
     ("formato_formato.json", "FORMATO: Formato de importación"),
     ("formato_clasificacion.json", "FORMATO: Clasificación"),
-    ("frecuencia_tipofrecuencia.json", "FRECUENCIA: Tipo"),
-    ("telemetria_alarmatipoestado.json", "TELEMETRÍA: Estados de alarma"),
+    # ("frecuencia_tipofrecuencia.json", "FRECUENCIA: Tipo"),
+    # ("telemetria_alarmatipoestado.json", "TELEMETRÍA: Estados de alarma"),
     ("sensor_marca.json", "SENSOR: Marca"),
     ("sensor_tipo.json", "SENSOR: Tipo"),
-    ("datalogger_marca.json", "DATALOGGER: Marca"),
+    # ("datalogger_marca.json", "DATALOGGER: Marca"),
     ("estacion_tipo.json", "ESTACIÓN: Tipo"),
     ("estacion_ecosistema.json", "ESTACIÓN: Ecosistema"),
     ("estacion_pais.json", "ESTACIÓN: País"),
@@ -44,10 +44,10 @@ OPCIONES_CARGA = [
     ("estacion_estacion.json", "ESTACIÓN: Estación"),
     ("formato_asociacion.json", "FORMATO/ESTACION: Asociación de Formato con Estación"),
     ("cruce_cruce.json", "VARIABLE/ESTACION: Asociación Variable por Estación"),
-    (
-        "frecuencia_frecuencia.json",
-        "FRECUENCIA/VARIABLE/ESTACION: Frecuencias por variable y por estación",
-    ),
+    # (
+    #    "frecuencia_frecuencia.json",
+    #    "FRECUENCIA/VARIABLE/ESTACION: Frecuencias por variable y por estación",
+    # ),
 ]
 
 
