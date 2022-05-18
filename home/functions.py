@@ -11,7 +11,7 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 from logging import getLogger
-from typing import List, Dict
+from typing import Dict, List
 
 from django.contrib.auth.models import Permission, User
 from django.db.models import QuerySet

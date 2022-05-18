@@ -11,10 +11,10 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from typing import List, NamedTuple, Optional
-from pathlib import Path
 import json
 from functools import lru_cache
+from pathlib import Path
+from typing import List, NamedTuple, Optional
 
 
 class Entry(NamedTuple):
