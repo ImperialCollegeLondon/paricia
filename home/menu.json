@@ -1,421 +1,421 @@
 {
     "Estación": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "Estación",
+                "name": "Estación",
                 "url_name": "estacion:estacion_index",
-                "permiso": "estacion.view_estacion"
+                "permission": "estacion.view_estacion"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "País",
+                "name": "País",
                 "url_name": "estacion:pais_index",
-                "permiso": "estacion.view_pais"
+                "permission": "estacion.view_pais"
             },
             {
-                "nombre": "Región/Provincia/Departamento",
+                "name": "Región/Provincia/Departamento",
                 "url_name": "estacion:region_index",
-                "permiso": "estacion.view_region"
+                "permission": "estacion.view_region"
             },
             {
-                "nombre": "Ecosistema",
+                "name": "Ecosistema",
                 "url_name": "estacion:ecosistema_index",
-                "permiso": "estacion.view_ecosistema"
+                "permission": "estacion.view_ecosistema"
             },
             {
-                "nombre": "Socio",
+                "name": "Socio",
                 "url_name": "estacion:socio_index",
-                "permiso": "estacion.view_socio"
+                "permission": "estacion.view_socio"
             },
             {
-                "nombre": "Sitio",
+                "name": "Sitio",
                 "url_name": "estacion:sitio_index",
-                "permiso": "estacion.view_sitio"
+                "permission": "estacion.view_sitio"
             },
             {
-                "nombre": "Cuenca",
+                "name": "Cuenca",
                 "url_name": "estacion:cuenca_index",
-                "permiso": "estacion.view_cuenca"
+                "permission": "estacion.view_cuenca"
             },
             {
-                "nombre": "Asociación Sitio-Cuenca",
+                "name": "Asociación Sitio-Cuenca",
                 "url_name": "estacion:sitiocuenca_index",
-                "permiso": "estacion.view_sitiocuenca"
+                "permission": "estacion.view_sitiocuenca"
             },
             {
-                "nombre": "Tipo de estación",
+                "name": "Tipo de estación",
                 "url_name": "estacion:tipo_index",
-                "permiso": "estacion.view_tipo"
+                "permission": "estacion.view_tipo"
             }
         ]
     },
     "Información de la red": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "Datalogger",
+                "name": "Datalogger",
                 "url_name": "datalogger:datalogger_index",
-                "permiso": "datalogger.view_datalogger"
+                "permission": "datalogger.view_datalogger"
             },
             {
-                "nombre": "Marca de datalogger",
+                "name": "Marca de datalogger",
                 "url_name": "datalogger:marca_index",
-                "permiso": "datalogger.view_marca"
+                "permission": "datalogger.view_marca"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Sensor",
+                "name": "Sensor",
                 "url_name": "sensor:sensor_index",
-                "permiso": "sensor.view_sensor"
+                "permission": "sensor.view_sensor"
             },
             {
-                "nombre": "Marca de sensor",
+                "name": "Marca de sensor",
                 "url_name": "sensor:marca_index",
-                "permiso": "sensor.view_marca"
+                "permission": "sensor.view_marca"
             },
             {
-                "nombre": "Tipo de sensor",
+                "name": "Tipo de sensor",
                 "url_name": "sensor:tipo_index",
-                "permiso": "sensor.view_tipo"
+                "permission": "sensor.view_tipo"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Frecuencia de Registro",
+                "name": "Frecuencia de Registro",
                 "url_name": "frecuencia:frecuencia_index",
-                "permiso": "frecuencia.view_frecuencia"
+                "permission": "frecuencia.view_frecuencia"
             },
             {
-                "nombre": "Curva de descarga",
+                "name": "Curva de descarga",
                 "url_name": "medicion:curvadescarga_index",
-                "permiso": "medicion.view_curvadescarga"
+                "permission": "medicion.view_curvadescarga"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Unidad de variable",
+                "name": "Unidad de variable",
                 "url_name": "variable:unidad_index",
-                "permiso": "variable.view_unidad"
+                "permission": "variable.view_unidad"
             },
             {
-                "nombre": "Variable",
+                "name": "Variable",
                 "url_name": "variable:variable_index",
-                "permiso": "variable.view_variable"
+                "permission": "variable.view_variable"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Variables por Estación",
+                "name": "Variables por Estación",
                 "url_name": "cruce:cruce_index",
-                "permiso": "cruce.view_cruce"
+                "permission": "cruce.view_cruce"
             }
         ]
     },
     "Mantenimiento": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "Instalación de Sensor",
+                "name": "Instalación de Sensor",
                 "url_name": "variable:control_index",
-                "permiso": "variable.view_control"
+                "permission": "variable.view_control"
             },
             {
-                "nombre": "Instalación de Datalogger",
+                "name": "Instalación de Datalogger",
                 "url_name": "instalacion:instalacion_index",
-                "permiso": "instalacion.view_instalacion"
+                "permission": "instalacion.view_instalacion"
             },
             {
-                "nombre": "Historial",
+                "name": "Historial",
                 "url_name": "bitacora:bitacora_index",
-                "permiso": "bitacora.view_bitacora"
+                "permission": "bitacora.view_bitacora"
             },
             {
-                "nombre": "Carga inicial",
+                "name": "Carga inicial",
                 "url_name": "home:carga_inicial",
-                "permiso": "home.carga_inicial"
+                "permission": "home.carga_inicial"
             }
         ]
     },
     "Importación de datos": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "Importar Archivo",
+                "name": "Importar Archivo",
                 "url_name": "importacion:importacion_temp_create",
-                "permiso": "importacion.add_importacion"
+                "permission": "importacion.add_importacion"
             },
             {
-                "nombre": "Vacios de Información",
+                "name": "Vacios de Información",
                 "url_name": "vacios:vacios",
-                "permiso": "vacios.view_vacios"
+                "permission": "vacios.view_vacios"
             },
             {
-                "nombre": "Archivos Importados",
+                "name": "Archivos Importados",
                 "url_name": "importacion:importacion_index",
-                "permiso": "importacion.view_importacion"
+                "permission": "importacion.view_importacion"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Formato de Importación",
+                "name": "Formato de Importación",
                 "url_name": "formato:formato_index",
-                "permiso": "formato.view_formato"
+                "permission": "formato.view_formato"
             },
             {
-                "nombre": "Formato por Estación",
+                "name": "Formato por Estación",
                 "url_name": "formato:asociacion_index",
-                "permiso": "formato.view_asociacion"
+                "permission": "formato.view_asociacion"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Extensión de archivo",
+                "name": "Extensión de archivo",
                 "url_name": "formato:extension_index",
-                "permiso": "formato.view_extension"
+                "permission": "formato.view_extension"
             },
             {
-                "nombre": "Delimitador de campos en archivo",
+                "name": "Delimitador de campos en archivo",
                 "url_name": "formato:delimitador_index",
-                "permiso": "formato.view_delimitador"
+                "permission": "formato.view_delimitador"
             },
             {
-                "nombre": "Formato de Fecha",
+                "name": "Formato de Fecha",
                 "url_name": "formato:fecha_index",
-                "permiso": "formato.view_fecha"
+                "permission": "formato.view_fecha"
             },
             {
-                "nombre": "Formato de Hora",
+                "name": "Formato de Hora",
                 "url_name": "formato:hora_index",
-                "permiso": "formato.view_hora"
+                "permission": "formato.view_hora"
             }
         ]
     },
     "Validación": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "<small>HIDRO - </small>Validar Datos Crudos",
+                "name": "<small>HIDRO - </small>Validar Datos Crudos",
                 "url_name": "validacion:validar",
-                "permiso": "validacion.hidro_validar"
+                "permission": "validacion.hidro_validar"
             },
             {
-                "nombre": "<small>HIDRO - </small>Historial validaciones",
+                "name": "<small>HIDRO - </small>Historial validaciones",
                 "url_name": "validacion:validacion_index",
-                "permiso": "validacion.view_validacion"
+                "permission": "validacion.view_validacion"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "<small>HIDRO - </small>Borrar crudos y VALIDADOS",
+                "name": "<small>HIDRO - </small>Borrar crudos y VALIDADOS",
                 "url_name": "validacion:borrar_crudos_y_validados",
-                "permiso": "validacion.hidro_borrar_crudos_y_validados"
+                "permission": "validacion.hidro_borrar_crudos_y_validados"
             },
             {
-                "nombre": "<small>HIDRO - </small>Borrar solo VALIDADOS",
+                "name": "<small>HIDRO - </small>Borrar solo VALIDADOS",
                 "url_name": "validacion:borrar_validados",
-                "permiso": "validacion.hidro_borrar_solo_validados"
+                "permission": "validacion.hidro_borrar_solo_validados"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "<small>LIMNO. - </small>Validar",
+                "name": "<small>LIMNO. - </small>Validar",
                 "url_name": "validacion:calidad_validar",
-                "permiso": "validacion.calidad_validar"
+                "permission": "validacion.calidad_validar"
             },
             {
-                "nombre": "<small>LIMNO. - </small>Borrar datos",
+                "name": "<small>LIMNO. - </small>Borrar datos",
                 "url_name": "validacion:calidad_borrar_datos",
-                "permiso": "validacion.calidad_validar"
+                "permission": "validacion.calidad_validar"
             }
         ]
     },
     "Indices": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "Precipitación",
+                "name": "Precipitación",
                 "url_name": "indices:precipitacion",
-                "permiso": "indices.view_indices"
+                "permission": "indices.view_indices"
             },
             {
-                "nombre": "Intensidad - Duración",
+                "name": "Intensidad - Duración",
                 "url_name": "indices:intensidad",
-                "permiso": "indices.view_indices"
+                "permission": "indices.view_indices"
             },
             {
-                "nombre": "Intensidad - Duración Multiestación",
+                "name": "Intensidad - Duración Multiestación",
                 "url_name": "indices:intensidadmulti",
-                "permiso": "indices.view_indices"
+                "permission": "indices.view_indices"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Caudales",
+                "name": "Caudales",
                 "url_name": "indices:caudal",
-                "permiso": "indices.view_indices"
+                "permission": "indices.view_indices"
             },
             {
-                "nombre": "Duración Caudal",
+                "name": "Duración Caudal",
                 "url_name": "indices:duracaudal",
-                "permiso": "indices.view_indices"
+                "permission": "indices.view_indices"
             },
             {
-                "nombre": "Duración Caudal Multiestación",
+                "name": "Duración Caudal Multiestación",
                 "url_name": "indices:duracaudalmulti",
-                "permiso": "indices.view_indices"
+                "permission": "indices.view_indices"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Coeficiente de Escorrentía",
+                "name": "Coeficiente de Escorrentía",
                 "url_name": "indices:escorrentia",
-                "permiso": "indices.view_indices"
+                "permission": "indices.view_indices"
             }
         ]
     },
     "Reportes": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "<small>HIDRO - </small>Consultas por Periodo",
+                "name": "<small>HIDRO - </small>Consultas por Periodo",
                 "url_name": "reportes:consultas_periodo",
-                "permiso": "reportes.view_consultasperiodo"
+                "permission": "reportes.view_consultasperiodo"
             },
             {
-                "nombre": "<small>HIDRO - </small>Diario",
+                "name": "<small>HIDRO - </small>Diario",
                 "url_name": "reportes:diario",
-                "permiso": "reportes.view_diario"
+                "permission": "reportes.view_diario"
             },
             {
-                "nombre": "<small>HIDRO - </small>Mensual-Multianual",
+                "name": "<small>HIDRO - </small>Mensual-Multianual",
                 "url_name": "reportes:mensual_multianual",
-                "permiso": "reportes.view_mensualmultianual"
+                "permission": "reportes.view_mensualmultianual"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "<small>HIDRO - </small>Anuario",
+                "name": "<small>HIDRO - </small>Anuario",
                 "url_name": "reportes_v2:anuario",
-                "permiso": "reportes.view_anuario"
+                "permission": "reportes.view_anuario"
             },
             {
-                "nombre": "<small>HIDRO - </small>Comparar 3 estaciones",
+                "name": "<small>HIDRO - </small>Comparar 3 estaciones",
                 "url_name": "reportes:comparacion_reporte",
-                "permiso": "reportes.view_comparacionvalores"
+                "permission": "reportes.view_comparacionvalores"
             },
             {
-                "nombre": "<small>HIDRO - </small>Comparar 2 variables",
+                "name": "<small>HIDRO - </small>Comparar 2 variables",
                 "url_name": "reportes:comparacion_variables",
-                "permiso": "reportes.view_comparacionvariables"
+                "permission": "reportes.view_comparacionvariables"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "<small>LIMNO. - </small>Gráfico: Serie temporal",
+                "name": "<small>LIMNO. - </small>Gráfico: Serie temporal",
                 "url_name": "calidad:grafico1",
-                "permiso": "calidad.view_graficos"
+                "permission": "calidad.view_graficos"
             },
             {
-                "nombre": "<small>LIMNO. - </small>Gráfico: Serie temporal CRUDOS",
+                "name": "<small>LIMNO. - </small>Gráfico: Serie temporal CRUDOS",
                 "url_name": "calidad:crudos_grafico1",
-                "permiso": "calidad.view_graficoscrudos"
+                "permission": "calidad.view_graficoscrudos"
             },
             {
-                "nombre": "<small>LIMNO. - </small>Gráfico: Promedio horario",
+                "name": "<small>LIMNO. - </small>Gráfico: Promedio horario",
                 "url_name": "calidad:grafico2",
-                "permiso": "calidad.view_graficos"
+                "permission": "calidad.view_graficos"
             },
             {
-                "nombre": "<small>LIMNO. - </small>Consulta Períodos",
+                "name": "<small>LIMNO. - </small>Consulta Períodos",
                 "url_name": "reportes:calidad_consultas_periodo",
-                "permiso": "reportes.view_calidadconsultasperiodo"
+                "permission": "reportes.view_calidadconsultasperiodo"
             }
         ]
     },
     "Telemetría": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "<small>HIDRO </small>Visualizar variables",
+                "name": "<small>HIDRO </small>Visualizar variables",
                 "url_name": "telemetria:visualizar",
-                "permiso": "telemetria.view_consulta"
+                "permission": "telemetria.view_consulta"
             },
             {
-                "nombre": "<small>LIMNO. </small>Visualizar variables",
+                "name": "<small>LIMNO. </small>Visualizar variables",
                 "url_name": "telemetria:calidad_visualizar",
-                "permiso": "telemetria.view_calidad_consulta"
+                "permission": "telemetria.view_calidad_consulta"
             },
             {
-                "nombre": "Mapa transmisión",
+                "name": "Mapa transmisión",
                 "url_name": "telemetria:mapa_alarma_transmision",
-                "permiso": "telemetria.view_mapatransmision"
+                "permission": "telemetria.view_mapatransmision"
             },
             {
-                "nombre": "Precipitación",
+                "name": "Precipitación",
                 "url_name": "telemetria:precipitacion",
-                "permiso": "telemetria.view_precipitacion"
+                "permission": "telemetria.view_precipitacion"
             },
             {
-                "nombre": "Precipitación Multiestación",
+                "name": "Precipitación Multiestación",
                 "url_name": "telemetria:multiestacion_precipitacion",
-                "permiso": "telemetria.view_precipitacionmultiestacion"
+                "permission": "telemetria.view_precipitacionmultiestacion"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "<small>HIDRO </small>Configurar visualización",
+                "name": "<small>HIDRO </small>Configurar visualización",
                 "url_name": "telemetria:configvisualizar_list",
-                "permiso": "telemetria.add_configvisualizar"
+                "permission": "telemetria.add_configvisualizar"
             },
             {
-                "nombre": "<small>LIMNO. </small>Configurar visualización",
+                "name": "<small>LIMNO. </small>Configurar visualización",
                 "url_name": "telemetria:configcalidad_list",
-                "permiso": "telemetria.add_configcalidad"
+                "permission": "telemetria.add_configcalidad"
             },
             {
-                "nombre": "Configurar alarma",
+                "name": "Configurar alarma",
                 "url_name": "telemetria:config_alarma_list",
-                "permiso": "telemetria.add_alarmaemail"
+                "permission": "telemetria.add_alarmaemail"
             }
         ]
     },
     "Calidad de Agua": {
-        "permiso": "",
+        "permission": "",
         "items": [
             {
-                "nombre": "Gráfico comparación Limno. - Hidro",
+                "name": "Gráfico comparación Limno. - Hidro",
                 "url_name": "calidad:comparar_hidro",
-                "permiso": "calidad.view_comparar_hidro"
+                "permission": "calidad.view_comparar_hidro"
             },
             {
-                "nombre": ""
+                "name": ""
             },
             {
-                "nombre": "Asociación estaciones Hidro",
+                "name": "Asociación estaciones Hidro",
                 "url_name": "calidad:asociacionhidro_index",
-                "permiso": "calidad.view_asociacionhidro"
+                "permission": "calidad.view_asociacionhidro"
             },
             {
-                "nombre": "Permisos de usuario - variables",
+                "name": "permissions de usuario - variables",
                 "url_name": "calidad:usuariovariable_index",
-                "permiso": "calidad.view_usuariovariable"
+                "permission": "calidad.view_usuariovariable"
             }
         ]
     }
