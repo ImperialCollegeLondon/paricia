@@ -6,55 +6,14 @@
 <div class="container centr">
 
 
-<div class="row">
-        <div class="col">
-                <center><h1><font face="courier">           </font></h1></center>
-        </div>
-</div>
-
-<div class="row">
-        <div class="col centr-h">
-                <div class="jumbotron transp-negro ajust-a-cont">
-
-                        {% if perms.reportes.view_consultasperiodo %}
-                        <a class="button btn btn-light btn-lg text-center" title="" href="{% url 'reportes:consultas_periodo' %}">
-                                <i class="fas fa-th-list fa-2x"></i><br>Datos hidro</a>
-                        {% endif %}
-
-                        {% if perms.reportes.view_calidadconsultasperiodo %}
-                        <a class="button btn btn-link btn-lg text-center" title="" href="{% url 'reportes:calidad_consultas_periodo' %}">
-                                <i class="fas fa-th-list fa-2x"></i><br>Datos calidad</a>
-                        {% endif %}
-
-                        {% if perms.validacion.hidro_validar %}
-                        <a class="button btn btn-light btn-lg text-center" title="" href="{% url 'validacion:validar' %}">
-                                <i class="fas fa-check fa-2x"></i><br>Validación</a>
-                        {% endif %}
-
-                        {% if perms.validacion.calidad_validar %}
-                        <a class="button btn btn-link btn-lg text-center" title="" href="{% url 'validacion:calidad_validar' %}">
-                                <i class="fas fa-check fa-2x"></i><br>Validación</a>
-                        {% endif %}
-
-                        {% if perms.telemetria.view_mapatransmision %}
-                        <a class="button btn btn-light btn-lg text-center" title="" href="{% url 'telemetria:mapa_alarma_transmision' %}">
-                                <i class="fas fa-map-marked-alt fa-2x"></i><br>Mapa de transmisión</a>
-                        {% endif %}
-
-                        {% if perms.telemetria.view_consulta %}
-                        <a class="button btn btn-light btn-lg text-center" title="" href="{% url 'telemetria:visualizar' %}">
-                                <i class="fas fa-chart-bar fa-2x"></i><br>Telemetría Hidro</a>
-                        {% endif %}
-
-                        {% if perms.telemetria.view_calidad_consulta %}
-                        <a class="button btn btn-link btn-lg text-center" title="" href="{% url 'telemetria:calidad_visualizar' %}">
-                                <i class="fas fa-chart-bar fa-2x"></i><br>Telemetría Limnología</a>
-                        {% endif %}
-
-
+        <div class="row">
+                <div class="col">
+                        <center>
+                                <h1>
+                                        <font face="courier"> </font>
+                                </h1>
+                        </center>
                 </div>
         </div>
-</div>
 
-</div>
-{% endblock %}
+        {% endblock %}
