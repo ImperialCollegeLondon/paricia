@@ -26,21 +26,21 @@ class Entry(NamedTuple):
 class Tab(NamedTuple):
     name: str = ""
     permission: str = ""
-    item: List[Entry] = []
+    items: List[Entry] = []
 
 
 menu_tab_html = """
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="navbarInfoRed" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    __PESTAÑA__
+    {tab}
     </a>
     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        __ITEMS__
+        {items}
     </div>
 </li>
 """
 
-menu_item_html = """<a class="dropdown-item" href="__URL__">__NOMBRE__</a>"""
+menu_item_html = """<a class="dropdown-item" href="{url}">{name}</a>"""
 menu_item_divider_html = """<div class="dropdown-divider"></div>"""
 
 
