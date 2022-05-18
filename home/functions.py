@@ -11,9 +11,11 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 from logging import getLogger
+from typing import List, Dict
 
 from django.contrib.auth.models import Permission, User
-from django.db.models import Q
+from django.db.models import QuerySet
+from django.db.models.query import Q
 from django.urls import reverse
 
 from .constants import (
@@ -95,7 +97,18 @@ def get_menu(user: User) -> str:
     return menu
 
 
-def modelo_a_select_html(modelo, col_extra):
+def modelo_a_tabla_html(modelo: QuerySet, col_extra: bool) -> str:
+    """Extracts the entries in a query as an HTML table.
+
+    NOTE: To be moved to a separates 'utilities' module.
+
+    Args:
+        modelo (QuerySet): Objects to extract as HTML
+        col_extra (bool): If an extra column need to be included at the end.
+
+    Returns:
+        str: Table in HTML with the contents of a model
+    """
     html_cola = "</td></tr>"
     if col_extra:
         html_cola = "</td><td></td></tr>"
@@ -105,31 +118,31 @@ def modelo_a_select_html(modelo, col_extra):
     return html
 
 
-def modelo_a_tabla_html(modelo, col_extra):
-    html_cola = "</td></tr>"
-    if col_extra:
-        html_cola = "</td><td></td></tr>"
-    html = ""
-    for row in modelo:
-        html += "<tr><td>" + "</td><td>".join([str(i or "") for i in row]) + html_cola
-    return html
+def dictfetchall(cursor) -> List[Dict]:
+    """Return all rows from a cursor as a list of dict.
 
+    TODO: This is used to process low level SQL requests, so chances are it will not be
+    needed once we are done with this.
+    NOTE: To be moved to a separates 'utilities' module.
 
-def modelo_a_js(modelo):
-    js = "["
-    for row in modelo:
-        js += "['" + "','".join([str(i or "") for i in row]) + "'],"
-    js += "]"
-    return js
+    Args:
+        cursor (?): ?
 
-
-def dictfetchall(cursor):
-    # Return all rows from a cursor as a dict
+    Returns:
+        List[Dict]: ?
+    """
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 class objdict(dict):
+    """
+    Dictionary whose content can be manipulated as attributes.
+
+    NOTE: Might be a better option to do this. Needs deeper analysis.
+    NOTE: To be moved to a separates 'utilities' module.
+    """
+
     def __getattr__(self, name):
         if name in self:
             return self[name]
