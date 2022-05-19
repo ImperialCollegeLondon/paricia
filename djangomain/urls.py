@@ -33,7 +33,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("django.contrib.auth.urls")),
     path("", include("home.urls", namespace="home")),
-    path("", include("estacion.urls", namespace="estacion")),
+    path("", include("station.urls", namespace="station")),
     path("", include("sensor.urls", namespace="sensor")),
     path("", include("variable.urls", namespace="variable")),
     path("", include("cruce.urls", namespace="cruce")),
