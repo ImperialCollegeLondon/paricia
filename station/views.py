@@ -587,51 +587,6 @@ def station_query(request):
     return JsonResponse(lista)
 
 
-#  FONAG stations in JSON format
-def stations_json_data(request):
-
-    if request.user.is_authenticated:
-        stations = list(stn.Station.objects.order_by("station_id").all())
-    else:
-        stations = list(
-            stn.Station.objects.order_by("station_id").filter(station_external=False)
-        )
-
-    features = []
-    for item in stations:
-        if (type(item.station_latitude) is not type(None)) and (
-            type(item.station_longitude) is not type(None)
-        ):
-            # if  item.station_latitude > 100 and item.station_latitude < 10000000 and item.station_longitude < 10000000 :
-            #     lon_col = utm.to_latlon(float(item.station_longitude), float(item.station_latitude), 17.41666, 'M')
-            #     item.station_longitude= lon_col[1]
-            #     item.station_latitude= lon_col[0]
-            # else:
-            #     item.station_longitude= 0
-            #     item.station_latitude= 0
-            fila = dict(
-                type="Feature",
-                geometry=dict(
-                    type="Point",
-                    coordinates=[
-                        float(item.station_longitude),
-                        float(item.station_latitude),
-                    ],
-                ),
-                properties=dict(
-                    code=item.station_code,
-                    name=item.station_name,
-                    station_type=item.station_type.name,
-                    latitude=item.station_latitude,
-                    longitude=item.station_longitude,
-                    altitude=item.station_altitude,
-                ),
-            )
-            features.append(fila)
-    datos = dict(type="FeatureCollection", features=features)
-    return JsonResponse(datos, safe=False)
-
-
 # Listar fechaS
 
 

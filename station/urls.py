@@ -207,7 +207,6 @@ urlpatterns = [
         views.SitioCuencaDelete.as_view(),
         name="sitiocuenca_delete",
     ),
-    path("estacion/getjson", views.datos_json_estaciones, name="jsonestaciones"),
     path(
         "estacion/listar_anio/<int:estacion>/<int:var>/",
         views.listar_anio,
