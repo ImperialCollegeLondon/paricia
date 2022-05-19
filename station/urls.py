@@ -203,8 +203,8 @@ urlpatterns = [
         name="sitiocuenca_delete",
     ),
     path(
-        "estacion/listar_anio/<int:estacion>/<int:var>/",
-        views.listar_anio,
-        name="listar_anio",
+        "estacion/list_year/<int:estacion>/<int:var>/",
+        views.list_year,
+        name="list_year",
     ),
 ]

@@ -587,19 +587,20 @@ def station_query(request):
     return JsonResponse(lista)
 
 
-# Listar fechaS
+def list_year(request, station, var):
+    """
+    List data for a number of whole calendar years.
+    """
 
-
-def listar_anio(request, station, var):
     model = "Var" + str(var) + "Medicion"
     model = globals()[model]
-    validados = model.objects.filter(station_id__exact=station).aggregate(
-        Max("fecha"), Min("fecha")
+    valid = model.objects.filter(station_id__exact=station).aggregate(
+        Max("date"), Min("date")
     )
-    if validados["fecha__max"] is not None:
-        validados["fecha__max"] = validados["fecha__max"].year
-        validados["fecha__min"] = validados["fecha__min"].year
-        fechas = list(range(validados["fecha__min"], validados["fecha__max"] + 1))
+    if valid["date__max"] is not None:
+        valid["date__max"] = valid["date__max"].year
+        valid["date__min"] = valid["date__min"].year
+        dates = list(range(valid["date__min"], valid["date__max"] + 1))
     else:
-        fechas = ["No existen datos"]
-    return JsonResponse(fechas, safe=False)
+        dates = ["No data"]
+    return JsonResponse(dates, safe=False)
