@@ -14,7 +14,7 @@
 from excel_response import ExcelResponse
 
 
-def excel_stacion(stations):
+def excel_station(stations):
     """
     Returns an Excel Spreadsheet given a queryset of Stations. Used to export
     information on stations in views.

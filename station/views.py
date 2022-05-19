@@ -1,5 +1,5 @@
 ########################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosystems Andinos
 # (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
 #           Contacto: info@fonag.org.ec
@@ -17,7 +17,6 @@ import mimetypes
 import os
 import urllib
 
-import utm
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Max, Min, Q, Value
@@ -28,515 +27,514 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from home.functions import *
+import station.models as stn
+from home.functions import modelo_a_tabla_html
 from medicion.models import *
-
-from .functions import *
-from .models import *
+from station.functions import excel_station
 
 
 # ####################################################################################
-class PaisList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/pais_list.html"
-    permission_required = "estacion.view_pais"
+class CountryList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/country_list.html"
+    permission_required = "station.view_country"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
+        fields = [
             "id",
-            "nombre",
+            "name",
         ]
-        modelo = Pais.objects.values_list(*campos)
-        context["paises"] = modelo_a_tabla_html(modelo, col_extra=True)
+        model = stn.Country.objects.values_list(*fields)
+        context["countries"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class PaisCreate(PermissionRequiredMixin, CreateView):
-    model = Pais
-    permission_required = "estacion.add_pais"
-    fields = ["nombre"]
+class CountryCreate(PermissionRequiredMixin, CreateView):
+    model = stn.Country
+    permission_required = "station.add_country"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class PaisDetail(PermissionRequiredMixin, DetailView):
-    model = Pais
-    permission_required = "estacion.view_pais"
+class CountryDetail(PermissionRequiredMixin, DetailView):
+    model = stn.Country
+    permission_required = "station.view_country"
 
 
-class PaisUpdate(PermissionRequiredMixin, UpdateView):
-    model = Pais
-    permission_required = "estacion.change_pais"
-    fields = ["nombre"]
+class CountryUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.Country
+    permission_required = "station.change_country"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class PaisDelete(PermissionRequiredMixin, DeleteView):
-    model = Pais
-    permission_required = "estacion.delete_pais"
-    success_url = reverse_lazy("estacion:pais_index")
+class CountryDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.Country
+    permission_required = "station.delete_country"
+    success_url = reverse_lazy("station:country_index")
 
 
 # ####################################################################################
 class RegionList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/region_list.html"
-    permission_required = "estacion.view_region"
+    template_name = "station/region_list.html"
+    permission_required = "station.view_region"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["id", "nombre", "pais_id__nombre"]
-        modelo = Region.objects.values_list(*campos)
-        context["regiones"] = modelo_a_tabla_html(modelo, col_extra=True)
+        fields = ["id", "name", "country_id__name"]
+        model = stn.Region.objects.values_list(*fields)
+        context["regions"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
 class RegionCreate(PermissionRequiredMixin, CreateView):
-    model = Region
-    permission_required = "estacion.add_region"
-    fields = ["nombre", "pais"]
+    model = stn.Region
+    permission_required = "station.add_region"
+    fields = ["name", "country"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
 class RegionDetail(PermissionRequiredMixin, DetailView):
-    model = Region
-    permission_required = "estacion.view_region"
+    model = stn.Region
+    permission_required = "station.view_region"
 
 
 class RegionUpdate(PermissionRequiredMixin, UpdateView):
-    model = Region
-    permission_required = "estacion.change_region"
-    fields = ["nombre", "pais"]
+    model = stn.Region
+    permission_required = "station.change_region"
+    fields = ["name", "country"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
 class RegionDelete(PermissionRequiredMixin, DeleteView):
-    model = Region
-    permission_required = "estacion.delete_region"
-    success_url = reverse_lazy("estacion:region_index")
+    model = stn.Region
+    permission_required = "station.delete_region"
+    success_url = reverse_lazy("station:region_index")
 
 
 # ####################################################################################
-class EcosistemaList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/ecosistema_list.html"
-    permission_required = "estacion.view_ecosistema"
+class EcosystemList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/ecosystem_list.html"
+    permission_required = "station.view_ecosystem"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
+        fields = [
             "id",
-            "nombre",
+            "name",
         ]
-        modelo = Ecosistema.objects.values_list(*campos)
-        context["ecosistemas"] = modelo_a_tabla_html(modelo, col_extra=True)
+        model = stn.Ecosystem.objects.values_list(*fields)
+        context["ecosystems"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class EcosistemaCreate(PermissionRequiredMixin, CreateView):
-    model = Ecosistema
-    permission_required = "estacion.add_ecosistema"
-    fields = ["nombre"]
+class EcosystemCreate(PermissionRequiredMixin, CreateView):
+    model = stn.Ecosystem
+    permission_required = "station.add_ecosystem"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class EcosistemaDetail(PermissionRequiredMixin, DetailView):
-    model = Ecosistema
-    permission_required = "estacion.view_ecosistema"
+class EcosystemDetail(PermissionRequiredMixin, DetailView):
+    model = stn.Ecosystem
+    permission_required = "station.view_ecosystem"
 
 
-class EcosistemaUpdate(PermissionRequiredMixin, UpdateView):
-    model = Ecosistema
-    permission_required = "estacion.change_ecosistema"
-    fields = ["nombre"]
+class EcosystemUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.Ecosystem
+    permission_required = "station.change_ecosystem"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class EcosistemaDelete(PermissionRequiredMixin, DeleteView):
-    model = Ecosistema
-    permission_required = "estacion.delete_ecosistema"
-    success_url = reverse_lazy("estacion:ecosistema_index")
+class EcosystemDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.Ecosystem
+    permission_required = "station.delete_ecosystem"
+    success_url = reverse_lazy("station:ecosystem_index")
 
 
 # ####################################################################################
-class SocioList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/socio_list.html"
-    permission_required = "estacion.view_socio"
+class InstitutionList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/institution_list.html"
+    permission_required = "station.view_institution"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["id", "nombre"]
-        modelo = Socio.objects.values_list(*campos)
-        context["socios"] = modelo_a_tabla_html(modelo, col_extra=True)
+        fields = ["id", "name"]
+        model = stn.Institution.objects.values_list(*fields)
+        context["institutions"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class SocioCreate(PermissionRequiredMixin, CreateView):
-    model = Socio
-    permission_required = "estacion.add_socio"
-    fields = ["nombre"]
+class InstitutionCreate(PermissionRequiredMixin, CreateView):
+    model = stn.Institution
+    permission_required = "station.add_institution"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class SocioDetail(PermissionRequiredMixin, DetailView):
-    model = Socio
-    permission_required = "estacion.view_socio"
+class InstitutionDetail(PermissionRequiredMixin, DetailView):
+    model = stn.Institution
+    permission_required = "station.view_institution"
 
 
-class SocioUpdate(PermissionRequiredMixin, UpdateView):
-    model = Socio
-    permission_required = "estacion.change_socio"
-    fields = ["nombre"]
+class InstitutionUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.Institution
+    permission_required = "station.change_institution"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class SocioDelete(PermissionRequiredMixin, DeleteView):
-    model = Socio
-    permission_required = "estacion.delete_socio"
-    success_url = reverse_lazy("estacion:socio_index")
+class InstitutionDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.Institution
+    permission_required = "station.delete_institution"
+    success_url = reverse_lazy("station:institution_index")
 
 
 # ####################################################################################
 
 
-class TipoList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/tipo_list.html"
-    permission_required = "estacion.view_tipo"
+class StationTypeList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/station_type_list.html"
+    permission_required = "station.view_stationtype"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
+        fields = [
             "id",
-            "nombre",
+            "name",
         ]
-        modelo = Tipo.objects.values_list(*campos)
-        context["tipos"] = modelo_a_tabla_html(modelo, col_extra=True)
+        model = stn.StationType.objects.values_list(*fields)
+        context["station_types"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class TipoCreate(PermissionRequiredMixin, CreateView):
-    model = Tipo
-    permission_required = "estacion.add_tipo"
-    fields = ["nombre"]
+class StationTypeCreate(PermissionRequiredMixin, CreateView):
+    model = stn.StationType
+    permission_required = "station.add_stationtype"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class TipoDetail(PermissionRequiredMixin, DetailView):
-    model = Tipo
-    permission_required = "estacion.view_tipo"
+class StationTypeDetail(PermissionRequiredMixin, DetailView):
+    model = stn.StationType
+    permission_required = "station.view_stationtype"
 
 
-class TipoUpdate(PermissionRequiredMixin, UpdateView):
-    model = Tipo
-    permission_required = "estacion.change_tipo"
-    fields = ["nombre"]
+class StationTypeUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.StationType
+    permission_required = "station.change_stationtype"
+    fields = ["name"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class TipoDelete(PermissionRequiredMixin, DeleteView):
-    model = Tipo
-    permission_required = "estacion.delete_tipo"
-    success_url = reverse_lazy("estacion:tipo_index")
+class StationTypeDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.StationType
+    permission_required = "station.delete_stationtype"
+    success_url = reverse_lazy("station:station_type_index")
 
 
 # ####################################################################################
 
 
-class EstacionList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/estacion_list.html"
-    permission_required = "estacion.view_estacion"
+class StationList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/station_list.html"
+    permission_required = "station.view_station"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
-            "est_id",
-            "est_codigo",
-            "est_nombre",
-            "tipo_id__nombre",
-            "pais_id__nombre",
-            "region_id__nombre",
-            "sitiocuenca_id__sitio__nombre",
-            "sitiocuenca_id__cuenca__nombre",
-            "ecosistema_id__nombre",
-            "socio_id__nombre",
-            "est_estado",
-            "est_latitud",
-            "est_longitud",
-            "est_altura",
-            "est_ficha",
-            "est_externa",
-            "influencia_km",
+        fields = [
+            "station_id",
+            "station_code",
+            "station_name",
+            "stationtype_id__name",
+            "country_id__name",
+            "region_id__name",
+            "placebasin_id__place__name",
+            "placebasin_id__basin__name",
+            "ecosystem_id__name",
+            "institution_id__name",
+            "station_state",
+            "station_latitude",
+            "station_longitude",
+            "station_altitude",
+            "station_file",
+            "station_external",
+            "influence_km",
         ]
-        modelo = Estacion.objects.values_list(*campos)
-        context["estaciones"] = modelo_a_tabla_html(modelo, col_extra=True)
-        context["tipos_estacion"] = Tipo.objects.all()
+        model = stn.Station.objects.values_list(*fields)
+        context["stations"] = modelo_a_tabla_html(model, col_extra=True)
+        context["station_types"] = stn.StationType.objects.all()
         return context
 
 
-class EstacionCreate(PermissionRequiredMixin, CreateView):
-    model = Estacion
-    permission_required = "estacion.add_estacion"
+class StationCreate(PermissionRequiredMixin, CreateView):
+    model = stn.Station
+    permission_required = "station.add_station"
     fields = [
-        "est_codigo",
-        "est_nombre",
-        "tipo",
-        "pais",
+        "station_code",
+        "station_name",
+        "stationtype",
+        "country",
         "region",
-        "ecosistema",
-        "socio",
-        "sitiocuenca",
-        "est_estado",
-        "est_latitud",
-        "est_longitud",
-        "est_altura",
-        "est_ficha",
-        "est_externa",
-        "influencia_km",
+        "ecosystem",
+        "institution",
+        "placebasin",
+        "station_state",
+        "station_latitude",
+        "station_longitude",
+        "station_altitude",
+        "station_file",
+        "station_external",
+        "influence_km",
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class EstacionDetail(PermissionRequiredMixin, DetailView):
-    model = Estacion
-    permission_required = "estacion.view_estacion"
+class StationDetail(PermissionRequiredMixin, DetailView):
+    model = stn.Station
+    permission_required = "station.view_station"
 
 
-class EstacionUpdate(PermissionRequiredMixin, UpdateView):
-    model = Estacion
-    permission_required = "estacion.change_estacion"
+class StationUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.Station
+    permission_required = "station.change_station"
     fields = [
-        "est_codigo",
-        "est_nombre",
-        "tipo",
-        "pais",
+        "station_code",
+        "station_name",
+        "stationtype",
+        "country",
         "region",
-        "ecosistema",
-        "socio",
-        "sitiocuenca",
-        "est_estado",
-        "est_latitud",
-        "est_longitud",
-        "est_altura",
-        "est_ficha",
-        "est_externa",
-        "influencia_km",
+        "ecosystem",
+        "institution",
+        "placebasin",
+        "station_state",
+        "station_latitude",
+        "station_longitude",
+        "station_altitude",
+        "station_file",
+        "station_external",
+        "influence_km",
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class EstacionDelete(PermissionRequiredMixin, DeleteView):
-    model = Estacion
-    permission_required = "estacion.delete_estacion"
-    success_url = reverse_lazy("estacion:estacion_index")
+class StationDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.Station
+    permission_required = "station.delete_station"
+    success_url = reverse_lazy("station:station_index")
 
 
-@permission_required("estacion.view_estacion")
-def EstacionExport(request):
-    estaciones = Estacion.objects.all()
-    response = excel_estacion(estaciones)
+@permission_required("station.view_station")
+def StationExport(request):
+    stations = stn.Station.objects.all()
+    response = excel_station(stations)
     return response
 
 
 # ####################################################################################
 
 
-class SitioList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/sitio_list.html"
-    permission_required = "estacion.view_sitio"
+class PlaceList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/place_list.html"
+    permission_required = "station.view_place"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
+        fields = [
             "id",
-            "nombre",
+            "name",
         ]
-        modelo = Sitio.objects.values_list(*campos)
-        context["sitios"] = modelo_a_tabla_html(modelo, col_extra=True)
+        model = stn.Place.objects.values_list(*fields)
+        context["places"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class SitioCreate(PermissionRequiredMixin, CreateView):
-    model = Sitio
-    permission_required = "estacion.add_sitio"
-    fields = ["nombre", "imagen"]
+class PlaceCreate(PermissionRequiredMixin, CreateView):
+    model = stn.Place
+    permission_required = "station.add_place"
+    fields = ["name", "imagen"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class SitioDetail(PermissionRequiredMixin, DetailView):
-    model = Sitio
-    permission_required = "estacion.view_sitio"
+class PlaceDetail(PermissionRequiredMixin, DetailView):
+    model = stn.Place
+    permission_required = "station.view_place"
 
 
-class SitioUpdate(PermissionRequiredMixin, UpdateView):
-    model = Sitio
-    permission_required = "estacion.change_sitio"
-    fields = ["nombre", "imagen"]
+class PlaceUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.Place
+    permission_required = "station.change_place"
+    fields = ["name", "imagen"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class SitioDelete(PermissionRequiredMixin, DeleteView):
-    model = Sitio
-    permission_required = "estacion.delete_sitio"
-    success_url = reverse_lazy("estacion:sitio_index")
+class PlaceDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.Place
+    permission_required = "station.delete_place"
+    success_url = reverse_lazy("station:place_index")
 
 
 # ####################################################################################
 
 
-class CuencaList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/cuenca_list.html"
-    permission_required = "estacion.view_cuenca"
+class BasinList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/basin_list.html"
+    permission_required = "station.view_basin"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        _modelo = Cuenca.objects.annotate(
-            ficha_filename=Replace("ficha", Value(CUENCA_FICHA_PATH), Value(""))
+        _modelo = stn.Basin.objects.annotate(
+            file_filename=Replace("file", Value(stn.BASIN_FILE_PATH), Value(""))
         )
-        campos = ["id", "nombre", "ficha_filename"]
-        modelo = _modelo.values_list(*campos)
-        context["cuencas"] = modelo_a_tabla_html(modelo, col_extra=True)
+        fields = ["id", "name", "file_filename"]
+        model = _modelo.values_list(*fields)
+        context["basins"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class CuencaCreate(PermissionRequiredMixin, CreateView):
-    model = Cuenca
-    permission_required = "estacion.add_cuenca"
-    fields = ["nombre", "imagen", "ficha"]
+class BasinCreate(PermissionRequiredMixin, CreateView):
+    model = stn.Basin
+    permission_required = "station.add_basin"
+    fields = ["name", "imagen", "file"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class CuencaDetail(PermissionRequiredMixin, DetailView):
-    model = Cuenca
-    permission_required = "estacion.view_cuenca"
+class BasinDetail(PermissionRequiredMixin, DetailView):
+    model = stn.Basin
+    permission_required = "station.view_basin"
 
 
-class CuencaUpdate(PermissionRequiredMixin, UpdateView):
-    model = Cuenca
-    permission_required = "estacion.change_cuenca"
-    fields = ["nombre", "imagen", "ficha"]
+class BasinUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.Basin
+    permission_required = "station.change_basin"
+    fields = ["name", "imagen", "file"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class CuencaDelete(PermissionRequiredMixin, DeleteView):
-    model = Cuenca
-    permission_required = "estacion.delete_cuenca"
-    success_url = reverse_lazy("estacion:cuenca_index")
+class BasinDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.Basin
+    permission_required = "station.delete_basin"
+    success_url = reverse_lazy("station:basin_index")
 
 
 # ####################################################################################
 
 
-class SitioCuencaList(PermissionRequiredMixin, TemplateView):
-    template_name = "estacion/sitiocuenca_list.html"
-    permission_required = "estacion.view_sitiocuenca"
+class PlaceBasinList(PermissionRequiredMixin, TemplateView):
+    template_name = "station/placebasin_list.html"
+    permission_required = "station.view_placebasin"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["id", "sitio_id__nombre", "cuenca_id__nombre"]
-        modelo = SitioCuenca.objects.values_list(*campos)
-        context["sitio_cuenca"] = modelo_a_tabla_html(modelo, col_extra=True)
+        fields = ["id", "place_id__name", "basin_id__name"]
+        model = stn.PlaceBasin.objects.values_list(*fields)
+        context["place_basin"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class SitioCuencaCreate(PermissionRequiredMixin, CreateView):
-    model = SitioCuenca
-    permission_required = "estacion.add_sitiocuenca"
-    fields = ["sitio", "cuenca", "imagen"]
+class PlaceBasinCreate(PermissionRequiredMixin, CreateView):
+    model = stn.PlaceBasin
+    permission_required = "station.add_placebasin"
+    fields = ["place", "basin", "imagen"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class SitioCuencaDetail(PermissionRequiredMixin, DetailView):
-    model = SitioCuenca
-    permission_required = "estacion.view_sitiocuenca"
+class PlaceBasinDetail(PermissionRequiredMixin, DetailView):
+    model = stn.PlaceBasin
+    permission_required = "station.view_placebasin"
 
 
-class SitioCuencaUpdate(PermissionRequiredMixin, UpdateView):
-    model = SitioCuenca
-    permission_required = "estacion.change_sitiocuenca"
-    fields = ["sitio", "cuenca", "imagen"]
+class PlaceBasinUpdate(PermissionRequiredMixin, UpdateView):
+    model = stn.PlaceBasin
+    permission_required = "station.change_placebasin"
+    fields = ["place", "basin", "imagen"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
-class SitioCuencaDelete(PermissionRequiredMixin, DeleteView):
-    model = SitioCuenca
-    permission_required = "estacion.delete_sitiocuenca"
-    success_url = reverse_lazy("estacion:sitiocuenca_index")
+class PlaceBasinDelete(PermissionRequiredMixin, DeleteView):
+    model = stn.PlaceBasin
+    permission_required = "station.delete_placebasin"
+    success_url = reverse_lazy("station:placebasin_index")
 
 
 #############################
-@permission_required("estacion.view_estacion")
-def estacion_consulta(request):
-    variable_id = sitio_id = cuenca_id = estacion_tipo_id = None
-    filtro = Q()
+@permission_required("station.view_station")
+def station_query(request):
+    variable_id = place_id = basin_id = station_type_id = None
+    filter_query = Q()
 
     try:
         variable_id = int(request.GET.get("variable_id", None))
@@ -544,85 +542,89 @@ def estacion_consulta(request):
         pass
 
     try:
-        sitio_id = int(request.GET.get("sitio_id", None))
+        place_id = int(request.GET.get("place_id", None))
     except Exception as e:
         pass
 
     try:
-        cuenca_id = int(request.GET.get("cuenca_id", None))
+        basin_id = int(request.GET.get("basin_id", None))
     except Exception as e:
         pass
 
     try:
-        estacion_tipo_id = int(request.GET.get("estacion_tipo_id", None))
+        station_type_id = int(request.GET.get("station_type_id", None))
     except Exception as e:
         pass
 
     if variable_id:
-        filtro &= Q(cruce__var_id_id=variable_id)
-    if sitio_id:
-        filtro &= Q(sitiocuenca__sitio_id=sitio_id)
-    if cuenca_id:
-        filtro &= Q(sitiocuenca__cuenca_id=cuenca_id)
-    if estacion_tipo_id:
-        filtro &= Q(tipo_id=estacion_tipo_id)
+        filter_query &= Q(cruce__var_id_id=variable_id)
+    if place_id:
+        filter_query &= Q(placebasin__place_id=place_id)
+    if basin_id:
+        filter_query &= Q(placebasin__basin_id=basin_id)
+    if station_type_id:
+        filter_query &= Q(station_type_id=station_type_id)
 
-    estaciones = Estacion.objects.filter(filtro)
+    stations = stn.Station.objects.filter(filter_query)
 
     imagen = None
-    if cuenca_id:
-        imagen = Cuenca.objects.get(id=cuenca_id).imagen
-    elif sitio_id:
-        imagen = Sitio.objects.get(id=sitio_id).imagen
+    if basin_id:
+        imagen = stn.Basin.objects.get(id=basin_id).imagen
+    elif place_id:
+        imagen = stn.Place.objects.get(id=place_id).imagen
 
     try:
         imagen_url = imagen.url
     except:
         imagen_url = ""
 
-    lista = {"estaciones": {}, "imagen": imagen_url}
+    lista = {"stations": {}, "imagen": imagen_url}
 
-    for row in estaciones:
-        # print(row.est_longitud)
-        # print(row.est_altura)
-        lista["estaciones"][row.est_id] = row.est_codigo
+    for row in stations:
+        # print(row.station_longitude)
+        # print(row.station_altitude)
+        lista["stations"][row.station_id] = row.station_code
     return JsonResponse(lista)
 
 
-# estaciones FONAG  en formato JSON
-def datos_json_estaciones(request):
-    import decimal
+#  FONAG stations in JSON format
+def stations_json_data(request):
 
     if request.user.is_authenticated:
-        estaciones = list(Estacion.objects.order_by("est_id").all())
+        stations = list(stn.Station.objects.order_by("station_id").all())
     else:
-        estaciones = list(Estacion.objects.order_by("est_id").filter(est_externa=False))
+        stations = list(
+            stn.Station.objects.order_by("station_id").filter(station_external=False)
+        )
 
     features = []
-    for item in estaciones:
-        if (type(item.est_latitud) is not type(None)) and (
-            type(item.est_longitud) is not type(None)
+    for item in stations:
+        if (type(item.station_latitude) is not type(None)) and (
+            type(item.station_longitude) is not type(None)
         ):
-            # if  item.est_latitud > 100 and item.est_latitud < 10000000 and item.est_longitud < 10000000 :
-            #     lon_col = utm.to_latlon(float(item.est_longitud), float(item.est_latitud), 17.41666, 'M')
-            #     item.est_longitud= lon_col[1]
-            #     item.est_latitud= lon_col[0]
+            # if  item.station_latitude > 100 and item.station_latitude < 10000000 and item.station_longitude < 10000000 :
+            #     lon_col = utm.to_latlon(float(item.station_longitude), float(item.station_latitude), 17.41666, 'M')
+            #     item.station_longitude= lon_col[1]
+            #     item.station_latitude= lon_col[0]
             # else:
-            #     item.est_longitud= 0
-            #     item.est_latitud= 0
+            #     item.station_longitude= 0
+            #     item.station_latitude= 0
             fila = dict(
                 type="Feature",
                 geometry=dict(
                     type="Point",
-                    coordinates=[float(item.est_longitud), float(item.est_latitud)],
+                    coordinates=[
+                        float(item.station_longitude),
+                        float(item.station_latitude),
+                    ],
                 ),
                 properties=dict(
-                    codigo=item.est_codigo,
-                    nombre=item.est_nombre,
-                    tipo=item.tipo.nombre,
-                    latitud=item.est_latitud,
-                    longitud=item.est_longitud,
-                    altura=item.est_altura,
+                    code=item.station_code,
+                    name=item.station_name,
+                    station_type=item.station_type.name,
+                    latitude=item.station_latitude,
+                    longitude=item.station_longitude,
+                    altitude=item.station_altitude,
                 ),
             )
             features.append(fila)
@@ -633,13 +635,13 @@ def datos_json_estaciones(request):
 # Listar fechaS
 
 
-def listar_anio(request, estacion, var):
-    modelo = "Var" + str(var) + "Medicion"
-    modelo = globals()[modelo]
-    validados = modelo.objects.filter(estacion_id__exact=estacion).aggregate(
+def listar_anio(request, station, var):
+    model = "Var" + str(var) + "Medicion"
+    model = globals()[model]
+    validados = model.objects.filter(station_id__exact=station).aggregate(
         Max("fecha"), Min("fecha")
     )
-    if validados["fecha__max"] != None:
+    if validados["fecha__max"] is not None:
         validados["fecha__max"] = validados["fecha__max"].year
         validados["fecha__min"] = validados["fecha__min"].year
         fechas = list(range(validados["fecha__min"], validados["fecha__max"] + 1))
@@ -648,10 +650,10 @@ def listar_anio(request, estacion, var):
     return JsonResponse(fechas, safe=False)
 
 
-@permission_required("estacion.view_cuenca")
-def cuenca_download_ficha(request, pk):
-    cuenca = Cuenca.objects.get(pk=pk)
-    file_path = cuenca.ficha.path
+@permission_required("station.view_basin")
+def basin_download_file(request, pk):
+    basin = stn.Basin.objects.get(pk=pk)
+    file_path = basin.file.path
     output_filename = os.path.basename(file_path)
     fp = open(file_path, "rb")
     response = HttpResponse(fp.read())
@@ -673,13 +675,16 @@ def cuenca_download_ficha(request, pk):
         )
     elif "MSIE" in request.META["HTTP_USER_AGENT"]:
         # IE does not support internationalized filename at all.
-        # It can only recognize internationalized URL, so we do the trick via routing rules.
+        # It can only recognize internationalized URL, so we do the trick via routing
+        # rules.
         filename_header = ""
     else:
-        # For others like Firefox, we follow RFC2231 (encoding extension in HTTP headers).
-        # filename_header = 'filename*=UTF-8\'\'%s' % urllib.quote(output_filename.encode('utf-8'))
+        # For others like Firefox, we follow RFC2231 (encoding extension in HTTP
+        # headers).
+        # filename_header = 'filename*=UTF-8\'\'%s' % \
+        # urllib.quote(output_filename.encode('utf-8'))
         filename_header = "filename*=UTF-8''%s" % urllib.parse.quote(
             output_filename.encode("utf-8")
         )
-    response["Content-Disposition"] = "attachment; " + filename_header
+    response["Content-Dispoplacen"] = "attachment; " + filename_header
     return response
