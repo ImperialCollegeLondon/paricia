@@ -14,46 +14,51 @@
 from excel_response import ExcelResponse
 
 
-def excel_estacion(estaciones):
-    cabecera = [
+def excel_stacion(stations):
+    """
+    Returns an Excel Spreadsheet given a queryset of Stations. Used to export
+    information on stations in views.
+    """
+
+    header = [
         [
-            "Código",
-            "Descripción",
-            "Tipo",
-            "País",
-            "Región",
-            "Ecosistema",
-            "Socio",
-            "Sitio",
-            "Cuenca",
-            "Latitud",
-            "Longitud",
-            "Altura",
-            "Estado",
+            "Code",
+            "Description",
+            "Station type",
+            "Country",
+            "Region",
+            "Ecosystem",
+            "Instituion",
+            "Place",
+            "Basin",
+            "Latitude",
+            "Longitude",
+            "Altitude",
+            "State",
         ],
     ]
-    cuerpo = []
-    for objeto in estaciones:
-        fila = []
-        fila.append(objeto.est_codigo)
-        fila.append(objeto.est_nombre)
-        fila.append(objeto.tipo.nombre if objeto.tipo is not None else None)
-        fila.append(objeto.pais.nombre if objeto.pais is not None else None)
-        fila.append(objeto.region.nombre if objeto.region is not None else None)
-        fila.append(objeto.ecosistema.nombre if objeto.ecosistema is not None else None)
-        fila.append(objeto.socio.nombre if objeto.socio is not None else None)
+    body = []
+    for obj in stations:
+        line = []
+        line.append(obj.station_code)
+        line.append(obj.station_name)
+        line.append(obj.station_type.name if obj.type is not None else None)
+        line.append(obj.country.name if obj.country is not None else None)
+        line.append(obj.region.name if obj.region is not None else None)
+        line.append(obj.ecosystem.name if obj.ecosystem is not None else None)
+        line.append(obj.institution.name if obj.institution is not None else None)
         try:
-            fila.append(objeto.sitiocuenca.sitio.nombre)
+            line.append(obj.place_basin.place.name)
         except:
-            fila.append(None)
+            line.append(None)
         try:
-            fila.append(objeto.sitiocuenca.cuenca.nombre)
+            line.append(obj.place_basin.basin.name)
         except:
-            fila.append(None)
-        fila.append(objeto.est_latitud)
-        fila.append(objeto.est_longitud)
-        fila.append(objeto.est_altura)
-        fila.append("Operativa" if objeto.est_estado else "No operativa")
-        cuerpo.append(fila)
-    response = ExcelResponse(cabecera + cuerpo, "Estaciones_iMHEA")
+            line.append(None)
+        line.append(obj.station_latitude)
+        line.append(obj.station_longitude)
+        line.append(obj.station_altitude)
+        line.append("Operational" if obj.station_state else "Not Operational")
+        body.append(line)
+    response = ExcelResponse(header + body, "Stations_iMHEA")
     return response
