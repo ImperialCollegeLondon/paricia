@@ -16,209 +16,260 @@ from django.db import models
 from django.urls import reverse
 
 
-class Pais(models.Model):
+class Country(models.Model):
+    """
+    The country that a station or region is in.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    nombre = models.CharField(max_length=32)
+    name = models.CharField(max_length=32)
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("estacion:pais_detail", kwargs={"pk": self.pk})
+        return reverse("station:country_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
 
 
 class Region(models.Model):
+    """
+    A region within a country.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    nombre = models.CharField(max_length=32, verbose_name="Nombre")
-    pais = models.ForeignKey(
-        Pais, on_delete=models.SET_NULL, null=True, verbose_name="País"
+    name = models.CharField(max_length=32, verbose_name="Name")
+    country = models.ForeignKey(
+        Country, on_delete=models.SET_NULL, null=True, verbose_name="Country"
     )
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("estacion:region_detail", kwargs={"pk": self.pk})
+        return reverse("station:region_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
 
 
-class Ecosistema(models.Model):
+class Ecosystem(models.Model):
+    """
+    The ecosystem associated with a station e.g. rainforest.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    nombre = models.CharField(max_length=32)
+    name = models.CharField(max_length=32)
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("estacion:ecosistema_detail", kwargs={"pk": self.pk})
+        return reverse("station:ecosystem_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
 
 
-class Socio(models.Model):
+class Institution(models.Model):
+    """
+    Institutional partner e.g. Imperial College London.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    nombre = models.CharField(max_length=32)
+    name = models.CharField(max_length=32)
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("estacion:socio_detail", kwargs={"pk": self.pk})
+        return reverse("station:institution_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
 
 
-class Tipo(models.Model):
+class StationType(models.Model):
+    """
+    Station type e.g. pluvometric, hydrological.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    nombre = models.CharField(max_length=40)
+    name = models.CharField(max_length=40)
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("estacion:tipo_detail", kwargs={"pk": self.pk})
+        return reverse("station:station_type_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
 
 
-class Sitio(models.Model):
+class Place(models.Model):
+    """
+    Specific place that a station is situated e.g. Huaraz.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    nombre = models.CharField(max_length=40)
-    imagen = models.FileField(
-        "Fotografía/Mapa", upload_to="estacion/sitio_imagen/", null=True, blank=True
+    name = models.CharField(max_length=40)
+    image = models.FileField(
+        "Photography/Map", upload_to="station/place_image/", null=True, blank=True
     )
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("estacion:sitio_detail", kwargs={"pk": self.pk})
+        return reverse("station:place_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
 
 
-CUENCA_IMAGEN_PATH = "estacion/cuenca_imagen/"
-CUENCA_FICHA_PATH = "estacion/cuenca_ficha/"
+BASIN_IMAGE_PATH = "station/basin_image/"
+BASIN_FILE_PATH = "station/basin_file/"
 
 
-class Cuenca(models.Model):
+class Basin(models.Model):
+    """
+    Basin e.g. El Carmen.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    nombre = models.CharField(max_length=40)
-    imagen = models.FileField(
-        "Fotografía/Mapa", upload_to=CUENCA_IMAGEN_PATH, null=True, blank=True
+    name = models.CharField(max_length=40)
+    image = models.FileField(
+        "Photography/Map", upload_to=BASIN_IMAGE_PATH, null=True, blank=True
     )
-    ficha = models.FileField(
-        "Ficha(PDF)", upload_to=CUENCA_FICHA_PATH, null=True, blank=True
+    file = models.FileField(
+        "File(PDF)", upload_to=BASIN_FILE_PATH, null=True, blank=True
     )
 
     def __str__(self):
-        return str(self.nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("estacion:cuenca_detail", kwargs={"pk": self.pk})
+        return reverse("station:basin_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
 
 
-class SitioCuenca(models.Model):
+class PlaceBasin(models.Model):
+    """
+    Associates a Basin with a Place and an image.
+    """
+
     id = models.AutoField("Id", primary_key=True)
-    sitio = models.ForeignKey(
-        Sitio, on_delete=models.SET_NULL, null=True, verbose_name="Sitio"
+    place = models.ForeignKey(
+        Place, on_delete=models.SET_NULL, null=True, verbose_name="Place"
     )
-    cuenca = models.ForeignKey(
-        Cuenca, on_delete=models.SET_NULL, null=True, verbose_name="Cuenca"
+    basin = models.ForeignKey(
+        Basin, on_delete=models.SET_NULL, null=True, verbose_name="Basin"
     )
-    imagen = models.FileField(
-        "Fotografía/Mapa",
-        upload_to="estacion/sitiocuenca_imagen/",
+    image = models.FileField(
+        "Photography/Map",
+        upload_to="station/place_basin_image/",
         null=True,
         blank=True,
     )
 
     def __str__(self):
-        return str(self.sitio) + " - " + str(self.cuenca)
+        return str(self.place) + " - " + str(self.basin)
 
     def get_absolute_url(self):
-        return reverse("estacion:sitiocuenca_detail", kwargs={"pk": self.pk})
+        return reverse("station:place_basin_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        unique_together = ("sitio", "cuenca")
+        unique_together = ("place", "basin")
         ordering = ("id",)
 
 
-class Estacion(models.Model):
-    est_id = models.AutoField("Id", primary_key=True)
-    est_codigo = models.CharField("Código", max_length=32)
-    est_nombre = models.CharField("Descripción", max_length=100, null=True, blank=True)
-    tipo = models.ForeignKey(
-        Tipo, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Tipo"
+class Station(models.Model):
+    """
+    Main representation of a station with lots of metadata, according to
+    the other models in this app, along with some geographical data.
+    """
+
+    station_id = models.AutoField("Id", primary_key=True)
+    station_code = models.CharField("Code", max_length=32)
+    station_name = models.CharField(
+        "Description", max_length=100, null=True, blank=True
     )
-    pais = models.ForeignKey(
-        Pais, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="País"
+    station_type = models.ForeignKey(
+        StationType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="StationType",
+    )
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Country",
     )
     region = models.ForeignKey(
         Region,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Región/Provincia/Departamento",
+        verbose_name="Region/Province/Department",
     )
-    ecosistema = models.ForeignKey(
-        Ecosistema,
+    ecosystem = models.ForeignKey(
+        Ecosystem,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Ecosistema",
+        verbose_name="Ecosystem",
     )
-    socio = models.ForeignKey(
-        Socio, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Socio"
-    )
-    sitiocuenca = models.ForeignKey(
-        SitioCuenca,
+    institution = models.ForeignKey(
+        Institution,
         on_delete=models.SET_NULL,
-        verbose_name="Sitio-Cuenca",
+        null=True,
+        blank=True,
+        verbose_name="Institution",
+    )
+    place_basin = models.ForeignKey(
+        PlaceBasin,
+        on_delete=models.SET_NULL,
+        verbose_name="Place-Basin",
         null=True,
         blank=True,
     )
-    est_estado = models.BooleanField("Operativa", default=True)
-    est_latitud = models.DecimalField(
-        "Latitud", max_digits=17, decimal_places=14, null=True, blank=True
+    station_state = models.BooleanField("Operational", default=True)
+    station_latitude = models.DecimalField(
+        "Latitude", max_digits=17, decimal_places=14, null=True, blank=True
     )
-    est_longitud = models.DecimalField(
-        "Longitud", max_digits=17, decimal_places=14, null=True, blank=True
+    station_longitude = models.DecimalField(
+        "Longitude", max_digits=17, decimal_places=14, null=True, blank=True
     )
-    est_altura = models.IntegerField(
-        "Altura",
+    station_altitude = models.IntegerField(
+        "Altitude",
         null=True,
         blank=True,
         validators=[MaxValueValidator(6000), MinValueValidator(0)],
     )
-    est_ficha = models.FileField(
-        "Fotografía/Archivo",
-        upload_to="estacion/estacion_ficha/",
+    station_file = models.FileField(
+        "Photography/File",
+        upload_to="station/station_file/",
         null=True,
         blank=True,
     )
-    est_externa = models.BooleanField("Externa", default=False)
-    influencia_km = models.DecimalField(
-        "Área de Aporte (km)", max_digits=12, decimal_places=4, null=True, blank=True
+    station_external = models.BooleanField("External", default=False)
+    influence_km = models.DecimalField(
+        "Área of input (km)", max_digits=12, decimal_places=4, null=True, blank=True
     )
 
     def __str__(self):
-        return str(self.est_codigo)
+        return str(self.station_code)
 
     def get_absolute_url(self):
-        return reverse("estacion:estacion_detail", kwargs={"pk": self.pk})
+        return reverse("station:station_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("est_id",)
+        ordering = ("station_id",)
