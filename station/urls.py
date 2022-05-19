@@ -178,11 +178,6 @@ urlpatterns = [
         name="cuenca_delete",
     ),
     re_path(
-        r"^estacion/cuenca/download_ficha/(?P<pk>[0-9]+)/$",
-        views.cuenca_download_ficha,
-        name="cuenca_download_ficha",
-    ),
-    re_path(
         r"^estacion/sitiocuenca/$",
         views.SitioCuencaList.as_view(),
         name="sitiocuenca_index",
