@@ -51,29 +51,12 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     "home.apps.HomeConfig",
     "estacion.apps.EstacionConfig",
-    "datalogger.apps.DataloggerConfig",
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
-    "bitacora.apps.BitacoraConfig",
     "cruce.apps.CruceConfig",
     "formato.apps.FormatoConfig",
-    "frecuencia.apps.FrecuenciaConfig",
-    "instalacion.apps.InstalacionConfig",
     "medicion.apps.MedicionConfig",
-    "validacion.apps.ValidacionConfig",
-    "validacion_v2.apps.ValidacionV2Config",
-    "horario.apps.HorarioConfig",
-    "diario.apps.DiarioConfig",
-    "mensual.apps.MensualConfig",
     "importacion.apps.ImportacionConfig",
-    "vacios.apps.VaciosConfig",
-    "calidad.apps.CalidadConfig",
-    "reportes.apps.ReportesConfig",
-    "reportes_v2.apps.Reportes_v2Config",
-    "telemetria.apps.TelemetriaConfig",
-    "anual.apps.AnualConfig",
-    "indices.apps.IndicesConfig",
-    "anuarios.apps.AnuariosConfig",
     "bootstrap4",
     "django_extensions",
     "django.contrib.humanize",
@@ -83,9 +66,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    #
-    # 'debug_toolbar',
-    #
 ]
 
 MIDDLEWARE = [
