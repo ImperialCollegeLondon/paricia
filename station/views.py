@@ -533,6 +533,12 @@ class PlaceBasinDelete(PermissionRequiredMixin, DeleteView):
 #############################
 @permission_required("station.view_station")
 def station_query(request):
+    """
+    Station query view to get the station based on various possible
+    query terms.
+    NOTE: Lots of bare except statements and it's unclear when/why this
+          would be used. Do we need it?
+    """
     variable_id = place_id = basin_id = station_type_id = None
     filter_query = Q()
 
