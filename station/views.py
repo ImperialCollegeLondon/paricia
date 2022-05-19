@@ -13,15 +13,11 @@
 
 from __future__ import unicode_literals
 
-import mimetypes
-import os
-import urllib
-
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Max, Min, Q, Value
 from django.db.models.functions import Replace
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
@@ -29,7 +25,6 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 import station.models as stn
 from home.functions import modelo_a_tabla_html
-from medicion.models import *
 from station.functions import excel_station
 
 
