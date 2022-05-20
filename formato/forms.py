@@ -16,22 +16,22 @@ from django.forms import ModelForm
 from formato.models import Clasification
 
 
-class ClasificacionForm(ModelForm):
+class ClasificationForm(ModelForm):
     class Meta:
         model = Clasification
         fields = [
-            "var_id",
-            "coma_decimal",
-            "cla_valor",
-            "cla_maximo",
-            "cla_minimo",
-            "acumular",
+            "variable",
+            "accumulate",
             "incremental",
-            "resolucion",
-            "col_validador_valor",
-            "txt_validador_valor",
-            "col_validador_maximo",
-            "txt_validador_maximo",
-            "col_validador_minimo",
-            "txt_validador_minimo",
+            "resolution",
+            "decimal_comma",
+            "value",
+            "value_validator_column",
+            "value_validator_text",
+            "maximum",
+            "maximum_validator_column",
+            "maximum_validator_text",
+            "minimum",
+            "minimum_validator_column",
+            "minimum_validator_text",
         ]

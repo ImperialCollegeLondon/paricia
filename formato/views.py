@@ -22,7 +22,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from home.functions import modelo_a_tabla_html
 
-from .forms import ClasificacionForm
+from .forms import ClasificationForm
 from .models import (
     Association,
     Clasification,
@@ -323,7 +323,7 @@ class ClasificationCreate(PermissionRequiredMixin, CreateView):
     ]
 
     def post(self, request, *args, **kwargs):
-        form = ClasificacionForm(self.request.POST or None)
+        form = ClasificationForm(self.request.POST or None)
         clasificacion = form.save(commit=False)
         format_id = kwargs.get("format_id")
         format = Format.objects.get(format_id=format_id)
