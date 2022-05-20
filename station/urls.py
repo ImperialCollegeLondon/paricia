@@ -151,7 +151,7 @@ urlpatterns = [
         views.StationTypeDelete.as_view(),
         name="sensor_type_delete",
     ),
-    re_path(r"^station/place/$", views.laceList.as_view(), name="place_index"),
+    re_path(r"^station/place/$", views.PlaceList.as_view(), name="place_index"),
     re_path(
         r"^station/place/create/$", views.PlaceCreate.as_view(), name="place_create"
     ),

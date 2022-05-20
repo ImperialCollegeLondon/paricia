@@ -15,7 +15,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import connection
 
-from station.models import Station, Tipo
+from station.models import Station, StationType
 from variable.models import Variable
 
 from .models import NivelFuncion
@@ -51,7 +51,7 @@ class NivelFuncionForm(forms.ModelForm):
 class ValidacionSearchForm(forms.Form):
     station = forms.ModelChoiceField(
         queryset=Station.objects.order_by("station_code").filter(
-            station_external=False, tipo__in=(1, 2, 3)
+            station_external=False, station_type__in=(1, 2, 3)
         ),
         empty_label="Station",
     )
