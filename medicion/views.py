@@ -13,6 +13,7 @@
 
 from __future__ import unicode_literals
 
+from cruce.models import Cruce
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
@@ -25,7 +26,6 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from cruce.models import Cruce
 from home.functions import *
 from medicion.models import CurvaDescarga, NivelFuncion
 from variable.models import Variable
