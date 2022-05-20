@@ -15,60 +15,60 @@ from django.urls import re_path
 
 from . import views
 
-app_name = "formato"
+app_name = "format"
 urlpatterns = [
-    re_path(r"^formato/fecha/$", views.FechaList.as_view(), name="fecha_index"),
+    re_path(r"^format/date/$", views.FechaList.as_view(), name="date_index"),
     re_path(
-        r"^formato/fecha/create/$", views.FechaCreate.as_view(), name="fecha_create"
+        r"^format/date/create/$", views.FechaCreate.as_view(), name="date_create"
     ),
     re_path(
-        r"^formato/fecha/detail/(?P<pk>[0-9]+)/$",
+        r"^format/date/detail/(?P<pk>[0-9]+)/$",
         views.FechaDetail.as_view(),
-        name="fecha_detail",
+        name="date_detail",
     ),
     re_path(
-        r"^formato/fecha/(?P<pk>[0-9]+)/$",
+        r"^format/date/(?P<pk>[0-9]+)/$",
         views.FechaUpdate.as_view(),
-        name="fecha_update",
+        name="date_update",
     ),
     re_path(
-        r"^formato/fecha/(?P<pk>[0-9]+)/delete/$",
+        r"^format/date/(?P<pk>[0-9]+)/delete/$",
         views.FechaDelete.as_view(),
-        name="fecha_delete",
+        name="date_delete",
     ),
-    re_path(r"^formato/hora/$", views.HoraList.as_view(), name="hora_index"),
-    re_path(r"^formato/hora/create/$", views.HoraCreate.as_view(), name="hora_create"),
+    re_path(r"^format/time/$", views.HoraList.as_view(), name="time_index"),
+    re_path(r"^format/time/create/$", views.HoraCreate.as_view(), name="time_create"),
     re_path(
-        r"^formato/hors/detail/(?P<pk>[0-9]+)/$",
+        r"^format/time/detail/(?P<pk>[0-9]+)/$",
         views.HoraDetail.as_view(),
-        name="hora_detail",
+        name="time_detail",
     ),
     re_path(
-        r"^formato/hora/(?P<pk>[0-9]+)/$",
+        r"^format/time/(?P<pk>[0-9]+)/$",
         views.HoraUpdate.as_view(),
-        name="hora_update",
+        name="time_update",
     ),
     re_path(
-        r"^formato/hora/(?P<pk>[0-9]+)/delete/$",
+        r"^format/time/(?P<pk>[0-9]+)/delete/$",
         views.HoraDelete.as_view(),
-        name="hora_delete",
+        name="time_delete",
     ),
-    re_path(r"formato/$", views.FormatoList.as_view(), name="formato_index"),
-    re_path(r"formato/create/$", views.FormatoCreate.as_view(), name="formato_create"),
+    re_path(r"format/$", views.FormatoList.as_view(), name="format_index"),
+    re_path(r"format/create/$", views.FormatoCreate.as_view(), name="format_create"),
     re_path(
-        r"formato/detail/(?P<pk>[0-9]+)/$",
+        r"format/detail/(?P<pk>[0-9]+)/$",
         views.FormatoDetail.as_view(),
-        name="formato_detail",
+        name="format_detail",
     ),
     re_path(
-        r"formato/edit/(?P<pk>[0-9]+)/$",
+        r"format/edit/(?P<pk>[0-9]+)/$",
         views.FormatoUpdate.as_view(),
-        name="formato_update",
+        name="format_update",
     ),
     re_path(
-        r"formato/(?P<pk>[0-9]+)/delete/$",
+        r"format/(?P<pk>[0-9]+)/delete/$",
         views.FormatoDelete.as_view(),
-        name="formato_delete",
+        name="format_delete",
     ),
     re_path(r"^extension/$", views.ExtensionList.as_view(), name="extension_index"),
     re_path(
@@ -85,62 +85,62 @@ urlpatterns = [
         name="extension_delete",
     ),
     re_path(
-        r"^delimitador/$", views.DelimitadorList.as_view(), name="delimitador_index"
+        r"^delimiter/$", views.DelimitadorList.as_view(), name="delimiter_index"
     ),
     re_path(
-        r"delimitador/create/$",
+        r"delimiter/create/$",
         views.DelimitadorCreate.as_view(),
-        name="delimitador_create",
+        name="delimiter_create",
     ),
     re_path(
-        r"delimitador/(?P<pk>[0-9]+)/$",
+        r"delimiter/(?P<pk>[0-9]+)/$",
         views.DelimitadorUpdate.as_view(),
-        name="delimitador_update",
+        name="delimiter_update",
     ),
     re_path(
-        r"delimitador/(?P<pk>[0-9]+)/delete/$",
+        r"delimiter/(?P<pk>[0-9]+)/delete/$",
         views.DelimitadorDelete.as_view(),
-        name="delimitador_delete",
+        name="delimiter_delete",
     ),
     re_path(
-        r"clasificacion/create/(?P<for_id>[0-9]+)/$",
+        r"clasification/create/(?P<for_id>[0-9]+)/$",
         views.ClasificacionCreate.as_view(),
-        name="clasificacion_create",
+        name="clasification_create",
     ),
     re_path(
-        r"clasificacion/detail/(?P<pk>[0-9]+)/$",
+        r"clasification/detail/(?P<pk>[0-9]+)/$",
         views.ClasificacionDetail.as_view(),
-        name="clasificacion_detail",
+        name="clasification_detail",
     ),
     re_path(
-        r"clasificacion/edit/(?P<pk>[0-9]+)/$",
+        r"clasification/edit/(?P<pk>[0-9]+)/$",
         views.ClasificacionUpdate.as_view(),
-        name="clasificacion_update",
+        name="clasification_update",
     ),
     re_path(
-        r"clasificacion/(?P<pk>[0-9]+)/delete/$",
+        r"clasification/(?P<pk>[0-9]+)/delete/$",
         views.ClasificacionDelete.as_view(),
-        name="clasificacion_delete",
+        name="clasification_delete",
     ),
-    re_path(r"^asociacion/$", views.AsociacionList.as_view(), name="asociacion_index"),
+    re_path(r"^asociation/$", views.AsociacionList.as_view(), name="asociation_index"),
     re_path(
-        r"asociacion/create/$",
+        r"asociation/create/$",
         views.AsociacionCreate.as_view(),
-        name="asociacion_create",
+        name="asociation_create",
     ),
     re_path(
-        r"asociacion/detail/(?P<pk>[0-9]+)/$",
+        r"asociation/detail/(?P<pk>[0-9]+)/$",
         views.AsociacionDetail.as_view(),
-        name="asociacion_detail",
+        name="asociation_detail",
     ),
     re_path(
-        r"asociacion/(?P<pk>[0-9]+)/$",
+        r"asociation/(?P<pk>[0-9]+)/$",
         views.AsociacionUpdate.as_view(),
-        name="asociacion_update",
+        name="asociation_update",
     ),
     re_path(
-        r"asociacion/(?P<pk>[0-9]+)/delete/$",
+        r"asociation/(?P<pk>[0-9]+)/delete/$",
         views.AsociacionDelete.as_view(),
-        name="asociacion_delete",
+        name="asociation_delete",
     ),
 ]
