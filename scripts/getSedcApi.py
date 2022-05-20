@@ -14,9 +14,9 @@ from builtins import print
 
 import requests
 from django.db import connection
+from validacion.models import Var1Validado
 
 from estacion.models import Estacion, Tipo
-from validacion.models import Var1Validado
 
 mainurl = "http://localhost:8002/"
 
