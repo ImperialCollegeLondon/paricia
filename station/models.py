@@ -137,6 +137,7 @@ class Place(models.Model):
 class Basin(models.Model):
     """
     Basin e.g. El Carmen.
+    TODO: Is there a more specific definition we can use? e.g. a river basin?
     """
 
     id = models.AutoField("Id", primary_key=True)
