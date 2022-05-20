@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 from django.contrib.auth.backends import ModelBackend
 
@@ -18,8 +18,9 @@ from .functions import get_anonymous_user
 
 class AnonymousPermissions(ModelBackend):
     """
-    Función que permite dar permisos a usuario AnonymousUser por medio de permisos de usuario
-    Solamente debe hacer override  a método has_perm de ModelBackend
+    Enable AnonymousUser to be granted permissions.
+
+    Should only overwrite 'has_perm' method from the parent model 'ModelBackend'
     """
 
     def has_perm(self, user_obj, perm, obj=None):
