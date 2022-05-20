@@ -557,6 +557,7 @@ def station_query(request):
     except Exception as e:
         pass
 
+    # NOTE: cruce has been (for now at least) removed so this query is broken
     if variable_id:
         filter_query &= Q(cruce__var_id_id=variable_id)
     if place_id:

@@ -43,7 +43,6 @@ OPCIONES_CARGA = [
     ("station_institution.json", "STATION: Institution"),
     ("station_station.json", "STATION: Station"),
     ("formato_asociacion.json", "FORMATO/ESTACION: Asociación de Formato con Station"),
-    ("cruce_cruce.json", "VARIABLE/ESTACION: Asociación Variable por Station"),
 ]
 
 

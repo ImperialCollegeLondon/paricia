@@ -65,5 +65,4 @@ urlpatterns = [
         views.recalcular_caudal,
         name="recalcular_caudal",
     ),
-    re_path(r"^ajax/medicion_variables", views.variables, name="variables"),
 ]

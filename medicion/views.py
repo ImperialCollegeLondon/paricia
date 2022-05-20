@@ -13,7 +13,6 @@
 
 from __future__ import unicode_literals
 
-from cruce.models import Cruce
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
@@ -193,22 +192,4 @@ def recalcular_caudal(request):
     curvadescarga.requiere_recalculo_caudal = False
     curvadescarga.save()
     lista = {"res": True}
-    return JsonResponse(lista)
-
-
-@permission_required("medicion.validar")
-def variables(request):
-    try:
-        station_id = int(request.GET.get("station_id", None))
-    except ValueError:
-        station_id = None
-    if station_id is not None:
-        variables = Cruce.objects.prefetch_related(
-            Prefetch("var_id", queryset=Variable.objects.all())
-        ).filter(station_id=station_id)
-    else:
-        variables = Variable.objects.all()
-    lista = {}
-    for row in variables:
-        lista[row.var_id.var_id] = row.var_id.var_nombre
     return JsonResponse(lista)
