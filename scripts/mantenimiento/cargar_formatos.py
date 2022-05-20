@@ -1,6 +1,7 @@
 import pandas as pd
-from station.models import Station
+
 from formato.models import Association, Format
+from station.models import Station
 
 
 def run():
