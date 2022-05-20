@@ -16,7 +16,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.urls import reverse
 
-from estacion.models import Estacion
+from station.models import Station
 from variable.models import Variable
 
 
@@ -191,8 +191,8 @@ class Asociacion(models.Model):
     for_id = models.ForeignKey(
         Formato, models.SET_NULL, blank=True, null=True, verbose_name="Formato"
     )
-    est_id = models.ForeignKey(
-        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+    station_id = models.ForeignKey(
+        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
 
     def get_absolute_url(self):
@@ -201,6 +201,6 @@ class Asociacion(models.Model):
     class Meta:
         ordering = ("aso_id",)
         unique_together = (
-            "est_id",
+            "station_id",
             "for_id",
         )

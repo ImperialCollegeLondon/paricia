@@ -15,7 +15,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import connection
 
-from estacion.models import Estacion, Tipo
+from station.models import Station, StationType
 from variable.models import Variable
 
 from .models import NivelFuncion
@@ -49,11 +49,11 @@ class NivelFuncionForm(forms.ModelForm):
 
 
 class ValidacionSearchForm(forms.Form):
-    estacion = forms.ModelChoiceField(
-        queryset=Estacion.objects.order_by("est_codigo").filter(
-            est_externa=False, tipo__in=(1, 2, 3)
+    station = forms.ModelChoiceField(
+        queryset=Station.objects.order_by("station_code").filter(
+            station_external=False, station_type__in=(1, 2, 3)
         ),
-        empty_label="Estación",
+        empty_label="Station",
     )
     variable = forms.ModelChoiceField(
         queryset=Variable.objects.order_by("var_id").exclude(var_id="10"),
@@ -76,6 +76,6 @@ class ValidacionSearchForm(forms.Form):
     # revalidar = forms.BooleanField(label="Revalidar", help_text='Marcar si deseas borrar la última validacion')
     def __init__(self, *args, **kwargs):
         super(ValidacionSearchForm, self).__init__(*args, **kwargs)
-        self.fields["estacion"].widget.attrs["placeholder"] = self.fields[
-            "estacion"
+        self.fields["station"].widget.attrs["placeholder"] = self.fields[
+            "station"
         ].label
