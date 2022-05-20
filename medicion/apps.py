@@ -16,5 +16,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class MedicionConfig(AppConfig):
-    name = "medicion"
+class MeasurementConfig(AppConfig):
+    name = "measurement"

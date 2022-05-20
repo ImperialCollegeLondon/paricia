@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
     "format.apps.FormatConfig",
-    "medicion.apps.MedicionConfig",
+    "medicion.apps.MeasurementConfig",
     "importacion.apps.ImportacionConfig",
     "bootstrap4",
     "django_extensions",
