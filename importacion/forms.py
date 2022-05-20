@@ -13,8 +13,8 @@
 
 from django import forms
 
-from estacion.models import Estacion
 from importacion.models import Importacion
+from station.models import Station
 
 
 class ImportacionForm(forms.Form):

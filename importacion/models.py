@@ -18,8 +18,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from estacion.models import Estacion
 from formato.models import Formato
+from station.models import Station
 
 
 class ImportacionBase(models.Model):

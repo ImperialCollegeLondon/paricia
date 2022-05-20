@@ -15,7 +15,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import connection
 
-from estacion.models import Estacion, Tipo
+from station.models import Station, Tipo
 from variable.models import Variable
 
 from .models import NivelFuncion

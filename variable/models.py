@@ -16,8 +16,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.urls import reverse
 
-from estacion.models import Estacion
 from sensor.models import Sensor
+from station.models import Station
 
 
 class Unidad(models.Model):
