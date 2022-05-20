@@ -16,7 +16,13 @@ from __future__ import unicode_literals
 from django.db import models
 
 
-class PermisosHome(models.Model):
+class PermissionsHome(models.Model):
+    """Model used to define the permission "carga_inicial".
+
+    This permission is use to show the interface to fill tables using default data. It
+    doesn't create a model in the database.
+    """
+
     class Meta:
         managed = False
         default_permissions = ()
