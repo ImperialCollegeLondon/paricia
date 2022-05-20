@@ -7,14 +7,7 @@ repos:
         args: ["--profile", "black"]
         exclude: |
           (?x)(
-              ^anual/|
-              ^anuarios/|
-              ^bitacora/|
-              ^calidad/|
-              ^datalogger/|
-              ^anuarios/|
-
-
+              ^unused_apps/
           )
   - repo: https://github.com/psf/black
     rev: "22.3.0"
