@@ -94,37 +94,38 @@ class SensorDelete(PermissionRequiredMixin, DeleteView):
 
 
 @permission_required("sensor.view_sensor")
-def SensorExport(request):
+def export_sensor(request):
     if request.user.is_authenticated:
-        cabecera = [
+        header = [
             ["Code", "Type", "Brand", "Model", "Serial"],
         ]
-        cuerpo = []
+        body = []
         objetos = Sensor.objects.all()
         for objeto in objetos:
-            fila = []
-            fila.append(objeto.code)
-            fila.append(
+            row = []
+            row.append(objeto.code)
+            row.append(
                 objeto.sensor_type.name if objeto.sensor_type is not None else None
             )
-            fila.append(
+            row.append(
                 objeto.sensor_brand.brand if objeto.sensor_brand is not None else None
             )
-            fila.append(objeto.model)
-            fila.append(objeto.serial)
-            cuerpo.append(fila)
-        response = ExcelResponse(cabecera + cuerpo, "Sensores_iMHEA")
+            row.append(objeto.model)
+            row.append(objeto.serial)
+            body.append(row)
+        response = ExcelResponse(header + body, "iMHEA_sensors")
         return response
 
 
 @permission_required("sensor.view_sensor")
-def ListaSensores(request):
+def sensors_list(request):
     sensores = Sensor.objects.all()
-    lista = []
+    slist = []
     for row in sensores:
-        linea = row.code + " -- " + ("" if row.model is None else row.model + " - ")
-        lista.append(linea)
-    return JsonResponse({"lista": lista})
+        slist.append(
+            row.code + " -- " + ("" if row.model is None else row.model + " - ")
+        )
+    return JsonResponse({"sensors_list": slist})
 
 
 # #  MARCA
@@ -140,8 +141,8 @@ class SensorBrandList(PermissionRequiredMixin, TemplateView):
             "brand_id",
             "name",
         ]
-        modelo = SensorBrand.objects.values_list(*campos)
-        context["brands"] = modelo_a_tabla_html(modelo, col_extra=True)
+        model = SensorBrand.objects.values_list(*campos)
+        context["brands"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
@@ -185,12 +186,12 @@ class SensorTypeList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
+        fields = [
             "sensor_type",
             "name",
         ]
-        modelo = SensorType.objects.values_list(*campos)
-        context["type"] = modelo_a_tabla_html(modelo, col_extra=True)
+        model = SensorType.objects.values_list(*fields)
+        context["type"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 

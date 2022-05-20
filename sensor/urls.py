@@ -34,8 +34,8 @@ urlpatterns = [
         views.SensorDelete.as_view(),
         name="sensor_delete",
     ),
-    re_path(r"sensor/export/$", views.SensorExport, name="sensor_export"),
-    re_path(r"^ajax/lista_sensores", views.ListaSensores, name="list_sensors"),
+    re_path(r"sensor/export/$", views.export_sensor, name="sensor_export"),
+    re_path(r"^ajax/sensors_list", views.sensors_list, name="sensors_list"),
     re_path(r"sensor/brand/$", views.SensorBrandList.as_view(), name="brand_index"),
     re_path(
         r"sensor/brand/create/$", views.SensorBrandCreate.as_view(), name="brand_create"
