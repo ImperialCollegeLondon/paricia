@@ -9,6 +9,11 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+
+"""
+es llamado en crontab
+"""
+
 import datetime
 
 from anuarios import functions

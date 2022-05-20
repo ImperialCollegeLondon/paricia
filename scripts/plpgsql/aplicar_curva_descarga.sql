@@ -1,4 +1,8 @@
--- Esta proceso se puede desencadenar luego de la validación
+/*
+Functions to
+
+*/
+
 
 CREATE OR REPLACE FUNCTION curva_descarga() RETURNS trigger
 LANGUAGE plpgsql

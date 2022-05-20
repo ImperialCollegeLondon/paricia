@@ -9,6 +9,23 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+
+"""Check the state of automatic transmitted stations
+
+This script is called every hour and check the last time each automatic station is transmitted
+In case a station has not been transmitted for the last hour then the script set a flag to 'YELLOW ALERT'
+In case a station has not been transmitted for the last 24 hours then the script set a flag to 'RED ALERT'
+    and an automatic email is sent to a mail list.
+
+The threshold values are set via the web interface.
+The mail list is also configured via the web interface.
+
+See:
+    telemetria/functions.py:  consulta_alarma_transmision()
+
+"""
+
+
 import datetime
 import itertools
 

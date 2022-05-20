@@ -1,6 +1,8 @@
 #!/bin/bash
 
-## Ejecutar: (djangomain): scripts/fix_permissions.sh
+# It fixes permissions of the web server after a git pull is made using local user
+#       It's made to work properly with apache server
+# Execution: (djangomain): scripts/fix_permissions.sh
 
 sudo chown -R :www-data ../imhea
 sudo chmod -R 750 ../imhea
