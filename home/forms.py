@@ -34,16 +34,16 @@ OPCIONES_CARGA = [
     ("sensor_tipo.json", "SENSOR: Tipo"),
     # ("datalogger_marca.json", "DATALOGGER: Marca"),
     ("station_stationtype.json", "STATION: StationType"),
-    ("station_ecosystem.json", "STATION: Ecosistema"),
-    ("station_country.json", "STATION: País"),
-    ("station_region.json", "STATION: Región"),
+    ("station_ecosystem.json", "STATION: Ecosystem"),
+    ("station_country.json", "STATION: Country"),
+    ("station_region.json", "STATION: Region"),
     ("station_place.json", "STATION: Place"),
     ("station_basin.json", "STATION: Basin"),
-    ("station_placebasin.json", "STATION: Asociación Place-Basin"),
+    ("station_placebasin.json", "STATION: Association Place-Basin"),
     ("station_institution.json", "STATION: Institution"),
     ("station_station.json", "STATION: Station"),
-    ("formato_asociacion.json", "FORMATO/ESTACION: Asociación de Formato con Station"),
-    ("cruce_cruce.json", "VARIABLE/ESTACION: Asociación Variable por Station"),
+    ("formato_asociacion.json", "FORMATO/STATION: Association Format-Station"),
+    ("cruce_cruce.json", "VARIABLE/STATION: Association Variable-Station"),
 ]
 
 
