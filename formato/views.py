@@ -14,15 +14,13 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db.models import Value
-from django.db.models.functions import Concat
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from home.functions import *
+from home.functions import modelo_a_tabla_html
 
 from .forms import ClasificacionForm
 from .models import (
