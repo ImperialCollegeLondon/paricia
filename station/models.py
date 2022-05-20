@@ -15,6 +15,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 
+# Global variables used in Basin model
+BASIN_IMAGE_PATH = "station/basin_image/"
+BASIN_FILE_PATH = "station/basin_file/"
+
 
 class Country(models.Model):
     """
@@ -128,10 +132,6 @@ class Place(models.Model):
 
     class Meta:
         ordering = ("id",)
-
-
-BASIN_IMAGE_PATH = "station/basin_image/"
-BASIN_FILE_PATH = "station/basin_file/"
 
 
 class Basin(models.Model):
