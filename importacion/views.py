@@ -40,10 +40,9 @@ class ImportacionList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # TODO: aparentemente cargar el select estaciones en javascript no genera retardo considerable
         campos = [
             "imp_id",
-            "est_id__est_codigo",
+            "station_id__station_code",
             "for_id__for_nombre",
             "imp_fecha",
             "imp_fecha_ini",
@@ -112,7 +111,7 @@ def ImportacionDescarga(request, *args, **kwargs):
 class ImportacionTempCreate(PermissionRequiredMixin, CreateView):
     permission_required = "importacion.add_importacion"
     model = ImportacionTemp
-    fields = ["est_id", "for_id", "imp_archivo"]
+    fields = ["station_id", "for_id", "imp_archivo"]
     template_name = "importacion/importacion_form.html"
 
     def form_valid(self, form):
@@ -170,9 +169,9 @@ class ImportacionTempDetail(PermissionRequiredMixin, DetailView, FormView):
         return context
 
 
-# lista de formatos por estacion y datalogger
+# lista de formatos por station y datalogger
 @permission_required("importacion.add_importacion")
 def lista_formatos(request):
-    est_id = request.GET.get("estacion", None)
-    datos = consultar_formatos(est_id)
+    station_id = request.GET.get("station", None)
+    datos = consultar_formatos(station_id)
     return JsonResponse(datos)

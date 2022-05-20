@@ -16,14 +16,14 @@ from __future__ import unicode_literals
 from django.db import models
 from django.urls import reverse
 
-from estacion.models import Estacion
+from station.models import Station
 from variable.models import Variable
 
 
 class Cruce(models.Model):
     cru_id = models.AutoField("Id", primary_key=True)
     est_id = models.ForeignKey(
-        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+        Station, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
     )
     var_id = models.ForeignKey(
         Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"

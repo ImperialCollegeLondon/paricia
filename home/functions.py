@@ -45,7 +45,7 @@ def get_anonymous_user() -> User:
 
 
 def get_menu(user: User) -> str:
-    """Generate the user menu in HTML, depending on its permissons.
+    """Generate the user menu in HTML, depending on its permissions.
 
     Args:
         user (User): The user to generate the menu for.

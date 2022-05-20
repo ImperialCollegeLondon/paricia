@@ -23,15 +23,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from home.functions import modelo_a_tabla_html
 
 from .forms import ClasificationForm
-from .models import (
-    Association,
-    Clasification,
-    Delimiter,
-    Extension,
-    Date,
-    Format,
-    Time,
-)
+from .models import Association, Clasification, Date, Delimiter, Extension, Format, Time
 
 
 #################################################################

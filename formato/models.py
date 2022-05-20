@@ -15,8 +15,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.urls import reverse
-from station.models import Station
 
+from station.models import Station
 from variable.models import Variable
 
 

@@ -18,14 +18,14 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from estacion.models import Estacion
+from station.models import Station
 from formato.models import Format
 
 
 class ImportacionBase(models.Model):
     imp_id = models.AutoField("Id", primary_key=True)
-    est_id = models.ForeignKey(
-        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+    station_id = models.ForeignKey(
+        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
     for_id = models.ForeignKey(
         Format, models.SET_NULL, blank=True, null=True, verbose_name="Formato"

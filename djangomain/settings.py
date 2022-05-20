@@ -50,10 +50,9 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "home.apps.HomeConfig",
-    "station.apps.EstacionConfig",
+    "station.apps.StationConfig",
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
-    "cruce.apps.CruceConfig",
     "format.apps.FormatConfig",
     "medicion.apps.MedicionConfig",
     "importacion.apps.ImportacionConfig",

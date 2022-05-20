@@ -189,7 +189,7 @@ class ControlCreate(PermissionRequiredMixin, CreateView):
     fields = [
         "var_id",
         "sen_id",
-        "est_id",
+        "station_id",
         "con_fecha_ini",
         "con_fecha_fin",
         "con_estado",
@@ -211,7 +211,7 @@ class ControlList(PermissionRequiredMixin, TemplateView):
             "con_id",
             "var_id__var_nombre",
             "sen_id__sen_codigo",
-            "est_id__est_codigo",
+            "station_id__station_code",
             "con_fecha_ini",
             "con_fecha_fin",
             "con_estado",
@@ -232,7 +232,7 @@ class ControlUpdate(PermissionRequiredMixin, UpdateView):
     fields = [
         "var_id",
         "sen_id",
-        "est_id",
+        "station_id",
         "con_fecha_ini",
         "con_fecha_fin",
         "con_estado",

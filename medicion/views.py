@@ -25,7 +25,6 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from cruce.models import Cruce
 from home.functions import *
 from medicion.models import CurvaDescarga, NivelFuncion
 from variable.models import Variable
@@ -40,7 +39,7 @@ class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["id", "estacion__est_codigo", "fecha", "requiere_recalculo_caudal"]
+        campos = ["id", "station__station_code", "fecha", "requiere_recalculo_caudal"]
         curvadescarga = CurvaDescarga.objects.all().values_list(*campos)
         context["curvadescarga"] = modelo_a_tabla_html(curvadescarga, col_extra=True)
         return context
@@ -48,7 +47,7 @@ class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
 
 class CurvaDescargaCreate(PermissionRequiredMixin, CreateView):
     model = CurvaDescarga
-    fields = ["estacion", "fecha"]
+    fields = ["station", "fecha"]
     permission_required = "medicion.add_curvadescarga"
 
     def get_context_data(self, **kwargs):
@@ -71,7 +70,7 @@ class CurvaDescargaDetail(PermissionRequiredMixin, DetailView):
 class CurvaDescargaUpdate(PermissionRequiredMixin, UpdateView):
     model = CurvaDescarga
     permission_required = "medicion.change_curvadescarga"
-    fields = ["estacion", "fecha"]
+    fields = ["station", "fecha"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -193,22 +192,4 @@ def recalcular_caudal(request):
     curvadescarga.requiere_recalculo_caudal = False
     curvadescarga.save()
     lista = {"res": True}
-    return JsonResponse(lista)
-
-
-@permission_required("medicion.validar")
-def variables(request):
-    try:
-        estacion_id = int(request.GET.get("estacion_id", None))
-    except ValueError:
-        estacion_id = None
-    if estacion_id is not None:
-        variables = Cruce.objects.prefetch_related(
-            Prefetch("var_id", queryset=Variable.objects.all())
-        ).filter(est_id=estacion_id)
-    else:
-        variables = Variable.objects.all()
-    lista = {}
-    for row in variables:
-        lista[row.var_id.var_id] = row.var_id.var_nombre
     return JsonResponse(lista)
