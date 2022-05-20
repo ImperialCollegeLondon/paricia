@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
     "cruce.apps.CruceConfig",
-    "formato.apps.FormatoConfig",
+    "format.apps.FormatConfig",
     "medicion.apps.MedicionConfig",
     "importacion.apps.ImportacionConfig",
     "bootstrap4",

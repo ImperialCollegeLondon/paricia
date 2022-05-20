@@ -16,5 +16,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class FormatoConfig(AppConfig):
-    name = "formato"
+class FormatConfig(AppConfig):
+    name = "format"
