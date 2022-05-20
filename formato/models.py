@@ -130,7 +130,7 @@ class Format(models.Model):
     )
     utc_date = models.BooleanField("Is time UTC? (substract 5 hours)", default=False)
     date_column = models.SmallIntegerField("Date column")
-    hor_id = models.ForeignKey(
+    time = models.ForeignKey(
         Time,
         on_delete=models.SET_NULL,
         blank=True,
