@@ -396,7 +396,7 @@ class PlaceList(PermissionRequiredMixin, TemplateView):
 class PlaceCreate(PermissionRequiredMixin, CreateView):
     model = stn.Place
     permission_required = "station.add_place"
-    fields = ["name", "imagen"]
+    fields = ["name", "image"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -412,7 +412,7 @@ class PlaceDetail(PermissionRequiredMixin, DetailView):
 class PlaceUpdate(PermissionRequiredMixin, UpdateView):
     model = stn.Place
     permission_required = "station.change_place"
-    fields = ["name", "imagen"]
+    fields = ["name", "image"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -447,7 +447,7 @@ class BasinList(PermissionRequiredMixin, TemplateView):
 class BasinCreate(PermissionRequiredMixin, CreateView):
     model = stn.Basin
     permission_required = "station.add_basin"
-    fields = ["name", "imagen", "file"]
+    fields = ["name", "image", "file"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -463,7 +463,7 @@ class BasinDetail(PermissionRequiredMixin, DetailView):
 class BasinUpdate(PermissionRequiredMixin, UpdateView):
     model = stn.Basin
     permission_required = "station.change_basin"
-    fields = ["name", "imagen", "file"]
+    fields = ["name", "image", "file"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -495,7 +495,7 @@ class PlaceBasinList(PermissionRequiredMixin, TemplateView):
 class PlaceBasinCreate(PermissionRequiredMixin, CreateView):
     model = stn.PlaceBasin
     permission_required = "station.add_placebasin"
-    fields = ["place", "basin", "imagen"]
+    fields = ["place", "basin", "image"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -511,7 +511,7 @@ class PlaceBasinDetail(PermissionRequiredMixin, DetailView):
 class PlaceBasinUpdate(PermissionRequiredMixin, UpdateView):
     model = stn.PlaceBasin
     permission_required = "station.change_placebasin"
-    fields = ["place", "basin", "imagen"]
+    fields = ["place", "basin", "image"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

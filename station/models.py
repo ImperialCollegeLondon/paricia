@@ -57,7 +57,7 @@ class Region(models.Model):
 
 class Ecosystem(models.Model):
     """
-    The ecosystem associated with a station e.g. rainforest.
+    The ecosystem associated with a station e.g. rain forest.
     """
 
     id = models.AutoField("Id", primary_key=True)

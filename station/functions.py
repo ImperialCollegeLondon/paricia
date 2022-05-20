@@ -28,7 +28,7 @@ def excel_station(stations):
             "Country",
             "Region",
             "Ecosystem",
-            "Instituion",
+            "Institution",
             "Place",
             "Basin",
             "Latitude",
