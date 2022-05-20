@@ -80,7 +80,7 @@ class CaudalViaEstacion(models.Model):
 
 class CurvaDescarga(models.Model):
     id = models.AutoField("Id", primary_key=True)
-    estacion = models.ForeignKey(
+    station = models.ForeignKey(
         Estacion, on_delete=models.SET_NULL, null=True, verbose_name="Estación"
     )
     fecha = models.DateTimeField("Fecha")
@@ -95,8 +95,8 @@ class CurvaDescarga(models.Model):
         return reverse("medicion:curvadescarga_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("estacion", "fecha")
-        unique_together = ("estacion", "fecha")
+        ordering = ("station", "fecha")
+        unique_together = ("station", "fecha")
 
 
 class NivelFuncion(models.Model):
@@ -121,7 +121,7 @@ class NivelFuncion(models.Model):
 
 
 class CursorDbclima(models.Model):
-    estacion_id = models.IntegerField(primary_key=True)
+    station_id = models.IntegerField(primary_key=True)
     fecha = models.DateTimeField(null=True)
 
 
@@ -183,7 +183,7 @@ class DigVar:
 
 class Var1Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -195,14 +195,14 @@ class Var1Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var2Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -226,14 +226,14 @@ class Var2Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var3Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -257,14 +257,14 @@ class Var3Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var4Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -288,14 +288,14 @@ class Var4Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var5Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -319,14 +319,14 @@ class Var5Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var6Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -350,14 +350,14 @@ class Var6Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var7Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -381,14 +381,14 @@ class Var7Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var8Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -412,14 +412,14 @@ class Var8Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var9Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -443,14 +443,14 @@ class Var9Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var10Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -474,14 +474,14 @@ class Var10Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var11Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -505,14 +505,14 @@ class Var11Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var12Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -536,14 +536,14 @@ class Var12Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var13Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -555,14 +555,14 @@ class Var13Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var14Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha_importacion = models.DateTimeField("Fecha Importación")
     fecha_inicio = models.DateTimeField("Fecha inicio datos")
     fecha = models.DateTimeField("Fecha fin datos")
@@ -584,15 +584,15 @@ class Var14Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha_importacion"]),
-            models.Index(fields=["estacion_id", "fecha_inicio", "fecha"]),
+            models.Index(fields=["station_id", "fecha_importacion"]),
+            models.Index(fields=["station_id", "fecha_inicio", "fecha"]),
             models.Index(fields=["fecha_importacion"]),
         ]
 
 
 class Var15Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -616,14 +616,14 @@ class Var15Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var16Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -647,14 +647,14 @@ class Var16Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var17Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -678,14 +678,14 @@ class Var17Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var18Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -709,14 +709,14 @@ class Var18Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var19Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -740,14 +740,14 @@ class Var19Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var20Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -771,14 +771,14 @@ class Var20Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var21Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -802,14 +802,14 @@ class Var21Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var22Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -833,14 +833,14 @@ class Var22Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var23Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -864,14 +864,14 @@ class Var23Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
 class Var24Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
@@ -895,8 +895,8 @@ class Var24Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "fecha"]),
-            models.Index(fields=["fecha", "estacion_id"]),
+            models.Index(fields=["station_id", "fecha"]),
+            models.Index(fields=["fecha", "station_id"]),
         ]
 
 
@@ -907,7 +907,7 @@ class Var24Medicion(models.Model):
 ##      Unidad : grados Celcius
 class Var101Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -920,7 +920,7 @@ class Var101Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]
 
 
@@ -929,7 +929,7 @@ class Var101Medicion(models.Model):
 ##      Unidad : pH
 class Var102Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -942,7 +942,7 @@ class Var102Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]
 
 
@@ -951,7 +951,7 @@ class Var102Medicion(models.Model):
 ##      Unidad : mV
 class Var103Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -964,7 +964,7 @@ class Var103Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]
 
 
@@ -973,7 +973,7 @@ class Var103Medicion(models.Model):
 ##      Unidad : NTU
 class Var104Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -986,7 +986,7 @@ class Var104Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]
 
 
@@ -995,7 +995,7 @@ class Var104Medicion(models.Model):
 ##      Unidad : ug/l
 class Var105Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -1008,7 +1008,7 @@ class Var105Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]
 
 
@@ -1017,7 +1017,7 @@ class Var105Medicion(models.Model):
 ##      Unidad : mg/l
 class Var106Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -1030,7 +1030,7 @@ class Var106Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]
 
 
@@ -1039,7 +1039,7 @@ class Var106Medicion(models.Model):
 ##      Unidad : mg/l
 class Var107Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -1052,7 +1052,7 @@ class Var107Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]
 
 
@@ -1061,7 +1061,7 @@ class Var107Medicion(models.Model):
 ##      Unidad :
 class Var108Medicion(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
-    estacion_id = models.PositiveIntegerField("estacion_id")
+    station_id = models.PositiveIntegerField("station_id")
     fecha = models.DateTimeField("Fecha")
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
@@ -1074,5 +1074,5 @@ class Var108Medicion(models.Model):
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["estacion_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "profundidad", "fecha"]),
         ]

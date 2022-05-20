@@ -40,7 +40,7 @@ class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["id", "estacion__est_codigo", "fecha", "requiere_recalculo_caudal"]
+        campos = ["id", "station__est_codigo", "fecha", "requiere_recalculo_caudal"]
         curvadescarga = CurvaDescarga.objects.all().values_list(*campos)
         context["curvadescarga"] = modelo_a_tabla_html(curvadescarga, col_extra=True)
         return context
@@ -48,7 +48,7 @@ class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
 
 class CurvaDescargaCreate(PermissionRequiredMixin, CreateView):
     model = CurvaDescarga
-    fields = ["estacion", "fecha"]
+    fields = ["station", "fecha"]
     permission_required = "medicion.add_curvadescarga"
 
     def get_context_data(self, **kwargs):
@@ -71,7 +71,7 @@ class CurvaDescargaDetail(PermissionRequiredMixin, DetailView):
 class CurvaDescargaUpdate(PermissionRequiredMixin, UpdateView):
     model = CurvaDescarga
     permission_required = "medicion.change_curvadescarga"
-    fields = ["estacion", "fecha"]
+    fields = ["station", "fecha"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -199,13 +199,13 @@ def recalcular_caudal(request):
 @permission_required("medicion.validar")
 def variables(request):
     try:
-        estacion_id = int(request.GET.get("estacion_id", None))
+        station_id = int(request.GET.get("station_id", None))
     except ValueError:
-        estacion_id = None
-    if estacion_id is not None:
+        station_id = None
+    if station_id is not None:
         variables = Cruce.objects.prefetch_related(
             Prefetch("var_id", queryset=Variable.objects.all())
-        ).filter(est_id=estacion_id)
+        ).filter(est_id=station_id)
     else:
         variables = Variable.objects.all()
     lista = {}
