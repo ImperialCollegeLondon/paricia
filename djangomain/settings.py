@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     "station.apps.StationConfig",
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
-    "cruce.apps.CruceConfig",
     "formato.apps.FormatoConfig",
     "medicion.apps.MedicionConfig",
     "importacion.apps.ImportacionConfig",
