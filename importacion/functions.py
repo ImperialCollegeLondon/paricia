@@ -60,16 +60,16 @@ def validar_fechas(importacion):
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
     for_id_id = importacion.for_id_id
-    station = importacion.est_id
+    station = importacion.station_id
     clasificacion = list(Clasificacion.objects.filter(for_id=for_id_id))
 
     sobrescribe = False
     result = []
     for fila in clasificacion:
         var_id = str(fila.var_id.var_id)
-        est_id = str(station.est_id)
-        ultima_fecha = ultima_fecha_cargada(est_id, var_id)
-        existe = existe_fechas(fecha_ini, fecha_fin, est_id, var_id)
+        station_id = str(station.station_id)
+        ultima_fecha = ultima_fecha_cargada(station_id, var_id)
+        existe = existe_fechas(fecha_ini, fecha_fin, station_id, var_id)
         sobrescribe = sobrescribe or existe
         resumen = {
             "var_id": fila.var_id.var_id,
@@ -82,10 +82,10 @@ def validar_fechas(importacion):
     return result, sobrescribe
 
 
-def ultima_fecha_cargada(est_id, var_id):
+def ultima_fecha_cargada(station_id, var_id):
     print("ultima_fecha: " + str(time.ctime()))
     sql = "SELECT  fecha FROM medicion_var" + str(int(var_id)) + "medicion "
-    sql += " WHERE station_id=" + str(int(est_id))
+    sql += " WHERE station_id=" + str(int(station_id))
     sql += " ORDER BY fecha DESC LIMIT 1"
     with connection.cursor() as cursor:
         cursor.execute(sql)
@@ -97,12 +97,12 @@ def ultima_fecha_cargada(est_id, var_id):
     return informacion
 
 
-def existe_fechas(ini, fin, est_id, var_id):
+def existe_fechas(ini, fin, station_id, var_id):
     sql = "SELECT id FROM medicion_var" + str(var_id) + "medicion "
     sql += " WHERE fecha >= %s  AND fecha <= %s AND station_id = %s "
     sql += " LIMIT 1;"
     query = globals()["Var" + str(var_id) + "Medicion"].objects.raw(
-        sql, (ini, fin, est_id)
+        sql, (ini, fin, station_id)
     )
     consulta = list(query)
     if len(consulta) > 0:
@@ -249,7 +249,7 @@ def verificar_fechahora(fechahora, formatofechahora):
 def guardar_datos__temp_a_final(imp_id, form):
     importaciontemp = ImportacionTemp.objects.get(imp_id=imp_id)
     formato = importaciontemp.for_id
-    station = importaciontemp.est_id
+    station = importaciontemp.station_id
     ruta = str(BASE_DIR) + "/media/" + str(importaciontemp.imp_archivo)
 
     datos = construir_matriz(ruta, formato, station)
@@ -297,7 +297,7 @@ FROM data d
     ruta_final_full = str(BASE_DIR) + "/media/" + ruta_final
     shutil.copy(ruta, ruta_final_full)
     importacion = Importacion(
-        est_id=importaciontemp.est_id,
+        station_id=importaciontemp.station_id,
         for_id=importaciontemp.for_id,
         imp_fecha=importaciontemp.imp_fecha,
         imp_fecha_ini=importaciontemp.imp_fecha_ini,
@@ -421,7 +421,7 @@ def construir_matriz(matriz_src, formato, station):
                 datos = datos.dropna()
             if var.resolucion:
                 datos["valor"] = datos["valor"] * float(var.resolucion)
-        datos["station_id"] = station.est_id
+        datos["station_id"] = station.station_id
         datos_variables[var.var_id_id] = datos
     return datos_variables
 
@@ -451,7 +451,7 @@ def numero_coma_decimal(val_str):
 
 def insertar_nivel_regleta(importacion, nivelregleta):
     nivelagua_mediciones = Var11Medicion.objects.filter(
-        station_id=importacion.est_id_id, fecha=importacion.imp_fecha_fin
+        station_id=importacion.station_id_id, fecha=importacion.imp_fecha_fin
     )
     nivelagua = None
     for i in nivelagua_mediciones:
@@ -463,7 +463,7 @@ def insertar_nivel_regleta(importacion, nivelregleta):
     except:
         return False
     Var14Medicion(
-        station_id=importacion.est_id_id,
+        station_id=importacion.station_id_id,
         fecha_importacion=importacion.imp_fecha,
         fecha_inicio=importacion.imp_fecha_ini,
         fecha=importacion.imp_fecha_fin,
@@ -476,7 +476,7 @@ def insertar_nivel_regleta(importacion, nivelregleta):
 
 # consultar formatos por datalogger y station
 def consultar_formatos(station):
-    asociacion = list(Asociacion.objects.filter(est_id=station))
+    asociacion = list(Asociacion.objects.filter(station_id=station))
     lista = {}
     for item in asociacion:
         lista[item.for_id.for_id] = item.for_id.for_nombre
@@ -509,7 +509,7 @@ def consultar_formatos(station):
 #
 # # def guardar_vacios(informacion, station, observacion, fecha_archivo):
 # #     variable = Variable.objects.get(var_id=informacion.get('var_id'))
-# #     vacio = Vacios(est_id=station, var_id=variable,
+# #     vacio = Vacios(station_id=station, var_id=variable,
 # #                    vac_fecha_ini=informacion.get('ultima_fecha').date(),
 # #                    vac_hora_ini=informacion.get('ultima_fecha').time(),
 # #                    vac_fecha_fin=fecha_archivo.date(),
@@ -528,12 +528,12 @@ def consultar_formatos(station):
 #     fec_fin = str(fecha_fin)
 #     year_ini = fecha_ini.strftime('%Y')
 #     year_fin = fecha_fin.strftime('%Y')
-#     est_id = str(importacion.est_id.est_id)
+#     station_id = str(importacion.station_id.station_id)
 #     var_cod = informacion.get('var_cod')
 #     var_id = informacion.get('var_id')
 #     if year_ini == year_fin:
 #         sql = 'DELETE FROM  medicion_var' + str(var_id) + 'medicion '
-#         sql += ' WHERE station_id=' + str(est_id)
+#         sql += ' WHERE station_id=' + str(station_id)
 #         sql += '  AND fecha>=\'' + fec_ini + '\''
 #         sql += '  AND fecha<=\'' + fec_fin + '\''
 #         with connection.cursor() as cursor:
@@ -543,17 +543,17 @@ def consultar_formatos(station):
 #         for year in range_year:
 #             if str(year) == year_ini:
 #                 sql = 'DELETE FROM  medicion_var' + str(var_id) + 'medicion '
-#                 sql += ' WHERE station_id=' + str(est_id)
+#                 sql += ' WHERE station_id=' + str(station_id)
 #                 sql += '   AND fecha>=\'' + fec_ini + '\''
 #
 #             elif str(year) == year_fin:
 #                 sql = 'DELETE FROM  medicion_var' + str(var_id) + 'medicion '
-#                 sql += ' WHERE station_id=' + str(est_id)
+#                 sql += ' WHERE station_id=' + str(station_id)
 #                 sql += '   AND fecha<=\'' + fec_fin + '\''
 #
 #             else:
 #                 sql = 'DELETE FROM  medicion_var' + str(var_id) + 'medicion '
-#                 sql += ' WHERE station_id=' + str(est_id)
+#                 sql += ' WHERE station_id=' + str(station_id)
 #             with connection.cursor() as cursor:
 #                 cursor.execute(sql)
 #

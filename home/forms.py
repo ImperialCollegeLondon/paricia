@@ -35,15 +35,15 @@ OPCIONES_CARGA = [
     # ("datalogger_marca.json", "DATALOGGER: Marca"),
     ("station_tipo.json", "STATION: Tipo"),
     ("station_ecosistema.json", "STATION: Ecosistema"),
-    ("station_pais.json", "STATION: País"),
+    ("station_country.json", "STATION: País"),
     ("station_region.json", "STATION: Región"),
     ("station_sitio.json", "STATION: Sitio"),
     ("station_cuenca.json", "STATION: Cuenca"),
     ("station_sitiocuenca.json", "STATION: Asociación Sitio-Cuenca"),
     ("station_socio.json", "STATION: Socio"),
-    ("station_station.json", "STATION: Estación"),
-    ("formato_asociacion.json", "FORMATO/ESTACION: Asociación de Formato con Estación"),
-    ("cruce_cruce.json", "VARIABLE/ESTACION: Asociación Variable por Estación"),
+    ("station_station.json", "STATION: Station"),
+    ("formato_asociacion.json", "FORMATO/ESTACION: Asociación de Formato con Station"),
+    ("cruce_cruce.json", "VARIABLE/ESTACION: Asociación Variable por Station"),
 ]
 
 

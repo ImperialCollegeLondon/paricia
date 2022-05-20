@@ -24,8 +24,8 @@ from station.models import Station
 
 class ImportacionBase(models.Model):
     imp_id = models.AutoField("Id", primary_key=True)
-    est_id = models.ForeignKey(
-        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+    station_id = models.ForeignKey(
+        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
     for_id = models.ForeignKey(
         Formato, models.SET_NULL, blank=True, null=True, verbose_name="Formato"

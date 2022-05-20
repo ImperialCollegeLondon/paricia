@@ -402,7 +402,7 @@ class ClasificacionDetail(PermissionRequiredMixin, DetailView):
 class AsociacionCreate(PermissionRequiredMixin, CreateView):
     permission_required = "formato.add_asociacion"
     model = Asociacion
-    fields = ["for_id", "est_id"]
+    fields = ["for_id", "station_id"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -416,7 +416,7 @@ class AsociacionList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["aso_id", "for_id__for_nombre", "est_id__est_codigo"]
+        campos = ["aso_id", "for_id__for_nombre", "station_id__station_code"]
         asociacion = Asociacion.objects.all().values_list(*campos)
         context["asociacion"] = modelo_a_tabla_html(asociacion, col_extra=True)
         return context
@@ -430,7 +430,7 @@ class AsociacionDetail(PermissionRequiredMixin, DetailView):
 class AsociacionUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = "formato.change_asociacion"
     model = Asociacion
-    fields = ["for_id", "est_id"]
+    fields = ["for_id", "station_id"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

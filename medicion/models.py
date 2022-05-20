@@ -32,7 +32,7 @@ class PermisosMedicion(models.Model):
 # class Medicion(models.Model):
 #     med_id = models.BigAutoField("Id", primary_key=True)
 #     var_id = models.ForeignKey(Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable")
-#     est_id = models.ForeignKey(Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación")
+#     station_id = models.ForeignKey(Station, models.SET_NULL, blank=True, null=True, verbose_name="Station")
 #     med_fecha = models.DateTimeField("Fecha")
 #     med_valor = models.DecimalField("Valor", max_digits=14, decimal_places=6, blank=True, null=True)
 #     med_maximo = models.DecimalField("Máximo", max_digits=14, decimal_places=6, blank=True, null=True)
@@ -67,8 +67,8 @@ class VientoPolar(models.Model):
 
 class CaudalViaEstacion(models.Model):
     id = models.AutoField("Id", primary_key=True)
-    est_id = models.ForeignKey(
-        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+    station_id = models.ForeignKey(
+        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
     fecha_inicio = models.DateTimeField("Fecha inicio")
     fecha_fin = models.DateTimeField("Fecha fin")
@@ -81,7 +81,7 @@ class CaudalViaEstacion(models.Model):
 class CurvaDescarga(models.Model):
     id = models.AutoField("Id", primary_key=True)
     station = models.ForeignKey(
-        Estacion, on_delete=models.SET_NULL, null=True, verbose_name="Estación"
+        Station, on_delete=models.SET_NULL, null=True, verbose_name="Station"
     )
     fecha = models.DateTimeField("Fecha")
     requiere_recalculo_caudal = models.BooleanField(
@@ -126,9 +126,9 @@ class CursorDbclima(models.Model):
 
 
 class CursorEmaaphidro(models.Model):
-    est_id_paramh2o = models.IntegerField(primary_key=True)
-    est_id_emaaphidro = models.SmallIntegerField()
-    est_codigo = models.CharField(max_length=4)
+    station_id_paramh2o = models.IntegerField(primary_key=True)
+    station_id_emaaphidro = models.SmallIntegerField()
+    station_code = models.CharField(max_length=4)
     fecha = models.DateTimeField()
 
 

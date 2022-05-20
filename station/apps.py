@@ -14,5 +14,5 @@
 from django.apps import AppConfig
 
 
-class EstacionConfig(AppConfig):
+class StationConfig(AppConfig):
     name = "station"

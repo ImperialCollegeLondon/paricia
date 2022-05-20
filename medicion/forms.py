@@ -50,10 +50,10 @@ class NivelFuncionForm(forms.ModelForm):
 
 class ValidacionSearchForm(forms.Form):
     station = forms.ModelChoiceField(
-        queryset=Station.objects.order_by("est_codigo").filter(
-            est_externa=False, tipo__in=(1, 2, 3)
+        queryset=Station.objects.order_by("station_code").filter(
+            station_external=False, tipo__in=(1, 2, 3)
         ),
-        empty_label="Estación",
+        empty_label="Station",
     )
     variable = forms.ModelChoiceField(
         queryset=Variable.objects.order_by("var_id").exclude(var_id="10"),

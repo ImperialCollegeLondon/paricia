@@ -78,8 +78,8 @@ class Control(models.Model):
     var_id = models.ForeignKey(
         Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"
     )
-    est_id = models.ForeignKey(
-        Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"
+    station_id = models.ForeignKey(
+        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
     sen_id = models.ForeignKey(
         Sensor, models.SET_NULL, blank=True, null=True, verbose_name="Sensor"
@@ -92,14 +92,14 @@ class Control(models.Model):
         return reverse("variable:control_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ["est_id"]
+        ordering = ["station_id"]
 
 
 class CurvaDescarga(models.Model):
     station = models.ForeignKey(
-        Estacion,
+        Station,
         on_delete=models.CASCADE,
-        verbose_name="Estacion",
+        verbose_name="Station",
         related_name="var_curvadescarga_station_id",
     )
     funcion = models.CharField("Función", max_length=200)

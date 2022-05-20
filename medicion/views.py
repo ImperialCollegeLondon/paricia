@@ -40,7 +40,7 @@ class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["id", "station__est_codigo", "fecha", "requiere_recalculo_caudal"]
+        campos = ["id", "station__station_code", "fecha", "requiere_recalculo_caudal"]
         curvadescarga = CurvaDescarga.objects.all().values_list(*campos)
         context["curvadescarga"] = modelo_a_tabla_html(curvadescarga, col_extra=True)
         return context
@@ -205,7 +205,7 @@ def variables(request):
     if station_id is not None:
         variables = Cruce.objects.prefetch_related(
             Prefetch("var_id", queryset=Variable.objects.all())
-        ).filter(est_id=station_id)
+        ).filter(station_id=station_id)
     else:
         variables = Variable.objects.all()
     lista = {}
