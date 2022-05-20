@@ -27,7 +27,7 @@ from .constants import (
 
 
 def get_anonymous_user() -> User:
-    """Retrives the anonymous user, creating it if it does not exist.
+    """Retrieves the anonymous user, creating it if it does not exist.
 
     NOTE: Is there any reason for not using the standard
     `django.contrib.auth.models.AnonymousUser` ?
@@ -45,7 +45,7 @@ def get_anonymous_user() -> User:
 
 
 def get_menu(user: User) -> str:
-    """Generate the user menu in HTML, depending on its permissons.
+    """Generate the user menu in HTML, depending on its permissions.
 
     Args:
         user (User): The user to generate the menu for.
@@ -100,14 +100,19 @@ def get_menu(user: User) -> str:
 def modelo_a_tabla_html(modelo: QuerySet, col_extra: bool) -> str:
     """Extracts the entries in a query as an HTML table.
 
-    NOTE: To be moved to a separates 'utilities' module.
+        NOTE: To be moved to a separates 'utilities' module.
+    <<<<<<< HEAD
+    =======
+        NOTE: There's no need to do this manually, we should use django-tables2 for
+                    this: https://django-tables2.readthedocs.io/en/latest/
+    >>>>>>> develop
 
-    Args:
-        modelo (QuerySet): Objects to extract as HTML
-        col_extra (bool): If an extra column need to be included at the end.
+        Args:
+            modelo (QuerySet): Objects to extract as HTML
+            col_extra (bool): If an extra column need to be included at the end.
 
-    Returns:
-        str: Table in HTML with the contents of a model
+        Returns:
+            str: Table in HTML with the contents of a model
     """
     html_cola = "</td></tr>"
     if col_extra:

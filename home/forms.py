@@ -33,7 +33,7 @@ OPCIONES_CARGA = [
     ("sensor_marca.json", "SENSOR: Marca"),
     ("sensor_tipo.json", "SENSOR: Tipo"),
     # ("datalogger_marca.json", "DATALOGGER: Marca"),
-    ("station_tipo.json", "STATION: Tipo"),
+    ("station_stationtype.json", "STATION: StationType"),
     ("station_ecosystem.json", "STATION: Ecosistema"),
     ("station_country.json", "STATION: País"),
     ("station_region.json", "STATION: Región"),
