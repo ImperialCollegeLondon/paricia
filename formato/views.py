@@ -24,12 +24,12 @@ from home.functions import modelo_a_tabla_html
 
 from .forms import ClasificacionForm
 from .models import (
-    Asociacion,
-    Clasificacion,
-    Delimitador,
+    Association,
+    Clasification,
+    Delimiter,
     Extension,
-    Fecha,
-    Formato,
+    Date,
+    Format,
     Hora,
 )
 
@@ -38,7 +38,7 @@ from .models import (
 # Fecha
 class FechaCreate(PermissionRequiredMixin, CreateView):
     permission_required = "formato.add_fecha"
-    model = Fecha
+    model = Date
     fields = ["fec_formato", "fec_codigo"]
 
     def get_context_data(self, **kwargs):
@@ -54,19 +54,19 @@ class FechaList(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         campos = ["fec_id", "fec_formato", "fec_codigo"]
-        modelo = Fecha.objects.values_list(*campos)
+        modelo = Date.objects.values_list(*campos)
         context["fechas"] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
 
 
 class FechaDetail(PermissionRequiredMixin, DetailView):
-    model = Fecha
+    model = Date
     permission_required = "formato.view_fecha"
 
 
 class FechaUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = "formato.change_fecha"
-    model = Fecha
+    model = Date
     fields = ["fec_formato", "fec_codigo"]
 
     def get_context_data(self, **kwargs):
@@ -77,7 +77,7 @@ class FechaUpdate(PermissionRequiredMixin, UpdateView):
 
 class FechaDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "formato.delete_fecha"
-    model = Fecha
+    model = Date
     success_url = reverse_lazy("formato:fecha_index")
 
 
@@ -132,7 +132,7 @@ class HoraDelete(PermissionRequiredMixin, DeleteView):
 
 
 class FormatoCreate(PermissionRequiredMixin, CreateView):
-    model = Formato
+    model = Format
     fields = [
         "for_nombre",
         "for_descripcion",
@@ -174,24 +174,24 @@ class FormatoList(PermissionRequiredMixin, TemplateView):
             "for_col_hora",
             "hor_id__hor_formato",
         ]
-        modelo = Formato.objects.values_list(*campos)
+        modelo = Format.objects.values_list(*campos)
         context["formato"] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
 
 
 class FormatoDetail(PermissionRequiredMixin, DetailView):
     permission_required = "formato.view_formato"
-    model = Formato
+    model = Format
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        variable = Clasificacion.objects.filter(for_id=self.object.for_id)
+        variable = Clasification.objects.filter(for_id=self.object.for_id)
         context["variable"] = variable
         return context
 
 
 class FormatoUpdate(PermissionRequiredMixin, UpdateView):
-    model = Formato
+    model = Format
     permission_required = "formato.change_formato"
     fields = [
         "ext_id",
@@ -215,7 +215,7 @@ class FormatoUpdate(PermissionRequiredMixin, UpdateView):
 
 class FormatoDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "formato.delete_formato"
-    model = Formato
+    model = Format
     success_url = reverse_lazy("formato:formato_index")
 
 
@@ -263,7 +263,7 @@ class ExtensionDelete(PermissionRequiredMixin, DeleteView):
 # Delimitador
 class DelimitadorCreate(PermissionRequiredMixin, CreateView):
     permission_required = "formato.add_delimitador"
-    model = Delimitador
+    model = Delimiter
     fields = ["del_nombre", "del_caracter"]
 
     def get_context_data(self, **kwargs):
@@ -279,14 +279,14 @@ class DelimitadorList(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         campos = ["del_id", "del_nombre", "del_caracter"]
-        modelo = Delimitador.objects.values_list(*campos)
+        modelo = Delimiter.objects.values_list(*campos)
         context["delimitador"] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
 
 
 class DelimitadorUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = "formato.change_delimitador"
-    model = Delimitador
+    model = Delimiter
     fields = ["del_nombre", "del_caracter"]
 
     def get_context_data(self, **kwargs):
@@ -297,14 +297,14 @@ class DelimitadorUpdate(PermissionRequiredMixin, UpdateView):
 
 class DelimitadorDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "formato.delete_delimitador"
-    model = Delimitador
+    model = Delimiter
     success_url = reverse_lazy("formato:delimitador_index")
 
 
 # Clasificacion
 class ClasificacionCreate(PermissionRequiredMixin, CreateView):
     permission_required = "formato.add_clasificacion"
-    model = Clasificacion
+    model = Clasification
     fields = [
         "var_id",
         "acumular",
@@ -326,7 +326,7 @@ class ClasificacionCreate(PermissionRequiredMixin, CreateView):
         form = ClasificacionForm(self.request.POST or None)
         clasificacion = form.save(commit=False)
         for_id = kwargs.get("for_id")
-        formato = Formato.objects.get(for_id=for_id)
+        formato = Format.objects.get(for_id=for_id)
         clasificacion.for_id = formato
         clasificacion.save()
         url = reverse("formato:formato_detail", kwargs={"pk": formato.for_id})
@@ -344,7 +344,7 @@ class ClasificacionCreate(PermissionRequiredMixin, CreateView):
 
 class ClasificacionUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = "formato.change_clasificacion"
-    model = Clasificacion
+    model = Clasification
     fields = [
         "for_id",
         "var_id",
@@ -380,7 +380,7 @@ class ClasificacionUpdate(PermissionRequiredMixin, UpdateView):
 
 class ClasificacionDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "formato.delete_clasificacion"
-    model = Clasificacion
+    model = Clasification
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -393,13 +393,13 @@ class ClasificacionDelete(PermissionRequiredMixin, DeleteView):
 
 class ClasificacionDetail(PermissionRequiredMixin, DetailView):
     permission_required = "formato.view_clasificacion"
-    model = Clasificacion
+    model = Clasification
 
 
 # Asociacion
 class AsociacionCreate(PermissionRequiredMixin, CreateView):
     permission_required = "formato.add_asociacion"
-    model = Asociacion
+    model = Association
     fields = ["for_id", "est_id"]
 
     def get_context_data(self, **kwargs):
@@ -415,19 +415,19 @@ class AsociacionList(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         campos = ["aso_id", "for_id__for_nombre", "est_id__est_codigo"]
-        asociacion = Asociacion.objects.all().values_list(*campos)
+        asociacion = Association.objects.all().values_list(*campos)
         context["asociacion"] = modelo_a_tabla_html(asociacion, col_extra=True)
         return context
 
 
 class AsociacionDetail(PermissionRequiredMixin, DetailView):
     permission_required = "formato.view_asociacion"
-    model = Asociacion
+    model = Association
 
 
 class AsociacionUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = "formato.change_asociacion"
-    model = Asociacion
+    model = Association
     fields = ["for_id", "est_id"]
 
     def get_context_data(self, **kwargs):
@@ -438,5 +438,5 @@ class AsociacionUpdate(PermissionRequiredMixin, UpdateView):
 
 class AsociacionDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "formato.delete_asociacion"
-    model = Asociacion
+    model = Association
     success_url = reverse_lazy("formato:asociacion_index")

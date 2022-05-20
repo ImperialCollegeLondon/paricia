@@ -13,12 +13,12 @@
 
 from django.forms import ModelForm
 
-from formato.models import Clasificacion
+from formato.models import Clasification
 
 
 class ClasificacionForm(ModelForm):
     class Meta:
-        model = Clasificacion
+        model = Clasification
         fields = [
             "var_id",
             "coma_decimal",
