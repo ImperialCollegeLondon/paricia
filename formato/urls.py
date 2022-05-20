@@ -17,38 +17,38 @@ from . import views
 
 app_name = "format"
 urlpatterns = [
-    re_path(r"^format/date/$", views.FechaList.as_view(), name="date_index"),
-    re_path(r"^format/date/create/$", views.FechaCreate.as_view(), name="date_create"),
+    re_path(r"^format/date/$", views.DateList.as_view(), name="date_index"),
+    re_path(r"^format/date/create/$", views.DateCreate.as_view(), name="date_create"),
     re_path(
         r"^format/date/detail/(?P<pk>[0-9]+)/$",
-        views.FechaDetail.as_view(),
+        views.DateDetail.as_view(),
         name="date_detail",
     ),
     re_path(
         r"^format/date/(?P<pk>[0-9]+)/$",
-        views.FechaUpdate.as_view(),
+        views.DateUpdate.as_view(),
         name="date_update",
     ),
     re_path(
         r"^format/date/(?P<pk>[0-9]+)/delete/$",
-        views.FechaDelete.as_view(),
+        views.DateDelete.as_view(),
         name="date_delete",
     ),
-    re_path(r"^format/time/$", views.HoraList.as_view(), name="time_index"),
-    re_path(r"^format/time/create/$", views.HoraCreate.as_view(), name="time_create"),
+    re_path(r"^format/time/$", views.TimeList.as_view(), name="time_index"),
+    re_path(r"^format/time/create/$", views.TimeCreate.as_view(), name="time_create"),
     re_path(
         r"^format/time/detail/(?P<pk>[0-9]+)/$",
-        views.HoraDetail.as_view(),
+        views.TimeDetail.as_view(),
         name="time_detail",
     ),
     re_path(
         r"^format/time/(?P<pk>[0-9]+)/$",
-        views.HoraUpdate.as_view(),
+        views.TimeUpdate.as_view(),
         name="time_update",
     ),
     re_path(
         r"^format/time/(?P<pk>[0-9]+)/delete/$",
-        views.HoraDelete.as_view(),
+        views.TimeDelete.as_view(),
         name="time_delete",
     ),
     re_path(r"format/$", views.FormatoList.as_view(), name="format_index"),
@@ -118,25 +118,27 @@ urlpatterns = [
         views.ClasificationDelete.as_view(),
         name="clasification_delete",
     ),
-    re_path(r"^asociation/$", views.AssociationList.as_view(), name="asociation_index"),
     re_path(
-        r"asociation/create/$",
+        r"^association/$", views.AssociationList.as_view(), name="association_index"
+    ),
+    re_path(
+        r"association/create/$",
         views.AssociationCreate.as_view(),
-        name="asociation_create",
+        name="association_create",
     ),
     re_path(
-        r"asociation/detail/(?P<pk>[0-9]+)/$",
+        r"association/detail/(?P<pk>[0-9]+)/$",
         views.AssociationDetail.as_view(),
-        name="asociation_detail",
+        name="association_detail",
     ),
     re_path(
-        r"asociation/(?P<pk>[0-9]+)/$",
+        r"association/(?P<pk>[0-9]+)/$",
         views.AssociationUpdate.as_view(),
-        name="asociation_update",
+        name="association_update",
     ),
     re_path(
-        r"asociation/(?P<pk>[0-9]+)/delete/$",
+        r"association/(?P<pk>[0-9]+)/delete/$",
         views.AssociationDelete.as_view(),
-        name="asociation_delete",
+        name="association_delete",
     ),
 ]
