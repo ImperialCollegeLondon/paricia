@@ -22,8 +22,8 @@ class Var1Anual(models.Model):
     fecha = models.DateField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=(DigVar.v1.max_dig + 2),
-        decimal_places=DigVar.v1.dec_pla,
+        max_digits=(DigVar.v1.max_digits + 2),
+        decimal_places=DigVar.v1.decimal_places,
         null=True,
     )
     vacios = models.DecimalField("Vacíos %", max_digits=4, decimal_places=1)
@@ -35,8 +35,8 @@ class Var1Anual(models.Model):
     )
     mes_seco_valor = models.DecimalField(
         "Valor",
-        max_digits=(DigVar.v1.max_dig + 2),
-        decimal_places=DigVar.v1.dec_pla,
+        max_digits=(DigVar.v1.max_digits + 2),
+        decimal_places=DigVar.v1.decimal_places,
         null=True,
     )
     mes_lluvioso = models.IntegerField(
@@ -47,16 +47,16 @@ class Var1Anual(models.Model):
     )
     mes_lluvioso_valor = models.DecimalField(
         "Valor",
-        max_digits=(DigVar.v1.max_dig + 2),
-        decimal_places=DigVar.v1.dec_pla,
+        max_digits=(DigVar.v1.max_digits + 2),
+        decimal_places=DigVar.v1.decimal_places,
         null=True,
     )
     dias_con_lluvia = models.IntegerField("dias con lluvia", null=True)
     dias_sin_lluvia = models.IntegerField("dias sin lluvia", null=True)
     estacionalidad = models.DecimalField(
         "estacionalidad",
-        max_digits=(DigVar.v1.max_dig + 2),
-        decimal_places=DigVar.v1.dec_pla,
+        max_digits=(DigVar.v1.max_digits + 2),
+        decimal_places=DigVar.v1.decimal_places,
         null=True,
     )
 

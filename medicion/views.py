@@ -26,7 +26,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from home.functions import *
-from medicion.models import CurvaDescarga, NivelFuncion
+from medicion.models import DischargeCurve, LevelFunction
 from variable.models import Variable
 
 from .forms import NivelFuncionForm
@@ -40,13 +40,13 @@ class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         campos = ["id", "station__station_code", "fecha", "requiere_recalculo_caudal"]
-        curvadescarga = CurvaDescarga.objects.all().values_list(*campos)
+        curvadescarga = DischargeCurve.objects.all().values_list(*campos)
         context["curvadescarga"] = modelo_a_tabla_html(curvadescarga, col_extra=True)
         return context
 
 
 class CurvaDescargaCreate(PermissionRequiredMixin, CreateView):
-    model = CurvaDescarga
+    model = DischargeCurve
     fields = ["station", "fecha"]
     permission_required = "medicion.add_curvadescarga"
 
@@ -57,7 +57,7 @@ class CurvaDescargaCreate(PermissionRequiredMixin, CreateView):
 
 
 class CurvaDescargaDetail(PermissionRequiredMixin, DetailView):
-    model = CurvaDescarga
+    model = DischargeCurve
     permission_required = "medicion.view_curvadescarga"
 
     def get_context_data(self, **kwargs):
@@ -68,7 +68,7 @@ class CurvaDescargaDetail(PermissionRequiredMixin, DetailView):
 
 
 class CurvaDescargaUpdate(PermissionRequiredMixin, UpdateView):
-    model = CurvaDescarga
+    model = DischargeCurve
     permission_required = "medicion.change_curvadescarga"
     fields = ["station", "fecha"]
 
@@ -79,19 +79,19 @@ class CurvaDescargaUpdate(PermissionRequiredMixin, UpdateView):
 
 
 class CurvaDescargaDelete(PermissionRequiredMixin, DeleteView):
-    model = CurvaDescarga
+    model = DischargeCurve
     permission_required = "medicion.delete_curvadescarga"
     success_url = reverse_lazy("medicion:curvadescarga_index")
 
 
 class NivelFuncionCreate(PermissionRequiredMixin, CreateView):
     permission_required = "medicion.add_curvadescarga"
-    model = NivelFuncion
+    model = LevelFunction
     form_class = NivelFuncionForm
 
     def post(self, request, *args, **kwargs):
         curvadescarga_id = kwargs.get("id")
-        curvadescarga = CurvaDescarga.objects.get(pk=curvadescarga_id)
+        curvadescarga = DischargeCurve.objects.get(pk=curvadescarga_id)
         form = NivelFuncionForm(self.request.POST or None)
         try:
             ## Verificar si el formulario está correcto
@@ -132,7 +132,7 @@ class NivelFuncionCreate(PermissionRequiredMixin, CreateView):
 
 class NivelFuncionUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = "medicion.change_curvadescarga"
-    model = NivelFuncion
+    model = LevelFunction
     fields = ["nivel", "funcion"]
 
     def get_context_data(self, **kwargs):
@@ -148,7 +148,7 @@ class NivelFuncionUpdate(PermissionRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         data = request.POST.copy()
         curvadescarga_id = data.get("curvadescarga_id")
-        curvadescarga = CurvaDescarga.objects.get(pk=curvadescarga_id)
+        curvadescarga = DischargeCurve.objects.get(pk=curvadescarga_id)
         curvadescarga.requiere_recalculo_caudal = True
         curvadescarga.save()
         self.success_url = reverse(
@@ -159,7 +159,7 @@ class NivelFuncionUpdate(PermissionRequiredMixin, UpdateView):
 
 class NivelFuncionDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "medicion.delete_curvadescarga"
-    model = NivelFuncion
+    model = LevelFunction
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -174,7 +174,7 @@ class NivelFuncionDelete(PermissionRequiredMixin, DeleteView):
 
 class NivelFuncionDetail(PermissionRequiredMixin, DetailView):
     permission_required = "medicion.view_curvadescarga"
-    model = NivelFuncion
+    model = LevelFunction
 
 
 @permission_required("medicion.add_curvadescarga")
@@ -188,7 +188,7 @@ def recalcular_caudal(request):
     except:
         lista = {"res": False}
         return JsonResponse(lista)
-    curvadescarga = CurvaDescarga.objects.get(pk=curvadescarga_id)
+    curvadescarga = DischargeCurve.objects.get(pk=curvadescarga_id)
     curvadescarga.requiere_recalculo_caudal = False
     curvadescarga.save()
     lista = {"res": True}

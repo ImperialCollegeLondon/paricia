@@ -18,12 +18,12 @@ from django.db import connection
 from station.models import Station, StationType
 from variable.models import Variable
 
-from .models import NivelFuncion
+from .models import LevelFunction
 
 
 class NivelFuncionForm(forms.ModelForm):
     class Meta:
-        model = NivelFuncion
+        model = LevelFunction
         fields = ["nivel", "funcion"]
 
     def clean_funcion(self):

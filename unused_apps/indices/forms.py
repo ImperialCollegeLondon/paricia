@@ -16,7 +16,7 @@ from datetime import date, datetime
 from django import forms
 
 from estacion.models import Cuenca, Estacion, SitioCuenca, Tipo
-from medicion.models import CurvaDescarga
+from medicion.models import DischargeCurve
 from validacion.models import Var1Validado
 from variable.models import Variable
 

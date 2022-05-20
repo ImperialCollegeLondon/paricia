@@ -22,7 +22,7 @@ from calidad.models import *
 from estacion.models import Estacion
 from frecuencia.models import Frecuencia
 from home.functions import *
-from medicion.models import VientoPolar
+from medicion.models import PolarWind
 from telemetria.models import (
     AlarmaEstado,
     ConfigCalidad,
@@ -109,7 +109,7 @@ AND dvi.fecha = vvi.fecha AND dvi.estacion_id = vvi.estacion_id
 AND vvi.valor IS NOT NULL AND dvi.valor IS NOT NULL 
 ORDER BY fecha ASC
         """
-        consulta = VientoPolar.objects.raw(sql, [estacion_id, inicio, fechahora_actual])
+        consulta = PolarWind.objects.raw(sql, [estacion_id, inicio, fechahora_actual])
         velocidad = []
         direccion = []
         for fila in consulta:
