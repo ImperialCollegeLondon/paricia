@@ -12,7 +12,6 @@
 ########################################################################################
 
 from django.forms import ModelForm
-
 from formato.models import Clasification
 
 
