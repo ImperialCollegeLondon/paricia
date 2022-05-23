@@ -139,7 +139,7 @@ class Format(models.Model):
     )
     time_column = models.SmallIntegerField("Time column")
     format_type = models.CharField(
-        "Tipo de Formato",
+        "Format type",
         max_length=25,
         choices=(
             ("automatic", "automatic"),
