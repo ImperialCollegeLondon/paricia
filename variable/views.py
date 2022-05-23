@@ -183,7 +183,7 @@ class UnidadDelete(PermissionRequiredMixin, DeleteView):
 
 
 ####################################################################
-# Model Control
+# Model SensorInstallation
 class SensorInstallationCreate(PermissionRequiredMixin, CreateView):
     model = SensorInstallation
     permission_required = "variable.add_sensorinstallation"
