@@ -23,7 +23,7 @@ import pandas as pd
 from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
-from formato.models import Association, Clasification, Date, Time
+from formatting.models import Association, Clasification, Date, Time
 from importacion.models import Importacion, ImportacionTemp
 from medicion.models import (
     Var1Medicion,
