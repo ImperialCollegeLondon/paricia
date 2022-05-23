@@ -23,7 +23,7 @@ import pandas as pd
 from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
-from formatting.models import Association, Clasification, Date, Time
+from formatting.models import Association, Classification, Date, Time
 from importacion.models import Importacion, ImportacionTemp
 from medicion.models import (
     Var1Medicion,
@@ -61,7 +61,7 @@ def validar_fechas(importacion):
     fecha_fin = importacion.imp_fecha_fin
     for_id_id = importacion.for_id_id
     station = importacion.est_id
-    clasificacion = list(Clasification.objects.filter(for_id=for_id_id))
+    clasificacion = list(Classification.objects.filter(for_id=for_id_id))
 
     sobrescribe = False
     result = []
@@ -325,7 +325,7 @@ def construir_matriz(matriz_src, formato, station):
     fecha_ini = matriz.loc[0, "fecha"]
     fecha_fin = matriz.loc[matriz.shape[0] - 1, "fecha"]
 
-    clasificacion = list(Clasification.objects.filter(for_id=formato.for_id))
+    clasificacion = list(Classification.objects.filter(for_id=formato.for_id))
     datos_variables = {}
     for var in clasificacion:
         columnas = []

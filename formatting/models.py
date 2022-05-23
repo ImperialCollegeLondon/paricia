@@ -158,9 +158,9 @@ class Format(models.Model):
         ordering = ("-format_id",)
 
 
-class Clasification(models.Model):
+class Classification(models.Model):
     """
-    Classification details.
+    Classification details, combining a Format, Variable with some other properties.
     """
 
     cls_id = models.AutoField("Id", primary_key=True)
