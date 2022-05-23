@@ -1,22 +1,20 @@
-# -*- coding: utf-8 -*-
-
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db.models import Value
-from django.db.models.functions import Concat
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
@@ -24,32 +22,33 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from excel_response import ExcelResponse
 
-from home.functions import *
+from home.functions import modelo_a_tabla_html
 
-from .models import Control, Unidad, Variable
+from .models import SensorInstallation, Unit, Variable
 
 
 class VariableCreate(PermissionRequiredMixin, CreateView):
     model = Variable
     permission_required = "variable.__super__add_variable"
     fields = [
-        "var_codigo",
-        "var_nombre",
-        "uni_id",
-        "var_maximo",
-        "var_minimo",
+        "variable_code",
+        "name",
+        "unit",
+        "maximum",
+        "minimum",
+        # TODO: update these
         "var_sos",
         "var_err",
         "var_min",
         "var_estado",
-        "es_acumulada",
-        "reporte_automatico",
+        "is_cumulative",
+        "automatic_report",
         "vacios",
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
@@ -59,22 +58,22 @@ class VariableList(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
-            "var_id",
-            "var_codigo",
-            "var_nombre",
-            "uni_id__uni_sigla",
-            "var_maximo",
-            "var_minimo",
+        fields = [
+            "variable_code",
+            "name",
+            "unit",
+            "maximum",
+            "minimum",
+            # TODO: update these
             "var_sos",
             "var_err",
             "var_min",
             "var_estado",
-            "es_acumulada",
-            "reporte_automatico",
+            "is_cumulative",
+            "automatic_report",
             "vacios",
         ]
-        modelo = Variable.objects.values_list(*campos)
+        modelo = Variable.objects.values_list(*fields)
         context["variables"] = modelo_a_tabla_html(modelo, col_extra=True)
         return context
 
@@ -88,23 +87,24 @@ class VariableUpdate(PermissionRequiredMixin, UpdateView):
     model = Variable
     permission_required = "variable.change_variable"
     fields = [
-        "var_codigo",
-        "var_nombre",
-        "uni_id",
-        "var_maximo",
-        "var_minimo",
+        "variable_code",
+        "name",
+        "unit",
+        "maximum",
+        "minimum",
+        # TODO: update these
         "var_sos",
         "var_err",
         "var_min",
         "var_estado",
-        "es_acumulada",
-        "reporte_automatico",
+        "is_cumulative",
+        "automatic_report",
         "vacios",
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
@@ -116,143 +116,144 @@ class VariableDelete(PermissionRequiredMixin, DeleteView):
 
 @permission_required("variable.view_variable")
 def VariableExport(request):
-    cabecera = [
-        ["Código", "Nombre", "Unidad"],
+    header = [
+        ["Code", "Name", "Unit"],
     ]
-    cuerpo = []
-    objetos = Variable.objects.all()
-    for objeto in objetos:
-        fila = []
-        fila.append(objeto.var_codigo)
-        fila.append(objeto.var_nombre)
+    body = []
+    objects = Variable.objects.all()
+    for obj in objects:
+        line = []
+        line.append(obj.code)
+        line.append(obj.name)
         try:
-            fila.append("' " + objeto.uni_id.uni_sigla)
+            line.append("' " + obj.unit.initials)
+        # TODO fix bare except
         except:
-            fila.append(None)
-        cuerpo.append(fila)
-    response = ExcelResponse(cabecera + cuerpo, "Variables_iMHEA")
+            line.append(None)
+        body.append(line)
+    response = ExcelResponse(header + body, "Variables_iMHEA")
     return response
 
 
 ##################################################################
-# Unidad
-class UnidadCreate(PermissionRequiredMixin, CreateView):
-    model = Unidad
-    permission_required = "variable.add_unidad"
-    fields = ["uni_nombre", "uni_sigla"]
+# Unit
+class UnitCreate(PermissionRequiredMixin, CreateView):
+    model = Unit
+    permission_required = "variable.add_unit"
+    fields = ["name", "initials"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class UnidadList(PermissionRequiredMixin, TemplateView):
-    template_name = "variable/unidad_list.html"
-    permission_required = "variable.view_unidad"
+class UnitList(PermissionRequiredMixin, TemplateView):
+    template_name = "variable/unit_list.html"
+    permission_required = "variable.view_unit"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = ["uni_id", "uni_nombre", "uni_sigla"]
-        modelo = Unidad.objects.values_list(*campos)
-        context["unidades"] = modelo_a_tabla_html(modelo, col_extra=True)
+        fields = ["unit_id", "name", "initials"]
+        model = Unit.objects.values_list(*fields)
+        context["units"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class UnidadDetail(PermissionRequiredMixin, DetailView):
-    model = Unidad
-    permission_required = "variable.view_unidad"
+class UnitDetail(PermissionRequiredMixin, DetailView):
+    model = Unit
+    permission_required = "variable.view_unit"
 
 
-class UnidadUpdate(PermissionRequiredMixin, UpdateView):
-    model = Unidad
-    permission_required = "variable.change_unidad"
-    fields = ["uni_nombre", "uni_sigla"]
+class UnitUpdate(PermissionRequiredMixin, UpdateView):
+    model = Unit
+    permission_required = "variable.change_unit"
+    fields = ["name", "initials"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context["title"] = "Modify"
         return context
 
 
 class UnidadDelete(PermissionRequiredMixin, DeleteView):
-    model = Unidad
-    permission_required = "variable.delete_unidad"
-    success_url = reverse_lazy("variable:unidad_index")
+    model = Unit
+    permission_required = "variable.delete_unit"
+    success_url = reverse_lazy("variable:unit_index")
 
 
 ####################################################################
 # Model Control
-class ControlCreate(PermissionRequiredMixin, CreateView):
-    model = Control
-    permission_required = "variable.add_control"
+class SensorInstallationCreate(PermissionRequiredMixin, CreateView):
+    model = SensorInstallation
+    permission_required = "variable.add_sensorinstallation"
     fields = [
-        "var_id",
-        "sen_id",
-        "station_id",
-        "con_fecha_ini",
-        "con_fecha_fin",
-        "con_estado",
+        "variable",
+        "sensor",
+        "station",
+        "start_date",
+        "end_date",
+        "state",
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        context["title"] = "Create"
         return context
 
 
-class ControlList(PermissionRequiredMixin, TemplateView):
-    template_name = "variable/control_list.html"
-    permission_required = "variable.view_control"
+class SensorInstallationList(PermissionRequiredMixin, TemplateView):
+    template_name = "variable/sensorinstallation_list.html"
+    permission_required = "variable.view_sensorinstallation"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        campos = [
-            "con_id",
-            "var_id__var_nombre",
-            "sen_id__sen_codigo",
-            "station_id__station_code",
-            "con_fecha_ini",
-            "con_fecha_fin",
-            "con_estado",
+        fields = [
+            "sensorinstallation_id",
+            "variable__name",
+            "sensor__code",
+            "station__station_code",
+            "start_date",
+            "end_date",
+            "state",
         ]
-        control = Control.objects.all().values_list(*campos)
-        context["control"] = modelo_a_tabla_html(control, col_extra=True)
+        model = SensorInstallation.objects.all().values_list(*fields)
+        context["sensor_installation"] = modelo_a_tabla_html(model, col_extra=True)
         return context
 
 
-class ControlDetail(PermissionRequiredMixin, DetailView):
-    model = Control
-    permission_required = "variable.view_control"
+class SensorInstallationDetail(PermissionRequiredMixin, DetailView):
+    model = SensorInstallation
+    permission_required = "variable.view_sensorinstallation"
 
 
-class ControlUpdate(PermissionRequiredMixin, UpdateView):
-    model = Control
-    permission_required = "variable.change_control"
+class SensorInstallationUpdate(PermissionRequiredMixin, UpdateView):
+    model = SensorInstallation
+    permission_required = "variable.change_sensorinstallation"
     fields = [
-        "var_id",
-        "sen_id",
-        "station_id",
-        "con_fecha_ini",
-        "con_fecha_fin",
-        "con_estado",
+        "variable",
+        "sensor",
+        "station",
+        "start_date",
+        "end_date",
+        "state",
     ]
 
     def get_context_data(self, **kwargs):
-        context = super(ControlUpdate, self).get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        context = super(SensorInstallationUpdate, self).get_context_data(**kwargs)
+        context["title"] = "Modify"
         return context
 
 
-class ControlDelete(PermissionRequiredMixin, DeleteView):
-    model = Control
-    permission_required = "variable.delete_control"
-    success_url = reverse_lazy("variable:control_index")
+class SensorInstallationDelete(PermissionRequiredMixin, DeleteView):
+    model = SensorInstallation
+    permission_required = "variable.delete_sensorinstallation"
+    success_url = reverse_lazy("variable:sensorinstallation_index")
 
 
-def get_limites(request):
-    print(request.POST.get("var_id"))
-    id = int(request.POST.get("var_id"))
-    variable = Variable.objects.get(var_id=id)
-    data = {"var_maximo": variable.var_maximo, "var_minimo": variable.var_minimo}
+def get_limits(request):
+    print(request.POST.get("variable_id"))
+    id = int(request.POST.get("variable_id"))
+    variable = Variable.objects.get(variable_id=id)
+    data = {"maximum": variable.maximum, "minimum": variable.minimum}
     return JsonResponse(data)

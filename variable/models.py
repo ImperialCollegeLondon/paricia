@@ -48,7 +48,7 @@ class Variable(models.Model):
     variable_id = models.AutoField("Id", primary_key=True)
     variable_code = models.CharField("Code", max_length=7)
     name = models.CharField("Name", max_length=50)
-    unit_id = models.ForeignKey(
+    unit = models.ForeignKey(
         Unit, models.SET_NULL, blank=True, null=True, verbose_name="Unidad"
     )
     maximum = models.DecimalField("Maximum", max_digits=7, decimal_places=2)
