@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 from __future__ import unicode_literals
 
@@ -21,186 +21,212 @@ from variable.models import Variable
 
 
 class Extension(models.Model):
-    ext_id = models.AutoField("Id", primary_key=True)
-    ext_valor = models.CharField("Valor", max_length=5)
+    """
+    File extension.
+    """
+
+    extension_id = models.AutoField("Id", primary_key=True)
+    value = models.CharField("Value", max_length=5)
 
     def __str__(self):
         return str(self.ext_valor)
 
     def get_absolute_url(self):
-        return reverse("formato:extension_index")
+        return reverse("format:extension_index")
 
 
-class Delimitador(models.Model):
-    del_id = models.AutoField("Id", primary_key=True)
-    del_nombre = models.CharField("Nombre", max_length=100)
-    del_caracter = models.CharField("Caracter", max_length=10, blank=True)
+class Delimiter(models.Model):
+    """
+    Data delimiter
+    """
 
-    def __str__(self):
-        return str(self.del_nombre)
-
-    def get_absolute_url(self):
-        return reverse("formato:delimitador_index")
-
-
-class Fecha(models.Model):
-    fec_id = models.AutoField("Id", primary_key=True)
-    fec_formato = models.CharField("Formato", max_length=20)
-    fec_codigo = models.CharField("Código", max_length=20)
+    delimiter_id = models.AutoField("Id", primary_key=True)
+    name = models.CharField("Name", max_length=100)
+    character = models.CharField("Character", max_length=10, blank=True)
 
     def __str__(self):
-        return str(self.fec_formato)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("formato:fecha_detail", kwargs={"pk": self.pk})
+        return reverse("format:delimiter_index")
+
+
+class Date(models.Model):
+    """
+    Date format
+    """
+
+    date_id = models.AutoField("Id", primary_key=True)
+    format = models.CharField("Format", max_length=20)
+    code = models.CharField("Code", max_length=20)
+
+    def __str__(self):
+        return str(self.fec_format)
+
+    def get_absolute_url(self):
+        return reverse("format:date_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("fec_id",)
+        ordering = ("date_id",)
 
 
-class Hora(models.Model):
-    hor_id = models.AutoField("Id", primary_key=True)
-    hor_formato = models.CharField("Formato", max_length=20)
-    hor_codigo = models.CharField("Código", max_length=20)
+class Time(models.Model):
+    """
+    Time format
+    """
+
+    time_id = models.AutoField("Id", primary_key=True)
+    format = models.CharField("Format", max_length=20)
+    code = models.CharField("Code", max_length=20)
 
     def __str__(self):
-        return str(self.hor_formato)
+        return str(self.hor_format)
 
     def get_absolute_url(self):
-        return reverse("formato:hora_detail", kwargs={"pk": self.pk})
+        return reverse("format:time_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("hor_id",)
+        ordering = ("time_id",)
 
 
-class Formato(models.Model):
-    for_id = models.AutoField("for_id", primary_key=True)
-    ext_id = models.ForeignKey(
+class Format(models.Model):
+    """
+    Details of the data file format, combining different aspects.
+    """
+
+    format_id = models.AutoField("format_id", primary_key=True)
+    extension = models.ForeignKey(
         Extension,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name="Extensión del Archivo",
+        verbose_name="File extension",
     )
-    del_id = models.ForeignKey(
-        Delimitador,
+    delimiter = models.ForeignKey(
+        Delimiter,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name="Delimitador",
+        verbose_name="Delimiter",
     )
-    for_nombre = models.CharField("Nombre del Formato", max_length=35)
-    for_descripcion = models.TextField("Descripción", null=True)
-    for_ubicacion = models.CharField("Ubicación", max_length=300, blank=True, null=True)
-    for_archivo = models.CharField(
+    name = models.CharField("Format name", max_length=35)
+    description = models.TextField("Description", null=True)
+    location = models.CharField("Location", max_length=300, blank=True, null=True)
+    file = models.CharField(
         "Archivo",
         max_length=100,
         blank=True,
         null=True,
-        help_text="Solo aplica para transmisión automática",
+        help_text="Only applies to automatic transmission",
     )
-    for_fil_ini = models.SmallIntegerField("Fila de inicio")
-    for_fil_cola = models.SmallIntegerField(
-        "Número de filas de cola", blank=True, null=True
-    )
-    fec_id = models.ForeignKey(
-        Fecha,
+    first_row = models.SmallIntegerField("First row")
+    last_row = models.SmallIntegerField("Last row", blank=True, null=True)
+    date = models.ForeignKey(
+        Date,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name="Formato de Fecha",
+        verbose_name="Date format",
     )
-    es_fecha_utc = models.BooleanField("¿Es fecha UTC? (Resta 5 horas)", default=False)
-    for_col_fecha = models.SmallIntegerField("Columna fecha")
-    hor_id = models.ForeignKey(
-        Hora,
+    utc_date = models.BooleanField("Is time UTC? (substract 5 hours)", default=False)
+    date_column = models.SmallIntegerField("Date column")
+    time = models.ForeignKey(
+        Time,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name="Formato de Hora",
+        verbose_name="Time format",
     )
-    for_col_hora = models.SmallIntegerField("Columna de hora")
-    for_tipo = models.CharField(
+    time_column = models.SmallIntegerField("Time column")
+    format_type = models.CharField(
         "Tipo de Formato",
         max_length=25,
         choices=(
-            ("automatico", "automático"),
-            ("convencional", "convencional"),
+            ("automatic", "automatic"),
+            ("conventional", "conventional"),
         ),
     )
-    for_estado = models.BooleanField("Estado", default=True)
+    status = models.BooleanField("Status", default=True)
 
     def __str__(self):
-        return str(self.for_nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("formato:formato_detail", kwargs={"pk": self.pk})
+        return reverse("format:format_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("-for_id",)
 
 
-class Clasificacion(models.Model):
-    cla_id = models.AutoField("Id", primary_key=True)
-    for_id = models.ForeignKey(
-        Formato, on_delete=models.CASCADE, verbose_name="Formato"
-    )
-    var_id = models.ForeignKey(
+class Clasification(models.Model):
+    """
+    Classification details.
+    """
+
+    cls_id = models.AutoField("Id", primary_key=True)
+    format = models.ForeignKey(Format, on_delete=models.CASCADE, verbose_name="Format")
+    variable = models.ForeignKey(
         Variable, on_delete=models.CASCADE, verbose_name="Variable"
     )
-    cla_valor = models.SmallIntegerField("Columna valor")
-    cla_maximo = models.SmallIntegerField("Columna valor máximo", blank=True, null=True)
-    cla_minimo = models.SmallIntegerField("Columna valor mínimo", blank=True, null=True)
-    col_validador_valor = models.SmallIntegerField(
-        "Columna validador Valor", blank=True, null=True
+    value = models.SmallIntegerField("Value column")
+    maximum = models.SmallIntegerField("Maximum value column", blank=True, null=True)
+    minimum = models.SmallIntegerField("Minimum value column", blank=True, null=True)
+    value_validator_column = models.SmallIntegerField(
+        "Value validator column", blank=True, null=True
     )
-    txt_validador_valor = models.CharField(
-        "Texto validador Valor", max_length=10, blank=True, null=True
+    value_validator_text = models.CharField(
+        "Value validator text", max_length=10, blank=True, null=True
     )
-    col_validador_maximo = models.SmallIntegerField(
-        "Columna validador Máximo", blank=True, null=True
+    maximum_validator_column = models.SmallIntegerField(
+        "Maximum value validator column", blank=True, null=True
     )
-    txt_validador_maximo = models.CharField(
-        "Texto validador Máximo", max_length=10, blank=True, null=True
+    maximum_validator_text = models.CharField(
+        "Maximum value  validator text", max_length=10, blank=True, null=True
     )
-    col_validador_minimo = models.SmallIntegerField(
-        "Columna validador Mínimo", blank=True, null=True
+    minimum_validator_column = models.SmallIntegerField(
+        "Minimum value validator column", blank=True, null=True
     )
-    txt_validador_minimo = models.CharField(
-        "Texto validador Mínimo", max_length=10, blank=True, null=True
+    minimum_validator_text = models.CharField(
+        "Minimum value validator text", max_length=10, blank=True, null=True
     )
-    acumular = models.BooleanField("¿Acumular a 5 minutos?", default=False)
-    incremental = models.BooleanField("¿Es contador incremental?", default=False)
-    resolucion = models.DecimalField(
-        "Resolución", max_digits=6, decimal_places=2, blank=True, null=True
+    accumulate = models.BooleanField("Accumulate every 5 min?", default=False)
+    incremental = models.BooleanField("Is it an incremental counter?", default=False)
+    resolution = models.DecimalField(
+        "Resolution", max_digits=6, decimal_places=2, blank=True, null=True
     )
-    coma_decimal = models.BooleanField("COMA: separador decimal", default=False)
+    decimal_comma = models.BooleanField(
+        "Uses comma as decimal separator?", default=False
+    )
 
     def __str__(self):
         return str(self.cla_id)
 
     def get_absolute_url(self):
-        return reverse("formato:clasificacion_detail", kwargs={"pk": self.pk})
+        return reverse("format:clasificacion_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("var_id",)
 
 
-class Asociacion(models.Model):
-    aso_id = models.AutoField("Id", primary_key=True)
-    for_id = models.ForeignKey(
-        Formato, models.SET_NULL, blank=True, null=True, verbose_name="Formato"
+class Association(models.Model):
+    """
+    Associates a data format with a station.
+    """
+
+    association_id = models.AutoField("Id", primary_key=True)
+    format = models.ForeignKey(
+        Format, models.SET_NULL, blank=True, null=True, verbose_name="Format"
     )
-    station_id = models.ForeignKey(
+    station = models.ForeignKey(
         Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
 
     def get_absolute_url(self):
-        return reverse("formato:asociacion_detail", kwargs={"pk": self.pk})
+        return reverse("format:association_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("aso_id",)
         unique_together = (
-            "station_id",
-            "for_id",
+            "station",
+            "format",
         )

@@ -1,7 +1,7 @@
 import pandas as pd
-from estacion.models import Estacion
 
-from formato.models import Asociacion, Formato
+from formato.models import Association, Format
+from station.models import Station
 
 
 def run():
@@ -19,9 +19,9 @@ def run():
         est_codigo = row["est_codigo"]
         for_id = row["for_id"]
 
-        estacion = Estacion.objects.get(est_codigo=est_codigo)
-        formato = Formato.objects.get(for_id=for_id)
-        asociacion = Asociacion(for_id=formato, est_id=estacion)
+        estacion = Station.objects.get(est_codigo=est_codigo)
+        formato = Format.objects.get(for_id=for_id)
+        asociacion = Association(for_id=formato, est_id=estacion)
         asociacion.save()
         print(" ---")
         print("Código: ", est_codigo)

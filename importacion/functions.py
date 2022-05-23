@@ -23,7 +23,7 @@ import pandas as pd
 from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
-from formato.models import Asociacion, Clasificacion, Fecha, Hora
+from formato.models import Association, Clasification, Date, Time
 from importacion.models import Importacion, ImportacionTemp
 from medicion.models import (
     Var1Medicion,
@@ -60,8 +60,8 @@ def validar_fechas(importacion):
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
     for_id_id = importacion.for_id_id
-    station = importacion.station_id
-    clasificacion = list(Clasificacion.objects.filter(for_id=for_id_id))
+    station = importacion.est_id
+    clasificacion = list(Clasification.objects.filter(for_id=for_id_id))
 
     sobrescribe = False
     result = []
@@ -325,7 +325,7 @@ def construir_matriz(matriz_src, formato, station):
     fecha_ini = matriz.loc[0, "fecha"]
     fecha_fin = matriz.loc[matriz.shape[0] - 1, "fecha"]
 
-    clasificacion = list(Clasificacion.objects.filter(for_id=formato.for_id))
+    clasificacion = list(Clasification.objects.filter(for_id=formato.for_id))
     datos_variables = {}
     for var in clasificacion:
         columnas = []
@@ -474,9 +474,9 @@ def insertar_nivel_regleta(importacion, nivelregleta):
     ).save()
 
 
-# consultar formatos por datalogger y station
+# consultar formatos por datalogger y estacion
 def consultar_formatos(station):
-    asociacion = list(Asociacion.objects.filter(station_id=station))
+    asociacion = list(Association.objects.filter(station=station))
     lista = {}
     for item in asociacion:
         lista[item.for_id.for_id] = item.for_id.for_nombre

@@ -1,72 +1,72 @@
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 from django.urls import re_path
 
 from . import views
 
-app_name = "formato"
+app_name = "format"
 urlpatterns = [
-    re_path(r"^formato/fecha/$", views.FechaList.as_view(), name="fecha_index"),
+    re_path(r"^format/date/$", views.DateList.as_view(), name="date_index"),
+    re_path(r"^format/date/create/$", views.DateCreate.as_view(), name="date_create"),
     re_path(
-        r"^formato/fecha/create/$", views.FechaCreate.as_view(), name="fecha_create"
+        r"^format/date/detail/(?P<pk>[0-9]+)/$",
+        views.DateDetail.as_view(),
+        name="date_detail",
     ),
     re_path(
-        r"^formato/fecha/detail/(?P<pk>[0-9]+)/$",
-        views.FechaDetail.as_view(),
-        name="fecha_detail",
+        r"^format/date/(?P<pk>[0-9]+)/$",
+        views.DateUpdate.as_view(),
+        name="date_update",
     ),
     re_path(
-        r"^formato/fecha/(?P<pk>[0-9]+)/$",
-        views.FechaUpdate.as_view(),
-        name="fecha_update",
+        r"^format/date/(?P<pk>[0-9]+)/delete/$",
+        views.DateDelete.as_view(),
+        name="date_delete",
+    ),
+    re_path(r"^format/time/$", views.TimeList.as_view(), name="time_index"),
+    re_path(r"^format/time/create/$", views.TimeCreate.as_view(), name="time_create"),
+    re_path(
+        r"^format/time/detail/(?P<pk>[0-9]+)/$",
+        views.TimeDetail.as_view(),
+        name="time_detail",
     ),
     re_path(
-        r"^formato/fecha/(?P<pk>[0-9]+)/delete/$",
-        views.FechaDelete.as_view(),
-        name="fecha_delete",
-    ),
-    re_path(r"^formato/hora/$", views.HoraList.as_view(), name="hora_index"),
-    re_path(r"^formato/hora/create/$", views.HoraCreate.as_view(), name="hora_create"),
-    re_path(
-        r"^formato/hors/detail/(?P<pk>[0-9]+)/$",
-        views.HoraDetail.as_view(),
-        name="hora_detail",
+        r"^format/time/(?P<pk>[0-9]+)/$",
+        views.TimeUpdate.as_view(),
+        name="time_update",
     ),
     re_path(
-        r"^formato/hora/(?P<pk>[0-9]+)/$",
-        views.HoraUpdate.as_view(),
-        name="hora_update",
+        r"^format/time/(?P<pk>[0-9]+)/delete/$",
+        views.TimeDelete.as_view(),
+        name="time_delete",
+    ),
+    re_path(r"format/$", views.FormatoList.as_view(), name="format_index"),
+    re_path(r"format/create/$", views.FormatCreate.as_view(), name="format_create"),
+    re_path(
+        r"format/detail/(?P<pk>[0-9]+)/$",
+        views.FormatDetail.as_view(),
+        name="format_detail",
     ),
     re_path(
-        r"^formato/hora/(?P<pk>[0-9]+)/delete/$",
-        views.HoraDelete.as_view(),
-        name="hora_delete",
-    ),
-    re_path(r"formato/$", views.FormatoList.as_view(), name="formato_index"),
-    re_path(r"formato/create/$", views.FormatoCreate.as_view(), name="formato_create"),
-    re_path(
-        r"formato/detail/(?P<pk>[0-9]+)/$",
-        views.FormatoDetail.as_view(),
-        name="formato_detail",
+        r"format/edit/(?P<pk>[0-9]+)/$",
+        views.FormatUpdate.as_view(),
+        name="format_update",
     ),
     re_path(
-        r"formato/edit/(?P<pk>[0-9]+)/$",
-        views.FormatoUpdate.as_view(),
-        name="formato_update",
-    ),
-    re_path(
-        r"formato/(?P<pk>[0-9]+)/delete/$",
-        views.FormatoDelete.as_view(),
-        name="formato_delete",
+        r"format/(?P<pk>[0-9]+)/delete/$",
+        views.FormatDelete.as_view(),
+        name="format_delete",
     ),
     re_path(r"^extension/$", views.ExtensionList.as_view(), name="extension_index"),
     re_path(
@@ -82,63 +82,63 @@ urlpatterns = [
         views.ExtensionDelete.as_view(),
         name="extension_delete",
     ),
+    re_path(r"^delimiter/$", views.DelimiterList.as_view(), name="delimiter_index"),
     re_path(
-        r"^delimitador/$", views.DelimitadorList.as_view(), name="delimitador_index"
+        r"delimiter/create/$",
+        views.DelimiterCreate.as_view(),
+        name="delimiter_create",
     ),
     re_path(
-        r"delimitador/create/$",
-        views.DelimitadorCreate.as_view(),
-        name="delimitador_create",
+        r"delimiter/(?P<pk>[0-9]+)/$",
+        views.DelimiterUpdate.as_view(),
+        name="delimiter_update",
     ),
     re_path(
-        r"delimitador/(?P<pk>[0-9]+)/$",
-        views.DelimitadorUpdate.as_view(),
-        name="delimitador_update",
+        r"delimiter/(?P<pk>[0-9]+)/delete/$",
+        views.DelimiterDelete.as_view(),
+        name="delimiter_delete",
     ),
     re_path(
-        r"delimitador/(?P<pk>[0-9]+)/delete/$",
-        views.DelimitadorDelete.as_view(),
-        name="delimitador_delete",
+        r"clasification/create/(?P<for_id>[0-9]+)/$",
+        views.ClasificationCreate.as_view(),
+        name="clasification_create",
     ),
     re_path(
-        r"clasificacion/create/(?P<for_id>[0-9]+)/$",
-        views.ClasificacionCreate.as_view(),
-        name="clasificacion_create",
+        r"clasification/detail/(?P<pk>[0-9]+)/$",
+        views.ClasificationDetail.as_view(),
+        name="clasification_detail",
     ),
     re_path(
-        r"clasificacion/detail/(?P<pk>[0-9]+)/$",
-        views.ClasificacionDetail.as_view(),
-        name="clasificacion_detail",
+        r"clasification/edit/(?P<pk>[0-9]+)/$",
+        views.ClasificationUpdate.as_view(),
+        name="clasification_update",
     ),
     re_path(
-        r"clasificacion/edit/(?P<pk>[0-9]+)/$",
-        views.ClasificacionUpdate.as_view(),
-        name="clasificacion_update",
+        r"clasification/(?P<pk>[0-9]+)/delete/$",
+        views.ClasificationDelete.as_view(),
+        name="clasification_delete",
     ),
     re_path(
-        r"clasificacion/(?P<pk>[0-9]+)/delete/$",
-        views.ClasificacionDelete.as_view(),
-        name="clasificacion_delete",
-    ),
-    re_path(r"^asociacion/$", views.AsociacionList.as_view(), name="asociacion_index"),
-    re_path(
-        r"asociacion/create/$",
-        views.AsociacionCreate.as_view(),
-        name="asociacion_create",
+        r"^association/$", views.AssociationList.as_view(), name="association_index"
     ),
     re_path(
-        r"asociacion/detail/(?P<pk>[0-9]+)/$",
-        views.AsociacionDetail.as_view(),
-        name="asociacion_detail",
+        r"association/create/$",
+        views.AssociationCreate.as_view(),
+        name="association_create",
     ),
     re_path(
-        r"asociacion/(?P<pk>[0-9]+)/$",
-        views.AsociacionUpdate.as_view(),
-        name="asociacion_update",
+        r"association/detail/(?P<pk>[0-9]+)/$",
+        views.AssociationDetail.as_view(),
+        name="association_detail",
     ),
     re_path(
-        r"asociacion/(?P<pk>[0-9]+)/delete/$",
-        views.AsociacionDelete.as_view(),
-        name="asociacion_delete",
+        r"association/(?P<pk>[0-9]+)/$",
+        views.AssociationUpdate.as_view(),
+        name="association_update",
+    ),
+    re_path(
+        r"association/(?P<pk>[0-9]+)/delete/$",
+        views.AssociationDelete.as_view(),
+        name="association_delete",
     ),
 ]

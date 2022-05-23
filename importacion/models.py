@@ -18,7 +18,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from formato.models import Formato
+from formato.models import Format
 from station.models import Station
 
 
@@ -28,7 +28,7 @@ class ImportacionBase(models.Model):
         Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
     for_id = models.ForeignKey(
-        Formato, models.SET_NULL, blank=True, null=True, verbose_name="Formato"
+        Format, models.SET_NULL, blank=True, null=True, verbose_name="Formato"
     )
     imp_fecha = models.DateTimeField("Fecha", auto_now_add=True)
     imp_fecha_ini = models.DateTimeField("Fecha Inicial", default=timezone.now)
