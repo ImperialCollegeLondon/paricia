@@ -146,7 +146,7 @@ class FormatCreate(PermissionRequiredMixin, CreateView):
         return context
 
 
-class FormatoList(PermissionRequiredMixin, TemplateView):
+class FormatList(PermissionRequiredMixin, TemplateView):
     template_name = "format/format_list.html"
     permission_required = "format.view_format"
 
