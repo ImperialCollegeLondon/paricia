@@ -22,39 +22,34 @@ from formatting.models import Format
 from station.models import Station
 
 
-class ImportacionBase(models.Model):
-    imp_id = models.AutoField("Id", primary_key=True)
-    station_id = models.ForeignKey(
+class ImportBase(models.Model):
+    importing_id = models.AutoField("Id", primary_key=True)
+    station = models.ForeignKey(
         Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
-    for_id = models.ForeignKey(
-        Format, models.SET_NULL, blank=True, null=True, verbose_name="Formato"
+    format = models.ForeignKey(
+        Format, models.SET_NULL, blank=True, null=True, verbose_name="Format"
     )
-    imp_fecha = models.DateTimeField("Fecha", auto_now_add=True)
-    imp_fecha_ini = models.DateTimeField("Fecha Inicial", default=timezone.now)
-    imp_fecha_fin = models.DateTimeField("Fecha Final", default=timezone.now)
-    # imp_archivo = models.FileField("Archivo", upload_to='archivos/', blank=True, null=True)
-    imp_observacion = models.TextField(
-        "Observaciones/Anotaciones", blank=True, null=True
-    )
-    usuario = models.ForeignKey(
-        User, models.SET_NULL, blank=True, null=True, verbose_name="Usuario"
+    date = models.DateTimeField("Date", auto_now_add=True)
+    start_date = models.DateTimeField("Start date", default=timezone.now)
+    end_date = models.DateTimeField("End date", default=timezone.now)
+    observations = models.TextField("Observations/Notes", blank=True, null=True)
+    user = models.ForeignKey(
+        User, models.SET_NULL, blank=True, null=True, verbose_name="Usuar"
     )
 
     class Meta:
         abstract = True
 
 
-class Importacion(ImportacionBase):
-    imp_archivo = models.FileField(
-        "Archivo", upload_to="archivos/", blank=True, null=True
-    )
+class ImportFull(ImportBase):
+    file = models.FileField("File", upload_to="files/", blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("importacion:importacion_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("-imp_fecha",)
+        ordering = ("-date",)
         permissions = [
             (
                 "descarga_archivo_original",
@@ -63,8 +58,8 @@ class Importacion(ImportacionBase):
         ]
 
 
-class ImportacionTemp(ImportacionBase):
-    imp_archivo = models.FileField("Archivo", upload_to="archivos/tmp/")
+class ImportacionTemp(ImportBase):
+    file = models.FileField("File", upload_to="files/tmp/")
 
     def get_absolute_url(self):
         return reverse("importacion:importacion_temp_detail", kwargs={"pk": self.pk})
