@@ -49,7 +49,7 @@ class Variable(models.Model):
     variable_code = models.CharField("Code", max_length=7)
     name = models.CharField("Name", max_length=50)
     unit = models.ForeignKey(
-        Unit, models.SET_NULL, blank=True, null=True, verbose_name="Unidad"
+        Unit, models.SET_NULL, blank=True, null=True, verbose_name="Unit"
     )
     maximum = models.DecimalField("Maximum", max_digits=7, decimal_places=2)
     minimum = models.DecimalField("Minimum", max_digits=7, decimal_places=2)
