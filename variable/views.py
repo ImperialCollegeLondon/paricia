@@ -176,7 +176,7 @@ class UnitUpdate(PermissionRequiredMixin, UpdateView):
         return context
 
 
-class UnidadDelete(PermissionRequiredMixin, DeleteView):
+class UnitDelete(PermissionRequiredMixin, DeleteView):
     model = Unit
     permission_required = "variable.delete_unit"
     success_url = reverse_lazy("variable:unit_index")

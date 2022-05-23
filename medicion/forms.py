@@ -56,7 +56,7 @@ class ValidacionSearchForm(forms.Form):
         empty_label="Station",
     )
     variable = forms.ModelChoiceField(
-        queryset=Variable.objects.order_by("var_id").exclude(var_id="10"),
+        queryset=Variable.objects.order_by("variable_id").exclude(variable_id="10"),
         empty_label="Variable",
     )
     inicio = forms.DateField(

@@ -39,17 +39,17 @@ urlpatterns = [
         name="variable_delete",
     ),
     re_path(r"variable/export/$", views.VariableExport, name="variable_export"),
-    re_path(r"unit/$", views.unitList.as_view(), name="unit_index"),
-    re_path(r"unit/create/$", views.unitCreate.as_view(), name="unit_create"),
+    re_path(r"unit/$", views.UnitList.as_view(), name="unit_index"),
+    re_path(r"unit/create/$", views.UnitCreate.as_view(), name="unit_create"),
     re_path(
         r"unit/detail/(?P<pk>[0-9]+)/$",
-        views.unitDetail.as_view(),
+        views.UnitDetail.as_view(),
         name="unit_detail",
     ),
-    re_path(r"unit/(?P<pk>[0-9]+)/$", views.unitUpdate.as_view(), name="unit_update"),
+    re_path(r"unit/(?P<pk>[0-9]+)/$", views.UnitUpdate.as_view(), name="unit_update"),
     re_path(
         r"unit/(?P<pk>[0-9]+)/delete/$",
-        views.unitDelete.as_view(),
+        views.UnitDelete.as_view(),
         name="unit_delete",
     ),
     re_path(
