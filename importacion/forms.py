@@ -13,11 +13,8 @@
 
 from django import forms
 
-from importacion.models import Importacion
-from station.models import Station
 
-
-class ImportacionForm(forms.Form):
-    imp_observacion = forms.CharField(
-        label="Observación", required=False, widget=forms.Textarea(attrs={"rows": "3"})
+class ImportForm(forms.Form):
+    observation = forms.CharField(
+        label="Observations", required=False, widget=forms.Textarea(attrs={"rows": "3"})
     )
