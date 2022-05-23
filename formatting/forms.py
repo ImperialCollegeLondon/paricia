@@ -13,12 +13,12 @@
 
 from django.forms import ModelForm
 
-from formatting.models import Clasification
+from formatting.models import Classification
 
 
-class ClasificationForm(ModelForm):
+class ClassificationForm(ModelForm):
     class Meta:
-        model = Clasification
+        model = Classification
         fields = [
             "variable",
             "accumulate",

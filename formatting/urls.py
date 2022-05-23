@@ -103,24 +103,24 @@ urlpatterns = [
         name="delimiter_delete",
     ),
     re_path(
-        r"clasification/create/(?P<for_id>[0-9]+)/$",
-        views.ClasificationCreate.as_view(),
-        name="clasification_create",
+        r"classification/create/(?P<for_id>[0-9]+)/$",
+        views.ClassificationCreate.as_view(),
+        name="classification_create",
     ),
     re_path(
-        r"clasification/detail/(?P<pk>[0-9]+)/$",
-        views.ClasificationDetail.as_view(),
-        name="clasification_detail",
+        r"classification/detail/(?P<pk>[0-9]+)/$",
+        views.ClassificationDetail.as_view(),
+        name="classification_detail",
     ),
     re_path(
-        r"clasification/edit/(?P<pk>[0-9]+)/$",
-        views.ClasificationUpdate.as_view(),
-        name="clasification_update",
+        r"classification/edit/(?P<pk>[0-9]+)/$",
+        views.ClassificationUpdate.as_view(),
+        name="classification_update",
     ),
     re_path(
-        r"clasification/(?P<pk>[0-9]+)/delete/$",
-        views.ClasificationDelete.as_view(),
-        name="clasification_delete",
+        r"classification/(?P<pk>[0-9]+)/delete/$",
+        views.ClassificationDelete.as_view(),
+        name="classification_delete",
     ),
     re_path(
         r"^association/$", views.AssociationList.as_view(), name="association_index"

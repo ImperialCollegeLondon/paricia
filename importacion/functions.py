@@ -35,7 +35,7 @@ def validar_fechas(importacion):
     fecha_fin = importacion.imp_fecha_fin
     for_id_id = importacion.for_id_id
     station = importacion.est_id
-    clasificacion = list(Clasification.objects.filter(for_id=for_id_id))
+    clasificacion = list(Classification.objects.filter(for_id=for_id_id))
 
     sobrescribe = False
     result = []
@@ -261,10 +261,7 @@ FROM data d
 
         with connection.cursor() as cursor:
             cursor.execute(
-                sql,
-                [
-                    data,
-                ],
+                sql, [data,],
             )
 
     ruta_final = str(importaciontemp.imp_archivo).replace("archivos/tmp/", "archivos/")
@@ -299,7 +296,7 @@ def construir_matriz(matriz_src, formato, station):
     fecha_ini = matriz.loc[0, "fecha"]
     fecha_fin = matriz.loc[matriz.shape[0] - 1, "fecha"]
 
-    clasificacion = list(Clasification.objects.filter(for_id=formato.for_id))
+    clasificacion = list(Classification.objects.filter(for_id=formato.for_id))
     datos_variables = {}
     for var in clasificacion:
         columnas = []
