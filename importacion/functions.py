@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-import io
 import os
 import shutil
 import time
@@ -23,39 +22,14 @@ import pandas as pd
 from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
-from formatting.models import Association, Clasification, Date, Time
+from formatting.models import Association, Clasification
 from importacion.models import Importacion, ImportacionTemp
-from medicion.models import (
-    Var1Medicion,
-    Var2Medicion,
-    Var3Medicion,
-    Var4Medicion,
-    Var5Medicion,
-    Var6Medicion,
-    Var7Medicion,
-    Var8Medicion,
-    Var9Medicion,
-    Var10Medicion,
-    Var11Medicion,
-    Var12Medicion,
-    Var13Medicion,
-    Var14Medicion,
-    Var15Medicion,
-    Var16Medicion,
-    Var17Medicion,
-    Var18Medicion,
-    Var19Medicion,
-    Var20Medicion,
-    Var21Medicion,
-    Var22Medicion,
-    Var23Medicion,
-    Var24Medicion,
-)
+from medicion.models import Var11Medicion, Var14Medicion
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
 
-# verificar si existen los datos
+
 def validar_fechas(importacion):
     fecha_ini = importacion.imp_fecha_ini
     fecha_fin = importacion.imp_fecha_fin
