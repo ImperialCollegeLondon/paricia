@@ -23,7 +23,7 @@ from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
-from importacion.models import Importacion, ImportacionTemp
+from importacion.models import DataImportFull, DataImportTemp
 from medicion.models import Var11Medicion, Var14Medicion
 
 unix_epoch = np.datetime64(0, "s")
@@ -264,44 +264,51 @@ def standardise_datetime(date_time, datetime_format):
     return _date_time
 
 
-# Esta funcion pasa la importación temporal a final
-def guardar_datos__temp_a_final(imp_id, form):
-    importaciontemp = ImportacionTemp.objects.get(imp_id=imp_id)
-    formato = importaciontemp.for_id
-    station = importaciontemp.station_id
-    ruta = str(BASE_DIR) + "/media/" + str(importaciontemp.imp_archivo)
+def save_temp_data_to_permanent(imp_id, form):
+    """
+    Function to pass the temporary import to the final table.
+    NOTE: Uses a lot of pure sql to insert the data, overwriting if it already exists.
+        This could probably be rewritten in python and won't work after medicion has
+        been overhauled anyway.
+    TODO: Overall, this is an important function for importing but can probably be
+        seriously simplified.
+    """
+    data_import_temp = DataImportTemp.objects.get(data_import_id=imp_id)
+    file_format = data_import_temp.format
+    station = data_import_temp.station
+    file_path = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
 
-    datos = construir_matriz(ruta, formato, station)
-    for var_id, tabla in datos.items():
-        tabla = tabla.where((pd.notnull(tabla)), None)
-        data = list(tabla.itertuples(index=False, name=None))
+    all_data = construir_matriz(file_path, file_format, station)
+    for var_id, table in all_data.items():
+        table = table.where((pd.notnull(table)), None)
+        data = list(table.itertuples(index=False, name=None))
         sql = """
 WITH
 data AS (
-    SELECT DISTINCT u.fecha, u.valor, u.station_id 
+    SELECT DISTINCT u.fecha, u.valor, u.station_id
     FROM unnest(%s::fecha__valor__station_id[]) u
     ORDER BY u.fecha ASC
 ),
 eliminar AS (
     DELETE FROM medicion_var1medicion
     WHERE station_id = (SELECT d.station_id FROM data d LIMIT 1)
-    AND fecha >= (SELECT d.fecha FROM data d ORDER BY d.fecha ASC LIMIT 1) 
-    AND fecha <= (SELECT d.fecha FROM data d ORDER BY d.fecha DESC LIMIT 1) 
+    AND fecha >= (SELECT d.fecha FROM data d ORDER BY d.fecha ASC LIMIT 1)
+    AND fecha <= (SELECT d.fecha FROM data d ORDER BY d.fecha DESC LIMIT 1)
     returning *
 )
 INSERT INTO medicion_var1medicion(fecha, valor, station_id)
-SELECT d.fecha, d.valor, d.station_id 
+SELECT d.fecha, d.valor, d.station_id
 FROM data d
 ;
 """
         sql = sql.replace("var1", "var" + str(var_id))
         sql = sql.replace(
-            "u.fecha, u.valor, u.station_id", "u." + ", u.".join(tabla.columns)
+            "u.fecha, u.valor, u.station_id", "u." + ", u.".join(table.columns)
         )
-        sql = sql.replace("fecha__valor__station_id", "__".join(tabla.columns))
-        sql = sql.replace("fecha, valor, station_id", ", ".join(tabla.columns))
+        sql = sql.replace("fecha__valor__station_id", "__".join(table.columns))
+        sql = sql.replace("fecha, valor, station_id", ", ".join(table.columns))
         sql = sql.replace(
-            "d.fecha, d.valor, d.station_id", "d." + ", d.".join(tabla.columns)
+            "d.fecha, d.valor, d.station_id", "d." + ", d.".join(table.columns)
         )
 
         with connection.cursor() as cursor:
@@ -309,28 +316,30 @@ FROM data d
                 sql,
                 [
                     data,
-                ],
+                ],  # NOQA
             )
 
-    ruta_final = str(importaciontemp.imp_archivo).replace("archivos/tmp/", "archivos/")
-    ruta_final_full = str(BASE_DIR) + "/media/" + ruta_final
-    shutil.copy(ruta, ruta_final_full)
-    importacion = Importacion(
-        station_id=importaciontemp.station_id,
-        for_id=importaciontemp.for_id,
-        imp_fecha=importaciontemp.imp_fecha,
-        imp_fecha_ini=importaciontemp.imp_fecha_ini,
-        imp_fecha_fin=importaciontemp.imp_fecha_fin,
-        imp_archivo=ruta_final,
-        imp_observacion=importaciontemp.imp_observacion,
-        usuario=importaciontemp.usuario,
+    final_file_path = str(data_import_temp.file).replace("files/tmp/", "files/")
+    final_file_path_full = str(BASE_DIR) + "/media/" + final_file_path
+    shutil.copy(file_path, final_file_path_full)
+    data_import_full = DataImportFull(
+        station=data_import_temp.station,
+        format=data_import_temp.format,
+        date=data_import_temp.date,
+        start_date=data_import_temp.start_date,
+        end_date=data_import_temp.end_date,
+        file=final_file_path,
+        observations=data_import_temp.observations,
+        user=data_import_temp.user,
     )
-    ruta_original_full = str(BASE_DIR) + "/media/" + str(importaciontemp.imp_archivo)
+    file_path_full = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
+    # Delete the temp object and save the full one
     with transaction.atomic():
-        importacion.save()
-        importaciontemp.delete()
-    os.remove(ruta_original_full)
-    return importacion.imp_id
+        data_import_full.save()
+        data_import_temp.delete()
+    # Remove the temp file itself using os.remove...
+    os.remove(file_path_full)
+    return data_import_full.data_import_id
 
 
 def construir_matriz(matriz_src, formato, station):
