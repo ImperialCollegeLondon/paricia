@@ -15,56 +15,60 @@ from django.urls import re_path
 
 from . import views
 
-app_name = "format"
+app_name = "formatting"
 urlpatterns = [
-    re_path(r"^format/date/$", views.DateList.as_view(), name="date_index"),
-    re_path(r"^format/date/create/$", views.DateCreate.as_view(), name="date_create"),
+    re_path(r"^formatting/date/$", views.DateList.as_view(), name="date_index"),
     re_path(
-        r"^format/date/detail/(?P<pk>[0-9]+)/$",
+        r"^formatting/date/create/$", views.DateCreate.as_view(), name="date_create"
+    ),
+    re_path(
+        r"^formatting/date/detail/(?P<pk>[0-9]+)/$",
         views.DateDetail.as_view(),
         name="date_detail",
     ),
     re_path(
-        r"^format/date/(?P<pk>[0-9]+)/$",
+        r"^formatting/date/(?P<pk>[0-9]+)/$",
         views.DateUpdate.as_view(),
         name="date_update",
     ),
     re_path(
-        r"^format/date/(?P<pk>[0-9]+)/delete/$",
+        r"^formatting/date/(?P<pk>[0-9]+)/delete/$",
         views.DateDelete.as_view(),
         name="date_delete",
     ),
-    re_path(r"^format/time/$", views.TimeList.as_view(), name="time_index"),
-    re_path(r"^format/time/create/$", views.TimeCreate.as_view(), name="time_create"),
+    re_path(r"^formatting/time/$", views.TimeList.as_view(), name="time_index"),
     re_path(
-        r"^format/time/detail/(?P<pk>[0-9]+)/$",
+        r"^formatting/time/create/$", views.TimeCreate.as_view(), name="time_create"
+    ),
+    re_path(
+        r"^formatting/time/detail/(?P<pk>[0-9]+)/$",
         views.TimeDetail.as_view(),
         name="time_detail",
     ),
     re_path(
-        r"^format/time/(?P<pk>[0-9]+)/$",
+        r"^formatting/time/(?P<pk>[0-9]+)/$",
         views.TimeUpdate.as_view(),
         name="time_update",
     ),
     re_path(
-        r"^format/time/(?P<pk>[0-9]+)/delete/$",
+        r"^formatting/time/(?P<pk>[0-9]+)/delete/$",
         views.TimeDelete.as_view(),
         name="time_delete",
     ),
-    re_path(r"format/$", views.FormatoList.as_view(), name="format_index"),
-    re_path(r"format/create/$", views.FormatCreate.as_view(), name="format_create"),
+    re_path(r"formatting/$", views.FormatList.as_view(), name="format_index"),
+    re_path(r"formatting/create/$", views.FormatCreate.as_view(), name="format_create"),
     re_path(
-        r"format/detail/(?P<pk>[0-9]+)/$",
+        r"formatting/detail/(?P<pk>[0-9]+)/$",
         views.FormatDetail.as_view(),
         name="format_detail",
     ),
     re_path(
-        r"format/edit/(?P<pk>[0-9]+)/$",
+        r"formatting/edit/(?P<pk>[0-9]+)/$",
         views.FormatUpdate.as_view(),
         name="format_update",
     ),
     re_path(
-        r"format/(?P<pk>[0-9]+)/delete/$",
+        r"formatting/(?P<pk>[0-9]+)/delete/$",
         views.FormatDelete.as_view(),
         name="format_delete",
     ),
@@ -99,24 +103,24 @@ urlpatterns = [
         name="delimiter_delete",
     ),
     re_path(
-        r"clasification/create/(?P<for_id>[0-9]+)/$",
-        views.ClasificationCreate.as_view(),
-        name="clasification_create",
+        r"classification/create/(?P<for_id>[0-9]+)/$",
+        views.ClassificationCreate.as_view(),
+        name="classification_create",
     ),
     re_path(
-        r"clasification/detail/(?P<pk>[0-9]+)/$",
-        views.ClasificationDetail.as_view(),
-        name="clasification_detail",
+        r"classification/detail/(?P<pk>[0-9]+)/$",
+        views.ClassificationDetail.as_view(),
+        name="classification_detail",
     ),
     re_path(
-        r"clasification/edit/(?P<pk>[0-9]+)/$",
-        views.ClasificationUpdate.as_view(),
-        name="clasification_update",
+        r"classification/edit/(?P<pk>[0-9]+)/$",
+        views.ClassificationUpdate.as_view(),
+        name="classification_update",
     ),
     re_path(
-        r"clasification/(?P<pk>[0-9]+)/delete/$",
-        views.ClasificationDelete.as_view(),
-        name="clasification_delete",
+        r"classification/(?P<pk>[0-9]+)/delete/$",
+        views.ClassificationDelete.as_view(),
+        name="classification_delete",
     ),
     re_path(
         r"^association/$", views.AssociationList.as_view(), name="association_index"

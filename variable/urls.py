@@ -1,13 +1,15 @@
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 from django.urls import path, re_path
 
@@ -37,37 +39,43 @@ urlpatterns = [
         name="variable_delete",
     ),
     re_path(r"variable/export/$", views.VariableExport, name="variable_export"),
-    re_path(r"unidad/$", views.UnidadList.as_view(), name="unidad_index"),
-    re_path(r"unidad/create/$", views.UnidadCreate.as_view(), name="unidad_create"),
+    re_path(r"unit/$", views.UnitList.as_view(), name="unit_index"),
+    re_path(r"unit/create/$", views.UnitCreate.as_view(), name="unit_create"),
     re_path(
-        r"unidad/detail/(?P<pk>[0-9]+)/$",
-        views.UnidadDetail.as_view(),
-        name="unidad_detail",
+        r"unit/detail/(?P<pk>[0-9]+)/$",
+        views.UnitDetail.as_view(),
+        name="unit_detail",
+    ),
+    re_path(r"unit/(?P<pk>[0-9]+)/$", views.UnitUpdate.as_view(), name="unit_update"),
+    re_path(
+        r"unit/(?P<pk>[0-9]+)/delete/$",
+        views.UnitDelete.as_view(),
+        name="unit_delete",
     ),
     re_path(
-        r"unidad/(?P<pk>[0-9]+)/$", views.UnidadUpdate.as_view(), name="unidad_update"
+        r"sensorinstallation/$",
+        views.SensorInstallationList.as_view(),
+        name="sensorinstallation_index",
     ),
     re_path(
-        r"unidad/(?P<pk>[0-9]+)/delete/$",
-        views.UnidadDelete.as_view(),
-        name="unidad_delete",
-    ),
-    re_path(r"control/$", views.ControlList.as_view(), name="control_index"),
-    re_path(r"control/create/$", views.ControlCreate.as_view(), name="control_create"),
-    re_path(
-        r"control/detail/(?P<pk>[0-9]+)/$",
-        views.ControlDetail.as_view(),
-        name="control_detail",
+        r"sensorinstallation/create/$",
+        views.SensorInstallationCreate.as_view(),
+        name="sensorinstallation_create",
     ),
     re_path(
-        r"control/edit/(?P<pk>[0-9]+)/$",
-        views.ControlUpdate.as_view(),
-        name="control_update",
+        r"sensorinstallation/detail/(?P<pk>[0-9]+)/$",
+        views.SensorInstallationDetail.as_view(),
+        name="sensorinstallation_detail",
     ),
     re_path(
-        r"control/(?P<pk>[0-9]+)/delete/$",
-        views.ControlDelete.as_view(),
-        name="control_delete",
+        r"sensorinstallation/edit/(?P<pk>[0-9]+)/$",
+        views.SensorInstallationUpdate.as_view(),
+        name="sensorinstallation_update",
     ),
-    path("variable/limites/", views.get_limites, name="variable_limites"),
+    re_path(
+        r"sensorinstallation/(?P<pk>[0-9]+)/delete/$",
+        views.SensorInstallationDelete.as_view(),
+        name="sensorinstallation_delete",
+    ),
+    path("variable/limits/", views.get_limits, name="variable_limits"),
 ]

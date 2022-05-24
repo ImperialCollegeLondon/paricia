@@ -22,8 +22,16 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from home.functions import modelo_a_tabla_html
 
-from .forms import ClasificationForm
-from .models import Association, Clasification, Date, Delimiter, Extension, Format, Time
+from .forms import ClassificationForm
+from .models import (
+    Association,
+    Classification,
+    Date,
+    Delimiter,
+    Extension,
+    Format,
+    Time,
+)
 
 
 #################################################################
@@ -146,7 +154,7 @@ class FormatCreate(PermissionRequiredMixin, CreateView):
         return context
 
 
-class FormatoList(PermissionRequiredMixin, TemplateView):
+class FormatList(PermissionRequiredMixin, TemplateView):
     template_name = "format/format_list.html"
     permission_required = "format.view_format"
 
@@ -177,7 +185,7 @@ class FormatDetail(PermissionRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        variable = Clasification.objects.filter(for_id=self.object.for_id)
+        variable = Classification.objects.filter(for_id=self.object.for_id)
         context["variable"] = variable
         return context
 
@@ -293,10 +301,10 @@ class DelimiterDelete(PermissionRequiredMixin, DeleteView):
     success_url = reverse_lazy("format:delimiter_index")
 
 
-# Clasification
-class ClasificationCreate(PermissionRequiredMixin, CreateView):
-    permission_required = "format.add_clasification"
-    model = Clasification
+# Classification
+class ClassificationCreate(PermissionRequiredMixin, CreateView):
+    permission_required = "format.add_classification"
+    model = Classification
     fields = [
         "variable",
         "accumulate",
@@ -315,7 +323,7 @@ class ClasificationCreate(PermissionRequiredMixin, CreateView):
     ]
 
     def post(self, request, *args, **kwargs):
-        form = ClasificationForm(self.request.POST or None)
+        form = ClassificationForm(self.request.POST or None)
         clasificacion = form.save(commit=False)
         format_id = kwargs.get("format_id")
         format = Format.objects.get(format_id=format_id)
@@ -335,9 +343,9 @@ class ClasificationCreate(PermissionRequiredMixin, CreateView):
         return context
 
 
-class ClasificationUpdate(PermissionRequiredMixin, UpdateView):
-    permission_required = "format.change_clasification"
-    model = Clasification
+class ClassificationUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = "format.change_classification"
+    model = Classification
     fields = [
         "variable",
         "accumulate",
@@ -370,9 +378,9 @@ class ClasificationUpdate(PermissionRequiredMixin, UpdateView):
         return super().post(data, **kwargs)
 
 
-class ClasificationDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = "format.delete_clasification"
-    model = Clasification
+class ClassificationDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = "format.delete_classification"
+    model = Classification
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -383,9 +391,9 @@ class ClasificationDelete(PermissionRequiredMixin, DeleteView):
         )
 
 
-class ClasificationDetail(PermissionRequiredMixin, DetailView):
-    permission_required = "format.view_clasification"
-    model = Clasification
+class ClassificationDetail(PermissionRequiredMixin, DetailView):
+    permission_required = "format.view_classification"
+    model = Classification
 
 
 # Association
