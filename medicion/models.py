@@ -10,7 +10,6 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-# type: ignore
 from __future__ import unicode_literals
 
 from typing import Type
