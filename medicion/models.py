@@ -10,10 +10,10 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-
+# type: ignore
 from __future__ import unicode_literals
 
-from typing import NamedTuple
+from typing import Type
 
 from django.db import models
 from django.urls import reverse
@@ -34,10 +34,8 @@ class PermissionsMeasurement(models.Model):
 
 class PolarWind(models.Model):
     date = models.DateTimeField("Date")
-    speed = models.DecimalField("Speed", max_digits=14, decimal_places=6, null=True)
-    direction = models.DecimalField(
-        "Direction", max_digits=14, decimal_places=6, null=True
-    )
+    speed = models.DecimalField("Speed", digits=14, decimals=6, null=True)
+    direction = models.DecimalField("Direction", digits=14, decimals=6, null=True)
 
     class Meta:
         """
@@ -61,9 +59,7 @@ class FlowThroughStation(models.Model):
     )
     start_date = models.DateTimeField("Start date")
     end_date = models.DateTimeField("End date")
-    value = models.DecimalField(
-        "Value", max_digits=14, decimal_places=6, blank=True, null=True
-    )
+    value = models.DecimalField("Value", digits=14, decimals=6, blank=True, null=True)
     calibration_sensor_strip = models.NullBooleanField("Calibration", default=False)
 
 
@@ -98,9 +94,7 @@ class LevelFunction(models.Model):
     """
 
     discharge_curve = models.ForeignKey(DischargeCurve, on_delete=models.CASCADE)
-    level = models.DecimalField(
-        "Level (cm)", max_digits=5, decimal_places=1, db_index=True
-    )
+    level = models.DecimalField("Level (cm)", digits=5, decimals=1, db_index=True)
     function = models.CharField("Function", max_length=80)
 
     def __str__(self):
@@ -154,41 +148,28 @@ class BaseMeasurement(models.Model):
 
 
 def limits_model(
-    num, max_digits=14, decimal_places=6, value=True, maximum=True, minimum=True
-) -> models.Model:
-    fields = {}
-    if value:
-        fields["value"] = models.DecimalField(
-            "Value",
-            max_digits=max_digits,
-            decimal_places=decimal_places,
+    num, digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
+) -> Type[models.Model]:
+    _fields = {
+        key.lowercase(): models.DecimalField(
+            key,
+            digits=digits,
+            decimals=decimals,
             null=True,
         )
-    if maximum:
-        fields["maximum"] = models.DecimalField(
-            "Maximum",
-            max_digits=max_digits,
-            decimal_places=decimal_places,
-            null=True,
-        )
-    if minimum:
-        fields["minimum"] = models.DecimalField(
-            "Minimum",
-            max_digits=max_digits,
-            decimal_places=decimal_places,
-            null=True,
-        )
-    return type(f"Limits{num}", (models.Model,), fields)
+        for key in fields
+    }
+
+    return type(f"Limits{num}", (models.Model,), _fields)
 
 
 class Var1Measurement(
-    BaseMeasurement,
-    limits_model(1, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    BaseMeasurement, limits_model(1, digits=6, decimals=2, fields=("Value"))
 ):
     pass
 
 
-class Var2Measurement(BaseMeasurement, limits_model(2, max_digits=5, decimal_places=2)):
+class Var2Measurement(BaseMeasurement, limits_model(2, digits=5, decimals=2)):
     pass
 
 
@@ -232,20 +213,16 @@ class Var12Measurement(BaseMeasurement, limits_model(12)):
     pass
 
 
-class Var13Measurement(BaseMeasurement, limits_model(13, maximum=False, minimum=False)):
+class Var13Measurement(BaseMeasurement, limits_model(13, fields=("Value"))):
     pass
 
 
-class Var14Measurement(BaseMeasurement, limits_model(14, maximum=False, minimum=False)):
+class Var14Measurement(
+    BaseMeasurement, limits_model(14, fields=("Value", "Incertidumbre"))
+):
     fecha_importacion = models.DateTimeField("Date Importación")
     fecha_inicio = models.DateTimeField("Date inicio datos")
     calibrado = models.BooleanField("Calibrado")
-    incertidumbre = models.DecimalField(
-        "Incertidumbre",
-        max_digits=DigVar.v14.max_digits,
-        decimal_places=DigVar.v14.decimal_places,
-        null=True,
-    )
     comentario = models.CharField("Comentario", null=True, max_length=250)
 
     class Meta:
@@ -302,7 +279,7 @@ class Var24Measurement(BaseMeasurement, limits_model(24)):
 
 class Var101Measurement(
     BaseMeasurement,
-    limits_model(101, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(101, digits=6, decimals=2, fields=("Value")),
 ):
     """
     Temperatura agua
@@ -321,7 +298,7 @@ class Var101Measurement(
 
 class Var102Measurement(
     BaseMeasurement,
-    limits_model(102, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(102, digits=6, decimals=2, fields=("Value")),
 ):
     """
     pH Acidez agua
@@ -340,7 +317,7 @@ class Var102Measurement(
 
 class Var103Measurement(
     BaseMeasurement,
-    limits_model(103, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(103, digits=6, decimals=2, fields=("Value")),
 ):
     """
     ORP : Potencial REDOX en agua
@@ -359,7 +336,7 @@ class Var103Measurement(
 
 class Var104Measurement(
     BaseMeasurement,
-    limits_model(104, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(104, digits=6, decimals=2, fields=("Value")),
 ):
     """
     Turp Turbidez en agua
@@ -378,7 +355,7 @@ class Var104Measurement(
 
 class Var105Measurement(
     BaseMeasurement,
-    limits_model(105, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(105, digits=6, decimals=2, fields=("Value")),
 ):
     """
     Chl : Concentracion Cloro
@@ -397,7 +374,7 @@ class Var105Measurement(
 
 class Var106Measurement(
     BaseMeasurement,
-    limits_model(106, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(106, digits=6, decimals=2, fields=("Value")),
 ):
     """
     HDO : Oxígeno disuelto en agua
@@ -416,7 +393,7 @@ class Var106Measurement(
 
 class Var107Measurement(
     BaseMeasurement,
-    limits_model(107, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(107, digits=6, decimals=2, fields=("Value")),
 ):
     """
     % HDO : Porcentaje Oxígeno disuelto en agua
@@ -435,7 +412,7 @@ class Var107Measurement(
 
 class Var108Measurement(
     BaseMeasurement,
-    limits_model(108, max_digits=6, decimal_places=2, maximum=False, minimum=False),
+    limits_model(108, digits=6, decimals=2, fields=("Value")),
 ):
     """
     BGAPC : Ficocianina
