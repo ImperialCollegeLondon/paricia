@@ -109,14 +109,24 @@ def data_exists_between_dates(start, end, station_id, var_id):
     return False
 
 
-def preformato_matriz(archivo_src, formato):
-    firstline = formato.for_fil_ini if formato.for_fil_ini else 0
-    skipfooter = formato.for_fil_cola if formato.for_fil_cola else 0
+def preformat_matrix(source_file, file_format):
+    """
+    First step for importing data. Works out what sort of file is being read and adds
+    standardised columns for date and datetime (str). This is used in construc_matrix.
+    Args:
+        source_file: path to (?) raw data file.
+        file_format: formatting.Format object.
+    Returns:
+        Pandas.DataFrame with raw data read and extra column(s) for date and datetime
+        (Str), which should be parsed correctly here.
+    """
+    firstline = file_format.first_row if file_format.first_row else 0
+    skipfooter = file_format.footer_rows if file_format.footer_rows else 0
 
-    if formato.ext_id.ext_valor in ["xlsx", "xlx"]:
-        # Es formato excel
-        archivo = pd.read_excel(
-            archivo_src,
+    if file_format.extension.value in ["xlsx", "xlx"]:
+        # If in Excel format
+        file = pd.read_excel(
+            source_file,
             header=None,
             skiprows=firstline - 1,
             skipfooter=skipfooter,
@@ -125,31 +135,32 @@ def preformato_matriz(archivo_src, formato):
             index_col=None,
         )
     else:
-        # No es formato excel
+        # Is not Excel format e.g. CSV
         engine = "c"
-        if not isinstance(archivo_src, str):
-            # El archivo se cargó como binario
-            lines = len(archivo_src.readlines())
-            archivo_src.seek(0)
+        if not isinstance(source_file, str):
+            # The file was uploaded as binary
+            lines = len(source_file.readlines())
+            source_file.seek(0)
             skiprows = [i - 1 for i in range(1, firstline)] + [
                 i - 1 for i in range(lines, lines - skipfooter, -1)
             ]
             skipfooter = 0
         else:
-            # El archivo es pasado como una cadena de texto
+            # The file can be read as a string
             skiprows = firstline - 1
             if skipfooter > 0:
                 engine = "python"
 
-        delimitador = formato.del_id.del_caracter
-        if "\\x" in delimitador:
-            delim_hexcode = delimitador.replace("\\x", "")
+        # Deal with the delimiter
+        delimiter = file_format.delimiter.character
+        if "\\x" in delimiter:
+            delim_hexcode = delimiter.replace("\\x", "")
             delim_intcode = eval("0x" + delim_hexcode)
-            delimitador = chr(delim_intcode)
+            delimiter = chr(delim_intcode)
 
-        if delimitador == " ":
-            archivo = pd.read_csv(
-                archivo_src,
+        if delimiter == " ":
+            file = pd.read_csv(
+                source_file,
                 delim_whitespace=True,
                 header=None,
                 index_col=False,
@@ -160,9 +171,9 @@ def preformato_matriz(archivo_src, formato):
                 error_bad_lines=False,
             )
         else:
-            archivo = pd.read_csv(
-                archivo_src,
-                sep=delimitador,
+            file = pd.read_csv(
+                source_file,
+                sep=delimiter,
                 header=None,
                 index_col=False,
                 skiprows=skiprows,
@@ -172,48 +183,50 @@ def preformato_matriz(archivo_src, formato):
                 error_bad_lines=False,
             )
 
-    formatofechahora = formato.fec_id.fec_codigo + " " + formato.hor_id.hor_codigo
-    if formato.for_col_fecha == formato.for_col_hora:
-        # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
-        archivo["fecha"] = pd.Series(
+    datetime_format = file_format.date.code + " " + file_format.time.code
+    if file_format.date_column == file_format.time_column:
+        file["date"] = pd.Series(
             [
-                verificar_fechahora(row, formatofechahora)
-                for row in archivo[formato.for_col_fecha - 1].values
+                verificar_fechahora(row, datetime_format)
+                for row in file[file_format.date_column - 1].values
             ],
-            index=archivo.index,
+            index=file.index,
         )
     else:
-        items_fecha = formato.fec_id.fec_codigo.split(delimitador)
-        cols_fecha = list(
+        date_items = file_format.date.code.split(delimiter)
+        date_cols = list(
             range(
-                formato.for_col_fecha - 1, formato.for_col_fecha - 1 + len(items_fecha)
+                file_format.date_column - 1,
+                file_format.date_column - 1 + len(date_items),
             )
         )
-        items_hora = formato.hor_id.hor_codigo.split(delimitador)
-        cols_hora = list(
-            range(formato.for_col_hora - 1, formato.for_col_hora - 1 + len(items_hora))
+        time_items = file_format.time.code.split(delimiter)
+        time_cols = list(
+            range(
+                file_format.for_col_hora - 1,
+                file_format.for_col_hora - 1 + len(time_items),
+            )
         )
-        cols = cols_fecha + cols_hora
-        # TODO añadir column from a array para evitar usar pd.Series y que tenga TYPE DATETIMTE.DATETIME
-        archivo["fechahora_str"] = pd.Series(
-            [" ".join(row.astype(str)) for row in archivo[cols].values],
-            index=archivo.index,
+        cols = date_cols + time_cols
+        file["datetime_str"] = pd.Series(
+            [" ".join(row.astype(str)) for row in file[cols].values],
+            index=file.index,
         )
-        archivo["fecha"] = pd.Series(
+        file["date"] = pd.Series(
             [
-                verificar_fechahora(row, formatofechahora)
-                for row in archivo["fechahora_str"].values
+                verificar_fechahora(row, datetime_format)
+                for row in file["datetime_str"].values
             ],
-            index=archivo.index,
+            index=file.index,
         )
 
-    archivo = archivo.sort_values("fecha")
-    archivo = archivo.reset_index(drop=True)
+    file = file.sort_values("date")
+    file = file.reset_index(drop=True)
 
-    ### Conversión en caso de formato de fecha UTC
-    if formato.es_fecha_utc == True:
-        archivo["fecha"] = archivo["fecha"] - timedelta(hours=5)
-    return archivo
+    # Conversion in case of UTC date file_format
+    if file_format.utc_date:
+        file["date"] = file["date"] - timedelta(hours=5)
+    return file
 
 
 def verificar_fechahora(fechahora, formatofechahora):
@@ -317,7 +330,7 @@ def construir_matriz(matriz_src, formato, station):
     cambiar_fecha = False
 
     # Preformato entrega matriz ordenada por fecha
-    matriz = preformato_matriz(matriz_src, formato)
+    matriz = preformat_matrix(matriz_src, formato)
     fecha_ini = matriz.loc[0, "fecha"]
     fecha_fin = matriz.loc[matriz.shape[0] - 1, "fecha"]
 
