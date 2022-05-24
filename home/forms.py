@@ -20,8 +20,8 @@ class LoginForm(forms.Form):
 
 
 OPCIONES_CARGA = [
-    ("variable_unidad.json", "VARIABLE: Unidades"),
-    ("variable_variable.json", "VARIABLE: Lista de variables"),
+    ("variable_unit.json", "VARIABLE: Units"),
+    ("variable_variable.json", "VARIABLE: List of variables"),
     ("formatting_delimiter.json", "FORMATTING: Delimiters"),
     ("formatting_extension.json", "FORMATTING: File extensions"),
     ("formatting_date.json", "FORMATTING: Date"),
