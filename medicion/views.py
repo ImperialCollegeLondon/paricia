@@ -16,180 +16,179 @@ from __future__ import unicode_literals
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
-from django.db.models import F, Prefetch, Value, Window
-from django.db.models.functions import Concat, Lag
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from home.functions import *
+from home.functions import modelo_a_tabla_html
 from medicion.models import DischargeCurve, LevelFunction
-from variable.models import Variable
 
-from .forms import NivelFuncionForm
-from .functions import *
-
-
-class CurvaDescargaList(PermissionRequiredMixin, TemplateView):
-    template_name = "medicion/curvadescarga_list.html"
-    permission_required = "medicion.view_curvadescarga"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        campos = ["id", "station__station_code", "fecha", "requiere_recalculo_caudal"]
-        curvadescarga = DischargeCurve.objects.all().values_list(*campos)
-        context["curvadescarga"] = modelo_a_tabla_html(curvadescarga, col_extra=True)
-        return context
+from .forms import LevelFunctionForm
+from .functions import level_function_table
 
 
-class CurvaDescargaCreate(PermissionRequiredMixin, CreateView):
-    model = DischargeCurve
-    fields = ["station", "fecha"]
-    permission_required = "medicion.add_curvadescarga"
+class DischargeCurveList(PermissionRequiredMixin, TemplateView):
+    template_name = "medicion/dischargecurve_list.html"
+    permission_required = "medicion.view_dischargecurve"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Crear"
+        campos = ["id", "station__station_code", "date", "require_recalculate_flow"]
+        dischargecurve = DischargeCurve.objects.all().values_list(*campos)
+        context["dischargecurve"] = modelo_a_tabla_html(dischargecurve, col_extra=True)
         return context
 
 
-class CurvaDescargaDetail(PermissionRequiredMixin, DetailView):
+class DischargeCurveCreate(PermissionRequiredMixin, CreateView):
     model = DischargeCurve
-    permission_required = "medicion.view_curvadescarga"
+    fields = ["station", "date"]
+    permission_required = "medicion.add_dischargecurve"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        curvadescarga_id = self.object.pk
-        context["nivelfunciontabla"] = nivelfunciontabla(curvadescarga_id)
+        context["title"] = "Create"
         return context
 
 
-class CurvaDescargaUpdate(PermissionRequiredMixin, UpdateView):
+class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
     model = DischargeCurve
-    permission_required = "medicion.change_curvadescarga"
-    fields = ["station", "fecha"]
+    permission_required = "medicion.view_dischargecurve"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
+        dischargecurve_id = self.object.pk
+        context["levelfunctiontable"] = level_function_table(dischargecurve_id)
         return context
 
 
-class CurvaDescargaDelete(PermissionRequiredMixin, DeleteView):
+class DischargeCurveUpdate(PermissionRequiredMixin, UpdateView):
     model = DischargeCurve
-    permission_required = "medicion.delete_curvadescarga"
-    success_url = reverse_lazy("medicion:curvadescarga_index")
+    permission_required = "medicion.change_dischargecurve"
+    fields = ["station", "date"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Modify"
+        return context
 
 
-class NivelFuncionCreate(PermissionRequiredMixin, CreateView):
-    permission_required = "medicion.add_curvadescarga"
+class DischargeCurveDelete(PermissionRequiredMixin, DeleteView):
+    model = DischargeCurve
+    permission_required = "medicion.delete_dischargecurve"
+    success_url = reverse_lazy("medicion:dischargecurve_index")
+
+
+class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
+    permission_required = "medicion.add_dischargecurve"
     model = LevelFunction
-    form_class = NivelFuncionForm
+    form_class = LevelFunctionForm
 
     def post(self, request, *args, **kwargs):
-        curvadescarga_id = kwargs.get("id")
-        curvadescarga = DischargeCurve.objects.get(pk=curvadescarga_id)
-        form = NivelFuncionForm(self.request.POST or None)
+        dischargecurve_id = kwargs.get("id")
+        dischargecurve = DischargeCurve.objects.get(pk=dischargecurve_id)
+        form = LevelFunctionForm(self.request.POST or None)
         try:
-            ## Verificar si el formulario está correcto
-            nivelfuncion = form.save(commit=False)
-        except:
-            ## Si no está correcto se envía un mensaje de Error
-            _nivelfunciontabla = nivelfunciontabla(curvadescarga_id)
-            new_nivelfuncion = render(
+            # Verify if form is correct
+            levelfunction = form.save(commit=False)
+        except Exception:
+            # If it is not, send an informative message.
+            _levelfunctiontable = level_function_table(dischargecurve_id)
+            new_levelfunction = render(
                 request,
-                "medicion/nivelfuncion_form.html",
-                {"form": NivelFuncionForm(self.request.POST or None)},
+                "medicion/levelfunction_form.html",
+                {"form": LevelFunctionForm(self.request.POST or None)},
             )
             return render(
                 request,
-                "medicion/curvadescarga_detail.html",
+                "medicion/dischargecurve_detail.html",
                 {
-                    "curvadescarga": curvadescarga,
-                    "nivelfunciontabla": _nivelfunciontabla,
-                    "new_nivelfuncion": new_nivelfuncion.content.decode("utf-8"),
+                    "dischargecurve": dischargecurve,
+                    "levelfunctiontable": _levelfunctiontable,
+                    "new_levelfunction": new_levelfunction.content.decode("utf-8"),
                 },
             )
-        nivelfuncion.curvadescarga = curvadescarga
-        nivelfuncion.save()
-        curvadescarga.requiere_recalculo_caudal = True
-        curvadescarga.save()
-        url = reverse("medicion:curvadescarga_detail", kwargs={"pk": curvadescarga_id})
+        levelfunction.dischargecurve = dischargecurve
+        levelfunction.save()
+        dischargecurve.requiere_recalculo_caudal = True
+        dischargecurve.save()
+        url = reverse(
+            "medicion:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
+        )
         return HttpResponseRedirect(url)
 
     def get_context_data(self, **kwargs):
-        context = super(NivelFuncionCreate, self).get_context_data(**kwargs)
-        context["title"] = "Crear"
-        curvadescarga_id = self.kwargs.get("id")
+        context = super(LevelFunctionCreate, self).get_context_data(**kwargs)
+        context["title"] = "Create"
+        dischargecurve_id = self.kwargs.get("id")
         context["url"] = reverse(
-            "medicion:nivelfuncion_create", kwargs={"id": curvadescarga_id}
+            "medicion:levelfunction_create", kwargs={"id": dischargecurve_id}
         )
         return context
 
 
-class NivelFuncionUpdate(PermissionRequiredMixin, UpdateView):
-    permission_required = "medicion.change_curvadescarga"
+class LevelFunctionUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = "medicion.change_dischargecurve"
     model = LevelFunction
-    fields = ["nivel", "funcion"]
+    fields = ["level", "function"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Modificar"
-        nivelfuncion_pk = self.kwargs.get("pk")
+        context["title"] = "Modify"
+        levelfunction_pk = self.kwargs.get("pk")
         context["url"] = reverse(
-            "medicion:nivelfuncion_update", kwargs={"pk": nivelfuncion_pk}
+            "medicion:levelfunction_update", kwargs={"pk": levelfunction_pk}
         )
-        context["curvadescarga_id"] = self.object.curvadescarga.id
+        context["dischargecurve_id"] = self.object.dischargecurve.id
         return context
 
     def post(self, request, *args, **kwargs):
         data = request.POST.copy()
-        curvadescarga_id = data.get("curvadescarga_id")
-        curvadescarga = DischargeCurve.objects.get(pk=curvadescarga_id)
-        curvadescarga.requiere_recalculo_caudal = True
-        curvadescarga.save()
+        dischargecurve_id = data.get("dischargecurve_id")
+        dischargecurve = DischargeCurve.objects.get(pk=dischargecurve_id)
+        dischargecurve.require_recalculate_flow = True
+        dischargecurve.save()
         self.success_url = reverse(
-            "medicion:curvadescarga_detail", kwargs={"pk": curvadescarga_id}
+            "medicion:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
         )
         return super().post(data, **kwargs)
 
 
-class NivelFuncionDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = "medicion.delete_curvadescarga"
+class LevelFunctionDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = "medicion.delete_dischargecurve"
     model = LevelFunction
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        curvadescarga = self.object.curvadescarga
-        curvadescarga.requiere_recalculo_caudal = True
-        curvadescarga.save()
+        dischargecurve = self.object.dischargecurve
+        dischargecurve.require_recalculate_flow = True
+        dischargecurve.save()
         self.object.delete()
         return HttpResponseRedirect(
-            reverse("medicion:curvadescarga_detail", kwargs={"pk": curvadescarga.id})
+            reverse("medicion:dischargecurve_detail", kwargs={"pk": dischargecurve.id})
         )
 
 
-class NivelFuncionDetail(PermissionRequiredMixin, DetailView):
-    permission_required = "medicion.view_curvadescarga"
+class LevelFunctionDetail(PermissionRequiredMixin, DetailView):
+    permission_required = "medicion.view_dischargecurve"
     model = LevelFunction
 
 
-@permission_required("medicion.add_curvadescarga")
+@permission_required("medicion.add_dischargecurve")
 def recalcular_caudal(request):
-    curvadescarga_id = int(request.POST.get("curvadescarga_id", None))
-    sql = "SELECT calcular_caudal(%s);"
+    dischargecurve_id = int(request.POST.get("dischargecurve_id", None))
+    sql = "SELECT calculate_flow(%s);"
     try:
         with connection.cursor() as cursor:
-            cursor.execute(sql, [curvadescarga_id])
-            res = cursor.fetchone()
-    except:
+            cursor.execute(sql, [dischargecurve_id])
+            cursor.fetchone()
+    except Exception:
         lista = {"res": False}
         return JsonResponse(lista)
-    curvadescarga = DischargeCurve.objects.get(pk=curvadescarga_id)
-    curvadescarga.requiere_recalculo_caudal = False
-    curvadescarga.save()
+    dischargecurve = DischargeCurve.objects.get(pk=dischargecurve_id)
+    dischargecurve.require_recalculate_flow = False
+    dischargecurve.save()
     lista = {"res": True}
     return JsonResponse(lista)
