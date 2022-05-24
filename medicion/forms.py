@@ -31,7 +31,7 @@ class LevelFunctionForm(forms.ModelForm):
 
         # Verifica si tiene letra H
         if "H" not in function:
-            raise ValidationError("Debe incluir el parámetro H (level de agua)")
+            raise ValidationError("It muts include parameter H (whater level)")
 
         # Verifica si la función devuelve resultado
         test_func = function.replace("H", "10")
@@ -42,10 +42,10 @@ class LevelFunctionForm(forms.ModelForm):
                 len = cursor.rowcount
                 cursor.fetchall()
         except Exception as err:
-            raise ValidationError(f"Error en la sintáxis de la fórmula. {err}")
+            raise ValidationError(f"Formula sintax error. {err}")
 
         if len < 1:
-            raise ValidationError("Error en la sintáxis de la fórmula. No rows found!")
+            raise ValidationError("Formula sintax error. No rows found!")
         return function
 
 
@@ -63,13 +63,13 @@ class ValidationSearchForm(forms.Form):
     inicio = forms.DateField(
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
         input_formats=["%Y-%m-%d"],
-        label="Fecha de Inicio",
+        label="Start date",
         required=True,
     )
     fin = forms.DateField(
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
         input_formats=["%Y-%m-%d"],
-        label="Fecha de Fin",
+        label="End date",
         required=True,
     )
     limite_inferior = forms.IntegerField(required=False)
