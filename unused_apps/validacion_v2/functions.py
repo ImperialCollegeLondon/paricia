@@ -21,7 +21,7 @@ from django.db import connection, models
 from django.http import HttpResponse
 
 from home.functions import dictfetchall
-from medicion.functions import ReporteValidacion
+from medicion.functions import ValidationReport
 from validacion_v2.abstract import (
     ReporteCrudos,
     ReporteDiario,
