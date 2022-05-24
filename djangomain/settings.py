@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     "station.apps.StationConfig",
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
-    "format.apps.FormatConfig",
+    "formatting.apps.FormattingConfig",
     "medicion.apps.MedicionConfig",
     "importacion.apps.ImportacionConfig",
     "bootstrap4",

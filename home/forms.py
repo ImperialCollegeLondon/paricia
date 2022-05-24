@@ -22,12 +22,12 @@ class LoginForm(forms.Form):
 OPCIONES_CARGA = [
     ("variable_unidad.json", "VARIABLE: Unidades"),
     ("variable_variable.json", "VARIABLE: Lista de variables"),
-    ("formato_delimitador.json", "FORMATO: Delimitadores"),
-    ("formato_extension.json", "FORMATO: Extensiones de archivo"),
-    ("formato_fecha.json", "FORMATO: Fecha"),
-    ("formato_hora.json", "FORMATO: Hora"),
-    ("formato_formato.json", "FORMATO: Formato de importación"),
-    ("formato_clasificacion.json", "FORMATO: Clasificación"),
+    ("formatting_delimiter.json", "FORMATTING: Delimiters"),
+    ("formatting_extension.json", "FORMATTING: File extensions"),
+    ("formatting_date.json", "FORMATTING: Date"),
+    ("formatting_time.json", "FORMATTING: Time"),
+    ("formatting_format.json", "FORMATTING: Import format"),
+    ("formatting_classification.json", "FORMATTING: Classification"),
     # ("frecuencia_tipofrecuencia.json", "FRECUENCIA: Tipo"),
     # ("telemetria_alarmatipoestado.json", "TELEMETRÍA: Estados de alarma"),
     ("sensor_marca.json", "SENSOR: Marca"),
@@ -42,7 +42,7 @@ OPCIONES_CARGA = [
     ("station_placebasin.json", "STATION: Association Place-Basin"),
     ("station_institution.json", "STATION: Institution"),
     ("station_station.json", "STATION: Station"),
-    ("formato_asociacion.json", "FORMATO/STATION: Association Format-Station"),
+    ("format_association.json", "FORMATTING/STATION: Association Format-Station"),
 ]
 
 

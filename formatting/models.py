@@ -57,7 +57,7 @@ class Date(models.Model):
     """
 
     date_id = models.AutoField("Id", primary_key=True)
-    format = models.CharField("Format", max_length=20)
+    date_format = models.CharField("Format", max_length=20)
     code = models.CharField("Code", max_length=20)
 
     def __str__(self):
@@ -76,7 +76,7 @@ class Time(models.Model):
     """
 
     time_id = models.AutoField("Id", primary_key=True)
-    format = models.CharField("Format", max_length=20)
+    time_format = models.CharField("Format", max_length=20)
     code = models.CharField("Code", max_length=20)
 
     def __str__(self):
@@ -139,7 +139,7 @@ class Format(models.Model):
     )
     time_column = models.SmallIntegerField("Time column")
     format_type = models.CharField(
-        "Tipo de Formato",
+        "Format type",
         max_length=25,
         choices=(
             ("automatic", "automatic"),
@@ -155,12 +155,12 @@ class Format(models.Model):
         return reverse("format:format_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("-for_id",)
+        ordering = ("-format_id",)
 
 
-class Clasification(models.Model):
+class Classification(models.Model):
     """
-    Classification details.
+    Classification details, combining a Format, Variable with some other properties.
     """
 
     cls_id = models.AutoField("Id", primary_key=True)
@@ -205,7 +205,7 @@ class Clasification(models.Model):
         return reverse("format:clasificacion_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("var_id",)
+        ordering = ("variable",)
 
 
 class Association(models.Model):
@@ -225,7 +225,7 @@ class Association(models.Model):
         return reverse("format:association_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("aso_id",)
+        ordering = ("association_id",)
         unique_together = (
             "station",
             "format",

@@ -11,10 +11,27 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
+from django.forms import ModelForm
 
-from django.apps import AppConfig
+from formatting.models import Classification
 
 
-class FormatConfig(AppConfig):
-    name = "format"
+class ClassificationForm(ModelForm):
+    class Meta:
+        model = Classification
+        fields = [
+            "variable",
+            "accumulate",
+            "incremental",
+            "resolution",
+            "decimal_comma",
+            "value",
+            "value_validator_column",
+            "value_validator_text",
+            "maximum",
+            "maximum_validator_column",
+            "maximum_validator_text",
+            "minimum",
+            "minimum_validator_column",
+            "minimum_validator_text",
+        ]
