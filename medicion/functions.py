@@ -10,7 +10,6 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-
 from django.db import models
 
 
@@ -121,5 +120,5 @@ def level_function_table(curvadescarga_id):
     (SELECT eval_math(f.f5)) AS flow5,
     (SELECT eval_math(f.f_sup)) AS flow_sup
     FROM funciones f ORDER BY f.level_inf;    
-    """
+    """  # noqa: W291
     return LevelFunctionTable.objects.raw(sql, [curvadescarga_id])
