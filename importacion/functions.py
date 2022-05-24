@@ -187,7 +187,7 @@ def preformat_matrix(source_file, file_format):
     if file_format.date_column == file_format.time_column:
         file["date"] = pd.Series(
             [
-                verificar_fechahora(row, datetime_format)
+                standardise_datetime(row, datetime_format)
                 for row in file[file_format.date_column - 1].values
             ],
             index=file.index,
@@ -214,7 +214,7 @@ def preformat_matrix(source_file, file_format):
         )
         file["date"] = pd.Series(
             [
-                verificar_fechahora(row, datetime_format)
+                standardise_datetime(row, datetime_format)
                 for row in file["datetime_str"].values
             ],
             index=file.index,
@@ -229,32 +229,39 @@ def preformat_matrix(source_file, file_format):
     return file
 
 
-def verificar_fechahora(fechahora, formatofechahora):
-    if isinstance(fechahora, datetime):
-        return fechahora
-    elif isinstance(fechahora, np.datetime64):
-        fechahora = datetime.utcfromtimestamp((fechahora - unix_epoch) / one_second)
-        return fechahora
-    elif isinstance(fechahora, str):
+def standardise_datetime(date_time, datetime_format):
+    """
+    Returns a datetime object in the case that date_time is not already in that form.
+    Args:
+        date_time: The date_time to be transformed.
+        datetime_format: The format that date_time is in (to be passed to
+            datetime.strptime()).
+    """
+
+    if isinstance(date_time, datetime):
+        return date_time
+    elif isinstance(date_time, np.datetime64):
+        date_time = datetime.utcfromtimestamp((date_time - unix_epoch) / one_second)
+        return date_time
+    elif isinstance(date_time, str):
         pass
-        # valores = fechahora.split(" ")
-        # valores = list(filter(None, valores))
-        # fechahora_str = valores[0].strip('\"') + ' ' + valores[1].strip('\"')
 
-    elif isinstance(fechahora, list):
-        fechahora = " ".join(fechahora)
+    elif isinstance(date_time, list):
+        date_time = " ".join(date_time)
 
-    elif isinstance(fechahora, pd.Series):
-        fechahora = " ".join([str(val) for val in list(fechahora[:])])
+    elif isinstance(date_time, pd.Series):
+        date_time = " ".join([str(val) for val in list(date_time[:])])
 
     else:
-        fechahora = ""
+        date_time = ""
 
+    # Now try converting the resulting string into a datetime obj
     try:
-        _fechahora = datetime.strptime(fechahora, formatofechahora)
+        _date_time = datetime.strptime(date_time, datetime_format)
     except:
-        _fechahora = None
-    return _fechahora
+        # TODO: Fix bare except statement
+        _date_time = None
+    return _date_time
 
 
 # Esta funcion pasa la importación temporal a final
@@ -299,7 +306,10 @@ FROM data d
 
         with connection.cursor() as cursor:
             cursor.execute(
-                sql, [data,],
+                sql,
+                [
+                    data,
+                ],
             )
 
     ruta_final = str(importaciontemp.imp_archivo).replace("archivos/tmp/", "archivos/")
