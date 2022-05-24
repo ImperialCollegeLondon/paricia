@@ -15,40 +15,41 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import connection
 
-from station.models import Station, StationType
+from station.models import Station
 from variable.models import Variable
 
 from .models import LevelFunction
 
 
-class NivelFuncionForm(forms.ModelForm):
+class LevelFunctionForm(forms.ModelForm):
     class Meta:
         model = LevelFunction
-        fields = ["nivel", "funcion"]
+        fields = ["level", "function"]
 
-    def clean_funcion(self):
-        funcion = self.cleaned_data["funcion"]
+    def clean_function(self):
+        function = self.cleaned_data["function"]
 
-        ## Verifica si tiene letra H
-        if "H" not in funcion:
-            raise ValidationError("Debe incluir el parámetro H (nivel de agua)")
+        # Verifica si tiene letra H
+        if "H" not in function:
+            raise ValidationError("Debe incluir el parámetro H (level de agua)")
 
-        ## Verifica si la función devuelve resultado
-        test_func = funcion.replace("H", "10")
+        # Verifica si la función devuelve resultado
+        test_func = function.replace("H", "10")
         sql = "SELECT eval_math('" + test_func + "');"
         try:
             with connection.cursor() as cursor:
                 cursor.execute(sql)
                 len = cursor.rowcount
-                res = cursor.fetchall()
-        except:
-            raise ValidationError("Error en la sintáxis de la fórmula")
+                cursor.fetchall()
+        except Exception as err:
+            raise ValidationError(f"Error en la sintáxis de la fórmula. {err}")
+
         if len < 1:
-            raise ValidationError("Error en la sintáxis de la fórmula")
-        return funcion
+            raise ValidationError("Error en la sintáxis de la fórmula. No rows found!")
+        return function
 
 
-class ValidacionSearchForm(forms.Form):
+class ValidationSearchForm(forms.Form):
     station = forms.ModelChoiceField(
         queryset=Station.objects.order_by("station_code").filter(
             station_external=False, station_type__in=(1, 2, 3)
@@ -73,9 +74,9 @@ class ValidacionSearchForm(forms.Form):
     )
     limite_inferior = forms.IntegerField(required=False)
     limite_superior = forms.IntegerField(required=False)
-    # revalidar = forms.BooleanField(label="Revalidar", help_text='Marcar si deseas borrar la última validacion')
+
     def __init__(self, *args, **kwargs):
-        super(ValidacionSearchForm, self).__init__(*args, **kwargs)
+        super(ValidationSearchForm, self).__init__(*args, **kwargs)
         self.fields["station"].widget.attrs["placeholder"] = self.fields[
             "station"
         ].label
