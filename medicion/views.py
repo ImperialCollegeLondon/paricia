@@ -177,7 +177,7 @@ class LevelFunctionDetail(PermissionRequiredMixin, DetailView):
 
 
 @permission_required("medicion.add_dischargecurve")
-def recalcular_caudal(request):
+def recalculate_flow(request):
     dischargecurve_id = int(request.POST.get("dischargecurve_id", None))
     sql = "SELECT calculate_flow(%s);"
     try:
