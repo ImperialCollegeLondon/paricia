@@ -33,6 +33,10 @@ class PermissionsMeasurement(models.Model):
 
 
 class PolarWind(models.Model):
+    """
+    Polar Wind measurement with a velocity and direction at a specific date.
+    """
+
     date = models.DateTimeField("Date")
     speed = models.DecimalField("Speed", digits=14, decimals=6, null=True)
     direction = models.DecimalField("Direction", digits=14, decimals=6, null=True)
@@ -48,24 +52,12 @@ class PolarWind(models.Model):
         managed = False
 
 
-class FlowThroughStation(models.Model):
-    """
-    Flow (of water) through the station.
-    """
-
-    id = models.AutoField("Id", primary_key=True)
-    station = models.ForeignKey(
-        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
-    )
-    start_date = models.DateTimeField("Start date")
-    end_date = models.DateTimeField("End date")
-    value = models.DecimalField("Value", digits=14, decimals=6, blank=True, null=True)
-    calibration_sensor_strip = models.NullBooleanField("Calibration", default=False)
-
-
 class DischargeCurve(models.Model):
     """
-    NOTE: No idea what this is -> Ask Pablo
+    Discharge curve.
+
+    Relates a station and a date and a bool as to whether a flow recalculation is
+    required.
     """
 
     id = models.AutoField("Id", primary_key=True)
@@ -90,6 +82,8 @@ class DischargeCurve(models.Model):
 
 class LevelFunction(models.Model):
     """
+    Function Level. Relates a dischage curve to a level (in cm) to a function.
+
     NOTE: No idea what this is -> Ask Pablo
     """
 
@@ -109,26 +103,6 @@ class LevelFunction(models.Model):
             "discharge_curve",
             "level",
         )
-
-
-class CursorDbclima(models.Model):
-    """
-    NOTE: No idea what this is -> Ask Pablo
-    """
-
-    station_id = models.IntegerField(primary_key=True)
-    date = models.DateTimeField(null=True)
-
-
-class CursorEmaaphidro(models.Model):
-    """
-    NOTE: No idea what this is -> Ask Pablo
-    """
-
-    station_id_paramh2o = models.IntegerField(primary_key=True)
-    station_id_emaaphidro = models.SmallIntegerField()
-    station_code = models.CharField(max_length=4)
-    date = models.DateTimeField()
 
 
 ##############################################################
@@ -166,47 +140,47 @@ def limits_model(
 class Var1Measurement(
     BaseMeasurement, limits_model(1, digits=6, decimals=2, fields=("Value"))
 ):
-    pass
+    """Precipitation."""
 
 
 class Var2Measurement(BaseMeasurement, limits_model(2, digits=5, decimals=2)):
-    pass
+    """Air temperature."""
 
 
 class Var3Measurement(BaseMeasurement, limits_model(3)):
-    pass
+    """Humidity."""
 
 
 class Var4Measurement(BaseMeasurement, limits_model(4)):
-    pass
+    """Wind velocity."""
 
 
 class Var5Measurement(BaseMeasurement, limits_model(5)):
-    pass
+    """Wind direction."""
 
 
 class Var6Measurement(BaseMeasurement, limits_model(6)):
-    pass
+    """Soil moisture."""
 
 
 class Var7Measurement(BaseMeasurement, limits_model(7)):
-    pass
+    """Solar radiation."""
 
 
 class Var8Measurement(BaseMeasurement, limits_model(8)):
-    pass
+    """Atmospheric pressure."""
 
 
 class Var9Measurement(BaseMeasurement, limits_model(9)):
-    pass
+    """Water temperature."""
 
 
 class Var10Measurement(BaseMeasurement, limits_model(10)):
-    pass
+    """Flow."""
 
 
 class Var11Measurement(BaseMeasurement, limits_model(11)):
-    pass
+    """Water level."""
 
 
 class Var12Measurement(BaseMeasurement, limits_model(12)):
@@ -281,11 +255,7 @@ class Var101Measurement(
     BaseMeasurement,
     limits_model(101, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    Temperatura agua
-        Depth en centimetros
-        Unidad : grados Celcius
-    """
+    """Water temperature (degrees celcius) at a depth in cm."""
 
     depth = models.PositiveSmallIntegerField("Depth")
 
@@ -300,11 +270,7 @@ class Var102Measurement(
     BaseMeasurement,
     limits_model(102, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    pH Acidez agua
-        Depth en centimetros
-        Unidad : pH
-    """
+    """Water acidity (pH) at a depth in cm."""
 
     depth = models.PositiveSmallIntegerField("Depth")
 
@@ -319,11 +285,7 @@ class Var103Measurement(
     BaseMeasurement,
     limits_model(103, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    ORP : Potencial REDOX en agua
-        Depth en centimetros
-        Unidad : mV
-    """
+    """Redox potential (mV) at a depth in cm."""
 
     depth = models.PositiveSmallIntegerField("Depth")
 
@@ -338,11 +300,7 @@ class Var104Measurement(
     BaseMeasurement,
     limits_model(104, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    Turp Turbidez en agua
-        Depth en centimetros
-        Unidad : NTU
-    """
+    """Water turbidity (NTU) at a depth in cm."""
 
     depth = models.PositiveSmallIntegerField("Depth")
 
@@ -357,11 +315,7 @@ class Var105Measurement(
     BaseMeasurement,
     limits_model(105, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    Chl : Concentracion Cloro
-        Depth en centimetros
-        Unidad : ug/l
-    """
+    """Chlorine concentration (ug/l) at a depth in cm."""
 
     depth = models.PositiveSmallIntegerField("Depth")
 
@@ -376,11 +330,7 @@ class Var106Measurement(
     BaseMeasurement,
     limits_model(106, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    HDO : Oxígeno disuelto en agua
-        Depth en centimetros
-        Unidad : mg/l
-    """
+    """Oxygen concentration (mg/l) at a depth in cm."""
 
     depth = models.PositiveSmallIntegerField("Depth")
 
@@ -395,10 +345,10 @@ class Var107Measurement(
     BaseMeasurement,
     limits_model(107, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    % HDO : Porcentaje Oxígeno disuelto en agua
-        Depth en centimetros
-        Unidad : mg/l
+    """Percentage oxygen concentration (mg/l) at a depth in cm.
+
+    HELPWANTED: Is this wrong? It's teh same as above, perhaps units should
+    be %? --> DIEGO: Looks identical to the previous one to me. It might be an error.
     """
 
     depth = models.PositiveSmallIntegerField("Depth")
@@ -414,11 +364,7 @@ class Var108Measurement(
     BaseMeasurement,
     limits_model(108, digits=6, decimals=2, fields=("Value")),
 ):
-    """
-    BGAPC : Ficocianina
-        Depth en centimetros
-        Unidad :
-    """
+    """Phycocyanin (?) at a depth in cm."""
 
     depth = models.PositiveSmallIntegerField("Depth")
 
