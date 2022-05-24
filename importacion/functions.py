@@ -278,7 +278,7 @@ def save_temp_data_to_permanent(imp_id, form):
     station = data_import_temp.station
     file_path = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
 
-    all_data = construir_matriz(file_path, file_format, station)
+    all_data = construct_matrix(file_path, file_format, station)
     for var_id, table in all_data.items():
         table = table.where((pd.notnull(table)), None)
         data = list(table.itertuples(index=False, name=None))
@@ -342,116 +342,130 @@ FROM data d
     return data_import_full.data_import_id
 
 
-def construir_matriz(matriz_src, formato, station):
-    # TODO : Eliminar validar_datalogger, validar acumulado
-    # determinar si debemos restar 5 horas a la fecha del archivo
-    # cambiar_fecha = validar_datalogger(formato.mar_id)
-    cambiar_fecha = False
+def construct_matrix(matrix_source, file_format, station):
+    """
+    Construct the "matrix" or results table. Does various cleaning / simple
+    transformations depending on the date format, type of data (accumulated,
+    incremental...) and deals with NANs.
+    Args:
+        matrix_source: raw data file (file path?)
+        file_format: a formatting.Format object.
+    Returns: Dict of dataframes for results (one for each variable type in the raw data
+        file).
+    TODO: Probably refactor into smaller chunks.
+    """
 
-    # Preformato entrega matriz ordenada por fecha
-    matriz = preformat_matrix(matriz_src, formato)
-    fecha_ini = matriz.loc[0, "fecha"]
-    fecha_fin = matriz.loc[matriz.shape[0] - 1, "fecha"]
+    # Get the "preformatted matrix" sorted by date col
+    matrix = preformat_matrix(matrix_source, file_format)
+    # Find start and end dates from top and bottom row
+    start_date = matrix.loc[0, "date"]
+    end_date = matrix.loc[matrix.shape[0] - 1, "date"]
 
-    clasificacion = list(Classification.objects.filter(for_id=formato.for_id))
-    datos_variables = {}
-    for var in clasificacion:
-        columnas = []
-        columnas.append(("fecha", "fecha"))
-        ##
-        columnas.append((var.cla_valor - 1, "valor"))
-        if var.col_validador_valor:
-            # matriz[var.cla_valor - 1][matriz[var.col_validador_valor - 1] != var.txt_validador_valor] = np.nan
-            matriz.loc[
-                matriz[var.col_validador_valor - 1] != var.txt_validador_valor,
-                var.cla_valor - 1,
+    classifications = list(Classification.objects.filter(format=file_format))
+    variables_data = {}
+    for classification in classifications:
+        columns = []
+        columns.append(("date", "date"))
+
+        # Validation of values
+        columns.append((classification.value - 1, "value"))
+        if classification.value_validator_column:
+            matrix.loc[
+                matrix[classification.value_validator_column - 1]
+                != classification.value_validator_text,
+                classification.value - 1,
             ] = np.nan
-        ##
-        if var.cla_maximo:
-            columnas.append((var.cla_maximo - 1, "maximo"))
-        if var.col_validador_maximo:
-            # matriz[var.cla_maximo - 1][matriz[var.col_validador_maximo - 1] != var.txt_validador_maximo] = np.nan
-            matriz.loc[
-                matriz[var.col_validador_maximo - 1] != var.txt_validador_maximo,
-                var.cla_maximo - 1,
-            ] = np.nan
-        ##
-        if var.cla_minimo:
-            columnas.append((var.cla_minimo - 1, "minimo"))
-        if var.col_validador_minimo:
-            # matriz[var.cla_minimo - 1][matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo] = np.nan
-            matriz.loc[
-                matriz[var.col_validador_minimo - 1] != var.txt_validador_minimo,
-                var.cla_minimo - 1,
-            ] = np.nan
-        ##
 
-        datos = matriz.loc[:, [v[0] for v in columnas]]
-        datos.rename(columns=dict(columnas), inplace=True)
+        # Validation of maximum
+        if classification.maximum:
+            columns.append((classification.maximum - 1, "maximum"))
+        if classification.maximum_validator_column:
+            matrix.loc[
+                matrix[classification.maximum_validator_column - 1]
+                != classification.maximum_validator_text,
+                classification.maximum - 1,
+            ] = np.nan
 
-        for col in datos:
-            if col == "fecha":
+        # Validation of minimum
+        if classification.minimum:
+            columns.append((classification.minimum - 1, "minimum"))
+        if classification.minimum_validator_column:
+            matrix.loc[
+                matrix[classification.minimum_validator_column - 1]
+                != classification.minimum_validator_text,
+                classification.minimum - 1,
+            ] = np.nan
+
+        data = matrix.loc[:, [v[0] for v in columns]]
+        data.rename(columns=dict(columns), inplace=True)
+
+        # More data cleaning, column by column, deal with decimal comma vs point.
+        for col in data:
+            if col == "date":
                 continue
-
-            if var.coma_decimal:
-                datos[col] = pd.Series(
-                    [numero_coma_decimal(val) for val in datos[col].values],
-                    index=matriz.index,
+            if classification.decimal_comma:
+                data[col] = pd.Series(
+                    [numero_coma_decimal(val) for val in data[col].values],
+                    index=matrix.index,
                 )
             else:
-                datos[col] = pd.Series(
-                    [numero_punto_decimal(val) for val in datos[col].values],
-                    index=matriz.index,
+                data[col] = pd.Series(
+                    [numero_punto_decimal(val) for val in data[col].values],
+                    index=matrix.index,
                 )
 
-        ## Eliminar NAs
-        columnas_datos = [columna[1] for columna in columnas if columna[1] != "fecha"]
-        datos = datos.dropna(axis=0, how="all", subset=columnas_datos)
+        # Eliminate NAs
+        data_columns = [column[1] for column in columns if column[1] != "date"]
+        data = data.dropna(axis=0, how="all", subset=data_columns)
 
-        if var.acumular:
-            # Se asume que si es incremental solo trabaja con VALOR (Se excluye MAXIMO y MINIMO)
-            if var.incremental:
-                datos["valor"] = datos["valor"].diff()
-                # datos['valor'][datos['valor'] < 0] = np.nan
-                datos.loc[datos["valor"] < 0, "valor"] = np.nan
-                datos = datos.dropna()
-            datos["fecha"] = datos["fecha"].apply(
+        # Deal with cumulative and incremental data
+        if classification.accumulate:
+            # assumes that if incremental it only works with VALUE
+            # (MAXIMUM and MINIMUM are excluded)
+            if classification.incremental:
+                data["value"] = data["value"].diff()
+                data.loc[data["valor"] < 0, "valor"] = np.nan
+                data = data.dropna()
+            data["date"] = data["date"].apply(
                 lambda x: x.replace(
                     minute=int(x.minute / 5) * 5, second=0, microsecond=0, nanosecond=0
                 )
             )
-            datos["fecha"] = datos["fecha"] + pd.Timedelta(minutes=5)
-            cuenta = datos.groupby("fecha")["valor"].sum().to_frame()
-            datos = cuenta["valor"] * float(var.resolucion)
+            data["date"] = data["date"] + pd.Timedelta(minutes=5)
+            count = data.groupby("date")["value"].sum().to_frame()
+            data = count["value"] * float(classification.resolucion)
 
-            fecha_ini = fecha_ini.replace(
-                minute=int(fecha_ini.minute / 5) * 5,
+            start_date = start_date.replace(
+                minute=int(start_date.minute / 5) * 5,
                 second=0,
                 microsecond=0,
                 nanosecond=0,
             ) + pd.Timedelta(minutes=5)
-            fecha_fin = fecha_fin.replace(
-                minute=int(fecha_fin.minute / 5) * 5,
+            end_date = end_date.replace(
+                minute=int(end_date.minute / 5) * 5,
                 second=0,
                 microsecond=0,
                 nanosecond=0,
             ) + pd.Timedelta(minutes=5)
-            tabla = pd.date_range(
-                fecha_ini, fecha_fin, freq="5min", name="fecha"
+            table = pd.date_range(
+                start_date, end_date, freq="5min", name="fecha"
             ).to_frame()
-            datos = pd.concat([tabla, datos], axis=1)
-            datos = datos.fillna(0)
+            data = pd.concat([table, data], axis=1)
+            data = data.fillna(0)
+
+        # Deal with non cumulative but incremental data
         else:
-            if var.incremental:
-                datos["valor"] = datos["valor"].diff()
-                # datos['valor'][datos['valor'] < 0] = np.nan
-                datos.loc[datos["valor"] < 0, "valor"] = np.nan
-                datos = datos.dropna()
-            if var.resolucion:
-                datos["valor"] = datos["valor"] * float(var.resolucion)
-        datos["station_id"] = station.station_id
-        datos_variables[var.var_id_id] = datos
-    return datos_variables
+            if classification.incremental:
+                data["value"] = data["value"].diff()
+                data.loc[data["value"] < 0, "value"] = np.nan
+                data = data.dropna()
+            if classification.resolution:
+                data["value"] = data["value"] * float(classification.resolution)
+        data["station_id"] = station.station_id
+        # Add the data to the main dict
+        variables_data[classification.variable_id] = data
+
+    return variables_data
 
 
 def numero_punto_decimal(val_str):
