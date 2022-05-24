@@ -22,7 +22,7 @@ import pandas as pd
 from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
-from formatting.models import Association, Clasification
+from formatting.models import Association, Classification
 from importacion.models import Importacion, ImportacionTemp
 from medicion.models import Var11Medicion, Var14Medicion
 
@@ -30,34 +30,52 @@ unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
 
 
-def validar_fechas(importacion):
-    fecha_ini = importacion.imp_fecha_ini
-    fecha_fin = importacion.imp_fecha_fin
-    for_id_id = importacion.for_id_id
-    station = importacion.est_id
-    clasificacion = list(Classification.objects.filter(for_id=for_id_id))
+def validar_fechas(data_import):
+    """
+    Verify if the data to be imported exists.
+    Args:
+        data_import: DataImportFull or DataImportTemp object.
+    Returns:
+        tuple of:
+            result: (list of dicts): one per classification for this file format of
+            summary:
+                dict containing information on the variable, the end date and whether
+                the data exists.
+            overwrite: (bool) True if any of the data already exists.
+    """
+    start_date = data_import.start_date
+    end_date = data_import.end_date
+    file_format = data_import.format_id
+    station = data_import.station
+    classifications = list(Classification.objects.filter(format=file_format))
 
-    sobrescribe = False
+    overwrite = False
     result = []
-    for fila in clasificacion:
-        var_id = str(fila.var_id.var_id)
+    for classification in classifications:
+        var_id = str(classification.variable.variable_id)
         station_id = str(station.station_id)
-        ultima_fecha = ultima_fecha_cargada(station_id, var_id)
-        existe = existe_fechas(fecha_ini, fecha_fin, station_id, var_id)
-        sobrescribe = sobrescribe or existe
-        resumen = {
-            "var_id": fila.var_id.var_id,
-            "var_cod": fila.var_id.var_codigo,
-            "var_nombre": fila.var_id.var_nombre,
-            "ultima_fecha": ultima_fecha,
-            "existe": existe,
+        last_upload_date = get_last_uploaded_date(station_id, var_id)
+        exists = data_exists_between_dates(start_date, end_date, station_id, var_id)
+        overwrite = overwrite or exists
+        summary = {
+            "variable_id": classification.variable.var_id,
+            "variable_code": classification.variable.variable_code,
+            "variable_name": classification.variable.name,
+            "last_upload_date": last_upload_date,
+            "exists": exists,
         }
-        result.append(resumen)
-    return result, sobrescribe
+        result.append(summary)
+    return result, overwrite
 
 
-def ultima_fecha_cargada(station_id, var_id):
-    print("ultima_fecha: " + str(time.ctime()))
+def get_last_uploaded_date(station_id, var_id):
+    """
+    Retrieves the last date that data was uploaded for a given station ID and variable
+    ID.
+    TODO: this will likely need a lot of reworking once the Medicion module is
+        overhauled.
+    """
+    print("last_date: " + str(time.ctime()))
     sql = "SELECT  fecha FROM medicion_var" + str(int(var_id)) + "medicion "
     sql += " WHERE station_id=" + str(int(station_id))
     sql += " ORDER BY fecha DESC LIMIT 1"
@@ -71,15 +89,22 @@ def ultima_fecha_cargada(station_id, var_id):
     return informacion
 
 
-def existe_fechas(ini, fin, station_id, var_id):
+def data_exists_between_dates(start, end, station_id, var_id):
+    """
+    Checks whether there exists data for a given station and variable type between two
+    dates.
+        Returns: True if there exists data, else False.
+    TODO: This will need reworking once Medicion module is overhauled.
+    """
+
     sql = "SELECT id FROM medicion_var" + str(var_id) + "medicion "
     sql += " WHERE fecha >= %s  AND fecha <= %s AND station_id = %s "
     sql += " LIMIT 1;"
     query = globals()["Var" + str(var_id) + "Medicion"].objects.raw(
-        sql, (ini, fin, station_id)
+        sql, (start, end, station_id)
     )
-    consulta = list(query)
-    if len(consulta) > 0:
+    query = list(query)
+    if len(query) > 0:
         return True
     return False
 
