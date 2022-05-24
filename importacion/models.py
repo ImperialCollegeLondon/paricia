@@ -22,8 +22,15 @@ from formatting.models import Format
 from station.models import Station
 
 
-class ImportBase(models.Model):
-    importing_id = models.AutoField("Id", primary_key=True)
+class DataImportBase(models.Model):
+    """
+    Base class used for full and temporary import of data files.
+    start_date and end_date refer to the first and last dates of the data and are
+    populated automatically from the data file. They are used to check whether any
+    existing data from this station would be overwritten upon import.
+    """
+
+    data_import_id = models.AutoField("Id", primary_key=True)
     station = models.ForeignKey(
         Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
     )
@@ -35,34 +42,42 @@ class ImportBase(models.Model):
     end_date = models.DateTimeField("End date", default=timezone.now)
     observations = models.TextField("Observations/Notes", blank=True, null=True)
     user = models.ForeignKey(
-        User, models.SET_NULL, blank=True, null=True, verbose_name="Usuar"
+        User, models.SET_NULL, blank=True, null=True, verbose_name="User"
     )
 
     class Meta:
         abstract = True
 
 
-class ImportFull(ImportBase):
+class DataImportFull(DataImportBase):
+    """
+    Used for importing data permanently (fully) to the database.
+    """
+
     file = models.FileField("File", upload_to="files/", blank=True, null=True)
 
     def get_absolute_url(self):
-        return reverse("importacion:importacion_detail", kwargs={"pk": self.pk})
+        return reverse("importing:dataimport_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("-date",)
         permissions = [
             (
-                "descarga_archivo_original",
-                "Descargar el archivo original que fue cargado al sistema.",
+                "download_original_file",
+                "Download the original file that was uploaded to the system.",
             ),
         ]
 
 
-class ImportacionTemp(ImportBase):
+class DataImportTemp(DataImportBase):
+    """
+    Used for importing data temporarily before full import to the database.
+    """
+
     file = models.FileField("File", upload_to="files/tmp/")
 
     def get_absolute_url(self):
-        return reverse("importacion:importacion_temp_detail", kwargs={"pk": self.pk})
+        return reverse("importing:dataimport_temp_detail", kwargs={"pk": self.pk})
 
     class Meta:
         default_permissions = ()
