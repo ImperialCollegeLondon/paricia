@@ -185,8 +185,8 @@ def recalculate_flow(request):
             cursor.execute(sql, [dischargecurve_id])
             cursor.fetchone()
     except Exception:
-        lista = {"res": False}
-        return JsonResponse(lista)
+        result = {"res": False}
+        return JsonResponse(result)
     dischargecurve = DischargeCurve.objects.get(pk=dischargecurve_id)
     dischargecurve.require_recalculate_flow = False
     dischargecurve.save()
