@@ -410,7 +410,7 @@ def construct_matrix(matrix_source, file_format, station):
                 )
             else:
                 data[col] = pd.Series(
-                    [numero_punto_decimal(val) for val in data[col].values],
+                    [standardise_float(val) for val in data[col].values],
                     index=matrix.index,
                 )
 
@@ -468,7 +468,14 @@ def construct_matrix(matrix_source, file_format, station):
     return variables_data
 
 
-def numero_punto_decimal(val_str):
+def standardise_float(val_str):
+    """
+    Removes commas from strings representing numbers that use a full stop as a decimal
+    separator.
+    TODO: Fix bare except statement.
+    Args: val_str: string or Number-like
+    Returns: val_num: float or None
+    """
     if isinstance(val_str, Number):
         return float(val_str)
     try:
@@ -479,7 +486,15 @@ def numero_punto_decimal(val_str):
     return val_num
 
 
-def numero_coma_decimal(val_str):
+def standardise_float_comma(val_str):
+    """
+    For strings representing numbers that use a comma as a decimal separator:
+    (i) Removes full stops
+    (ii) Replaces commas for full stops
+    TODO: Fix bare except statement.
+    Args: val_str: string or Number-like
+    Returns: val_num: float or None
+    """
     if isinstance(val_str, Number):
         return float(val_str)
     try:
@@ -491,28 +506,28 @@ def numero_coma_decimal(val_str):
     return val_num
 
 
-def insertar_nivel_regleta(importacion, nivelregleta):
-    nivelagua_mediciones = Var11Medicion.objects.filter(
-        station_id=importacion.station_id_id, date=importacion.imp_fecha_fin
+def insert_level_rule(data_import, level_rule):
+    water_level_measurements = Var11Medicion.objects.filter(
+        station_id=data_import.station_id, date=data_import.end_date
     )
-    nivelagua = None
-    for i in nivelagua_mediciones:
-        nivelagua = i
-    if nivelagua is None:
+    water_level = None
+    for i in water_level_measurements:
+        water_level = i
+    if water_level is None:
         return False
     try:
-        incertidumbre = float(nivelregleta["valor"]) - float(nivelagua.valor)
+        uncertainty = float(level_rule["value"]) - float(water_level.value)
     except:
         return False
     Var14Medicion(
-        station_id=importacion.station_id_id,
-        fecha_importacion=importacion.imp_fecha,
-        fecha_inicio=importacion.imp_fecha_ini,
-        date=importacion.imp_fecha_fin,
-        calibrado=nivelregleta["calibrado"],
-        valor=float(nivelregleta["valor"]),
-        incertidumbre=incertidumbre,
-        comentario=nivelregleta["comentario"],
+        station_id=data_import.station_id_id,
+        fecha_importacion=data_import.imp_fecha,
+        fecha_inicio=data_import.imp_fecha_ini,
+        date=data_import.imp_fecha_fin,
+        calibrado=level_rule["calibrated"],
+        valor=float(level_rule["value"]),
+        uncertainty=uncertainty,
+        comentario=level_rule["comments"],
     ).save()
 
 
