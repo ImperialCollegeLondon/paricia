@@ -28,7 +28,7 @@ urlpatterns = [
         name="data_import_temp_detail",
     ),
     re_path(
-        r"^data_import/$", views.ImportacionList.as_view(), name="data_import_index"
+        r"^data_import/$", views.DataImportFullList.as_view(), name="data_import_index"
     ),
     re_path(
         r"data_import/detail/(?P<pk>[0-9]+)/$",

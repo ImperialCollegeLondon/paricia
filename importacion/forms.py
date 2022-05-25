@@ -14,7 +14,7 @@
 from django import forms
 
 
-class ImportForm(forms.Form):
+class DataImportForm(forms.Form):
     observation = forms.CharField(
         label="Observations", required=False, widget=forms.Textarea(attrs={"rows": "3"})
     )
