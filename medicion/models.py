@@ -193,8 +193,8 @@ class Var13Measurement(BaseMeasurement, limits_model(13, fields=("Value"))):
 class Var14Measurement(
     BaseMeasurement, limits_model(14, fields=("Value", "Incertidumbre"))
 ):
-    fecha_importacion = models.DateTimeField("Date Importación")
-    fecha_inicio = models.DateTimeField("Date inicio datos")
+    data_import_date = models.DateTimeField("Data import date")
+    data_start_date = models.DateTimeField("Data start date")
     calibrado = models.BooleanField("Calibrado")
     comentario = models.CharField("Comentario", null=True, max_length=250)
 
