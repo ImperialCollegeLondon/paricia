@@ -76,9 +76,9 @@ def get_last_uploaded_date(station_id, var_id):
         overhauled.
     """
     print("last_date: " + str(time.ctime()))
-    sql = "SELECT  fecha FROM medicion_var" + str(int(var_id)) + "medicion "
+    sql = "SELECT  date FROM medicion_var" + str(int(var_id)) + "medicion "
     sql += " WHERE station_id=" + str(int(station_id))
-    sql += " ORDER BY fecha DESC LIMIT 1"
+    sql += " ORDER BY date DESC LIMIT 1"
     with connection.cursor() as cursor:
         cursor.execute(sql)
         consulta = cursor.fetchone()
@@ -98,7 +98,7 @@ def data_exists_between_dates(start, end, station_id, var_id):
     """
 
     sql = "SELECT id FROM medicion_var" + str(var_id) + "medicion "
-    sql += " WHERE fecha >= %s  AND fecha <= %s AND station_id = %s "
+    sql += " WHERE date >= %s  AND date <= %s AND station_id = %s "
     sql += " LIMIT 1;"
     query = globals()["Var" + str(var_id) + "Medicion"].objects.raw(
         sql, (start, end, station_id)
@@ -285,30 +285,30 @@ def save_temp_data_to_permanent(imp_id, form):
         sql = """
 WITH
 data AS (
-    SELECT DISTINCT u.fecha, u.valor, u.station_id
+    SELECT DISTINCT u.date, u.valor, u.station_id
     FROM unnest(%s::fecha__valor__station_id[]) u
-    ORDER BY u.fecha ASC
+    ORDER BY u.date ASC
 ),
 eliminar AS (
     DELETE FROM medicion_var1medicion
     WHERE station_id = (SELECT d.station_id FROM data d LIMIT 1)
-    AND fecha >= (SELECT d.fecha FROM data d ORDER BY d.fecha ASC LIMIT 1)
-    AND fecha <= (SELECT d.fecha FROM data d ORDER BY d.fecha DESC LIMIT 1)
+    AND date >= (SELECT d.date FROM data d ORDER BY d.date ASC LIMIT 1)
+    AND date <= (SELECT d.date FROM data d ORDER BY d.date DESC LIMIT 1)
     returning *
 )
-INSERT INTO medicion_var1medicion(fecha, valor, station_id)
-SELECT d.fecha, d.valor, d.station_id
+INSERT INTO medicion_var1medicion(date, valor, station_id)
+SELECT d.date, d.valor, d.station_id
 FROM data d
 ;
 """
         sql = sql.replace("var1", "var" + str(var_id))
         sql = sql.replace(
-            "u.fecha, u.valor, u.station_id", "u." + ", u.".join(table.columns)
+            "u.date, u.valor, u.station_id", "u." + ", u.".join(table.columns)
         )
         sql = sql.replace("fecha__valor__station_id", "__".join(table.columns))
-        sql = sql.replace("fecha, valor, station_id", ", ".join(table.columns))
+        sql = sql.replace("date, valor, station_id", ", ".join(table.columns))
         sql = sql.replace(
-            "d.fecha, d.valor, d.station_id", "d." + ", d.".join(table.columns)
+            "d.date, d.valor, d.station_id", "d." + ", d.".join(table.columns)
         )
 
         with connection.cursor() as cursor:
@@ -448,7 +448,7 @@ def construct_matrix(matrix_source, file_format, station):
                 nanosecond=0,
             ) + pd.Timedelta(minutes=5)
             table = pd.date_range(
-                start_date, end_date, freq="5min", name="fecha"
+                start_date, end_date, freq="5min", name="date"
             ).to_frame()
             data = pd.concat([table, data], axis=1)
             data = data.fillna(0)
@@ -493,7 +493,7 @@ def numero_coma_decimal(val_str):
 
 def insertar_nivel_regleta(importacion, nivelregleta):
     nivelagua_mediciones = Var11Medicion.objects.filter(
-        station_id=importacion.station_id_id, fecha=importacion.imp_fecha_fin
+        station_id=importacion.station_id_id, date=importacion.imp_fecha_fin
     )
     nivelagua = None
     for i in nivelagua_mediciones:
@@ -508,7 +508,7 @@ def insertar_nivel_regleta(importacion, nivelregleta):
         station_id=importacion.station_id_id,
         fecha_importacion=importacion.imp_fecha,
         fecha_inicio=importacion.imp_fecha_ini,
-        fecha=importacion.imp_fecha_fin,
+        date=importacion.imp_fecha_fin,
         calibrado=nivelregleta["calibrado"],
         valor=float(nivelregleta["valor"]),
         incertidumbre=incertidumbre,
