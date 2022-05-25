@@ -37,7 +37,7 @@ class DischargeCurveList(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         fields = ["id", "station__station_code", "date", "require_recalculate_flow"]
-        dischargecurve = DischargeCurve.objects.all().values_list(*campos)
+        dischargecurve = DischargeCurve.objects.all().values_list(*fields)
         context["dischargecurve"] = modelo_a_tabla_html(dischargecurve, col_extra=True)
         return context
 
