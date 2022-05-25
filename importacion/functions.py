@@ -406,7 +406,7 @@ def construct_matrix(matrix_source, file_format, station):
                 continue
             if classification.decimal_comma:
                 data[col] = pd.Series(
-                    [numero_coma_decimal(val) for val in data[col].values],
+                    [standardise_float_comma(val) for val in data[col].values],
                     index=matrix.index,
                 )
             else:
