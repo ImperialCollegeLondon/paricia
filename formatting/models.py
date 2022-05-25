@@ -120,7 +120,9 @@ class Format(models.Model):
         help_text="Only applies to automatic transmission",
     )
     first_row = models.SmallIntegerField("First row")
-    last_row = models.SmallIntegerField("Last row", blank=True, null=True)
+    footer_rows = models.SmallIntegerField(
+        "Number of footer rows", blank=True, null=True
+    )
     date = models.ForeignKey(
         Date,
         on_delete=models.SET_NULL,
