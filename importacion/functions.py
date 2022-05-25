@@ -25,6 +25,7 @@ from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
 from importacion.models import DataImportFull, DataImportTemp
 from medicion.models import Var11Medicion, Var14Medicion
+from variable.models import Variable
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
@@ -518,6 +519,7 @@ def insert_level_rule(data_import, level_rule):
     Returns:
         None
     """
+
     water_level_measurements = Var11Medicion.objects.filter(
         station_id=data_import.station_id, date=data_import.end_date
     )
@@ -544,15 +546,14 @@ def insert_level_rule(data_import, level_rule):
 
 
 # consultar formatos por datalogger y estacion
-def consultar_formatos(station):
-    asociacion = list(Association.objects.filter(station=station))
-    lista = {}
-    for item in asociacion:
-        lista[item.for_id.for_id] = item.for_id.for_nombre
-    return lista
+def query_formats(station):
+    """
+    Return dict of file formats associated with a given station in the form
+    {format_id: format_name, ...}.
+    """
 
-
-def get_modelo(var_id):
-    variable = Variable.objects.get(var_id=var_id)
-    modelo = globals()[variable.var_modelo]
-    return modelo
+    association = list(Association.objects.filter(station=station))
+    results = {}
+    for item in association:
+        results[item.format.format_id] = item.format.name
+    return results
