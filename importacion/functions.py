@@ -507,6 +507,17 @@ def standardise_float_comma(val_str):
 
 
 def insert_level_rule(data_import, level_rule):
+    """
+    Calculates uncertainty based on difference between a level_rule object's value
+    and the water level measurement, saving a new "Var14" object.
+    TODO: What exactly does this do? What is the nivelagua (level_rule?) and why is it
+    used in this way?
+    Args:
+        data_import: DataImportFull or DataImportTemp object.
+        level_rule: TODO: ??
+    Returns:
+        None
+    """
     water_level_measurements = Var11Medicion.objects.filter(
         station_id=data_import.station_id, date=data_import.end_date
     )
@@ -517,6 +528,7 @@ def insert_level_rule(data_import, level_rule):
         return False
     try:
         uncertainty = float(level_rule["value"]) - float(water_level.value)
+    # TODO: Fix bare except
     except:
         return False
     Var14Medicion(
