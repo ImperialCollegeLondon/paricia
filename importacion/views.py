@@ -34,7 +34,7 @@ from importacion.functions import (
     preformat_matrix,
     query_formats,
     save_temp_data_to_permanent,
-    validar_fechas,
+    validate_dates,
 )
 from importacion.models import DataImportFull, DataImportTemp
 
@@ -70,7 +70,7 @@ class DataImportFullDetail(PermissionRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        information, self.existing_data = validar_fechas(self.object)
+        information, self.existing_data = validate_dates(self.object)
         context["information"] = information
         return context
 
@@ -174,7 +174,7 @@ class DataImportTempDetail(PermissionRequiredMixin, DetailView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(DataImportTempDetail, self).get_context_data(**kwargs)
-        information, self.overwrite = validar_fechas(self.object)
+        information, self.overwrite = validate_dates(self.object)
         context["information"] = information
         context["overwrite"] = self.overwrite
         context["file_name_only"] = os.path.basename(self.object.file.name)

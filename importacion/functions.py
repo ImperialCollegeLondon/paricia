@@ -31,7 +31,7 @@ unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
 
 
-def validar_fechas(data_import):
+def validate_dates(data_import):
     """
     Verify if there already exists data for the dates of the data being imported.
     Args:
