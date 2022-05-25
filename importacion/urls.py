@@ -18,27 +18,27 @@ from importacion import views
 app_name = "importacion"
 urlpatterns = [
     re_path(
-        r"importacion_temp/create/$",
-        views.ImportacionTempCreate.as_view(),
-        name="importacion_temp_create",
+        r"data_import_temp/create/$",
+        views.DataImportTempCreate.as_view(),
+        name="data_import_temp_create",
     ),
     re_path(
-        r"importacion_temp/detail/(?P<pk>[0-9]+)/$",
-        views.ImportacionTempDetail.as_view(),
-        name="importacion_temp_detail",
+        r"data_import_temp/detail/(?P<pk>[0-9]+)/$",
+        views.DataImportTempDetail.as_view(),
+        name="data_import_temp_detail",
     ),
     re_path(
-        r"^importacion/$", views.ImportacionList.as_view(), name="importacion_index"
+        r"^data_import/$", views.ImportacionList.as_view(), name="data_import_index"
     ),
     re_path(
-        r"importacion/detail/(?P<pk>[0-9]+)/$",
-        views.ImportacionDetail.as_view(),
-        name="importacion_detail",
+        r"data_import/detail/(?P<pk>[0-9]+)/$",
+        views.DataImportFullDetail.as_view(),
+        name="data_import_detail",
     ),
     re_path(
-        r"importacion/descarga/(?P<pk>[0-9]+)/$",
-        views.ImportacionDescarga,
-        name="importacion_descarga",
+        r"data_import/download/(?P<pk>[0-9]+)/$",
+        views.DataImportDownload,
+        name="data_import_download",
     ),
-    re_path(r"^ajax/importacion/formatos", views.lista_formatos, name="formatos"),
+    re_path(r"^ajax/data_import/formats", views.list_formats, name="formats"),
 ]
