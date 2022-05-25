@@ -190,5 +190,5 @@ def recalculate_flow(request):
     dischargecurve = DischargeCurve.objects.get(pk=dischargecurve_id)
     dischargecurve.require_recalculate_flow = False
     dischargecurve.save()
-    lista = {"res": True}
-    return JsonResponse(lista)
+    result = {"res": True}
+    return JsonResponse(result)
