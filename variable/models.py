@@ -42,7 +42,23 @@ class Unit(models.Model):
 class Variable(models.Model):
     """
     A variable e.g. precipitation, wind speed, wind direction, soil moisture,
-    with an associated unit. Also has max, min... TODO: finish.
+    with an associated unit. There are max and min allowed values as well as:
+    diff_warning: If two sequential values in the time-series data of this variable
+        differ by more than this value, the validation process can mark this with a
+        warning flag.
+    diff_error: If two sequential values in the time-series data of this variable
+        differ by more than this value, the validation process can mark this with an
+        error flag.
+    is_active: True if the variable is in use in the database.
+    is_cumulative: True if the variable is accumulated over time, False if it is
+        averaged over time.
+    outlier_limit: How many times the standard deviation (sigma) is considered an
+        outlier for this variable.
+    automatic_report: True if this variable should be included in automatic hourly,
+        daily etc. reporting scripts.
+    null_limit: The max % of null (missing, Caused by e.g. equipment malfunction) values
+        allowed for hourly, daily, monthly data. Cumulative values are not deemed
+        trustworthy if the number of missing values in a given period > null_limit.
     """
 
     variable_id = models.AutoField("Id", primary_key=True)
@@ -53,24 +69,22 @@ class Variable(models.Model):
     )
     maximum = models.DecimalField("Maximum", max_digits=7, decimal_places=2)
     minimum = models.DecimalField("Minimum", max_digits=7, decimal_places=2)
-    # TODO translate var_sos, var_err, var_estado and vacios if they're needed
-    # otherwise delete
-    var_sos = models.DecimalField(
-        "Incremento sospechoso", max_digits=7, decimal_places=2, null=True, blank=True
+    diff_warning = models.DecimalField(
+        "Difference warning", max_digits=7, decimal_places=2, null=True, blank=True
     )
-    var_err = models.DecimalField(
-        "Incremento error", max_digits=7, decimal_places=2, null=True, blank=True
+    diff_error = models.DecimalField(
+        "Difference error", max_digits=7, decimal_places=2, null=True, blank=True
     )
-    var_min = models.DecimalField(
+    outlier_limit = models.DecimalField(
         "Sigmas (outliers)", max_digits=7, decimal_places=2, null=True, blank=True
     )
-    var_estado = models.BooleanField("Estado", default=True)
+    is_active = models.BooleanField("Active", default=True)
     is_cumulative = models.BooleanField(
         "Cumulative (True) or Averaged (False)", default=True
     )
     automatic_report = models.BooleanField("Automatic report", default=True)
-    vacios = models.DecimalField(
-        "Vacíos (%)", max_digits=4, decimal_places=1, null=True
+    null_limit = models.DecimalField(
+        "Null limit (%)", max_digits=4, decimal_places=1, null=True
     )
 
     def __str__(self):
