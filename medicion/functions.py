@@ -78,7 +78,7 @@ def level_function_table(curvadescarga_id):
         from medicion_levelfuncion nv 
         WHERE nv.curvadescarga_id = %s
     ),
-    leveles AS (
+    levels AS (
         select 
         b.id,
         b.funcion,
@@ -100,7 +100,7 @@ def level_function_table(curvadescarga_id):
         replace(n.funcion, 'H', CAST(n.level4 AS VarChar) ) AS f4,
         replace(n.funcion, 'H', CAST(n.level5 AS VarChar) ) AS f5,
         replace(n.funcion, 'H', CAST(n.level_sup AS VarChar) ) AS f_sup
-        from leveles n
+        from levels n
     )
     select 	
     f.id,

@@ -183,11 +183,11 @@ class Var11Measurement(BaseMeasurement, limits_model(11)):
 
 
 class Var12Measurement(BaseMeasurement, limits_model(12)):
-    pass
+    """Battery voltage."""
 
 
 class Var13Measurement(BaseMeasurement, limits_model(13, fields=("Value"))):
-    pass
+    """Flow rate."""
 
 
 class Var14Measurement(
@@ -208,35 +208,35 @@ class Var14Measurement(
 
 
 class Var15Measurement(BaseMeasurement, limits_model(15)):
-    pass
+    """Wind gust direction."
 
 
 class Var16Measurement(BaseMeasurement, limits_model(16)):
-    pass
+    """Wind path."""
 
 
 class Var17Measurement(BaseMeasurement, limits_model(17)):
-    pass
+    """ TODO: What is "gustdir"? """
 
 
 class Var18Measurement(BaseMeasurement, limits_model(18)):
-    pass
+        """ TODO: What is "gusth"? """
 
 
 class Var19Measurement(BaseMeasurement, limits_model(19)):
-    pass
+        """ TODO: What is "gustm"? """
 
 
 class Var20Measurement(BaseMeasurement, limits_model(20)):
-    pass
+    """Soil temperature."""
 
 
 class Var21Measurement(BaseMeasurement, limits_model(21)):
-    pass
+    """Indirect radiation."""
 
 
 class Var22Measurement(BaseMeasurement, limits_model(22)):
-    pass
+    """Solar radiation (cumulative)."""
 
 
 class Var23Measurement(BaseMeasurement, limits_model(23)):
@@ -247,7 +247,7 @@ class Var24Measurement(BaseMeasurement, limits_model(24)):
     pass
 
 
-# Variables creadas para boya con diferentes depthes
+# Variables created for buoy with different depths
 
 
 class Var101Measurement(

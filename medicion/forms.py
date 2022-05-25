@@ -31,7 +31,7 @@ class LevelFunctionForm(forms.ModelForm):
 
         # Verifica si tiene letra H
         if "H" not in function:
-            raise ValidationError("It muts include parameter H (whater level)")
+            raise ValidationError("It must include parameter H (water level)")
 
         # Verifica si la función devuelve resultado
         test_func = function.replace("H", "10")
@@ -42,10 +42,10 @@ class LevelFunctionForm(forms.ModelForm):
                 len = cursor.rowcount
                 cursor.fetchall()
         except Exception as err:
-            raise ValidationError(f"Formula sintax error. {err}")
+            raise ValidationError(f"Formula syntax error. {err}")
 
         if len < 1:
-            raise ValidationError("Formula sintax error. No rows found!")
+            raise ValidationError("Formula syntax error. No rows found!")
         return function
 
 
@@ -60,20 +60,20 @@ class ValidationSearchForm(forms.Form):
         queryset=Variable.objects.order_by("variable_id").exclude(variable_id="10"),
         empty_label="Variable",
     )
-    inicio = forms.DateField(
+    start = forms.DateField(
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
         input_formats=["%Y-%m-%d"],
         label="Start date",
         required=True,
     )
-    fin = forms.DateField(
+    end = forms.DateField(
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
         input_formats=["%Y-%m-%d"],
         label="End date",
         required=True,
     )
-    limite_inferior = forms.IntegerField(required=False)
-    limite_superior = forms.IntegerField(required=False)
+    lower_limit = forms.IntegerField(required=False)
+    upper_limit = forms.IntegerField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(ValidationSearchForm, self).__init__(*args, **kwargs)
