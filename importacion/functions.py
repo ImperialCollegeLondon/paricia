@@ -33,7 +33,7 @@ one_second = np.timedelta64(1, "s")
 
 def validar_fechas(data_import):
     """
-    Verify if the data to be imported exists.
+    Verify if there already exists data for the dates of the data being imported.
     Args:
         data_import: DataImportFull or DataImportTemp object.
     Returns:
