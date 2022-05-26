@@ -1,0 +1,90 @@
+[
+{
+  "model": "station.region",
+  "pk": 1,
+  "fields": {
+    "name": "Pichincha",
+    "country": 2
+  }
+},
+{
+  "model": "station.region",
+  "pk": 2,
+  "fields": {
+    "name": "Piura",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 3,
+  "fields": {
+    "name": "Amazonas",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 4,
+  "fields": {
+    "name": "Lima",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 5,
+  "fields": {
+    "name": "Tarapoto",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 6,
+  "fields": {
+    "name": "Huancayo",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 7,
+  "fields": {
+    "name": "Ayacucho",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 9,
+  "fields": {
+    "name": "Ica",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 10,
+  "fields": {
+    "name": "Apur\u00edmac",
+    "country": 1
+  }
+},
+{
+  "model": "station.region",
+  "pk": 11,
+  "fields": {
+    "name": "Cochabamba",
+    "country": 5
+  }
+},
+{
+  "model": "station.region",
+  "pk": 12,
+  "fields": {
+    "name": "Boyac\u00e1",
+    "country": 3
+  }
+}
+]
