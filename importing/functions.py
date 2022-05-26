@@ -434,7 +434,7 @@ def construct_matrix(matrix_source, file_format, station):
             )
             data["date"] = data["date"] + pd.Timedelta(minutes=5)
             count = data.groupby("date")["value"].sum().to_frame()
-            data = count["value"] * float(classification.resolucion)
+            data = count["value"] * float(classification.resolution)
 
             start_date = start_date.replace(
                 minute=int(start_date.minute / 5) * 5,
@@ -535,13 +535,13 @@ def insert_level_rule(data_import, level_rule):
         return False
     Var14Measurement(
         station_id=data_import.station_id_id,
-        fecha_importacion=data_import.imp_fecha,
-        fecha_inicio=data_import.imp_fecha_ini,
-        date=data_import.imp_fecha_fin,
-        calibrado=level_rule["calibrated"],
+        data_import_date=data_import.date,
+        data_start_date=data_import.start_date,
+        date=data_import.end_date,
+        calibrated=level_rule["calibrated"],
         valor=float(level_rule["value"]),
         uncertainty=uncertainty,
-        comentario=level_rule["comments"],
+        comments=level_rule["comments"],
     ).save()
 
 
