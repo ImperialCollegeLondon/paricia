@@ -1,37 +1,37 @@
 [
 {
-  "model": "formato.extension",
+  "model": "formatting.extension",
   "pk": 1,
   "fields": {
-    "ext_valor": "txt"
+    "value": "txt"
   }
 },
 {
-  "model": "formato.extension",
+  "model": "formatting.extension",
   "pk": 2,
   "fields": {
-    "ext_valor": "csv"
+    "value": "csv"
   }
 },
 {
-  "model": "formato.extension",
+  "model": "formatting.extension",
   "pk": 3,
   "fields": {
-    "ext_valor": "xlsx"
+    "value": "xlsx"
   }
 },
 {
-  "model": "formato.extension",
+  "model": "formatting.extension",
   "pk": 4,
   "fields": {
-    "ext_valor": "asc"
+    "value": "asc"
   }
 },
 {
-  "model": "formato.extension",
+  "model": "formatting.extension",
   "pk": 5,
   "fields": {
-    "ext_valor": "dat"
+    "value": "dat"
   }
 }
 ]

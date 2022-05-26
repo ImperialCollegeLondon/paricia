@@ -1,26 +1,26 @@
 [
 {
-  "model": "formato.hora",
+  "model": "formatting.time",
   "pk": 1,
   "fields": {
-    "hor_formato": "HH:MM:SS AM/PM",
-    "hor_codigo": "%I:%M:%S %p"
+    "time_format": "HH:MM:SS AM/PM",
+    "code": "%I:%M:%S %p"
   }
 },
 {
-  "model": "formato.hora",
+  "model": "formatting.time",
   "pk": 2,
   "fields": {
-    "hor_formato": "HH:MM:SS 24H",
-    "hor_codigo": "%H:%M:%S"
+    "time_format": "HH:MM:SS 24H",
+    "code": "%H:%M:%S"
   }
 },
 {
-  "model": "formato.hora",
+  "model": "formatting.time",
   "pk": 3,
   "fields": {
-    "hor_formato": "HH:MM 24H",
-    "hor_codigo": "%H:%M"
+    "time_format": "HH:MM 24H",
+    "code": "%H:%M"
   }
 }
 ]

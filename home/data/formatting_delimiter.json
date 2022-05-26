@@ -1,74 +1,74 @@
 [
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 1,
   "fields": {
-    "del_nombre": "Tabulador",
-    "del_caracter": "\\x09"
+    "name": "Tabulador",
+    "character": "\\x09"
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 2,
   "fields": {
-    "del_nombre": "Linea",
-    "del_caracter": "\\x0A"
+    "name": "Linea",
+    "character": "\\x0A"
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 3,
   "fields": {
-    "del_nombre": "Espacio",
-    "del_caracter": "\\x20"
+    "name": "Espacio",
+    "character": "\\x20"
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 4,
   "fields": {
-    "del_nombre": "Comilla doble",
-    "del_caracter": "\\x22"
+    "name": "Comilla doble",
+    "character": "\\x22"
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 5,
   "fields": {
-    "del_nombre": "Comilla Simple",
-    "del_caracter": "\\x27"
+    "name": "Comilla Simple",
+    "character": "\\x27"
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 6,
   "fields": {
-    "del_nombre": "Coma",
-    "del_caracter": ","
+    "name": "Coma",
+    "character": ","
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 7,
   "fields": {
-    "del_nombre": "Dos Puntos",
-    "del_caracter": ":"
+    "name": "Dos Puntos",
+    "character": ":"
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 8,
   "fields": {
-    "del_nombre": "Punto y Com",
-    "del_caracter": ";"
+    "name": "Punto y Com",
+    "character": ";"
   }
 },
 {
-  "model": "formato.delimitador",
+  "model": "formatting.delimiter",
   "pk": 9,
   "fields": {
-    "del_nombre": "BackSlash",
-    "del_caracter": "\\x5C"
+    "name": "BackSlash",
+    "character": "\\x5C"
   }
 }
 ]
