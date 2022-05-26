@@ -17,4 +17,4 @@ from django.apps import AppConfig
 
 
 class ImportacionConfig(AppConfig):
-    name = "importacion"
+    name = "importing"

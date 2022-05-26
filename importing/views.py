@@ -40,8 +40,8 @@ from importing.models import DataImportFull, DataImportTemp
 
 
 class DataImportFullList(PermissionRequiredMixin, TemplateView):
-    template_name = "importacion/importacion_list.html"
-    permission_required = "importacion.view_dataimportfull"
+    template_name = "importing/importing_list.html"
+    permission_required = "importing.view_dataimportfull"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -62,9 +62,9 @@ class DataImportFullList(PermissionRequiredMixin, TemplateView):
 
 
 class DataImportFullDetail(PermissionRequiredMixin, DetailView):
-    permission_required = "importacion.view_dataimportfull"
+    permission_required = "importing.view_dataimportfull"
     model = DataImportFull
-    template_name = "importacion/importacion_detail.html"
+    template_name = "importing/importing_detail.html"
     # existing_data = True if there exists data already for these dates.
     existing_data = False
 
@@ -75,7 +75,7 @@ class DataImportFullDetail(PermissionRequiredMixin, DetailView):
         return context
 
 
-@permission_required("importacion.download_original_file")
+@permission_required("importing.download_original_file")
 def DataImportDownload(request, *args, **kwargs):
     """
     Download the original file from a data upload.
@@ -121,10 +121,10 @@ def DataImportDownload(request, *args, **kwargs):
 
 
 class DataImportTempCreate(PermissionRequiredMixin, CreateView):
-    permission_required = "importacion.add_dataimportfull"
+    permission_required = "importing.add_dataimportfull"
     model = DataImportTemp
     fields = ["station", "format", "file"]
-    template_name = "importacion/importacion_form.html"
+    template_name = "importing/importing_form.html"
 
     def form_valid(self, form):
         file = copy.deepcopy(self.request.FILES["file"])
@@ -142,9 +142,9 @@ class DataImportTempCreate(PermissionRequiredMixin, CreateView):
 
 
 class DataImportTempDetail(PermissionRequiredMixin, DetailView, FormView):
-    permission_required = "importacion.add_dataimportfull"  # TODO: is this right?
+    permission_required = "importing.add_dataimportfull"  # TODO: is this right?
     model = DataImportTemp
-    template_name = "importacion/importaciontemp_detail.html"
+    template_name = "importing/importingtemp_detail.html"
     form_class = DataImportForm
     overwrite = False
 
@@ -165,7 +165,7 @@ class DataImportTempDetail(PermissionRequiredMixin, DetailView, FormView):
                     )
                 return render(
                     request,
-                    "importacion/mensaje.html",
+                    "importing/mensaje.html",
                     {"mensaje": "Informacion Cargada"},
                 )
             elif request.POST["action"] == "cancel":
@@ -181,7 +181,7 @@ class DataImportTempDetail(PermissionRequiredMixin, DetailView, FormView):
         return context
 
 
-@permission_required("importacion.add_importacion")
+@permission_required("importing.add_importing")
 def list_formats(request):
     """
     list of formats per station.

@@ -38,7 +38,7 @@ urlpatterns = [
     path("", include("variable.urls", namespace="variable")),
     path("", include("formatting.urls", namespace="formatting")),
     path("", include("measurement.urls", namespace="measurement")),
-    path("", include("importacion.urls", namespace="importacion")),
+    path("", include("importing.urls", namespace="importing")),
 ]
 
 if settings.DEBUG:

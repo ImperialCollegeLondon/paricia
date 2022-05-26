@@ -15,7 +15,7 @@ from django.urls import re_path
 
 from importing import views
 
-app_name = "importacion"
+app_name = "importing"
 urlpatterns = [
     re_path(
         r"data_import_temp/create/$",
