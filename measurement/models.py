@@ -122,6 +122,7 @@ class BaseMeasurement(models.Model):
             models.Index(fields=["station_id", "date"]),
             models.Index(fields=["date", "station_id"]),
         ]
+        abstract = True
 
 
 def limits_model(
