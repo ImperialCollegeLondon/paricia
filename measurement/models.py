@@ -112,7 +112,6 @@ class LevelFunction(models.Model):
 
 
 class BaseMeasurement(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
     station_id = models.PositiveIntegerField("station_id")
     date = models.DateTimeField("Date")
 
