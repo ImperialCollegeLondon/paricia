@@ -77,7 +77,7 @@ def get_last_uploaded_date(station_id, var_id):
         overhauled.
     """
     print("last_date: " + str(time.ctime()))
-    sql = "SELECT  date FROM medicion_var" + str(int(var_id)) + "medicion "
+    sql = "SELECT  date FROM measurement_var" + str(int(var_id)) + "measurement "
     sql += " WHERE station_id=" + str(int(station_id))
     sql += " ORDER BY date DESC LIMIT 1"
     with connection.cursor() as cursor:
@@ -98,7 +98,7 @@ def data_exists_between_dates(start, end, station_id, var_id):
     TODO: This will need reworking once Medicion module is overhauled.
     """
 
-    sql = "SELECT id FROM medicion_var" + str(var_id) + "medicion "
+    sql = "SELECT id FROM measurement_var" + str(var_id) + "measurement "
     sql += " WHERE date >= %s  AND date <= %s AND station_id = %s "
     sql += " LIMIT 1;"
     query = globals()["Var" + str(var_id) + "Medicion"].objects.raw(
@@ -291,13 +291,13 @@ data AS (
     ORDER BY u.date ASC
 ),
 eliminar AS (
-    DELETE FROM medicion_var1medicion
+    DELETE FROM measurement_var1measurement
     WHERE station_id = (SELECT d.station_id FROM data d LIMIT 1)
     AND date >= (SELECT d.date FROM data d ORDER BY d.date ASC LIMIT 1)
     AND date <= (SELECT d.date FROM data d ORDER BY d.date DESC LIMIT 1)
     returning *
 )
-INSERT INTO medicion_var1medicion(date, valor, station_id)
+INSERT INTO measurement_var1measurement(date, valor, station_id)
 SELECT d.date, d.valor, d.station_id
 FROM data d
 ;

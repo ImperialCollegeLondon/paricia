@@ -74,7 +74,7 @@ class DischargeCurve(models.Model):
         return self.id
 
     def get_absolute_url(self):
-        return reverse("medicion:dischargecurve_detail", kwargs={"pk": self.pk})
+        return reverse("measurement:dischargecurve_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("station", "date")
@@ -98,7 +98,7 @@ class LevelFunction(models.Model):
         return str(self.pk)
 
     def get_absolute_url(self):
-        return reverse("medicion:levelfunction_detail", kwargs={"pk": self.pk})
+        return reverse("measurement:levelfunction_detail", kwargs={"pk": self.pk})
 
     class Meta:
         default_permissions = ()

@@ -37,7 +37,7 @@ urlpatterns = [
     path("", include("sensor.urls", namespace="sensor")),
     path("", include("variable.urls", namespace="variable")),
     path("", include("formatting.urls", namespace="formatting")),
-    path("", include("medicion.urls", namespace="medicion")),
+    path("", include("measurement.urls", namespace="measurement")),
     path("", include("importacion.urls", namespace="importacion")),
 ]
 

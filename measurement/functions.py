@@ -75,7 +75,7 @@ def level_function_table(curvadescarga_id):
         nv.funcion,
         coalesce( lag(nv.level) OVER (ORDER BY nv.level ASC), 0.0 ) AS level_inf,
         nv.level AS level_sup
-        from medicion_levelfuncion nv 
+        from measurement_levelfuncion nv 
         WHERE nv.curvadescarga_id = %s
     ),
     levels AS (
