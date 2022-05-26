@@ -208,7 +208,7 @@ class Var14Measurement(
 
 
 class Var15Measurement(BaseMeasurement, limits_model(15)):
-    """Wind gust direction."
+    """Wind gust direction."""
 
 
 class Var16Measurement(BaseMeasurement, limits_model(16)):
