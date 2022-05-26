@@ -14,7 +14,7 @@
 
 
 ##################################################################################################################
-# Estas variables se van acorde con los modelos establecidos en: Medicion, Validacion, Horario, Diario y Mensual
+# Estas variables se van acorde con los modelos establecidos en: Measurement, Validacion, Horario, Diario y Mensual
 #          Si modificó los modelos anteriormente mencionados, deberá modificar 'vars' y 'vars_profundidad'
 
 

@@ -594,7 +594,7 @@ def list_year(request, station, var):
     List data for a number of whole calendar years.
     """
 
-    model = "Var" + str(var) + "Medicion"
+    model = "Var" + str(var) + "Measurement"
     model = globals()[model]
     valid = model.objects.filter(station_id__exact=station).aggregate(
         Max("date"), Min("date")

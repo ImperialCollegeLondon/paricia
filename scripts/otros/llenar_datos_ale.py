@@ -14,7 +14,7 @@ from datetime import date, datetime, time, timedelta
 
 from django.db import connection
 
-from measurement.models import *
+from measurement.models import Var4Measurement, Var5Measurement
 
 
 def llenarPrecipitacion():
@@ -23,7 +23,7 @@ def llenarPrecipitacion():
     date = date_inicio
     while date <= date_fin:
         date = date + timedelta(seconds=300)
-        var4 = Var4Medicion(
+        var4 = Var4Measurement(
             fecha=date,
             valor=random.randrange(0, 100),
             estacion_id=1,
@@ -31,7 +31,7 @@ def llenarPrecipitacion():
             minimo=0,
         )
         var4.save()
-        var5 = Var5Medicion(
+        var5 = Var5Measurement(
             fecha=date,
             valor=random.randrange(0, 360),
             estacion_id=1,
