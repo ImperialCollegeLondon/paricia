@@ -1,178 +1,178 @@
 [
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 1,
   "fields": {
-    "uni_nombre": "Kil\u00f3metros por Hora",
-    "uni_sigla": "km/h"
+    "name": "Kil\u00f3metros por Hora",
+    "initials": "km/h"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 2,
   "fields": {
-    "uni_nombre": "Grados",
-    "uni_sigla": "\u00b0"
+    "name": "Grados",
+    "initials": "\u00b0"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 3,
   "fields": {
-    "uni_nombre": "Porcentaje",
-    "uni_sigla": "%"
+    "name": "Porcentaje",
+    "initials": "%"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 4,
   "fields": {
-    "uni_nombre": "Cent\u00edmetros",
-    "uni_sigla": "cm"
+    "name": "Cent\u00edmetros",
+    "initials": "cm"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 5,
   "fields": {
-    "uni_nombre": "Hecto Pascales",
-    "uni_sigla": "hPa"
+    "name": "Hecto Pascales",
+    "initials": "hPa"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 6,
   "fields": {
-    "uni_nombre": "Mil\u00edmetros",
-    "uni_sigla": "mm"
+    "name": "Mil\u00edmetros",
+    "initials": "mm"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 7,
   "fields": {
-    "uni_nombre": "KiloWatts por m2",
-    "uni_sigla": "kW/m2"
+    "name": "KiloWatts por m2",
+    "initials": "kW/m2"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 8,
   "fields": {
-    "uni_nombre": "Grados Cent\u00edgrados",
-    "uni_sigla": "\u00b0C"
+    "name": "Grados Cent\u00edgrados",
+    "initials": "\u00b0C"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 9,
   "fields": {
-    "uni_nombre": "Metros por Segundo",
-    "uni_sigla": "m/s"
+    "name": "Metros por Segundo",
+    "initials": "m/s"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 10,
   "fields": {
-    "uni_nombre": "Metros",
-    "uni_sigla": "m"
+    "name": "Metros",
+    "initials": "m"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 11,
   "fields": {
-    "uni_nombre": "Mega Jouls por m2",
-    "uni_sigla": "MJ/m2"
+    "name": "Mega Jouls por m2",
+    "initials": "MJ/m2"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 12,
   "fields": {
-    "uni_nombre": "Voltios",
-    "uni_sigla": "V"
+    "name": "Voltios",
+    "initials": "V"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 13,
   "fields": {
-    "uni_nombre": "Watts por m2",
-    "uni_sigla": "W/m2"
+    "name": "Watts por m2",
+    "initials": "W/m2"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 14,
   "fields": {
-    "uni_nombre": "Metros C\u00fabicos por Segundo",
-    "uni_sigla": "m3/s"
+    "name": "Metros C\u00fabicos por Segundo",
+    "initials": "m3/s"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 15,
   "fields": {
-    "uni_nombre": "Mil\u00edmetros por Hora",
-    "uni_sigla": "mm/h"
+    "name": "Mil\u00edmetros por Hora",
+    "initials": "mm/h"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 16,
   "fields": {
-    "uni_nombre": "Potencial Hidr\u00f3geno",
-    "uni_sigla": "pH"
+    "name": "Potencial Hidr\u00f3geno",
+    "initials": "pH"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 17,
   "fields": {
-    "uni_nombre": "mili Voltio",
-    "uni_sigla": "mV"
+    "name": "mili Voltio",
+    "initials": "mV"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 18,
   "fields": {
-    "uni_nombre": "Nephelometric Turbidity Unit",
-    "uni_sigla": "NTU"
+    "name": "Nephelometric Turbidity Unit",
+    "initials": "NTU"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 19,
   "fields": {
-    "uni_nombre": "microgramo por Litro",
-    "uni_sigla": "ug/L"
+    "name": "microgramo por Litro",
+    "initials": "ug/L"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 20,
   "fields": {
-    "uni_nombre": "miligramo por Litro",
-    "uni_sigla": "mg/L"
+    "name": "miligramo por Litro",
+    "initials": "mg/L"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 21,
   "fields": {
-    "uni_nombre": "parts-per-billion 10^-9",
-    "uni_sigla": "ppb"
+    "name": "parts-per-billion 10^-9",
+    "initials": "ppb"
   }
 },
 {
-  "model": "variable.unidad",
+  "model": "variable.unit",
   "pk": 22,
   "fields": {
-    "uni_nombre": "Litros por segundo",
-    "uni_sigla": "L/s"
+    "name": "Litros por segundo",
+    "initials": "L/s"
   }
 }
 ]
