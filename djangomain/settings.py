@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "variable.apps.VariableConfig",
     "formatting.apps.FormattingConfig",
     "measurement.apps.MeasurementConfig",
-    "importing.apps.ImportacionConfig",
+    "importing.apps.ImportingConfig",
     "bootstrap4",
     "django_extensions",
     "django.contrib.humanize",
