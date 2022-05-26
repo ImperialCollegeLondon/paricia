@@ -1,17 +1,18 @@
-# -*- coding: utf-8 -*-
-
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
-
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 from __future__ import unicode_literals
+
+from typing import Type
 
 from django.db import models
 from django.urls import reverse
@@ -19,1060 +20,355 @@ from django.urls import reverse
 from station.models import Station
 
 
-class PermisosMedicion(models.Model):
+class PermissionsMeasurement(models.Model):
+    """
+    Model used to define the permission "validar".
+    """
+
     class Meta:
         managed = False
         default_permissions = ()
         permissions = (("validar", "usar interfaz de validación"),)
 
 
-# # Este modelo posiblemente se lo usaría para compatibilidad con SEDC
-# # Se necesita al menos en: reportes/views/datos_json_horarios
-# # clase para almacenar los datos crudos del sistema
-# class Medicion(models.Model):
-#     med_id = models.BigAutoField("Id", primary_key=True)
-#     var_id = models.ForeignKey(Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable")
-#     station_id = models.ForeignKey(Station, models.SET_NULL, blank=True, null=True, verbose_name="Station")
-#     med_fecha = models.DateTimeField("Fecha")
-#     med_valor = models.DecimalField("Valor", max_digits=14, decimal_places=6, blank=True, null=True)
-#     med_maximo = models.DecimalField("Máximo", max_digits=14, decimal_places=6, blank=True, null=True)
-#     med_minimo = models.DecimalField("Mínimo", max_digits=14, decimal_places=6, blank=True, null=True)
-#     med_estado = models.NullBooleanField("Estado", default=True)
-#
-#     def __str__(self):
-#         return str(self.med_fecha)
-#
-#     def get_absolute_url(self):
-#         return reverse('medicion:medicion_index')
-#
-#     class Meta:
-#         default_permissions = ()
-#         ordering = ('med_fecha',)
+class PolarWind(models.Model):
+    """
+    Polar Wind measurement with a velocity and direction at a specific date.
+    """
 
-
-class VientoPolar(models.Model):
-    fecha = models.DateTimeField("Fecha")
-    velocidad = models.DecimalField(
-        "Velocidad", max_digits=14, decimal_places=6, null=True
-    )
-    direccion = models.DecimalField(
-        "Direccion", max_digits=14, decimal_places=6, null=True
-    )
+    date = models.DateTimeField("Date")
+    speed = models.DecimalField("Speed", digits=14, decimals=6, null=True)
+    direction = models.DecimalField("Direction", digits=14, decimals=6, null=True)
 
     class Meta:
-        ### Para que no se cree en la migracion
+        """
+        Para que no se cree en la migracion.
+
+        NOTE: Why don't we want this in the migration?
+        """
+
         default_permissions = ()
         managed = False
 
 
-class CaudalViaEstacion(models.Model):
-    id = models.AutoField("Id", primary_key=True)
-    station_id = models.ForeignKey(
-        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
-    )
-    fecha_inicio = models.DateTimeField("Fecha inicio")
-    fecha_fin = models.DateTimeField("Fecha fin")
-    valor = models.DecimalField(
-        "Valor", max_digits=14, decimal_places=6, blank=True, null=True
-    )
-    calibracion_regleta_sensor = models.NullBooleanField("Calibracion", default=False)
+class DischargeCurve(models.Model):
+    """
+    Discharge curve.
 
+    Relates a station and a date and a bool as to whether a flow recalculation is
+    required.
+    """
 
-class CurvaDescarga(models.Model):
     id = models.AutoField("Id", primary_key=True)
     station = models.ForeignKey(
         Station, on_delete=models.SET_NULL, null=True, verbose_name="Station"
     )
-    fecha = models.DateTimeField("Fecha")
-    requiere_recalculo_caudal = models.BooleanField(
-        verbose_name="Requiere recaldular Caudal", default=False
+    date = models.DateTimeField("Date")
+    require_recalculate_flow = models.BooleanField(
+        verbose_name="Requires re-calculate flow?", default=False
     )
 
     def __str__(self):
         return self.id
 
     def get_absolute_url(self):
-        return reverse("medicion:curvadescarga_detail", kwargs={"pk": self.pk})
+        return reverse("medicion:dischargecurve_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("station", "fecha")
-        unique_together = ("station", "fecha")
+        ordering = ("station", "date")
+        unique_together = ("station", "date")
 
 
-class NivelFuncion(models.Model):
-    curvadescarga = models.ForeignKey(CurvaDescarga, on_delete=models.CASCADE)
-    nivel = models.DecimalField(
-        "Nivel (cm)", max_digits=5, decimal_places=1, db_index=True
-    )
-    funcion = models.CharField("Función", max_length=80)
+class LevelFunction(models.Model):
+    """
+    Function Level. Relates a dischage curve to a level (in cm) to a function.
+
+    NOTE: No idea what this is -> Ask Pablo
+    """
+
+    discharge_curve = models.ForeignKey(DischargeCurve, on_delete=models.CASCADE)
+    level = models.DecimalField("Level (cm)", digits=5, decimals=1, db_index=True)
+    function = models.CharField("Function", max_length=80)
 
     def __str__(self):
         return str(self.pk)
 
     def get_absolute_url(self):
-        return reverse("medicion:nivelfuncion_detail", kwargs={"pk": self.pk})
+        return reverse("medicion:levelfunction_detail", kwargs={"pk": self.pk})
 
     class Meta:
         default_permissions = ()
         ordering = (
-            "curvadescarga",
-            "nivel",
+            "discharge_curve",
+            "level",
         )
-
-
-class CursorDbclima(models.Model):
-    station_id = models.IntegerField(primary_key=True)
-    fecha = models.DateTimeField(null=True)
-
-
-class CursorEmaaphidro(models.Model):
-    station_id_paramh2o = models.IntegerField(primary_key=True)
-    station_id_emaaphidro = models.SmallIntegerField()
-    station_code = models.CharField(max_length=4)
-    fecha = models.DateTimeField()
 
 
 ##############################################################
 
 
-class ValorDecimal:
-    max_dig = 6
-    dec_pla = 2
-
-    def __init__(self, max_dig, dec_pla):
-        self.max_dig = max_dig
-        self.dec_pla = dec_pla
-
-
-class DigVar:
-    v1 = ValorDecimal(max_dig=6, dec_pla=2)
-    v2 = ValorDecimal(max_dig=5, dec_pla=2)
-    v3 = ValorDecimal(max_dig=14, dec_pla=6)
-    v4 = ValorDecimal(max_dig=14, dec_pla=6)
-    v5 = ValorDecimal(max_dig=14, dec_pla=6)
-    v6 = ValorDecimal(max_dig=14, dec_pla=6)
-    v7 = ValorDecimal(max_dig=14, dec_pla=6)
-    v8 = ValorDecimal(max_dig=14, dec_pla=6)
-    v9 = ValorDecimal(max_dig=14, dec_pla=6)
-    v10 = ValorDecimal(max_dig=14, dec_pla=6)
-    v11 = ValorDecimal(max_dig=14, dec_pla=6)
-    v12 = ValorDecimal(max_dig=14, dec_pla=6)
-    v13 = ValorDecimal(max_dig=14, dec_pla=6)
-    v14 = ValorDecimal(max_dig=14, dec_pla=6)
-    v15 = ValorDecimal(max_dig=14, dec_pla=6)
-    v16 = ValorDecimal(max_dig=14, dec_pla=6)
-    v17 = ValorDecimal(max_dig=14, dec_pla=6)
-    v18 = ValorDecimal(max_dig=14, dec_pla=6)
-    v19 = ValorDecimal(max_dig=14, dec_pla=6)
-    v20 = ValorDecimal(max_dig=14, dec_pla=6)
-    v21 = ValorDecimal(max_dig=14, dec_pla=6)
-    v22 = ValorDecimal(max_dig=14, dec_pla=6)
-    v23 = ValorDecimal(max_dig=14, dec_pla=6)
-    v24 = ValorDecimal(max_dig=14, dec_pla=6)
-
-    # variable con profundidad
-    v101 = ValorDecimal(max_dig=6, dec_pla=2)
-    v102 = ValorDecimal(max_dig=6, dec_pla=2)
-    v103 = ValorDecimal(max_dig=6, dec_pla=2)
-    v104 = ValorDecimal(max_dig=7, dec_pla=2)
-    v105 = ValorDecimal(max_dig=6, dec_pla=2)
-    v106 = ValorDecimal(max_dig=6, dec_pla=2)
-    v107 = ValorDecimal(max_dig=6, dec_pla=2)
-    v108 = ValorDecimal(max_dig=6, dec_pla=2)
-
-
-class Var1Medicion(models.Model):
+class BaseMeasurement(models.Model):
     id = models.BigAutoField("Id", primary_key=True)
     station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v1.max_dig,
-        decimal_places=DigVar.v1.dec_pla,
-        null=True,
-    )
+    date = models.DateTimeField("Date")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "date"]),
+            models.Index(fields=["date", "station_id"]),
         ]
 
 
-class Var2Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v2.max_dig,
-        decimal_places=DigVar.v2.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v2.max_dig,
-        decimal_places=DigVar.v2.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v2.max_dig,
-        decimal_places=DigVar.v2.dec_pla,
-        null=True,
-    )
+def limits_model(
+    num, digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
+) -> Type[models.Model]:
+    _fields = {
+        key.lowercase(): models.DecimalField(
+            key,
+            digits=digits,
+            decimals=decimals,
+            null=True,
+        )
+        for key in fields
+    }
 
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+    return type(f"Limits{num}", (models.Model,), _fields)
 
 
-class Var3Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v3.max_dig,
-        decimal_places=DigVar.v3.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v3.max_dig,
-        decimal_places=DigVar.v3.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v3.max_dig,
-        decimal_places=DigVar.v3.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var1Measurement(
+    BaseMeasurement, limits_model(1, digits=6, decimals=2, fields=("Value"))
+):
+    """Precipitation."""
 
 
-class Var4Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v4.max_dig,
-        decimal_places=DigVar.v4.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v4.max_dig,
-        decimal_places=DigVar.v4.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v4.max_dig,
-        decimal_places=DigVar.v4.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var2Measurement(BaseMeasurement, limits_model(2, digits=5, decimals=2)):
+    """Air temperature."""
 
 
-class Var5Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v5.max_dig,
-        decimal_places=DigVar.v5.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v5.max_dig,
-        decimal_places=DigVar.v5.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v5.max_dig,
-        decimal_places=DigVar.v5.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var3Measurement(BaseMeasurement, limits_model(3)):
+    """Humidity."""
 
 
-class Var6Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v6.max_dig,
-        decimal_places=DigVar.v6.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v6.max_dig,
-        decimal_places=DigVar.v6.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v6.max_dig,
-        decimal_places=DigVar.v6.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var4Measurement(BaseMeasurement, limits_model(4)):
+    """Wind velocity."""
 
 
-class Var7Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v7.max_dig,
-        decimal_places=DigVar.v7.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v7.max_dig,
-        decimal_places=DigVar.v7.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v7.max_dig,
-        decimal_places=DigVar.v7.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var5Measurement(BaseMeasurement, limits_model(5)):
+    """Wind direction."""
 
 
-class Var8Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v8.max_dig,
-        decimal_places=DigVar.v8.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v8.max_dig,
-        decimal_places=DigVar.v8.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v8.max_dig,
-        decimal_places=DigVar.v8.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var6Measurement(BaseMeasurement, limits_model(6)):
+    """Soil moisture."""
 
 
-class Var9Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v9.max_dig,
-        decimal_places=DigVar.v9.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v9.max_dig,
-        decimal_places=DigVar.v9.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v9.max_dig,
-        decimal_places=DigVar.v9.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var7Measurement(BaseMeasurement, limits_model(7)):
+    """Solar radiation."""
 
 
-class Var10Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v10.max_dig,
-        decimal_places=DigVar.v10.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v10.max_dig,
-        decimal_places=DigVar.v10.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v10.max_dig,
-        decimal_places=DigVar.v10.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var8Measurement(BaseMeasurement, limits_model(8)):
+    """Atmospheric pressure."""
 
 
-class Var11Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var9Measurement(BaseMeasurement, limits_model(9)):
+    """Water temperature."""
 
 
-class Var12Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v12.max_dig,
-        decimal_places=DigVar.v12.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v12.max_dig,
-        decimal_places=DigVar.v12.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v12.max_dig,
-        decimal_places=DigVar.v12.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var10Measurement(BaseMeasurement, limits_model(10)):
+    """Flow."""
 
 
-class Var13Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v13.max_dig,
-        decimal_places=DigVar.v13.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
+class Var11Measurement(BaseMeasurement, limits_model(11)):
+    """Water level."""
 
 
-class Var14Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha_importacion = models.DateTimeField("Fecha Importación")
-    fecha_inicio = models.DateTimeField("Fecha inicio datos")
-    fecha = models.DateTimeField("Fecha fin datos")
+class Var12Measurement(BaseMeasurement, limits_model(12)):
+    """Battery voltage."""
+
+
+class Var13Measurement(BaseMeasurement, limits_model(13, fields=("Value"))):
+    """Flow rate."""
+
+
+class Var14Measurement(
+    BaseMeasurement, limits_model(14, fields=("Value", "Incertidumbre"))
+):
+    data_import_date = models.DateTimeField("Data import date")
+    data_start_date = models.DateTimeField("Data start date")
     calibrado = models.BooleanField("Calibrado")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v14.max_dig,
-        decimal_places=DigVar.v14.dec_pla,
-        null=True,
-    )
-    incertidumbre = models.DecimalField(
-        "Incertidumbre",
-        max_digits=DigVar.v14.max_dig,
-        decimal_places=DigVar.v14.dec_pla,
-        null=True,
-    )
     comentario = models.CharField("Comentario", null=True, max_length=250)
 
     class Meta:
         default_permissions = ()
         indexes = [
             models.Index(fields=["station_id", "fecha_importacion"]),
-            models.Index(fields=["station_id", "fecha_inicio", "fecha"]),
+            models.Index(fields=["station_id", "fecha_inicio", "date"]),
             models.Index(fields=["fecha_importacion"]),
         ]
 
 
-class Var15Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v15.max_dig,
-        decimal_places=DigVar.v15.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v15.max_dig,
-        decimal_places=DigVar.v15.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v15.max_dig,
-        decimal_places=DigVar.v15.dec_pla,
-        null=True,
-    )
+class Var15Measurement(BaseMeasurement, limits_model(15)):
+    """Wind gust direction."""
+
+
+class Var16Measurement(BaseMeasurement, limits_model(16)):
+    """Wind path."""
+
+
+class Var17Measurement(BaseMeasurement, limits_model(17)):
+    """TODO: What is "gustdir"?"""
+
+
+class Var18Measurement(BaseMeasurement, limits_model(18)):
+    """TODO: What is "gusth"?"""
+
+
+class Var19Measurement(BaseMeasurement, limits_model(19)):
+    """TODO: What is "gustm"?"""
+
+
+class Var20Measurement(BaseMeasurement, limits_model(20)):
+    """Soil temperature."""
+
+
+class Var21Measurement(BaseMeasurement, limits_model(21)):
+    """Indirect radiation."""
+
+
+class Var22Measurement(BaseMeasurement, limits_model(22)):
+    """Solar radiation (cumulative)."""
+
+
+class Var23Measurement(BaseMeasurement, limits_model(23)):
+    pass
+
+
+class Var24Measurement(BaseMeasurement, limits_model(24)):
+    pass
+
+
+# Variables created for buoy with different depths
+
+
+class Var101Measurement(
+    BaseMeasurement,
+    limits_model(101, digits=6, decimals=2, fields=("Value")),
+):
+    """Water temperature (degrees celcius) at a depth in cm."""
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]
 
 
-class Var16Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v16.max_dig,
-        decimal_places=DigVar.v16.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v16.max_dig,
-        decimal_places=DigVar.v16.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v16.max_dig,
-        decimal_places=DigVar.v16.dec_pla,
-        null=True,
-    )
+class Var102Measurement(
+    BaseMeasurement,
+    limits_model(102, digits=6, decimals=2, fields=("Value")),
+):
+    """Water acidity (pH) at a depth in cm."""
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]
 
 
-class Var17Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v17.max_dig,
-        decimal_places=DigVar.v17.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v17.max_dig,
-        decimal_places=DigVar.v17.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v17.max_dig,
-        decimal_places=DigVar.v17.dec_pla,
-        null=True,
-    )
+class Var103Measurement(
+    BaseMeasurement,
+    limits_model(103, digits=6, decimals=2, fields=("Value")),
+):
+    """Redox potential (mV) at a depth in cm."""
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]
 
 
-class Var18Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v18.max_dig,
-        decimal_places=DigVar.v18.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v18.max_dig,
-        decimal_places=DigVar.v18.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v18.max_dig,
-        decimal_places=DigVar.v18.dec_pla,
-        null=True,
-    )
+class Var104Measurement(
+    BaseMeasurement,
+    limits_model(104, digits=6, decimals=2, fields=("Value")),
+):
+    """Water turbidity (NTU) at a depth in cm."""
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]
 
 
-class Var19Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v19.max_dig,
-        decimal_places=DigVar.v19.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v19.max_dig,
-        decimal_places=DigVar.v19.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v19.max_dig,
-        decimal_places=DigVar.v19.dec_pla,
-        null=True,
-    )
+class Var105Measurement(
+    BaseMeasurement,
+    limits_model(105, digits=6, decimals=2, fields=("Value")),
+):
+    """Chlorine concentration (ug/l) at a depth in cm."""
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]
 
 
-class Var20Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v20.max_dig,
-        decimal_places=DigVar.v20.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v20.max_dig,
-        decimal_places=DigVar.v20.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v20.max_dig,
-        decimal_places=DigVar.v20.dec_pla,
-        null=True,
-    )
+class Var106Measurement(
+    BaseMeasurement,
+    limits_model(106, digits=6, decimals=2, fields=("Value")),
+):
+    """Oxygen concentration (mg/l) at a depth in cm."""
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]
 
 
-class Var21Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v21.max_dig,
-        decimal_places=DigVar.v21.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v21.max_dig,
-        decimal_places=DigVar.v21.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v21.max_dig,
-        decimal_places=DigVar.v21.dec_pla,
-        null=True,
-    )
+class Var107Measurement(
+    BaseMeasurement,
+    limits_model(107, digits=6, decimals=2, fields=("Value")),
+):
+    """Percentage oxygen concentration (mg/l) at a depth in cm.
+
+    HELPWANTED: Is this wrong? It's teh same as above, perhaps units should
+    be %? --> DIEGO: Looks identical to the previous one to me. It might be an error.
+    """
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]
 
 
-class Var22Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v22.max_dig,
-        decimal_places=DigVar.v22.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v22.max_dig,
-        decimal_places=DigVar.v22.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v22.max_dig,
-        decimal_places=DigVar.v22.dec_pla,
-        null=True,
-    )
+class Var108Measurement(
+    BaseMeasurement,
+    limits_model(108, digits=6, decimals=2, fields=("Value")),
+):
+    """Phycocyanin (?) at a depth in cm."""
+
+    depth = models.PositiveSmallIntegerField("Depth")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
-
-
-class Var23Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v23.max_dig,
-        decimal_places=DigVar.v23.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v23.max_dig,
-        decimal_places=DigVar.v23.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v23.max_dig,
-        decimal_places=DigVar.v23.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
-
-
-class Var24Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v24.max_dig,
-        decimal_places=DigVar.v24.dec_pla,
-        null=True,
-    )
-    maximo = models.DecimalField(
-        "Máximo",
-        max_digits=DigVar.v24.max_dig,
-        decimal_places=DigVar.v24.dec_pla,
-        null=True,
-    )
-    minimo = models.DecimalField(
-        "Mínimo",
-        max_digits=DigVar.v24.max_dig,
-        decimal_places=DigVar.v24.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "fecha"]),
-            models.Index(fields=["fecha", "station_id"]),
-        ]
-
-
-## Variables creadas para boya con diferentes profundidades
-
-## Temperatura agua
-##      Profundidad en centimetros
-##      Unidad : grados Celcius
-class Var101Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v101.max_dig,
-        decimal_places=DigVar.v101.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
-        ]
-
-
-## pH Acidez agua
-##      Profundidad en centimetros
-##      Unidad : pH
-class Var102Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v102.max_dig,
-        decimal_places=DigVar.v102.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
-        ]
-
-
-## ORP : Potencial REDOX en agua
-##      Profundidad en centimetros
-##      Unidad : mV
-class Var103Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v103.max_dig,
-        decimal_places=DigVar.v103.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
-        ]
-
-
-## Turp Turbidez en agua
-##      Profundidad en centimetros
-##      Unidad : NTU
-class Var104Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v104.max_dig,
-        decimal_places=DigVar.v104.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
-        ]
-
-
-## Chl : Concentracion Cloro
-##      Profundidad en centimetros
-##      Unidad : ug/l
-class Var105Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v105.max_dig,
-        decimal_places=DigVar.v105.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
-        ]
-
-
-## HDO : Oxígeno disuelto en agua
-##      Profundidad en centimetros
-##      Unidad : mg/l
-class Var106Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v106.max_dig,
-        decimal_places=DigVar.v106.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
-        ]
-
-
-## % HDO : Porcentaje Oxígeno disuelto en agua
-##      Profundidad en centimetros
-##      Unidad : mg/l
-class Var107Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v107.max_dig,
-        decimal_places=DigVar.v107.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
-        ]
-
-
-## BGAPC : Ficocianina
-##      Profundidad en centimetros
-##      Unidad :
-class Var108Medicion(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
-    station_id = models.PositiveIntegerField("station_id")
-    fecha = models.DateTimeField("Fecha")
-    profundidad = models.PositiveSmallIntegerField("Profundidad")
-    valor = models.DecimalField(
-        "Valor",
-        max_digits=DigVar.v108.max_dig,
-        decimal_places=DigVar.v108.dec_pla,
-        null=True,
-    )
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "profundidad", "fecha"]),
+            models.Index(fields=["station_id", "depth", "date"]),
         ]

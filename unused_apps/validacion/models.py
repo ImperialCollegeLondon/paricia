@@ -98,8 +98,8 @@ class Var1Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v1.max_dig,
-        decimal_places=DigVar.v1.dec_pla,
+        max_digits=DigVar.v1.max_digits,
+        decimal_places=DigVar.v1.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -119,20 +119,20 @@ class Var2Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v2.max_dig,
-        decimal_places=DigVar.v2.dec_pla,
+        max_digits=DigVar.v2.max_digits,
+        decimal_places=DigVar.v2.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v2.max_dig,
-        decimal_places=DigVar.v2.dec_pla,
+        max_digits=DigVar.v2.max_digits,
+        decimal_places=DigVar.v2.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v2.max_dig,
-        decimal_places=DigVar.v2.dec_pla,
+        max_digits=DigVar.v2.max_digits,
+        decimal_places=DigVar.v2.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -152,20 +152,20 @@ class Var3Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v3.max_dig,
-        decimal_places=DigVar.v3.dec_pla,
+        max_digits=DigVar.v3.max_digits,
+        decimal_places=DigVar.v3.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v3.max_dig,
-        decimal_places=DigVar.v3.dec_pla,
+        max_digits=DigVar.v3.max_digits,
+        decimal_places=DigVar.v3.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v3.max_dig,
-        decimal_places=DigVar.v3.dec_pla,
+        max_digits=DigVar.v3.max_digits,
+        decimal_places=DigVar.v3.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -185,20 +185,20 @@ class Var4Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v4.max_dig,
-        decimal_places=DigVar.v4.dec_pla,
+        max_digits=DigVar.v4.max_digits,
+        decimal_places=DigVar.v4.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v4.max_dig,
-        decimal_places=DigVar.v4.dec_pla,
+        max_digits=DigVar.v4.max_digits,
+        decimal_places=DigVar.v4.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v4.max_dig,
-        decimal_places=DigVar.v4.dec_pla,
+        max_digits=DigVar.v4.max_digits,
+        decimal_places=DigVar.v4.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -218,20 +218,20 @@ class Var5Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v5.max_dig,
-        decimal_places=DigVar.v5.dec_pla,
+        max_digits=DigVar.v5.max_digits,
+        decimal_places=DigVar.v5.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v5.max_dig,
-        decimal_places=DigVar.v5.dec_pla,
+        max_digits=DigVar.v5.max_digits,
+        decimal_places=DigVar.v5.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v5.max_dig,
-        decimal_places=DigVar.v5.dec_pla,
+        max_digits=DigVar.v5.max_digits,
+        decimal_places=DigVar.v5.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -251,20 +251,20 @@ class Var6Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v6.max_dig,
-        decimal_places=DigVar.v6.dec_pla,
+        max_digits=DigVar.v6.max_digits,
+        decimal_places=DigVar.v6.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v6.max_dig,
-        decimal_places=DigVar.v6.dec_pla,
+        max_digits=DigVar.v6.max_digits,
+        decimal_places=DigVar.v6.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v6.max_dig,
-        decimal_places=DigVar.v6.dec_pla,
+        max_digits=DigVar.v6.max_digits,
+        decimal_places=DigVar.v6.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -284,20 +284,20 @@ class Var7Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v7.max_dig,
-        decimal_places=DigVar.v7.dec_pla,
+        max_digits=DigVar.v7.max_digits,
+        decimal_places=DigVar.v7.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v7.max_dig,
-        decimal_places=DigVar.v7.dec_pla,
+        max_digits=DigVar.v7.max_digits,
+        decimal_places=DigVar.v7.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v7.max_dig,
-        decimal_places=DigVar.v7.dec_pla,
+        max_digits=DigVar.v7.max_digits,
+        decimal_places=DigVar.v7.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -317,20 +317,20 @@ class Var8Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v8.max_dig,
-        decimal_places=DigVar.v8.dec_pla,
+        max_digits=DigVar.v8.max_digits,
+        decimal_places=DigVar.v8.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v8.max_dig,
-        decimal_places=DigVar.v8.dec_pla,
+        max_digits=DigVar.v8.max_digits,
+        decimal_places=DigVar.v8.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v8.max_dig,
-        decimal_places=DigVar.v8.dec_pla,
+        max_digits=DigVar.v8.max_digits,
+        decimal_places=DigVar.v8.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -350,20 +350,20 @@ class Var9Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v9.max_dig,
-        decimal_places=DigVar.v9.dec_pla,
+        max_digits=DigVar.v9.max_digits,
+        decimal_places=DigVar.v9.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v9.max_dig,
-        decimal_places=DigVar.v9.dec_pla,
+        max_digits=DigVar.v9.max_digits,
+        decimal_places=DigVar.v9.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v9.max_dig,
-        decimal_places=DigVar.v9.dec_pla,
+        max_digits=DigVar.v9.max_digits,
+        decimal_places=DigVar.v9.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -383,20 +383,20 @@ class Var10Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v10.max_dig,
-        decimal_places=DigVar.v10.dec_pla,
+        max_digits=DigVar.v10.max_digits,
+        decimal_places=DigVar.v10.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v10.max_dig,
-        decimal_places=DigVar.v10.dec_pla,
+        max_digits=DigVar.v10.max_digits,
+        decimal_places=DigVar.v10.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v10.max_dig,
-        decimal_places=DigVar.v10.dec_pla,
+        max_digits=DigVar.v10.max_digits,
+        decimal_places=DigVar.v10.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -416,20 +416,20 @@ class Var11Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -449,20 +449,20 @@ class Var12Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v12.max_dig,
-        decimal_places=DigVar.v12.dec_pla,
+        max_digits=DigVar.v12.max_digits,
+        decimal_places=DigVar.v12.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v12.max_dig,
-        decimal_places=DigVar.v12.dec_pla,
+        max_digits=DigVar.v12.max_digits,
+        decimal_places=DigVar.v12.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v12.max_dig,
-        decimal_places=DigVar.v12.dec_pla,
+        max_digits=DigVar.v12.max_digits,
+        decimal_places=DigVar.v12.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -482,20 +482,20 @@ class Var13Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v13.max_dig,
-        decimal_places=DigVar.v13.dec_pla,
+        max_digits=DigVar.v13.max_digits,
+        decimal_places=DigVar.v13.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v13.max_dig,
-        decimal_places=DigVar.v13.dec_pla,
+        max_digits=DigVar.v13.max_digits,
+        decimal_places=DigVar.v13.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v13.max_dig,
-        decimal_places=DigVar.v13.dec_pla,
+        max_digits=DigVar.v13.max_digits,
+        decimal_places=DigVar.v13.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -515,20 +515,20 @@ class Var14Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v14.max_dig,
-        decimal_places=DigVar.v14.dec_pla,
+        max_digits=DigVar.v14.max_digits,
+        decimal_places=DigVar.v14.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v14.max_dig,
-        decimal_places=DigVar.v14.dec_pla,
+        max_digits=DigVar.v14.max_digits,
+        decimal_places=DigVar.v14.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v14.max_dig,
-        decimal_places=DigVar.v14.dec_pla,
+        max_digits=DigVar.v14.max_digits,
+        decimal_places=DigVar.v14.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -548,20 +548,20 @@ class Var15Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v15.max_dig,
-        decimal_places=DigVar.v15.dec_pla,
+        max_digits=DigVar.v15.max_digits,
+        decimal_places=DigVar.v15.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v15.max_dig,
-        decimal_places=DigVar.v15.dec_pla,
+        max_digits=DigVar.v15.max_digits,
+        decimal_places=DigVar.v15.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v15.max_dig,
-        decimal_places=DigVar.v15.dec_pla,
+        max_digits=DigVar.v15.max_digits,
+        decimal_places=DigVar.v15.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -581,20 +581,20 @@ class Var16Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v16.max_dig,
-        decimal_places=DigVar.v16.dec_pla,
+        max_digits=DigVar.v16.max_digits,
+        decimal_places=DigVar.v16.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v16.max_dig,
-        decimal_places=DigVar.v16.dec_pla,
+        max_digits=DigVar.v16.max_digits,
+        decimal_places=DigVar.v16.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v16.max_dig,
-        decimal_places=DigVar.v16.dec_pla,
+        max_digits=DigVar.v16.max_digits,
+        decimal_places=DigVar.v16.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -614,20 +614,20 @@ class Var17Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v17.max_dig,
-        decimal_places=DigVar.v17.dec_pla,
+        max_digits=DigVar.v17.max_digits,
+        decimal_places=DigVar.v17.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v17.max_dig,
-        decimal_places=DigVar.v17.dec_pla,
+        max_digits=DigVar.v17.max_digits,
+        decimal_places=DigVar.v17.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v17.max_dig,
-        decimal_places=DigVar.v17.dec_pla,
+        max_digits=DigVar.v17.max_digits,
+        decimal_places=DigVar.v17.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -647,20 +647,20 @@ class Var18Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v18.max_dig,
-        decimal_places=DigVar.v18.dec_pla,
+        max_digits=DigVar.v18.max_digits,
+        decimal_places=DigVar.v18.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v18.max_dig,
-        decimal_places=DigVar.v18.dec_pla,
+        max_digits=DigVar.v18.max_digits,
+        decimal_places=DigVar.v18.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v18.max_dig,
-        decimal_places=DigVar.v18.dec_pla,
+        max_digits=DigVar.v18.max_digits,
+        decimal_places=DigVar.v18.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -680,20 +680,20 @@ class Var19Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v19.max_dig,
-        decimal_places=DigVar.v19.dec_pla,
+        max_digits=DigVar.v19.max_digits,
+        decimal_places=DigVar.v19.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v19.max_dig,
-        decimal_places=DigVar.v19.dec_pla,
+        max_digits=DigVar.v19.max_digits,
+        decimal_places=DigVar.v19.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v19.max_dig,
-        decimal_places=DigVar.v19.dec_pla,
+        max_digits=DigVar.v19.max_digits,
+        decimal_places=DigVar.v19.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -713,20 +713,20 @@ class Var20Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v20.max_dig,
-        decimal_places=DigVar.v20.dec_pla,
+        max_digits=DigVar.v20.max_digits,
+        decimal_places=DigVar.v20.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v20.max_dig,
-        decimal_places=DigVar.v20.dec_pla,
+        max_digits=DigVar.v20.max_digits,
+        decimal_places=DigVar.v20.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v20.max_dig,
-        decimal_places=DigVar.v20.dec_pla,
+        max_digits=DigVar.v20.max_digits,
+        decimal_places=DigVar.v20.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -746,20 +746,20 @@ class Var21Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v21.max_dig,
-        decimal_places=DigVar.v21.dec_pla,
+        max_digits=DigVar.v21.max_digits,
+        decimal_places=DigVar.v21.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v21.max_dig,
-        decimal_places=DigVar.v21.dec_pla,
+        max_digits=DigVar.v21.max_digits,
+        decimal_places=DigVar.v21.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v21.max_dig,
-        decimal_places=DigVar.v21.dec_pla,
+        max_digits=DigVar.v21.max_digits,
+        decimal_places=DigVar.v21.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -779,20 +779,20 @@ class Var22Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v22.max_dig,
-        decimal_places=DigVar.v22.dec_pla,
+        max_digits=DigVar.v22.max_digits,
+        decimal_places=DigVar.v22.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v22.max_dig,
-        decimal_places=DigVar.v22.dec_pla,
+        max_digits=DigVar.v22.max_digits,
+        decimal_places=DigVar.v22.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v22.max_dig,
-        decimal_places=DigVar.v22.dec_pla,
+        max_digits=DigVar.v22.max_digits,
+        decimal_places=DigVar.v22.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -812,8 +812,8 @@ class Var23Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v23.max_dig,
-        decimal_places=DigVar.v23.dec_pla,
+        max_digits=DigVar.v23.max_digits,
+        decimal_places=DigVar.v23.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -833,8 +833,8 @@ class Var24Validado(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v24.max_dig,
-        decimal_places=DigVar.v24.dec_pla,
+        max_digits=DigVar.v24.max_digits,
+        decimal_places=DigVar.v24.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -858,8 +858,8 @@ class Var101Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v101.max_dig,
-        decimal_places=DigVar.v101.dec_pla,
+        max_digits=DigVar.v101.max_digits,
+        decimal_places=DigVar.v101.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -879,8 +879,8 @@ class Var102Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v102.max_dig,
-        decimal_places=DigVar.v102.dec_pla,
+        max_digits=DigVar.v102.max_digits,
+        decimal_places=DigVar.v102.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -900,8 +900,8 @@ class Var103Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v103.max_dig,
-        decimal_places=DigVar.v103.dec_pla,
+        max_digits=DigVar.v103.max_digits,
+        decimal_places=DigVar.v103.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -921,8 +921,8 @@ class Var104Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v104.max_dig,
-        decimal_places=DigVar.v104.dec_pla,
+        max_digits=DigVar.v104.max_digits,
+        decimal_places=DigVar.v104.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -942,8 +942,8 @@ class Var105Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v105.max_dig,
-        decimal_places=DigVar.v105.dec_pla,
+        max_digits=DigVar.v105.max_digits,
+        decimal_places=DigVar.v105.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -963,8 +963,8 @@ class Var106Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v106.max_dig,
-        decimal_places=DigVar.v106.dec_pla,
+        max_digits=DigVar.v106.max_digits,
+        decimal_places=DigVar.v106.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -984,8 +984,8 @@ class Var107Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v107.max_dig,
-        decimal_places=DigVar.v107.dec_pla,
+        max_digits=DigVar.v107.max_digits,
+        decimal_places=DigVar.v107.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -1005,8 +1005,8 @@ class Var108Validado(models.Model):
     profundidad = models.PositiveSmallIntegerField("Profundidad")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v108.max_dig,
-        decimal_places=DigVar.v108.dec_pla,
+        max_digits=DigVar.v108.max_digits,
+        decimal_places=DigVar.v108.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -1028,32 +1028,32 @@ class Viento(models.Model):
     fecha = models.DateTimeField("Fecha")
     valor = models.DecimalField(
         "Valor",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     maximo = models.DecimalField(
         "Máximo",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     minimo = models.DecimalField(
         "Mínimo",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     direccion = models.DecimalField(
         "Direccion",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     categoria = models.DecimalField(
         "Categoria",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)
@@ -1072,14 +1072,14 @@ class Agua(models.Model):
     fecha = models.DateTimeField("Fecha")
     caudal = models.DecimalField(
         "Caudal",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     nivel = models.DecimalField(
         "Nivel",
-        max_digits=DigVar.v11.max_dig,
-        decimal_places=DigVar.v11.dec_pla,
+        max_digits=DigVar.v11.max_digits,
+        decimal_places=DigVar.v11.decimal_places,
         null=True,
     )
     usado_para_horario = models.BooleanField("Usado en horario", default=False)

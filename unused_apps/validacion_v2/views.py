@@ -21,7 +21,7 @@ from django.shortcuts import render
 from django.views.generic import FormView, ListView
 
 from estacion.views import listar_anio
-from medicion.forms import ValidacionSearchForm
+from medicion.forms import ValidationSearchForm
 from medicion.models import *
 from reportes import functions as functions1
 from validacion import functions as funcvariable
@@ -34,11 +34,11 @@ from variable.models import Variable
 # Consulta de datos diarios por reporte
 class ValidacionDiaria(LoginRequiredMixin, FormView):
     template_name = "validacion_v2/validacion_diaria.html"
-    form_class = ValidacionSearchForm
+    form_class = ValidationSearchForm
     success_url = "/validacion_v2/diaria/"
 
     def post(self, request, *args, **kwargs):
-        form = ValidacionSearchForm(self.request.POST or None)
+        form = ValidationSearchForm(self.request.POST or None)
         if form.is_valid():
             if self.request.is_ajax():
                 modelo = "Var" + form.data["variable"] + "Medicion"
@@ -119,7 +119,7 @@ class ListaValidacion(LoginRequiredMixin, ListView):
 # Consular los periodos de validacion por estacion y variable
 class PeriodosValidacion(LoginRequiredMixin, FormView):
     template_name = "validacion_v2/periodos_validacion.html"
-    form_class = ValidacionSearchForm
+    form_class = ValidationSearchForm
     success_url = "/medicion/filter/"
     lista = []
 
@@ -354,7 +354,7 @@ def eliminar_validados(request):
 
 class ValidacionList(LoginRequiredMixin, FormView):
     template_name = "validacion_v2/periodos_validacion.html"
-    form_class = ValidacionSearchForm
+    form_class = ValidationSearchForm
     success_url = "/medicion/filter/"
     lista = []
 
