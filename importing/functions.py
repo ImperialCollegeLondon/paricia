@@ -23,7 +23,7 @@ from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
-from importacion.models import DataImportFull, DataImportTemp
+from importing.models import DataImportFull, DataImportTemp
 from measurement.models import Var11Measurement, Var14Measurement
 from variable.models import Variable
 

@@ -28,15 +28,15 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 
 from home.functions import modelo_a_tabla_html
-from importacion.forms import DataImportForm
-from importacion.functions import (
+from importing.forms import DataImportForm
+from importing.functions import (
     insert_level_rule,
     preformat_matrix,
     query_formats,
     save_temp_data_to_permanent,
     validate_dates,
 )
-from importacion.models import DataImportFull, DataImportTemp
+from importing.models import DataImportFull, DataImportTemp
 
 
 class DataImportFullList(PermissionRequiredMixin, TemplateView):
