@@ -37,8 +37,10 @@ class PolarWind(models.Model):
     """
 
     date = models.DateTimeField("Date")
-    speed = models.DecimalField("Speed", digits=14, decimals=6, null=True)
-    direction = models.DecimalField("Direction", digits=14, decimals=6, null=True)
+    speed = models.DecimalField("Speed", max_digits=14, decimal_places=6, null=True)
+    direction = models.DecimalField(
+        "Direction", max_digits=14, decimal_places=6, null=True
+    )
 
     class Meta:
         """
@@ -81,13 +83,15 @@ class DischargeCurve(models.Model):
 
 class LevelFunction(models.Model):
     """
-    Function Level. Relates a dischage curve to a level (in cm) to a function.
+    Function Level. Relates a discharge curve to a level (in cm) to a function.
 
     NOTE: No idea what this is -> Ask Pablo
     """
 
     discharge_curve = models.ForeignKey(DischargeCurve, on_delete=models.CASCADE)
-    level = models.DecimalField("Level (cm)", digits=5, decimals=1, db_index=True)
+    level = models.DecimalField(
+        "Level (cm)", max_digits=5, decimal_places=1, db_index=True
+    )
     function = models.CharField("Function", max_length=80)
 
     def __str__(self):
@@ -124,16 +128,18 @@ def limits_model(
     num, digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
 ) -> Type[models.Model]:
     _fields = {
-        key.lowercase(): models.DecimalField(
+        key.lower(): models.DecimalField(
             key,
-            digits=digits,
-            decimals=decimals,
+            max_digits=digits,
+            decimal_places=decimals,
             null=True,
         )
         for key in fields
     }
 
-    return type(f"Limits{num}", (models.Model,), _fields)
+    return type(
+        f"Limits{num}", (models.Model,), {"field": _fields, "__module__": __name__}
+    )
 
 
 class Var1Measurement(
@@ -201,9 +207,9 @@ class Var14Measurement(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha_importacion"]),
-            models.Index(fields=["station_id", "fecha_inicio", "date"]),
-            models.Index(fields=["fecha_importacion"]),
+            models.Index(fields=["station_id", "data_import_date"]),
+            models.Index(fields=["station_id", "data_start_date", "date"]),
+            models.Index(fields=["data_import_date"]),
         ]
 
 

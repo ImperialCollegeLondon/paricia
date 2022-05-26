@@ -14,7 +14,7 @@ from datetime import date, datetime, time, timedelta
 
 from django.db import connection
 
-from medicion.models import *
+from measurement.models import *
 
 
 def llenarPrecipitacion():
