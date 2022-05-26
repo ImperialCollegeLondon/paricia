@@ -216,15 +216,15 @@ class Var16Measurement(BaseMeasurement, limits_model(16)):
 
 
 class Var17Measurement(BaseMeasurement, limits_model(17)):
-    """ TODO: What is "gustdir"? """
+    """TODO: What is "gustdir"?"""
 
 
 class Var18Measurement(BaseMeasurement, limits_model(18)):
-        """ TODO: What is "gusth"? """
+    """TODO: What is "gusth"?"""
 
 
 class Var19Measurement(BaseMeasurement, limits_model(19)):
-        """ TODO: What is "gustm"? """
+    """TODO: What is "gustm"?"""
 
 
 class Var20Measurement(BaseMeasurement, limits_model(20)):
