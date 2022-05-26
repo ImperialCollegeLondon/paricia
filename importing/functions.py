@@ -23,8 +23,8 @@ from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
-from importacion.models import DataImportFull, DataImportTemp
-from medicion.models import Var11Medicion, Var14Medicion
+from importing.models import DataImportFull, DataImportTemp
+from measurement.models import Var11Measurement, Var14Measurement
 from variable.models import Variable
 
 unix_epoch = np.datetime64(0, "s")
@@ -77,7 +77,7 @@ def get_last_uploaded_date(station_id, var_id):
         overhauled.
     """
     print("last_date: " + str(time.ctime()))
-    sql = "SELECT  date FROM medicion_var" + str(int(var_id)) + "medicion "
+    sql = "SELECT  date FROM measurement_var" + str(int(var_id)) + "measurement "
     sql += " WHERE station_id=" + str(int(station_id))
     sql += " ORDER BY date DESC LIMIT 1"
     with connection.cursor() as cursor:
@@ -98,10 +98,10 @@ def data_exists_between_dates(start, end, station_id, var_id):
     TODO: This will need reworking once Medicion module is overhauled.
     """
 
-    sql = "SELECT id FROM medicion_var" + str(var_id) + "medicion "
+    sql = "SELECT id FROM measurement_var" + str(var_id) + "measurement "
     sql += " WHERE date >= %s  AND date <= %s AND station_id = %s "
     sql += " LIMIT 1;"
-    query = globals()["Var" + str(var_id) + "Medicion"].objects.raw(
+    query = globals()["Var" + str(var_id) + "Measurement"].objects.raw(
         sql, (start, end, station_id)
     )
     query = list(query)
@@ -291,13 +291,13 @@ data AS (
     ORDER BY u.date ASC
 ),
 eliminar AS (
-    DELETE FROM medicion_var1medicion
+    DELETE FROM measurement_var1measurement
     WHERE station_id = (SELECT d.station_id FROM data d LIMIT 1)
     AND date >= (SELECT d.date FROM data d ORDER BY d.date ASC LIMIT 1)
     AND date <= (SELECT d.date FROM data d ORDER BY d.date DESC LIMIT 1)
     returning *
 )
-INSERT INTO medicion_var1medicion(date, valor, station_id)
+INSERT INTO measurement_var1measurement(date, valor, station_id)
 SELECT d.date, d.valor, d.station_id
 FROM data d
 ;
@@ -434,7 +434,7 @@ def construct_matrix(matrix_source, file_format, station):
             )
             data["date"] = data["date"] + pd.Timedelta(minutes=5)
             count = data.groupby("date")["value"].sum().to_frame()
-            data = count["value"] * float(classification.resolucion)
+            data = count["value"] * float(classification.resolution)
 
             start_date = start_date.replace(
                 minute=int(start_date.minute / 5) * 5,
@@ -520,7 +520,7 @@ def insert_level_rule(data_import, level_rule):
         None
     """
 
-    water_level_measurements = Var11Medicion.objects.filter(
+    water_level_measurements = Var11Measurement.objects.filter(
         station_id=data_import.station_id, date=data_import.end_date
     )
     water_level = None
@@ -533,15 +533,15 @@ def insert_level_rule(data_import, level_rule):
     # TODO: Fix bare except
     except:
         return False
-    Var14Medicion(
+    Var14Measurement(
         station_id=data_import.station_id_id,
-        fecha_importacion=data_import.imp_fecha,
-        fecha_inicio=data_import.imp_fecha_ini,
-        date=data_import.imp_fecha_fin,
-        calibrado=level_rule["calibrated"],
+        data_import_date=data_import.date,
+        data_start_date=data_import.start_date,
+        date=data_import.end_date,
+        calibrated=level_rule["calibrated"],
         valor=float(level_rule["value"]),
         uncertainty=uncertainty,
-        comentario=level_rule["comments"],
+        comments=level_rule["comments"],
     ).save()
 
 

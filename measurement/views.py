@@ -24,15 +24,15 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from home.functions import modelo_a_tabla_html
-from medicion.models import DischargeCurve, LevelFunction
+from measurement.models import DischargeCurve, LevelFunction
 
 from .forms import LevelFunctionForm
 from .functions import level_function_table
 
 
 class DischargeCurveList(PermissionRequiredMixin, TemplateView):
-    template_name = "medicion/dischargecurve_list.html"
-    permission_required = "medicion.view_dischargecurve"
+    template_name = "measurement/dischargecurve_list.html"
+    permission_required = "measurement.view_dischargecurve"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,7 +45,7 @@ class DischargeCurveList(PermissionRequiredMixin, TemplateView):
 class DischargeCurveCreate(PermissionRequiredMixin, CreateView):
     model = DischargeCurve
     fields = ["station", "date"]
-    permission_required = "medicion.add_dischargecurve"
+    permission_required = "measurement.add_dischargecurve"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -55,7 +55,7 @@ class DischargeCurveCreate(PermissionRequiredMixin, CreateView):
 
 class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
     model = DischargeCurve
-    permission_required = "medicion.view_dischargecurve"
+    permission_required = "measurement.view_dischargecurve"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -66,7 +66,7 @@ class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
 
 class DischargeCurveUpdate(PermissionRequiredMixin, UpdateView):
     model = DischargeCurve
-    permission_required = "medicion.change_dischargecurve"
+    permission_required = "measurement.change_dischargecurve"
     fields = ["station", "date"]
 
     def get_context_data(self, **kwargs):
@@ -77,12 +77,12 @@ class DischargeCurveUpdate(PermissionRequiredMixin, UpdateView):
 
 class DischargeCurveDelete(PermissionRequiredMixin, DeleteView):
     model = DischargeCurve
-    permission_required = "medicion.delete_dischargecurve"
-    success_url = reverse_lazy("medicion:dischargecurve_index")
+    permission_required = "measurement.delete_dischargecurve"
+    success_url = reverse_lazy("measurement:dischargecurve_index")
 
 
 class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
-    permission_required = "medicion.add_dischargecurve"
+    permission_required = "measurement.add_dischargecurve"
     model = LevelFunction
     form_class = LevelFunctionForm
 
@@ -98,12 +98,12 @@ class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
             _levelfunctiontable = level_function_table(dischargecurve_id)
             new_levelfunction = render(
                 request,
-                "medicion/levelfunction_form.html",
+                "measurement/levelfunction_form.html",
                 {"form": LevelFunctionForm(self.request.POST or None)},
             )
             return render(
                 request,
-                "medicion/dischargecurve_detail.html",
+                "measurement/dischargecurve_detail.html",
                 {
                     "dischargecurve": dischargecurve,
                     "levelfunctiontable": _levelfunctiontable,
@@ -115,7 +115,7 @@ class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
         dischargecurve.requiere_recalculo_caudal = True
         dischargecurve.save()
         url = reverse(
-            "medicion:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
+            "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
         )
         return HttpResponseRedirect(url)
 
@@ -124,13 +124,13 @@ class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
         context["title"] = "Create"
         dischargecurve_id = self.kwargs.get("id")
         context["url"] = reverse(
-            "medicion:levelfunction_create", kwargs={"id": dischargecurve_id}
+            "measurement:levelfunction_create", kwargs={"id": dischargecurve_id}
         )
         return context
 
 
 class LevelFunctionUpdate(PermissionRequiredMixin, UpdateView):
-    permission_required = "medicion.change_dischargecurve"
+    permission_required = "measurement.change_dischargecurve"
     model = LevelFunction
     fields = ["level", "function"]
 
@@ -139,7 +139,7 @@ class LevelFunctionUpdate(PermissionRequiredMixin, UpdateView):
         context["title"] = "Modify"
         levelfunction_pk = self.kwargs.get("pk")
         context["url"] = reverse(
-            "medicion:levelfunction_update", kwargs={"pk": levelfunction_pk}
+            "measurement:levelfunction_update", kwargs={"pk": levelfunction_pk}
         )
         context["dischargecurve_id"] = self.object.dischargecurve.id
         return context
@@ -151,13 +151,13 @@ class LevelFunctionUpdate(PermissionRequiredMixin, UpdateView):
         dischargecurve.require_recalculate_flow = True
         dischargecurve.save()
         self.success_url = reverse(
-            "medicion:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
+            "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
         )
         return super().post(data, **kwargs)
 
 
 class LevelFunctionDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = "medicion.delete_dischargecurve"
+    permission_required = "measurement.delete_dischargecurve"
     model = LevelFunction
 
     def delete(self, request, *args, **kwargs):
@@ -167,16 +167,18 @@ class LevelFunctionDelete(PermissionRequiredMixin, DeleteView):
         dischargecurve.save()
         self.object.delete()
         return HttpResponseRedirect(
-            reverse("medicion:dischargecurve_detail", kwargs={"pk": dischargecurve.id})
+            reverse(
+                "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve.id}
+            )
         )
 
 
 class LevelFunctionDetail(PermissionRequiredMixin, DetailView):
-    permission_required = "medicion.view_dischargecurve"
+    permission_required = "measurement.view_dischargecurve"
     model = LevelFunction
 
 
-@permission_required("medicion.add_dischargecurve")
+@permission_required("measurement.add_dischargecurve")
 def recalculate_flow(request):
     dischargecurve_id = int(request.POST.get("dischargecurve_id", None))
     sql = "SELECT calculate_flow(%s);"

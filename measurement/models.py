@@ -37,8 +37,10 @@ class PolarWind(models.Model):
     """
 
     date = models.DateTimeField("Date")
-    speed = models.DecimalField("Speed", digits=14, decimals=6, null=True)
-    direction = models.DecimalField("Direction", digits=14, decimals=6, null=True)
+    speed = models.DecimalField("Speed", max_digits=14, decimal_places=6, null=True)
+    direction = models.DecimalField(
+        "Direction", max_digits=14, decimal_places=6, null=True
+    )
 
     class Meta:
         """
@@ -72,7 +74,7 @@ class DischargeCurve(models.Model):
         return self.id
 
     def get_absolute_url(self):
-        return reverse("medicion:dischargecurve_detail", kwargs={"pk": self.pk})
+        return reverse("measurement:dischargecurve_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("station", "date")
@@ -81,20 +83,22 @@ class DischargeCurve(models.Model):
 
 class LevelFunction(models.Model):
     """
-    Function Level. Relates a dischage curve to a level (in cm) to a function.
+    Function Level. Relates a discharge curve to a level (in cm) to a function.
 
     NOTE: No idea what this is -> Ask Pablo
     """
 
     discharge_curve = models.ForeignKey(DischargeCurve, on_delete=models.CASCADE)
-    level = models.DecimalField("Level (cm)", digits=5, decimals=1, db_index=True)
+    level = models.DecimalField(
+        "Level (cm)", max_digits=5, decimal_places=1, db_index=True
+    )
     function = models.CharField("Function", max_length=80)
 
     def __str__(self):
         return str(self.pk)
 
     def get_absolute_url(self):
-        return reverse("medicion:levelfunction_detail", kwargs={"pk": self.pk})
+        return reverse("measurement:levelfunction_detail", kwargs={"pk": self.pk})
 
     class Meta:
         default_permissions = ()
@@ -108,7 +112,6 @@ class LevelFunction(models.Model):
 
 
 class BaseMeasurement(models.Model):
-    id = models.BigAutoField("Id", primary_key=True)
     station_id = models.PositiveIntegerField("station_id")
     date = models.DateTimeField("Date")
 
@@ -118,22 +121,25 @@ class BaseMeasurement(models.Model):
             models.Index(fields=["station_id", "date"]),
             models.Index(fields=["date", "station_id"]),
         ]
+        abstract = True
 
 
 def limits_model(
     num, digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
 ) -> Type[models.Model]:
     _fields = {
-        key.lowercase(): models.DecimalField(
+        key.lower(): models.DecimalField(
             key,
-            digits=digits,
-            decimals=decimals,
+            max_digits=digits,
+            decimal_places=decimals,
             null=True,
         )
         for key in fields
     }
 
-    return type(f"Limits{num}", (models.Model,), _fields)
+    return type(
+        f"Limits{num}", (models.Model,), {"field": _fields, "__module__": __name__}
+    )
 
 
 class Var1Measurement(
@@ -191,19 +197,19 @@ class Var13Measurement(BaseMeasurement, limits_model(13, fields=("Value"))):
 
 
 class Var14Measurement(
-    BaseMeasurement, limits_model(14, fields=("Value", "Incertidumbre"))
+    BaseMeasurement, limits_model(14, fields=("Value", "Uncertainty"))
 ):
     data_import_date = models.DateTimeField("Data import date")
     data_start_date = models.DateTimeField("Data start date")
-    calibrado = models.BooleanField("Calibrado")
-    comentario = models.CharField("Comentario", null=True, max_length=250)
+    calibrated = models.BooleanField("Calibrated")
+    comments = models.CharField("Comments", null=True, max_length=250)
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "fecha_importacion"]),
-            models.Index(fields=["station_id", "fecha_inicio", "date"]),
-            models.Index(fields=["fecha_importacion"]),
+            models.Index(fields=["station_id", "data_import_date"]),
+            models.Index(fields=["station_id", "data_start_date", "date"]),
+            models.Index(fields=["data_import_date"]),
         ]
 
 
