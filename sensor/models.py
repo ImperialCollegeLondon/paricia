@@ -34,7 +34,7 @@ class SensorType(models.Model):
 
 class SensorBrand(models.Model):
     """
-    Brand of the sensor, eg. Davies, Texas Electronics, etc.
+    Brand of the sensor, eg. Davis, Texas Electronics, etc.
     """
 
     brand_id = models.AutoField("Id", primary_key=True)
