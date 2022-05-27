@@ -128,11 +128,10 @@ def aplicar_validacion_cruda():
     cursor.close()
 
 
-
 def aplicar_reporte_crudos():
     """
-        Need more exploration to describe it.
-        Report functions - Raw data that are not validated yet
+    Need more exploration to describe it.
+    Report functions - Raw data that are not validated yet
     """
     cursor = connection.cursor()
     print("Funcion Reporte Crudos")
@@ -219,7 +218,6 @@ def cargar_type():
     sqla = open("scripts/plpgsql/tipos_dato.sql", "r")
     cursor.execute(sqla.read())
     cursor.close()
-
 
 
 def funciones_indices():
