@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 
-class TestUnit(TestCase):
+class TestInitialData(TestCase):
     fixtures = ["variable_unit.json", "variable_variable.json"]
 
     def test_units(self):
