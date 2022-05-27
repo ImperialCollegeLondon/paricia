@@ -2,9 +2,9 @@ from django.test import TestCase
 
 
 class TestUnit(TestCase):
-    fixtures = ["variable_unit.json", "variable_variable.json"]
+    fixtures = ["variable_unit.json"]
 
-    def test_units(self):
+    def test_unit(self):
         from variable.models import Unit
 
         self.assertEqual(len(Unit.objects.get_queryset()), 22)
@@ -13,7 +13,11 @@ class TestUnit(TestCase):
         self.assertEqual(unit.name, "Kil\u00f3metros por Hora")
         self.assertEqual(unit.initials, "km/h")
 
-    def test_variables(self):
+
+class TestVariable(TestCase):
+    fixtures = ["variable_unit.json", "variable_variable.json"]
+
+    def test_variable(self):
         from variable.models import Variable
 
         self.assertEqual(len(Variable.objects.get_queryset()), 30)
