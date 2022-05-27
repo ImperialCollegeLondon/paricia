@@ -193,7 +193,7 @@ class Var12Measurement(BaseMeasurement, limits_model(12)):
 
 
 class Var13Measurement(BaseMeasurement, limits_model(13, fields=("Value"))):
-    """Flow rate."""
+    """Flow (manual)."""
 
 
 class Var14Measurement(
@@ -213,44 +213,12 @@ class Var14Measurement(
         ]
 
 
-class Var15Measurement(BaseMeasurement, limits_model(15)):
-    """Wind gust direction."""
-
-
-class Var16Measurement(BaseMeasurement, limits_model(16)):
-    """Wind path."""
-
-
-class Var17Measurement(BaseMeasurement, limits_model(17)):
-    """TODO: What is "gustdir"?"""
-
-
-class Var18Measurement(BaseMeasurement, limits_model(18)):
-    """TODO: What is "gusth"?"""
-
-
-class Var19Measurement(BaseMeasurement, limits_model(19)):
-    """TODO: What is "gustm"?"""
-
-
-class Var20Measurement(BaseMeasurement, limits_model(20)):
+class Var15Measurement(BaseMeasurement, limits_model(20)):
     """Soil temperature."""
 
 
-class Var21Measurement(BaseMeasurement, limits_model(21)):
+class Var16Measurement(BaseMeasurement, limits_model(21)):
     """Indirect radiation."""
-
-
-class Var22Measurement(BaseMeasurement, limits_model(22)):
-    """Solar radiation (cumulative)."""
-
-
-class Var23Measurement(BaseMeasurement, limits_model(23)):
-    pass
-
-
-class Var24Measurement(BaseMeasurement, limits_model(24)):
-    pass
 
 
 # Variables created for buoy with different depths
