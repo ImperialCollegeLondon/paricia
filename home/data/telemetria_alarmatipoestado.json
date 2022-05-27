@@ -3,7 +3,7 @@
   "model": "telemetria.alarmatipoestado",
   "pk": 1,
   "fields": {
-    "nombre": "NORMAL",
+    "name": "NORMAL",
     "descripcion": "La transmisi\u00f3n es cont\u00ednua."
   }
 },
@@ -11,7 +11,7 @@
   "model": "telemetria.alarmatipoestado",
   "pk": 2,
   "fields": {
-    "nombre": "EXPECTANTE",
+    "name": "EXPECTANTE",
     "descripcion": "No ha existido transmisi\u00f3n en mas de 1 hora pero a\u00fan no excede el per\u00edodo de tolerancia."
   }
 },
@@ -19,7 +19,7 @@
   "model": "telemetria.alarmatipoestado",
   "pk": 3,
   "fields": {
-    "nombre": "FALLO",
+    "name": "FALLO",
     "descripcion": "Se considera transmisi\u00f3n fallida. Execedi\u00f3 el per\u00edodo de tolerancia."
   }
 }

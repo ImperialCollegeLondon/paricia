@@ -1,98 +1,98 @@
 [
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 1,
   "fields": {
-    "fec_formato": "DD/MM/YY",
-    "fec_codigo": "%d/%m/%y"
+    "date_format": "DD/MM/YY",
+    "code": "%d/%m/%y"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 2,
   "fields": {
-    "fec_formato": "MM/DD/YY",
-    "fec_codigo": "%m/%d/%y"
+    "date_format": "MM/DD/YY",
+    "code": "%m/%d/%y"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 3,
   "fields": {
-    "fec_formato": "YYYY-MM-DD",
-    "fec_codigo": "%Y-%m-%d"
+    "date_format": "YYYY-MM-DD",
+    "code": "%Y-%m-%d"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 4,
   "fields": {
-    "fec_formato": "DD/MM/YYYY",
-    "fec_codigo": "%d/%m/%Y"
+    "date_format": "DD/MM/YYYY",
+    "code": "%d/%m/%Y"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 5,
   "fields": {
-    "fec_formato": "MM/DD/YYYY",
-    "fec_codigo": "%m/%d/%Y"
+    "date_format": "MM/DD/YYYY",
+    "code": "%m/%d/%Y"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 6,
   "fields": {
-    "fec_formato": "DD-BB-YY",
-    "fec_codigo": "%d-%b-%y"
+    "date_format": "DD-BB-YY",
+    "code": "%d-%b-%y"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 7,
   "fields": {
-    "fec_formato": "YYYY-DD-MM",
-    "fec_codigo": "%Y-%d-%m"
+    "date_format": "YYYY-DD-MM",
+    "code": "%Y-%d-%m"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 8,
   "fields": {
-    "fec_formato": "DD-MM-YYYY",
-    "fec_codigo": "%d-%m-%Y"
+    "date_format": "DD-MM-YYYY",
+    "code": "%d-%m-%Y"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 9,
   "fields": {
-    "fec_formato": "YY-DD-MM",
-    "fec_codigo": "%y-%m-%d"
+    "date_format": "YY-DD-MM",
+    "code": "%y-%m-%d"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 10,
   "fields": {
-    "fec_formato": "YY-MM-DD",
-    "fec_codigo": "%y-%m-%d"
+    "date_format": "YY-MM-DD",
+    "code": "%y-%m-%d"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 11,
   "fields": {
-    "fec_formato": "YYYY DOY",
-    "fec_codigo": "%Y %j"
+    "date_format": "YYYY DOY",
+    "code": "%Y %j"
   }
 },
 {
-  "model": "formato.fecha",
+  "model": "formatting.date",
   "pk": 12,
   "fields": {
-    "fec_formato": "DD.MM.YYYY",
-    "fec_codigo": "%d.%m.%Y"
+    "date_format": "DD.MM.YYYY",
+    "code": "%d.%m.%Y"
   }
 }
 ]

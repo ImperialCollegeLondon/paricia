@@ -204,7 +204,7 @@ class Classification(models.Model):
         return str(self.cla_id)
 
     def get_absolute_url(self):
-        return reverse("format:clasificacion_detail", kwargs={"pk": self.pk})
+        return reverse("format:classification_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("variable",)
