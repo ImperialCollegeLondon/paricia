@@ -4,7 +4,7 @@ from django.test import TestCase
 class TestUnit(TestCase):
     fixtures = ["variable_unit.json"]
 
-    def test_unit(self):
+    def test_unit_loaded(self):
         from variable.models import Unit
 
         self.assertEqual(len(Unit.objects.get_queryset()), 22)
@@ -17,7 +17,7 @@ class TestUnit(TestCase):
 class TestVariable(TestCase):
     fixtures = ["variable_unit.json", "variable_variable.json"]
 
-    def test_variable(self):
+    def test_variable_loaded(self):
         from variable.models import Variable
 
         self.assertEqual(len(Variable.objects.get_queryset()), 30)
