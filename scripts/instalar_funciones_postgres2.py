@@ -9,10 +9,26 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+
+"""Installation script for POSTGRES function - part 2
+Creates functions in the database needed for:
+    - Second Version or 'Validacion' app
+    - Rain indexes (Days with same value of precipitation, Days with greater value of precipitation, etc)
+
+Use:
+(venv)  $ python manage.py runscript instalar_funciones_postgres2
+(venv)  $ python manage.py shell <  ./scripts/instalar_funciones_postgres2.py
+
+"""
+
+
 from django.db import connection
 
-
 def aplicar_reportes_generar_anual():
+    """
+    Create a function for making ANUAL data from monthly data.
+    This function is just for precipitation
+    """
     cursor = connection.cursor()
     print("Función generar anual var1")
     file = open("scripts/plpgsql/generar_anual_var1.sql", "r")
@@ -21,9 +37,10 @@ def aplicar_reportes_generar_anual():
     cursor.close()
 
 
-# 2 temperaturaambiente; 3 humedadrelativa, temperaturaaire,humedadaire
-
 variables = [
+    """
+    List of tags for variables to translate functions from using var1, ... varN  tags
+    """
     "precipitacion",
     "temperaturaambiente",
     "humedadrelativa",

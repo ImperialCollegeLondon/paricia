@@ -11,7 +11,8 @@
 
 
 """
-es llamado en crontab
+Processes data to fill ANUARIOS models: Var1Anuarios, Var2Anuarios, Var3Anuearios, etc.
+It's executed every day using crontab
 """
 
 import datetime
