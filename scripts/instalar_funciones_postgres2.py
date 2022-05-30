@@ -24,6 +24,7 @@ Use:
 
 from django.db import connection
 
+
 def aplicar_reportes_generar_anual():
     """
     Create a function for making ANUAL data from monthly data.
