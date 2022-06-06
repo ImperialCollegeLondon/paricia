@@ -11,18 +11,18 @@
 
 
 """
-Computes hourly data from 5,1,30 minute ones. It's intented to be called once a day in case of the regular flow for
-computing hourly data have failed.
-    (regular flow is a background thread that is launched after validation process. /
-    See validacion/views.py:generar_reportes_1variable() )
+Computes hourly data from 5,1,30 minute data. It's intended to be called once a day in case the regular flow for
+computing hourly data has failed.
+(regular flow is a background thread that is launched after validation process. /
+See validacion/views.py:generar_reportes_1variable() )
 
 It performs the POSTGRESQL function `generar_horario_varN` in a loop until there's no more data
-marked as FALSE in `usado_para_horario` flag.
+marked as FALSE in `usado_para_horario` (used for hourly) flag.
 
 This script is called by a crontab activity once a day.
 
 The function `generar_horario_varN` is defined in the templates `scripts/plpgsql/generar_horario_xxxx.sql`
-    and its installed once at installation process. See script: `scripts/instalar_funciones_postgres.py`
+and its installed once at installation process. See script: `scripts/instalar_funciones_postgres.py`
 """
 
 

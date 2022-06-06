@@ -11,18 +11,18 @@
 
 
 """
-Computes mensual data from daily ones. It's intented to be called once a day in case of the regular flow for
-computing mensual data have failed.
-    (regular flow is a background thread that is launched after validation process. /
-    See validacion/views.py:generar_reportes_1variable() )
+Computes monthly data from daily data. It's intended to be called once a day in case the regular flow for
+computing monthly data has failed.
+ (regular flow is a background thread that is launched after validation process. /
+ See validacion/views.py:generar_reportes_1variable() )
 
 It performs the POSTGRESQL function `generar_mensual_var1` in a loop until there's no more data
-marked as FALSE in `usado_para_mensual` flag.
+marked as FALSE in `usado_para_mensual` (used for monthly) flag.
 
 This script is called by a crontab activity once a day.
 
 The function `generar_mensual_var1` is defined in the template `scripts/plpgsql/generar_mensual_var1.sql`
-    and its installed once at installation process. See script: `scripts/instalar_funciones_postgres2.py`
+and it is installed once at installation process. See script: `scripts/instalar_funciones_postgres2.py`
 """
 
 

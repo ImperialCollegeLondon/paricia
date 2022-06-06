@@ -9,7 +9,8 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
-"""Get external data using a web service request
+"""
+Get external data using a web service request.
 This tool was created to meet specific needs for an institution who wanted to extract data for an external server.
 
 This script was executed every hour via crontab.
