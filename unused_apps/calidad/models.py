@@ -31,6 +31,8 @@ class CalidadPermisos(models.Model):
 
 
 class AsociacionHidro(models.Model):
+    """Associates one station with multiple others."""
+
     estacion_calidad = models.OneToOneField(
         Estacion, related_name="estacion_calidad", on_delete=models.SET_NULL, null=True
     )
@@ -41,6 +43,8 @@ class AsociacionHidro(models.Model):
 
 
 class UsuarioVariable(models.Model):
+    """Associates user and variable. Used in telemetria to query quality."""
+
     usuario = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     variable = models.ManyToManyField(Variable)
 

@@ -19,6 +19,13 @@ from variable.models import Variable
 
 
 class Bitacora(models.Model):
+    """Possibly similar to a log entry? An observation made about some variable
+    at some station between some dates. Appears under "Maintenance" on frontend
+    alongside sensor installations. Perhaps intended for more general notes.
+    DELETE? - Unsure how useful this is.
+    NEWNAME: LogEntry
+    """
+
     bit_id = models.AutoField("Id", primary_key=True)
     var_id = models.ForeignKey(
         Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"

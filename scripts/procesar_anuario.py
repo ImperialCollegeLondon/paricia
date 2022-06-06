@@ -9,6 +9,12 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+
+"""
+Processes data to fill ANUARIOS models: Var1Anuarios, Var2Anuarios, Var3Anuearios, etc.
+It's executed every day using crontab
+"""
+
 import datetime
 
 from anuarios import functions

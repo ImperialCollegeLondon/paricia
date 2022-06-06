@@ -9,6 +9,23 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+
+"""
+Computes monthly data from daily data. It's intended to be called once a day in case the regular flow for
+computing monthly data has failed.
+ (regular flow is a background thread that is launched after validation process. /
+ See validacion/views.py:generar_reportes_1variable() )
+
+It performs the POSTGRESQL function `generar_mensual_var1` in a loop until there's no more data
+marked as FALSE in `usado_para_mensual` (used for monthly) flag.
+
+This script is called by a crontab activity once a day.
+
+The function `generar_mensual_var1` is defined in the template `scripts/plpgsql/generar_mensual_var1.sql`
+and it is installed once at installation process. See script: `scripts/instalar_funciones_postgres2.py`
+"""
+
+
 from django.db import connection
 
 from variable.models import Variable

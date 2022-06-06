@@ -9,6 +9,10 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+""" These views allow the user to calcualte various derived hydrological indices using
+the functions in this app. 
+"""
+
 import decimal
 
 # from anuarios.models import *
@@ -105,7 +109,7 @@ class PeriodoDatos(generic.View):
 
 
 class IndPrecip(generic.FormView):
-    """Calcula los indices de precipitacion dispinibles para la estación selecionada"""
+    """Calculates available precipitation rates for the selected station"""
 
     template_name = "indices/precipitacion.html"
     form_class = IndPrecipForm
@@ -144,7 +148,7 @@ class IndPrecip(generic.FormView):
 
 
 class IndCaudal(generic.FormView):
-    """Calcula los indices de caudal dispinibles para la estación selecionada"""
+    """Calculates available flow rates for the selected station"""
 
     template_name = "indices/caudal.html"
     form_class = IndCaudForm
@@ -174,7 +178,7 @@ class IndCaudal(generic.FormView):
 
 
 class IntensidadRR(generic.FormView):
-    """Raliza la grafica para una estacion de la intensidad vs la duracion"""
+    """Plot the graph of intensity vs. duration for a station"""
 
     template_name = "indices/intendura.html"
     form_class = SelecEstForm
@@ -222,7 +226,8 @@ class IntensidadRRMultiestacion(generic.FormView):
 
 class DuracionCaudal(generic.FormView):
     # duracioncaudal.html
-    """Raliza la grafica para una estacion de la duracion del caudal"""
+    """Plot a graph of the duration of flow for a station"""
+
     template_name = "indices/duracioncaudal.html"
     form_class = SelecCaudalForm
     success_url = "indices/duracioncaudal.html"
@@ -249,7 +254,10 @@ class DuracionCaudal(generic.FormView):
 
 class DuracionCaudalExport(generic.FormView):
     # duracioncaudal.html
-    """Raliza la grafica para una estacion de la duracion del caudal"""
+    """Plot a graph of the duration of flow for a station.
+    Action of the "Export" button as opposed to "Calculate" button.
+    """
+
     template_name = "indices/duracioncaudal.html"
     form_class = SelecCaudalForm
     success_url = "indices/duracioncaudal.html"
@@ -389,6 +397,8 @@ class DuracionCaudalExport(generic.FormView):
 
 
 class DuracionCaudalMultiestacion(generic.FormView):
+    """Compare flow duration curves of multiple stations."""
+
     template_name = "indices/duracioncaudal_multiestacion.html"
     form_class = CuvarCaudalMultiestacionForm
     success_url = "indices/duracioncaudal_multiestacion.html"
@@ -534,6 +544,8 @@ def listar_fecha_precipitacion(request, estacion):
 
 
 class EscorrentiaView(PermissionRequiredMixin, FormView):
+    """Calculate the runoff coefficient for one or more instrument at a station."""
+
     permission_required = "indices.view_indices"
     template_name = "indices/escorrentia.html"
     form_class = EscorrentiaForm
@@ -559,6 +571,7 @@ class EscorrentiaView(PermissionRequiredMixin, FormView):
 
 @permission_required("indices.view_indices")
 def estaciones_en_cuenca(request, sitiocuenca_id):
+    """View to show the precipitation and flow stations in a basin (basic text output)."""
     sitiocuenca = SitioCuenca.objects.filter(pk=sitiocuenca_id)
     tipo_precipitacion = Tipo.objects.filter(
         nombre__in=["Pluviométrica", "Climatológica"]

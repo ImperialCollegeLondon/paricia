@@ -9,6 +9,21 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+"""
+Computes daily data from hourly data. It's intended to be called once a day in case the regular flow for
+computing daily data has failed.
+(regular flow is a background thread that is launched after validation process. /
+See validacion/views.py:generar_reportes_1variable() )
+
+It performs the POSTGRESQL function `generar_diario_varN` in a loop until there's no more data
+marked as FALSE in `usado_para_diario` (used for daily) flag.
+
+This script is called by a crontab activity once a day.
+
+The function `generar_diario_varN` is defined in the templates `scripts/plpgsql/generar_diario_xxxx.sql`
+and it is installed once at installation process. See script: `scripts/instalar_funciones_postgres.py`
+"""
+
 from django.db import connection
 
 from variable.models import Variable

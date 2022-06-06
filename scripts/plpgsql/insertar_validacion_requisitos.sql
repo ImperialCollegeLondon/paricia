@@ -1,3 +1,20 @@
+/*
+Required data types for 'importing' app:
+    fecha__valor
+    fecha__valor__maximo__minimo
+    fecha__xxx__xxx_xxx
+    ...
+
+    Those types used in `importacion/functions.py: guardar_datos__temp_a_final()`
+        The data to import is passed to PGSQL query as a string and then its formatted
+            using the type:  `unnest(%s::fecha__valor__estacion_id[])`
+
+
+Required data types for 'validation' app:
+    validacion
+    validacion_profundidad
+
+*/
 
 DROP TYPE IF EXISTS fecha__valor;
 CREATE TYPE fecha__valor AS (fecha TIMESTAMP WITHOUT TIME ZONE, valor NUMERIC);

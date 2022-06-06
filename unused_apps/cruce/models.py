@@ -21,6 +21,11 @@ from variable.models import Variable
 
 
 class Cruce(models.Model):
+    """This model associates a Variable (e.g. Precipitation) with a Station. This is used in various
+    places to filter for stations based on a specific variable, and vice versa.
+    NEWNAME: StationVariable
+    """
+
     cru_id = models.AutoField("Id", primary_key=True)
     est_id = models.ForeignKey(
         Station, models.SET_NULL, blank=True, null=True, verbose_name="Estación"

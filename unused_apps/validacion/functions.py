@@ -17,6 +17,9 @@ import plotly.graph_objs as go
 import plotly.offline as opy
 from django.db import connection, models
 
+## Various functions to report and select periods of validated data.
+## Nothing about validating data here, all handled by calling processes in scripts/plpgsql.
+
 
 class consulta_validados(models.Model):
     fecha_inicio = models.DateTimeField(primary_key=True)

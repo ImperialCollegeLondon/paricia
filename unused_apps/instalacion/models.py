@@ -21,6 +21,12 @@ from estacion.models import Estacion
 
 
 class Instalacion(models.Model):
+    """Very similar to variable.Control, but instead of a sensor installation it is
+    a datalogger installation. Associates DataLogger with station with metadata for
+    installation and finishing date, as well as status (in use).
+    NEWNAME: DataLoggerInstallation
+    """
+
     ins_id = models.AutoField("Id", primary_key=True)
     est_id = models.ForeignKey(
         Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación"

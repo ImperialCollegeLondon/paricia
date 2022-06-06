@@ -9,10 +9,27 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
 
+
+"""Installation script for POSTGRES function - part 2
+Creates functions in the database needed for:
+    - Second Version or 'Validacion' app
+    - Rain indexes (Days with same value of precipitation, Days with greater value of precipitation, etc)
+
+Use:
+(venv)  $ python manage.py runscript instalar_funciones_postgres2
+(venv)  $ python manage.py shell <  ./scripts/instalar_funciones_postgres2.py
+
+"""
+
+
 from django.db import connection
 
 
 def aplicar_reportes_generar_anual():
+    """
+    Create a function for making ANUAL data from monthly data.
+    This function is just for precipitation
+    """
     cursor = connection.cursor()
     print("Función generar anual var1")
     file = open("scripts/plpgsql/generar_anual_var1.sql", "r")
@@ -21,9 +38,10 @@ def aplicar_reportes_generar_anual():
     cursor.close()
 
 
-# 2 temperaturaambiente; 3 humedadrelativa, temperaturaaire,humedadaire
-
 variables = [
+    """
+    List of tags for variables to translate functions from using var1, ... varN  tags
+    """
     "precipitacion",
     "temperaturaambiente",
     "humedadrelativa",
@@ -49,6 +67,9 @@ variables = [
 
 
 def aplicar_validacion_diaria():
+    """
+    Functions required for the second version of the validation app -> 'validacion_v2' using daily data
+    """
     cursor = connection.cursor()
     print("Funcion de validacion diaria")
 
@@ -86,6 +107,9 @@ def aplicar_validacion_diaria():
 
 
 def aplicar_validacion_cruda():
+    """
+    Functions required for the second version of the validation app -> 'validacion_v2' using raw data
+    """
     cursor = connection.cursor()
     print("Funcion Validacion Cruda")
 
@@ -122,8 +146,11 @@ def aplicar_validacion_cruda():
     cursor.close()
 
 
-# Reporte de Datos Crudos que aun no estan validados
 def aplicar_reporte_crudos():
+    """
+    Need more exploration to describe it.
+    Report functions - Raw data that are not validated yet
+    """
     cursor = connection.cursor()
     print("Funcion Reporte Crudos")
 
@@ -160,6 +187,9 @@ def aplicar_reporte_crudos():
 
 
 def aplicar_insert_crudos():
+    """
+    POSTGRES functions for inserting data after validating it using the new validation app -> validacion_v2
+    """
     cursor = connection.cursor()
     print("Funcion Insertar Datos Crudos")
 
@@ -198,6 +228,9 @@ def aplicar_insert_crudos():
 
 
 def cargar_type():
+    """
+    POSTGRES data types to support new validation module -> validacion_v2
+    """
     cursor = connection.cursor()
     print("Insertar types")
     sqla = open("scripts/plpgsql/tipos_dato.sql", "r")
@@ -205,8 +238,14 @@ def cargar_type():
     cursor.close()
 
 
-# Funciones desarrolladas por Darwin Rosero para: nuevo módulo de validación, y otras funciones
 def funciones_indices():
+    """
+    Functions required for precipitation indexes:
+        - Accumulated precipitation
+        - Days with the same value of precipitation
+        - Days with greater value of precipitation
+        - Estationality
+    """
     indices = [
         "acumular.sql",
         "dias_cons_igua_lluvia.sql",
@@ -222,6 +261,9 @@ def funciones_indices():
 
 
 def run():
+    """
+    Run the installation functions
+    """
     aplicar_reportes_generar_anual()
     cargar_type()
     aplicar_validacion_cruda()

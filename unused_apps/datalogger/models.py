@@ -18,6 +18,10 @@ from django.urls import reverse
 
 
 class Marca(models.Model):
+    """Brand of datalogger e.g. Lascar electronics.
+    GENERALISE with sensor.Brand ?
+    """
+
     mar_id = models.AutoField("Id", primary_key=True)
     mar_nombre = models.CharField("Marca", max_length=25)
 
@@ -32,6 +36,8 @@ class Marca(models.Model):
 
 
 class Datalogger(models.Model):
+    """Datalogger is similar to sensor.Sensor - has brand, model, serial no."""
+
     dat_id = models.AutoField("Id", primary_key=True)
     dat_codigo = models.CharField("Código", max_length=32)
     mar_id = models.ForeignKey(
