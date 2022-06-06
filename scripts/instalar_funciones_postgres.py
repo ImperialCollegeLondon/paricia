@@ -1,10 +1,11 @@
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosystems Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
 #              ya sea en uso total o parcial del código.
@@ -36,39 +37,34 @@ The third parameter is a boolean to identify if a variable is treated as:
         id, nombre, es_acumulada(True)/es_promediada(False)
 """
 vars = [
-    [1, "precipitacion", True],
-    [2, "temperaturaambiente", False],
-    [3, "humedadrelativa", False],
-    [4, "velocidadviento", False],
-    [5, "direccionviento", False],
-    [6, "humedadsuelo", False],
-    [7, "radiacionsolar", False],
-    [8, "presionatmosferica", False],
-    [9, "temperaturaagua", False],
-    [10, "caudal", False],
-    [11, "nivelagua", False],
-    [12, "voltajebateria", False],
-    [13, "caudalaforo", False],
-    [14, "nivelregleta", False],
-    [15, "direccionvientorafaga", True],
-    [16, "recorridoviento", False],
-    [17, "gustdir", False],
-    [18, "gusth", False],
-    [19, "gustm", False],
-    [20, "temperaturasuelo", False],
-    [21, "radiacionindirecta", False],
-    [22, "radiacionsolarsuma", True],
+    # id, nombre, es_acumulada(True)/es_promediada(False)
+    [1, "precipitation", True],
+    [2, "airtemperature", False],
+    [3, "humidity", False],
+    [4, "windvelocity", False],
+    [5, "winddirection", False],
+    [6, "soilmoisture", False],
+    [7, "solarradiation", False],
+    [8, "atmosphericpressure", False],
+    [9, "watertemperature", False],
+    [10, "flow", False],
+    [11, "waterlevel", False],
+    [12, "batteryvoltage", False],
+    [13, "flowmanual", False],
+    [14, "level_rule", False],
+    [15, "soiltemperature", False],
+    [16, "indirectradiation", False],
 ]
 
 vars_profundidad = [
-    [101, "temperaturaaguaprofundidad", False],
+    [101, "watertemperature", False],
     [102, "ph", False],
-    [103, "potencialredox", False],
-    [104, "turbidez", False],
-    [105, "clorofila", False],
-    [106, "oxigenodisuelto", False],
-    [107, "porcentajeoxigenodisuelto", False],
-    [108, "ficocianina", False],
+    [103, "redoxpotential", False],
+    [104, "turbidity", False],
+    [105, "chlorineconc", False],
+    [106, "oxygenconc", False],
+    [107, "percentageoxygenconc", False],
+    [108, "phyocyanin", False],
 ]
 
 
@@ -90,13 +86,13 @@ def insercion_validacion():
     with connection.cursor() as cursor:
         cursor.execute(sql0)
 
-    file = open("scripts/plpgsql/insertar_1validacion.sql", "r")
-    funcion = file.read()
-    for var in vars:
-        var_id = str(var[0])
-        sql = funcion.replace("1", var_id)
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
+    # file = open("scripts/plpgsql/insertar_1validacion.sql", "r")
+    # funcion = file.read()
+    # for var in vars:
+    #    var_id = str(var[0])
+    #    sql = funcion.replace("1", var_id)
+    #    with connection.cursor() as cursor:
+    #        cursor.execute(sql)
 
 
 def inserccion_validacion_profundidad():
@@ -379,19 +375,16 @@ def generar_mensual_profundidad():
 
 
 def run():
-    """
-    Run the POSTGRES installation functions
-    """
-    reporte_validacion()
-    reporte_validacion_profundidad()
+    # reporte_validacion()
+    # reporte_validacion_profundidad()
     insercion_validacion()
-    inserccion_validacion_profundidad()
-    aplicar_curvadescarga()
-    aplicar_curvadescarga_crudos()
-    calculo_caudal()
-    generar_horario()
-    generar_diario()
-    generar_mensual()
-    generar_horario_profundidad()
-    generar_diario_profundidad()
-    generar_mensual_profundidad()
+    # inserccion_validacion_profundidad()
+    # aplicar_curvadescarga()
+    # aplicar_curvadescarga_crudos()
+    # calculo_caudal()
+    # generar_horario()
+    # generar_diario()
+    # generar_mensual()
+    # generar_horario_profundidad()
+    # generar_diario_profundidad()
+    # generar_mensual_profundidad()

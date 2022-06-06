@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 from django import forms
 
@@ -20,34 +20,29 @@ class LoginForm(forms.Form):
 
 
 OPCIONES_CARGA = [
-    ("variable_unidad.json", "VARIABLE: Unidades"),
-    ("variable_variable.json", "VARIABLE: Lista de variables"),
-    ("formato_delimitador.json", "FORMATO: Delimitadores"),
-    ("formato_extension.json", "FORMATO: Extensiones de archivo"),
-    ("formato_fecha.json", "FORMATO: Fecha"),
-    ("formato_hora.json", "FORMATO: Hora"),
-    ("formato_formato.json", "FORMATO: Formato de importación"),
-    ("formato_clasificacion.json", "FORMATO: Clasificación"),
-    ("frecuencia_tipofrecuencia.json", "FRECUENCIA: Tipo"),
-    ("telemetria_alarmatipoestado.json", "TELEMETRÍA: Estados de alarma"),
+    ("variable_unit.json", "VARIABLE: Units"),
+    ("variable_variable.json", "VARIABLE: List of variables"),
+    ("formatting_delimiter.json", "FORMATTING: Delimiters"),
+    ("formatting_extension.json", "FORMATTING: File extensions"),
+    ("formatting_date.json", "FORMATTING: Date"),
+    ("formatting_time.json", "FORMATTING: Time"),
+    ("formatting_format.json", "FORMATTING: Import format"),
+    ("formatting_classification.json", "FORMATTING: Classification"),
+    # ("frecuencia_tipofrecuencia.json", "FRECUENCIA: Tipo"),
+    # ("telemetria_alarmatipoestado.json", "TELEMETRÍA: Estados de alarma"),
     ("sensor_marca.json", "SENSOR: Marca"),
     ("sensor_tipo.json", "SENSOR: Tipo"),
-    ("datalogger_marca.json", "DATALOGGER: Marca"),
-    ("estacion_tipo.json", "ESTACIÓN: Tipo"),
-    ("estacion_ecosistema.json", "ESTACIÓN: Ecosistema"),
-    ("estacion_pais.json", "ESTACIÓN: País"),
-    ("estacion_region.json", "ESTACIÓN: Región"),
-    ("estacion_sitio.json", "ESTACIÓN: Sitio"),
-    ("estacion_cuenca.json", "ESTACIÓN: Cuenca"),
-    ("estacion_sitiocuenca.json", "ESTACIÓN: Asociación Sitio-Cuenca"),
-    ("estacion_socio.json", "ESTACIÓN: Socio"),
-    ("estacion_estacion.json", "ESTACIÓN: Estación"),
-    ("formato_asociacion.json", "FORMATO/ESTACION: Asociación de Formato con Estación"),
-    ("cruce_cruce.json", "VARIABLE/ESTACION: Asociación Variable por Estación"),
-    (
-        "frecuencia_frecuencia.json",
-        "FRECUENCIA/VARIABLE/ESTACION: Frecuencias por variable y por estación",
-    ),
+    # ("datalogger_marca.json", "DATALOGGER: Marca"),
+    ("station_stationtype.json", "STATION: StationType"),
+    ("station_ecosystem.json", "STATION: Ecosystem"),
+    ("station_country.json", "STATION: Country"),
+    ("station_region.json", "STATION: Region"),
+    ("station_place.json", "STATION: Place"),
+    ("station_basin.json", "STATION: Basin"),
+    ("station_placebasin.json", "STATION: Association Place-Basin"),
+    ("station_institution.json", "STATION: Institution"),
+    ("station_station.json", "STATION: Station"),
+    ("format_association.json", "FORMATTING/STATION: Association Format-Station"),
 ]
 
 

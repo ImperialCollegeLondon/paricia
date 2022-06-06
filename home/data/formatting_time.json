@@ -1,0 +1,26 @@
+[
+{
+  "model": "formatting.time",
+  "pk": 1,
+  "fields": {
+    "time_format": "HH:MM:SS AM/PM",
+    "code": "%I:%M:%S %p"
+  }
+},
+{
+  "model": "formatting.time",
+  "pk": 2,
+  "fields": {
+    "time_format": "HH:MM:SS 24H",
+    "code": "%H:%M:%S"
+  }
+},
+{
+  "model": "formatting.time",
+  "pk": 3,
+  "fields": {
+    "time_format": "HH:MM 24H",
+    "code": "%H:%M"
+  }
+}
+]

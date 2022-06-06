@@ -50,30 +50,12 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "home.apps.HomeConfig",
-    "estacion.apps.EstacionConfig",
-    "datalogger.apps.DataloggerConfig",
+    "station.apps.StationConfig",
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
-    "bitacora.apps.BitacoraConfig",
-    "cruce.apps.CruceConfig",
-    "formato.apps.FormatoConfig",
-    "frecuencia.apps.FrecuenciaConfig",
-    "instalacion.apps.InstalacionConfig",
-    "medicion.apps.MedicionConfig",
-    "validacion.apps.ValidacionConfig",
-    "validacion_v2.apps.ValidacionV2Config",
-    "horario.apps.HorarioConfig",
-    "diario.apps.DiarioConfig",
-    "mensual.apps.MensualConfig",
-    "importacion.apps.ImportacionConfig",
-    "vacios.apps.VaciosConfig",
-    "calidad.apps.CalidadConfig",
-    "reportes.apps.ReportesConfig",
-    "reportes_v2.apps.Reportes_v2Config",
-    "telemetria.apps.TelemetriaConfig",
-    "anual.apps.AnualConfig",
-    "indices.apps.IndicesConfig",
-    "anuarios.apps.AnuariosConfig",
+    "formatting.apps.FormattingConfig",
+    "measurement.apps.MeasurementConfig",
+    "importing.apps.ImportingConfig",
     "bootstrap4",
     "django_extensions",
     "django.contrib.humanize",
@@ -83,9 +65,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    #
-    # 'debug_toolbar',
-    #
 ]
 
 MIDDLEWARE = [
@@ -161,17 +140,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-# LANGUAGE_CODE = 'en-us'
-# TIME_ZONE = 'UTC'
-# USE_L10N = True
-# USE_TZ = True
-
-LANGUAGE_CODE = "es-EC"
-TIME_ZONE = "America/Bogota"
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
 USE_I18N = True
-USE_L10N = False
-DECIMAL_SEPARATOR = "."
-USE_TZ = False
+USE_L10N = True
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

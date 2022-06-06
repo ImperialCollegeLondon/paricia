@@ -32,7 +32,6 @@ import itertools
 import pytz
 from django.core.mail import send_mail
 from django.db import connection
-
 from telemetria.models import (
     AlarmaEmail,
     AlarmaEstado,

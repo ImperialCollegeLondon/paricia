@@ -1,0 +1,37 @@
+[
+{
+  "model": "formatting.extension",
+  "pk": 1,
+  "fields": {
+    "value": "txt"
+  }
+},
+{
+  "model": "formatting.extension",
+  "pk": 2,
+  "fields": {
+    "value": "csv"
+  }
+},
+{
+  "model": "formatting.extension",
+  "pk": 3,
+  "fields": {
+    "value": "xlsx"
+  }
+},
+{
+  "model": "formatting.extension",
+  "pk": 4,
+  "fields": {
+    "value": "asc"
+  }
+},
+{
+  "model": "formatting.extension",
+  "pk": 5,
+  "fields": {
+    "value": "dat"
+  }
+}
+]

@@ -1,18 +1,21 @@
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
+from logging import getLogger
+from typing import Dict, List
 
-import re
-
-from django.contrib.auth.models import AnonymousUser, Group, Permission, User
-from django.db.models import Q
+from django.contrib.auth.models import Permission, User
+from django.db.models import QuerySet
+from django.db.models.query import Q
 from django.urls import reverse
 
 from .constants import (
@@ -22,13 +25,16 @@ from .constants import (
     menu_tab_html,
 )
 
-menu = {}
 
+def get_anonymous_user() -> User:
+    """Retrieves the anonymous user, creating it if it does not exist.
 
-def get_anonymous_user():
+    NOTE: Is there any reason for not using the standard
+    `django.contrib.auth.models.AnonymousUser` ?
+    """
     try:
         anon_user = User.objects.get(username="AnonymousUser")
-    except:
+    except User.DoesNotExist:
         anon_user = User.objects.create_user(
             username="AnonymousUser",
             is_active=True,
@@ -38,81 +44,73 @@ def get_anonymous_user():
     return anon_user
 
 
-def generar_menu_usuario(usuario):
-    if usuario.id is None:
-        usuario = get_anonymous_user()
-        perms = Permission.objects.filter(
-            Q(user=usuario) | Q(group__in=usuario.groups.all())
-        )
+def get_menu(user: User) -> str:
+    """Generate the user menu in HTML, depending on its permissions.
+
+    Args:
+        user (User): The user to generate the menu for.
+
+    Returns:
+        str: An HTML string with the menu items.
+    """
+    if user.id is None:
+        user = get_anonymous_user()
+        perms = Permission.objects.filter(Q(user=user) | Q(group__in=user.groups.all()))
         is_superuser = False
     else:
-        perms = Permission.objects.filter(
-            Q(user=usuario) | Q(group__in=usuario.groups.all())
-        )
-        is_superuser = usuario.is_superuser
+        perms = Permission.objects.filter(Q(user=user) | Q(group__in=user.groups.all()))
+        is_superuser = user.is_superuser
 
-    _menu = ""
-    for tab in menu_struct:
+    menu = ""
+    for tab in menu_struct():
         items = ""
-        ultimo_es_divisor = True
+        last_is_divider = True
         i = 0
-        for e in tab["items"]:
-            if e["nombre"] == "":
-                if ultimo_es_divisor:
+
+        for elements in tab.items:
+            if elements.name == "":
+                if last_is_divider:
                     continue
                 items += menu_item_divider_html
-                ultimo_es_divisor = True
+                last_is_divider = True
                 continue
 
-            app, codename = e["permiso"].split(".")
+            app, codename = elements.permission.split(".")
             if (
                 perms.filter(content_type__app_label=app, codename=codename).exists()
                 or is_superuser
             ):
                 try:
-                    url = reverse(e["url_name"])
-                except:
+                    url = reverse(elements.url_name)
+                except Exception:
+                    msg = f"URL '{elements.url_name}' not found when creating menu."
+                    getLogger().debug(msg)
                     continue
 
-                if not is_superuser:
-                    # tab_name = re.sub("<small>.*</small>", "", e['nombre'])
-                    tab_name = e["nombre"]
-                else:
-                    tab_name = e["nombre"]
-                items += menu_item_html.replace("__URL__", url).replace(
-                    "__NOMBRE__", tab_name
-                )
-                ultimo_es_divisor = False
+                items += menu_item_html.format(url=url, name=elements.name)
+                last_is_divider = False
                 i += 1
+
         if i > 0:
-            _menu += menu_tab_html.replace("__PESTAÑA__", tab["pestaña"]).replace(
-                "__ITEMS__", items
-            )
-    return _menu
+            menu += menu_tab_html.format(tab=tab.name, items=items)
+
+    return menu
 
 
-def actualizar_menu_usuario(usuario):
-    menu[usuario.id] = generar_menu_usuario(usuario)
+def modelo_a_tabla_html(modelo: QuerySet, col_extra: bool) -> str:
+    """Extracts the entries in a query as an HTML table.
 
+    NOTE: To be moved to a separates 'utilities' module.
+    NOTE: There's no need to do this manually, we should use django-tables2 for
+                this: https://django-tables2.readthedocs.io/en/latest/
 
-def actualizar_menu_grupo(grupo):
-    users = User.objects.filter(groups=grupo)
-    for user in users:
-        menu[user.id] = generar_menu_usuario(user)
+    Args:
+        modelo (QuerySet): Objects to extract as HTML
+        col_extra (bool): If an extra column need to be included at the end.
 
-
-def get_menu(usuario):
-    user_id = usuario.id
-    if user_id is None:
-        usuario = get_anonymous_user()
-        user_id = usuario.id
-
-    if not user_id in menu:
-        menu[user_id] = generar_menu_usuario(usuario)
-    return menu[user_id]
-
-
-def modelo_a_select_html(modelo, col_extra):
+    Returns:
+        str: Table in HTML with the contents of a model
+    """
     html_cola = "</td></tr>"
     if col_extra:
         html_cola = "</td><td></td></tr>"
@@ -122,31 +120,31 @@ def modelo_a_select_html(modelo, col_extra):
     return html
 
 
-def modelo_a_tabla_html(modelo, col_extra):
-    html_cola = "</td></tr>"
-    if col_extra:
-        html_cola = "</td><td></td></tr>"
-    html = ""
-    for row in modelo:
-        html += "<tr><td>" + "</td><td>".join([str(i or "") for i in row]) + html_cola
-    return html
+def dictfetchall(cursor) -> List[Dict]:
+    """Return all rows from a cursor as a list of dict.
 
+    TODO: This is used to process low level SQL requests, so chances are it will not be
+    needed once we are done with this.
+    NOTE: To be moved to a separates 'utilities' module.
 
-def modelo_a_js(modelo):
-    js = "["
-    for row in modelo:
-        js += "['" + "','".join([str(i or "") for i in row]) + "'],"
-    js += "]"
-    return js
+    Args:
+        cursor (?): ?
 
-
-def dictfetchall(cursor):
-    # Return all rows from a cursor as a dict
+    Returns:
+        List[Dict]: ?
+    """
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 class objdict(dict):
+    """
+    Dictionary whose content can be manipulated as attributes.
+
+    NOTE: Might be a better option to do this. Needs deeper analysis.
+    NOTE: To be moved to a separates 'utilities' module.
+    """
+
     def __getattr__(self, name):
         if name in self:
             return self[name]

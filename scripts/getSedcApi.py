@@ -21,7 +21,6 @@ from builtins import print
 
 import requests
 from django.db import connection
-
 from estacion.models import Estacion, Tipo
 from validacion.models import Var1Validado
 
