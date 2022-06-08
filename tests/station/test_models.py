@@ -3,15 +3,15 @@ from django.test import TestCase
 
 class TestInitialData(TestCase):
     fixtures = [
-        "station_country.json",
-        "station_region.json",
-        "station_ecosystem.json",
-        "station_institution.json",
-        "station_type.json",
-        "station_place.json",
-        "station_basin.json",
-        "station_placebasin.json",
-        "station_station.json",
+        "station_country",
+        "station_region",
+        "station_ecosystem",
+        "station_institution",
+        "station_type",
+        "station_place",
+        "station_basin",
+        "station_placebasin",
+        "station_station",
     ]
 
     def test_country(self):

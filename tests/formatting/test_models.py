@@ -3,8 +3,8 @@ from django.test import TestCase
 
 class TestInitialData(TestCase):
     fixtures = [
-        "variable_unit.json",
-        "variable_variable.json",
+        "variable_unit",
+        "variable_variable",
         "formatting_delimiter",
         "formatting_extension",
         "formatting_date",

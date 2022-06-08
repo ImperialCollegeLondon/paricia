@@ -3,8 +3,8 @@ from django.test import TestCase
 
 class TestInitialData(TestCase):
     fixtures = [
-        "sensor_type.json",
-        "sensor_brand.json",
+        "sensor_type",
+        "sensor_brand",
     ]
 
     def test_sensor_type(self):
