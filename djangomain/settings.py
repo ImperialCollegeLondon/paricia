@@ -1,13 +1,15 @@
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 """
 Django settings for djangomain project.
@@ -118,6 +120,9 @@ DATABASES = {
     }
 }
 
+if os.environ.get("GITHUB_WORKFLOW"):
+    DATABASES["default"]["HOST"] = "127.0.0.1"
+
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -182,3 +187,7 @@ EMAIL_PORT = 25
 AUTHENTICATION_BACKENDS = ["home.auth_backend.AnonymousPermissions"]
 #
 #########################################################################
+
+# Fixtures for tests
+PROJECT_ROOT = os.path.dirname(os.path.dirname((os.path.realpath(__file__))))
+FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "home/data")]
