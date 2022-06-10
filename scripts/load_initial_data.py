@@ -1,7 +1,7 @@
 """
 Script to load initial data into the system such as stations, sensors, format types 
 etc. Currently data is stored in home/data but this will change in the future when
-home is refactored. 
+home is refactored.
 """
 
 
