@@ -3,7 +3,7 @@ from pathlib import Path
 from django.test import TestCase
 
 
-class TestUploadData(TestCase):
+class TestUploadDataFunctions(TestCase):
     fixtures = [
         "variable_unit",
         "variable_variable",
