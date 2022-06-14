@@ -8,13 +8,13 @@
     var btns = '';
     var table;
 
-    {% if perms.importacion.view_importacion %}
-    btns = btns + window.btn_detalle_html("{% url 'importacion:importacion_detail' 0 %}");
+    {% if perms.importing.view_importing %}
+    btns = btns + window.btn_detalle_html("{% url 'importing:importing_detail' 0 %}");
     {% endif %}
 
     $(document).ready(function() {
 
-        table = $('#table_importacion').DataTable({
+        table = $('#table_importing').DataTable({
             language: window.DATATABLES_LANGUAGE,
             scrollX: true,
             "dom": '<"top"f>rt<"bottom"p><"clear">',
@@ -77,7 +77,7 @@
     tr>:nth-child(9) {min-width:  4em; max-width: 4em;}
 
     </style>
-    <table id="table_importacion" class="table table-hover table-sm overflowtooltip" >
+    <table id="table_importing" class="table table-hover table-sm overflowtooltip" >
         <thead>
         <tr>
             <th>Id</th>
@@ -93,7 +93,7 @@
         </tr>
         </thead>
 
-        <tbody>{{ importacion|safe }}</tbody>
+        <tbody>{{ importing|safe }}</tbody>
     </table>
 
 

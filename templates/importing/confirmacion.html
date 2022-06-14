@@ -28,14 +28,14 @@
         <div class="panel panel-default">
             <div class="panel-heading">Registro de Vacios de Información</div>
             <div class="panel-body">
-                <form method="post" class="form" action="{% url 'importacion:guardar' %}">
+                <form method="post" class="form" action="{% url 'importing:guardar' %}">
                     {% csrf_token %}
                     {% bootstrap_form form %}
                     <button type="submit" class="btn btn-default btn-primary">
                         Confirmar
                     </button>
                     <a class="btn btn-default"
-                       href="{% url 'importacion:importacion_index' %}">
+                       href="{% url 'importing:data_import_index' %}">
                         Cancelar</a>
                 </form>
             </div>
@@ -47,13 +47,13 @@
         <div class="panel panel-default">
             <div class="panel-heading">Confirmar Importación de datos</div>
             <div class="panel-body">
-                <form method="post" class="form" action="{% url 'importacion:guardar' %}">
+                <form method="post" class="form" action="{% url 'importing:save' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-default btn-primary">
                         Confirmar
                     </button>
                     <a class="btn btn-default"
-                       href="{% url 'importacion:importacion_index' %}">
+                       href="{% url 'importing:importing_index' %}">
                         Cancelar</a>
                 </form>
             </div>

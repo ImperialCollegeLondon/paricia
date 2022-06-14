@@ -9,7 +9,7 @@ $( function() {
     var estacion = $(this).val();
     $("#id_for_id").find('option').remove().end()
     $.ajax({
-        url: '{% url 'importacion:formatos' %}',
+        url: '{% url 'importing:formats' %}',
         data: {
             'estacion' : estacion
         },
@@ -38,7 +38,7 @@ $( function() {
         {% csrf_token %}
         {% bootstrap_form form %}
         <button id="btn_procesar" type="submit" class="btn btn-primary">Procesar</button>
-        <a class="btn btn-secondary" href="{% url 'importacion:importacion_index' %}">Cancelar</a>
+        <a class="btn btn-secondary" href="{% url 'importing:data_import_index' %}">Cancelar</a>
     </form>
 </div>
 {% endblock %}

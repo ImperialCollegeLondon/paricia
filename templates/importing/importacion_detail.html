@@ -13,26 +13,26 @@
             </tr>
             <tr>
                 <th>Código de la Estación</th>
-                <td>{{importacion.est_id}}</td>
+                <td>{{importing.station_id}}</td>
             </tr>
             <tr>
                 <th>Formato de Importación</th>
-                <td>{{importacion.for_id|default_if_none:""}}</td>
+                <td>{{importing.format_id|default_if_none:""}}</td>
             </tr>
             <tr>
                 <th>Fecha Inicial</th>
-                <td>{{importacion.imp_fecha_ini|date:"Y-m-d H:i:s"}}</td>
+                <td>{{importing.start_date|date:"Y-m-d H:i:s"}}</td>
             </tr>
             <tr>
                 <th>Fecha Final</th>
-                <td>{{importacion.imp_fecha_fin|date:"Y-m-d H:i:s "}}</td>
+                <td>{{importing.end_date|date:"Y-m-d H:i:s "}}</td>
             </tr>
 
             <tr>
-                <th colspan="2">Observación</th>
+                <th colspan="2">Observations</th>
             </tr>
             <tr>
-                <td colspan="2">{{importacion.imp_observacion}}</td>
+                <td colspan="2">{{importing.observations}}</td>
             </tr>
 
         </table>
@@ -52,7 +52,7 @@
             <tbody>
             {% for item in informacion %}
             <tr>
-                <td>{{ item.var_nombre}}</td>
+                <td>{{ item.name}}</td>
             </tr>
             {% endfor%}
 
@@ -68,5 +68,5 @@
 
 
 {% block url_back %}
-{% url 'importacion:importacion_index' %}
+{% url 'importing:importing_index' %}
 {% endblock %}
