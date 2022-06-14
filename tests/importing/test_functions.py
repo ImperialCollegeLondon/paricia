@@ -3,7 +3,7 @@ from pathlib import Path
 from django.test import TestCase
 
 
-class TestPreformatMatrix(TestCase):
+class TestUploadData(TestCase):
     fixtures = [
         "variable_unit",
         "variable_variable",
@@ -13,16 +13,43 @@ class TestPreformatMatrix(TestCase):
         "formatting_time",
         "formatting_format",
         "formatting_classification",
+        "station_country",
+        "station_region",
+        "station_ecosystem",
+        "station_institution",
+        "station_type",
+        "station_place",
+        "station_basin",
+        "station_placebasin",
+        "station_station",
     ]
 
-    def test_preformat_matrix(self):
+    def setUp(self):
         from formatting.models import Format
-        from importing.functions import preformat_matrix
+        from station.models import Station
 
-        file_format = Format.objects.get(format_id=45)
-        data_file = str(
+        self.file_format = Format.objects.get(format_id=45)
+        self.data_file = str(
             Path(__file__).parent.parent / "test_data/iMHEA_HMT_01_HI_01_raw.csv"
         )
+        self.station = Station.objects.get(station_id=8)
 
-        df = preformat_matrix(data_file, file_format)
+    def test_preformat_matrix(self):
+        from importing.functions import preformat_matrix
+
+        df = preformat_matrix(self.data_file, self.file_format)
         self.assertEqual(df.shape, (263371, 5))
+
+    def test_construct_matrix(self):
+        from importing.functions import construct_matrix
+
+        variables_data = construct_matrix(
+            self.data_file, self.file_format, self.station
+        )
+        self.assertEqual(list(variables_data.keys()), [10, 11])
+
+        self.assertEqual(variables_data[10].value.min(), 0.0)
+        self.assertEqual(variables_data[10].value.max(), 1624.4041)
+
+        self.assertEqual(variables_data[11].value.min(), 0.0)
+        self.assertEqual(variables_data[11].value.max(), 96.54)
