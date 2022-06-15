@@ -24,8 +24,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 import station.models as stn
-from home.functions import modelo_a_tabla_html
 from station.functions import excel_station
+from utilities.functions import modelo_a_tabla_html
 
 
 # ####################################################################################

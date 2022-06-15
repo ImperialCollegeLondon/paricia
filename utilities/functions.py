@@ -18,7 +18,7 @@ from django.db.models import QuerySet
 from django.db.models.query import Q
 from django.urls import reverse
 
-from .constants import (
+from .frontend_menu.constants import (
     menu_item_divider_html,
     menu_item_html,
     menu_struct,

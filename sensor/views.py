@@ -22,8 +22,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from excel_response import ExcelResponse
 
-from home.functions import modelo_a_tabla_html
 from sensor.models import Sensor, SensorBrand, SensorType
+from utilities.functions import modelo_a_tabla_html
 
 
 class SensorList(PermissionRequiredMixin, TemplateView):

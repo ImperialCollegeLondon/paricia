@@ -27,7 +27,6 @@ from django.views.generic import FormView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 
-from home.functions import modelo_a_tabla_html
 from importing.forms import DataImportForm
 from importing.functions import (
     insert_level_rule,
@@ -37,6 +36,7 @@ from importing.functions import (
     validate_dates,
 )
 from importing.models import DataImportFull, DataImportTemp
+from utilities.functions import modelo_a_tabla_html
 
 
 class DataImportFullList(PermissionRequiredMixin, TemplateView):

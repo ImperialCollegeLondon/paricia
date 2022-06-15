@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from home.functions import modelo_a_tabla_html
+from utilities.functions import modelo_a_tabla_html
 
 from .forms import ClassificationForm
 from .models import (

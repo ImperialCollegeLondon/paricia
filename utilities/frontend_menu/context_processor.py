@@ -14,7 +14,7 @@ from typing import Dict
 
 from django.http import HttpRequest
 
-from .functions import get_menu
+from ..functions import get_menu
 
 
 def menu(request: HttpRequest) -> Dict[str, str]:
