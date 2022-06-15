@@ -35,5 +35,9 @@ data_files = [
 
 for file in data_files:
     execute_from_command_line(
-        ["manage.py", "loaddata", settings.BASE_DIR + "/home/data/" + file + ".json"]
+        [
+            "manage.py",
+            "loaddata",
+            settings.BASE_DIR + "/utilities/data/" + file + ".json",
+        ]
     )
