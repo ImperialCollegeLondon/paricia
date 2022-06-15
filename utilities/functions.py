@@ -26,24 +26,6 @@ from .frontend_menu.constants import (
 )
 
 
-def get_anonymous_user() -> User:
-    """Retrieves the anonymous user, creating it if it does not exist.
-
-    NOTE: Is there any reason for not using the standard
-    `django.contrib.auth.models.AnonymousUser` ?
-    """
-    try:
-        anon_user = User.objects.get(username="AnonymousUser")
-    except User.DoesNotExist:
-        anon_user = User.objects.create_user(
-            username="AnonymousUser",
-            is_active=True,
-            is_superuser=False,
-            is_staff=False,
-        )
-    return anon_user
-
-
 def get_menu(user: User) -> str:
     """Generate the user menu in HTML, depending on its permissions.
 
@@ -53,8 +35,7 @@ def get_menu(user: User) -> str:
     Returns:
         str: An HTML string with the menu items.
     """
-    if user.id is None:
-        user = get_anonymous_user()
+    if user.is_anonymous:  # TODO check this new logic if this function is ever used
         perms = Permission.objects.filter(Q(user=user) | Q(group__in=user.groups.all()))
         is_superuser = False
     else:
