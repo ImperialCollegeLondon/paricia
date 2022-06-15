@@ -186,4 +186,4 @@ AUTHENTICATION_BACKENDS = (
 
 # Fixtures for tests
 PROJECT_ROOT = os.path.dirname(os.path.dirname((os.path.realpath(__file__))))
-FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "home/data")]
+FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "utilities/data")]
