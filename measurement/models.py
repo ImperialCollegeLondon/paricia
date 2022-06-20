@@ -118,7 +118,7 @@ class LevelFunction(models.Model):
 class BaseMeasurement(models.Model):
     @classmethod
     def __init_subclass__(cls, *args, **kwargs) -> None:
-        if cls.__name__ not in MEASUREMENTS:
+        if not cls.__name__.startswith("_Meas") and cls.__name__ not in MEASUREMENTS:
             MEASUREMENTS.append(cls.__name__)
 
     station_id = models.PositiveIntegerField("station_id")
@@ -154,69 +154,65 @@ def create_meas_model(
     attrs.update(_fields)
 
     return type(
-        f"Meas{num}",
-        (models.Model,),
+        f"_Meas{num}",
+        (BaseMeasurement,),
         attrs,
     )
 
 
-class Precipitation(
-    BaseMeasurement, create_meas_model(digits=6, decimals=2, fields=("Value"))
-):
+class Precipitation(create_meas_model(digits=6, decimals=2, fields=("Value"))):
     """Precipitation."""
 
 
-class AirTemperature(BaseMeasurement, create_meas_model(digits=5, decimals=2)):
+class AirTemperature(create_meas_model(digits=5, decimals=2)):
     """Air temperature."""
 
 
-class Humidity(BaseMeasurement, create_meas_model()):
+class Humidity(create_meas_model()):
     """Humidity."""
 
 
-class WindVelocity(BaseMeasurement, create_meas_model()):
+class WindVelocity(create_meas_model()):
     """Wind velocity."""
 
 
-class WindDirection(BaseMeasurement, create_meas_model()):
+class WindDirection(create_meas_model()):
     """Wind direction."""
 
 
-class SoilMoisture(BaseMeasurement, create_meas_model()):
+class SoilMoisture(create_meas_model()):
     """Soil moisture."""
 
 
-class SolarRadiation(BaseMeasurement, create_meas_model()):
+class SolarRadiation(create_meas_model()):
     """Solar radiation."""
 
 
-class AtmosphericPressure(BaseMeasurement, create_meas_model()):
+class AtmosphericPressure(create_meas_model()):
     """Atmospheric pressure."""
 
 
-class WaterTemperature(BaseMeasurement, create_meas_model()):
+class WaterTemperature(create_meas_model()):
     """Water temperature."""
 
 
-class Flow(BaseMeasurement, create_meas_model()):
+class Flow(create_meas_model()):
     """Flow."""
 
 
-class WaterLevel(BaseMeasurement, create_meas_model()):
+class WaterLevel(create_meas_model()):
     """Water level."""
 
 
-class BatteryVoltage(BaseMeasurement, create_meas_model()):
+class BatteryVoltage(create_meas_model()):
     """Battery voltage."""
 
 
-class FlowManual(BaseMeasurement, create_meas_model(fields=("Value"))):
+class FlowManual(create_meas_model(fields=("Value"))):
     """Flow (manual)."""
 
 
-class Var14Measurement(
-    BaseMeasurement, create_meas_model(fields=("Value", "Uncertainty"))
-):
+class Var14Measurement(create_meas_model(fields=("Value", "Uncertainty"))):
     """Fix: Need proper name"""
 
     data_import_date = models.DateTimeField("Data import date")
@@ -233,19 +229,16 @@ class Var14Measurement(
         ]
 
 
-class SoilTemperature(BaseMeasurement, create_meas_model()):
+class SoilTemperature(create_meas_model()):
     """Soil temperature."""
 
 
-class IndirectRadiation(BaseMeasurement, create_meas_model()):
+class IndirectRadiation(create_meas_model()):
     """Indirect radiation."""
 
 
 # Variables created for buoy with different depths
-
-
-class WaterTemperature(
-    BaseMeasurement,
+class WaterTemperatureDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
@@ -259,8 +252,7 @@ class WaterTemperature(
         ]
 
 
-class WaterAcidity(
-    BaseMeasurement,
+class WaterAcidityDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water acidity (pH) at a depth in cm."""
@@ -274,8 +266,7 @@ class WaterAcidity(
         ]
 
 
-class RedoxPotential(
-    BaseMeasurement,
+class RedoxPotentialDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Redox potential (mV) at a depth in cm."""
@@ -289,8 +280,7 @@ class RedoxPotential(
         ]
 
 
-class WaterTurbidity(
-    BaseMeasurement,
+class WaterTurbidityDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water turbidity (NTU) at a depth in cm."""
@@ -304,8 +294,7 @@ class WaterTurbidity(
         ]
 
 
-class ClorineConcentration(
-    BaseMeasurement,
+class ClorineConcentrationDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
@@ -319,8 +308,7 @@ class ClorineConcentration(
         ]
 
 
-class OxigenConcentration(
-    BaseMeasurement,
+class OxigenConcentrationDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
@@ -334,8 +322,7 @@ class OxigenConcentration(
         ]
 
 
-class PercentageOxigenConcentration(
-    BaseMeasurement,
+class PercentageOxigenConcentrationDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
@@ -353,8 +340,7 @@ class PercentageOxigenConcentration(
         ]
 
 
-class Phycocyanin(
-    BaseMeasurement,
+class PhycocyaninDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Phycocyanin (?) at a depth in cm."""
