@@ -133,7 +133,7 @@ class BaseMeasurement(models.Model):
         abstract = True
 
 
-def custom_meas_model(
+def create_meas_model(
     digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
 ) -> Type[models.Model]:
     num = len(MEASUREMENTS) + 1
@@ -147,67 +147,75 @@ def custom_meas_model(
         for key in fields
     }
 
+    class Meta:
+        abstract = True
+
+    attrs = {"__module__": __name__, "Meta": Meta}
+    attrs.update(_fields)
+
     return type(
-        f"Limits{num}", (models.Model,), {"field": _fields, "__module__": __name__}
+        f"Meas{num}",
+        (models.Model,),
+        attrs,
     )
 
 
 class Precipitation(
-    BaseMeasurement, custom_meas_model(digits=6, decimals=2, fields=("Value"))
+    BaseMeasurement, create_meas_model(digits=6, decimals=2, fields=("Value"))
 ):
     """Precipitation."""
 
 
-class AirTemperature(BaseMeasurement, custom_meas_model(digits=5, decimals=2)):
+class AirTemperature(BaseMeasurement, create_meas_model(digits=5, decimals=2)):
     """Air temperature."""
 
 
-class Humidity(BaseMeasurement, custom_meas_model()):
+class Humidity(BaseMeasurement, create_meas_model()):
     """Humidity."""
 
 
-class WindVelocity(BaseMeasurement, custom_meas_model()):
+class WindVelocity(BaseMeasurement, create_meas_model()):
     """Wind velocity."""
 
 
-class WindDirection(BaseMeasurement, custom_meas_model()):
+class WindDirection(BaseMeasurement, create_meas_model()):
     """Wind direction."""
 
 
-class SoilMoisture(BaseMeasurement, custom_meas_model()):
+class SoilMoisture(BaseMeasurement, create_meas_model()):
     """Soil moisture."""
 
 
-class SolarRadiation(BaseMeasurement, custom_meas_model()):
+class SolarRadiation(BaseMeasurement, create_meas_model()):
     """Solar radiation."""
 
 
-class AtmosphericPressure(BaseMeasurement, custom_meas_model()):
+class AtmosphericPressure(BaseMeasurement, create_meas_model()):
     """Atmospheric pressure."""
 
 
-class WaterTemperature(BaseMeasurement, custom_meas_model()):
+class WaterTemperature(BaseMeasurement, create_meas_model()):
     """Water temperature."""
 
 
-class Flow(BaseMeasurement, custom_meas_model()):
+class Flow(BaseMeasurement, create_meas_model()):
     """Flow."""
 
 
-class WaterLevel(BaseMeasurement, custom_meas_model()):
+class WaterLevel(BaseMeasurement, create_meas_model()):
     """Water level."""
 
 
-class BatteryVoltage(BaseMeasurement, custom_meas_model()):
+class BatteryVoltage(BaseMeasurement, create_meas_model()):
     """Battery voltage."""
 
 
-class FlowManual(BaseMeasurement, custom_meas_model(fields=("Value"))):
+class FlowManual(BaseMeasurement, create_meas_model(fields=("Value"))):
     """Flow (manual)."""
 
 
 class Var14Measurement(
-    BaseMeasurement, custom_meas_model(fields=("Value", "Uncertainty"))
+    BaseMeasurement, create_meas_model(fields=("Value", "Uncertainty"))
 ):
     """Fix: Need proper name"""
 
@@ -225,11 +233,11 @@ class Var14Measurement(
         ]
 
 
-class SoilTemperature(BaseMeasurement, custom_meas_model()):
+class SoilTemperature(BaseMeasurement, create_meas_model()):
     """Soil temperature."""
 
 
-class IndirectRadiation(BaseMeasurement, custom_meas_model()):
+class IndirectRadiation(BaseMeasurement, create_meas_model()):
     """Indirect radiation."""
 
 
@@ -238,7 +246,7 @@ class IndirectRadiation(BaseMeasurement, custom_meas_model()):
 
 class WaterTemperature(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
 
@@ -253,7 +261,7 @@ class WaterTemperature(
 
 class WaterAcidity(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water acidity (pH) at a depth in cm."""
 
@@ -268,7 +276,7 @@ class WaterAcidity(
 
 class RedoxPotential(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Redox potential (mV) at a depth in cm."""
 
@@ -283,7 +291,7 @@ class RedoxPotential(
 
 class WaterTurbidity(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water turbidity (NTU) at a depth in cm."""
 
@@ -298,7 +306,7 @@ class WaterTurbidity(
 
 class ClorineConcentration(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
 
@@ -313,7 +321,7 @@ class ClorineConcentration(
 
 class OxigenConcentration(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
 
@@ -328,7 +336,7 @@ class OxigenConcentration(
 
 class PercentageOxigenConcentration(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
 
@@ -347,7 +355,7 @@ class PercentageOxigenConcentration(
 
 class Phycocyanin(
     BaseMeasurement,
-    custom_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Phycocyanin (?) at a depth in cm."""
 
