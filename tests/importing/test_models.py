@@ -42,7 +42,7 @@ class TestSaveImportModels(TestCase):
 
         matrix = preformat_matrix(self.data_file, self.file_format)
         start_date = matrix.loc[0, "date"]
-        end_date = matrix.loc[- 1, "date"]
+        end_date = matrix.loc[-1, "date"]
 
         # Note: This sample file is not used by any functions
         sample_file = SimpleUploadedFile(
