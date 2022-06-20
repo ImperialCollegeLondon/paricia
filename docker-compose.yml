@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    image: postgres:13
+    image: timescale/timescaledb-ha:pg14-latest
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
