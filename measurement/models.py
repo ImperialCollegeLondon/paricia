@@ -12,13 +12,12 @@
 ########################################################################################
 from __future__ import unicode_literals
 
-from typing import Type, List
+from typing import List, Type
 
 from django.db import models
 from django.urls import reverse
 
 from station.models import Station
-
 
 MEASUREMENTS: List[str] = []
 """Available measurent variables."""

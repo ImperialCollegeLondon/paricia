@@ -14,7 +14,7 @@ from datetime import date, datetime, time, timedelta
 
 from django.db import connection
 
-from measurement.models import WindVelocity, WindDirection
+from measurement.models import WindDirection, WindVelocity
 
 
 def llenarPrecipitacion():

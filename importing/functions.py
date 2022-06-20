@@ -24,7 +24,7 @@ from django.db import connection, transaction
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
 from importing.models import DataImportFull, DataImportTemp
-from measurement.models import WaterLevel, Var14Measurement
+from measurement.models import Var14Measurement, WaterLevel
 from variable.models import Variable
 
 unix_epoch = np.datetime64(0, "s")
