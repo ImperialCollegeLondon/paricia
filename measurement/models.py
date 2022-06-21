@@ -157,7 +157,7 @@ def create_meas_model(
     )
 
 
-class Precipitation(create_meas_model(digits=6, decimals=2, fields=("Value"))):
+class Precipitation(create_meas_model(digits=6, decimals=2, fields=("Value",))):
     """Precipitation."""
 
 
@@ -205,7 +205,7 @@ class BatteryVoltage(create_meas_model()):
     """Battery voltage."""
 
 
-class FlowManual(create_meas_model(fields=("Value"))):
+class FlowManual(create_meas_model(fields=("Value",))):
     """Flow (manual)."""
 
 
@@ -236,7 +236,7 @@ class IndirectRadiation(create_meas_model()):
 
 # Variables created for buoy with different depths
 class WaterTemperatureDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
 
@@ -250,7 +250,7 @@ class WaterTemperatureDepth(
 
 
 class WaterAcidityDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Water acidity (pH) at a depth in cm."""
 
@@ -264,7 +264,7 @@ class WaterAcidityDepth(
 
 
 class RedoxPotentialDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Redox potential (mV) at a depth in cm."""
 
@@ -278,7 +278,7 @@ class RedoxPotentialDepth(
 
 
 class WaterTurbidityDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Water turbidity (NTU) at a depth in cm."""
 
@@ -292,7 +292,7 @@ class WaterTurbidityDepth(
 
 
 class ClorineConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
 
@@ -306,7 +306,7 @@ class ClorineConcentrationDepth(
 
 
 class OxigenConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
 
@@ -320,7 +320,7 @@ class OxigenConcentrationDepth(
 
 
 class PercentageOxigenConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
 
@@ -338,7 +338,7 @@ class PercentageOxigenConcentrationDepth(
 
 
 class PhycocyaninDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Phycocyanin (?) at a depth in cm."""
 
