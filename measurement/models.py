@@ -12,12 +12,15 @@
 ########################################################################################
 from __future__ import unicode_literals
 
-from typing import Type
+from typing import List, Type
 
 from django.db import models
 from django.urls import reverse
 
 from station.models import Station
+
+MEASUREMENTS: List[str] = []
+"""Available measurent variables."""
 
 
 class PermissionsMeasurement(models.Model):
@@ -112,6 +115,11 @@ class LevelFunction(models.Model):
 
 
 class BaseMeasurement(models.Model):
+    @classmethod
+    def __init_subclass__(cls, *args, **kwargs) -> None:
+        if not cls.__name__.startswith("_Meas") and cls.__name__ not in MEASUREMENTS:
+            MEASUREMENTS.append(cls.__name__)
+
     station_id = models.PositiveIntegerField("station_id")
     date = models.DateTimeField("Date")
 
@@ -124,9 +132,10 @@ class BaseMeasurement(models.Model):
         abstract = True
 
 
-def limits_model(
-    num, digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
+def create_meas_model(
+    digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
 ) -> Type[models.Model]:
+    num = len(MEASUREMENTS) + 1
     _fields = {
         key.lower(): models.DecimalField(
             key,
@@ -137,68 +146,74 @@ def limits_model(
         for key in fields
     }
 
+    class Meta:
+        abstract = True
+
+    attrs = {"__module__": __name__, "Meta": Meta}
+    attrs.update(_fields)
+
     return type(
-        f"Limits{num}", (models.Model,), {"field": _fields, "__module__": __name__}
+        f"_Meas{num}",
+        (BaseMeasurement,),
+        attrs,
     )
 
 
-class Var1Measurement(
-    BaseMeasurement, limits_model(1, digits=6, decimals=2, fields=("Value"))
-):
+class Precipitation(create_meas_model(digits=6, decimals=2, fields=("Value"))):
     """Precipitation."""
 
 
-class Var2Measurement(BaseMeasurement, limits_model(2, digits=5, decimals=2)):
+class AirTemperature(create_meas_model(digits=5, decimals=2)):
     """Air temperature."""
 
 
-class Var3Measurement(BaseMeasurement, limits_model(3)):
+class Humidity(create_meas_model()):
     """Humidity."""
 
 
-class Var4Measurement(BaseMeasurement, limits_model(4)):
+class WindVelocity(create_meas_model()):
     """Wind velocity."""
 
 
-class Var5Measurement(BaseMeasurement, limits_model(5)):
+class WindDirection(create_meas_model()):
     """Wind direction."""
 
 
-class Var6Measurement(BaseMeasurement, limits_model(6)):
+class SoilMoisture(create_meas_model()):
     """Soil moisture."""
 
 
-class Var7Measurement(BaseMeasurement, limits_model(7)):
+class SolarRadiation(create_meas_model()):
     """Solar radiation."""
 
 
-class Var8Measurement(BaseMeasurement, limits_model(8)):
+class AtmosphericPressure(create_meas_model()):
     """Atmospheric pressure."""
 
 
-class Var9Measurement(BaseMeasurement, limits_model(9)):
+class WaterTemperature(create_meas_model()):
     """Water temperature."""
 
 
-class Var10Measurement(BaseMeasurement, limits_model(10)):
+class Flow(create_meas_model()):
     """Flow."""
 
 
-class Var11Measurement(BaseMeasurement, limits_model(11)):
+class WaterLevel(create_meas_model()):
     """Water level."""
 
 
-class Var12Measurement(BaseMeasurement, limits_model(12)):
+class BatteryVoltage(create_meas_model()):
     """Battery voltage."""
 
 
-class Var13Measurement(BaseMeasurement, limits_model(13, fields=("Value"))):
+class FlowManual(create_meas_model(fields=("Value"))):
     """Flow (manual)."""
 
 
-class Var14Measurement(
-    BaseMeasurement, limits_model(14, fields=("Value", "Uncertainty"))
-):
+class Var14Measurement(create_meas_model(fields=("Value", "Uncertainty"))):
+    """Fix: Need proper name"""
+
     data_import_date = models.DateTimeField("Data import date")
     data_start_date = models.DateTimeField("Data start date")
     calibrated = models.BooleanField("Calibrated")
@@ -213,20 +228,17 @@ class Var14Measurement(
         ]
 
 
-class Var15Measurement(BaseMeasurement, limits_model(20)):
+class SoilTemperature(create_meas_model()):
     """Soil temperature."""
 
 
-class Var16Measurement(BaseMeasurement, limits_model(21)):
+class IndirectRadiation(create_meas_model()):
     """Indirect radiation."""
 
 
 # Variables created for buoy with different depths
-
-
-class Var101Measurement(
-    BaseMeasurement,
-    limits_model(101, digits=6, decimals=2, fields=("Value")),
+class WaterTemperatureDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
 
@@ -239,9 +251,8 @@ class Var101Measurement(
         ]
 
 
-class Var102Measurement(
-    BaseMeasurement,
-    limits_model(102, digits=6, decimals=2, fields=("Value")),
+class WaterAcidityDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water acidity (pH) at a depth in cm."""
 
@@ -254,9 +265,8 @@ class Var102Measurement(
         ]
 
 
-class Var103Measurement(
-    BaseMeasurement,
-    limits_model(103, digits=6, decimals=2, fields=("Value")),
+class RedoxPotentialDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Redox potential (mV) at a depth in cm."""
 
@@ -269,9 +279,8 @@ class Var103Measurement(
         ]
 
 
-class Var104Measurement(
-    BaseMeasurement,
-    limits_model(104, digits=6, decimals=2, fields=("Value")),
+class WaterTurbidityDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Water turbidity (NTU) at a depth in cm."""
 
@@ -284,9 +293,8 @@ class Var104Measurement(
         ]
 
 
-class Var105Measurement(
-    BaseMeasurement,
-    limits_model(105, digits=6, decimals=2, fields=("Value")),
+class ClorineConcentrationDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
 
@@ -299,9 +307,8 @@ class Var105Measurement(
         ]
 
 
-class Var106Measurement(
-    BaseMeasurement,
-    limits_model(106, digits=6, decimals=2, fields=("Value")),
+class OxigenConcentrationDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
 
@@ -314,9 +321,8 @@ class Var106Measurement(
         ]
 
 
-class Var107Measurement(
-    BaseMeasurement,
-    limits_model(107, digits=6, decimals=2, fields=("Value")),
+class PercentageOxigenConcentrationDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
 
@@ -333,9 +339,8 @@ class Var107Measurement(
         ]
 
 
-class Var108Measurement(
-    BaseMeasurement,
-    limits_model(108, digits=6, decimals=2, fields=("Value")),
+class PhycocyaninDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value")),
 ):
     """Phycocyanin (?) at a depth in cm."""
 
