@@ -82,12 +82,12 @@ def get_last_uploaded_date(station_id, var_id):
     sql += " ORDER BY date DESC LIMIT 1"
     with connection.cursor() as cursor:
         cursor.execute(sql)
-        consulta = cursor.fetchone()
-    if consulta:
-        informacion = consulta[0]
+        query = cursor.fetchone()
+    if query:
+        information = query[0]
     else:
-        informacion = "No existen datos"
-    return informacion
+        information = "Data does not exist"
+    return information
 
 
 def data_exists_between_dates(start, end, station_id, var_id):
@@ -286,30 +286,30 @@ def save_temp_data_to_permanent(imp_id, form):
         sql = """
 WITH
 data AS (
-    SELECT DISTINCT u.date, u.valor, u.station_id
-    FROM unnest(%s::fecha__valor__station_id[]) u
+    SELECT DISTINCT u.date, u.value, u.station_id
+    FROM unnest(%s::date__value__station_id[]) u
     ORDER BY u.date ASC
 ),
-eliminar AS (
+delete AS (
     DELETE FROM measurement_var1measurement
     WHERE station_id = (SELECT d.station_id FROM data d LIMIT 1)
     AND date >= (SELECT d.date FROM data d ORDER BY d.date ASC LIMIT 1)
     AND date <= (SELECT d.date FROM data d ORDER BY d.date DESC LIMIT 1)
     returning *
 )
-INSERT INTO measurement_var1measurement(date, valor, station_id)
-SELECT d.date, d.valor, d.station_id
+INSERT INTO measurement_var1measurement(date, value, station_id)
+SELECT d.date, d.value, d.station_id
 FROM data d
 ;
 """
         sql = sql.replace("var1", "var" + str(var_id))
         sql = sql.replace(
-            "u.date, u.valor, u.station_id", "u." + ", u.".join(table.columns)
+            "u.date, u.value, u.station_id", "u." + ", u.".join(table.columns)
         )
-        sql = sql.replace("fecha__valor__station_id", "__".join(table.columns))
-        sql = sql.replace("date, valor, station_id", ", ".join(table.columns))
+        sql = sql.replace("date__value__station_id", "__".join(table.columns))
+        sql = sql.replace("date, value, station_id", ", ".join(table.columns))
         sql = sql.replace(
-            "d.date, d.valor, d.station_id", "d." + ", d.".join(table.columns)
+            "d.date, d.value, d.station_id", "d." + ", d.".join(table.columns)
         )
 
         with connection.cursor() as cursor:
@@ -425,7 +425,7 @@ def construct_matrix(matrix_source, file_format, station):
             # (MAXIMUM and MINIMUM are excluded)
             if classification.incremental:
                 data["value"] = data["value"].diff()
-                data.loc[data["valor"] < 0, "valor"] = np.nan
+                data.loc[data["value"] < 0, "value"] = np.nan
                 data = data.dropna()
             data["date"] = data["date"].apply(
                 lambda x: x.replace(
@@ -539,7 +539,7 @@ def insert_level_rule(data_import, level_rule):
         data_start_date=data_import.start_date,
         date=data_import.end_date,
         calibrated=level_rule["calibrated"],
-        valor=float(level_rule["value"]),
+        value=float(level_rule["value"]),
         uncertainty=uncertainty,
         comments=level_rule["comments"],
     ).save()

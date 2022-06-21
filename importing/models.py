@@ -57,7 +57,7 @@ class DataImportFull(DataImportBase):
     file = models.FileField("File", upload_to="files/", blank=True, null=True)
 
     def get_absolute_url(self):
-        return reverse("importing:dataimport_detail", kwargs={"pk": self.pk})
+        return reverse("importing:data_import_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("-date",)
@@ -77,7 +77,7 @@ class DataImportTemp(DataImportBase):
     file = models.FileField("File", upload_to="files/tmp/")
 
     def get_absolute_url(self):
-        return reverse("importing:dataimport_temp_detail", kwargs={"pk": self.pk})
+        return reverse("importing:data_import_temp_detail", kwargs={"pk": self.pk})
 
     class Meta:
         default_permissions = ()

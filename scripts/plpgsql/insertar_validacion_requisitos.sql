@@ -10,7 +10,7 @@ Required data types for 'importing' app:
             using the type:  `unnest(%s::date__value__station_id[])`
 
 
-Required data types for 'validation' app:
+Required data types for 'validation' app (NOTE: NOT IMPLEMENTED YET):
     validacion
     validacion_profundidad
 
