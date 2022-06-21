@@ -16,11 +16,12 @@ from typing import List, Type
 
 from django.db import models
 from django.urls import reverse
+from timescale.db.models.models import TimescaleModel
 
 from station.models import Station
 
 MEASUREMENTS: List[str] = []
-"""Available measurent variables."""
+"""Available measurement variables."""
 
 
 class PermissionsMeasurement(models.Model):
@@ -34,12 +35,11 @@ class PermissionsMeasurement(models.Model):
         permissions = (("validar", "usar interfaz de validación"),)
 
 
-class PolarWind(models.Model):
+class PolarWind(TimescaleModel):
     """
-    Polar Wind measurement with a velocity and direction at a specific date.
+    Polar Wind measurement with a velocity and direction at a specific time.
     """
 
-    date = models.DateTimeField("Date")
     speed = models.DecimalField("Speed", max_digits=14, decimal_places=6, null=True)
     direction = models.DecimalField(
         "Direction", max_digits=14, decimal_places=6, null=True
@@ -56,11 +56,11 @@ class PolarWind(models.Model):
         managed = False
 
 
-class DischargeCurve(models.Model):
+class DischargeCurve(TimescaleModel):
     """
     Discharge curve.
 
-    Relates a station and a date and a bool as to whether a flow recalculation is
+    Relates a station and a time and a bool as to whether a flow recalculation is
     required.
     """
 
@@ -68,7 +68,6 @@ class DischargeCurve(models.Model):
     station = models.ForeignKey(
         Station, on_delete=models.SET_NULL, null=True, verbose_name="Station"
     )
-    date = models.DateTimeField("Date")
     require_recalculate_flow = models.BooleanField(
         verbose_name="Requires re-calculate flow?", default=False
     )
@@ -80,11 +79,11 @@ class DischargeCurve(models.Model):
         return reverse("measurement:dischargecurve_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("station", "date")
-        unique_together = ("station", "date")
+        ordering = ("station", "time")
+        unique_together = ("station", "time")
 
 
-class LevelFunction(models.Model):
+class LevelFunction(TimescaleModel):
     """
     Function Level. Relates a discharge curve to a level (in cm) to a function.
 
@@ -114,27 +113,26 @@ class LevelFunction(models.Model):
 ##############################################################
 
 
-class BaseMeasurement(models.Model):
+class BaseMeasurement(TimescaleModel):
     @classmethod
     def __init_subclass__(cls, *args, **kwargs) -> None:
         if not cls.__name__.startswith("_Meas") and cls.__name__ not in MEASUREMENTS:
             MEASUREMENTS.append(cls.__name__)
 
     station_id = models.PositiveIntegerField("station_id")
-    date = models.DateTimeField("Date")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "date"]),
-            models.Index(fields=["date", "station_id"]),
+            models.Index(fields=["station_id", "time"]),
+            models.Index(fields=["time", "station_id"]),
         ]
         abstract = True
 
 
 def create_meas_model(
     digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
-) -> Type[models.Model]:
+) -> Type[TimescaleModel]:
     num = len(MEASUREMENTS) + 1
     _fields = {
         key.lower(): models.DecimalField(
@@ -223,7 +221,7 @@ class Var14Measurement(create_meas_model(fields=("Value", "Uncertainty"))):
         default_permissions = ()
         indexes = [
             models.Index(fields=["station_id", "data_import_date"]),
-            models.Index(fields=["station_id", "data_start_date", "date"]),
+            models.Index(fields=["station_id", "data_start_date", "time"]),
             models.Index(fields=["data_import_date"]),
         ]
 
@@ -247,7 +245,7 @@ class WaterTemperatureDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
@@ -261,7 +259,7 @@ class WaterAcidityDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
@@ -275,7 +273,7 @@ class RedoxPotentialDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
@@ -289,7 +287,7 @@ class WaterTurbidityDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
@@ -303,7 +301,7 @@ class ClorineConcentrationDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
@@ -317,7 +315,7 @@ class OxigenConcentrationDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
@@ -335,7 +333,7 @@ class PercentageOxigenConcentrationDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
@@ -349,5 +347,5 @@ class PhycocyaninDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
