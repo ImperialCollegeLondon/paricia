@@ -10,24 +10,22 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
+from typing import Dict
 
-from django.contrib.auth import views as auth_views
-from django.urls import path, re_path, reverse_lazy
+from django.http import HttpRequest
 
-from home.views import CargaInicialView, HomePageView
+from ..functions import get_menu
 
-app_name = "home"
-urlpatterns = [
-    re_path(r"^$", HomePageView.as_view(), name="home"),
-    path(
-        "login/",
-        auth_views.LoginView.as_view(template_name="registration/login.html"),
-        name="login",
-    ),
-    path(
-        "logout/",
-        auth_views.LogoutView.as_view(next_page=reverse_lazy("login")),
-        name="logout",
-    ),
-    re_path(r"^carga_inicial$", CargaInicialView.as_view(), name="carga_inicial"),
-]
+
+def menu(request: HttpRequest) -> Dict[str, str]:
+    """Context processor for creating the menus.
+
+    Using this processor is indicated in the TEMPLATES section of settings.py.
+
+    Args:
+        request (HttpRequest): The request to process, including the 'user'.
+
+    Returns:
+        Dict[str, str]: A dictionary with the menu items.
+    """
+    return {"menu": get_menu(request.user)}

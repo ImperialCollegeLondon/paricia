@@ -22,7 +22,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from excel_response import ExcelResponse
 
-from home.functions import modelo_a_tabla_html
+from utilities.functions import modelo_a_tabla_html
 
 from .models import SensorInstallation, Unit, Variable
 

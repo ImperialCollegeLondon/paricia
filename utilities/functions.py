@@ -18,30 +18,12 @@ from django.db.models import QuerySet
 from django.db.models.query import Q
 from django.urls import reverse
 
-from .constants import (
+from .frontend_menu.constants import (
     menu_item_divider_html,
     menu_item_html,
     menu_struct,
     menu_tab_html,
 )
-
-
-def get_anonymous_user() -> User:
-    """Retrieves the anonymous user, creating it if it does not exist.
-
-    NOTE: Is there any reason for not using the standard
-    `django.contrib.auth.models.AnonymousUser` ?
-    """
-    try:
-        anon_user = User.objects.get(username="AnonymousUser")
-    except User.DoesNotExist:
-        anon_user = User.objects.create_user(
-            username="AnonymousUser",
-            is_active=True,
-            is_superuser=False,
-            is_staff=False,
-        )
-    return anon_user
 
 
 def get_menu(user: User) -> str:
@@ -53,8 +35,7 @@ def get_menu(user: User) -> str:
     Returns:
         str: An HTML string with the menu items.
     """
-    if user.id is None:
-        user = get_anonymous_user()
+    if user.is_anonymous:  # TODO check this new logic if this function is ever used
         perms = Permission.objects.filter(Q(user=user) | Q(group__in=user.groups.all()))
         is_superuser = False
     else:

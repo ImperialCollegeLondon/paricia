@@ -3,13 +3,13 @@ FROM python:3.8-buster as python
 FROM python
 
 # ssh
-COPY scripts/install_ssh.sh .
+COPY utilities/install_ssh.sh .
 RUN chmod u+x install_ssh.sh
 RUN ./install_ssh.sh
-COPY scripts/sshd_config /etc/ssh/
+COPY utilities/sshd_config /etc/ssh/
 
 # Initialization
-COPY scripts/init.sh /usr/local/bin/
+COPY utilities/init.sh /usr/local/bin/
 RUN chmod u+x /usr/local/bin/init.sh
 CMD ["/usr/local/bin/init.sh"]
 

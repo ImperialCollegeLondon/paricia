@@ -51,7 +51,6 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    "home.apps.HomeConfig",
     "station.apps.StationConfig",
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
@@ -91,13 +90,11 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                # 'django.template.context_processors.debug',
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                ##
-                "home.context_processor.menu",
-                ##
+                # "home.context_processor.menu",
             ],
         },
     },
@@ -180,14 +177,13 @@ EMAIL_PORT = 25
 #########################################################################
 
 #########################################################################
-# Implementa permisos para usuario Anónimo
 #
-# Reemplaza a:
-#              AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
-AUTHENTICATION_BACKENDS = ["home.auth_backend.AnonymousPermissions"]
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",  # this is default
+)
 #
 #########################################################################
 
 # Fixtures for tests
 PROJECT_ROOT = os.path.dirname(os.path.dirname((os.path.realpath(__file__))))
-FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "home/data")]
+FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "utilities/data")]
