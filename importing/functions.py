@@ -96,6 +96,7 @@ def data_exists_between_dates(start, end, station_id, var_id):
     dates.
         Returns: True if there exists data, else False.
     TODO: This will need reworking once Medicion module is overhauled.
+    TODO: This can probably just be some logic directly in validate_dates.
     """
 
     sql = "SELECT id FROM measurement_var" + str(var_id) + "measurement "

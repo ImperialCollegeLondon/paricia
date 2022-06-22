@@ -209,8 +209,8 @@ class FlowManual(create_meas_model(fields=("Value",))):
     """Flow (manual)."""
 
 
-class Var14Measurement(create_meas_model(fields=("Value", "Uncertainty"))):
-    """Fix: Need proper name"""
+class StripLevelReading(create_meas_model(fields=("Value", "Uncertainty"))):
+    """Strip level reading."""
 
     data_import_date = models.DateTimeField("Data import date")
     data_start_date = models.DateTimeField("Data start date")
@@ -305,7 +305,7 @@ class ClorineConcentrationDepth(
         ]
 
 
-class OxigenConcentrationDepth(
+class OxygenConcentrationDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
@@ -319,7 +319,7 @@ class OxigenConcentrationDepth(
         ]
 
 
-class PercentageOxigenConcentrationDepth(
+class PercentageOxygenConcentrationDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
