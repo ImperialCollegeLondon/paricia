@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytz
 from django.test import TestCase
 
@@ -6,8 +8,6 @@ class TestModelCreation(TestCase):
     # TODO test creation from DataFrame
     # TODO test performance of creation and reading
     def setUp(self):
-        from datetime import datetime
-
         from measurement.models import Flow, Precipitation
 
         flow1 = Flow.objects.create(
@@ -42,3 +42,19 @@ class TestModelCreation(TestCase):
 
         precip_query = Precipitation.objects.get_queryset()
         self.assertEqual(len(precip_query), 2)
+
+    def test_timescale_query(self):
+        from measurement.models import Flow
+
+        start_time, end_time = datetime(2015, 1, 1, tzinfo=pytz.UTC), datetime(
+            2016, 11, 10, tzinfo=pytz.UTC
+        )
+        query = Flow.timescale.filter(time__range=[start_time, end_time], station_id=1)
+        self.assertEqual(len(query), 2)
+
+        end_time = datetime(2016, 11, 9, 23, 55, tzinfo=pytz.UTC)
+        query = Flow.timescale.filter(time__range=[start_time, end_time], station_id=1)
+        self.assertEqual(len(query), 1)
+
+        query = Flow.timescale.filter(time__range=[start_time, end_time], station_id=2)
+        self.assertEqual(len(query), 0)
