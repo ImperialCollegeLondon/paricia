@@ -96,7 +96,7 @@ def preformat_matrix(source_file, file_format):
     First step for importing data. Works out what sort of file is being read and adds
     standardised columns for date and datetime (str). This is used in construc_matrix.
     Args:
-        source_file: path to (?) raw data file.
+        source_file: path to raw data file.
         file_format: formatting.Format object.
     Returns:
         Pandas.DataFrame with raw data read and extra column(s) for date and datetime
