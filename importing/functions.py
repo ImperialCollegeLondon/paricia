@@ -19,6 +19,7 @@ from numbers import Number
 
 import numpy as np
 import pandas as pd
+from django.apps import apps
 from django.db import connection, transaction
 
 from djangomain.settings import BASE_DIR
@@ -53,10 +54,16 @@ def validate_dates(data_import):
     overwrite = False
     result = []
     for classification in classifications:
-        var_id = str(classification.variable.variable_id)
+        var_code = str(classification.variable.variable_code)
         station_id = str(station.station_id)
-        last_upload_date = get_last_uploaded_date(station_id, var_id)
-        exists = data_exists_between_dates(start_date, end_date, station_id, var_id)
+        last_upload_date = get_last_uploaded_date(station_id, var_code)
+
+        # Check if data exists between dates
+        model = apps.get_model("measurement", var_code)
+        query = model.timescale.filter(
+            time__range=[start_date, end_date], station_id=station_id
+        )
+        exists = True if query else False
         overwrite = overwrite or exists
         summary = {
             "variable_id": classification.variable.var_id,
@@ -88,27 +95,6 @@ def get_last_uploaded_date(station_id, var_id):
     else:
         information = "Data does not exist"
     return information
-
-
-def data_exists_between_dates(start, end, station_id, var_id):
-    """
-    Checks whether there exists data for a given station and variable type between two
-    dates.
-        Returns: True if there exists data, else False.
-    TODO: This will need reworking once Medicion module is overhauled.
-    TODO: This can probably just be some logic directly in validate_dates.
-    """
-
-    sql = "SELECT id FROM measurement_var" + str(var_id) + "measurement "
-    sql += " WHERE date >= %s  AND date <= %s AND station_id = %s "
-    sql += " LIMIT 1;"
-    query = globals()["Var" + str(var_id) + "Measurement"].objects.raw(
-        sql, (start, end, station_id)
-    )
-    query = list(query)
-    if len(query) > 0:
-        return True
-    return False
 
 
 def preformat_matrix(source_file, file_format):
