@@ -48,13 +48,13 @@ class TestMatrixFunctions(TestCase):
         variables_data = construct_matrix(
             self.data_file, self.file_format, self.station
         )
-        self.assertEqual(list(variables_data.keys()), [10, 11])
+        self.assertEqual(list(variables_data.keys()), ["flow", "waterlevel"])
 
-        self.assertEqual(variables_data[10].value.min(), 0.0)
-        self.assertEqual(variables_data[10].value.max(), 1624.4041)
+        self.assertEqual(variables_data["flow"].value.min(), 0.0)
+        self.assertEqual(variables_data["flow"].value.max(), 1624.4041)
 
-        self.assertEqual(variables_data[11].value.min(), 0.0)
-        self.assertEqual(variables_data[11].value.max(), 96.54)
+        self.assertEqual(variables_data["waterlevel"].value.min(), 0.0)
+        self.assertEqual(variables_data["waterlevel"].value.max(), 96.54)
 
 
 class TestDateFunctions(TestCase):

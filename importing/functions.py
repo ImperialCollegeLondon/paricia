@@ -445,7 +445,7 @@ def construct_matrix(matrix_source, file_format, station):
                 data["value"] = data["value"] * float(classification.resolution)
         data["station_id"] = station.station_id
         # Add the data to the main dict
-        variables_data[classification.variable_id] = data
+        variables_data[classification.variable.variable_code] = data
 
     return variables_data
 
