@@ -1,0 +1,44 @@
+import pytz
+from django.test import TestCase
+
+
+class TestModelCreation(TestCase):
+    # TODO test creation from DataFrame
+    # TODO test performance of creation and reading
+    def setUp(self):
+        from datetime import datetime
+
+        from measurement.models import Flow, Precipitation
+
+        flow1 = Flow.objects.create(
+            station_id=1,
+            time=datetime(2015, 10, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            value=10.2,
+        )
+        flow2 = Flow.objects.create(
+            station_id=1,
+            time=datetime(2016, 11, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            value=5.7,
+        )
+        precip1 = Precipitation.objects.create(
+            station_id=2,
+            time=datetime(2017, 12, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            value=11.1,
+        )
+        precip2 = Precipitation.objects.create(
+            station_id=2,
+            time=datetime(2018, 1, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            value=0.3,
+        )
+
+    def test_flow(self):
+        from measurement.models import Flow
+
+        flow_query = Flow.objects.get_queryset()
+        self.assertEqual(len(flow_query), 2)
+
+    def test_precipitation(self):
+        from measurement.models import Precipitation
+
+        precip_query = Precipitation.objects.get_queryset()
+        self.assertEqual(len(precip_query), 2)
