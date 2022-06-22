@@ -57,6 +57,6 @@ class TestSaveImportModels(TestCase):
             file=sample_file,
         )
 
-        retrieved_dit = DataImportTemp.objects.get(data_import_id=1)
+        retrieved_dit = DataImportTemp.objects.get_queryset()[0]
         self.assertEqual(retrieved_dit.station, self.station)
         self.assertEqual(retrieved_dit.format, self.file_format)

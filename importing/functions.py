@@ -65,7 +65,7 @@ def validate_dates(data_import):
         exists = True if query else False
         overwrite = overwrite or exists
         summary = {
-            "variable_id": classification.variable.var_id,
+            "variable_id": classification.variable.variable_id,
             "variable_code": classification.variable.variable_code,
             "variable_name": classification.variable.name,
             "last_upload_date": last_upload_date,
