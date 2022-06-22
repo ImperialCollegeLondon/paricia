@@ -83,12 +83,13 @@ def get_last_uploaded_date(station_id, var_code):
     """
     print("last_date: " + str(time.ctime()))
     model = apps.get_model("measurement", var_code)
-    query = model.timescale.filter(station_id=station_id).order_by("time")
+    # The first entry will be the most recent
+    query = model.timescale.filter(station_id=station_id).order_by("-time")
     if query:
-        information = query[0].time
+        datetime = query[0].time
     else:
-        information = "Data does not exist"
-    return information
+        datetime = "Data does not exist"
+    return datetime
 
 
 def preformat_matrix(source_file, file_format):

@@ -58,3 +58,10 @@ class TestModelCreation(TestCase):
 
         query = Flow.timescale.filter(time__range=[start_time, end_time], station_id=2)
         self.assertEqual(len(query), 0)
+
+    def test_query_ordering(self):
+        from measurement.models import Precipitation
+
+        query = Precipitation.timescale.filter(station_id=2).order_by("-time")
+        self.assertEqual(query[0].time.year, 2018)
+        self.assertEqual(query[1].time.year, 2017)
