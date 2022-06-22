@@ -261,9 +261,12 @@ def save_temp_data_to_permanent(imp_id, form):
     file_path = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
 
     all_data = construct_matrix(file_path, file_format, station)
-    for var_id, table in all_data.items():
+    for var_code, table in all_data.items():
         table = table.where((pd.notnull(table)), None)
         data = list(table.itertuples(index=False, name=None))
+        # TODO: Here we want to be careful about how we override the data.
+        # Not 100% clear what the SQL is doing in terms of chosing which dates
+        # to override.
         sql = """
 WITH
 data AS (
