@@ -291,7 +291,7 @@ class WaterTurbidityDepth(
         ]
 
 
-class ClorineConcentrationDepth(
+class ChlorineConcentrationDepth(
     create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""

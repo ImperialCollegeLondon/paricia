@@ -263,7 +263,7 @@
     "diff_warning": "100.00",
     "diff_error": "100.00",
     "outlier_limit": "3.00",
-    "is_active": true,
+    "is_active": false,
     "is_cumulative": true,
     "automatic_report": false,
     "null_limit": null
