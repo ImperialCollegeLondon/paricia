@@ -1,9 +1,11 @@
+from datetime import datetime
 from pathlib import Path
 
+import pytz
 from django.test import TestCase
 
 
-class TestUploadDataFunctions(TestCase):
+class TestMatrixFunctions(TestCase):
     fixtures = [
         "variable_unit",
         "variable_variable",
@@ -53,3 +55,24 @@ class TestUploadDataFunctions(TestCase):
 
         self.assertEqual(variables_data[11].value.min(), 0.0)
         self.assertEqual(variables_data[11].value.max(), 96.54)
+
+
+class TestDateFunctions(TestCase):
+    def setUp(self):
+        from measurement.models import Flow
+
+        flow1 = Flow.objects.create(
+            station_id=1,
+            time=datetime(2015, 10, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            value=10.2,
+        )
+        flow2 = Flow.objects.create(
+            station_id=1,
+            time=datetime(2016, 11, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            value=5.7,
+        )
+
+    def test_get_last_uploaded_date(self):
+        from importing.functions import get_last_uploaded_date
+
+        self.assertEqual(get_last_uploaded_date(1, "flow").year, 2016)

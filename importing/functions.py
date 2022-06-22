@@ -55,13 +55,12 @@ def validate_dates(data_import):
     result = []
     for classification in classifications:
         var_code = str(classification.variable.variable_code)
-        station_id = str(station.station_id)
-        last_upload_date = get_last_uploaded_date(station_id, var_code)
+        last_upload_date = get_last_uploaded_date(station.station_id, var_code)
 
         # Check if data exists between dates
         model = apps.get_model("measurement", var_code)
         query = model.timescale.filter(
-            time__range=[start_date, end_date], station_id=station_id
+            time__range=[start_date, end_date], station_id=station.station_id
         )
         exists = True if query else False
         overwrite = overwrite or exists
@@ -81,7 +80,7 @@ def get_last_uploaded_date(station_id, var_code):
     Retrieves the last date that data was uploaded for a given station ID and variable
     code. Variable code will be the name of some measurement table.
     """
-    print("last_date: " + str(time.ctime()))
+    print("current_time: " + str(time.ctime()))
     model = apps.get_model("measurement", var_code)
     # The first entry will be the most recent
     query = model.timescale.filter(station_id=station_id).order_by("-time")
