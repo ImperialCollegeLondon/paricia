@@ -255,6 +255,96 @@
   "model": "variable.variable",
   "pk": 15,
   "fields": {
+    "variable_code": "dvr",
+    "name": "Direcci\u00f3n de viento r\u00e1faga",
+    "unit": 2,
+    "maximum": "360.00",
+    "minimum": "0.00",
+    "diff_warning": "100.00",
+    "diff_error": "100.00",
+    "outlier_limit": "3.00",
+    "is_active": true,
+    "is_cumulative": true,
+    "automatic_report": false,
+    "null_limit": null
+  }
+},
+{
+  "model": "variable.variable",
+  "pk": 16,
+  "fields": {
+    "variable_code": "rvi",
+    "name": "Recorrido de viento",
+    "unit": 10,
+    "maximum": "17.00",
+    "minimum": "0.00",
+    "diff_warning": "100.00",
+    "diff_error": "100.00",
+    "outlier_limit": "3.00",
+    "is_active": true,
+    "is_cumulative": false,
+    "automatic_report": false,
+    "null_limit": null
+  }
+},
+{
+  "model": "variable.variable",
+  "pk": 17,
+  "fields": {
+    "variable_code": "gustdir",
+    "name": "GustDir",
+    "unit": 1,
+    "maximum": "1.00",
+    "minimum": "0.00",
+    "diff_warning": "100.00",
+    "diff_error": "100.00",
+    "outlier_limit": "3.00",
+    "is_active": false,
+    "is_cumulative": false,
+    "automatic_report": false,
+    "null_limit": null
+  }
+},
+{
+  "model": "variable.variable",
+  "pk": 18,
+  "fields": {
+    "variable_code": "gusth",
+    "name": "GustH",
+    "unit": 1,
+    "maximum": "1.00",
+    "minimum": "0.00",
+    "diff_warning": "100.00",
+    "diff_error": "100.00",
+    "outlier_limit": "3.00",
+    "is_active": false,
+    "is_cumulative": false,
+    "automatic_report": false,
+    "null_limit": null
+  }
+},
+{
+  "model": "variable.variable",
+  "pk": 19,
+  "fields": {
+    "variable_code": "gustm",
+    "name": "GustM",
+    "unit": 1,
+    "maximum": "1.00",
+    "minimum": "0.00",
+    "diff_warning": "100.00",
+    "diff_error": "100.00",
+    "outlier_limit": "3.00",
+    "is_active": false,
+    "is_cumulative": false,
+    "automatic_report": false,
+    "null_limit": null
+  }
+},
+{
+  "model": "variable.variable",
+  "pk": 20,
+  "fields": {
     "variable_code": "soiltemperature",
     "name": "Temperatura de suelo",
     "unit": 8,
@@ -271,7 +361,7 @@
 },
 {
   "model": "variable.variable",
-  "pk": 16,
+  "pk": 21,
   "fields": {
     "variable_code": "indirectradiation",
     "name": "Radiacion indirecta",
@@ -285,6 +375,24 @@
     "is_cumulative": false,
     "automatic_report": false,
     "null_limit": "30.0"
+  }
+},
+{
+  "model": "variable.variable",
+  "pk": 22,
+  "fields": {
+    "variable_code": "radsum",
+    "name": "Radiacion solar suma",
+    "unit": 13,
+    "maximum": "6000.00",
+    "minimum": "0.00",
+    "diff_warning": "35000.00",
+    "diff_error": "40000.00",
+    "outlier_limit": "3.00",
+    "is_active": true,
+    "is_cumulative": true,
+    "automatic_report": false,
+    "null_limit": null
   }
 },
 {

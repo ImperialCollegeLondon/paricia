@@ -18,5 +18,5 @@ class TestInitialData(TestCase):
 
         self.assertEqual(len(Variable.objects.get_queryset()), 30)
         variable = Variable.objects.get(name="Temperatura ambiente")
-        self.assertEqual(variable.variable_code, "tai")
+        self.assertEqual(variable.variable_code, "airtemperature")
         self.assertEqual(variable.unit.name, "Grados Cent\u00edgrados")
