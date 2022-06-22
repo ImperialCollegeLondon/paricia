@@ -24,7 +24,7 @@ from django.db import connection, transaction
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
 from importing.models import DataImportFull, DataImportTemp
-from measurement.models import Var14Measurement, WaterLevel
+from measurement.models import StripLevelReading, WaterLevel
 from variable.models import Variable
 
 unix_epoch = np.datetime64(0, "s")
@@ -534,7 +534,7 @@ def insert_level_rule(data_import, level_rule):
     # TODO: Fix bare except
     except:
         return False
-    Var14Measurement(
+    StripLevelReading(
         station_id=data_import.station_id_id,
         data_import_date=data_import.date,
         data_start_date=data_import.start_date,

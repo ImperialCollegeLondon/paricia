@@ -62,7 +62,7 @@ class Variable(models.Model):
     """
 
     variable_id = models.AutoField("Id", primary_key=True)
-    variable_code = models.CharField("Code", max_length=7)
+    variable_code = models.CharField("Code", max_length=100)
     name = models.CharField("Name", max_length=50)
     unit = models.ForeignKey(
         Unit, models.SET_NULL, blank=True, null=True, verbose_name="Unit"
