@@ -76,22 +76,16 @@ def validate_dates(data_import):
     return result, overwrite
 
 
-def get_last_uploaded_date(station_id, var_id):
+def get_last_uploaded_date(station_id, var_code):
     """
     Retrieves the last date that data was uploaded for a given station ID and variable
-    ID.
-    TODO: this will likely need a lot of reworking once the Medicion module is
-        overhauled.
+    code. Variable code will be the name of some measurement table.
     """
     print("last_date: " + str(time.ctime()))
-    sql = "SELECT  date FROM measurement_var" + str(int(var_id)) + "measurement "
-    sql += " WHERE station_id=" + str(int(station_id))
-    sql += " ORDER BY date DESC LIMIT 1"
-    with connection.cursor() as cursor:
-        cursor.execute(sql)
-        query = cursor.fetchone()
+    model = apps.get_model("measurement", var_code)
+    query = model.timescale.filter(station_id=station_id).order_by("time")
     if query:
-        information = query[0]
+        information = query[0].time
     else:
         information = "Data does not exist"
     return information
