@@ -14,13 +14,13 @@
 import os
 import shutil
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from numbers import Number
 
 import numpy as np
 import pandas as pd
 from django.apps import apps
-from django.db import connection, transaction
+from django.db import transaction
 
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
