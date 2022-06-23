@@ -94,10 +94,10 @@ def get_last_uploaded_date(station_id, var_code):
 def preformat_matrix(source_file, file_format):
     """
     First step for importing data. Works out what sort of file is being read and adds
-    standardised columns for date and datetime (str). This is used in construc_matrix.
+    standardised columns for date and datetime (str). This is used in construct_matrix.
     Args:
         source_file: path to raw data file.
-        file_format: formatting.Format object.
+        file_format: formatting.models.Format object.
     Returns:
         Pandas.DataFrame with raw data read and extra column(s) for date and datetime
         (Str), which should be parsed correctly here.
@@ -204,11 +204,6 @@ def preformat_matrix(source_file, file_format):
 
     file = file.sort_values("date")
     file = file.reset_index(drop=True)
-
-    # Conversion in case of UTC date file_format
-    if file_format.utc_date:
-        file["date"] = file["date"] - timedelta(hours=5)
-    return file
 
 
 def standardise_datetime(date_time, datetime_format):
