@@ -249,11 +249,6 @@ def standardise_datetime(date_time, datetime_format):
 def save_temp_data_to_permanent(imp_id, form):
     """
     Function to pass the temporary import to the final table.
-    NOTE: Uses a lot of pure sql to insert the data, overwriting if it already exists.
-        This could probably be rewritten in python and won't work after medicion has
-        been overhauled anyway.
-    TODO: Overall, this is an important function for importing but can probably be
-        seriously simplified.
     """
     data_import_temp = DataImportTemp.objects.get(data_import_id=imp_id)
     file_format = data_import_temp.format
@@ -263,46 +258,26 @@ def save_temp_data_to_permanent(imp_id, form):
     all_data = construct_matrix(file_path, file_format, station)
     for var_code, table in all_data.items():
         table = table.where((pd.notnull(table)), None)
-        data = list(table.itertuples(index=False, name=None))
-        # TODO: Here we want to be careful about how we override the data.
-        # Not 100% clear what the SQL is doing in terms of chosing which dates
-        # to override.
-        sql = """
-WITH
-data AS (
-    SELECT DISTINCT u.date, u.value, u.station_id
-    FROM unnest(%s::date__value__station_id[]) u
-    ORDER BY u.date ASC
-),
-delete AS (
-    DELETE FROM measurement_var1measurement
-    WHERE station_id = (SELECT d.station_id FROM data d LIMIT 1)
-    AND date >= (SELECT d.date FROM data d ORDER BY d.date ASC LIMIT 1)
-    AND date <= (SELECT d.date FROM data d ORDER BY d.date DESC LIMIT 1)
-    returning *
-)
-INSERT INTO measurement_var1measurement(date, value, station_id)
-SELECT d.date, d.value, d.station_id
-FROM data d
-;
-"""
-        sql = sql.replace("var1", "var" + str(var_id))
-        sql = sql.replace(
-            "u.date, u.value, u.station_id", "u." + ", u.".join(table.columns)
-        )
-        sql = sql.replace("date__value__station_id", "__".join(table.columns))
-        sql = sql.replace("date, value, station_id", ", ".join(table.columns))
-        sql = sql.replace(
-            "d.date, d.value, d.station_id", "d." + ", d.".join(table.columns)
-        )
+        records = table.to_dict("records")
+        Model = apps.get_model("measurement", var_code)
 
-        with connection.cursor() as cursor:
-            cursor.execute(
-                sql,
-                [
-                    data,
-                ],  # NOQA
+        # Delete existing data between the date ranges
+        Model.timescale.filter(
+            time__range=[data_import_temp.start_date, data_import_temp.end_date],
+            station_id=station.station_id,
+        ).delete()
+        # Bulk add new data
+        model_instances = [
+            Model(
+                time=record["date"],
+                value=record["value"],
+                station_id=record["station_id"],
             )
+            for record in records
+        ]
+        Model.objects.bulk_create(model_instances)
+        # TODO: Deal with those tables which have max and min columns. Can be
+        # determined based on whether they're cumulative or not? (see construct_matrix)
 
     final_file_path = str(data_import_temp.file).replace("files/tmp/", "files/")
     final_file_path_full = str(BASE_DIR) + "/media/" + final_file_path
@@ -333,7 +308,7 @@ def construct_matrix(matrix_source, file_format, station):
     transformations depending on the date format, type of data (accumulated,
     incremental...) and deals with NANs.
     Args:
-        matrix_source: raw data file (file path?)
+        matrix_source: raw data file path
         file_format: a formatting.Format object.
     Returns: Dict of dataframes for results (one for each variable type in the raw data
         file).
