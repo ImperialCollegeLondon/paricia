@@ -273,18 +273,29 @@ def save_temp_data_to_permanent(data_import_id):
             time__range=[data_import_temp.start_date, data_import_temp.end_date],
             station_id=station.station_id,
         ).delete()
+
         # Bulk add new data
-        model_instances = [
-            Model(
-                time=record["date"],
-                value=record["value"],
-                station_id=record["station_id"],
-            )
-            for record in records
-        ]
+        if "maximum" in [f.name for f in Model._meta.fields]:
+            model_instances = [
+                Model(
+                    time=record["date"],
+                    value=record["value"],
+                    station_id=record["station_id"],
+                    maximum=record["maximum"],
+                    minimum=record["minimum"],
+                )
+                for record in records
+            ]
+        else:
+            model_instances = [
+                Model(
+                    time=record["date"],
+                    value=record["value"],
+                    station_id=record["station_id"],
+                )
+                for record in records
+            ]
         Model.objects.bulk_create(model_instances)
-        # TODO: Deal with those tables which have max and min columns. Can be
-        # determined based on whether they're cumulative or not? (see construct_matrix)
 
     final_file_path = str(data_import_temp.file).replace("files/tmp/", "files/")
     final_file_path_full = str(BASE_DIR) + "/media/" + final_file_path
