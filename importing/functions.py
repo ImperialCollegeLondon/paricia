@@ -203,7 +203,7 @@ def preformat_matrix(source_file, file_format):
         )
 
     file = file.sort_values("date")
-    file = file.reset_index(drop=True)
+    return file.reset_index(drop=True)
 
 
 def standardise_datetime(date_time, datetime_format):
@@ -241,11 +241,23 @@ def standardise_datetime(date_time, datetime_format):
     return _date_time
 
 
-def save_temp_data_to_permanent(imp_id, form):
+def save_temp_data_to_permanent(data_import_id):
     """
-    Function to pass the temporary import to the final table.
+    Function to pass the temporary import to the final table. Uses the data_import_id
+    only to get all required information, which are fields of the DataImportTemp object.
+    This function carries out the following steps:
+    1.  Bulk delete of existing data between two times on a given measurement table for
+    the station in question.
+    2.  Bulk create to add the new data from the uploaded file.
+    3.  Copy the uploaded file to the temp to permanent directory.
+    4.  Create a new DataImportFull entry.
+    5.  Delete the DataImportTemp entry.
+    6.  Delete the file from the temporary directory.
+    Steps 1. and 2. are carried out for each columns (variable) in the uploaded file.
+    Args: data_import_id (int): DataImportTemp ID
+    Returns: data_import_id (int): DataImportFull ID
     """
-    data_import_temp = DataImportTemp.objects.get(data_import_id=imp_id)
+    data_import_temp = DataImportTemp.objects.get(data_import_id=data_import_id)
     file_format = data_import_temp.format
     station = data_import_temp.station
     file_path = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
