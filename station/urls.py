@@ -17,6 +17,7 @@ from . import views
 
 app_name = "station"
 urlpatterns = [
+    path("countries/", views.CountryList.as_view()),
     re_path(r"^station/$", views.StationList.as_view(), name="station_index"),
     re_path(r"^station/create/$", views.StationCreate.as_view(), name="station_create"),
     re_path(
@@ -37,26 +38,6 @@ urlpatterns = [
     re_path(r"^station/export/$", views.StationExport, name="station_export"),
     re_path(r"^ajax/station_query", views.station_query, name="station_query"),
     re_path(r"^station/country/$", views.CountryList.as_view(), name="country_index"),
-    re_path(
-        r"^station/country/create/$",
-        views.CountryCreate.as_view(),
-        name="country_create",
-    ),
-    re_path(
-        r"^station/country/detail/(?P<pk>[0-9]+)/$",
-        views.CountryDetail.as_view(),
-        name="country_detail",
-    ),
-    re_path(
-        r"^station/country/(?P<pk>[0-9]+)/$",
-        views.CountryUpdate.as_view(),
-        name="country_update",
-    ),
-    re_path(
-        r"^station/country/(?P<pk>[0-9]+)/delete/$",
-        views.CountryDelete.as_view(),
-        name="country_delete",
-    ),
     re_path(r"^station/region/$", views.RegionList.as_view(), name="region_index"),
     re_path(
         r"^station/region/create/$", views.RegionCreate.as_view(), name="region_create"

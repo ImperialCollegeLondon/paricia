@@ -22,59 +22,17 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from rest_framework import generics
 
 import station.models as stn
+import station.serializers as serializers
 from station.functions import excel_station
 from utilities.functions import modelo_a_tabla_html
 
 
-# ####################################################################################
-class CountryList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/country_list.html"
-    permission_required = "station.view_country"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = [
-            "id",
-            "name",
-        ]
-        model = stn.Country.objects.values_list(*fields)
-        context["countries"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
-
-
-class CountryCreate(PermissionRequiredMixin, CreateView):
-    model = stn.Country
-    permission_required = "station.add_country"
-    fields = ["name"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class CountryDetail(PermissionRequiredMixin, DetailView):
-    model = stn.Country
-    permission_required = "station.view_country"
-
-
-class CountryUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.Country
-    permission_required = "station.change_country"
-    fields = ["name"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class CountryDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.Country
-    permission_required = "station.delete_country"
-    success_url = reverse_lazy("station:country_index")
+class CountryList(generics.ListCreateAPIView):
+    queryset = stn.Country.objects.all()
+    serializer_class = serializers.CountrySerializer
 
 
 # ####################################################################################
