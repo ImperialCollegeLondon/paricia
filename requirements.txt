@@ -8,6 +8,7 @@ django-bootstrap4==1.1.1
 django-excel-response==2.0.5
 django-extensions==2.2.9
 django-timescaledb
+djangorestframework
 et-xmlfile==1.0.1
 idna==2.10
 jdcal==1.4.1
