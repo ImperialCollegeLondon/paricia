@@ -61,6 +61,18 @@ class DataImportTempCreate(generics.CreateAPIView):
         serializer.save()
 
 
+class DataImportTempDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DataImportTemp.objects.all()
+    serializer_class = DataImportTempSerializer
+
+    # TODO: will this still work with the DRF?
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        information, self.existing_data = validate_dates(self.object)
+        context["information"] = information
+        return context
+
+
 class DataImportFullList(generics.ListAPIView):
     queryset = DataImportFull.objects.all()
     serializer_class = DataImportFullSerializer
@@ -70,6 +82,9 @@ class DataImportFullCreate(generics.CreateAPIView):
     serializer_class = DataImportFullSerializer
     # TODO adjust so that file is selected based on the id of the
     # DataImportTemp object
+    # Refactor save_temp_data_to_permanent to run when a DataImportFull
+    # is saved. Then run in this view.
+    serializer_class = DataImportTempSerializer
 
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -82,6 +97,9 @@ class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
         information, self.existing_data = validate_dates(self.object)
         context["information"] = information
         return context
+
+
+########################################################################
 
 
 @permission_required("importing.download_original_file")
@@ -129,7 +147,7 @@ def DataImportDownload(request, *args, **kwargs):
         return response
 
 
-class DataImportTempDetail(PermissionRequiredMixin, DetailView, FormView):
+class DataImportTempDetailOld(PermissionRequiredMixin, DetailView, FormView):
     """
     This view acts as the detail view of the DataImportTemp objects and creates
     a new DataImportFull object. It also directly enters the measurement data into

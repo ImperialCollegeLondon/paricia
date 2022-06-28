@@ -51,26 +51,6 @@ class DataImportBase(models.Model):
         abstract = True
 
 
-class DataImportFull(DataImportBase):
-    """
-    Used for importing data permanently (fully) to the database.
-    """
-
-    file = models.FileField("File", upload_to="files/", blank=True, null=True)
-
-    def get_absolute_url(self):
-        return reverse("importing:data_import_detail", kwargs={"pk": self.pk})
-
-    class Meta:
-        ordering = ("-date",)
-        permissions = [
-            (
-                "download_original_file",
-                "Download the original file that was uploaded to the system.",
-            ),
-        ]
-
-
 class DataImportTemp(DataImportBase):
     """
     Used for importing data temporarily before full import to the database.
@@ -83,3 +63,26 @@ class DataImportTemp(DataImportBase):
 
     class Meta:
         default_permissions = ()
+
+
+class DataImportFull(DataImportBase):
+    """
+    Used for importing data permanently (fully) to the database.
+    """
+
+    file = models.FileField("File", upload_to="files/", blank=True, null=True)
+    import_temp = models.ForeignKey(
+        DataImportTemp, on_delete=models.CASCADE, null=True, blank=True
+    )
+
+    def get_absolute_url(self):
+        return reverse("importing:data_import_detail", kwargs={"pk": self.pk})
+
+    class Meta:
+        ordering = ("-date",)
+        permissions = [
+            (
+                "download_original_file",
+                "Download the original file that was uploaded to the system.",
+            ),
+        ]

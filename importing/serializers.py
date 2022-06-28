@@ -7,6 +7,9 @@ class DataImportFullSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source="user.username")
     start_date = serializers.ReadOnlyField()
     end_date = serializers.ReadOnlyField()
+    station = serializers.ReadOnlyField()
+    format = serializers.ReadOnlyField()
+    observations = serializers.ReadOnlyField()
 
     class Meta:
         model = DataImportFull
@@ -20,6 +23,7 @@ class DataImportFullSerializer(serializers.ModelSerializer):
             "observations",
             "file",
             "user",
+            "import_temp",
         ]
 
 
