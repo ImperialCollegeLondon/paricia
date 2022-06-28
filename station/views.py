@@ -35,455 +35,94 @@ class CountryList(generics.ListCreateAPIView):
     serializer_class = serializers.CountrySerializer
 
 
-# ####################################################################################
-class RegionList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/region_list.html"
-    permission_required = "station.view_region"
+class CountryDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.Country.objects.all()
+    serializer_class = serializers.CountrySerializer
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = ["id", "name", "country_id__name"]
-        model = stn.Region.objects.values_list(*fields)
-        context["regions"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
 
+class RegionList(generics.ListCreateAPIView):
+    queryset = stn.Region.objects.all()
+    serializer_class = serializers.RegionSerializer
 
-class RegionCreate(PermissionRequiredMixin, CreateView):
-    model = stn.Region
-    permission_required = "station.add_region"
-    fields = ["name", "country"]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
+class RegionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.Region.objects.all()
+    serializer_class = serializers.RegionSerializer
 
 
-class RegionDetail(PermissionRequiredMixin, DetailView):
-    model = stn.Region
-    permission_required = "station.view_region"
+class EcosystemList(generics.ListCreateAPIView):
+    queryset = stn.Ecosystem.objects.all()
+    serializer_class = serializers.EcosystemSerializer
 
 
-class RegionUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.Region
-    permission_required = "station.change_region"
-    fields = ["name", "country"]
+class EcosystemDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.Ecosystem.objects.all()
+    serializer_class = serializers.EcosystemSerializer
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
 
+class InstitutionList(generics.ListCreateAPIView):
+    queryset = stn.Institution.objects.all()
+    serializer_class = serializers.InstitutionSerializer
 
-class RegionDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.Region
-    permission_required = "station.delete_region"
-    success_url = reverse_lazy("station:region_index")
 
+class InstitutionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.Institution.objects.all()
+    serializer_class = serializers.InstitutionSerializer
 
-# ####################################################################################
-class EcosystemList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/ecosystem_list.html"
-    permission_required = "station.view_ecosystem"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = [
-            "id",
-            "name",
-        ]
-        model = stn.Ecosystem.objects.values_list(*fields)
-        context["ecosystems"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
+class StationTypeList(generics.ListCreateAPIView):
+    queryset = stn.StationType.objects.all()
+    serializer_class = serializers.StationTypeSerializer
 
 
-class EcosystemCreate(PermissionRequiredMixin, CreateView):
-    model = stn.Ecosystem
-    permission_required = "station.add_ecosystem"
-    fields = ["name"]
+class StationTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.StationType.objects.all()
+    serializer_class = serializers.StationTypeSerializer
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
 
+class PlaceList(generics.ListCreateAPIView):
+    queryset = stn.Place.objects.all()
+    serializer_class = serializers.PlaceSerializer
 
-class EcosystemDetail(PermissionRequiredMixin, DetailView):
-    model = stn.Ecosystem
-    permission_required = "station.view_ecosystem"
 
+class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.Place.objects.all()
+    serializer_class = serializers.PlaceSerializer
 
-class EcosystemUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.Ecosystem
-    permission_required = "station.change_ecosystem"
-    fields = ["name"]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
+class BasinList(generics.ListCreateAPIView):
+    queryset = stn.Basin.objects.all()
+    serializer_class = serializers.BasinSerializer
 
 
-class EcosystemDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.Ecosystem
-    permission_required = "station.delete_ecosystem"
-    success_url = reverse_lazy("station:ecosystem_index")
+class BasinDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.Basin.objects.all()
+    serializer_class = serializers.BasinSerializer
 
 
-# ####################################################################################
-class InstitutionList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/institution_list.html"
-    permission_required = "station.view_institution"
+class PlaceBasinList(generics.ListCreateAPIView):
+    queryset = stn.PlaceBasin.objects.all()
+    serializer_class = serializers.PlaceBasinSerializer
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = ["id", "name"]
-        model = stn.Institution.objects.values_list(*fields)
-        context["institutions"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
 
+class PlaceBasinDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.PlaceBasin.objects.all()
+    serializer_class = serializers.PlaceBasinSerializer
 
-class InstitutionCreate(PermissionRequiredMixin, CreateView):
-    model = stn.Institution
-    permission_required = "station.add_institution"
-    fields = ["name"]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
+class StationList(generics.ListCreateAPIView):
+    queryset = stn.Station.objects.all()
+    serializer_class = serializers.StationSerializer
 
 
-class InstitutionDetail(PermissionRequiredMixin, DetailView):
-    model = stn.Institution
-    permission_required = "station.view_institution"
-
-
-class InstitutionUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.Institution
-    permission_required = "station.change_institution"
-    fields = ["name"]
+class StationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = stn.Station.objects.all()
+    serializer_class = serializers.StationSerializer
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class InstitutionDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.Institution
-    permission_required = "station.delete_institution"
-    success_url = reverse_lazy("station:institution_index")
-
-
-# ####################################################################################
-
-
-class StationTypeList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/station_type_list.html"
-    permission_required = "station.view_stationtype"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = [
-            "id",
-            "name",
-        ]
-        model = stn.StationType.objects.values_list(*fields)
-        context["station_types"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
-
-
-class StationTypeCreate(PermissionRequiredMixin, CreateView):
-    model = stn.StationType
-    permission_required = "station.add_stationtype"
-    fields = ["name"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class StationTypeDetail(PermissionRequiredMixin, DetailView):
-    model = stn.StationType
-    permission_required = "station.view_stationtype"
-
-
-class StationTypeUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.StationType
-    permission_required = "station.change_stationtype"
-    fields = ["name"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class StationTypeDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.StationType
-    permission_required = "station.delete_stationtype"
-    success_url = reverse_lazy("station:station_type_index")
-
-
-# ####################################################################################
-
-
-class StationList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/station_list.html"
-    permission_required = "station.view_station"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = [
-            "station_id",
-            "station_code",
-            "station_name",
-            "stationtype_id__name",
-            "country_id__name",
-            "region_id__name",
-            "placebasin_id__place__name",
-            "placebasin_id__basin__name",
-            "ecosystem_id__name",
-            "institution_id__name",
-            "station_state",
-            "station_latitude",
-            "station_longitude",
-            "station_altitude",
-            "station_file",
-            "station_external",
-            "influence_km",
-        ]
-        model = stn.Station.objects.values_list(*fields)
-        context["stations"] = modelo_a_tabla_html(model, col_extra=True)
-        context["station_types"] = stn.StationType.objects.all()
-        return context
-
-
-class StationCreate(PermissionRequiredMixin, CreateView):
-    model = stn.Station
-    permission_required = "station.add_station"
-    fields = [
-        "station_code",
-        "station_name",
-        "stationtype",
-        "country",
-        "region",
-        "ecosystem",
-        "institution",
-        "placebasin",
-        "station_state",
-        "station_latitude",
-        "station_longitude",
-        "station_altitude",
-        "station_file",
-        "station_external",
-        "influence_km",
-    ]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class StationDetail(PermissionRequiredMixin, DetailView):
-    model = stn.Station
-    permission_required = "station.view_station"
-
-
-class StationUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.Station
-    permission_required = "station.change_station"
-    fields = [
-        "station_code",
-        "station_name",
-        "stationtype",
-        "country",
-        "region",
-        "ecosystem",
-        "institution",
-        "placebasin",
-        "station_state",
-        "station_latitude",
-        "station_longitude",
-        "station_altitude",
-        "station_file",
-        "station_external",
-        "influence_km",
-    ]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class StationDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.Station
-    permission_required = "station.delete_station"
-    success_url = reverse_lazy("station:station_index")
-
-
-@permission_required("station.view_station")
-def StationExport(request):
-    stations = stn.Station.objects.all()
-    response = excel_station(stations)
-    return response
-
-
-# ####################################################################################
-
-
-class PlaceList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/place_list.html"
-    permission_required = "station.view_place"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = [
-            "id",
-            "name",
-        ]
-        model = stn.Place.objects.values_list(*fields)
-        context["places"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
-
+############################################################################
 
-class PlaceCreate(PermissionRequiredMixin, CreateView):
-    model = stn.Place
-    permission_required = "station.add_place"
-    fields = ["name", "image"]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class PlaceDetail(PermissionRequiredMixin, DetailView):
-    model = stn.Place
-    permission_required = "station.view_place"
-
-
-class PlaceUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.Place
-    permission_required = "station.change_place"
-    fields = ["name", "image"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class PlaceDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.Place
-    permission_required = "station.delete_place"
-    success_url = reverse_lazy("station:place_index")
-
-
-# ####################################################################################
-
-
-class BasinList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/basin_list.html"
-    permission_required = "station.view_basin"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        _modelo = stn.Basin.objects.annotate(
-            file_filename=Replace("file", Value(stn.BASIN_FILE_PATH), Value(""))
-        )
-        fields = ["id", "name", "file_filename"]
-        model = _modelo.values_list(*fields)
-        context["basins"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
-
-
-class BasinCreate(PermissionRequiredMixin, CreateView):
-    model = stn.Basin
-    permission_required = "station.add_basin"
-    fields = ["name", "image", "file"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class BasinDetail(PermissionRequiredMixin, DetailView):
-    model = stn.Basin
-    permission_required = "station.view_basin"
-
-
-class BasinUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.Basin
-    permission_required = "station.change_basin"
-    fields = ["name", "image", "file"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class BasinDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.Basin
-    permission_required = "station.delete_basin"
-    success_url = reverse_lazy("station:basin_index")
-
-
-# ####################################################################################
-
-
-class PlaceBasinList(PermissionRequiredMixin, TemplateView):
-    template_name = "station/placebasin_list.html"
-    permission_required = "station.view_placebasin"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = ["id", "place_id__name", "basin_id__name"]
-        model = stn.PlaceBasin.objects.values_list(*fields)
-        context["place_basin"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
-
-
-class PlaceBasinCreate(PermissionRequiredMixin, CreateView):
-    model = stn.PlaceBasin
-    permission_required = "station.add_placebasin"
-    fields = ["place", "basin", "image"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class PlaceBasinDetail(PermissionRequiredMixin, DetailView):
-    model = stn.PlaceBasin
-    permission_required = "station.view_placebasin"
-
-
-class PlaceBasinUpdate(PermissionRequiredMixin, UpdateView):
-    model = stn.PlaceBasin
-    permission_required = "station.change_placebasin"
-    fields = ["place", "basin", "image"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class PlaceBasinDelete(PermissionRequiredMixin, DeleteView):
-    model = stn.PlaceBasin
-    permission_required = "station.delete_placebasin"
-    success_url = reverse_lazy("station:placebasin_index")
-
-
-#############################
 @permission_required("station.view_station")
 def station_query(request):
     """
