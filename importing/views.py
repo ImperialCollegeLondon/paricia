@@ -26,6 +26,7 @@ from django.shortcuts import render
 from django.views.generic import FormView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
+from rest_framework import generics
 
 from importing.forms import DataImportForm
 from importing.functions import (
@@ -36,43 +37,46 @@ from importing.functions import (
     validate_dates,
 )
 from importing.models import DataImportFull, DataImportTemp
-from utilities.functions import modelo_a_tabla_html
+
+from .serializers import DataImportFullSerializer, DataImportTempSerializer
 
 
-class DataImportFullList(PermissionRequiredMixin, TemplateView):
-    template_name = "importing/importing_list.html"
-    permission_required = "importing.view_dataimportfull"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = [
-            "data_import_id",
-            "station__station_code",
-            "format__name",
-            "date",
-            "start_date",
-            "end_date",
-            "file",
-            "observations",
-            "user__username",
-        ]
-        data_import = DataImportFull.objects.all().values_list(*fields)
-        context["data_import"] = modelo_a_tabla_html(data_import, col_extra=True)
-        return context
+class DataImportFullList(generics.ListAPIView):
+    queryset = DataImportFull.objects.all()
+    serializer_class = DataImportFullSerializer
 
 
-class DataImportFullDetail(PermissionRequiredMixin, DetailView):
-    permission_required = "importing.view_dataimportfull"
-    model = DataImportFull
-    template_name = "importing/importing_detail.html"
-    # existing_data = True if there exists data already for these dates.
-    existing_data = False
+class DataImportFullCreate(generics.CreateAPIView):
+    serializer_class = DataImportFullSerializer
+    # TODO adjust so that file is selected based on the id of the
+    # DataImportTemp object
 
+
+class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DataImportFull.objects.all()
+    serializer_class = DataImportFullSerializer
+
+    # TODO: will this still work with the DRF?
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         information, self.existing_data = validate_dates(self.object)
         context["information"] = information
         return context
+
+
+class DataImportTempCreate(generics.CreateAPIView):
+    serializer_class = DataImportTempSerializer
+
+    def perform_create(self, serializer):
+        file = copy.deepcopy(self.request.FILES["file"])
+        matrix = preformat_matrix(file, serializer.validated_data["format"])
+        del file
+        # Set start and end date based on cleaned data from the file
+        serializer.validated_data["start_date"] = matrix.loc[0, "date"]
+        serializer.validated_data["end_date"] = matrix.loc[matrix.shape[0] - 1, "date"]
+        # Set user from the request
+        serializer.validated_data["user"] = self.request.user
+        serializer.save()
 
 
 @permission_required("importing.download_original_file")
@@ -118,29 +122,6 @@ def DataImportDownload(request, *args, **kwargs):
             )
         response["Content-Disposition"] = "attachment; " + filename_header
         return response
-
-
-class DataImportTempCreate(PermissionRequiredMixin, CreateView):
-    permission_required = "importing.add_dataimportfull"
-    model = DataImportTemp
-    fields = ["station", "format", "file"]
-    template_name = "importing/importing_form.html"
-
-    def form_valid(self, form):
-        file = copy.deepcopy(self.request.FILES["file"])
-        matrix = preformat_matrix(file, form.cleaned_data["format"])
-        del file
-        # Set start and end date based on cleaned data from the file
-        form.instance.start_date = matrix.loc[0, "date"]
-        form.instance.end_date = matrix.loc[matrix.shape[0] - 1, "date"]
-        # Set user from the request
-        form.instance.user = self.request.user
-        return super(DataImportTempCreate, self).form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super(DataImportTempCreate, self).get_context_data(**kwargs)
-        context["title"] = "Upload File"
-        return context
 
 
 class DataImportTempDetail(PermissionRequiredMixin, DetailView, FormView):
