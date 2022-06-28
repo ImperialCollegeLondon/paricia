@@ -13,13 +13,15 @@
 
 from __future__ import unicode_literals
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
 from formatting.models import Format
 from station.models import Station
+
+User = get_user_model()
 
 
 class DataImportBase(models.Model):

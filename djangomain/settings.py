@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "management",
 ]
 
 MIDDLEWARE = [
@@ -188,3 +189,6 @@ AUTHENTICATION_BACKENDS = (
 # Fixtures for tests
 PROJECT_ROOT = os.path.dirname(os.path.dirname((os.path.realpath(__file__))))
 FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "utilities/data")]
+
+# Custom User model
+AUTH_USER_MODEL = "management.User"

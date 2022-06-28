@@ -8,5 +8,6 @@ service ssh start
 # hack taken form https://stackoverflow.com/a/65988789/3778792
 eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/g' | sed '/=/s//="/' | sed 's/$/"/' >> /etc/profile)
 
+python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
