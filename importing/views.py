@@ -41,6 +41,26 @@ from importing.models import DataImportFull, DataImportTemp
 from .serializers import DataImportFullSerializer, DataImportTempSerializer
 
 
+class DataImportTempList(generics.ListAPIView):
+    queryset = DataImportTemp.objects.all()
+    serializer_class = DataImportTempSerializer
+
+
+class DataImportTempCreate(generics.CreateAPIView):
+    serializer_class = DataImportTempSerializer
+
+    def perform_create(self, serializer):
+        file = copy.deepcopy(self.request.FILES["file"])
+        matrix = preformat_matrix(file, serializer.validated_data["format"])
+        del file
+        # Set start and end date based on cleaned data from the file
+        serializer.validated_data["start_date"] = matrix.loc[0, "date"]
+        serializer.validated_data["end_date"] = matrix.loc[matrix.shape[0] - 1, "date"]
+        # Set user from the request
+        serializer.validated_data["user"] = self.request.user
+        serializer.save()
+
+
 class DataImportFullList(generics.ListAPIView):
     queryset = DataImportFull.objects.all()
     serializer_class = DataImportFullSerializer
@@ -62,21 +82,6 @@ class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
         information, self.existing_data = validate_dates(self.object)
         context["information"] = information
         return context
-
-
-class DataImportTempCreate(generics.CreateAPIView):
-    serializer_class = DataImportTempSerializer
-
-    def perform_create(self, serializer):
-        file = copy.deepcopy(self.request.FILES["file"])
-        matrix = preformat_matrix(file, serializer.validated_data["format"])
-        del file
-        # Set start and end date based on cleaned data from the file
-        serializer.validated_data["start_date"] = matrix.loc[0, "date"]
-        serializer.validated_data["end_date"] = matrix.loc[matrix.shape[0] - 1, "date"]
-        # Set user from the request
-        serializer.validated_data["user"] = self.request.user
-        serializer.save()
 
 
 @permission_required("importing.download_original_file")

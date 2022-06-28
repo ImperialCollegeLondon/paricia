@@ -17,6 +17,7 @@ from importing import views
 
 app_name = "importing"
 urlpatterns = [
+    path("data_imports_temp/", views.DataImportTempList.as_view()),
     path("data_import_temp/create/", views.DataImportTempCreate.as_view()),
     path("data_imports_full/", views.DataImportFullList.as_view()),
     path("data_imports_full/create/", views.DataImportFullCreate.as_view()),
