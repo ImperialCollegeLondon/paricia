@@ -55,6 +55,7 @@ def validate_dates(data_import):
     overwrite = False
     result = []
     for classification in classifications:
+        # variable_code is used to select the measurmenet class
         var_code = str(classification.variable.variable_code)
         last_upload_date = get_last_uploaded_date(station.station_id, var_code)
 
