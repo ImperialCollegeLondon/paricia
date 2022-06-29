@@ -84,7 +84,7 @@ class DataImportFullCreate(generics.CreateAPIView):
     # DataImportTemp object
     # Refactor save_temp_data_to_permanent to run when a DataImportFull
     # is saved. Then run in this view.
-    serializer_class = DataImportTempSerializer
+    serializer_class = DataImportFullSerializer
 
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):

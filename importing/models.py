@@ -47,6 +47,9 @@ class DataImportBase(models.Model):
         User, models.SET_NULL, blank=True, null=True, verbose_name="User"
     )
 
+    def __str__(self):
+        return f"{self.station}/{self.user}/{self.date}"
+
     class Meta:
         abstract = True
 
