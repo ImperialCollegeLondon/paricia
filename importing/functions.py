@@ -15,6 +15,7 @@ import os
 import shutil
 import time
 from datetime import datetime
+from logging import getLogger
 from numbers import Number
 
 import numpy as np
@@ -80,7 +81,7 @@ def get_last_uploaded_date(station_id, var_code):
     Retrieves the last date that data was uploaded for a given station ID and variable
     code. Variable code will be the name of some measurement table.
     """
-    print("current_time: " + str(time.ctime()))
+    getLogger().info("current_time: " + str(time.ctime()))
     model = apps.get_model("measurement", var_code)
     # The first entry will be the most recent
     query = model.timescale.filter(station_id=station_id).order_by("-time")
