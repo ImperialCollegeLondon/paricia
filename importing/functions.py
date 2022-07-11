@@ -14,17 +14,19 @@
 import os
 import shutil
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
+from logging import getLogger
 from numbers import Number
 
 import numpy as np
 import pandas as pd
-from django.db import connection, transaction
+from django.apps import apps
+from django.db import transaction
 
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
 from importing.models import DataImportFull, DataImportTemp
-from measurement.models import Var14Measurement, WaterLevel
+from measurement.models import StripLevelReading, WaterLevel
 from variable.models import Variable
 
 unix_epoch = np.datetime64(0, "s")
@@ -53,13 +55,19 @@ def validate_dates(data_import):
     overwrite = False
     result = []
     for classification in classifications:
-        var_id = str(classification.variable.variable_id)
-        station_id = str(station.station_id)
-        last_upload_date = get_last_uploaded_date(station_id, var_id)
-        exists = data_exists_between_dates(start_date, end_date, station_id, var_id)
+        # variable_code is used to select the measurmenet class
+        var_code = str(classification.variable.variable_code)
+        last_upload_date = get_last_uploaded_date(station.station_id, var_code)
+
+        # Check if data exists between dates
+        model = apps.get_model("measurement", var_code)
+        query = model.timescale.filter(
+            time__range=[start_date, end_date], station_id=station.station_id
+        )
+        exists = True if query else False
         overwrite = overwrite or exists
         summary = {
-            "variable_id": classification.variable.var_id,
+            "variable_id": classification.variable.variable_id,
             "variable_code": classification.variable.variable_code,
             "variable_name": classification.variable.name,
             "last_upload_date": last_upload_date,
@@ -69,54 +77,29 @@ def validate_dates(data_import):
     return result, overwrite
 
 
-def get_last_uploaded_date(station_id, var_id):
+def get_last_uploaded_date(station_id, var_code):
     """
     Retrieves the last date that data was uploaded for a given station ID and variable
-    ID.
-    TODO: this will likely need a lot of reworking once the Medicion module is
-        overhauled.
+    code. Variable code will be the name of some measurement table.
     """
-    print("last_date: " + str(time.ctime()))
-    sql = "SELECT  date FROM measurement_var" + str(int(var_id)) + "measurement "
-    sql += " WHERE station_id=" + str(int(station_id))
-    sql += " ORDER BY date DESC LIMIT 1"
-    with connection.cursor() as cursor:
-        cursor.execute(sql)
-        query = cursor.fetchone()
+    getLogger().info("current_time: " + str(time.ctime()))
+    model = apps.get_model("measurement", var_code)
+    # The first entry will be the most recent
+    query = model.timescale.filter(station_id=station_id).order_by("-time")
     if query:
-        information = query[0]
+        datetime = query[0].time
     else:
-        information = "Data does not exist"
-    return information
-
-
-def data_exists_between_dates(start, end, station_id, var_id):
-    """
-    Checks whether there exists data for a given station and variable type between two
-    dates.
-        Returns: True if there exists data, else False.
-    TODO: This will need reworking once Medicion module is overhauled.
-    """
-
-    sql = "SELECT id FROM measurement_var" + str(var_id) + "measurement "
-    sql += " WHERE date >= %s  AND date <= %s AND station_id = %s "
-    sql += " LIMIT 1;"
-    query = globals()["Var" + str(var_id) + "Measurement"].objects.raw(
-        sql, (start, end, station_id)
-    )
-    query = list(query)
-    if len(query) > 0:
-        return True
-    return False
+        datetime = "Data does not exist"
+    return datetime
 
 
 def preformat_matrix(source_file, file_format):
     """
     First step for importing data. Works out what sort of file is being read and adds
-    standardised columns for date and datetime (str). This is used in construc_matrix.
+    standardised columns for date and datetime (str). This is used in construct_matrix.
     Args:
-        source_file: path to (?) raw data file.
-        file_format: formatting.Format object.
+        source_file: path to raw data file.
+        file_format: formatting.models.Format object.
     Returns:
         Pandas.DataFrame with raw data read and extra column(s) for date and datetime
         (Str), which should be parsed correctly here.
@@ -222,12 +205,7 @@ def preformat_matrix(source_file, file_format):
         )
 
     file = file.sort_values("date")
-    file = file.reset_index(drop=True)
-
-    # Conversion in case of UTC date file_format
-    if file_format.utc_date:
-        file["date"] = file["date"] - timedelta(hours=5)
-    return file
+    return file.reset_index(drop=True)
 
 
 def standardise_datetime(date_time, datetime_format):
@@ -265,60 +243,73 @@ def standardise_datetime(date_time, datetime_format):
     return _date_time
 
 
-def save_temp_data_to_permanent(imp_id, form):
+def save_temp_data_to_permanent(data_import_id):
     """
-    Function to pass the temporary import to the final table.
-    NOTE: Uses a lot of pure sql to insert the data, overwriting if it already exists.
-        This could probably be rewritten in python and won't work after medicion has
-        been overhauled anyway.
-    TODO: Overall, this is an important function for importing but can probably be
-        seriously simplified.
+    Function to pass the temporary import to the final table. Uses the data_import_id
+    only to get all required information, which are fields of the DataImportTemp object.
+    This function carries out the following steps:
+    1.  Bulk delete of existing data between two times on a given measurement table for
+    the station in question.
+    2.  Bulk create to add the new data from the uploaded file.
+    3.  Copy the uploaded file to the temp to permanent directory.
+    4.  Create a new DataImportFull entry.
+    5.  Delete the DataImportTemp entry.
+    6.  Delete the file from the temporary directory.
+    Steps 1. and 2. are carried out for each columns (variable) in the uploaded file.
+    Args: data_import_id (int): DataImportTemp ID
+    Returns: data_import_id (int): DataImportFull ID
     """
-    data_import_temp = DataImportTemp.objects.get(data_import_id=imp_id)
+    data_import_temp = DataImportTemp.objects.get(data_import_id=data_import_id)
     file_format = data_import_temp.format
     station = data_import_temp.station
     file_path = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
 
     all_data = construct_matrix(file_path, file_format, station)
-    for var_id, table in all_data.items():
+    for var_code, table in all_data.items():
         table = table.where((pd.notnull(table)), None)
-        data = list(table.itertuples(index=False, name=None))
-        sql = """
-WITH
-data AS (
-    SELECT DISTINCT u.date, u.value, u.station_id
-    FROM unnest(%s::date__value__station_id[]) u
-    ORDER BY u.date ASC
-),
-delete AS (
-    DELETE FROM measurement_var1measurement
-    WHERE station_id = (SELECT d.station_id FROM data d LIMIT 1)
-    AND date >= (SELECT d.date FROM data d ORDER BY d.date ASC LIMIT 1)
-    AND date <= (SELECT d.date FROM data d ORDER BY d.date DESC LIMIT 1)
-    returning *
-)
-INSERT INTO measurement_var1measurement(date, value, station_id)
-SELECT d.date, d.value, d.station_id
-FROM data d
-;
-"""
-        sql = sql.replace("var1", "var" + str(var_id))
-        sql = sql.replace(
-            "u.date, u.value, u.station_id", "u." + ", u.".join(table.columns)
-        )
-        sql = sql.replace("date__value__station_id", "__".join(table.columns))
-        sql = sql.replace("date, value, station_id", ", ".join(table.columns))
-        sql = sql.replace(
-            "d.date, d.value, d.station_id", "d." + ", d.".join(table.columns)
-        )
+        records = table.to_dict("records")
+        Model = apps.get_model("measurement", var_code)
 
-        with connection.cursor() as cursor:
-            cursor.execute(
-                sql,
-                [
-                    data,
-                ],  # NOQA
-            )
+        # Delete existing data between the date ranges
+        Model.timescale.filter(
+            time__range=[data_import_temp.start_date, data_import_temp.end_date],
+            station_id=station.station_id,
+        ).delete()
+
+        # Bulk add new data
+        # TODO improve this logic to cope with variables that might have max/min
+        # AND depth.
+        if "maximum" in [f.name for f in Model._meta.fields]:
+            model_instances = [
+                Model(
+                    time=record["date"],
+                    value=record["value"],
+                    station_id=record["station_id"],
+                    maximum=record["maximum"],
+                    minimum=record["minimum"],
+                )
+                for record in records
+            ]
+        elif "depth" in [f.name for f in Model._meta.fields]:
+            model_instances = [
+                Model(
+                    time=record["date"],
+                    value=record["value"],
+                    depth=record["depth"],
+                    station_id=record["station_id"],
+                )
+                for record in records
+            ]
+        else:
+            model_instances = [
+                Model(
+                    time=record["date"],
+                    value=record["value"],
+                    station_id=record["station_id"],
+                )
+                for record in records
+            ]
+        Model.objects.bulk_create(model_instances)
 
     final_file_path = str(data_import_temp.file).replace("files/tmp/", "files/")
     final_file_path_full = str(BASE_DIR) + "/media/" + final_file_path
@@ -349,7 +340,7 @@ def construct_matrix(matrix_source, file_format, station):
     transformations depending on the date format, type of data (accumulated,
     incremental...) and deals with NANs.
     Args:
-        matrix_source: raw data file (file path?)
+        matrix_source: raw data file path
         file_format: a formatting.Format object.
     Returns: Dict of dataframes for results (one for each variable type in the raw data
         file).
@@ -464,7 +455,7 @@ def construct_matrix(matrix_source, file_format, station):
                 data["value"] = data["value"] * float(classification.resolution)
         data["station_id"] = station.station_id
         # Add the data to the main dict
-        variables_data[classification.variable_id] = data
+        variables_data[classification.variable.variable_code] = data
 
     return variables_data
 
@@ -533,7 +524,7 @@ def insert_level_rule(data_import, level_rule):
     # TODO: Fix bare except
     except:
         return False
-    Var14Measurement(
+    StripLevelReading(
         station_id=data_import.station_id_id,
         data_import_date=data_import.date,
         data_start_date=data_import.start_date,

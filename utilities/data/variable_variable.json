@@ -3,7 +3,7 @@
   "model": "variable.variable",
   "pk": 1,
   "fields": {
-    "variable_code": "pre",
+    "variable_code": "precipitation",
     "name": "Precipitaci\u00f3n",
     "unit": 6,
     "maximum": "13.00",
@@ -21,7 +21,7 @@
   "model": "variable.variable",
   "pk": 2,
   "fields": {
-    "variable_code": "tai",
+    "variable_code": "airtemperature",
     "name": "Temperatura ambiente",
     "unit": 8,
     "maximum": "28.00",
@@ -39,7 +39,7 @@
   "model": "variable.variable",
   "pk": 3,
   "fields": {
-    "variable_code": "hai",
+    "variable_code": "humidity",
     "name": "Humedad relativa",
     "unit": 3,
     "maximum": "100.00",
@@ -57,7 +57,7 @@
   "model": "variable.variable",
   "pk": 4,
   "fields": {
-    "variable_code": "vvi",
+    "variable_code": "windvelocity",
     "name": "Velocidad de viento",
     "unit": 9,
     "maximum": "15.00",
@@ -75,7 +75,7 @@
   "model": "variable.variable",
   "pk": 5,
   "fields": {
-    "variable_code": "dvi",
+    "variable_code": "winddirection",
     "name": "Direcci\u00f3n de viento",
     "unit": 2,
     "maximum": "360.00",
@@ -93,7 +93,7 @@
   "model": "variable.variable",
   "pk": 6,
   "fields": {
-    "variable_code": "hsu",
+    "variable_code": "soilmoisture",
     "name": "Humedad de suelo",
     "unit": 3,
     "maximum": "100.00",
@@ -101,7 +101,7 @@
     "diff_warning": "100.00",
     "diff_error": "100.00",
     "outlier_limit": "3.00",
-    "is_active": false,
+    "is_active": true,
     "is_cumulative": false,
     "automatic_report": false,
     "null_limit": "30.0"
@@ -111,7 +111,7 @@
   "model": "variable.variable",
   "pk": 7,
   "fields": {
-    "variable_code": "rad",
+    "variable_code": "solarradiation",
     "name": "Radiaci\u00f3n solar",
     "unit": 13,
     "maximum": "1353.00",
@@ -129,7 +129,7 @@
   "model": "variable.variable",
   "pk": 8,
   "fields": {
-    "variable_code": "pat",
+    "variable_code": "atmosphericpressure",
     "name": "Presion atmosf\u00e9rica",
     "unit": 5,
     "maximum": "740.00",
@@ -147,7 +147,7 @@
   "model": "variable.variable",
   "pk": 9,
   "fields": {
-    "variable_code": "tag",
+    "variable_code": "watertemperature",
     "name": "Temperatura de agua",
     "unit": 8,
     "maximum": "17.00",
@@ -165,7 +165,7 @@
   "model": "variable.variable",
   "pk": 10,
   "fields": {
-    "variable_code": "cau",
+    "variable_code": "flow",
     "name": "Caudal",
     "unit": 22,
     "maximum": "8.00",
@@ -183,7 +183,7 @@
   "model": "variable.variable",
   "pk": 11,
   "fields": {
-    "variable_code": "nag",
+    "variable_code": "waterlevel",
     "name": "Nivel de agua",
     "unit": 4,
     "maximum": "250.00",
@@ -201,7 +201,7 @@
   "model": "variable.variable",
   "pk": 12,
   "fields": {
-    "variable_code": "vol",
+    "variable_code": "batteryvoltage",
     "name": "Voltaje de bater\u00eda",
     "unit": 12,
     "maximum": "15.00",
@@ -219,7 +219,7 @@
   "model": "variable.variable",
   "pk": 13,
   "fields": {
-    "variable_code": "caf",
+    "variable_code": "flowmanual",
     "name": "Caudal de aforo",
     "unit": 14,
     "maximum": "8.00",
@@ -237,7 +237,7 @@
   "model": "variable.variable",
   "pk": 14,
   "fields": {
-    "variable_code": "nre",
+    "variable_code": "striplevelreading",
     "name": "Nivel de regleta",
     "unit": 4,
     "maximum": "300.00",
@@ -263,7 +263,7 @@
     "diff_warning": "100.00",
     "diff_error": "100.00",
     "outlier_limit": "3.00",
-    "is_active": true,
+    "is_active": false,
     "is_cumulative": true,
     "automatic_report": false,
     "null_limit": null
@@ -281,7 +281,7 @@
     "diff_warning": "100.00",
     "diff_error": "100.00",
     "outlier_limit": "3.00",
-    "is_active": true,
+    "is_active": false,
     "is_cumulative": false,
     "automatic_report": false,
     "null_limit": null
@@ -345,7 +345,7 @@
   "model": "variable.variable",
   "pk": 20,
   "fields": {
-    "variable_code": "tsu",
+    "variable_code": "soiltemperature",
     "name": "Temperatura de suelo",
     "unit": 8,
     "maximum": "20.00",
@@ -363,7 +363,7 @@
   "model": "variable.variable",
   "pk": 21,
   "fields": {
-    "variable_code": "rin",
+    "variable_code": "indirectradiation",
     "name": "Radiacion indirecta",
     "unit": 13,
     "maximum": "1.00",
@@ -371,7 +371,7 @@
     "diff_warning": "100.00",
     "diff_error": "100.00",
     "outlier_limit": "3.00",
-    "is_active": false,
+    "is_active": true,
     "is_cumulative": false,
     "automatic_report": false,
     "null_limit": "30.0"
@@ -389,7 +389,7 @@
     "diff_warning": "35000.00",
     "diff_error": "40000.00",
     "outlier_limit": "3.00",
-    "is_active": true,
+    "is_active": false,
     "is_cumulative": true,
     "automatic_report": false,
     "null_limit": null
@@ -399,7 +399,7 @@
   "model": "variable.variable",
   "pk": 101,
   "fields": {
-    "variable_code": "T\u00b0 Agua",
+    "variable_code": "watertemperaturedepth",
     "name": "Temperatura agua",
     "unit": 8,
     "maximum": "99.00",
@@ -417,7 +417,7 @@
   "model": "variable.variable",
   "pk": 102,
   "fields": {
-    "variable_code": "pH",
+    "variable_code": "wateraciditydepth",
     "name": "pH",
     "unit": 16,
     "maximum": "14.00",
@@ -435,7 +435,7 @@
   "model": "variable.variable",
   "pk": 103,
   "fields": {
-    "variable_code": "ORP",
+    "variable_code": "redoxpotentialdepth",
     "name": "Potencial REDOX",
     "unit": 17,
     "maximum": "2000.00",
@@ -453,7 +453,7 @@
   "model": "variable.variable",
   "pk": 104,
   "fields": {
-    "variable_code": "Turp.",
+    "variable_code": "waterturbiditydepth",
     "name": "Turbidez",
     "unit": 18,
     "maximum": "10000.00",
@@ -471,7 +471,7 @@
   "model": "variable.variable",
   "pk": 105,
   "fields": {
-    "variable_code": "chl.",
+    "variable_code": "chlorineconcentrationdepth",
     "name": "Clorofila",
     "unit": 19,
     "maximum": "100.00",
@@ -489,7 +489,7 @@
   "model": "variable.variable",
   "pk": 106,
   "fields": {
-    "variable_code": "HDO",
+    "variable_code": "oxygenconcentrationdepth",
     "name": "Ox\u00edgeno disuelto",
     "unit": 20,
     "maximum": "14.00",
@@ -507,7 +507,7 @@
   "model": "variable.variable",
   "pk": 107,
   "fields": {
-    "variable_code": "HDO%",
+    "variable_code": "percentageoxygenconcentrationdepth",
     "name": "Porcentaje de Ox\u00edgeno disuelto",
     "unit": 3,
     "maximum": "100.00",
@@ -525,7 +525,7 @@
   "model": "variable.variable",
   "pk": 108,
   "fields": {
-    "variable_code": "BGA-PC",
+    "variable_code": "phycocyanindepth",
     "name": "Ficocianina",
     "unit": 21,
     "maximum": "99999.00",

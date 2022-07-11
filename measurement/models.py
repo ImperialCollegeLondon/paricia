@@ -16,11 +16,12 @@ from typing import List, Type
 
 from django.db import models
 from django.urls import reverse
+from timescale.db.models.models import TimescaleModel
 
 from station.models import Station
 
 MEASUREMENTS: List[str] = []
-"""Available measurent variables."""
+"""Available measurement variables."""
 
 
 class PermissionsMeasurement(models.Model):
@@ -34,12 +35,11 @@ class PermissionsMeasurement(models.Model):
         permissions = (("validar", "usar interfaz de validación"),)
 
 
-class PolarWind(models.Model):
+class PolarWind(TimescaleModel):
     """
-    Polar Wind measurement with a velocity and direction at a specific date.
+    Polar Wind measurement with a velocity and direction at a specific time.
     """
 
-    date = models.DateTimeField("Date")
     speed = models.DecimalField("Speed", max_digits=14, decimal_places=6, null=True)
     direction = models.DecimalField(
         "Direction", max_digits=14, decimal_places=6, null=True
@@ -56,11 +56,11 @@ class PolarWind(models.Model):
         managed = False
 
 
-class DischargeCurve(models.Model):
+class DischargeCurve(TimescaleModel):
     """
     Discharge curve.
 
-    Relates a station and a date and a bool as to whether a flow recalculation is
+    Relates a station and a time and a bool as to whether a flow recalculation is
     required.
     """
 
@@ -68,7 +68,6 @@ class DischargeCurve(models.Model):
     station = models.ForeignKey(
         Station, on_delete=models.SET_NULL, null=True, verbose_name="Station"
     )
-    date = models.DateTimeField("Date")
     require_recalculate_flow = models.BooleanField(
         verbose_name="Requires re-calculate flow?", default=False
     )
@@ -80,11 +79,11 @@ class DischargeCurve(models.Model):
         return reverse("measurement:dischargecurve_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ("station", "date")
-        unique_together = ("station", "date")
+        ordering = ("station", "time")
+        unique_together = ("station", "time")
 
 
-class LevelFunction(models.Model):
+class LevelFunction(TimescaleModel):
     """
     Function Level. Relates a discharge curve to a level (in cm) to a function.
 
@@ -114,27 +113,26 @@ class LevelFunction(models.Model):
 ##############################################################
 
 
-class BaseMeasurement(models.Model):
+class BaseMeasurement(TimescaleModel):
     @classmethod
     def __init_subclass__(cls, *args, **kwargs) -> None:
         if not cls.__name__.startswith("_Meas") and cls.__name__ not in MEASUREMENTS:
             MEASUREMENTS.append(cls.__name__)
 
     station_id = models.PositiveIntegerField("station_id")
-    date = models.DateTimeField("Date")
 
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "date"]),
-            models.Index(fields=["date", "station_id"]),
+            models.Index(fields=["station_id", "time"]),
+            models.Index(fields=["time", "station_id"]),
         ]
         abstract = True
 
 
 def create_meas_model(
     digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
-) -> Type[models.Model]:
+) -> Type[TimescaleModel]:
     num = len(MEASUREMENTS) + 1
     _fields = {
         key.lower(): models.DecimalField(
@@ -159,7 +157,7 @@ def create_meas_model(
     )
 
 
-class Precipitation(create_meas_model(digits=6, decimals=2, fields=("Value"))):
+class Precipitation(create_meas_model(digits=6, decimals=2, fields=("Value",))):
     """Precipitation."""
 
 
@@ -207,12 +205,12 @@ class BatteryVoltage(create_meas_model()):
     """Battery voltage."""
 
 
-class FlowManual(create_meas_model(fields=("Value"))):
+class FlowManual(create_meas_model(fields=("Value",))):
     """Flow (manual)."""
 
 
-class Var14Measurement(create_meas_model(fields=("Value", "Uncertainty"))):
-    """Fix: Need proper name"""
+class StripLevelReading(create_meas_model(fields=("Value", "Uncertainty"))):
+    """Strip level reading."""
 
     data_import_date = models.DateTimeField("Data import date")
     data_start_date = models.DateTimeField("Data start date")
@@ -223,7 +221,7 @@ class Var14Measurement(create_meas_model(fields=("Value", "Uncertainty"))):
         default_permissions = ()
         indexes = [
             models.Index(fields=["station_id", "data_import_date"]),
-            models.Index(fields=["station_id", "data_start_date", "date"]),
+            models.Index(fields=["station_id", "data_start_date", "time"]),
             models.Index(fields=["data_import_date"]),
         ]
 
@@ -238,7 +236,7 @@ class IndirectRadiation(create_meas_model()):
 
 # Variables created for buoy with different depths
 class WaterTemperatureDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
 
@@ -247,12 +245,12 @@ class WaterTemperatureDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
 class WaterAcidityDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Water acidity (pH) at a depth in cm."""
 
@@ -261,12 +259,12 @@ class WaterAcidityDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
 class RedoxPotentialDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Redox potential (mV) at a depth in cm."""
 
@@ -275,12 +273,12 @@ class RedoxPotentialDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
 class WaterTurbidityDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Water turbidity (NTU) at a depth in cm."""
 
@@ -289,12 +287,12 @@ class WaterTurbidityDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
-class ClorineConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+class ChlorineConcentrationDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
 
@@ -303,12 +301,12 @@ class ClorineConcentrationDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
-class OxigenConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+class OxygenConcentrationDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
 
@@ -317,12 +315,12 @@ class OxigenConcentrationDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
-class PercentageOxigenConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+class PercentageOxygenConcentrationDepth(
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
 
@@ -335,12 +333,12 @@ class PercentageOxigenConcentrationDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
 
 
 class PhycocyaninDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value")),
+    create_meas_model(digits=6, decimals=2, fields=("Value",)),
 ):
     """Phycocyanin (?) at a depth in cm."""
 
@@ -349,5 +347,5 @@ class PhycocyaninDepth(
     class Meta:
         default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "date"]),
+            models.Index(fields=["station_id", "depth", "time"]),
         ]
