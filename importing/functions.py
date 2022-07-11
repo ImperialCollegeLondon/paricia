@@ -277,6 +277,8 @@ def save_temp_data_to_permanent(data_import_id):
         ).delete()
 
         # Bulk add new data
+        # TODO improve this logic to cope with variables that might have max/min
+        # AND depth.
         if "maximum" in [f.name for f in Model._meta.fields]:
             model_instances = [
                 Model(
@@ -285,6 +287,16 @@ def save_temp_data_to_permanent(data_import_id):
                     station_id=record["station_id"],
                     maximum=record["maximum"],
                     minimum=record["minimum"],
+                )
+                for record in records
+            ]
+        elif "depth" in [f.name for f in Model._meta.fields]:
+            model_instances = [
+                Model(
+                    time=record["date"],
+                    value=record["value"],
+                    depth=record["depth"],
+                    station_id=record["station_id"],
                 )
                 for record in records
             ]
