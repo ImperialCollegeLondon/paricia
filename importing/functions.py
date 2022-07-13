@@ -460,7 +460,7 @@ def standardise_float_comma(val_str):
 def insert_level_rule(data_import, level_rule):
     """
     Calculates uncertainty based on difference between a level_rule object's value
-    and the water level measurement, saving a new "Var14" object.
+    and the water level measurement, saving a new "StripLevelReading" object.
     TODO: What exactly does this do? What is the nivelagua (level_rule?) and why is it
     used in this way?
     Args:
@@ -495,7 +495,6 @@ def insert_level_rule(data_import, level_rule):
     ).save()
 
 
-# consultar formatos por datalogger y estacion
 def query_formats(station):
     """
     Return dict of file formats associated with a given station in the form

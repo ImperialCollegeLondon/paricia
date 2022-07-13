@@ -101,6 +101,18 @@ class DataImportFullCreate(generics.CreateAPIView):
         serializer.save()
         os.remove(tmp_file_path)
 
+        # Create a new StripLevelReading object if appropriate.
+        # TODO: This functionality is untested: insert_level_rule function needs checking.
+        classifications = serializer.validated_data[
+            "import_temp"
+        ].format.classification_set.all()
+        variable_codes = [c.variable.variable_code for c in classifications]
+        if "waterlevel" in variable_codes:
+            insert_level_rule(
+                serializer.validated_data["import_temp"],
+                json.loads(self.request.POST["level_rule"]),
+            )
+
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DataImportFull.objects.all()
