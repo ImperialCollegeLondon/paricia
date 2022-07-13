@@ -17,6 +17,7 @@ import copy
 import json
 import mimetypes
 import os
+import shutil
 import urllib
 
 from django.contrib.auth.decorators import permission_required
@@ -28,6 +29,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from rest_framework import generics
 
+from djangomain.settings import BASE_DIR
 from importing.forms import DataImportForm
 from importing.functions import (
     insert_level_rule,
@@ -80,11 +82,21 @@ class DataImportFullList(generics.ListAPIView):
 
 class DataImportFullCreate(generics.CreateAPIView):
     serializer_class = DataImportFullSerializer
-    # TODO adjust so that file is selected based on the id of the
-    # DataImportTemp object
     # Refactor save_temp_data_to_permanent to run when a DataImportFull
     # is saved. Then run in this view.
     serializer_class = DataImportFullSerializer
+
+    def perform_create(self, serializer):
+        serializer.validated_data["user"] = self.request.user
+
+        tmp_file_path = "media/" + str(serializer.validated_data["import_temp"].file)
+        final_file_path = str(
+            serializer.validated_data["import_temp"].file.path
+        ).replace("files/tmp/", "files/")
+        serializer.validated_data["file"] = str(final_file_path)
+
+        shutil.copy(tmp_file_path, final_file_path)
+        serializer.save()
 
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
