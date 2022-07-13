@@ -192,3 +192,8 @@ FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "utilities/data")]
 
 # Custom User model
 AUTH_USER_MODEL = "management.User"
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 100,
+}
