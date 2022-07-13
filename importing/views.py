@@ -125,7 +125,7 @@ def DataImportDownload(request, *args, **kwargs):
     if request.user.is_authenticated:
         imp_id = kwargs.get("pk")
         data_import = DataImportFull.objects.get(data_import_id=imp_id)
-        file_path = "media/" + str(data_import.file)
+        file_path = str(data_import.filepath)
         output_filename = os.path.basename(file_path)
         fp = open(file_path, "rb")
         response = HttpResponse(fp.read())
@@ -162,57 +162,6 @@ def DataImportDownload(request, *args, **kwargs):
         return response
 
 
-class DataImportTempDetailOld(PermissionRequiredMixin, DetailView, FormView):
-    """
-    This view acts as the detail view of the DataImportTemp objects and creates
-    a new DataImportFull object. It also directly enters the measurement data into
-    the database using the save_temp_data_to_permanent function.
-    """
-
-    permission_required = "importing.add_dataimportfull"  # TODO: is this right?
-    model = DataImportTemp
-    template_name = "importing/importingtemp_detail.html"
-    form_class = DataImportForm
-    overwrite = False
-
-    def post(self, request, *args, **kwargs):
-        form = DataImportForm(request.POST or None)
-        if form.is_valid():
-            if request.POST["action"] == "confirm":
-                # Get the pk of the DataImportTemp object
-                imp_id__temp = kwargs.get("pk")
-                # Save the actual measurement data
-                imp_id = save_temp_data_to_permanent(imp_id__temp, form)
-                # Get the DataImportFull object as returned by the above function
-                data_import = DataImportFull.objects.get(imp_id=imp_id)
-                # Get the variables that are saved in this dataset
-                classifications = data_import.format.classification_set.all()
-                variables = []
-                for classification in classifications:
-                    variables.append(classification.variable_id)
-                if 11 in variables:
-                    insert_level_rule(
-                        data_import, json.loads(request.POST["level_rule"])
-                    )
-                return render(
-                    request,
-                    "importing/mensaje.html",
-                    {"mensaje": "Informacion Cargada"},
-                )
-            elif request.POST["action"] == "cancel":
-                return self.render_to_response(self.get_context_data(form=form))
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_context_data(self, **kwargs):
-        context = super(DataImportTempDetail, self).get_context_data(**kwargs)
-        information, self.overwrite = validate_dates(self.object)
-        context["information"] = information
-        context["overwrite"] = self.overwrite
-        context["file_name_only"] = os.path.basename(self.object.file.name)
-        return context
-
-
-@permission_required("importing.add_importing")
 def list_formats(request):
     """
     list of formats per station.
