@@ -30,6 +30,7 @@ class DataImportTemp(models.Model):
     start_date and end_date refer to the first and last dates of the data and are
     populated automatically from the data file. They are used to flag whether any
     existing data from this station would be overwritten upon import.
+    TODO: Rename to DataImportInitial.
     """
 
     data_import_id = models.AutoField("Id", primary_key=True)

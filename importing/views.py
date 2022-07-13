@@ -93,10 +93,11 @@ class DataImportFullCreate(generics.CreateAPIView):
         final_file_path = str(
             serializer.validated_data["import_temp"].file.path
         ).replace("files/tmp/", "files/")
-        serializer.validated_data["file"] = str(final_file_path)
+        serializer.validated_data["filepath"] = str(final_file_path)
 
         shutil.copy(tmp_file_path, final_file_path)
         serializer.save()
+        os.remove(tmp_file_path)
 
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):

@@ -25,12 +25,12 @@ class DataImportTempSerializer(serializers.ModelSerializer):
 
 class DataImportFullSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source="user.username")
-    file = serializers.ReadOnlyField()
+    filepath = serializers.ReadOnlyField()
 
     class Meta:
         model = DataImportFull
         fields = [
-            "file",
+            "filepath",
             "import_temp",
             "user",
             "date",
