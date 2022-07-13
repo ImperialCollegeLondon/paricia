@@ -69,7 +69,7 @@ class DataImportFull(models.Model):
         User, models.SET_NULL, blank=True, null=True, verbose_name="User"
     )
     date = models.DateTimeField("Date", auto_now_add=True)
-    file = models.CharField("File", max_length=1024, blank=True, null=True)
+    filepath = models.CharField("File", max_length=1024, blank=True, null=True)
     import_temp = models.ForeignKey(
         DataImportTemp, on_delete=models.CASCADE, null=True, blank=True
     )
