@@ -29,7 +29,7 @@ class Extension(models.Model):
     value = models.CharField("Value", max_length=5)
 
     def __str__(self):
-        return str(self.ext_valor)
+        return str(self.value)
 
     def get_absolute_url(self):
         return reverse("format:extension_index")
@@ -61,7 +61,7 @@ class Date(models.Model):
     code = models.CharField("Code", max_length=20)
 
     def __str__(self):
-        return str(self.fec_format)
+        return str(self.date_format)
 
     def get_absolute_url(self):
         return reverse("format:date_detail", kwargs={"pk": self.pk})
@@ -80,7 +80,7 @@ class Time(models.Model):
     code = models.CharField("Code", max_length=20)
 
     def __str__(self):
-        return str(self.hor_format)
+        return str(self.time_format)
 
     def get_absolute_url(self):
         return reverse("format:time_detail", kwargs={"pk": self.pk})

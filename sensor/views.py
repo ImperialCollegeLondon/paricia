@@ -14,19 +14,12 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
-from django.urls import reverse_lazy
-from django.views.generic import TemplateView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from excel_response import ExcelResponse
 from rest_framework import generics
 
 import sensor.models as sens
 import sensor.serializers as serializers
-from sensor.models import Sensor, SensorBrand, SensorType
-from utilities.functions import modelo_a_tabla_html
 
 
 class SensorTypeList(generics.ListCreateAPIView):
@@ -66,7 +59,7 @@ def export_sensor(request):
             ["Code", "Type", "Brand", "Model", "Serial"],
         ]
         body = []
-        objetos = Sensor.objects.all()
+        objetos = sens.Sensor.objects.all()
         for objeto in objetos:
             row = []
             row.append(objeto.code)
@@ -85,7 +78,7 @@ def export_sensor(request):
 
 @permission_required("sensor.view_sensor")
 def sensors_list(request):
-    sensores = Sensor.objects.all()
+    sensores = sens.Sensor.objects.all()
     slist = []
     for row in sensores:
         slist.append(
