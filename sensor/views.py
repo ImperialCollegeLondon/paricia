@@ -21,76 +21,42 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from excel_response import ExcelResponse
+from rest_framework import generics
 
+import sensor.models as sens
+import sensor.serializers as serializers
 from sensor.models import Sensor, SensorBrand, SensorType
 from utilities.functions import modelo_a_tabla_html
 
 
-class SensorList(PermissionRequiredMixin, TemplateView):
-    template_name = "sensor/sensor_list.html"
-    permission_required = "sensor.view_sensor"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        campos = [
-            "sensor_id",
-            "code",
-            "sensor_type__name",
-            "sensor_brand__name",
-            "model",
-            "serial",
-            "status",
-        ]
-        modelo = Sensor.objects.values_list(*campos)
-        context["sensores"] = modelo_a_tabla_html(modelo, col_extra=True)
-        return context
+class SensorTypeList(generics.ListCreateAPIView):
+    queryset = sens.SensorType.objects.all()
+    serializer_class = serializers.SensorTypeSerializer
 
 
-class SensorCreate(PermissionRequiredMixin, CreateView):
-    model = Sensor
-    permission_required = "sensor.add_sensor"
-    fields = [
-        "code",
-        "sensor_type",
-        "sensor_brand",
-        "model",
-        "serial",
-        "status",
-    ]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
+class SensorTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = sens.SensorType.objects.all()
+    serializer_class = serializers.SensorTypeSerializer
 
 
-class SensorDetail(PermissionRequiredMixin, DetailView):
-    model = Sensor
-    permission_required = "sensor.view_sensor"
+class SensorBrandList(generics.ListCreateAPIView):
+    queryset = sens.SensorBrand.objects.all()
+    serializer_class = serializers.SensorBrandSerializer
 
 
-class SensorUpdate(PermissionRequiredMixin, UpdateView):
-    model = Sensor
-    permission_required = "sensor.change_sensor"
-    fields = [
-        "code",
-        "sensor_type",
-        "sensor_brand",
-        "model",
-        "serial",
-        "status",
-    ]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update"
-        return context
+class SensorBrandDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = sens.SensorBrand.objects.all()
+    serializer_class = serializers.SensorBrandSerializer
 
 
-class SensorDelete(PermissionRequiredMixin, DeleteView):
-    model = Sensor
-    permission_required = "sensor.delete_sensor"
-    success_url = reverse_lazy("sensor:sensor_index")
+class SensorList(generics.ListCreateAPIView):
+    queryset = sens.Sensor.objects.all()
+    serializer_class = serializers.SensorSerializer
+
+
+class SensorDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = sens.Sensor.objects.all()
+    serializer_class = serializers.SensorSerializer
 
 
 @permission_required("sensor.view_sensor")
@@ -126,103 +92,3 @@ def sensors_list(request):
             row.code + " -- " + ("" if row.model is None else row.model + " - ")
         )
     return JsonResponse({"sensors_list": slist})
-
-
-# #  MARCA
-
-
-class SensorBrandList(PermissionRequiredMixin, TemplateView):
-    template_name = "sensor/brand_list.html"
-    permission_required = "sensor.view_brand"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        campos = [
-            "brand_id",
-            "name",
-        ]
-        model = SensorBrand.objects.values_list(*campos)
-        context["brands"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
-
-
-class SensorBrandCreate(PermissionRequiredMixin, CreateView):
-    model = SensorBrand
-    permission_required = "sensor.add_brand"
-    fields = ["name"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class SensorBrandDetail(PermissionRequiredMixin, DetailView):
-    model = SensorBrand
-    permission_required = "sensor.view_brand"
-
-
-class SensorBrandUpdate(PermissionRequiredMixin, UpdateView):
-    model = SensorBrand
-    permission_required = "sensor.change_brand"
-    fields = ["brand"]
-
-    def get_context_data(self, **kwargs):
-        context = super(SensorBrandUpdate, self).get_context_data(**kwargs)
-        context["title"] = "Update"
-        return context
-
-
-class SensorBrandDelete(PermissionRequiredMixin, DeleteView):
-    model = SensorBrandUpdate
-    permission_required = "sensor.delete_brand"
-    success_url = reverse_lazy("sensor:brand_index")
-
-
-# SensorType
-class SensorTypeList(PermissionRequiredMixin, TemplateView):
-    template_name = "sensor/type_list.html"
-    permission_required = "sensor.view_type"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = [
-            "sensor_type",
-            "name",
-        ]
-        model = SensorType.objects.values_list(*fields)
-        context["type"] = modelo_a_tabla_html(model, col_extra=True)
-        return context
-
-
-class SensorTypeCreate(PermissionRequiredMixin, CreateView):
-    model = SensorType
-    permission_required = "sensor.add_type"
-    fields = ["name"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
-
-
-class SensorTypeDetail(PermissionRequiredMixin, DetailView):
-    model = SensorType
-    permission_required = "sensor.view_type"
-
-
-class SensorTypeUpdate(PermissionRequiredMixin, UpdateView):
-    model = SensorType
-    permission_required = "sensor.change_type"
-    fields = ["name"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update"
-        return context
-
-
-class SensorTypeDelete(PermissionRequiredMixin, DeleteView):
-    model = SensorType
-    permission_required = "sensor.delete_type"
-    success_url = reverse_lazy("sensor:type_index")
