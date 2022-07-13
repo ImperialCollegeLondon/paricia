@@ -241,23 +241,18 @@ def standardise_datetime(date_time, datetime_format):
     return _date_time
 
 
-def save_temp_data_to_permanent(data_import_id):
+def save_temp_data_to_permanent(data_import_temp):
     """
-    Function to pass the temporary import to the final table. Uses the data_import_id
-    only to get all required information, which are fields of the DataImportTemp object.
+    Function to pass the temporary import to the final table. Uses the data_import_temp
+    object only to get all required information from its fields.
     This function carries out the following steps:
     1.  Bulk delete of existing data between two times on a given measurement table for
     the station in question.
     2.  Bulk create to add the new data from the uploaded file.
-    3.  Copy the uploaded file to the temp to permanent directory.
-    4.  Create a new DataImportFull entry.
-    5.  Delete the DataImportTemp entry.
-    6.  Delete the file from the temporary directory.
     Steps 1. and 2. are carried out for each columns (variable) in the uploaded file.
     Args: data_import_id (int): DataImportTemp ID
-    Returns: data_import_id (int): DataImportFull ID
+    Returns: None
     """
-    data_import_temp = DataImportTemp.objects.get(data_import_id=data_import_id)
     file_format = data_import_temp.format
     station = data_import_temp.station
     file_path = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
@@ -275,7 +270,7 @@ def save_temp_data_to_permanent(data_import_id):
         ).delete()
 
         # Bulk add new data
-        if "maximum" in [f.name for f in Model._meta.fields]:
+        if "maximum" in table.columns:
             model_instances = [
                 Model(
                     time=record["date"],
@@ -296,28 +291,6 @@ def save_temp_data_to_permanent(data_import_id):
                 for record in records
             ]
         Model.objects.bulk_create(model_instances)
-
-    final_file_path = str(data_import_temp.file).replace("files/tmp/", "files/")
-    final_file_path_full = str(BASE_DIR) + "/media/" + final_file_path
-    shutil.copy(file_path, final_file_path_full)
-    data_import_full = DataImportFull(
-        station=data_import_temp.station,
-        format=data_import_temp.format,
-        date=data_import_temp.date,
-        start_date=data_import_temp.start_date,
-        end_date=data_import_temp.end_date,
-        file=final_file_path,
-        observations=data_import_temp.observations,
-        user=data_import_temp.user,
-    )
-    file_path_full = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
-    # Delete the temp object and save the full one
-    with transaction.atomic():
-        data_import_full.save()
-        data_import_temp.delete()
-    # Remove the temp file itself using os.remove...
-    os.remove(file_path_full)
-    return data_import_full.data_import_id
 
 
 def construct_matrix(matrix_source, file_format, station):

@@ -82,20 +82,22 @@ class DataImportFullList(generics.ListAPIView):
 
 class DataImportFullCreate(generics.CreateAPIView):
     serializer_class = DataImportFullSerializer
-    # Refactor save_temp_data_to_permanent to run when a DataImportFull
-    # is saved. Then run in this view.
-    serializer_class = DataImportFullSerializer
 
     def perform_create(self, serializer):
         serializer.validated_data["user"] = self.request.user
 
+        # Save the actual measurement data
+        save_temp_data_to_permanent(serializer.validated_data["import_temp"])
+
+        # Move the file from tmp to permanent and set the filepath field accordingly
         tmp_file_path = "media/" + str(serializer.validated_data["import_temp"].file)
         final_file_path = str(
             serializer.validated_data["import_temp"].file.path
         ).replace("files/tmp/", "files/")
         serializer.validated_data["filepath"] = str(final_file_path)
-
         shutil.copy(tmp_file_path, final_file_path)
+
+        # Save the new object and remove the tmp file
         serializer.save()
         os.remove(tmp_file_path)
 
