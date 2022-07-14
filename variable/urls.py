@@ -11,71 +11,23 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from django.urls import path, re_path
+from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
 app_name = "variable"
 urlpatterns = [
-    re_path(r"variable/$", views.VariableList.as_view(), name="variable_index"),
-    re_path(
-        r"variable/__super__create/$",
-        views.VariableCreate.as_view(),
-        name="variable_create",
-    ),
-    re_path(
-        r"variable/detail/(?P<pk>[0-9]+)/$",
-        views.VariableDetail.as_view(),
-        name="variable_detail",
-    ),
-    re_path(
-        r"variable/(?P<pk>[0-9]+)/$",
-        views.VariableUpdate.as_view(),
-        name="variable_update",
-    ),
-    re_path(
-        r"variable/(?P<pk>[0-9]+)/__super__delete/$",
-        views.VariableDelete.as_view(),
-        name="variable_delete",
-    ),
-    re_path(r"variable/export/$", views.VariableExport, name="variable_export"),
-    re_path(r"unit/$", views.UnitList.as_view(), name="unit_index"),
-    re_path(r"unit/create/$", views.UnitCreate.as_view(), name="unit_create"),
-    re_path(
-        r"unit/detail/(?P<pk>[0-9]+)/$",
-        views.UnitDetail.as_view(),
-        name="unit_detail",
-    ),
-    re_path(r"unit/(?P<pk>[0-9]+)/$", views.UnitUpdate.as_view(), name="unit_update"),
-    re_path(
-        r"unit/(?P<pk>[0-9]+)/delete/$",
-        views.UnitDelete.as_view(),
-        name="unit_delete",
-    ),
-    re_path(
-        r"sensorinstallation/$",
-        views.SensorInstallationList.as_view(),
-        name="sensorinstallation_index",
-    ),
-    re_path(
-        r"sensorinstallation/create/$",
-        views.SensorInstallationCreate.as_view(),
-        name="sensorinstallation_create",
-    ),
-    re_path(
-        r"sensorinstallation/detail/(?P<pk>[0-9]+)/$",
+    path("variable/unit/", views.UnitList.as_view()),
+    path("variable/unit/<int:pk>/", views.UnitDetail.as_view()),
+    path("variable/variable/", views.VariableList.as_view()),
+    path("variable/variable/<int:pk>/", views.VariableDetail.as_view()),
+    path("variable/sensorinstallation/", views.SensorInstallationList.as_view()),
+    path(
+        "variable/sensorinstallation/<int:pk>/",
         views.SensorInstallationDetail.as_view(),
-        name="sensorinstallation_detail",
     ),
-    re_path(
-        r"sensorinstallation/edit/(?P<pk>[0-9]+)/$",
-        views.SensorInstallationUpdate.as_view(),
-        name="sensorinstallation_update",
-    ),
-    re_path(
-        r"sensorinstallation/(?P<pk>[0-9]+)/delete/$",
-        views.SensorInstallationDelete.as_view(),
-        name="sensorinstallation_delete",
-    ),
-    path("variable/limits/", views.get_limits, name="variable_limits"),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
+urlpatterns.extend([path("variable/limits/", views.get_limits, name="variable_limits")])
