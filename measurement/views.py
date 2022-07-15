@@ -13,7 +13,6 @@
 
 from __future__ import unicode_literals
 
-import django_filters
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
@@ -28,20 +27,15 @@ import measurement.models as meas
 import measurement.serializers as serializers
 from measurement.models import DischargeCurve, LevelFunction
 
+from .filters import MeasurementFilter, MeasurementFilterDepth
 from .forms import LevelFunctionForm
 from .functions import level_function_table
-
-
-class FlowFilter(django_filters.FilterSet):
-    class Meta:
-        model = meas.Flow
-        fields = ["station_id", "value", "time"]
 
 
 class FlowList(generics.ListAPIView):
     queryset = meas.Flow.objects.all()
     serializer_class = serializers.FlowSerializer
-    filterset_class = FlowFilter
+    filterset_class = MeasurementFilter
 
 
 ########################################################################################
