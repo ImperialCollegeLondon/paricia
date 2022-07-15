@@ -11,6 +11,7 @@ django-extensions==2.2.9
 django-filter
 django-timescaledb
 djangorestframework
+django-rest-swagger
 et-xmlfile==1.0.1
 idna==2.10
 jdcal==1.4.1

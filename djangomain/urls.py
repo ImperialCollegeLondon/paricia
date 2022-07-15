@@ -25,9 +25,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -39,6 +41,7 @@ urlpatterns = [
     path("", include("measurement.urls", namespace="measurement")),
     path("", include("importing.urls", namespace="importing")),
     path("", include("management.urls", namespace="management")),
+    url(r"^api/v1/docs/", include_docs_urls(title="Paricia API")),
 ]
 
 urlpatterns += [
