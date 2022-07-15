@@ -5,8 +5,10 @@ chardet==3.0.4
 cycler==0.10.0
 Django==3.0.11
 django-bootstrap4==1.1.1
+django-crispy-forms
 django-excel-response==2.0.5
 django-extensions==2.2.9
+django-filter
 django-timescaledb
 djangorestframework
 et-xmlfile==1.0.1

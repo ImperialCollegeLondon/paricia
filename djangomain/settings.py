@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "importing.apps.ImportingConfig",
     "bootstrap4",
     "django_extensions",
+    "django_filters",
     "django.contrib.humanize",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -68,6 +69,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "management",
+    "crispy_forms",
 ]
 
 MIDDLEWARE = [
@@ -196,4 +198,5 @@ AUTH_USER_MODEL = "management.User"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 100,
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }

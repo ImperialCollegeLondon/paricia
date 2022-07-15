@@ -13,44 +13,41 @@
 
 from __future__ import unicode_literals
 
+import django_filters
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView
+from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from rest_framework import generics
 
+import measurement.models as meas
+import measurement.serializers as serializers
 from measurement.models import DischargeCurve, LevelFunction
-from utilities.functions import modelo_a_tabla_html
 
 from .forms import LevelFunctionForm
 from .functions import level_function_table
 
 
-class DischargeCurveList(PermissionRequiredMixin, TemplateView):
-    template_name = "measurement/dischargecurve_list.html"
-    permission_required = "measurement.view_dischargecurve"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = ["id", "station__station_code", "date", "require_recalculate_flow"]
-        dischargecurve = DischargeCurve.objects.all().values_list(*fields)
-        context["dischargecurve"] = modelo_a_tabla_html(dischargecurve, col_extra=True)
-        return context
+class FlowFilter(django_filters.FilterSet):
+    class Meta:
+        model = meas.Flow
+        fields = ["station_id", "value", "time"]
 
 
-class DischargeCurveCreate(PermissionRequiredMixin, CreateView):
-    model = DischargeCurve
-    fields = ["station", "date"]
-    permission_required = "measurement.add_dischargecurve"
+class FlowList(generics.ListAPIView):
+    queryset = meas.Flow.objects.all()
+    serializer_class = serializers.FlowSerializer
+    filterset_class = FlowFilter
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
+
+########################################################################################
+# TODO: Revisit theses specialised views that use level_function_table() and create
+# Django Rest Framework equivalents.
+########################################################################################
 
 
 class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
@@ -62,23 +59,6 @@ class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
         dischargecurve_id = self.object.pk
         context["levelfunctiontable"] = level_function_table(dischargecurve_id)
         return context
-
-
-class DischargeCurveUpdate(PermissionRequiredMixin, UpdateView):
-    model = DischargeCurve
-    permission_required = "measurement.change_dischargecurve"
-    fields = ["station", "date"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class DischargeCurveDelete(PermissionRequiredMixin, DeleteView):
-    model = DischargeCurve
-    permission_required = "measurement.delete_dischargecurve"
-    success_url = reverse_lazy("measurement:dischargecurve_index")
 
 
 class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
@@ -171,11 +151,6 @@ class LevelFunctionDelete(PermissionRequiredMixin, DeleteView):
                 "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve.id}
             )
         )
-
-
-class LevelFunctionDetail(PermissionRequiredMixin, DetailView):
-    permission_required = "measurement.view_dischargecurve"
-    model = LevelFunction
 
 
 @permission_required("measurement.add_dischargecurve")

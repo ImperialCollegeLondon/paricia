@@ -201,7 +201,7 @@ class Classification(models.Model):
     )
 
     def __str__(self):
-        return str(self.cla_id)
+        return str(self.cls_id)
 
     def get_absolute_url(self):
         return reverse("format:classification_detail", kwargs={"pk": self.pk})

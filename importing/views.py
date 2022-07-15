@@ -108,10 +108,12 @@ class DataImportFullCreate(generics.CreateAPIView):
         ].format.classification_set.all()
         variable_codes = [c.variable.variable_code for c in classifications]
         if "waterlevel" in variable_codes:
-            insert_level_rule(
-                serializer.validated_data["import_temp"],
-                json.loads(self.request.POST["level_rule"]),
-            )
+            pass
+            # TODO work out how to implement below in DRF.
+            # insert_level_rule(
+            #    serializer.validated_data["import_temp"],
+            #    json.loads(self.request.POST["level_rule"]),
+            # )
 
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
