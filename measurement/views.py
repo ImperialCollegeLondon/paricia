@@ -152,7 +152,7 @@ class SolarRadiationList(MeasurementListBase):
     serializer_class = serializers.SolarRadiationSerializer
 
 
-class AtmposphericPressureList(MeasurementListBase):
+class AtmosphericPressureList(MeasurementListBase):
     """
     List all measurements of Atmospheric Pressure.
     """
