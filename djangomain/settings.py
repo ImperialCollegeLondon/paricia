@@ -70,7 +70,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "management",
     "crispy_forms",
-    "rest_framework_swagger",
 ]
 
 MIDDLEWARE = [
