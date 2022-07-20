@@ -23,31 +23,55 @@ import sensor.serializers as serializers
 
 
 class SensorTypeList(generics.ListCreateAPIView):
+    """
+    List all sensor types, or create a new sensor type.
+    """
+
     queryset = sens.SensorType.objects.all()
     serializer_class = serializers.SensorTypeSerializer
 
 
 class SensorTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a sensor type.
+    """
+
     queryset = sens.SensorType.objects.all()
     serializer_class = serializers.SensorTypeSerializer
 
 
 class SensorBrandList(generics.ListCreateAPIView):
+    """
+    List all sensor brands, or create a new sensor brand.
+    """
+
     queryset = sens.SensorBrand.objects.all()
     serializer_class = serializers.SensorBrandSerializer
 
 
 class SensorBrandDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a sensor brand.
+    """
+
     queryset = sens.SensorBrand.objects.all()
     serializer_class = serializers.SensorBrandSerializer
 
 
 class SensorList(generics.ListCreateAPIView):
+    """
+    List all sensors, or create a new sensor.
+    """
+
     queryset = sens.Sensor.objects.all()
     serializer_class = serializers.SensorSerializer
 
 
 class SensorDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a sensor.
+    """
+
     queryset = sens.Sensor.objects.all()
     serializer_class = serializers.SensorSerializer
 

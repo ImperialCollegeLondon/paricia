@@ -14,25 +14,16 @@
 from __future__ import unicode_literals
 
 import copy
-import json
 import mimetypes
 import os
 import shutil
 import urllib
 
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
-from django.views.generic import FormView, TemplateView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
 from rest_framework import generics
 
-from djangomain.settings import BASE_DIR
-from importing.forms import DataImportForm
 from importing.functions import (
-    insert_level_rule,
     preformat_matrix,
     query_formats,
     save_temp_data_to_permanent,
@@ -44,11 +35,23 @@ from .serializers import DataImportFullSerializer, DataImportTempSerializer
 
 
 class DataImportTempList(generics.ListAPIView):
+    """
+    List all DataImportTemp objects. These are created when uploading a
+    new data file. The measurement data is not saved until a DataImportFull object
+    is created using an existing DataImportTemp object as a ForeignKey.
+    """
+
     queryset = DataImportTemp.objects.all()
     serializer_class = DataImportTempSerializer
 
 
 class DataImportTempCreate(generics.CreateAPIView):
+    """
+    Create a new DataImportTemp object. These are created when uploading a
+    new data file. The measurement data is not saved until a DataImportFull object
+    is created using an existing DataImportTemp object as a ForeignKey.
+    """
+
     serializer_class = DataImportTempSerializer
 
     def perform_create(self, serializer):
@@ -64,6 +67,12 @@ class DataImportTempCreate(generics.CreateAPIView):
 
 
 class DataImportTempDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a DataImportTemp object. These are created when uploading
+    a new data file. The measurement data is not saved until a DataImportFull object
+    is created using an existing DataImportTemp object as a ForeignKey.
+    """
+
     queryset = DataImportTemp.objects.all()
     serializer_class = DataImportTempSerializer
 
@@ -76,11 +85,22 @@ class DataImportTempDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class DataImportFullList(generics.ListAPIView):
+    """
+    List all DataImportFull objects. These are created to save measurement data.
+    A DataImportTemp object is required as a ForeignKey.
+    """
+
     queryset = DataImportFull.objects.all()
     serializer_class = DataImportFullSerializer
 
 
 class DataImportFullCreate(generics.CreateAPIView):
+    """
+    Create a new DataImportFull object. When these are created, the measurement data
+    from a DataImportTemp object is imported into the database (into the measurement
+    app).
+    """
+
     serializer_class = DataImportFullSerializer
 
     def perform_create(self, serializer):
@@ -102,7 +122,8 @@ class DataImportFullCreate(generics.CreateAPIView):
         os.remove(tmp_file_path)
 
         # Create a new StripLevelReading object if appropriate.
-        # TODO: This functionality is untested: insert_level_rule function needs checking.
+        # TODO: This functionality is untested: insert_level_rule function needs
+        # checking.
         classifications = serializer.validated_data[
             "import_temp"
         ].format.classification_set.all()
@@ -117,6 +138,11 @@ class DataImportFullCreate(generics.CreateAPIView):
 
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a DataImportFull object. These are created to save
+    measurement data. A DataImportTemp object is required as a ForeignKey.
+    """
+
     queryset = DataImportFull.objects.all()
     serializer_class = DataImportFullSerializer
 

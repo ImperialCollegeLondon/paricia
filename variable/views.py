@@ -21,31 +21,55 @@ import variable.serializers as serializers
 
 
 class UnitList(generics.ListCreateAPIView):
+    """
+    List all units, or create a new unit.
+    """
+
     queryset = var.Unit.objects.all()
     serializer_class = serializers.UnitSerializer
 
 
 class UnitDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a unit.
+    """
+
     queryset = var.Unit.objects.all()
     serializer_class = serializers.UnitSerializer
 
 
 class VariableList(generics.ListCreateAPIView):
+    """
+    List all variables, or create a new variable.
+    """
+
     queryset = var.Variable.objects.all()
     serializer_class = serializers.VariableSerializer
 
 
 class VariableDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a variable.
+    """
+
     queryset = var.Variable.objects.all()
     serializer_class = serializers.VariableSerializer
 
 
 class SensorInstallationList(generics.ListCreateAPIView):
+    """
+    List all sensor installations, or create a new sensor installation.
+    """
+
     queryset = var.SensorInstallation.objects.all()
     serializer_class = serializers.SensorInstallationSerializer
 
 
 class SensorInstallationDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a sensor installation.
+    """
+
     queryset = var.SensorInstallation.objects.all()
     serializer_class = serializers.SensorInstallationSerializer
 
