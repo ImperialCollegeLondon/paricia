@@ -8,10 +8,8 @@ media
 */db/*
 
 # Migrations 
-# Probably want to ignore _for now_ but not after refactoring of code
-**/migrations/**
-!**/migrations
-!**/migrations/__init__.py
+# We don't want to ignore migrations because we have data migrations to set up groups
+# and permissions.
 
 # Backup files # 
 *.bak 
