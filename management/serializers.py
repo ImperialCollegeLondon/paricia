@@ -1,17 +1,12 @@
 from rest_framework import serializers
 
-from importing.models import DataImportTemp
-
 from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     # TODO this needs thinking about - how do we want to handle
     # serialization of users
-    data_imports_temp = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=DataImportTemp.objects.all()
-    )
 
     class Meta:
         model = User
-        fields = ["id", "username", "data_imports_temp"]
+        fields = ["id", "username"]
