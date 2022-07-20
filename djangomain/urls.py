@@ -1,13 +1,15 @@
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 """djangomain URL Configuration
 
@@ -29,15 +31,34 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 
+from .views import HomePageView, schema_view
+
 urlpatterns = [
+    path("", HomePageView.as_view()),
     path("admin/", admin.site.urls),
-    path("", include("django.contrib.auth.urls")),
-    path("", include("station.urls", namespace="station")),
-    path("", include("sensor.urls", namespace="sensor")),
-    path("", include("variable.urls", namespace="variable")),
-    path("", include("formatting.urls", namespace="formatting")),
-    path("", include("measurement.urls", namespace="measurement")),
-    path("", include("importing.urls", namespace="importing")),
+    path("auth/", include("django.contrib.auth.urls")),
+    path("station/", include("station.urls", namespace="station")),
+    path("sensor/", include("sensor.urls", namespace="sensor")),
+    path("variable/", include("variable.urls", namespace="variable")),
+    path("formatting/", include("formatting.urls", namespace="formatting")),
+    path("measurement/", include("measurement.urls", namespace="measurement")),
+    path("importing/", include("importing.urls", namespace="importing")),
+    path("management/", include("management.urls", namespace="management")),
+    re_path(
+        r"^swagger(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
+    re_path(
+        r"^swagger/$",
+        schema_view.with_ui("swagger"),
+        name="schema-swagger-ui",
+    ),
+    re_path(r"^redoc/$", schema_view.with_ui("redoc"), name="schema-redoc"),
+]
+
+urlpatterns += [
+    path("api-auth/", include("rest_framework.urls")),
 ]
 
 if settings.DEBUG:

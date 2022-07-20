@@ -18,39 +18,297 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView
+from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from rest_framework import generics
 
+import measurement.models as meas
+import measurement.serializers as serializers
 from measurement.models import DischargeCurve, LevelFunction
-from utilities.functions import modelo_a_tabla_html
 
+from .filters import (
+    DischargeCurveFilter,
+    LevelFunctionFilter,
+    MeasurementFilter,
+    MeasurementFilterDepth,
+    PolarWindFilter,
+)
 from .forms import LevelFunctionForm
 from .functions import level_function_table
 
 
-class DischargeCurveList(PermissionRequiredMixin, TemplateView):
-    template_name = "measurement/dischargecurve_list.html"
-    permission_required = "measurement.view_dischargecurve"
+class PolarWindList(generics.ListAPIView):
+    """
+    List all measurements of Polar Wind.
+    """
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        fields = ["id", "station__station_code", "date", "require_recalculate_flow"]
-        dischargecurve = DischargeCurve.objects.all().values_list(*fields)
-        context["dischargecurve"] = modelo_a_tabla_html(dischargecurve, col_extra=True)
-        return context
+    queryset = meas.PolarWind.objects.all()
+    serializer_class = serializers.PolarWindSerializer
+    filterset_class = PolarWindFilter
 
 
-class DischargeCurveCreate(PermissionRequiredMixin, CreateView):
-    model = DischargeCurve
-    fields = ["station", "date"]
-    permission_required = "measurement.add_dischargecurve"
+class DischargeCurveList(generics.ListAPIView):
+    """
+    List all measurements of Discharge Curve.
+    """
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Create"
-        return context
+    queryset = meas.DischargeCurve.objects.all()
+    serializer_class = serializers.DischargeCurveSerializer
+    filterset_class = DischargeCurveFilter
+
+
+class LevelFunctionList(generics.ListAPIView):
+    """
+    List all measurements of Level Function.
+    """
+
+    queryset = meas.LevelFunction.objects.all()
+    serializer_class = serializers.LevelFunctionSerializer
+    filterset_class = LevelFunctionFilter
+
+
+##############################################################
+
+
+class MeasurementListBase(generics.ListAPIView):
+    """
+    Base class for the measurement list views that all use the
+    MeasurementFilter class to filter the results.
+    """
+
+    filterset_class = MeasurementFilter
+
+
+class MeasurementDepthListBase(generics.ListAPIView):
+    """
+    Base class for the measurement list views that all use the
+    MeasurementFilterDepth class to filter the results.
+    """
+
+    filterset_class = MeasurementFilterDepth
+
+
+class PrecipitationList(MeasurementListBase):
+    """
+    List all measurements of Precipitation.
+    """
+
+    queryset = meas.Precipitation.objects.all()
+    serializer_class = serializers.PrecipitationSerializer
+
+
+class AirTemperatureList(MeasurementListBase):
+    """
+    List all measurements of Air Temperature.
+    """
+
+    queryset = meas.AirTemperature.objects.all()
+    serializer_class = serializers.AirTemperatureSerializer
+
+
+class HumidityList(MeasurementListBase):
+    """
+    List all measurements of Humidity.
+    """
+
+    queryset = meas.Humidity.objects.all()
+    serializer_class = serializers.HumiditySerializer
+
+
+class WindVelocityList(MeasurementListBase):
+    """
+    List all measurements of Wind Velocity.
+    """
+
+    queryset = meas.WindVelocity.objects.all()
+    serializer_class = serializers.WindVelocitySerializer
+
+
+class WindDirectionList(MeasurementListBase):
+    """
+    List all measurements of Wind Direction.
+    """
+
+    queryset = meas.WindDirection.objects.all()
+    serializer_class = serializers.WindDirectionSerializer
+
+
+class SoilMoistureList(MeasurementListBase):
+    """
+    List all measurements of Soil Moisture.
+    """
+
+    queryset = meas.SoilMoisture.objects.all()
+    serializer_class = serializers.SoilMoistureSerializer
+
+
+class SolarRadiationList(MeasurementListBase):
+    """
+    List all measurements of Solar Radiation.
+    """
+
+    queryset = meas.SolarRadiation.objects.all()
+    serializer_class = serializers.SolarRadiationSerializer
+
+
+class AtmosphericPressureList(MeasurementListBase):
+    """
+    List all measurements of Atmospheric Pressure.
+    """
+
+    queryset = meas.AtmosphericPressure.objects.all()
+    serializer_class = serializers.AtmosphericPressureSerializer
+
+
+class WaterTemperatureList(MeasurementListBase):
+    """
+    List all measurements of Water Temperature.
+    """
+
+    queryset = meas.WaterTemperature.objects.all()
+    serializer_class = serializers.WaterTemperatureSerializer
+
+
+class FlowList(MeasurementListBase):
+    """
+    List all measurements of Flow.
+    """
+
+    queryset = meas.Flow.objects.all()
+    serializer_class = serializers.FlowSerializer
+
+
+class WaterLevelList(MeasurementListBase):
+    """
+    List all measurements of Water Level.
+    """
+
+    queryset = meas.WaterLevel.objects.all()
+    serializer_class = serializers.WaterLevelSerializer
+
+
+class BatteryVoltageList(MeasurementListBase):
+    """
+    List all measurements of Battery Voltage.
+    """
+
+    queryset = meas.BatteryVoltage.objects.all()
+    serializer_class = serializers.BatteryVoltageSerializer
+
+
+class FlowManualList(MeasurementListBase):
+    """
+    List all measurements of Flow Manual.
+    """
+
+    queryset = meas.FlowManual.objects.all()
+    serializer_class = serializers.FlowManualSerializer
+
+
+class StripLevelReadingList(MeasurementListBase):
+    """
+    List all measurements of Strip Level Reading.
+    """
+
+    queryset = meas.StripLevelReading.objects.all()
+    serializer_class = serializers.StripLevelReadingSerializer
+
+
+class SoilTemperatureList(MeasurementListBase):
+    """
+    List all measurements of Soil Temperature.
+    """
+
+    queryset = meas.SoilTemperature.objects.all()
+    serializer_class = serializers.SoilTemperatureSerializer
+
+
+class IndirectRadiationList(MeasurementListBase):
+    """
+    List all measurements of Indirect Radiation.
+    """
+
+    queryset = meas.IndirectRadiation.objects.all()
+    serializer_class = serializers.IndirectRadiationSerializer
+
+
+class WaterTemperatureDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Water Temperature Depth.
+    """
+
+    queryset = meas.WaterTemperatureDepth.objects.all()
+    serializer_class = serializers.WaterTemperatureDepthSerializer
+
+
+class WaterAcidityDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Water Acidity Depth.
+    """
+
+    queryset = meas.WaterAcidityDepth.objects.all()
+    serializer_class = serializers.WaterAcidityDepthSerializer
+
+
+class RedoxPotentialDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Redox Potential Depth.
+    """
+
+    queryset = meas.RedoxPotentialDepth.objects.all()
+    serializer_class = serializers.RedoxPotentialDepthSerializer
+
+
+class WaterTurbidityDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Water Turbidity Depth.
+    """
+
+    queryset = meas.WaterTurbidityDepth.objects.all()
+    serializer_class = serializers.WaterTurbidityDepthSerializer
+
+
+class ChlorineConcentrationDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Chlorine Concentration Depth.
+    """
+
+    queryset = meas.ChlorineConcentrationDepth.objects.all()
+    serializer_class = serializers.ChlorineConcentrationDepthSerializer
+
+
+class OxygenConcentrationDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Oxygen Concentration Depth.
+    """
+
+    queryset = meas.OxygenConcentrationDepth.objects.all()
+    serializer_class = serializers.OxygenConcentrationDepthSerializer
+
+
+class PercentageOxygenConcentrationDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Percentage Oxygen Concentration Depth.
+    """
+
+    queryset = meas.PercentageOxygenConcentrationDepth.objects.all()
+    serializer_class = serializers.PercentageOxygenConcentrationDepthSerializer
+
+
+class PhycocyaninDepthList(MeasurementDepthListBase):
+    """
+    List all measurements of Phycocyanin Depth.
+    """
+
+    queryset = meas.PhycocyaninDepth.objects.all()
+    serializer_class = serializers.PhycocyaninDepthSerializer
+
+
+########################################################################################
+# TODO: Revisit theses specialised views that use level_function_table() and create
+# Django Rest Framework equivalents.
+########################################################################################
 
 
 class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
@@ -62,23 +320,6 @@ class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
         dischargecurve_id = self.object.pk
         context["levelfunctiontable"] = level_function_table(dischargecurve_id)
         return context
-
-
-class DischargeCurveUpdate(PermissionRequiredMixin, UpdateView):
-    model = DischargeCurve
-    permission_required = "measurement.change_dischargecurve"
-    fields = ["station", "date"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Modify"
-        return context
-
-
-class DischargeCurveDelete(PermissionRequiredMixin, DeleteView):
-    model = DischargeCurve
-    permission_required = "measurement.delete_dischargecurve"
-    success_url = reverse_lazy("measurement:dischargecurve_index")
 
 
 class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
@@ -171,11 +412,6 @@ class LevelFunctionDelete(PermissionRequiredMixin, DeleteView):
                 "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve.id}
             )
         )
-
-
-class LevelFunctionDetail(PermissionRequiredMixin, DetailView):
-    permission_required = "measurement.view_dischargecurve"
-    model = LevelFunction
 
 
 @permission_required("measurement.add_dischargecurve")

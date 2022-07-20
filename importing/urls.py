@@ -11,34 +11,16 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from django.urls import re_path
+from django.urls import path
 
 from importing import views
 
 app_name = "importing"
 urlpatterns = [
-    re_path(
-        r"data_import_temp/create/$",
-        views.DataImportTempCreate.as_view(),
-        name="data_import_temp_create",
-    ),
-    re_path(
-        r"data_import_temp/detail/(?P<pk>[0-9]+)/$",
-        views.DataImportTempDetail.as_view(),
-        name="data_import_temp_detail",
-    ),
-    re_path(
-        r"^data_import/$", views.DataImportFullList.as_view(), name="data_import_index"
-    ),
-    re_path(
-        r"data_import/detail/(?P<pk>[0-9]+)/$",
-        views.DataImportFullDetail.as_view(),
-        name="data_import_detail",
-    ),
-    re_path(
-        r"data_import/download/(?P<pk>[0-9]+)/$",
-        views.DataImportDownload,
-        name="data_import_download",
-    ),
-    re_path(r"^ajax/data_import/formats", views.list_formats, name="formats"),
+    path("data_import_temp/", views.DataImportTempList.as_view()),
+    path("data_import_temp/create/", views.DataImportTempCreate.as_view()),
+    path("data_import_temp/<int:pk>/", views.DataImportTempDetail.as_view()),
+    path("data_import_full/", views.DataImportFullList.as_view()),
+    path("data_import_full/create/", views.DataImportFullCreate.as_view()),
+    path("data_import_full/<int:pk>/", views.DataImportFullDetail.as_view()),
 ]

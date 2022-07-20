@@ -11,60 +11,49 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from django.urls import re_path
+from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
 app_name = "measurement"
 urlpatterns = [
-    re_path(
-        r"^measurement/dischargecurve/$",
-        views.DischargeCurveList.as_view(),
-        name="dischargecurve_index",
+    path("polarwind/", views.PolarWindList.as_view()),
+    path("dischargecurve/", views.DischargeCurveList.as_view()),
+    path("levelfunction/", views.LevelFunctionList.as_view()),
+    path("precipitation/", views.PrecipitationList.as_view()),
+    path("airtemperature/", views.AirTemperatureList.as_view()),
+    path("humidity/", views.HumidityList.as_view()),
+    path("windvelocity/", views.WindVelocityList.as_view()),
+    path("winddirection/", views.WindDirectionList.as_view()),
+    path("soilmoisture/", views.SoilMoistureList.as_view()),
+    path("solarradiation/", views.SolarRadiationList.as_view()),
+    path("atmosphericpressure/", views.AtmosphericPressureList.as_view()),
+    path("watertemperature/", views.WaterTemperatureList.as_view()),
+    path("flow/", views.FlowList.as_view()),
+    path("waterlevel/", views.WaterLevelList.as_view()),
+    path("batteryvoltage/", views.BatteryVoltageList.as_view()),
+    path("flowmanual/", views.FlowManualList.as_view()),
+    path("striplevelreading/", views.StripLevelReadingList.as_view()),
+    path("soiltemperature/", views.SoilTemperatureList.as_view()),
+    path("indirectradiation/", views.IndirectRadiationList.as_view()),
+    path("watertemperature_depth/", views.WaterTemperatureDepthList.as_view()),
+    path("wateracidity_depth/", views.WaterAcidityDepthList.as_view()),
+    path("redoxpotential_depth/", views.RedoxPotentialDepthList.as_view()),
+    path("waterturbidity_depth/", views.WaterTurbidityDepthList.as_view()),
+    path(
+        "chlorineconcentration_depth/",
+        views.ChlorineConcentrationDepthList.as_view(),
     ),
-    re_path(
-        r"^measurement/dischargecurve/create/$",
-        views.DischargeCurveCreate.as_view(),
-        name="dischargecurve_create",
+    path(
+        "oxygenconcentration_depth/",
+        views.OxygenConcentrationDepthList.as_view(),
     ),
-    re_path(
-        r"^measurement/dischargecurve/detail/(?P<pk>[0-9]+)/$",
-        views.DischargeCurveDetail.as_view(),
-        name="dischargecurve_detail",
+    path(
+        "percentageoxygen_depth/",
+        views.PercentageOxygenConcentrationDepthList.as_view(),
     ),
-    re_path(
-        r"^measurement/dischargecurve/edit/(?P<pk>[0-9]+)/$",
-        views.DischargeCurveUpdate.as_view(),
-        name="dischargecurve_update",
-    ),
-    re_path(
-        r"^measurement/dischargecurve/(?P<pk>[0-9]+)/delete/$",
-        views.DischargeCurveDelete.as_view(),
-        name="dischargecurve_delete",
-    ),
-    re_path(
-        r"^measurement/dischargecurve/levelfunction/create/(?P<id>[0-9]+)/$",
-        views.LevelFunctionCreate.as_view(),
-        name="levelfunction_create",
-    ),
-    re_path(
-        r"^measurement/dischargecurve/levelfunction/detail/(?P<pk>[0-9]+)/$",
-        views.LevelFunctionDetail.as_view(),
-        name="levelfunction_detail",
-    ),
-    re_path(
-        r"^measurement/dischargecurve/levelfunction/edit/(?P<pk>[0-9]+)/$",
-        views.LevelFunctionUpdate.as_view(),
-        name="levelfunction_update",
-    ),
-    re_path(
-        r"^measurement/dischargecurve/levelfunction/(?P<pk>[0-9]+)/delete/$",
-        views.LevelFunctionDelete.as_view(),
-        name="levelfunction_delete",
-    ),
-    re_path(
-        r"^measurement/dischargecurve/recalculate_flow/$",
-        views.recalculate_flow,
-        name="recalculate_flow",
-    ),
+    path("phycocyanin_depth/", views.PhycocyaninDepthList.as_view()),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
