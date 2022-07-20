@@ -15,6 +15,7 @@ import os
 import shutil
 import time
 from datetime import datetime
+from logging import getLogger
 from numbers import Number
 
 import numpy as np
@@ -54,6 +55,7 @@ def validate_dates(data_import):
     overwrite = False
     result = []
     for classification in classifications:
+        # variable_code is used to select the measurmenet class
         var_code = str(classification.variable.variable_code)
         last_upload_date = get_last_uploaded_date(station.station_id, var_code)
 
@@ -80,7 +82,7 @@ def get_last_uploaded_date(station_id, var_code):
     Retrieves the last date that data was uploaded for a given station ID and variable
     code. Variable code will be the name of some measurement table.
     """
-    print("current_time: " + str(time.ctime()))
+    getLogger().info("current_time: " + str(time.ctime()))
     model = apps.get_model("measurement", var_code)
     # The first entry will be the most recent
     query = model.timescale.filter(station_id=station_id).order_by("-time")
@@ -270,6 +272,8 @@ def save_temp_data_to_permanent(data_import_temp):
         ).delete()
 
         # Bulk add new data
+        # TODO improve this logic to cope with variables that might have max/min
+        # AND depth.
         if "maximum" in table.columns:
             model_instances = [
                 Model(
@@ -278,6 +282,16 @@ def save_temp_data_to_permanent(data_import_temp):
                     station_id=record["station_id"],
                     maximum=record["maximum"],
                     minimum=record["minimum"],
+                )
+                for record in records
+            ]
+        elif "depth" in [f.name for f in Model._meta.fields]:
+            model_instances = [
+                Model(
+                    time=record["date"],
+                    value=record["value"],
+                    depth=record["depth"],
+                    station_id=record["station_id"],
                 )
                 for record in records
             ]

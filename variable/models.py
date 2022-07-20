@@ -42,7 +42,9 @@ class Unit(models.Model):
 class Variable(models.Model):
     """
     A variable e.g. precipitation, wind speed, wind direction, soil moisture,
-    with an associated unit. There are max and min allowed values as well as:
+    with an associated unit.
+    The variable_code must match the name of one of the classes in measurement.models.
+    There are max and min allowed values as well as:
     diff_warning: If two sequential values in the time-series data of this variable
         differ by more than this value, the validation process can mark this with a
         warning flag.

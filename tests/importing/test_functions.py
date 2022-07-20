@@ -89,7 +89,7 @@ class TestDateFunctions(TestCase):
 
         self.file_format = Format.objects.get(format_id=45)
         self.data_file = str(
-            Path(__file__).parent.parent / "test_data/iMHEA_HMT_01_HI_01_raw.csv"
+            Path(__file__).parent.parent / "test_data" / "iMHEA_HMT_01_HI_01_raw.csv"
         )
         self.station = Station.objects.get(station_id=8)
 
