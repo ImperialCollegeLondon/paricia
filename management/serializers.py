@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from importing.models import DataImportTemp
-
 from .models import User
 
 
