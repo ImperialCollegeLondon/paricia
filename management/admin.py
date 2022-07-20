@@ -54,16 +54,11 @@ class CustomUserAdmin(UserAdmin):
         if not is_superuser:
             disabled_fields |= {
                 "is_superuser",
+                "is_staff",
                 "user_permissions",
             }
-        # Prevent users changing own permissions or those of AnonymousUser
-        if (
-            not is_superuser
-            and obj is not None
-            and (
-                obj == request.user or obj == User.objects.get(username="AnonymousUser")
-            )
-        ):
+        # Prevent users changing own permissions
+        if not is_superuser and obj is not None and obj == request.user:
             disabled_fields |= {
                 "is_staff",
                 "is_superuser",
