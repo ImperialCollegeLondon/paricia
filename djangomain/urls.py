@@ -31,11 +31,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from .views import schema_view
+from .views import HomePageView, schema_view
 
 urlpatterns = [
+    path("", HomePageView.as_view()),
     path("admin/", admin.site.urls),
-    path("", include("django.contrib.auth.urls")),
+    path("auth/", include("django.contrib.auth.urls")),
     path("station/", include("station.urls", namespace="station")),
     path("sensor/", include("sensor.urls", namespace="sensor")),
     path("variable/", include("variable.urls", namespace="variable")),
