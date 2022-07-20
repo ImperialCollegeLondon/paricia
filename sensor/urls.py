@@ -18,12 +18,12 @@ from sensor import views
 
 app_name = "sensor"
 urlpatterns = [
-    path("sensortypes/", views.SensorTypeList.as_view()),
-    path("sensortypes/<int:pk>/", views.SensorTypeDetail.as_view()),
-    path("sensorbrands/", views.SensorBrandList.as_view()),
-    path("sensorbrands/<int:pk>/", views.SensorBrandDetail.as_view()),
-    path("sensors/", views.SensorList.as_view()),
-    path("sensors/<int:pk>/", views.SensorDetail.as_view()),
+    path("sensortype/", views.SensorTypeList.as_view()),
+    path("sensortype/<int:pk>/", views.SensorTypeDetail.as_view()),
+    path("sensorbrand/", views.SensorBrandList.as_view()),
+    path("sensorbrand/<int:pk>/", views.SensorBrandDetail.as_view()),
+    path("sensor/", views.SensorList.as_view()),
+    path("sensor/<int:pk>/", views.SensorDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

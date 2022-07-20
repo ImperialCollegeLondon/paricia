@@ -18,13 +18,13 @@ from . import views
 
 app_name = "variable"
 urlpatterns = [
-    path("variable/unit/", views.UnitList.as_view()),
-    path("variable/unit/<int:pk>/", views.UnitDetail.as_view()),
-    path("variable/variable/", views.VariableList.as_view()),
-    path("variable/variable/<int:pk>/", views.VariableDetail.as_view()),
-    path("variable/sensorinstallation/", views.SensorInstallationList.as_view()),
+    path("unit/", views.UnitList.as_view()),
+    path("unit/<int:pk>/", views.UnitDetail.as_view()),
+    path("variable/", views.VariableList.as_view()),
+    path("variable/<int:pk>/", views.VariableDetail.as_view()),
+    path("sensorinstallation/", views.SensorInstallationList.as_view()),
     path(
-        "variable/sensorinstallation/<int:pk>/",
+        "sensorinstallation/<int:pk>/",
         views.SensorInstallationDetail.as_view(),
     ),
 ]
