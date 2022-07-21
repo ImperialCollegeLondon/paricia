@@ -205,6 +205,6 @@ REST_FRAMEWORK = {
         "management.permissions.CustomDjangoModelPermissions",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }

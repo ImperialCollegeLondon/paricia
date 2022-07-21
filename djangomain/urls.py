@@ -30,7 +30,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
-from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 from .views import HomePageView, schema_view
 
@@ -38,7 +42,9 @@ urlpatterns = [
     path("", HomePageView.as_view()),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
-    path("api-token-auth", obtain_auth_token),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("station/", include("station.urls", namespace="station")),
     path("sensor/", include("sensor.urls", namespace="sensor")),
     path("variable/", include("variable.urls", namespace="variable")),
