@@ -211,6 +211,11 @@ REST_FRAMEWORK = {
     ],
 }
 
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": "management.serializers.UserSerializer",
+}
+
+
 ACCESS_TOKEN_LIFETIME_IN_SECONDS = 2 * 60 * 60  # 2 hours
 
 SIMPLE_JWT = {

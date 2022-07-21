@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -5,10 +6,18 @@ from rest_framework.validators import UniqueValidator
 from .models import User
 
 
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ("name",)
+
+
 class UserSerializer(serializers.ModelSerializer):
+    groups = GroupSerializer(many=True)
+
     class Meta:
         model = User
-        fields = ["id", "username", "first_name ", "last_name", "email"]
+        fields = ["id", "username", "first_name", "last_name", "email", "groups"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
