@@ -36,6 +36,8 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+from management.views import RegisterUserAPIView
+
 from .views import HomePageView, schema_view
 
 urlpatterns = [
@@ -43,6 +45,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("register/", RegisterUserAPIView.as_view(), name="auth_register"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("station/", include("station.urls", namespace="station")),
