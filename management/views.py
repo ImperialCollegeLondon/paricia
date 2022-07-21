@@ -1,14 +1,16 @@
 from rest_framework import generics
+from rest_framework.permissions import AllowAny
 
 from .models import User
-from .serializers import UserSerializer
+from .serializers import RegisterSerializer, UserSerializer
 
 
-class UserList(generics.ListAPIView):
+class UserDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
-class UserDetail(generics.RetrieveAPIView):
+class RegisterUserAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
