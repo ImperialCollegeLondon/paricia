@@ -1,9 +1,9 @@
 from django.urls import path
 
-from management import views
+from .views import RegisterUserAPIView, UserDetailAPI
 
 app_name = "management"
 urlpatterns = [
-    path("users/", views.UserList.as_view()),
-    path("users/<int:pk>/", views.UserDetail.as_view()),
+    path("get-details", UserDetailAPI.as_view()),
+    path("register", RegisterUserAPIView.as_view()),
 ]
