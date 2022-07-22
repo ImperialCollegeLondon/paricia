@@ -29,6 +29,8 @@ If installing this system from scratch:
 
 The first four models are shown below (formatting, measurement and management are ommitted to keep the diagram simple).
 
+![Flowchart showing the database schema](static/images/database_viz.png)
+
 To regenerate the image above:
 
 - Install graphviz and pygraphviz. Simplest is often `conda install pygraphviz` to get the necessary C extensions at the same time.
