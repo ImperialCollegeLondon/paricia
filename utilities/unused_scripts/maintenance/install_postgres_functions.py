@@ -1,6 +1,9 @@
-"""Installation script for POSTGRES functions. A much shorter version of the original
+"""
+Installation script for POSTGRES functions. A much shorter version of the original
 file unused_scripts/instalar_funciones_postgres.py. More functions can be moved from
 there to here as they are needed.
+
+NOTE: This script is not used anymore.
 """
 
 from logging import getLogger
