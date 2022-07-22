@@ -22,7 +22,6 @@ services:
       - LOGGING_FILE=/usr/src/app/log/paricia
     volumes:
       - .:/usr/src/app
-      - ./log:/usr/src/app/log
     ports:
       - 8000:8000
       - 2222:2222
