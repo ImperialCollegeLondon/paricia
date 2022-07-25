@@ -52,6 +52,7 @@ class DataImportTempCreate(generics.CreateAPIView):
     is created using an existing DataImportTemp object as a ForeignKey.
     """
 
+    queryset = DataImportTemp.objects.all()
     serializer_class = DataImportTempSerializer
 
     def perform_create(self, serializer):
@@ -101,6 +102,7 @@ class DataImportFullCreate(generics.CreateAPIView):
     app).
     """
 
+    queryset = DataImportFull.objects.all()
     serializer_class = DataImportFullSerializer
 
     def perform_create(self, serializer):
