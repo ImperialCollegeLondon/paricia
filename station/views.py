@@ -15,6 +15,8 @@ from rest_framework import generics
 
 import station.models as stn
 import station.serializers as serializers
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer, BrowsableAPIRenderer
+from rest_framework.response import Response
 
 
 class CountryList(generics.ListCreateAPIView):
@@ -24,6 +26,12 @@ class CountryList(generics.ListCreateAPIView):
 
     queryset = stn.Country.objects.all()
     serializer_class = serializers.CountrySerializer
+
+    def get(self, request, *args, **kwargs):
+        if 'format' in request.query_params.keys() and request.query_params['format'] == 'html':
+            self.object = self.get_queryset()
+            return Response({'countries': self.object}, template_name='country_list.html')
+        return self.list(request, *args, **kwargs)
 
 
 class CountryDetail(generics.RetrieveUpdateDestroyAPIView):
