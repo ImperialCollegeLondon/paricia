@@ -77,6 +77,11 @@ Similarly, there are `templates/unused_templates` and `utilities/unused_scripts`
 Paricia is developed at [Imperial College London](https://www.imperial.ac.uk/) by the Research Software Engineering team within the Research Computing Group.
 The project is coordinated by [Prof. Wouter Buytaert](https://www.imperial.ac.uk/people/w.buytaert).
 
+The code was originally based on the iMHEA platform - Plataforma para la **I**niciativa Regional de **M**onitoreo **H**idrológico de **E**cosistemas **A**ndinos. We are grateful to the following instututions for the development of iMHEA and for sharing their code to use as a starting point for Paricia:
+
+- Fondo para la Proteccion del Agua (FONAG), Ecuador. 
+- Empresa Pública Metropolitana de Agua Potable Y Saneamiento de Quito (EPMAPS)m Ecuador.
+
 ### Tests
 
 The tests are run with `python manage.py test` from inside the docker container.
