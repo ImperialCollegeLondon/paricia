@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: timescale/timescaledb-ha:pg14-latest
+    volumes:
+      - ./data/db:/home/postgres/pgdata/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+  web:
+    build: .
+    environment:
+      - LOGGING_FILE=/usr/src/app/log/paricia
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8000:8000
+      - 2222:2222
+    depends_on:
+      db:
+        condition: service_healthy

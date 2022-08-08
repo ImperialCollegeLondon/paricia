@@ -1,13 +1,15 @@
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 """djangomain URL Configuration
 
@@ -24,35 +26,50 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include ,re_path
-from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path, re_path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
+
+from management.views import RegisterUserAPIView
+
+from .views import HomePageView, schema_view
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('django.contrib.auth.urls')),
-    path('', include('home.urls', namespace='home')),
-    path('', include('estacion.urls', namespace='estacion')),
-    path('', include('datalogger.urls', namespace='datalogger')),
-    path('', include('sensor.urls', namespace='sensor')),
-    path('', include('variable.urls', namespace='variable')),
-    path('', include('bitacora.urls', namespace='bitacora')),
-    path('', include('cruce.urls', namespace='cruce')),
-    path('', include('formato.urls', namespace='formato')),
-    path('', include('frecuencia.urls', namespace='frecuencia')),
-    path('', include('instalacion.urls', namespace='instalacion')),
-    path('', include('medicion.urls', namespace='medicion')),
-    path('', include('validacion.urls', namespace='validacion')),
-    path('', include('importacion.urls', namespace='importacion')),
-    path('', include('vacios.urls', namespace='vacios')),
-    path('', include('calidad.urls', namespace='calidad')),
-    path('', include('reportes.urls', namespace='reportes')),
-    path('', include('reportes_v2.urls', namespace='reportes_v2')),
-    path('', include('telemetria.urls', namespace='telemetria')),
-    path('', include('indices.urls', namespace='indices')),    
-    path('', include('validacion_v2.urls', namespace='validacion_v2')), 
-    path('', include('anuarios.urls', namespace='anuarios')), 
+    path("", HomePageView.as_view()),
+    path("admin/", admin.site.urls),
+    path("auth/", include("django.contrib.auth.urls")),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("register/", RegisterUserAPIView.as_view(), name="auth_register"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("station/", include("station.urls", namespace="station")),
+    path("sensor/", include("sensor.urls", namespace="sensor")),
+    path("variable/", include("variable.urls", namespace="variable")),
+    path("formatting/", include("formatting.urls", namespace="formatting")),
+    path("measurement/", include("measurement.urls", namespace="measurement")),
+    path("importing/", include("importing.urls", namespace="importing")),
+    path("management/", include("management.urls", namespace="management")),
+    re_path(
+        r"^swagger(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
+    re_path(
+        r"^swagger/$",
+        schema_view.with_ui("swagger"),
+        name="schema-swagger-ui",
+    ),
+    re_path(r"^redoc/$", schema_view.with_ui("redoc"), name="schema-redoc"),
+]
+
+urlpatterns += [
+    path("api-auth/", include("rest_framework.urls")),
 ]
 
 if settings.DEBUG:

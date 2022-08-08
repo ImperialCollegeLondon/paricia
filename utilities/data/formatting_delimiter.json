@@ -1,0 +1,74 @@
+[
+{
+  "model": "formatting.delimiter",
+  "pk": 1,
+  "fields": {
+    "name": "Tabulador",
+    "character": "\\x09"
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 2,
+  "fields": {
+    "name": "Linea",
+    "character": "\\x0A"
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 3,
+  "fields": {
+    "name": "Espacio",
+    "character": "\\x20"
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 4,
+  "fields": {
+    "name": "Comilla doble",
+    "character": "\\x22"
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 5,
+  "fields": {
+    "name": "Comilla Simple",
+    "character": "\\x27"
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 6,
+  "fields": {
+    "name": "Coma",
+    "character": ","
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 7,
+  "fields": {
+    "name": "Dos Puntos",
+    "character": ":"
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 8,
+  "fields": {
+    "name": "Punto y Com",
+    "character": ";"
+  }
+},
+{
+  "model": "formatting.delimiter",
+  "pk": 9,
+  "fields": {
+    "name": "BackSlash",
+    "character": "\\x5C"
+  }
+}
+]

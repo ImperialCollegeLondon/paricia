@@ -1,82 +1,126 @@
-# -*- coding: utf-8 -*-
-
-################################################################################################
-# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos (iMHEA)
-# basada en los desarrollos realizados por:
+########################################################################################
+# Plataforma para la Iniciativa Regional de Monitoreo Hidrológico de Ecosistemas Andinos
+# (iMHEA)basada en los desarrollos realizados por:
 #     1) FONDO PARA LA PROTECCIÓN DEL AGUA (FONAG), Ecuador.
-#         Contacto: info@fonag.org.ec
-#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS), Ecuador.
-#         Contacto: paramh2o@aguaquito.gob.ec
+#           Contacto: info@fonag.org.ec
+#     2) EMPRESA PÚBLICA METROPOLITANA DE AGUA POTABLE Y SANEAMIENTO DE QUITO (EPMAPS),
+#           Ecuador.
+#           Contacto: paramh2o@aguaquito.gob.ec
 #
-#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones creadoras,
-#              ya sea en uso total o parcial del código.
+#  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
+#  creadoras, ya sea en uso total o parcial del código.
+########################################################################################
 
 from __future__ import unicode_literals
 
 from django.db import models
-from sensor.models import Sensor
-from estacion.models import Estacion
 from django.urls import reverse
 
-class Unidad(models.Model):
-    uni_id = models.AutoField("Id", primary_key=True)
-    uni_nombre = models.CharField("Nombre", max_length=50)
-    uni_sigla = models.CharField("Sigla", max_length=10)
+from sensor.models import Sensor
+from station.models import Station
+
+
+class Unit(models.Model):
+    """
+    Unit of measurement with a name and an initialised form e.g. metres per second, m/s.
+    """
+
+    unit_id = models.AutoField("Id", primary_key=True)
+    name = models.CharField("Name", max_length=50)
+    initials = models.CharField("Initials", max_length=10)
 
     def __str__(self):
-        return str(self.uni_sigla)
+        return str(self.initials)
 
     def get_absolute_url(self):
-        return reverse('variable:unidad_detail', kwargs={'pk': self.pk})
+        return reverse("variable:unit_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ['uni_id']
+        ordering = ["unit_id"]
 
 
 class Variable(models.Model):
-    var_id = models.AutoField("Id", primary_key=True)
-    var_codigo = models.CharField("Codigo", max_length=7)
-    var_nombre = models.CharField("Nombre", max_length=50)
-    #var_modelo = models.CharField("Modelo",max_length=50, blank=True, null=True)
-    uni_id = models.ForeignKey(Unidad, models.SET_NULL, blank=True, null=True, verbose_name="Unidad")
-    var_maximo = models.DecimalField("Maximo", max_digits=7, decimal_places=2)
-    var_minimo = models.DecimalField("Minimo", max_digits=7, decimal_places=2)
-    var_sos = models.DecimalField("Incremento sospechoso", max_digits=7, decimal_places=2, null=True, blank=True)
-    var_err = models.DecimalField("Incremento error", max_digits=7, decimal_places=2, null=True, blank=True)
-    var_min = models.DecimalField("Sigmas (outliers)", max_digits=7, decimal_places=2, null=True, blank=True)
-    var_estado = models.BooleanField("Estado", default=True)
-    es_acumulada = models.BooleanField("Acumulada (check)/ Promediada", default=True)    #True: ACUMULADA, False: PROMEDIADA
-    reporte_automatico = models.BooleanField("Reporte Automático", default=True)
-    vacios = models.DecimalField("Vacíos (%)", max_digits=4, decimal_places=1, null=True)
+    """
+    A variable e.g. precipitation, wind speed, wind direction, soil moisture,
+    with an associated unit.
+    The variable_code must match the name of one of the classes in measurement.models.
+    There are max and min allowed values as well as:
+    diff_warning: If two sequential values in the time-series data of this variable
+        differ by more than this value, the validation process can mark this with a
+        warning flag.
+    diff_error: If two sequential values in the time-series data of this variable
+        differ by more than this value, the validation process can mark this with an
+        error flag.
+    is_active: True if the variable is in use in the database.
+    is_cumulative: True if the variable is accumulated over time, False if it is
+        averaged over time.
+    outlier_limit: How many times the standard deviation (sigma) is considered an
+        outlier for this variable.
+    automatic_report: True if this variable should be included in automatic hourly,
+        daily etc. reporting scripts.
+    null_limit: The max % of null (missing, Caused by e.g. equipment malfunction) values
+        allowed for hourly, daily, monthly data. Cumulative values are not deemed
+        trustworthy if the number of missing values in a given period > null_limit.
+    """
+
+    variable_id = models.AutoField("Id", primary_key=True)
+    variable_code = models.CharField("Code", max_length=100)
+    name = models.CharField("Name", max_length=50)
+    unit = models.ForeignKey(
+        Unit, models.SET_NULL, blank=True, null=True, verbose_name="Unit"
+    )
+    maximum = models.DecimalField("Maximum", max_digits=7, decimal_places=2)
+    minimum = models.DecimalField("Minimum", max_digits=7, decimal_places=2)
+    diff_warning = models.DecimalField(
+        "Difference warning", max_digits=7, decimal_places=2, null=True, blank=True
+    )
+    diff_error = models.DecimalField(
+        "Difference error", max_digits=7, decimal_places=2, null=True, blank=True
+    )
+    outlier_limit = models.DecimalField(
+        "Sigmas (outliers)", max_digits=7, decimal_places=2, null=True, blank=True
+    )
+    is_active = models.BooleanField("Active", default=True)
+    is_cumulative = models.BooleanField(
+        "Cumulative (True) or Averaged (False)", default=True
+    )
+    automatic_report = models.BooleanField("Automatic report", default=True)
+    null_limit = models.DecimalField(
+        "Null limit (%)", max_digits=4, decimal_places=1, null=True
+    )
 
     def __str__(self):
-        return str(self.var_nombre)
+        return str(self.name)
 
     def get_absolute_url(self):
-        return reverse('variable:variable_detail', kwargs={'pk': self.pk})
+        return reverse("variable:variable_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ['var_id']
+        ordering = ["variable_id"]
 
 
-class Control(models.Model):
-    con_id = models.AutoField("Id", primary_key=True)
-    var_id = models.ForeignKey(Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable")
-    est_id = models.ForeignKey(Estacion, models.SET_NULL, blank=True, null=True, verbose_name="Estación")
-    sen_id = models.ForeignKey(Sensor, models.SET_NULL, blank=True, null=True, verbose_name="Sensor")
-    con_fecha_ini = models.DateField("Fecha inicio")
-    con_fecha_fin = models.DateField("Fecha fin", blank=True, null=True)
-    con_estado = models.BooleanField("Activo", default=True)
+class SensorInstallation(models.Model):
+    """
+    Represents an installation of a Sensor at a Station, which measures a Variable.
+    Metadata for installation and finishing date, as well as state (active or not).
+    """
+
+    sensorinstallation_id = models.AutoField("Id", primary_key=True)
+    variable = models.ForeignKey(
+        Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"
+    )
+    station = models.ForeignKey(
+        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
+    )
+    sensor = models.ForeignKey(
+        Sensor, models.SET_NULL, blank=True, null=True, verbose_name="Sensor"
+    )
+    start_date = models.DateField("Start date")
+    end_date = models.DateField("End date", blank=True, null=True)
+    state = models.BooleanField("Active", default=True)
 
     def get_absolute_url(self):
-        return reverse('variable:control_detail', kwargs={'pk': self.pk})
+        return reverse("variable:sensorinstallation_detail", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ['est_id']
-
-
-class CurvaDescarga(models.Model):
-    estacion = models.ForeignKey(Estacion, on_delete=models.CASCADE, verbose_name="Estacion",
-                                 related_name='var_curvadescarga_estacion_id')
-    funcion = models.CharField("Función", max_length=200)
-    fecha = models.DateField("Fecha")
+        ordering = ["station"]
