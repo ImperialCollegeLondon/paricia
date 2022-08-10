@@ -17,5 +17,11 @@ class VariableSerializer(serializers.ModelSerializer):
 
 class SensorInstallationSerializer(serializers.ModelSerializer):
     class Meta:
+        depth = 2
+        model = SensorInstallation
+        exclude = []
+
+class SensorInstallationCreateSerializer(serializers.ModelSerializer):
+    class Meta:
         model = SensorInstallation
         exclude = []
