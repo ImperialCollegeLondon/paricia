@@ -2,6 +2,7 @@ asgiref==3.3.4
 Django==3.2.14
 django-bootstrap4==22.1
 django-crispy-forms==1.14.0
+django-cors-headers==3.13.0
 django-excel-response==2.0.5
 django-extensions==3.2.0
 django-filter==22.1
