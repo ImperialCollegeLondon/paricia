@@ -15,6 +15,7 @@ from __future__ import unicode_literals
 
 from django.http import JsonResponse
 from rest_framework import generics
+from rest_framework.response import Response
 
 import variable.models as var
 import variable.serializers as serializers
@@ -63,6 +64,14 @@ class SensorInstallationList(generics.ListCreateAPIView):
 
     queryset = var.SensorInstallation.objects.all()
     serializer_class = serializers.SensorInstallationSerializer
+
+    def get_serializer_class(self, *args, **kwargs):
+        if self.request.method == 'POST':
+            return serializers.SensorInstallationCreateSerializer
+        return self.serializer_class
+
+
+
 
 
 class SensorInstallationDetail(generics.RetrieveUpdateDestroyAPIView):
