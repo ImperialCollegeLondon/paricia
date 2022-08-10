@@ -127,7 +127,7 @@
                     <tr>
                       <th scope="col">Action</th>
                       {% for key, val in response.data.results.0|items %}
-                        <th scope="col">{{ key }}</th>
+                        <th class="{{ key }}" scope="col">{{ key }}</th>
                       {% endfor %}
                     </tr>
                   </thead>
@@ -136,7 +136,7 @@
                       <tr>
                           <td><button class="btn btn-delete btn-danger btn-xs button-form js-tooltip" action="/station/country/{{ row.id }}/" title="Make a DELETE request" data-toggle="modal" data-target="#deleteModal">DELETE</button></td>
                         {% for key, val in row|items %}
-                          <td>{{ val|default_if_none:"" }}</td>
+                          <td class="{{ key }}">{{ val|default_if_none:"" }}</td>
                         {% endfor %}
                       </tr>
                     {% endfor %}
@@ -331,12 +331,14 @@ function doAjaxSubmit(e) {
   return ret;
 }
 
+
 function captureSubmittingElement(e) {
   var target = e.target;
   var form = this;
 
   form.clk = target;
 }
+
 
 $.fn.ajaxForm = function() {
   var options = {}
@@ -347,16 +349,61 @@ $.fn.ajaxForm = function() {
     .bind('click.form-plugin', options, captureSubmittingElement);
 };
 
-    $(document).ready(function() {
-      $('form').ajaxForm();
 
-      $('.btn-delete').click(function(){
-        var action = $(this).attr('action');
-        var form = $('#deleteModal').find('form');
-        form.attr('action', action);
-      });
+function change_id_to_name(){
+  $('#post-object-form  select').each(function(){
 
+    select=$(this);
+    var field_name = $(select).attr('name');
+    if (field_name == "") {
+      return true;
+    }
+
+    $('td.' + field_name).each(function(){
+      var cell = $(this);
+      var field_id = $(this).html();
+      if (field_id == "") {
+        return true;
+      }
+      var option = 'option[value=' + field_id + ']';
+      var text = $(select).find(option).html();
+      cell.html(text);
     });
+  });
+};
+
+
+function change_code_to_label(){
+
+  $('#post-object-form  .form-group').each(function(){
+     var form_group = $(this);
+     field_label = $(form_group).find('label').html().trim();
+     var field_name = form_group.find('input').attr('name');
+
+     if (field_name == null){
+        field_name = form_group.find('select').attr('name');
+     }
+
+      $('th.' + field_name).each(function(){
+        $(this).html(field_label);
+      });
+  });
+};
+
+
+$(document).ready(function() {
+  $('form').ajaxForm();
+
+  $('.btn-delete').click(function(){
+    var action = $(this).attr('action');
+    var form = $('#deleteModal').find('form');
+    form.attr('action', action);
+  });
+
+  change_id_to_name();
+  change_code_to_label();
+
+});
 
 
   </script>
