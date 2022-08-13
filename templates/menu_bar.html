@@ -1,0 +1,133 @@
+{% load static %}
+{% load i18n %}
+{% load rest_framework %}
+
+<div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}"
+     role="navigation" aria-label="{% trans 'navbar' %}">
+  <div class="container">
+    <span>
+      {% block branding %}
+        <a class='navbar-brand' rel="nofollow" href='/'>
+            Paricia
+        </a>
+      {% endblock %}
+    </span>
+
+
+
+    <ul class="nav navbar-nav pull-left">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarStationMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Station<span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarStationMenuLink">
+                <li><a class="dropdown-item" href="/station/country">Country</a></li>
+                <li><a class="dropdown-item" href="/station/region">Region</a></li>
+                <li><a class="dropdown-item" href="/station/ecosystem">Ecosystem</a></li>
+                <li><a class="dropdown-item" href="/station/institution">Institution</a></li>
+                <li><a class="dropdown-item" href="/station/stationtype">Station Type</a></li>
+                <li><a class="dropdown-item" href="/station/place">Place</a></li>
+                <li><a class="dropdown-item" href="/station/basin">Basin</a></li>
+                <li><a class="dropdown-item" href="/station/placebasin">Place Basin</a></li>
+                <li><a class="dropdown-item" href="/station/station">Station</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarVariableMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Variable<span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarVariableMenuLink">
+                <li><a class="dropdown-item" href="/variable/unit">Unit</a></li>
+                <li><a class="dropdown-item" href="/variable/variable">Variable</a></li>
+                <li><a class="dropdown-item" href="/variable/sensorinstallation">Sensor Installation</a></li>
+<!--                <li><a class="dropdown-item" href="/variable/variable/limits">Variable Limits</a></li>-->
+            </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarSensorMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Sensor<span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarSensorMenuLink">
+                <li><a class="dropdown-item" href="/sensor/sensortype">Sensor Type</a></li>
+                <li><a class="dropdown-item" href="/sensor/sensorbrand">Sensor Brand</a></li>
+                <li><a class="dropdown-item" href="/sensor/sensor">Sensor</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarMeasurementMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Measurement<span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarMeasurementMenuLink">
+                <li><a class="dropdown-item" href="/measurement/polarwind">Polar Wind</a></li>
+                <li><a class="dropdown-item" href="/measurement/dischargecurve">Discharge Curve</a></li>
+                <li><a class="dropdown-item" href="/measurement/levelfunction">Level Function</a></li>
+                <li><a class="dropdown-item" href="/measurement/precipitation">Precipitation</a></li>
+                <li><a class="dropdown-item" href="/measurement/airtemperature">Aire Temperature</a></li>
+                <li><a class="dropdown-item" href="/measurement/humidity">Humidity</a></li>
+                <li><a class="dropdown-item" href="/measurement/windvelocity">Wind Velocity</a></li>
+                <li><a class="dropdown-item" href="/measurement/winddirection">Wind Direction</a></li>
+                <li><a class="dropdown-item" href="/measurement/soilmoisture">Soil Moisture</a></li>
+                <li><a class="dropdown-item" href="/measurement/solarradiation">Solar Radiation</a></li>
+                <li><a class="dropdown-item" href="/measurement/atmosphericpressure">Athmosferic Pressure</a></li>
+                <li><a class="dropdown-item" href="/measurement/watertemperature">Water Temperature</a></li>
+                <li><a class="dropdown-item" href="/measurement/flow">Flow</a></li>
+                <li><a class="dropdown-item" href="/measurement/waterlevel">Water Level</a></li>
+                <li><a class="dropdown-item" href="/measurement/batteryvoltage">Battery Voltage</a></li>
+                <li><a class="dropdown-item" href="/measurement/flowmanual">Flow Manual</a></li>
+                <li><a class="dropdown-item" href="/measurement/striplevelreading">Strip Level Reading</a></li>
+                <li><a class="dropdown-item" href="/measurement/soiltemperature">Soil Temperature</a></li>
+                <li><a class="dropdown-item" href="/measurement/indirectradiation">Indirect Radiation</a></li>
+                <li><a class="dropdown-item" href="/measurement/watertemperature_depth">Water Temperature (Depth)</a></li>
+                <li><a class="dropdown-item" href="/measurement/wateracidity_depth">Water Acidity (Depth)</a></li>
+                <li><a class="dropdown-item" href="/measurement/redoxpotential_depth">Redox Potential (Depth)</a></li>
+                <li><a class="dropdown-item" href="/measurement/waterturbidity_depth">Water Turbidity (Depth)</a></li>
+                <li><a class="dropdown-item" href="/measurement/chlorineconcentration_depth">Chlorine Concentration (Depth)</a></li>
+                <li><a class="dropdown-item" href="/measurement/oxygenconcentration_depth">Oxygen Concentration (Depth)</a></li>
+                <li><a class="dropdown-item" href="/measurement/percentageoxygen_depth">Percentage Oxygen (Depth)</a></li>
+                <li><a class="dropdown-item" href="/measurement/phycocyanin_depth">Phycocyanin (Depth)</a></li>
+            </ul>
+        </li>
+
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarManagementMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Management<span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarManagementMenuLink">
+<!--                <li><a class="dropdown-item" href="/management/user">User</a></li>-->
+                <li><a class="dropdown-item" href="/management/register">Register</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarFormattingMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Formatting<span class="caret"></span></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarFormattingMenuLink">
+                <li><a class="dropdown-item" href="/formatting/extension">Extension</a></li>
+                <li><a class="dropdown-item" href="/formatting/delimiter"></a></li>
+                <li><a class="dropdown-item" href="/formatting/date">Date</a></li>
+                <li><a class="dropdown-item" href="/formatting/time">Time</a></li>
+                <li><a class="dropdown-item" href="/formatting/format">Format</a></li>
+                <li><a class="dropdown-item" href="/formatting/classification">Classification</a></li>
+                <li><a class="dropdown-item" href="/formatting/association">Association</a></li>
+            </ul>
+        </li>
+
+
+    </ul>
+
+
+
+
+
+
+    <ul class="nav navbar-nav pull-right">
+      {% block userlinks %}
+        {% if user.is_authenticated %}
+          {% optional_logout request user %}
+        {% else %}
+          {% optional_login request %}
+        {% endif %}
+      {% endblock %}
+    </ul>
+  </div>
+</div>
+

@@ -5,20 +5,7 @@
 {% load static %}
 
 {% block title %}PARICIA{% endblock title%}
-{% block branding %}
-
-<ul class="nav navbar-nav pull-left">
-<li class="nav-item"><a class="nav-link" href="/station/station">Station</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/country">Country</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/region">Region</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/ecosystem">Ecosystem</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/institution">Institution</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/stationtype">Station Type</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/place">Place</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/basin">Basin</a></li>
-<li class="nav-item"><a class="nav-link" href="/station/place">Place Basin</a></li>
-</ul>
-{% endblock branding %}
+{% block navbar %}{% include "menu_bar.html" %}{% endblock navbar %}
 {% block breadcrumbs %}<ul style="margin-top:70px;"></ul>{% endblock breadcrumbs %}
 
 
@@ -27,6 +14,32 @@
 
           <div class="region"  aria-label="{% trans 'request form' %}">
           {% block request_forms %}
+
+                      {% if 'GET' in allowed_methods %}
+            <form id="get-form" class="pull-right">
+              <fieldset>
+                {% if api_settings.URL_FORMAT_OVERRIDE %}
+                  <div class="btn-group format-selection">
+                    <a class="btn btn-primary js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+
+                    <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      {% for format in available_formats %}
+                        <li>
+                          <a class="js-tooltip format-option" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% else %}
+                  <a class="btn btn-primary js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+                {% endif %}
+              </fieldset>
+            </form>
+          {% endif %}
+
 
 
           {% if filter_form %}
@@ -101,6 +114,8 @@
                 <div class="modal-content">
                   <div class="modal-body">
                     <h4 class="text-center">Are you sure you want to delete this element?</h4>
+                    <b></b>
+                    <div id="delete_msg"></div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -398,6 +413,13 @@ $(document).ready(function() {
     var action = $(this).attr('action');
     var form = $('#deleteModal').find('form');
     form.attr('action', action);
+
+    delete_msg = '';
+    $(this).parent().parent().find("td").each(function(i, td){
+      if (i==0 ){ return null;}
+      delete_msg += '<b>' + td.className + '</b> : ' + td.getInnerHTML() + '<br>';
+    });
+    $("#delete_msg").html(delete_msg);
   });
 
   change_id_to_name();
