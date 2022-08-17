@@ -21,6 +21,7 @@ class SensorInstallationSerializer(serializers.ModelSerializer):
         model = SensorInstallation
         exclude = []
 
+
 class SensorInstallationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SensorInstallation

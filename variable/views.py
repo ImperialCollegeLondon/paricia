@@ -66,12 +66,9 @@ class SensorInstallationList(generics.ListCreateAPIView):
     serializer_class = serializers.SensorInstallationSerializer
 
     def get_serializer_class(self, *args, **kwargs):
-        if self.request.method == 'POST':
+        if self.request.method == "POST":
             return serializers.SensorInstallationCreateSerializer
         return self.serializer_class
-
-
-
 
 
 class SensorInstallationDetail(generics.RetrieveUpdateDestroyAPIView):
