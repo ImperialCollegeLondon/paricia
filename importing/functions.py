@@ -257,7 +257,7 @@ def save_temp_data_to_permanent(data_import_temp):
     """
     file_format = data_import_temp.format
     station = data_import_temp.station
-    file_path = str(BASE_DIR) + "/media/" + str(data_import_temp.file)
+    file_path = str(BASE_DIR) + "/data/media/" + str(data_import_temp.file)
 
     all_data = construct_matrix(file_path, file_format, station)
     for var_code, table in all_data.items():

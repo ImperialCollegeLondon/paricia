@@ -23,6 +23,7 @@ from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
 
+from djangomain.settings import BASE_DIR
 from importing.functions import (
     preformat_matrix,
     query_formats,
@@ -112,7 +113,11 @@ class DataImportFullCreate(generics.CreateAPIView):
         save_temp_data_to_permanent(serializer.validated_data["import_temp"])
 
         # Move the file from tmp to permanent and set the filepath field accordingly
-        tmp_file_path = "media/" + str(serializer.validated_data["import_temp"].file)
+        tmp_file_path = (
+            BASE_DIR
+            + "/data/media/"
+            + str(serializer.validated_data["import_temp"].file)
+        )
         final_file_path = str(
             serializer.validated_data["import_temp"].file.path
         ).replace("files/tmp/", "files/")
