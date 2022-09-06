@@ -151,6 +151,16 @@
               <div class="response-info" aria-label="{% trans 'response info' %}">
 
               </div>
+            <style>
+            .table-div {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap;
+                overflow-y: scroll;
+                height: calc(100vh - 220px);
+            }
+            </style>
+              <div class="table-div">
 
                 <table class="table">
                   <thead>
@@ -177,6 +187,9 @@
                     {% endfor %}
                   </tbody>
                 </table>
+
+              </div>
+
 
             </div>
 
