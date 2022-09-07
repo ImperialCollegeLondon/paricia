@@ -79,6 +79,11 @@ class SensorInstallationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = var.SensorInstallation.objects.all()
     serializer_class = serializers.SensorInstallationSerializer
 
+    def get_serializer_class(self, *args, **kwargs):
+        if self.request.method == "GET":
+            return self.serializer_class
+        return serializers.SensorInstallationSerializerUpdate
+
 
 def get_limits(request):
     print(request.POST.get("variable_id"))
