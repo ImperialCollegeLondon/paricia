@@ -2,8 +2,8 @@
 {% load bootstrap4 %}
 {% load static %}
 {% if 'use_i18n'|bootstrap_setting %}
-{% load i18n %}
-{% get_current_language as LANGUAGE_CODE %}
+    {% load i18n %}
+    {% get_current_language as LANGUAGE_CODE %}
 {% endif %}
 <html lang="{{ LANGUAGE_CODE|default:'en_us' }}" xmlns="http://www.w3.org/1999/html">
 
@@ -12,26 +12,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Paricia</title>
 
-    <!-- STYLESHEET CSS -->
-    <!--       {%  bootstrap_css %}-->
-    <link rel="stylesheet" href="{% static 'ext/jquery-ui-1.12.1/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'ext/bootstrap-4.4.1-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
-    <link rel="stylesheet" href="{% static 'ext/DataTables/datatables.min.css' %}" />
 
-
-    <!--SCRIPTS-->
-    <!--        {% bootstrap_javascript jquery=True %}-->
-    <!--        Se usa jquery 3.4.1 para compatibilidad con popper -->
-
-    <script crossorigin="anonymous" src="{% static 'ext/jquery3.4.1/jquery.min.js' %}"></script>
-    <script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
-    <script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
-    <script crossorigin="anonymous" src="{% static 'ext/bootstrap-4.4.1-dist/js/bootstrap.min.js' %}"></script>
-
-    <script type="text/javascript" src="{% static 'ext/DataTables/datatables.min.js' %}"></script>
-
-    <script src="{% static 'scripts/global.js' %}"></script>
+<!--    from rest_framework API-->
+    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/bootstrap-tweaks.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/prettify.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/default.css' %}"/>
 
     {% block javascript %}
     {% endblock %}
@@ -44,10 +30,19 @@
 <body>
 
     <main role="main" class="container py-2">
+        {% include "menu_bar.html" %}
+
         {% block content %}
         {% endblock %}
     </main>
 
+    <!--    from rest_framework API-->
+    <script src="{% static 'rest_framework/js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'rest_framework/js/ajax-form.js' %}"></script>
+    <script src="{% static 'rest_framework/js/csrf.js' %}"></script>
+    <script src="{% static 'rest_framework/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'rest_framework/js/prettify-min.js' %}"></script>
+    <script src="{% static 'rest_framework/js/default.js' %}"></script>
 
 
 </body>
