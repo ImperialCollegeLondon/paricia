@@ -4,7 +4,8 @@ services:
   db:
     image: timescale/timescaledb-ha:pg14-latest
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - db_postgres:/var/lib/postgresql/data/
+      
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -21,10 +22,17 @@ services:
     environment:
       - LOGGING_FILE=/usr/src/app/log/paricia
     volumes:
-      - .:/usr/src/app
+      - data_media:/usr/src/app/data/media/
+      - media:/usr/src/app/media/
     ports:
       - 8000:8000
       - 2222:2222
     depends_on:
       db:
         condition: service_healthy
+
+
+volumes:
+  db_postgres:
+  data_media:
+  media:

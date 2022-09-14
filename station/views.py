@@ -151,6 +151,11 @@ class PlaceBasinList(generics.ListCreateAPIView):
     queryset = stn.PlaceBasin.objects.all()
     serializer_class = serializers.PlaceBasinSerializer
 
+    def get_serializer_class(self, *args, **kwargs):
+        if self.request.method == "GET":
+            return serializers.PlaceBasinListSerializer
+        return self.serializer_class
+
 
 class PlaceBasinDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -159,6 +164,11 @@ class PlaceBasinDetail(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = stn.PlaceBasin.objects.all()
     serializer_class = serializers.PlaceBasinSerializer
+
+    def get_serializer_class(self, *args, **kwargs):
+        if self.request.method == "GET":
+            return serializers.PlaceBasinListSerializer
+        return self.serializer_class
 
 
 class StationList(generics.ListCreateAPIView):

@@ -55,6 +55,12 @@ class BasinSerializer(serializers.ModelSerializer):
         exclude = []
 
 
+class PlaceBasinListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceBasin
+        exclude = []
+        depth = 2
+        
 class PlaceBasinSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceBasin
