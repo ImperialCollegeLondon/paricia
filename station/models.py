@@ -284,7 +284,7 @@ class DeltaT(models.Model):
     id = models.AutoField("Id", primary_key=True)
     station = models.ForeignKey(
         Station,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name="Station",
     )
     delta_t = models.PositiveSmallIntegerField()

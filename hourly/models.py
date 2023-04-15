@@ -54,7 +54,7 @@ class BaseHourly(TimescaleModel):
         if not cls.__name__.startswith("_Hour") and cls.__name__ not in HOURLYS:
             HOURLYS.append(cls.__name__)
 
-    time = models.DateTimeField(precision=0)
+    time = models.DateTimeField()
     station_id = models.PositiveIntegerField("station_id")
     used_for_daily = models.BooleanField("used_for_daily", default=False)
     completeness = models.DecimalField(max_digits=4, decimal_places=1)

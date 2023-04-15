@@ -16,5 +16,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class HourlyConfig(AppConfig):
-    name = "hourly"
+class DailyConfig(AppConfig):
+    name = "daily"
