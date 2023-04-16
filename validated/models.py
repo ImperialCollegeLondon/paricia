@@ -23,7 +23,14 @@ from station.models import Station
 VALIDATEDS: List[str] = []
 """Available validated variables."""
 
-
+# class Permissions(models.Model):
+#
+#     class Meta:
+#         managed = False
+#         default_permissions = ()
+#         permissions = (
+#             ('daily_validation', 'Permission for validate raw data.')
+#         )
 
 
 class PolarWind(TimescaleModel):
