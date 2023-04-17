@@ -18,7 +18,7 @@ from . import views
 
 app_name = "validated"
 urlpatterns = [
-    path("polarwind/", views.PolarWindList.as_view()),
+    # path("polarwind/", views.PolarWindList.as_view()),
     # TODO Verify if it's not really needed
     # path("dischargecurve/", views.DischargeCurveList.as_view()),
     # path("levelfunction/", views.LevelFunctionList.as_view()),
@@ -59,7 +59,7 @@ urlpatterns = [
     ################
     # # path('validacion_v2/periodos_validacion/', views.PeriodosValidacion.as_view(), name='v2_periodos_validacion'),
     # # path('validacion_v2/borrar/', views.ValidacionBorrar.as_view(), name='v2_borrar'),
-    path('validated/daily_validation/', views.DailyValidation.as_view(), name='daily_validation'),
+    path('daily_validation/', views.DailyValidation.as_view(), name='daily_validation'),
     # path('val2/diaria/', views.ValidationReport.as_view(), name='diaria'),
     # path('val2/lista/<int:estacion>/<int:variable>/<str:fecha>/<str:maximo>/<str:minimo>/',
     #      views.ListaValidacion.as_view(),

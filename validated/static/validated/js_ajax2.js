@@ -1,7 +1,7 @@
 
 $(document).ready(function() {
     //activar tooltip
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
 
 
     // Comparar Variables
@@ -218,24 +218,54 @@ $(document).ready(function() {
 
 
     //datepicker con intervalo restringido
+//    var dateFormat = "yy-mm-dd";
+//    $( "#id_inicio" ).datepicker({
+//        changeMonth: true,
+//        changeYear: true,
+//        dateFormat:"yy-mm-dd",
+//        yearRange: '2000:'+(new Date).getFullYear()
+//    });
+//    $( "#id_inicio" ).on( "change", function() {
+//        $( "#id_fin" ).datepicker( "option", "minDate", getDate( this ) );
+//    });
+//    $( "#id_fin" ).datepicker({
+//        changeMonth: true,
+//        changeYear: true,
+//        dateFormat:"yy-mm-dd",
+//        yearRange: '2000:'+(new Date).getFullYear()
+//    });
+//    $( "#id_fin" ).on( "change", function() {
+//        $( "#id_inicio" ).datepicker( "option", "maxDate", getDate( this ) );
+//    });
+//
+//    function getDate( element ) {
+//        var date;
+//        try {
+//            date = $.datepicker.parseDate( dateFormat, element.value );
+//        } catch( error ) {
+//            date = null;
+//        }
+//        return date;
+//    }
+
     var dateFormat = "yy-mm-dd";
-    $( "#id_inicio" ).datepicker({
+    $( "#id_start_date" ).datepicker({
         changeMonth: true,
         changeYear: true,
         dateFormat:"yy-mm-dd",
         yearRange: '2000:'+(new Date).getFullYear()
     });
-    $( "#id_inicio" ).on( "change", function() {
-        $( "#id_fin" ).datepicker( "option", "minDate", getDate( this ) );
+    $( "#id_start_date" ).on( "change", function() {
+        $( "#id_end_date" ).datepicker( "option", "minDate", getDate( this ) );
     });
-    $( "#id_fin" ).datepicker({
+    $( "#id_end_date" ).datepicker({
         changeMonth: true,
         changeYear: true,
         dateFormat:"yy-mm-dd",
         yearRange: '2000:'+(new Date).getFullYear()
     });
-    $( "#id_fin" ).on( "change", function() {
-        $( "#id_inicio" ).datepicker( "option", "maxDate", getDate( this ) );
+    $( "#id_end_date" ).on( "change", function() {
+        $( "#id_start_time" ).datepicker( "option", "maxDate", getDate( this ) );
     });
 
     function getDate( element ) {
@@ -247,7 +277,6 @@ $(document).ready(function() {
         }
         return date;
     }
-
 
     function periodos_validacion(){
         token = $("input[name='csrfmiddlewaretoken']").val();

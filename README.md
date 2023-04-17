@@ -14,7 +14,7 @@ If installing this system from scratch:
 - If you want to load initial data (variables, units, stations...):
   - In a separate terminal run `docker exec -it <name_of_docker_container> bash` e.g. `docker exec -it paricia_web_1 bash` to start a bash session in the container. You can find the name of the container in the Docker Desktop GUI, or by running `docker container ls`.
   - Run `python manage.py shell < utilities/load_initial_data.py`.
-  - Create **admin** user running `python manage.py screatesuperuser`.
+  - Create **admin** user running `python manage.py createsuperuser`.
 
 ## Database Schema
 

@@ -32,20 +32,20 @@ from .filters import (
     # LevelFunctionFilter,
     ValidatedFilter,
     ValidatedFilterDepth,
-    PolarWindFilter,
+    # PolarWindFilter,
 )
-from .forms import LevelFunctionForm
-from validated.others.functions import level_function_table
+# from .forms import LevelFunctionForm
+# from validated.others.functions import level_function_table
 
 
-class PolarWindList(generics.ListAPIView):
-    """
-    List all measurements of Polar Wind.
-    """
-
-    queryset = vali.PolarWind.objects.all()
-    serializer_class = serializers.PolarWindSerializer
-    filterset_class = PolarWindFilter
+# class PolarWindList(generics.ListAPIView):
+#     """
+#     List all measurements of Polar Wind.
+#     """
+#
+#     queryset = vali.PolarWind.objects.all()
+#     serializer_class = serializers.PolarWindSerializer
+#     filterset_class = PolarWindFilter
 
 
 # class DischargeCurveList(generics.ListAPIView):

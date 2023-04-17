@@ -1,22 +1,42 @@
 {% extends "base.html" %}
-{% block content %}
+
 {% load bootstrap4 %}
 {% load static %}
-<!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
-<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+
+{% block extralibraries %}
+<link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<!--  <link rel="stylesheet" href="/resources/demos/style.css">-->
+<!--  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>-->
+<!--  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>-->
+
+<!--<script crossorigin="anonymous" src="{% static 'ext/jquery3.4.1/jquery.min.js' %}"></script>-->
+<script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
+<script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
+<script crossorigin="anonymous" src="{% static 'ext/bootstrap-4.4.1-dist/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'ext/DataTables/datatables.min.js' %}"></script>
+
+<!--<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.2.1/dygraph.min.css" />-->
+<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.2.1/dygraph.min.js"></script>-->
+
+
+<!--<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>-->
 <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
 <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
-<!-- bootstrap-table filter-->
-<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.css">
 
-<link rel="stylesheet" href="{% static 'ext/dygraph-2.1.0/dygraph.css' %}"/>
-<script crossorigin="anonymous" src="{% static 'ext/dygraph-2.1.0/dygraph.min.js' %}"></script>
+<!--<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>-->
+<!--<link rel="stylesheet" type="text/css" href="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.css">-->
 
 
-<script src="{% static 'val2/validacion_diaria2.js' %}"></script>
-<script src="{% static 'val2/js_ajax2.js' %}"></script>
+<!--<link rel="stylesheet" href="{% static 'ext/DataTables/datatables.min.css' %}"/>-->
+<link rel="stylesheet" href="{% static 'styles/global.css' %}">
 <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+<script src="{% static 'scripts/global.js' %}"></script>
+<script src="{% static 'validated/js_ajax2.js' %}"></script>
+<script src="{% static 'validated/daily_validation.js' %}"></script>
+
+
 <style type="text/css">
     .popup-overlay {
         visibility:hidden;
@@ -51,17 +71,18 @@
         margin: 0;
     }
 </style>
-
-
 <script>
-
 $(document).ready(function() {
 
     $("select").addClass("use-placeholder");
     window.mostrar_label_dentro_de_select();
 });
-
 </script>
+{% endblock %}
+
+
+{% block content %}
+
 <div class=" ">
 
     <!-- div titulo-->
@@ -70,7 +91,7 @@ $(document).ready(function() {
             <h5>Validación Datos Crudos por Frecuencia Diaria</h5>
         </div>
         <div class="col">
-            <a id="id_limpiar" class="btn btn-light" href="{% url 'val2:diaria' %}"><span>Limpiar</span></a>
+            <a id="id_limpiar" class="btn btn-light" href="{% url 'validated:daily_validation' %}"><span>Limpiar</span></a>
         </div>
     </div>
 
@@ -80,7 +101,7 @@ $(document).ready(function() {
         <!-- div formulario-->
         <div class="col-lg-12 col-md-12 col-sm-12">
 
-            <form id="form_validacion" class="form" method="post" action="{% url 'val2:diaria' %}">
+            <form id="form_validacion" class="form" method="post" action="{% url 'validated:daily_validation' %}">
                 <div class="row">
                     {% csrf_token %}
                     {% for field in form%}

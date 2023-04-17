@@ -531,6 +531,7 @@ function guardar_crudos(event){
 
 // Consultar la serie de datos diarios desde el servidor de base de datos
 function actualizar_tabla_diario(){
+    debugger;
     var $table = $('#table_diario');
     var var_id = $("#id_variable").val();
     var flag_error = false;
@@ -556,11 +557,13 @@ function actualizar_tabla_diario(){
             data: $("#form_validacion").serialize(),
             type:'POST',
             beforeSend: function () {
+                debugger;
                 //activar_espera();
                 $table.bootstrapTable('showLoading');
     
             },
             success: function (data) {
+                debugger;
                 $("#btn_buscar").attr("disabled", false);
                 for (var key in data){
                     if (key == 'error'){
@@ -625,6 +628,7 @@ function actualizar_tabla_diario(){
     
             },
             error: function () {
+                debugger;
                 $table.bootstrapTable('hideLoading');
                 $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
                 $("#div_mensaje_validacion").modal("show");

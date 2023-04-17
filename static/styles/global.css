@@ -11,7 +11,7 @@ body{
 */
 
 body {
-    background: url('../images/fondo1.jpg') ; /* Referencia: static/styles/. */
+    /* background: url('../images/fondo1.jpg') */ ; /* Referencia: static/styles/. */
     background-color: rgb(127,127,127);
     background-blend-mode: screen;
     background-repeat: repeat;
