@@ -6,7 +6,6 @@ from ..initial_data import populate_groups
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("station", "0001_initial"),
         ("sensor", "0001_initial"),

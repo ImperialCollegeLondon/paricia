@@ -374,7 +374,6 @@ def export_excel(estacion, variable, inicio, fin, frecuencia, profundidad):
     elif variable.var_id == 4 or variable.var_id == 5:
         pass
     else:
-
         chart = LineChart()
         chart.title = variable.var_nombre
         chart.style = 12

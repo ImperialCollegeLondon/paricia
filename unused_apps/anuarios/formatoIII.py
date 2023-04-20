@@ -157,7 +157,6 @@ def minimostai(datos_diarios_min):
 
 def get_maximo(fila):
     try:
-
         if isnan(fila.get("maximo")):
             if isnan(fila.get("valor")):
                 return 0
