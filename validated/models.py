@@ -102,7 +102,7 @@ def create_vali_model(
 # TODO Copy the decimal_places and max_digits from a measurement model
 # meas.Precipitation._meta.get_field('Value').max_digits
 # meas.Precipitation._meta.get_field('Value').decimal_places
-class Precipitation(create_vali_model(digits=6, decimals=2, fields=("Total",))):
+class Precipitation(create_vali_model(digits=6, decimals=2, fields=("Value",))):
     """Precipitation."""
 
 

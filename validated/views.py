@@ -36,6 +36,7 @@ from .filters import (
 )
 # from .forms import LevelFunctionForm
 # from validated.others.functions import level_function_table
+import validated.functions as functions
 
 
 # class PolarWindList(generics.ListAPIView):
@@ -476,24 +477,31 @@ class DailyValidation(FormView):
         form = DailyValidationForm(self.request.POST or None)
         if form.is_valid():
             if self.request.is_ajax():
-                modelo = 'Var' + form.data['variable'] + 'Medicion'
-                modelo = globals()[modelo]
-                fechaa = modelo.objects.filter(estacion_id__exact=form.data['estacion']).aggregate(Max('fecha'),
-                                                                                                   Min('fecha'))
-                if form.data['inicio'] == '':
-                    inicio = fechaa['fecha__min']
-                else:
-                    inicio = datetime.combine(form.cleaned_data['inicio'], time(0, 0, 0, 0))
-                if form.data['fin'] == '':
-                    fin = fechaa['fecha__max']
-                    fin = datetime.combine(fin, time(23, 59, 59, 999999))
-                else:
-                    fin = datetime.combine(form.cleaned_data['fin'], time(23, 59, 59, 999999))
+                # modelo = 'Var' + form.data['variable'] + 'Medicion'
+                # modelo = globals()[modelo]
+                # fechaa = modelo.objects.filter(estacion_id__exact=form.data['estacion']).aggregate(Max('fecha'),
+                #                                                                                    Min('fecha'))
+                # if form.data['inicio'] == '':
+                #     inicio = fechaa['fecha__min']
+                # else:
+                #     inicio = datetime.combine(form.cleaned_data['inicio'], time(0, 0, 0, 0))
+                # if form.data['fin'] == '':
+                #     fin = fechaa['fecha__max']
+                #     fin = datetime.combine(fin, time(23, 59, 59, 999999))
+                # else:
+                #     fin = datetime.combine(form.cleaned_data['fin'], time(23, 59, 59, 999999))
+                # variable = form.cleaned_data['variable']
+                # estacion = form.cleaned_data['estacion']
+                # maximo = form.cleaned_data['limite_superior']
+                # minimo = form.cleaned_data['limite_inferior']
                 variable = form.cleaned_data['variable']
-                estacion = form.cleaned_data['estacion']
-                maximo = form.cleaned_data['limite_superior']
-                minimo = form.cleaned_data['limite_inferior']
-                data = functions.reporte_diario(estacion, variable, inicio, fin, maximo, minimo)
+                station = form.cleaned_data['station']
+                start_date = form.cleaned_data['start_date']
+                end_date = form.cleaned_data['end_date']
+                maximum = form.cleaned_data['maximum']
+                minimum = form.cleaned_data['minimum']
+                # data = functions.reporte_diario(estacion, variable, inicio, fin, maximo, minimo)
+                data = functions.daily_validation(station, variable, start_date, end_date, minimum, maximum)
                 data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
                 return HttpResponse(data_json, content_type='application/json')
 

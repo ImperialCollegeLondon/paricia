@@ -9,8 +9,9 @@ import decimal as dec
 from datetime import datetime, timedelta, time
 
 
-def reporte_diario(station, variable, start_time, end_time, maximum, minimum):
-    reporte, series = reporte_diario_dataframes(station, variable, start_time, end_time, maximum, minimum)
+# def reporte_diario(station, variable, start_time, end_time, maximum, minimum):
+def daily_validation(station, variable, start_time, end_time, minimum, maximum):
+    reporte, series = daily_report_dataframes(station, variable, start_time, end_time, minimum, maximum)
     # reporte, series = calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum)
     reporte.rename(
         columns={
@@ -40,7 +41,7 @@ def reporte_diario(station, variable, start_time, end_time, maximum, minimum):
 
     # response = acumulado.to_dict(orient='list')
     # response = _records.to_dict(orient='records')
-    if variable.var_id in [4, 5]:
+    if variable.variable_id in [4, 5]:
         reporte['n_valor'] = 0
     else:
         reporte['n_valor'] = reporte['c_varia_err']
@@ -52,17 +53,16 @@ def reporte_diario(station, variable, start_time, end_time, maximum, minimum):
     num_dias = len(reporte.index)
 
     data = {'estacion': [{
-        'est_id': station.est_id,
-        'est_nombre': station.est_nombre,
+        'est_id': station.station_id,
+        'est_nombre': station.station_name,
         }],
         'variable': [{
-            'var_id': variable.var_id,
-            'var_nombre': variable.var_nombre,
-            'var_maximo': variable.var_maximo,
-            'var_minimo': variable.var_minimo,
-            'var_unidad_sigla': variable.uni_id.uni_sigla,
-            'var_unidad_sigla': variable.uni_id.uni_sigla,
-            'es_acumulada': variable.es_acumulada,
+            'var_id': variable.variable_id,
+            'var_nombre': variable.name,
+            'var_maximo': variable.maximum,
+            'var_minimo': variable.minimum,
+            'var_unidad_sigla': variable.unit.initials,
+            'es_acumulada': variable.is_cumulative,
         }],
         'datos': reporte.fillna('').to_dict(orient='records'),
         'indicadores': [{
@@ -82,39 +82,31 @@ def reporte_diario(station, variable, start_time, end_time, maximum, minimum):
 
 # Basic calculations is the main functions for calculations
 def basic_calculations(station, variable, start_time, end_time, inf_lim_variable, sup_lim_variable):
+    # TODO change tx_period for the code to query from model
     tx_period = 5
-    try:
-        model_name = 'Var' + str(variable.var_id)
-        variable = Variable.objects.get(pk=variable.var_id)
-        station = Estacion.objects.get(pk=station.est_id)
-    except:
-        model_name = 'Var' + str(variable)
-        variable = Variable.objects.get(pk=variable)
-        station = Estacion.objects.get(pk=station)
+    Measurement = apps.get_model(app_label='measurement', model_name=variable.variable_code)
+    Validated = apps.get_model(app_label='validated', model_name=variable.variable_code)
 
-    Measurement = apps.get_model(app_label='medicion', model_name=model_name+'Medicion')
-    Validated = apps.get_model(app_label='validacion', model_name=model_name+'Validado')
-
-
-    # filter_args = {}
-    # validated = pd.DataFrame.from_records(validated.values(**filter_args))
     validated = Validated.objects.filter(
-        estacion_id=station.est_id,
-        fecha__gte=start_time,
-        fecha__lte=end_time
+        station_id=station.station_id,
+        time__gte=start_time,
+        time__lte=end_time
     ).annotate(
-        is_validated=Value(True, output_field=BooleanField()),# True is for 'validated' tables, False for raw 'measurement'
+        # is_validated: True is for 'validated' tables, False for raw 'measurement'
+        is_validated=Value(True, output_field=BooleanField()),
         exists_in_validated=Value(True, output_field=BooleanField()),
         null_value=Value(False, output_field=BooleanField())
-    ).order_by('fecha')
+    ).order_by('time')
+
+    value_fields = ('value', 'minimum', 'maximum')
+    base_fields = ('id', 'time', 'is_validated', 'exists_in_validated', 'null_value')
+    fields = base_fields + value_fields
     validated = pd.DataFrame.from_records(
-        validated.values('id', 'fecha', 'is_validated', 'valor', 'maximo', 'minimo', 'exists_in_validated', 'null_value')
+        validated.values(*fields)
     )
-    # TODO: eliminar
-    validated = validated.rename(columns={'fecha':'time',  'valor':'value', 'maximo':'maximum', 'minimo':'minimum'})
+
     if validated.empty:
-        validated = pd.DataFrame(columns=['id', 'time', 'is_validated', 'value', 'maximum', 'minimum',
-                                          'exists_in_validated', 'null_value'])
+        validated = pd.DataFrame(columns=fields)
 
     # TODO WHich one is faster?
     # # validated['time'] = validated['time'].dt.floor('min')
@@ -124,20 +116,23 @@ def basic_calculations(station, variable, start_time, end_time, inf_lim_variable
     # validated['date'] = pd.to_datetime(validated['time']).dt.date
 
     measurement = Measurement.objects.filter(
-        estacion_id=station.est_id,
-        fecha__gte=start_time,
-        fecha__lte=end_time
+        station_id=station.station_id,
+        time__gte=start_time,
+        time__lte=end_time
     ).annotate(
-        is_validated=Value(False, output_field=BooleanField()),# True is for 'validated' tables, False for raw 'measurement'
-    ).order_by('fecha')
+        # is_validated: True is for 'validated' tables, False for raw 'measurement'
+        is_validated=Value(False, output_field=BooleanField()),
+    ).order_by('time')
+
+    value_fields = ('value', 'minimum', 'maximum')
+    base_fields = ('id', 'time', 'is_validated')
+    fields = base_fields + value_fields
     measurement = pd.DataFrame.from_records(
-        measurement.values('id', 'fecha', 'is_validated', 'valor', 'maximo', 'minimo')
+        measurement.values(*fields)
     )
-    # TODO eliminar
-    measurement = measurement.rename(columns={'fecha':'time', 'valor':'value', 'maximo':'maximum', 'minimo':'minimum'})
+
     if measurement.empty:
-        measurement = pd.DataFrame(columns=['id', 'time', 'is_validated', 'value', 'maximum', 'minimum',
-                                          'exists_in_validated', 'null_value'])
+        measurement = pd.DataFrame(columns=fields)
 
     measurement['time_truncated'] = measurement['time'].values.astype('<M8[m]')
     # measurement['date'] = pd.to_datetime(measurement['time']).dt.date
@@ -146,14 +141,20 @@ def basic_calculations(station, variable, start_time, end_time, inf_lim_variable
     # measurement['null_value'] = measurement['time_truncated'].isin(validated['time_truncated'])
     # TODO Probabliy is not necessary to math 'time' and 'value'
     # matches_time_and_value = pd.merge(measurement, validated, on=['time_truncated', 'value'], how='outer', indicator=True)
+
+    # TODO IMPORTANT: Verify all of matches_time and 'exists_in_validated' computations
     matches_time = pd.merge(measurement, validated, on=['time_truncated'], how='outer', indicator=True)
+    # TODO Specially, Check the following line: It´s not doing the right thing.
     measurement['exists_in_validated'] = matches_time['_merge'] == 'both'
 
     joined = pd.concat([validated, measurement]).sort_values(by=['time_truncated', 'is_validated', 'id'], ascending=[True, False, False])
     joined['date'] = pd.to_datetime(measurement['time']).dt.date
     joined.rename(columns={'id': 'db_row_id'}, inplace=True)
     joined.reset_index(drop=True, inplace=True)
-    joined.reset_index(names='id_joined', inplace=True)
+
+    joined.index.name = 'id_joined'
+    joined.reset_index(inplace=True)
+    # joined.reset_index(names='id_joined', inplace=True)
 
     inf_lim_variable = float(inf_lim_variable)
     sup_lim_variable = float(sup_lim_variable)
@@ -191,8 +192,9 @@ def basic_calculations(station, variable, start_time, end_time, inf_lim_variable
                           how='left',
                           indicator=False)
     joined['value_difference'] = joined['value'] - joined['lagged_value']
+    # TODO implement to a error/warning level (variable.diff_error and variable.diff_warning)
     joined['value_difference_error'] = np.where(
-        joined['value_difference'].abs().gt(variable.var_err),
+        joined['value_difference'].abs().gt(variable.diff_error),
         True,  # Error
         False,  # No Error
     )
@@ -208,7 +210,8 @@ def basic_calculations(station, variable, start_time, end_time, inf_lim_variable
 
 
 # def calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum):
-def reporte_diario_dataframes(station, variable, start_time, end_time, minimum, maximum):
+# def reporte_diario_dataframes(station, variable, start_time, end_time, minimum, maximum):
+def daily_report_dataframes(station, variable, start_time, end_time, minimum, maximum):
 
     measurement, validated, joined, selected, tx_period = basic_calculations(station, variable, start_time, end_time, minimum, maximum)
 
@@ -238,8 +241,9 @@ def reporte_diario_dataframes(station, variable, start_time, end_time, minimum, 
     # Percentage of data existence
     daily['data_existence_percentage'] = (daily['data_count'] / expected_data_count ) * 100.0
     # TODO escoger la correcta para PARICIA
+    daily['is_null'] = daily['data_existence_percentage'] < (100.0 - float(variable.null_limit))
     # daily['is_null'] = daily['data_existence_percentage'] < variable.null_limit
-    daily['is_null'] = daily['data_existence_percentage'] < variable.umbral_completo
+
 
     # REF. NAME: tabla_valores_sos
     # Count of suspicious values:  values over variable.maximum or under variable.minimum
@@ -275,7 +279,9 @@ def reporte_diario_dataframes(station, variable, start_time, end_time, minimum, 
     #                               2 if 'time_lapse' > 'period'
     #
 
-    daily['value_difference_error_count'] = daily_group['value_difference_error'].sum(numeric_only=False).to_numpy()
+    # TODO Check what would be the best option
+    # daily['value_difference_error_count'] = daily_group['value_difference_error'].sum(numeric_only=False).to_numpy()
+    daily['value_difference_error_count'] = daily_group_all['value_difference_error'].sum(numeric_only=False).to_numpy()
 
 
     # # REF. NAME: lapsos_dias
@@ -357,16 +363,20 @@ def reporte_diario_dataframes(station, variable, start_time, end_time, minimum, 
         pd.DatetimeIndex(daily['date']).month,
         pd.DatetimeIndex(daily['date']).day
     )))
-    historic_diary = Var2Diario.objects.filter(estacion_id=station.est_id).extra(
-        where=["(date_part('month', fecha), date_part('day', fecha)) in %s"],
+    Daily = apps.get_model(app_label='daily', model_name=variable.variable_code)
+    historic_diary = Daily.objects.filter(station_id=station.station_id).extra(
+        where=["(date_part('month', date), date_part('day', date)) in %s"],
         params=[month_day_tuples]
     )
     historic_diary = pd.DataFrame(list(historic_diary.values()))
-    historic_diary = historic_diary.rename(columns={'fecha':'date',  'valor':'value'})
-    historic_diary['month-day'] = pd.DatetimeIndex(historic_diary['date']).month.astype(str) \
-                                  + '-' + pd.DatetimeIndex(historic_diary['date']).day.astype(str)
-    historic_diary_group = historic_diary.groupby(['month-day'])
-    daily['historic_diary_avg'] = historic_diary_group['value'].mean().to_numpy()
+    if not historic_diary.empty:
+        historic_diary['month-day'] = pd.DatetimeIndex(historic_diary['date']).month.astype(str) \
+                                      + '-' + pd.DatetimeIndex(historic_diary['date']).day.astype(str)
+        historic_diary_group = historic_diary.groupby(['month-day'])
+        daily['historic_diary_avg'] = historic_diary_group['value'].mean().to_numpy()
+    else:
+        daily['historic_diary_avg'] = np.nan
+
 
 
     # estado : state
@@ -389,7 +399,7 @@ def reporte_diario_dataframes(station, variable, start_time, end_time, minimum, 
     daily['suspicious_maximums_count'].fillna(0, inplace=True)
     daily['suspicious_minimums_count'].fillna(0, inplace=True)
     daily['value_difference_error_count'].fillna(0, inplace=True)
-
+    daily['historic_diary_avg'].fillna('', inplace=True)
 
     ##
     # TODO check, maybe it's not needed anymore
@@ -401,12 +411,16 @@ def reporte_diario_dataframes(station, variable, start_time, end_time, minimum, 
 
     # Round decimals
     # TODO cambiar 'valor' por 'value' en pAricia
-    decimal_places = Measurement._meta.get_field('valor').decimal_places
+    Measurement = apps.get_model(app_label='measurement', model_name=variable.variable_code)
+    decimal_places = Measurement._meta.get_field('value').decimal_places
     daily['avg_value'] = daily['avg_value'].astype(np.float64).round(decimal_places)
     daily['max_maximum'] = daily['max_maximum'].astype(np.float64).round(decimal_places)
     daily['min_minimum'] = daily['min_minimum'].astype(np.float64).round(decimal_places)
     daily['data_existence_percentage'] = daily['data_existence_percentage'].astype(np.float64).round(1)
-    daily.reset_index(names='id', inplace=True)
+
+    # daily.reset_index(names='id', inplace=True)
+    daily.index.name = 'id'
+    daily.reset_index(inplace=True)
     ## TODO Eliminar o corregir ids -> id
     #
     # daily.rename(columns={'id':'ids',}, inplace=True)
