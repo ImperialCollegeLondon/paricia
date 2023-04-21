@@ -180,6 +180,7 @@ def matrizI(estacion, variable, periodo, tipo):
 
 def get_maximo(item_max):
     try:
+
         if isnan(item_max.get("maximo")):
             if isnan(item_max.get("valor")):
                 return 0

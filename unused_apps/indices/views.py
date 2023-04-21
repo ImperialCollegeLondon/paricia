@@ -404,6 +404,7 @@ class DuracionCaudalMultiestacion(generic.FormView):
     success_url = "indices/duracioncaudal_multiestacion.html"
 
     def post(self, request, *args, **kwargs):
+
         estacion_id = request.POST.getlist("estacion")
         listEst = estacion_id
         tinicio = request.POST.get("inicio", None)

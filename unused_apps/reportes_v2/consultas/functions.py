@@ -221,6 +221,7 @@ def reporte_csv(form):
 
 
 def datos_instantaneos(estacion, variable, fecha_inicio, fecha_fin):
+
     modelo = get_modelo(variable.var_id)
     fecha_inicio = datetime(
         fecha_inicio.year, fecha_inicio.month, fecha_inicio.day, 0, 0, 0
@@ -427,6 +428,7 @@ def datos_diarios(estacion, variable, fecha_inicio, fecha_fin):
         if item < num_datos:
             fecha_datos = datos[item].get("fecha").date()
             if fecha_datos == fecha:
+
                 valor.append(datos[item].get("valor"))
                 maximo_abs.append(datos[item].get("max_abs"))
                 maximo_pro.append(datos[item].get("max_pro"))
@@ -498,6 +500,7 @@ def datos_mensuales(estacion, variable, fecha_inicio, fecha_fin):
 
 
 def armar_consulta(estacion, variable, frecuencia, fecha_inicio, fecha_fin):
+
     cursor = connection.cursor()
     # datos = []
     fecha_inicio = datetime(

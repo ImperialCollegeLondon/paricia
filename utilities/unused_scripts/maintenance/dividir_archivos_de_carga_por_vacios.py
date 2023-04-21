@@ -31,7 +31,7 @@ def dividir_archivo(ruta, nombre_archivo):
 
 
 def run():
-    for ruta, directorios, archivos in os.walk(directorio_base):
+    for (ruta, directorios, archivos) in os.walk(directorio_base):
         print("Ruta: ", str(ruta))
         for nombre_archivo in sorted(archivos):
             if fnmatch.fnmatch(nombre_archivo, "*.[cC][sS][vV]"):

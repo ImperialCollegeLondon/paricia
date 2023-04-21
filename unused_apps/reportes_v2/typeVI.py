@@ -100,6 +100,7 @@ class TypeVI(Titulos):
         matriz = self.matriz(estacion, variable, periodo)
 
         if len(matriz):
+
             if tipo == "maxima":
                 informacion = matriz["rad_max"]
             else:

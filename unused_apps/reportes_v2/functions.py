@@ -70,6 +70,7 @@ def consultar_datos(form):
     max_pro = informacion["max_pro"]
     min_pro = informacion["min_pro"]
     if len(valor) > 0 and valor.count(None) != len(tiempo):
+
         if frecuencia == str(0):
             data_valor = get_trace_minimo(tiempo, valor, "Valor", "#1660A7")
             data_maximo = get_elemento_data(
@@ -280,6 +281,7 @@ def filtrar(estacion, periodo):
     matriz = []
 
     for item in variables:
+
         variable = item.var_id
 
         if variable.var_id in typeI:
@@ -474,6 +476,7 @@ def procesar_json_inamhi(form):
             fecha = datetime.strptime(variable["fechaTomaDelDato"], "%Y-%m-%d %H:%M:%S")
 
             if len(variable["dataJSON"]) > 0:
+
                 if variable["dataJSON"][0]["valor"] is not None:
                     valores.append(variable["dataJSON"][0]["valor"])
                     tiempo.append(fecha)
@@ -631,6 +634,7 @@ def get_layout_grafico(titulo, titulo_yaxis, fecha_inicio, fecha_fin):
 
 
 def get_layout_grafico_viento(titulo):
+
     layout = dict(
         title=titulo,
         # font=dict(size=16),
@@ -696,6 +700,7 @@ def get_layout_grafico_agua(titulo, titulo_nivel, titulo_caudal):
 
 
 def get_data_graph(trace_valor, trace_maximo=None, trace_minimo=None):
+
     if trace_maximo is None or trace_minimo is None:
         data = [trace_valor]
     else:
@@ -709,8 +714,7 @@ def mapa_estaciones_variable(var_id, privado):
     variable = Variable.objects.get(var_id=var_id)
     if privado is True:
         """estaciones = Estacion.objects.filter(
-        est_id__in=Cruce.objects.filter(var_id=var_id).order_by().values('est_id_id').distinct()).order_by('est_codigo')
-        """
+        est_id__in=Cruce.objects.filter(var_id=var_id).order_by().values('est_id_id').distinct()).order_by('est_codigo')"""
         estaciones = (
             Cruce.objects.filter(var_id=var_id)
             .order_by("est_id__est_codigo")
