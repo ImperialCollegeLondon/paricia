@@ -156,6 +156,7 @@ def create_meas_model(
         attrs,
     )
 
+
 # TODO Tell that tables (i.e. measurement_precipitation) are not inheriting indexes on multiple columns
 #  They only present primary key index
 # By the way, Models has explicit index (i.e. WaterTemperatureDepth) shows those indexes in the database

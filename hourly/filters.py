@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
-from station.models import Station
 
+from station.models import Station
 
 
 class HourlyFilter(filters.FilterSet):
@@ -16,7 +16,9 @@ class HourlyFilter(filters.FilterSet):
     min_value = filters.NumberFilter(field_name="value", lookup_expr="gte")
     max_value = filters.NumberFilter(field_name="value", lookup_expr="lte")
     station_id = filters.NumberFilter(field_name="station_id", lookup_expr="exact")
-    used_for_hourly = filters.BooleanFilter(fieldname='used_for_hourly', lookup_expr="exact")
+    used_for_hourly = filters.BooleanFilter(
+        fieldname="used_for_hourly", lookup_expr="exact"
+    )
 
 
 class HourlyFilterDepth(HourlyFilter):

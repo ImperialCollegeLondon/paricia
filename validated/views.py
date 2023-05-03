@@ -13,6 +13,7 @@
 
 from __future__ import unicode_literals
 
+from django.apps import apps
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
@@ -23,20 +24,19 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rest_framework import generics
 
-import validated.models as vali
-import validated.serializers as serializers
-# from validated.models import DischargeCurve, LevelFunction
-
-from .filters import (
-    # DischargeCurveFilter,
-    # LevelFunctionFilter,
-    ValidatedFilter,
-    ValidatedFilterDepth,
-    # PolarWindFilter,
-)
 # from .forms import LevelFunctionForm
 # from validated.others.functions import level_function_table
 import validated.functions as functions
+import validated.models as vali
+import validated.serializers as serializers
+from station.models import Station
+
+from .filters import (  # DischargeCurveFilter,; LevelFunctionFilter,; PolarWindFilter,
+    ValidatedFilter,
+    ValidatedFilterDepth,
+)
+
+# from validated.models import DischargeCurve, LevelFunction
 
 
 # class PolarWindList(generics.ListAPIView):
@@ -53,21 +53,21 @@ import validated.functions as functions
 #     """
 #     List all measurements of Discharge Curve.
 #     """
-# 
+#
 #     queryset = vali.DischargeCurve.objects.all()
 #     serializer_class = serializers.DischargeCurveSerializer
 #     filterset_class = DischargeCurveFilter
-# 
-# 
+#
+#
 # class LevelFunctionList(generics.ListAPIView):
 #     """
 #     List all measurements of Level Function.
 #     """
-# 
+#
 #     queryset = vali.LevelFunction.objects.all()
 #     serializer_class = serializers.LevelFunctionSerializer
 #     filterset_class = LevelFunctionFilter
-# 
+#
 
 ##############################################################
 
@@ -433,99 +433,178 @@ class PhycocyaninDepthList(ValidatedDepthListBase):
 #     return JsonResponse(result)
 
 
-
-
-from django.shortcuts import render
-# from medicion.forms import ValidacionSearchForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import permission_required
-from django.views.generic import ListView, FormView
 # from val2 import functions
 import json
+from datetime import datetime, time
+
+import pandas as pd
+from django.contrib.auth.decorators import permission_required
+
+# from medicion.forms import ValidacionSearchForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import JsonResponse,HttpResponse
-# from val2.forms import BorrarForm
-# from validacion import functions as funcvariable
-from variable.models import Variable
 from django.db import connection
-from datetime import datetime,time
+
 # from medicion.models import *
-from django.db.models import Min, Max
-from django.contrib.auth.mixins import PermissionRequiredMixin
-# from estacion.views import listar_anio
-# from val2.functions import guardar_cambios_validacion
+from django.db.models import Max, Min
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.views.generic import FormView, ListView
 
 # from threading import Thread
 # from validacion.serializers import *
 from rest_framework.generics import ListAPIView
-import pandas as pd
+
+# from val2.forms import BorrarForm
+# from validacion import functions as funcvariable
+from variable.models import Variable
+
 from .forms import DailyValidationForm
 
+# from estacion.views import listar_anio
+# from val2.functions import guardar_cambios_validacion
 
-# class ValidationReport(PermissionRequiredMixin, FormView):
-# class DailyValidation(PermissionRequiredMixin, FormView):
+
 class DailyValidation(FormView):
-    # template_name = 'validacion_diaria.html'
-    template_name = 'daily_validation.html'
-    # form_class = ValidacionSearchForm
+    template_name = "daily_validation.html"
     form_class = DailyValidationForm
     # success_url = '/val2/diaria/'
-    success_url = '/validated/daily_validation/'
-    permission_required = 'validated.daily_validation'
+    success_url = "/validated/daily_validation/"
+    permission_required = "validated.daily_validation"
 
     def post(self, request, *args, **kwargs):
         form = DailyValidationForm(self.request.POST or None)
         if form.is_valid():
             if self.request.is_ajax():
-                # modelo = 'Var' + form.data['variable'] + 'Medicion'
-                # modelo = globals()[modelo]
-                # fechaa = modelo.objects.filter(estacion_id__exact=form.data['estacion']).aggregate(Max('fecha'),
-                #                                                                                    Min('fecha'))
-                # if form.data['inicio'] == '':
-                #     inicio = fechaa['fecha__min']
-                # else:
-                #     inicio = datetime.combine(form.cleaned_data['inicio'], time(0, 0, 0, 0))
-                # if form.data['fin'] == '':
-                #     fin = fechaa['fecha__max']
-                #     fin = datetime.combine(fin, time(23, 59, 59, 999999))
-                # else:
-                #     fin = datetime.combine(form.cleaned_data['fin'], time(23, 59, 59, 999999))
-                # variable = form.cleaned_data['variable']
-                # estacion = form.cleaned_data['estacion']
-                # maximo = form.cleaned_data['limite_superior']
-                # minimo = form.cleaned_data['limite_inferior']
-                variable = form.cleaned_data['variable']
-                station = form.cleaned_data['station']
-                start_date = form.cleaned_data['start_date']
-                end_date = form.cleaned_data['end_date']
-                maximum = form.cleaned_data['maximum']
-                minimum = form.cleaned_data['minimum']
-                # data = functions.reporte_diario(estacion, variable, inicio, fin, maximo, minimo)
-                data = functions.daily_validation(station, variable, start_date, end_date, minimum, maximum)
+                variable = form.cleaned_data["variable"]
+                station = form.cleaned_data["station"]
+                start_date = form.cleaned_data["start_date"]
+                end_date = form.cleaned_data["end_date"]
+                maximum = form.cleaned_data["maximum"]
+                minimum = form.cleaned_data["minimum"]
+                data = functions.daily_validation(
+                    station, variable, start_date, end_date, minimum, maximum
+                )
                 data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
-                return HttpResponse(data_json, content_type='application/json')
+                return HttpResponse(data_json, content_type="application/json")
 
-        return render(request, 'home/form_error.html', {'form': form})
+        return render(request, "home/form_error.html", {"form": form})
 
 
 # Consulta de datos crudos y/o validados por estacion, variable y hora
-class ListaValidacion(PermissionRequiredMixin, ListView):
-    template_name = 'home/mensaje.html'
-    permission_required = 'validacion_v2.validacion_diaria'
+class ListaValidacion(ListView):
+    template_name = "home/mensaje.html"
 
     def get(self, request, *args, **kwargs):
         if self.request.is_ajax():
-            est_id = kwargs.get('estacion')
-            var_id = kwargs.get('variable')
-            fecha_str = kwargs.get('fecha')
-            maximo = kwargs.get('maximo')
-            minimo = kwargs.get('minimo')
+            station_id = kwargs.get("station_id")
+            variable_id = kwargs.get("variable_id")
+            date = kwargs.get("date")
+            minimum = kwargs.get("minimum")
+            maximum = kwargs.get("maximum")
 
-            datos = functions.detalle_diario(est_id, var_id, fecha_str, maximo, minimo)
+            datos = functions.detalle_diario(
+                station_id, variable_id, date, minimum, maximum
+            )
             data_json = json.dumps(datos, allow_nan=True, cls=DjangoJSONEncoder)
-            return HttpResponse(data_json, content_type='application/json')
-        mensaje = 'Ocurrio un problema con el procesamiento de la información, por favor contacte con el administrador'
-        return render(request, 'home/mensaje.html', {'mensaje': mensaje})
+            return HttpResponse(data_json, content_type="application/json")
+        mensaje = "Ocurrio un problema con el procesamiento de la información, por favor contacte con el administrador"
+        return render(request, "home/mensaje.html", {"mensaje": mensaje})
+
+
+# Pasar los datos crudos a validados
+@permission_required("validacion_v2.validacion_diaria")
+def guardar_validados(request):
+    station_id = int(request.POST.get("station_id", None))
+    variable_id = int(request.POST.get("variable_id", None))
+    maximum = float(request.POST.get("maximum", None))
+    minimum = float(request.POST.get("minimum", None))
+    cambios_json = request.POST.get("cambios", None)
+
+    station = Station.objects.get(station_id=station_id)
+    variable = Variable.objects.get(variable_id=variable_id)
+    cambios_lista = json.loads(cambios_json)
+
+    condiciones = functions.get_condiciones(cambios_lista)
+
+    resultado = functions.pasar_crudos_validados(
+        cambios_lista,
+        variable,
+        station,
+        condiciones,
+        minimum,
+        maximum,
+    )
+    if resultado:
+        lista = {"resultado": resultado}
+    else:
+        lista = {"resultado": False}
+    return JsonResponse(lista)
+
+
+def guardar_crudos(request):
+    station_id = int(request.POST.get("station_id", None))
+    variable_id = int(request.POST.get("variable_id", None))
+    data_json = request.POST.get("data", None)
+
+    variable = Variable.objects.get(variable_id=variable_id)
+    station = Station.objects.get(station_id=station_id)
+    data_list = json.loads(data_json)
+
+    fecha_inicio_dato = data_list[0]["fecha"]
+    fecha_fin_dato = data_list[-1]["fecha"]
+
+    # Delete previous validation
+    Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    Validated.timescale.filter(
+        time__range=[fecha_inicio_dato, fecha_fin_dato],
+        station_id=station.station_id,
+    ).delete()
+
+    # Insert new validation using postgres function: insertar_$var_name$_validacion'
+    #            insertion script defined insertar_validaicion_pro.sql
+    #     cursor.callproc('insertar_' + variable.var_modelo.lower() + '_validacion', [estacion_id, cambios_json])
+
+    model_instances = []
+    for row in data_list:
+        if not row["seleccionado"]:
+            continue
+
+        if not row["estado"]:
+            row["valor"] = None
+            row["maximo"] = None
+            row["minimo"] = None
+        # TODO ask if the following else condition has any sense
+        # else:
+        #     row["maximo"] = row["maximo"] if row["maximo"] is not None else row["valor"]
+        #     row["minimo"] = row["minimo"] if row["minimo"] is not None else row["valor"]
+
+        model_instances.append(
+            Validated(
+                time=row["fecha"],
+                value=row["valor"],
+                maximum=row["maximo"],
+                minimum=row["minimo"],
+                station_id=station.station_id,
+            )
+        )
+
+    insert_result = Validated.objects.bulk_create(model_instances)
+    result = False
+    if len(insert_result) == len(model_instances):
+        result = True
+
+    # if resultado:
+    #     lista = {'resultado': resultado}
+    #     fecha_inicio = cambios_lista[0]['fecha']
+    #     fecha_fin = cambios_lista[-1]['fecha']
+    #     t = Thread(target=guardar_cambios_validacion, args=(estacion_id, variable, 'insert', fecha_inicio, fecha_fin))
+    #     t.start()
+    # else:
+    #     lista = {'resultado': False}
+    # print(resultado)
+    return JsonResponse({"resultado": result})
+
 
 #
 # # Consular los periodos de validacion por estacion y variable
@@ -627,99 +706,7 @@ class ListaValidacion(PermissionRequiredMixin, ListView):
 #             return super().form_valid(form)
 #
 #
-# @permission_required('validacion_v2.validacion_diaria')
-# def guardar_crudos(request):
-#     # Verificando datos json para evitar inyeccion SQL
-#     estacion_id = int(request.POST.get('estacion_id', None))
-#     variable_id = int(request.POST.get('variable_id', None))
-#     cambios_json = request.POST.get('cambios', None)
-#     print('Guardar Crudos')
-#     variable = Variable.objects.get(var_id=variable_id)
-#     variable_nombre = str(variable_id)
-#     cambios_lista = json.loads(cambios_json)
-#
-#     # print(cambios_json)
-#
-#     fecha_inicio_dato = cambios_lista[0]['fecha']
-#     fecha_fin_dato = cambios_lista[-1]['fecha']
-#     # Borrar datos
-#     if variable.var_id == 4 or variable.var_id == 5:
-#         with connection.cursor() as cursor:
-#             sql = """DELETE FROM validacion_viento WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s;
-#             """
-#             cursor.execute(sql, [estacion_id, fecha_inicio_dato, fecha_fin_dato])
-#             sql = """DELETE FROM validacion_var4validado WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s;
-#             """
-#             cursor.execute(sql, [estacion_id, fecha_inicio_dato, fecha_fin_dato])
-#             sql = """DELETE FROM validacion_var5validado WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s;
-#             """
-#             cursor.execute(sql, [estacion_id, fecha_inicio_dato, fecha_fin_dato])
-#         cursor.close()
-#     else:
-#         with connection.cursor() as cursor:
-#             sql = "DELETE FROM validacion_var%%var_id%%validado WHERE estacion_id = %s AND fecha >= %s AND fecha <= %s;"
-#             sql = sql.replace('%%var_id%%', str(variable_nombre))
-#             print(sql)
-#             cursor.execute(sql, [estacion_id, fecha_inicio_dato, fecha_fin_dato])
-#         cursor.close()
-#     if variable.var_id == 4 or variable.var_id == 5:
-#         with connection.cursor() as cursor:
-#             cursor.callproc('insertar_viento_validacion', [estacion_id, cambios_json])
-#             resultado = cursor.fetchone()[0]
-#         cursor.close()
-#     else:
-#         with connection.cursor() as cursor:
-#             modelo = functions.normalize(variable.var_nombre).replace(" de ", "")
-#             modelo = modelo.replace(" ", "")
-#             variable_nombre = str(modelo)
-#             cursor.callproc('insertar_' + variable.var_modelo.lower() + '_validacion', [estacion_id, cambios_json])
-#             resultado = cursor.fetchone()[0]
-#             print(resultado)
-#         cursor.close()
-#
-#     if resultado:
-#         lista = {'resultado': resultado}
-#         fecha_inicio = cambios_lista[0]['fecha']
-#         fecha_fin = cambios_lista[-1]['fecha']
-#         t = Thread(target=guardar_cambios_validacion, args=(estacion_id, variable, 'insert', fecha_inicio, fecha_fin))
-#         t.start()
-#     else:
-#         lista = {'resultado': False}
-#     print(resultado)
-#     return JsonResponse(lista)
-#
-#
 
-# Pasar los datos crudos a validados
-@permission_required('validacion_v2.validacion_diaria')
-def guardar_validados(request):
-    # Verificando datos json para evitar inyeccion SQL
-    estacion_id = int(request.POST.get('estacion_id', None))
-    variable_id = int(request.POST.get('variable_id', None))
-    limite_superior = float(request.POST.get('limite_superior', None))
-    limite_inferior = float(request.POST.get('limite_inferior', None))
-    cambios_json = request.POST.get('cambios', None)
-
-    variable = Variable.objects.get(var_id=variable_id)
-    cambios_lista = json.loads(cambios_json)
-
-
-    condiciones = functions.get_condiciones(cambios_lista)
-
-    resultado = functions.pasar_crudos_validados(cambios_lista, variable, estacion_id,
-                                                 condiciones, limite_superior, limite_inferior)
-
-    if resultado:
-        fecha_inicio = cambios_lista[0]['fecha']
-        fecha_fin = cambios_lista[-1]['fecha']
-        lista = {'resultado': resultado}
-        t = Thread(target=guardar_cambios_validacion, args=(estacion_id, variable, 'insert', fecha_inicio, fecha_fin))
-        t.start()
-
-    else:
-        lista = {'resultado': False}
-
-    return JsonResponse(lista)
 
 # # Pasar los datos crudos a validados
 # @permission_required('validacion_v2.validacion_diaria')

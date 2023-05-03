@@ -25,19 +25,16 @@ from rest_framework import generics
 
 import hourly.models as hour
 import hourly.serializers as serializers
-# from Hourly.models import DischargeCurve, LevelFunction
 
-from .filters import (
-    # DischargeCurveFilter,
-    # LevelFunctionFilter,
+from .filters import (  # DischargeCurveFilter,; LevelFunctionFilter,; PolarWindFilter,
     HourlyFilter,
     HourlyFilterDepth,
-    # PolarWindFilter,
 )
 
+# from Hourly.models import DischargeCurve, LevelFunction
+
+
 # from Hourly.others.functions import level_function_table
-
-
 
 
 class HourlyListBase(generics.ListAPIView):

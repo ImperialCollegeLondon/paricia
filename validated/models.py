@@ -17,6 +17,7 @@ from typing import List, Type
 from django.db import models
 from django.urls import reverse
 from timescale.db.models.models import TimescaleModel
+
 import measurement.models as meas
 from station.models import Station
 
@@ -98,6 +99,7 @@ def create_vali_model(
         (BaseValidated,),
         attrs,
     )
+
 
 # TODO Copy the decimal_places and max_digits from a measurement model
 # meas.Precipitation._meta.get_field('Value').max_digits

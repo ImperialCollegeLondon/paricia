@@ -1,16 +1,14 @@
 from rest_framework import serializers
 
-from .models import (
+from .models import (  # DischargeCurve,; LevelFunction,
     AirTemperature,
     AtmosphericPressure,
     BatteryVoltage,
     ChlorineConcentrationDepth,
-    # DischargeCurve,
     Flow,
     FlowManual,
     Humidity,
     IndirectRadiation,
-    # LevelFunction,
     OxygenConcentrationDepth,
     PercentageOxygenConcentrationDepth,
     PhycocyaninDepth,
@@ -35,6 +33,7 @@ class PolarWindSerializer(serializers.ModelSerializer):
     class Meta:
         model = PolarWind
         exclude = []
+
 
 # TODO Confirm if DischargeCurveSerializer is not needed in Validated Models
 # class DischargeCurveSerializer(serializers.ModelSerializer):

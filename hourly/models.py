@@ -14,15 +14,16 @@ from __future__ import unicode_literals
 
 from typing import List, Type
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from timescale.db.models.models import TimescaleModel
-from django.core.exceptions import ValidationError
 
 from station.models import Station
 
 HOURLYS: List[str] = []
 """Available hourly variables."""
+
 
 # TODO check if PolarWind is needed in HOurly
 class PolarWind(TimescaleModel):
@@ -44,8 +45,6 @@ class PolarWind(TimescaleModel):
 
         default_permissions = ()
         managed = False
-
-
 
 
 class BaseHourly(TimescaleModel):
@@ -72,7 +71,9 @@ class BaseHourly(TimescaleModel):
     def clean(self):
         super().clean()
         if self.time.minute or self.time.second:
-            raise ValidationError('The information of minutes and seconds is not allowed in this field.')
+            raise ValidationError(
+                "The information of minutes and seconds is not allowed in this field."
+            )
 
     # TODO check if this is wanted/needed
     def save(self, *args, **kwargs):
@@ -154,6 +155,7 @@ class WaterLevel(create_hour_model()):
 class BatteryVoltage(create_hour_model()):
     """Battery voltage."""
 
+
 # TODO Check if this variable wouldn´t have table in hourly, daily and MOnthly
 class FlowManual(create_hour_model(fields=("Value",))):
     """Flow (manual)."""
@@ -187,7 +189,10 @@ class IndirectRadiation(create_hour_model()):
 
 # Variables created for buoy with different depths
 class WaterTemperatureDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
 
@@ -201,7 +206,10 @@ class WaterTemperatureDepth(
 
 
 class WaterAcidityDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Water acidity (pH) at a depth in cm."""
 
@@ -215,7 +223,10 @@ class WaterAcidityDepth(
 
 
 class RedoxPotentialDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Redox potential (mV) at a depth in cm."""
 
@@ -229,7 +240,10 @@ class RedoxPotentialDepth(
 
 
 class WaterTurbidityDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Water turbidity (NTU) at a depth in cm."""
 
@@ -243,7 +257,10 @@ class WaterTurbidityDepth(
 
 
 class ChlorineConcentrationDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
 
@@ -257,7 +274,10 @@ class ChlorineConcentrationDepth(
 
 
 class OxygenConcentrationDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
 
@@ -271,7 +291,10 @@ class OxygenConcentrationDepth(
 
 
 class PercentageOxygenConcentrationDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
 
@@ -289,7 +312,10 @@ class PercentageOxygenConcentrationDepth(
 
 
 class PhycocyaninDepth(
-    create_hour_model(digits=6, decimals=2,),
+    create_hour_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Phycocyanin (?) at a depth in cm."""
 

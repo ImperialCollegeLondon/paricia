@@ -49,7 +49,6 @@ def consulta(estacion_id, inicio):
     lista = {}
     viento = False
     for v in variables:
-
         ### Dirección viento o velocidad
         if v.var_id in (4, 5):
             viento = True

@@ -27,6 +27,7 @@ from validacion.models import Var1Validado
 
 mainurl = "http://localhost:8002/"
 
+
 ##en el el SEDC http://localhost:8002/api/?var=precipitacion&estacion_id=1&fecha=2018-01
 def getEstaciones():
     print("Lamando a la funcion estaciones")

@@ -281,6 +281,7 @@ class DeltaT(models.Model):
     """
     Delta T: Interval of data adquisition (In minutes)
     """
+
     id = models.AutoField("Id", primary_key=True)
     station = models.ForeignKey(
         Station,
@@ -290,7 +291,7 @@ class DeltaT(models.Model):
     delta_t = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return str(self.station.station_code + ' - ' + str(self.delta_t))
+        return str(self.station.station_code + " - " + str(self.delta_t))
 
     def get_absolute_url(self):
         return reverse("station:delta_t_detail", kwargs={"pk": self.pk})

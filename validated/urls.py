@@ -55,21 +55,24 @@ urlpatterns = [
         views.PercentageOxygenConcentrationDepthList.as_view(),
     ),
     path("phycocyanin_depth/", views.PhycocyaninDepthList.as_view()),
-
     ################
     # # path('validacion_v2/periodos_validacion/', views.PeriodosValidacion.as_view(), name='v2_periodos_validacion'),
     # # path('validacion_v2/borrar/', views.ValidacionBorrar.as_view(), name='v2_borrar'),
-    path('daily_validation/', views.DailyValidation.as_view(), name='daily_validation'),
+    path("daily_validation/", views.DailyValidation.as_view(), name="daily_validation"),
+    path("guardarvalidados/", views.guardar_validados, name="guardar_validados"),
+    path(
+        "lista/<int:station_id>/<int:variable_id>/<str:date>/<str:minimum>/<str:maximum>/",
+        views.ListaValidacion.as_view(),
+        name="horario",
+    ),
+    path("guardarcrudos/", views.guardar_crudos, name="guardar_crudos"),
     # path('val2/diaria/', views.ValidationReport.as_view(), name='diaria'),
     # path('val2/lista/<int:estacion>/<int:variable>/<str:fecha>/<str:maximo>/<str:minimo>/',
     #      views.ListaValidacion.as_view(),
     #      name='horario'),
-    # # path('validacion_v2/guardarcrudos/', views.guardar_crudos, name='v2_guardar_crudos'),
-    # path('val2/guardarvalidados/', views.guardar_validados, name='guardar_validados'),
     # # path('validacion_v2/eliminarvalidados/', views.eliminar_validados, name='v2_eliminar_validados'),
     #
     # # path('validacion_v2/', views.ValidacionList.as_view(), name='validacion_v2_index'),
-
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

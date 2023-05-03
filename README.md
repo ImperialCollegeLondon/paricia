@@ -91,3 +91,4 @@ The tests are run with `python manage.py test` from inside the docker container.
 
 Pre-commit hooks are set up to run code quality checks (isort and black) before committing. To run these locally, you will need to `pip install pre-commit` then `pre-commit install`.
 Github workflows are set up to run the pre-commit actions and the tests automatically on every push action.
+Run before commit: `pre-commit run --all-files`

@@ -14,15 +14,16 @@ from __future__ import unicode_literals
 
 from typing import List, Type
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from timescale.db.models.models import TimescaleModel
-from django.core.exceptions import ValidationError
 
 from station.models import Station
 
 MONTHLYS: List[str] = []
 """Available monthly variables."""
+
 
 # TODO check if PolarWind is needed in monthly
 class PolarWind(TimescaleModel):
@@ -44,8 +45,6 @@ class PolarWind(TimescaleModel):
 
         default_permissions = ()
         managed = False
-
-
 
 
 class BaseMonthly(TimescaleModel):
@@ -71,9 +70,7 @@ class BaseMonthly(TimescaleModel):
         abstract = True
 
 
-def create_Mon_model(
-    digits=14, decimals=6, fields=("Average")
-) -> Type[TimescaleModel]:
+def create_Mon_model(digits=14, decimals=6, fields=("Average")) -> Type[TimescaleModel]:
     num = len(MONTHLYS) + 1
     _fields = {
         key.lower(): models.DecimalField(
@@ -178,7 +175,10 @@ class IndirectRadiation(create_Mon_model()):
 
 # Variables created for buoy with different depths
 class WaterTemperatureDepth(
-    create_Mon_model(digits=6, decimals=2,),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
 
@@ -192,7 +192,10 @@ class WaterTemperatureDepth(
 
 
 class WaterAcidityDepth(
-    create_Mon_model(digits=6, decimals=2,),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Water acidity (pH) at a depth in cm."""
 
@@ -206,7 +209,10 @@ class WaterAcidityDepth(
 
 
 class RedoxPotentialDepth(
-    create_Mon_model(digits=6, decimals=2, ),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Redox potential (mV) at a depth in cm."""
 
@@ -220,7 +226,10 @@ class RedoxPotentialDepth(
 
 
 class WaterTurbidityDepth(
-    create_Mon_model(digits=6, decimals=2, ),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Water turbidity (NTU) at a depth in cm."""
 
@@ -234,7 +243,10 @@ class WaterTurbidityDepth(
 
 
 class ChlorineConcentrationDepth(
-    create_Mon_model(digits=6, decimals=2, ),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
 
@@ -248,7 +260,10 @@ class ChlorineConcentrationDepth(
 
 
 class OxygenConcentrationDepth(
-    create_Mon_model(digits=6, decimals=2, ),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
 
@@ -262,7 +277,10 @@ class OxygenConcentrationDepth(
 
 
 class PercentageOxygenConcentrationDepth(
-    create_Mon_model(digits=6, decimals=2, ),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
 
@@ -280,7 +298,10 @@ class PercentageOxygenConcentrationDepth(
 
 
 class PhycocyaninDepth(
-    create_Mon_model(digits=6, decimals=2, ),
+    create_Mon_model(
+        digits=6,
+        decimals=2,
+    ),
 ):
     """Phycocyanin (?) at a depth in cm."""
 

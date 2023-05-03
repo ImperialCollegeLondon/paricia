@@ -25,19 +25,16 @@ from rest_framework import generics
 
 import daily.models as day
 import daily.serializers as serializers
-# from Daily.models import DischargeCurve, LevelFunction
 
-from .filters import (
-    # DischargeCurveFilter,
-    # LevelFunctionFilter,
+from .filters import (  # DischargeCurveFilter,; LevelFunctionFilter,; PolarWindFilter,
     DailyFilter,
     DailyFilterDepth,
-    # PolarWindFilter,
 )
 
+# from Daily.models import DischargeCurve, LevelFunction
+
+
 # from Daily.others.functions import level_function_table
-
-
 
 
 class DailyListBase(generics.ListAPIView):

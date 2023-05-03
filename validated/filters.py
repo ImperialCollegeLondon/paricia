@@ -3,7 +3,6 @@ from django_filters import rest_framework as filters
 # from validated.models import DischargeCurve
 from station.models import Station
 
-
 # class PolarWindFilter(filters.FilterSet):
 #     """
 #     Filter class for the Polar Wind validateds.
@@ -66,8 +65,11 @@ class ValidatedFilter(filters.FilterSet):
     min_value = filters.NumberFilter(field_name="value", lookup_expr="gte")
     max_value = filters.NumberFilter(field_name="value", lookup_expr="lte")
     station_id = filters.NumberFilter(field_name="station_id", lookup_expr="exact")
-    #TODO Include used_for_hourly
-    used_for_hourly = filters.BooleanFilter(fieldname='used_for_hourly', lookup_expr="exact")
+    # TODO Include used_for_hourly
+    used_for_hourly = filters.BooleanFilter(
+        fieldname="used_for_hourly", lookup_expr="exact"
+    )
+
 
 class ValidatedFilterDepth(ValidatedFilter):
     """
