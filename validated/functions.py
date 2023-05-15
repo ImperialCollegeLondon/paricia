@@ -27,7 +27,7 @@ def set_time_limits(start_time, end_time):
 
 
 def daily_validation(station, variable, start_time, end_time, minimum, maximum):
-    reporte, series = daily_report(
+    reporte, selected, measurement, validated = daily_report(
         station, variable, start_time, end_time, minimum, maximum
     )
     # reporte, series = calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum)
@@ -41,7 +41,9 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
             "max_maximum": "maximo",
             "min_minimum": "minimo",
             "data_existence_percentage": "porcentaje",
-            "is_null": "porcentaje_error",
+            # TODO Confirm if "is_null" must be replaced for "porcentaje_error"
+            # "is_null": "porcentaje_error",
+            "percentage_error": "porcentaje_error",
             "value_error": "valor_error",
             "maximum_error": "maximo_error",
             "minimum_error": "minimo_error",
@@ -109,7 +111,12 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
                 "num_dias": num_dias,
             }
         ],
-        "datos_grafico": series.fillna("").values.tolist(),  # datos_grafico,
+        "datos_grafico": selected.fillna("").values.tolist(),  # datos_grafico,
+        "series": {
+            "selected": selected.fillna("").to_dict("list"),
+            "measurement": measurement.fillna("").to_dict("list"),
+            "validated": validated.fillna("").to_dict("list"),
+        },
         "grafico": None,  # grafico_msj,
         "curva": None,  # mensaje
     }
@@ -311,6 +318,10 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     )
     # daily['is_null'] = daily['data_existence_percentage'] < variable.null_limit
 
+    daily["percentage_error"] = ~daily["data_existence_percentage"].between(
+        100.0 - float(variable.null_limit), 100.0
+    )
+
     # REF. NAME: tabla_valores_sos
     # Count of suspicious values:  values over variable.maximum or under variable.minimum
     # TODO: change variable_maximun and variable_minimum to apply for PARICIA context
@@ -446,6 +457,10 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     daily = daily.merge(extra_data_daily, on="date", how="left")
     daily["extra_data_count"].fillna(0, inplace=True)
 
+    # TODO the following line makes an override of "date_error"
+    #           Discuss if the team are agree
+    daily["date_error"] = daily["extra_data_count"]
+
     # porcentaje : data_existence_percentage
     # porcentaje_error : null_value
     # valor_error : (posiblemente no requiera)
@@ -548,7 +563,10 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     daily["ids"] = daily["id"]
     #
     ##
-    return daily, selected[["time", "value"]]
+    _selected = selected[["time", "value", "maximum", "minimum"]]
+    _measurement = measurement[["time", "value", "maximum", "minimum"]]
+    _validated = validated[["time", "value", "maximum", "minimum"]]
+    return daily, _selected, _measurement, _validated
 
 
 # Consultar datos crudos y/o validados por estacion, variable y fecha de un día en específico

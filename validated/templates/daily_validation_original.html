@@ -15,7 +15,7 @@
 <!--<script crossorigin="anonymous" src="{% static 'ext/jquery3.4.1/jquery.min.js' %}"></script>-->
 <script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
 <script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
-<!--<script crossorigin="anonymous" src="{% static 'ext/bootstrap-4.4.1-dist/js/bootstrap.min.js' %}"></script>-->
+<script crossorigin="anonymous" src="{% static 'ext/bootstrap-4.4.1-dist/js/bootstrap.min.js' %}"></script>
 <!--<script type="text/javascript" src="{% static 'ext/DataTables/datatables.min.js' %}"></script>-->
 
 
@@ -72,13 +72,6 @@
         padding: 0;
         margin: 0;
     }
-
-
-  .panel-derecho {
-    height: calc(100vh - 150px);
-    overflow: auto;
-  }
-
 </style>
 <script>
 $(document).ready(function() {
@@ -107,18 +100,84 @@ $(document).ready(function() {
 
 <div style="height: 20px;"></div>
 
-<div class="row">
-    <div class="col-md-3">
+
+
+    <div class="filtro row">
+        <!-- div formulario-->
+        <div class="col-lg-12 col-md-12 col-sm-12">
+
             <form id="form_validacion" class="form" method="post" action="{% url 'validated:daily_validation' %}">
-
+                <div class="row">
                     {% csrf_token %}
-                    {% bootstrap_form form show_label=True  %}
-
-                    <button id="btn_buscar" type="button" class="btn btn-primary">Submit</button>
-
+                    {% for field in form%}
+                    {% bootstrap_field field show_label=False form_group_class='col-lg-3 col-md-3 col-sm-6 mt-3' %}
+                    {% endfor %}
+                    <div class="form-group col-lg-3 col-md-3 mt-3">
+                        <button id="btn_buscar" type="button" class="btn btn-primary">Validar</button>
+                        
+                    </div>
+                </div>
             </form>
+
+
+        </div><!-- end div formulario-->
+
+
     </div>
-    <div class="col-md-9 panel-derecho ">
+    <div id="div_c"></div>
+
+    <div id="div_informacion" style="overflow-x: scroll;"  class="col-lg-12 col-md-12 col-sm-12 nopadding">
+    </div>
+    <div id="div_message_fechas" class="row mt-4" style="display:none;">
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            Ocurrio un problema con el procesamiento de la información, seleccione Fechas
+        </div>
+    </div>
+
+
+    <div id="div_mensaje" class="filtro row" style="display:none;">
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+        </div>
+    </div>
+
+    <div class="row m-3">
+        <div class="col"></div>
+    </div>
+
+
+    <div class=" row my-3">
+        <div class="col-lg-2 col-md-2 col-sm-4">
+            <b>Filtro Fecha</b>
+            <select id="chk_fecha" name="crudo" type="text" class="form-control mr-2">
+                <option value="todos">Todos</option>
+                <option value="normal">Normales</option>
+                <option value="error">Errores</option>
+            </select>
+        </div>
+
+        <div class="col-lg-2 col-md-2 col-sm-4">
+            <b>Filtro Porcentaje</b>
+            <select id="chk_porcentaje" name="diario" type="text" class="form-control mr-2">
+                <option value="todos">Todos</option>
+                <option value="normal">Dentro del Umbral</option>
+                <option value="error">Fuera del Umbral</option>
+
+            </select>
+        </div>
+
+        <div class="col-lg-2 col-md-2 col-sm-4">
+            <b>Filtro Valor</b>
+            <select id="chk_numero" name="diario" type="text" class="form-control mr-2">
+                <option value="todos">Todos</option>
+                <option value="normal">Sin problemas</option>
+                <option value="error">Con problemas</option>
+
+            </select>
+        </div>
+    </div>
+
+
 
 
     <div id="toolbar_diario" class="filtro row no-gutters">
@@ -139,14 +198,14 @@ $(document).ready(function() {
                 <button id="btn_historial" name="diario" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Historial de Validación"><i class="fas fa-history"></i></button>
                 <button id="btn_eliminar" name="diario" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar Filas"><i name="diario" class="fas fa-trash"></i></button>
                 <button id="btn_mostrar" name="diario" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Deshacer Cambios"><i class="fas fa-trash-restore"></i></button>
-                <button id="btn_enviar" name="diario" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar Validación">Save</i></button>
+                <button id="btn_enviar" name="diario" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar Validación"><i class="fas fa-save"></i></button>
             </div>
         </div>
     </div>
 
     <table id="table_diario"
             data-toggle="table"
-            data-height="250"
+            data-height="458"
             data-show-footer="true"
             data-unique-id="id"
             data-show-columns="true"
@@ -155,58 +214,14 @@ $(document).ready(function() {
             <tr>
                 <th></th>
                 <th>Id</th>
-                <th>Day</th>
-                <th>Percentage</th>
-                <th>Value</th>
-                <th>Action</th>
+                <th>Fecha</th>
+                <th>Porcentaje</th>
+                <th>Valor</th>
+                <th>Acción</th>
             </tr>
         </thead>
     </table>
 
-            <div id="div_informacion" style="overflow-x: scroll;"  class="col-lg-12 col-md-12 col-sm-12 nopadding">
-    </div>
-
-
-
-    <div class="filtro row">
-        <!-- div formulario-->
-        <div class="col-lg-12 col-md-12 col-sm-12">
-
-
-
-        </div><!-- end div formulario-->
-
-
-    </div>
-    <div id="div_c"></div>
-
-
-    <div id="div_message_fechas" class="row mt-4" style="display:none;">
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            Ocurrio un problema con el procesamiento de la información, seleccione Fechas
-        </div>
-    </div>
-
-
-    <div id="div_mensaje" class="filtro row" style="display:none;">
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
-        </div>
-    </div>
-
-    <div class="row m-3">
-        <div class="col"></div>
-    </div>
-
-
-
-
-
-
-
-
-
-    <div style="height: 40px;"></div>
 
     <div class="row m-4">
         <div class="col"></div>
@@ -304,7 +319,7 @@ $(document).ready(function() {
                 <th>Valor</th>
                 <th>Variación consecutiva</th>
                 <th>Valores Atípicos</th>
-                <th>Comentario</th>
+                <th>Comentario</th>                
                 <th>Acción</th>
             </tr>
         </thead>
@@ -407,10 +422,6 @@ $(document).ready(function() {
         </div>
     </div>
     <!-- End Modal Formulario Promedio -->
-
-    </div>
-</div>
-
 
 
     <!-- Modal Formulario Modificar Agua -->

@@ -49,29 +49,6 @@ from .filters import (  # DischargeCurveFilter,; LevelFunctionFilter,; PolarWind
 #     filterset_class = PolarWindFilter
 
 
-# class DischargeCurveList(generics.ListAPIView):
-#     """
-#     List all measurements of Discharge Curve.
-#     """
-#
-#     queryset = vali.DischargeCurve.objects.all()
-#     serializer_class = serializers.DischargeCurveSerializer
-#     filterset_class = DischargeCurveFilter
-#
-#
-# class LevelFunctionList(generics.ListAPIView):
-#     """
-#     List all measurements of Level Function.
-#     """
-#
-#     queryset = vali.LevelFunction.objects.all()
-#     serializer_class = serializers.LevelFunctionSerializer
-#     filterset_class = LevelFunctionFilter
-#
-
-##############################################################
-
-
 class ValidatedListBase(generics.ListAPIView):
     """
     Base class for the measurement list views that all use the
@@ -312,108 +289,6 @@ class PhycocyaninDepthList(ValidatedDepthListBase):
 ########################################################################################
 
 
-# class DischargeCurveDetail(PermissionRequiredMixin, DetailView):
-#     model = DischargeCurve
-#     permission_required = "validated.view_dischargecurve"
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         dischargecurve_id = self.object.pk
-#         context["levelfunctiontable"] = level_function_table(dischargecurve_id)
-#         return context
-
-
-# class LevelFunctionCreate(PermissionRequiredMixin, CreateView):
-#     permission_required = "validated.add_dischargecurve"
-#     model = LevelFunction
-#     form_class = LevelFunctionForm
-#
-#     def post(self, request, *args, **kwargs):
-#         dischargecurve_id = kwargs.get("id")
-#         dischargecurve = DischargeCurve.objects.get(pk=dischargecurve_id)
-#         form = LevelFunctionForm(self.request.POST or None)
-#         try:
-#             # Verify if form is correct
-#             levelfunction = form.save(commit=False)
-#         except Exception:
-#             # If it is not, send an informative message.
-#             _levelfunctiontable = level_function_table(dischargecurve_id)
-#             new_levelfunction = render(
-#                 request,
-#                 "measurement/levelfunction_form.html",
-#                 {"form": LevelFunctionForm(self.request.POST or None)},
-#             )
-#             return render(
-#                 request,
-#                 "measurement/dischargecurve_detail.html",
-#                 {
-#                     "dischargecurve": dischargecurve,
-#                     "levelfunctiontable": _levelfunctiontable,
-#                     "new_levelfunction": new_levelfunction.content.decode("utf-8"),
-#                 },
-#             )
-#         levelfunction.dischargecurve = dischargecurve
-#         levelfunction.save()
-#         dischargecurve.requiere_recalculo_caudal = True
-#         dischargecurve.save()
-#         url = reverse(
-#             "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
-#         )
-#         return HttpResponseRedirect(url)
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(LevelFunctionCreate, self).get_context_data(**kwargs)
-#         context["title"] = "Create"
-#         dischargecurve_id = self.kwargs.get("id")
-#         context["url"] = reverse(
-#             "measurement:levelfunction_create", kwargs={"id": dischargecurve_id}
-#         )
-#         return context
-#
-#
-# class LevelFunctionUpdate(PermissionRequiredMixin, UpdateView):
-#     permission_required = "validated.change_dischargecurve"
-#     model = LevelFunction
-#     fields = ["level", "function"]
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context["title"] = "Modify"
-#         levelfunction_pk = self.kwargs.get("pk")
-#         context["url"] = reverse(
-#             "measurement:levelfunction_update", kwargs={"pk": levelfunction_pk}
-#         )
-#         context["dischargecurve_id"] = self.object.dischargecurve.id
-#         return context
-#
-#     def post(self, request, *args, **kwargs):
-#         data = request.POST.copy()
-#         dischargecurve_id = data.get("dischargecurve_id")
-#         dischargecurve = DischargeCurve.objects.get(pk=dischargecurve_id)
-#         dischargecurve.require_recalculate_flow = True
-#         dischargecurve.save()
-#         self.success_url = reverse(
-#             "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve_id}
-#         )
-#         return super().post(data, **kwargs)
-#
-#
-# class LevelFunctionDelete(PermissionRequiredMixin, DeleteView):
-#     permission_required = "validated.delete_dischargecurve"
-#     model = LevelFunction
-#
-#     def delete(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         dischargecurve = self.object.dischargecurve
-#         dischargecurve.require_recalculate_flow = True
-#         dischargecurve.save()
-#         self.object.delete()
-#         return HttpResponseRedirect(
-#             reverse(
-#                 "measurement:dischargecurve_detail", kwargs={"pk": dischargecurve.id}
-#             )
-#         )
-#
 #
 # @permission_required("validated.add_dischargecurve")
 # def recalculate_flow(request):
@@ -468,9 +343,7 @@ from .forms import DailyValidationForm
 class DailyValidation(FormView):
     template_name = "daily_validation.html"
     form_class = DailyValidationForm
-    # success_url = '/val2/diaria/'
     success_url = "/validated/daily_validation/"
-    permission_required = "validated.daily_validation"
 
     def post(self, request, *args, **kwargs):
         form = DailyValidationForm(self.request.POST or None)
@@ -513,7 +386,6 @@ class ListaValidacion(ListView):
 
 
 # Pasar los datos crudos a validados
-@permission_required("validacion_v2.validacion_diaria")
 def guardar_validados(request):
     station_id = int(request.POST.get("station_id", None))
     variable_id = int(request.POST.get("variable_id", None))
