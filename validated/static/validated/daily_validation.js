@@ -123,7 +123,7 @@ function grafico_dispersion_plotly(series, append_to, variable){
     };
 
     const miDiv = document.querySelector("#" + append_to);
-    miDiv.style.height = "500px";
+    miDiv.style.height = "450px";
     Plotly.newPlot(append_to, data_array, layout, {renderer: 'webgl'});
 }
 
@@ -677,6 +677,8 @@ function actualizar_tabla_diario(){
                             grafico_dispersion_plotly(data.series, "div_informacion", data.variable[0]);
                         }
 
+
+
 //                        $("#resize_plot").show("slow");
 //                        $("#div_informacion").show("slow");
 //                        window.gid = $('.plotly-graph-div,.js-plotly-plot').attr('id');
@@ -696,7 +698,7 @@ function actualizar_tabla_diario(){
                         $table.bootstrapTable({
                             columns:columns,
                             data: datos_json,
-                            height: 458,
+                            height: 420,
                             showFooter: true,
                             uniqueId: 'id',
                             rowStyle: style_fila
@@ -728,8 +730,28 @@ function actualizar_tabla_diario(){
         });
     
     }
-    
+
+    var tab1 = document.getElementById("tab1-tab");
+    tab1.click();
 }
+
+
+function getTab(evt, tabName) {
+
+    var i, tabpane;
+    tabpane = document.getElementsByClassName("tab-pane");
+    for (i = 0; i < tabpane.length; i++) {
+        tabpane[i].style.display = "none";
+        tabpane[i].classList.remove("show");
+    }
+
+    var e = document.getElementById(tabName);
+    e.classList.add("show");
+    e.style.display = "";
+}
+
+
+
 
 // actualizar una fila de la tabla de datos diarios
 function modificar_fila(){

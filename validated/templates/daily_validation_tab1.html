@@ -1,0 +1,40 @@
+    <div id="toolbar_diario" class="filtro row no-gutters">
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <input id="txt_seleccionar" name="diario" type="text" class="form-control mr-2" placeholder="1,5,7 or 1-10">
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="btn-group ml-lg-2 ml-md-2">
+                <button id="btn_seleccionar" name="diario" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Marcar Filas"><i style="margin: 4px auto;" class="fas fa-check-circle"></i></button>
+                <button id="btn_desmarcar" name="diario" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Desmarcar Filas"><i class="far fa-check-circle"></i></button>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="btn-group">
+                <button id="btn_desvalidar" name="diario" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Desvalidar Datos"><i style="margin: 4px auto;" class="fas fa-redo"></i></button>
+                <button id="btn_grafico" name="diario" class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Graficar Datos"><i style="margin: 4px auto;" class="fas fa-chart-line"></i></button>
+                <button id="btn_historial" name="diario" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Historial de Validación"><i class="fas fa-history"></i></button>
+                <button id="btn_eliminar" name="diario" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar Filas"><i name="diario" class="fas fa-trash"></i></button>
+                <button id="btn_mostrar" name="diario" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Deshacer Cambios"><i class="fas fa-trash-restore"></i></button>
+                <button id="btn_enviar" name="diario" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar Validación">Save</i></button>
+            </div>
+        </div>
+    </div>
+    <table id="table_diario"
+            data-toggle="table"
+            data-height="250"
+            data-show-footer="true"
+            data-unique-id="id"
+            data-show-columns="true"
+            data-toolbar="#toolbar_diario" class="filtro">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Id</th>
+                <th>Day</th>
+                <th>Percentage</th>
+                <th>Value</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+    </table>

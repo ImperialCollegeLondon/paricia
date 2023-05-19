@@ -74,7 +74,7 @@
     }
 
 
-  .panel-derecho {
+  .right-panel {
     height: calc(100vh - 150px);
     overflow: auto;
   }
@@ -108,7 +108,7 @@ $(document).ready(function() {
 <div style="height: 20px;"></div>
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-3 left-panel">
             <form id="form_validacion" class="form" method="post" action="{% url 'validated:daily_validation' %}">
 
                     {% csrf_token %}
@@ -118,53 +118,16 @@ $(document).ready(function() {
 
             </form>
     </div>
-    <div class="col-md-9 panel-derecho ">
+    <div class="col-md-9 right-panel ">
+        {% include "daily_validation_right_panel.html" %}
 
 
-    <div id="toolbar_diario" class="filtro row no-gutters">
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <input id="txt_seleccionar" name="diario" type="text" class="form-control mr-2" placeholder="1,5,7 or 1-10">
-        </div>
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <div class="btn-group ml-lg-2 ml-md-2">
-                <button id="btn_seleccionar" name="diario" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Marcar Filas"><i style="margin: 4px auto;" class="fas fa-check-circle"></i></button>
-                <button id="btn_desmarcar" name="diario" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Desmarcar Filas"><i class="far fa-check-circle"></i></button>
-            </div>
-        </div>
 
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="btn-group">
-                <button id="btn_desvalidar" name="diario" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Desvalidar Datos"><i style="margin: 4px auto;" class="fas fa-redo"></i></button>
-                <button id="btn_grafico" name="diario" class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Graficar Datos"><i style="margin: 4px auto;" class="fas fa-chart-line"></i></button>
-                <button id="btn_historial" name="diario" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Historial de Validación"><i class="fas fa-history"></i></button>
-                <button id="btn_eliminar" name="diario" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar Filas"><i name="diario" class="fas fa-trash"></i></button>
-                <button id="btn_mostrar" name="diario" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Deshacer Cambios"><i class="fas fa-trash-restore"></i></button>
-                <button id="btn_enviar" name="diario" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Enviar Validación">Save</i></button>
-            </div>
-        </div>
-    </div>
 
-    <table id="table_diario"
-            data-toggle="table"
-            data-height="250"
-            data-show-footer="true"
-            data-unique-id="id"
-            data-show-columns="true"
-            data-toolbar="#toolbar_diario" class="filtro">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Id</th>
-                <th>Day</th>
-                <th>Percentage</th>
-                <th>Value</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-    </table>
 
-            <div id="div_informacion" style="overflow-x: scroll;"  class="col-lg-12 col-md-12 col-sm-12 nopadding">
-    </div>
+
+
+
 
 
 
@@ -212,103 +175,6 @@ $(document).ready(function() {
         <div class="col"></div>
     </div>
 
-
-    <div class=" row my-3">
-        <div class="col-lg-2 col-md-2 col-sm-6">
-
-            <b>Filtro Fecha</b>
-            <select id="chk_fecha_crudo" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todos</option>
-                <option value="normal">Normales</option>
-                <option value="error">Anomálos</option>
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Filtro Valor</b>
-            <select id="chk_valor_crudo" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todos</option>
-                <option value="normal">Dentro del umbral</option>
-                <option value="error">Fuera del Umbral</option>
-
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Valores atípicos</b>
-            <select id="chk_stddev" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todos</option>
-                <option value="normal">Dentro de sigmas</option>
-                <option value="error">Fuera de sigmas</option>
-
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Filtro Estado</b>
-            <select id="chk_fila" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todas</option>
-                <option value="normal">Activo</option>
-                <option value="error">Inactivo</option>
-
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Filtro Variación</b>
-            <select id="chk_varcon" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todas</option>
-                <option value="normal">Normal</option>
-                <option value="error">Error</option>
-
-            </select>
-        </div>
-
-    </div>
-
-
-    <div id="toolbar_crudo" class="filtro row no-gutters">
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <input id="txt_seleccionar_crudo" type="text" class="form-control" placeholder="1,5,7 or 1-10">
-
-        </div>
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <div class="btn-group ml-lg-2 ml-md-2">
-                    <button id="btn_seleccionar_crudo" name="crudo" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Marcar Filas"><i style="margin: 4px auto;" class="fas fa-check-circle"></i></button>
-                    <button id="btn_desmarcar_crudo" name="crudo" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Desmarcar Filas"><i class="far fa-check-circle"></i></button>
-                </div>
-
-        </div>
-
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="btn-group">
-                <button id="btn_nuevo_crudo" name="crudo" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Nuevo Registro"><i class="fas fa-plus-circle"></i></button>
-                <button id="btn_grafico_crudo" name="crudo" class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Graficar Datos"><i style="margin: 4px auto;" class="fas fa-chart-line"></i></button>
-                <button id="btn_eliminar_crudo" name="crudo" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Eilminar Filas"><i class="fas fa-trash"></i></button>
-                <button id="btn_mostrar_crudo" name="crudo" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Deshacer Cambios"><i class="fas fa-trash-restore"></i></button>
-                <button id="btn_enviar_crudo" name="crudo" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Guardar Cambios"><i class="fas fa-save"></i></button>
-            </div>
-        </div>
-    </div>
-
-
-    <table id="table_crudo"
-            data-toggle="table"
-            data-height="458"
-            data-show-footer="true"
-            data-unique-id="id"
-            data-show-columns="true"
-            data-toolbar="#toolbar_crudo"
-            class="filtro">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Id</th>
-                <th>Fecha</th>
-                <th>Valor</th>
-                <th>Variación consecutiva</th>
-                <th>Valores Atípicos</th>
-                <th>Comentario</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-    </table>
 
 
     <div id="div_lista_datos">
