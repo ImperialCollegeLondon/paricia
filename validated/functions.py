@@ -27,91 +27,142 @@ def set_time_limits(start_time, end_time):
 
 
 def daily_validation(station, variable, start_time, end_time, minimum, maximum):
-    reporte, selected, measurement, validated = daily_report(
+    report, selected, measurement, validated = daily_report(
         station, variable, start_time, end_time, minimum, maximum
     )
     # reporte, series = calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum)
-    reporte.rename(
-        columns={
-            "date": "fecha",
-            "date_error": "fecha_error",
-            # 'repeated_values_count':'fecha_numero',
-            "extra_data_count": "fecha_numero",
-            "avg_value": "valor",
-            "max_maximum": "maximo",
-            "min_minimum": "minimo",
-            "data_existence_percentage": "porcentaje",
-            # TODO Confirm if "is_null" must be replaced for "porcentaje_error"
-            # "is_null": "porcentaje_error",
-            "percentage_error": "porcentaje_error",
-            "value_error": "valor_error",
-            "maximum_error": "maximo_error",
-            "minimum_error": "minimo_error",
-            "suspicious_values_count": "valor_numero",
-            "suspicious_maximums_count": "maximo_numero",
-            "suspicious_minimums_count": "minimo_numero",
-            "historic_diary_avg": "media_historica",
-            "state": "estado",
-            "all_validated": "validado",
-            "value_difference_error_count": "c_varia_err",
-        },
-        inplace=True,
+    # reporte.rename(
+    #     columns={
+    #         "date": "fecha",
+    #         "date_error": "fecha_error",
+    #         # 'repeated_values_count':'fecha_numero',
+    #         "extra_data_count": "fecha_numero",
+    #         "avg_value": "valor",
+    #         "max_maximum": "maximo",
+    #         "min_minimum": "minimo",
+    #         "percentage": "porcentaje",
+    #         # TODO Confirm if "is_null" must be replaced for "porcentaje_error"
+    #         # "is_null": "porcentaje_error",
+    #         "percentage_error": "porcentaje_error",
+    #         "value_error": "valor_error",
+    #         "maximum_error": "maximo_error",
+    #         "minimum_error": "minimo_error",
+    #         "suspicious_values_count": "valor_numero",
+    #         "suspicious_maximums_count": "maximo_numero",
+    #         "suspicious_minimums_count": "minimo_numero",
+    #         "historic_diary_avg": "media_historica",
+    #         "state": "estado",
+    #         "all_validated": "validado",
+    #         "value_difference_error_count": "c_varia_err",
+    #     },
+    #     inplace=True,
+    # )
+
+    # # response = acumulado.to_dict(orient='list')
+    # # response = _records.to_dict(orient='records')
+    # if variable.variable_id in [4, 5]:
+    #     report["n_valor"] = 0
+    # else:
+    #     report["n_valor"] = report["c_varia_err"]
+    if variable.variable_id in [4, 5]:
+        report["n_value"] = 0
+    else:
+        report["n_value"] = report["value_difference_error_count"]
+
+    # num_fecha = len(
+    #     report[report["fecha_error"].ne(1) & ~report["fecha_error"].isna()].index
+    # )
+    num_date = len(
+        report[report["date_error"].ne(1) & ~report["date_error"].isna()].index
     )
 
-    # response = acumulado.to_dict(orient='list')
-    # response = _records.to_dict(orient='records')
-    if variable.variable_id in [4, 5]:
-        reporte["n_valor"] = 0
-    else:
-        reporte["n_valor"] = reporte["c_varia_err"]
-    num_fecha = len(
-        reporte[reporte["fecha_error"].ne(1) & ~reporte["fecha_error"].isna()].index
-    )
-    num_porcentaje = len(reporte[reporte["porcentaje_error"].eq(True)])
-    num_valor = len(
-        reporte[reporte["porcentaje_error"].eq(False) & ~reporte["valor_numero"].isna()]
-    )
-    num_maximo = len(
-        reporte[
-            reporte["porcentaje_error"].eq(False) & ~reporte["maximo_numero"].isna()
+    # num_porcentaje = len(report[report["porcentaje_error"].eq(True)])
+    num_percentage = len(report[report["percentage_error"].eq(True)])
+
+    # num_valor = len(
+    #     report[report["porcentaje_error"].eq(False) & ~report["valor_numero"].isna()]
+    # )
+    num_value = len(
+        report[
+            report["percentage_error"].eq(False)
+            & ~report["suspicious_values_count"].isna()
         ]
     )
-    num_minimo = len(
-        reporte[
-            reporte["porcentaje_error"].eq(False) & ~reporte["minimo_numero"].isna()
+
+    # num_maximo = len(
+    #     report[
+    #         report["porcentaje_error"].eq(False) & ~report["maximo_numero"].isna()
+    #     ]
+    # )
+    num_maximum = len(
+        report[
+            report["percentage_error"].eq(False)
+            & ~report["suspicious_maximums_count"].isna()
         ]
     )
-    num_dias = len(reporte.index)
+
+    # num_minimo = len(
+    #     report[
+    #         report["porcentaje_error"].eq(False) & ~report["minimo_numero"].isna()
+    #     ]
+    # )
+    num_minimum = len(
+        report[
+            report["percentage_error"].eq(False)
+            & ~report["suspicious_minimums_count"].isna()
+        ]
+    )
+
+    # num_dias = len(report.index)
+    num_days = len(report.index)
 
     data = {
-        "estacion": [
+        # "estacion": [
+        "station": [
             {
-                "est_id": station.station_id,
-                "est_nombre": station.station_name,
+                # "est_id": station.station_id,
+                "id": station.station_id,
+                # "est_nombre": station.station_name,
+                "name": station.station_name,
             }
         ],
         "variable": [
             {
-                "var_id": variable.variable_id,
-                "var_nombre": variable.name,
-                "var_maximo": variable.maximum,
-                "var_minimo": variable.minimum,
-                "var_unidad_sigla": variable.unit.initials,
-                "es_acumulada": variable.is_cumulative,
+                # "var_id": variable.variable_id,
+                "id": variable.variable_id,
+                # "var_nombre": variable.name,
+                "name": variable.name,
+                # "var_maximo": variable.maximum,
+                "maximum": variable.maximum,
+                # "var_minimo": variable.minimum,
+                "minimum": variable.minimum,
+                # "var_unidad_sigla": variable.unit.initials,
+                "unit_initials": variable.unit.initials,
+                # "es_acumulada": variable.is_cumulative,
+                "is_cumulative": variable.is_cumulative,
             }
         ],
-        "datos": reporte.fillna("").to_dict(orient="records"),
-        "indicadores": [
+        # "datos": reporte.fillna("").to_dict(orient="records"),
+        "data": report.fillna("").to_dict(orient="records"),
+        # "indicadores": [
+        "indicators": [
             {
-                "num_fecha": num_fecha,
-                "num_porcentaje": num_porcentaje,
-                "num_valor": num_valor,
-                "num_maximo": num_maximo,
-                "num_minimo": num_minimo,
-                "num_dias": num_dias,
+                # "num_fecha": num_fecha,
+                "num_date": num_date,
+                # "num_porcentaje": num_porcentaje,
+                "num_percentage": num_percentage,
+                # "num_valor": num_valor,
+                "num_value": num_value,
+                # "num_maximo": num_maximo,
+                "num_maximum": num_maximum,
+                # "num_minimo": num_minimo,
+                "num_minimum": num_minimum,
+                # "num_dias": num_dias,
+                "num_days": num_days,
             }
         ],
-        "datos_grafico": selected.fillna("").values.tolist(),  # datos_grafico,
+        # "datos_grafico": selected.fillna("").values.tolist(),  # datos_grafico,
+        "plot_data": selected.fillna("").values.tolist(),
         "series": {
             "selected": selected.fillna("").to_dict("list"),
             "measurement": measurement.fillna("").to_dict("list"),
@@ -210,13 +261,22 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     minimum = float(minimum)
     maximum = float(maximum)
     joined["suspicious_value"] = np.where(
-        (joined["value"] < minimum) | (joined["value"] > maximum), True, False
+        (joined["value"] < minimum) | (joined["value"] > maximum),
+        True,
+        False
+        # (joined["value"] < minimum) | (joined["value"] > maximum), 1, 0
     )
     joined["suspicious_maximum"] = np.where(
-        (joined["maximum"] < minimum) | (joined["maximum"] > maximum), True, False
+        (joined["maximum"] < minimum) | (joined["maximum"] > maximum),
+        True,
+        False
+        # (joined["maximum"] < minimum) | (joined["maximum"] > maximum), 1, 0
     )
     joined["suspicious_minimum"] = np.where(
-        (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
+        (joined["minimum"] < minimum) | (joined["minimum"] > maximum),
+        True,
+        False
+        # (joined["minimum"] < minimum) | (joined["minimum"] > maximum), 1, 0
     )
 
     # selected
@@ -309,16 +369,12 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
 
     # REF. NAME: tabla_calculo
     # Percentage of data existence
-    daily["data_existence_percentage"] = (
-        daily["data_count"] / expected_data_count
-    ) * 100.0
+    daily["percentage"] = (daily["data_count"] / expected_data_count) * 100.0
     # TODO escoger la correcta para PARICIA
-    daily["is_null"] = daily["data_existence_percentage"] < (
-        100.0 - float(variable.null_limit)
-    )
-    # daily['is_null'] = daily['data_existence_percentage'] < variable.null_limit
+    daily["is_null"] = daily["percentage"] < (100.0 - float(variable.null_limit))
+    # daily['is_null'] = daily['percentage'] < variable.null_limit
 
-    daily["percentage_error"] = ~daily["data_existence_percentage"].between(
+    daily["percentage_error"] = ~daily["percentage"].between(
         100.0 - float(variable.null_limit), 100.0
     )
 
@@ -333,19 +389,25 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     #         column='value',
     #         aggfunc=lambda x: (x < variable.var_minimo).sum() + (x > variable.var_maximo).sum()
     #     )).to_numpy()
-    daily["suspicious_values_count"] = daily_group["suspicious_value"].count()
+    daily["suspicious_values_count"] = daily_group["suspicious_value"].sum().to_numpy()
+
     # daily['suspicious_maximums_count'] = daily_group.agg(
     #     suspicious=pd.NamedAgg(
     #         column='maximum',
     #         aggfunc=lambda x: (x < variable.var_minimo).sum() + (x > variable.var_maximo).sum()
     #     )).to_numpy()
-    daily["suspicious_maximums_count"] = daily_group["suspicious_maximum"].count()
+    daily["suspicious_maximums_count"] = (
+        daily_group["suspicious_maximum"].sum().to_numpy()
+    )
+
     # daily['suspicious_minimums_count'] = daily_group.agg(
     #     suspicious=pd.NamedAgg(
     #         column='minimum',
     #         aggfunc=lambda x: (x < variable.var_minimo).sum() + (x > variable.var_maximo).sum()
     #     )).to_numpy()
-    daily["suspicious_minimums_count"] = daily_group["suspicious_minimum"].count()
+    daily["suspicious_minimums_count"] = (
+        daily_group["suspicious_minimum"].sum().to_numpy()
+    )
 
     # TODO check this for PARAMH2O (tabla_varia_erro)
     # REF. NAME: tabla_varia_erro
@@ -381,7 +443,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
                 "max_maximum",
                 "min_minimum",
                 "all_validated",
-                "data_existence_percentage",
+                "percentage",
                 "is_null",
                 "suspicious_values_count",
                 "suspicious_maximums_count",
@@ -461,7 +523,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     #           Discuss if the team are agree
     daily["date_error"] = daily["extra_data_count"]
 
-    # porcentaje : data_existence_percentage
+    # porcentaje : percentage
     # porcentaje_error : null_value
     # valor_error : (posiblemente no requiera)
     # maximo_error : (posiblemente no requiera)
@@ -514,7 +576,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     # c_varia_err
 
     daily["data_count"].fillna(0, inplace=True)
-    daily["data_existence_percentage"].fillna(0, inplace=True)
+    daily["percentage"].fillna(0, inplace=True)
     daily["suspicious_values_count"].fillna(0, inplace=True)
     daily["suspicious_maximums_count"].fillna(0, inplace=True)
     daily["suspicious_minimums_count"].fillna(0, inplace=True)
@@ -550,9 +612,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     daily["avg_value"] = daily["avg_value"].astype(np.float64).round(decimal_places)
     daily["max_maximum"] = daily["max_maximum"].astype(np.float64).round(decimal_places)
     daily["min_minimum"] = daily["min_minimum"].astype(np.float64).round(decimal_places)
-    daily["data_existence_percentage"] = (
-        daily["data_existence_percentage"].astype(np.float64).round(1)
-    )
+    daily["percentage"] = daily["percentage"].astype(np.float64).round(1)
 
     # daily.reset_index(names='id', inplace=True)
     daily.index.name = "id"

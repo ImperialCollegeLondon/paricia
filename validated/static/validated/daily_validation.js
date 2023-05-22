@@ -564,7 +564,7 @@ function guardar_crudos(event){
 //    cambios = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true}));
 //    //console.log($table.bootstrapTable('getData',{unfiltered:true, }))
 //    //detalle_crudos();
-
+    document.getElementById("tab3-tab").style.display = "none";
     var $table = $('#table_crudo');
     token = $("input[name='csrfmiddlewaretoken']").val();
     station_id = $("#id_station").val();
@@ -671,7 +671,8 @@ function actualizar_tabla_diario(){
 
                         // GRAFICO con Plotly
 //                        debugger;
-                        if (data.variable[0].es_acumulada){
+//                        if (data.variable[0].es_acumulada){
+                        if (data.variable[0].is_cumulative){
                             grafico_barras_plotly(data.series, "#div_informacion", data.variable[0]);
                         }else{
                             grafico_dispersion_plotly(data.series, "div_informacion", data.variable[0]);
@@ -685,23 +686,25 @@ function actualizar_tabla_diario(){
 //                        window.plot_orig_width = $("#" + window.gid).width();
 //                        plot_adjust();
                         habilitar_nuevo();
-                        var_id = data.variable[0]['var_id'];
+                        var_id = data.variable[0]['id'];
                         variable = data.variable[0];
-                        estacion = data.estacion[0];
-                        datos_json = data.datos
+                        estacion = data.station[0];
+//                        datos_json = data.datos;
+                        datos_json = data.data
                         //num_dias = data.indicadores[0]['num_dias'];
                         $table.bootstrapTable('destroy');
-                        for (const index in data.indicadores[0]){
-                            indicadores_diarios[index]= data.indicadores[0][index];
+                        for (const index in data.indicators[0]){
+                            indicadores_diarios[index]= data.indicators[0][index];
                         }
-                        var columns = get_columns_diario(var_id, data.indicadores[0]);
+                        debugger;
+                        var columns = get_columns_diario(var_id, data.indicators[0]);
                         $table.bootstrapTable({
                             columns:columns,
                             data: datos_json,
                             height: 420,
                             showFooter: true,
                             uniqueId: 'id',
-                            rowStyle: style_fila
+                            rowStyle: style_row
                         });
 
                         $table.bootstrapTable('hideLoading');
@@ -1525,6 +1528,9 @@ function detalle_crudos(e, value, row){
             $table.bootstrapTable('showLoading');
         },
         success: function (data) {
+
+            document.getElementById("tab3-tab").style.display = "block";
+            document.getElementById("tab3-tab").click();
             datos_json = data.datos;
             $table.bootstrapTable('destroy');
             for (const index in data.indicadores[0]){
@@ -1536,7 +1542,12 @@ function detalle_crudos(e, value, row){
                 element["fecha"] = (element['fecha']).replace('T',' ');
             }
             var columns = get_column_validado(variable_id, data.indicadores[0]);
-            $table.bootstrapTable({columns:columns, data: datos_json, rowStyle: style_fila})
+            $table.bootstrapTable({
+                columns:columns,
+                data: datos_json,
+                rowStyle: style_row,
+                height: 320,
+                });
             //$table.bootstrapTable({columns:columns, data: datos_json})
             $table.bootstrapTable('hideLoading');
         },
@@ -1658,7 +1669,7 @@ function abrir_formulario(e, value, row, index){
 
 //Generar las columnas de la tabla de datos diarios
 function get_columns_diario(var_id){
-//    debugger;
+
     var span = '<span class="badge badge-danger">num</span>';
 
     var columns = [];
@@ -1674,26 +1685,53 @@ function get_columns_diario(var_id){
         cellStyle: style_id
     };
 
-    var fecha = {
-        field:'fecha',
-        title: 'Fecha',
-        cellStyle: style_fecha,
-        formatter: format_valor,
+//    var fecha = {
+//        field:'fecha',
+//        title: 'Fecha',
+//        cellStyle: style_fecha,
+//        formatter: format_valor,
+//        footerFormatter: total_filas,
+//        //filterControl: 'datepicker'
+//    };
+    var date = {
+        field:'date',
+        title: 'Date',
+        cellStyle: style_date,
+        formatter: format_value,
         footerFormatter: total_filas,
         //filterControl: 'datepicker'
-
     };
-    var porcentaje = {
-        field:'porcentaje',
-        title:'Porcentaje ',
-        cellStyle: style_porcentaje,
+
+
+//    var porcentaje = {
+//        field:'porcentaje',
+//        title:'Porcentaje ',
+//        cellStyle: style_porcentaje,
+//        footerFormatter: footer_promedio,
+//        //filterControl: 'input'
+//    };
+    var percentage = {
+        field:'percentage',
+        title:'Percnt.',
+        cellStyle: style_percentage,
         footerFormatter: footer_promedio,
         //filterControl: 'input'
     };
 
-    var accion = {
-        field: 'accion',
-        title: 'Acción',
+//    var accion = {
+//        field: 'accion',
+//        title: 'Acción',
+//        formatter: operate_table_diario,
+//        events: {
+//           'click .search': detalle_crudos,
+//           'click .delete': eliminar_diario,
+//           //'click .update': abrir_formulario
+//
+//        }
+//    };
+    var action = {
+        field: 'action',
+        title: 'Action',
         formatter: operate_table_diario,
         events: {
            'click .search': detalle_crudos,
@@ -1702,55 +1740,62 @@ function get_columns_diario(var_id){
 
         }
     };
-    var n_valor = {
-        field:'n_valor',
-        title:'Variación Consecutiva',
+
+//    var n_valor = {
+//        field:'n_valor',
+//        title:'Variación Consecutiva',
+//        cellStyle: style_var_con,
+//        footerFormatter: footer_variaConse_cont
+//    };
+    var n_value = {
+        field:'n_value',
+        title:'Diff. Err',
         cellStyle: style_var_con,
         footerFormatter: footer_variaConse_cont
     };
 
     columns.push(state);
     columns.push(id);
-    columns.push(fecha);
-    columns.push(porcentaje);
+    columns.push(date);
+    columns.push(percentage);
 
 
 
     if (var_id == 1) {
-        var valor = {
-            field:'valor',
-            title:'Valor ',
-            cellStyle: style_valor,
-            formatter: format_valor,
+        var value = {
+            field:'value',
+            title:'Value ',
+            cellStyle: style_value,
+            formatter: format_value,
             footerFormatter: footer_suma
         };
-        columns.push(valor);
-        columns.push(n_valor);
+        columns.push(value);
+        columns.push(n_value);
     }
     else if ((var_id == 4) || (var_id == 5)){
 
-        var valor = {
-            field:'valor',
-            title:'Valor ',
-            cellStyle: style_valor,
+        var value = {
+            field:'value',
+            title:'Value ',
+            cellStyle: style_value,
             //formatter: format_valor,
             footerFormatter: footer_promedio
         };
 
-        var maximo = {
-            field:'maximo',
-            title:'Máximo ',
+        var maximum = {
+            field:'maximum',
+            title:'Maximum ',
             visible: false,
-            cellStyle: style_valor,
+            cellStyle: style_value,
             //formatter: format_valor,
             footerFormatter: footer_promedio
         };
 
-        var minimo= {
-            field:'minimo',
-            title:'Mínimo ',
+        var minimum= {
+            field:'minimum',
+            title:'Minimum ',
             visible: false,
-            cellStyle: style_valor,
+            cellStyle: style_value,
             //formatter: format_valor,
             footerFormatter: footer_promedio
         }
@@ -1767,47 +1812,44 @@ function get_columns_diario(var_id){
             formatter: format_punto_cardinal,
             //footerFormatter: footer_promedio
         };
-        columns.push(valor);
-        columns.push(maximo);
-        columns.push(minimo);
+        columns.push(value);
+        columns.push(maximum);
+        columns.push(minimum);
         columns.push(direccion);
         columns.push(punto_cardinal);
 
     }
 
     else{
-        var valor = {
-            field:'valor',
-            title : 'Valor',
-            cellStyle: style_valor,
-            formatter: format_valor,
+        var value = {
+            field:'avg_value',
+            title : 'Avg. Val.',
+            cellStyle: style_value,
+            formatter: format_value,
             footerFormatter: footer_promedio
         };
-        var maximo = {
-            field:'maximo',
-            title:'Máximo ',
-            cellStyle: style_valor,
-            formatter: format_valor,
+        var maximum = {
+            field:'max_maximum',
+            title:'Max. of Maxs. ',
+            cellStyle: style_value,
+            formatter: format_value,
             footerFormatter: footer_promedio
         };
 
-        var minimo= {
-            field:'minimo',
-            title:'Mínimo ',
-            cellStyle: style_valor,
-            formatter: format_valor,
+        var minimum= {
+            field:'min_minimum',
+            title:'Min. of Mins.',
+            cellStyle: style_value,
+            formatter: format_value,
             footerFormatter: footer_promedio
         }
-        columns.push(valor);
-        columns.push(maximo);
-        columns.push(minimo);
-        columns.push(n_valor);
-
-
-
+        columns.push(value);
+        columns.push(maximum);
+        columns.push(minimum);
+        columns.push(n_value);
     }
 
-    columns.push(accion);
+    columns.push(action);
 
     return columns
 
@@ -1835,7 +1877,7 @@ function get_column_validado(var_id){
     var fecha = {
         field:'fecha',
         title:'Fecha',
-        cellStyle: style_fecha,
+        cellStyle: style_date,
         footerFormatter: total_datos
     };
 
@@ -1991,10 +2033,26 @@ function operate_table_crudo(value, row, index) {
 }
 /*Formatos para las tablas crudos/diario*/
 // Formato para el porcentaje de datos diarios
-function style_porcentaje(value, row, index) {
+//function style_porcentaje(value, row, index) {
+////    debugger;
+//    var clase = ''
+//    if (row.porcentaje_error == true) {
+//        return {
+//            classes: 'error'
+//        }
+//    }
+//    else{
+//        return {
+//            classes: 'normal'
+//        }
+//    }
+//
+//}
+
+function style_percentage(value, row, index) {
 //    debugger;
-    var clase = ''
-    if (row.porcentaje_error == true) {
+//    var class = '';
+    if (row.percentage_error == true) {
         return {
             classes: 'error'
         }
@@ -2006,30 +2064,43 @@ function style_porcentaje(value, row, index) {
     }
 
 }
+
+
+
+
 //Formato para el valor, maximo, minimo de la tabla crudos/diarios
-function style_fila(row, index){
+//function style_fila(row, index){
+function style_row(row, index){
 //    debugger;
-    if (row.estado == false) {
-      clase = 'error'
+    var _class = '';
+    if (row.state == false) {
+      _class = 'error';
     }
     /*if (row.seleccionado == false){
         clase = 'no-seleccionado'
     }*/
     else
-        clase = ''
-    return {classes: clase}
+        _class = '';
+    return {classes: _class}
 }
-function style_valor(value, row, index, field){
-//    debugger;
-    var clase = ''
-    field_numero = field+'_numero';
+
+
+//function style_valor(value, row, index, field){
+function style_value(value, row, index, field){
+
+    var _class = '';
+    field_numero = "suspicious_" + field.split("_")[1] +"s_count";
+
+    // TODO maybe limite_superior could be removed
     limite_superior = $('#id_limite_superior').val();
     if (row[field_numero]>0 )
-        clase = 'error';
+        _class = 'error';
     else
-        clase = 'normal';
-    return { classes: clase}
+        _class = 'normal';
+    return { classes: _class}
 }
+
+
 //Formato para el error de la tabla crudos/diarios
 function style_error_crudo(value, row, index, field){
 //    debugger;
@@ -2071,7 +2142,26 @@ function style_varia_error(value, row, index){
 }
 
 //Formato para el formato de la fecha
-function style_fecha(value, row, index){
+//function style_fecha(value, row, index){
+////    debugger;
+//    // TODO Verify what fecha_error means
+////    var clase = ''
+////    if (row.fecha_error == 0 || row.fecha_error == 2 || row.fecha_error == 3 || row.fecha_numero > 0)
+////        clase = 'error';
+////    else
+////        clase = '';
+////    return { classes: clase}
+//    var clase = ''
+//    if (row.fecha_error > 0)
+//        clase = 'error';
+//    else
+//        clase = '';
+//    return { classes: clase}
+//
+//}
+
+
+function style_date(value, row, index){
 //    debugger;
     // TODO Verify what fecha_error means
 //    var clase = ''
@@ -2080,36 +2170,59 @@ function style_fecha(value, row, index){
 //    else
 //        clase = '';
 //    return { classes: clase}
-    var clase = ''
-    if (row.fecha_error > 0)
-        clase = 'error';
+    var _class = '';
+    if (row.date_error > 0)
+        _class = 'error';
     else
-        clase = '';
-    return { classes: clase}
+        _class = '';
+    return { classes: _class}
 
 }
+
 //Formato para la fila validada
 function style_id(value, row, index){
 //    debugger;
-    var clase = ''
-    if (row.validado == true)
-        clase = 'validado';
+    var _class = '';
+//    if (row.validado == true)
+    if (row.all_validated == true)
+        _class = 'validado';
     ///else if (row.estado == false)
        // clase = 'error';
+   // TODO check row.seleccionado translation
     else if (row.seleccionado == false)
-        clase = 'error';
+        _class = 'error';
     else
-        clase = '';
-    return { classes: clase}
+        _class = '';
+    return { classes: _class}
 
 }
+///*Fomatos de celda para las tablas diario/crudos */
+//// Poner el numero de errores en el día
+//function format_valor(value, row, index, field){
+////    debugger;
+//    var span = '<span class="badge badge-light">num</span>';
+//    var content = ''
+//    var field_numero = field + '_numero'
+////    field_numero = "suspicious_" + field +"s_count";
+//    if (row[field_numero]>0 ){
+//        span = span.replace('num',row[field_numero].toString());
+//        content = value + ' ' + span;
+//    }
+//    else{
+//        //span = span.replace('num',0);
+//        content = value;
+//    }
+//    return content
+//}
+
 /*Fomatos de celda para las tablas diario/crudos */
 // Poner el numero de errores en el día
-function format_valor(value, row, index, field){
+function format_value(value, row, index, field){
 //    debugger;
     var span = '<span class="badge badge-light">num</span>';
-    var content = ''
-    var field_numero = field + '_numero'
+    var content = '';
+//    var field_numero = field + '_numero'
+    var field_numero = "suspicious_" + field.split("_")[1] +"s_count";
     if (row[field_numero]>0 ){
         span = span.replace('num',row[field_numero].toString());
         content = value + ' ' + span;
@@ -2120,6 +2233,8 @@ function format_valor(value, row, index, field){
     }
     return content
 }
+
+
 
 function format_punto_cardinal(value, row, index, field){
 //    debugger;
@@ -2132,48 +2247,78 @@ function format_punto_cardinal(value, row, index, field){
 
 /*Funciones para el footeer de la tabla*/
 
+//function footer_id(data){
+////    debugger;
+//    var span = '<span class="badge badge-danger">num</span>';
+//    var num_fecha = data.reduce(function(num, i){
+//        if (i['estado'] && i['seleccionado']==false)
+//            return num +1;
+//        else
+//            return num;
+//    }, 0);
+//
+//    span = span.replace('num',num_fecha.toString());
+//
+//    return span;
+//
+//}
+
 function footer_id(data){
-//    debugger;
+    debugger;
     var span = '<span class="badge badge-danger">num</span>';
-    var num_fecha = data.reduce(function(num, i){
-        if (i['estado'] && i['seleccionado']==false)
-            return num +1;
+    var num_date = data.reduce(function(num, i){
+        // TODO check translation: seleccionado
+        if (i['state'] && i['seleccionado']==false)
+            return num + 1;
         else
             return num;
     }, 0);
 
-    span = span.replace('num',num_fecha.toString());
+    span = span.replace('num',num_date.toString());
 
     return span;
 
 }
 
+
+
 // Obtener el promedio de los datos
 function footer_promedio(data){
-//    debugger;
+    debugger;
     var field = this.field;
-    var field_error = this.field + '_error';
+    var field_error = '';
+    if ( this.field.includes("value") || this.field.includes("maximum") || this.field.includes("minimum")){
+        field_error = this.field.split("_")[1] + '_error';
+    }else{
+        field_error = this.field + '_error';
+    }
 
 
     var span = '<span class="badge badge-danger">num</span>';
 
     var promedio = 0;
     var suma = data.reduce(function (sum, i) {
-        if (i['estado'] && i[field] != null)
+//        if (i['estado'] && i[field] != null)
+//           debugger;
+          if (i['state'] && i[field] != null)
             return sum + parseFloat(i[field])
         else
-            return sum
+            return sum;
     }, 0);
     var num_datos = data.reduce(function (sum, i) {
-        if (i['estado'] && i[field] != null)
-            return sum + 1
+//        debugger;
+//        if (i['estado'] && i[field] != null)
+        if (i['state'] && i[field] != null)
+            return sum + 1;
         else
-            return sum
+            return sum;
     }, 0);
 
     var num_valor = data.reduce (function (num, i){
         //console.log('field',i[field_error])
-        if (i[field_error] && i['estado'])
+//        if (i[field_error] && i['estado'])
+//        debugger;
+        if (i[field_error] && i['state'])
             return num + 1;
         else
             return num;
@@ -2189,7 +2334,7 @@ function footer_promedio(data){
 }
 //obtener la suma de los datos
 function footer_suma(data){
-//    debugger;
+    debugger;
     var field = this.field;
     var field_error = this.field + '_error';
     var span = '<span class="badge badge-danger">num</span>';
@@ -2216,34 +2361,35 @@ function footer_suma(data){
 
 //total de dias
 function total_filas(data){
-//    debugger;
     var span = '<span class="badge badge-danger">num</span>';
 
     var var_id = $("#id_variable").val();
-    var fechas = [];
-    /*if ((var_id == 4) || (var_id == 5)) {
-        console.log(data);
-        $.map(data, function(row){
-            fechas.push(row.fecha);
-        });
-        console.log( fechas.unique() );
-    }*/
+//    var fechas = [];
+    var dates = [];
+//    /*if ((var_id == 4) || (var_id == 5)) {
+//        console.log(data);
+//        $.map(data, function(row){
+//            fechas.push(row.fecha);
+//        });
+//        console.log( fechas.unique() );
+//    }*/
 
     $.map(data, function(row){
-        fechas.push(row.fecha);
+        dates.push(row.date);
     });
 
-    /*var suma = data.reduce(function (sum, i) {
-        if (i['estado']){
-            return sum + 1
-        }
-        else{
-            return sum
-        }
+//    /*var suma = data.reduce(function (sum, i) {
+//        if (i['estado']){
+//            return sum + 1
+//        }
+//        else{
+//            return sum
+//        }
+//
+//    }, 0);*/
 
-    }, 0);*/
-
-    var suma = fechas.unique().length;
+//    var suma = fechas.unique().length;
+    var suma = dates.unique().length;
 
 //    var num_fecha = data.reduce(function(num, i){
 //        if ((i['fecha_error']==0) || (i['fecha_error']==2) || (i['fecha_error']==3))
@@ -2254,20 +2400,24 @@ function total_filas(data){
 
 //    debugger;
     var num_fecha = data.reduce(function(num, i){
-        if (i['fecha_error']>0)
+//        if (i['fecha_error']>0)
+        if (i['date_error']>0)
             return num +1;
         else
             return num;
     }, 0);
 
     // TODO ask the team for prefferred behaviour
-    span = span.replace('num',num_fecha.toString());
+//    span = span.replace('num',num_fecha.toString());
+    span = span.replace('num', num_fecha.toString());
 
-    return suma + ' de ' + indicadores_diarios['num_dias'] + ' días ' + span;
+    return suma + ' of ' + indicadores_diarios['num_days'] + ' days ' + span;
+//    return suma + ' of ' + daily_indicators['num_days'] + ' days ' + span;
 }
+
 //total de datos
 function total_datos(data){
-//    debugger;
+    debugger;
     var span = '<span class="badge badge-danger">num</span>';
 
     var suma = data.reduce(function (sum, i) {
@@ -2293,7 +2443,7 @@ function total_datos(data){
 }
 // valores atípicos
 function footer_stddev(data){
-//    debugger;
+    debugger;
     var span = '<span class="badge badge-danger">num</span>';
     var num_stddev = data.reduce(function(num, i){
         if (i['stddev_error'] && i['estado'])
@@ -2307,7 +2457,7 @@ function footer_stddev(data){
     return span;
 }
 function footer_variaConse(data){
-//    debugger;
+    debugger;
     var span = '<span class="badge badge-danger">num</span>';
     var num_vcr = data.reduce(function(num, i){
         if (i['stddev_error'] && i['estado'])
@@ -2326,21 +2476,21 @@ function footer_variaConse(data){
 function footer_variaConse_cont(data){
 //    debugger;
     var span = '<span class="badge badge-danger">num</span>';
-    var num_vc= data.reduce(function(num, i){
-        if (i['c_varia_err'] >= 1 )
+    var num_vd= data.reduce(function(num, i){
+        if (i['value_difference_error_count'] >= 1 )
             return num + 1;
         else
             return num;
     }, 0);
 
-    span = span.replace('num',num_vc);
+    span = span.replace('num',num_vd);
     return span;
 }
 
 
 /* Filtro de las Tablas */
 function filtrar_diario(){
-//    debugger;
+    debugger;
     var fecha = $("#chk_fecha").val();
     var porcentaje = $("#chk_porcentaje").val();
     var numero = $("#chk_numero").val();
@@ -2374,7 +2524,7 @@ function filtrar_diario(){
 }
 
 function get_filtro_fecha(fecha){
-//    debugger;
+    debugger;
     var filtro_fecha = [];
     if (fecha == 'error')
         filtro_fecha = ['0','2', '3'];
@@ -2387,7 +2537,7 @@ function get_filtro_fecha(fecha){
 }
 
 function get_filtro_porcentaje(porcentaje){
-//    debugger;
+    debugger;
     var filtro_porcentaje = [];
 
     if (porcentaje == 'error')
@@ -2401,7 +2551,7 @@ function get_filtro_porcentaje(porcentaje){
 }
 
 function get_filtro_valor(numero){
-//    debugger;
+    debugger;
     var filtro_valor = [];
 
     if (numero == 'error')
@@ -2415,7 +2565,7 @@ function get_filtro_valor(numero){
 }
 
 function get_filtro_stddev(numero){
-//    debugger;
+    debugger;
     var filtro_valor = [];
 
     if (numero == 'error')
@@ -2429,7 +2579,7 @@ function get_filtro_stddev(numero){
 }
 
 function get_filtro_estado(numero){
-//    debugger;
+    debugger;
     var filtro_valor = [];
 
     if (numero == 'error')
@@ -2442,7 +2592,7 @@ function get_filtro_estado(numero){
     return filtro_valor
 }
 function get_filtro_var_con(numero){
-//    debugger;
+    debugger;
     console.log("Valorfiltro con ", numero);
     var filtro_valor = [];
 

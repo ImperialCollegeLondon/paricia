@@ -12,7 +12,9 @@ from variable.models import Variable
 
 class DailyValidationForm(forms.Form):
     station = forms.ModelChoiceField(
-        queryset=Station.objects.order_by("station_code"), empty_label="Station"
+        queryset=Station.objects.order_by("station_code"),
+        empty_label="Station",
+        initial=1,
     )
     variable = forms.ModelChoiceField(
         queryset=Variable.objects.order_by("variable_code"), empty_label="Variable"
@@ -22,12 +24,14 @@ class DailyValidationForm(forms.Form):
         label="Start date",
         required=True,
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
+        initial="2023-03-01",
     )
     end_date = forms.DateField(
         input_formats=["%Y-%m-%d"],
         label="End date",
         required=True,
         widget=forms.TextInput(attrs={"autocomplete": "off"}),
+        initial="2023-03-31",
     )
     minimum = forms.DecimalField(required=False)
     maximum = forms.DecimalField(required=False)
