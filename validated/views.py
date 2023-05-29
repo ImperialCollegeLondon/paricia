@@ -391,27 +391,27 @@ def guardar_validados(request):
     variable_id = int(request.POST.get("variable_id", None))
     maximum = float(request.POST.get("maximum", None))
     minimum = float(request.POST.get("minimum", None))
-    cambios_json = request.POST.get("cambios", None)
+    changes_json = request.POST.get("changes", None)
 
     station = Station.objects.get(station_id=station_id)
     variable = Variable.objects.get(variable_id=variable_id)
-    cambios_lista = json.loads(cambios_json)
+    changes_list = json.loads(changes_json)
 
-    condiciones = functions.get_condiciones(cambios_lista)
+    conditions = functions.get_conditions(changes_list)
 
-    resultado = functions.pasar_crudos_validados(
-        cambios_lista,
+    result = functions.save_to_validated(
+        changes_list,
         variable,
         station,
-        condiciones,
+        conditions,
         minimum,
         maximum,
     )
-    if resultado:
-        lista = {"resultado": resultado}
+    if result:
+        list = {"result": result}
     else:
-        lista = {"resultado": False}
-    return JsonResponse(lista)
+        list = {"result": False}
+    return JsonResponse(list)
 
 
 def guardar_crudos(request):

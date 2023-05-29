@@ -1,97 +1,84 @@
+<div class=" row my-3">
+    <div class="col-lg-2 col-md-2 col-sm-6">
 
-    <div class=" row my-3">
-        <div class="col-lg-2 col-md-2 col-sm-6">
+        <b>Time filter</b>
+        <select id="chk_detail_time" name="detail" type="text" class="form-control mr-2">
+            <option value="all">All</option>
+            <option value="normal">Normal</option>
+            <option value="error">Error</option>
+        </select>
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-6">
+        <b>Value filter</b>
+        <select id="chk_detail_value" name="detail" type="text" class="form-control mr-2">
+            <option value="all">All</option>
+            <option value="normal">Below threshold</option>
+            <option value="error">Above threshold</option>
 
-            <b>Filtro Fecha</b>
-            <select id="chk_fecha_crudo" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todos</option>
-                <option value="normal">Normales</option>
-                <option value="error">Anomálos</option>
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Filtro Valor</b>
-            <select id="chk_valor_crudo" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todos</option>
-                <option value="normal">Dentro del umbral</option>
-                <option value="error">Fuera del Umbral</option>
+        </select>
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-6">
+        <b>Outliers filter</b>
+        <select id="chk_detail_stddev" name="detail" type="text" class="form-control mr-2">
+            <option value="all">All</option>
+            <option value="normal">No outliers</option>
+            <option value="error">Outliers</option>
 
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Valores atípicos</b>
-            <select id="chk_stddev" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todos</option>
-                <option value="normal">Dentro de sigmas</option>
-                <option value="error">Fuera de sigmas</option>
+        </select>
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-6">
+        <b>State filter</b>
+        <select id="chk_detail_row" name="detail" type="text" class="form-control mr-2">
+            <option value="all">All</option>
+            <option value="normal">Active</option>
+            <option value="error">Inactive</option>
 
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Filtro Estado</b>
-            <select id="chk_fila" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todas</option>
-                <option value="normal">Activo</option>
-                <option value="error">Inactivo</option>
+        </select>
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-6">
+        <b>Value diff. filter</b>
+        <select id="chk_detail_value_difference" name="detail" type="text" class="form-control mr-2">
+            <option value="all">All</option>
+            <option value="normal">Normal</option>
+            <option value="error">Error</option>
 
-            </select>
-        </div>
-        <div class="col-lg-2 col-md-2 col-sm-6">
-            <b>Filtro Variación</b>
-            <select id="chk_varcon" name="crudo" type="text" class="form-control mr-2">
-                <option value="todos">Todas</option>
-                <option value="normal">Normal</option>
-                <option value="error">Error</option>
-
-            </select>
-        </div>
-
+        </select>
     </div>
 
+</div>
 
-    <div id="toolbar_crudo" class="filtro row no-gutters">
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <input id="txt_seleccionar_crudo" type="text" class="form-control" placeholder="1,5,7 or 1-10">
 
-        </div>
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <div class="btn-group ml-lg-2 ml-md-2">
-                    <button id="btn_seleccionar_crudo" name="crudo" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Marcar Filas"><i style="margin: 4px auto;" class="fas fa-check-circle"></i></button>
-                    <button id="btn_desmarcar_crudo" name="crudo" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Desmarcar Filas"><i class="far fa-check-circle"></i></button>
-                </div>
+<div id="toolbar_detail" class="filter row no-gutters">
+    <div class="col-lg-3 col-md-3 col-sm-12">
+        <input id="txt_detail_selection" type="text" class="form-control" placeholder="1,5,7 or 1-10">
 
-        </div>
-
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <div class="btn-group">
-                <button id="btn_nuevo_crudo" name="crudo" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Nuevo Registro"><i class="fas fa-plus-circle"></i></button>
-                <button id="btn_grafico_crudo" name="crudo" class="btn btn-info" data-toggle="tooltip" data-placement="top" title="Graficar Datos"><i style="margin: 4px auto;" class="fas fa-chart-line"></i></button>
-                <button id="btn_eliminar_crudo" name="crudo" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Eilminar Filas"><i class="fas fa-trash"></i></button>
-                <button id="btn_mostrar_crudo" name="crudo" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Deshacer Cambios"><i class="fas fa-trash-restore"></i></button>
-                <button id="btn_enviar_crudo" name="crudo" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Guardar Cambios"><i class="fas fa-save"></i></button>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-12">
+        <div class="btn-group ml-lg-2 ml-md-2">
+                <button id="btn_detail_select" name="detail" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="Select rows">Select rows</button>
+                <button id="btn_detail_unselect" name="detail" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="Unselect rows">Unselect rows</button>
             </div>
-        </div>
+
     </div>
 
+    <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="btn-group">
+            <button id="btn_detail_new" name="detail" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="New row">New</button>
+            <button id="btn_detail_plot" name="detail" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Plot data">Plot</button>
+            <button id="btn_detail_delete" name="detail" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="Delete rows">Delete</button>
+            <button id="btn_detail_undo" name="detail" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="Undo changes">Undo</button>
+            <button id="btn_detail_save" name="detail" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Save changes">Save</button>
+        </div>
+    </div>
+</div>
 
-    <table id="table_crudo"
-            data-toggle="table"
-            data-height="458"
-            data-show-footer="true"
-            data-unique-id="id"
-            data-show-columns="true"
-            data-toolbar="#toolbar_crudo"
-            class="filtro table-sm">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Id</th>
-                <th>Fecha</th>
-                <th>Valor</th>
-                <th>Variación consecutiva</th>
-                <th>Valores Atípicos</th>
-                <th>Comentario</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-    </table>
+
+<table id="table_crudo"
+        data-toggle="table"
+        data-height="458"
+        data-show-footer="true"
+        data-unique-id="id"
+        data-show-columns="true"
+        data-toolbar="#toolbar_detail"
+        class="filter table-sm">
+</table>

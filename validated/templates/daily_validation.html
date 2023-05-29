@@ -5,20 +5,10 @@
 
 {% block extralibraries %}
 <link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
-<!--<link rel="stylesheet" href="{% static 'ext/bootstrap-4.4.1-dist/css/bootstrap.css' %}">-->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<!--  <link rel="stylesheet" href="/resources/demos/style.css">-->
-<!--  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>-->
-<!--  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>-->
-
-<!--<script crossorigin="anonymous" src="{% static 'ext/jquery3.4.1/jquery.min.js' %}"></script>-->
 <script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
 <script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
-<!--<script crossorigin="anonymous" src="{% static 'ext/bootstrap-4.4.1-dist/js/bootstrap.min.js' %}"></script>-->
-<!--<script type="text/javascript" src="{% static 'ext/DataTables/datatables.min.js' %}"></script>-->
-
-
 
 
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
@@ -28,16 +18,12 @@
 <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.css">
 
-
-<!--<link rel="stylesheet" href="{% static 'ext/DataTables/datatables.min.css' %}"/>-->
 <!--<link rel="stylesheet" href="{% static 'styles/global.css' %}">-->
 <link rel="stylesheet" href="{% static 'styles/style.css' %}">
 <script src="{% static 'scripts/global.js' %}"></script>
-<script src="{% static 'validated/js_ajax2.js' %}"></script>
+<!--<script src="{% static 'validated/js_ajax2.js' %}"></script>-->
 <script src="{% static 'validated/daily_validation.js' %}"></script>
 
-<!--<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.2.1/dygraph.min.css" />-->
-<!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.2.1/dygraph.min.js"></script>-->
 
 <style type="text/css">
     .popup-overlay {
@@ -76,20 +62,15 @@
 
   .right-panel {
     height: calc(100vh - 150px);
-    overflow: auto;
+    #overflow: auto;
+    overflow: hidden;
   }
 
   .validation-body {
     overflow-y: hidden;
   }
 </style>
-<script>
-$(document).ready(function() {
 
-    $("select").addClass("use-placeholder");
-    window.mostrar_label_dentro_de_select();
-});
-</script>
 {% endblock %}
 
 
@@ -104,7 +85,7 @@ $(document).ready(function() {
             Validation module
         </div>
         <div class="col-md-6">
-            <a id="id_limpiar" class="btn btn-light" href="{% url 'validated:daily_validation' %}"><span>Clean form</span></a>
+            <a id="btn_clean" class="btn btn-light" href="{% url 'validated:daily_validation' %}"><span>Clean form</span></a>
         </div>
     </div>
 
@@ -112,12 +93,12 @@ $(document).ready(function() {
 
 <div class="row">
     <div class="col-md-3 left-panel">
-            <form id="form_validacion" class="form" method="post" action="{% url 'validated:daily_validation' %}">
+            <form id="form_validation" class="form" method="post" action="{% url 'validated:daily_validation' %}">
 
                     {% csrf_token %}
                     {% bootstrap_form form show_label=True  %}
 
-                    <button id="btn_buscar" type="button" class="btn btn-primary">Submit</button>
+                    <button id="btn_submit" type="button" class="btn btn-primary">Submit</button>
 
             </form>
     </div>
@@ -134,7 +115,7 @@ $(document).ready(function() {
 
 
 
-    <div class="filtro row">
+    <div class="filter row">
         <!-- div formulario-->
         <div class="col-lg-12 col-md-12 col-sm-12">
 
@@ -149,14 +130,14 @@ $(document).ready(function() {
 
     <div id="div_message_fechas" class="row mt-4" style="display:none;">
         <div class="alert alert-danger alert-dismissible" role="alert">
-            Ocurrio un problema con el procesamiento de la información, seleccione Fechas
+            A problem occurred with the processing of the information, please select Dates.
         </div>
     </div>
 
 
-    <div id="div_mensaje" class="filtro row" style="display:none;">
+    <div id="div_mensaje" class="filter row" style="display:none;">
         <div class="alert alert-danger alert-dismissible" role="alert">
-            Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+            A problem occurred with the processing of the information, please try again.
         </div>
     </div>
 
@@ -193,7 +174,7 @@ $(document).ready(function() {
 
     <div id="div_error_datos" class="row" style="display:none;">
         <div class="alert alert-danger alert-dismissible" role="alert">
-            Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente
+            There was a problem with processing the information, please try again.
         </div>
     </div>
 

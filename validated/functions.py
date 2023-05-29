@@ -168,7 +168,7 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
             "measurement": measurement.fillna("").to_dict("list"),
             "validated": validated.fillna("").to_dict("list"),
         },
-        "grafico": None,  # grafico_msj,
+        # "grafico": None,  # grafico_msj,
         "curva": None,  # mensaje
     }
     return data
@@ -694,7 +694,7 @@ def detalle_diario(station_id, variable_id, date, minimum, maximum):
     #######
     joined["n_valor"] = joined["value_difference"]
     _selected = joined[joined["is_selected"] == True]
-    num_fecha = len(_selected[_selected["time_lapse_status"] != 1].index)
+    num_date = len(_selected[_selected["time_lapse_status"] != 1].index)
 
     # Only take into account 'value_error' when there's no error in timestamp lapse
     _selected_NO_TIMELAPSE_ERROR = _selected[_selected["time_lapse_status"] == 1]
@@ -706,55 +706,70 @@ def detalle_diario(station_id, variable_id, date, minimum, maximum):
     # num_maximo = len(_selected[_selected["maximum_error"] == True].index)
     # num_minimo = len(_selected[_selected["minimum_error"] == True].index)
 
-    num_valor = len(
+    num_value = len(
         _selected_NO_TIMELAPSE_ERROR[
             _selected_NO_TIMELAPSE_ERROR["suspicious_value"] == True
         ].index
     )
-    num_maximo = len(_selected[_selected["suspicious_maximum"] == True].index)
-    num_minimo = len(_selected[_selected["suspicious_minimum"] == True].index)
+    num_maximum = len(_selected[_selected["suspicious_maximum"] == True].index)
+    num_minimum = len(_selected[_selected["suspicious_minimum"] == True].index)
 
     num_stddev = len(_selected[_selected["stddev_error"] == True].index)
 
     # TODO check if this es expected number of data
-    num_datos = int(24 * (60 / tx_period))
+    num_data = int(24 * (60 / tx_period))
 
-    report.rename(
-        columns={
-            # 'id': '',
-            "time": "fecha",
-            "value": "valor",
-            "maximum": "maximo",
-            "minimum": "minimo",
-            "is_validated": "validado",
-            "is_selected": "seleccionado",
-            "state": "estado",
-            "time_lapse_status": "fecha_error",
-            # "value_error": "valor_error",
-            # "maximum_error": "maximo_error",
-            # "minimum_error": "minimo_error",
-            "suspicious_value": "valor_error",
-            "suspicious_maximum": "maximo_error",
-            "suspicious_minimum": "minimo_error",
-            "stddev_error": "stddev_error",
-            "comment": "comentario",
-            "value_difference": "variacion_consecutiva",
-            "value_difference_error": "varia_error",
-        },
-        inplace=True,
-    )
+    # report.rename(
+    #     columns={
+    #         # 'id': '',
+    #         "time": "fecha",
+    #         "value": "valor",
+    #         "maximum": "maximo",
+    #         "minimum": "minimo",
+    #         "is_validated": "validado",
+    #         "is_selected": "seleccionado",
+    #         "state": "estado",
+    #         "time_lapse_status": "fecha_error",
+    #         # "value_error": "valor_error",
+    #         # "maximum_error": "maximo_error",
+    #         # "minimum_error": "minimo_error",
+    #         "suspicious_value": "valor_error",
+    #         "suspicious_maximum": "maximo_error",
+    #         "suspicious_minimum": "minimo_error",
+    #         "stddev_error": "stddev_error",
+    #         "comment": "comentario",
+    #         "value_difference": "variacion_consecutiva",
+    #         "value_difference_error": "varia_error",
+    #     },
+    #     inplace=True,
+    # )
+
+    # data = {
+    #     "datos": report.to_dict(orient="records"),
+    #     "indicadores": [
+    #         {
+    #             "num_fecha": num_fecha,
+    #             "num_valor": num_valor,
+    #             "num_valor1": num_valor,
+    #             "num_maximo": num_maximo,
+    #             "num_minimo": num_minimo,
+    #             "num_stddev": num_stddev,
+    #             "num_datos": num_datos,
+    #         }
+    #     ],
+    # }
 
     data = {
-        "datos": report.to_dict(orient="records"),
-        "indicadores": [
+        "series": report.to_dict(orient="records"),
+        "indicators": [
             {
-                "num_fecha": num_fecha,
-                "num_valor": num_valor,
-                "num_valor1": num_valor,
-                "num_maximo": num_maximo,
-                "num_minimo": num_minimo,
+                "num_date": num_date,
+                "num_value": num_value,
+                # "num_valor1": num_value,
+                "num_maximum": num_maximum,
+                "num_minimum": num_minimum,
                 "num_stddev": num_stddev,
-                "num_datos": num_datos,
+                "num_data": num_data,
             }
         ],
     }
@@ -762,48 +777,47 @@ def detalle_diario(station_id, variable_id, date, minimum, maximum):
     return data
 
 
-def get_condiciones(cambios_lista):
-    fechas_condicion = []
-    fechas_eliminar = []
-    for fila in cambios_lista:
-        if fila["validado"]:
-            fechas_condicion.append("'" + fila["fecha"] + "'")
-        if not fila["estado"]:
-            fechas_eliminar.append("'" + fila["fecha"] + "'")
+def get_conditions(changes_list):
+    dates_condition = []
+    dates_delete = []
+    for row in changes_list:
+        # TODO check "validado" has equivalence
+        # if fila["validado"]:
+        #     fechas_condicion.append("'" + fila["fecha"] + "'")
+        if not row["state"]:
+            dates_delete.append("'" + row["date"] + "'")
 
-    fechas_condicion = set(fechas_condicion)
-    fechas_eliminar = set(fechas_eliminar)
+    dates_condition = set(dates_condition)
+    dates_delete = set(dates_delete)
 
-    where_fechas = ",".join(fechas_condicion)
-    where_eliminar = ",".join(fechas_eliminar)
+    where_dates = ",".join(dates_condition)
+    where_delete = ",".join(dates_delete)
 
-    condiciones = {"where_eliminar": where_eliminar, "where_fechas": where_fechas}
-    return condiciones
+    conditions = {"where_delete": where_delete, "where_dates": where_dates}
+    return conditions
 
 
 # Pasar los datos crudos a validados
-def pasar_crudos_validados(
-    cambios_lista, variable, station, condiciones, minimum, maximum
-):
+def save_to_validated(changes_list, variable, station, conditions, minimum, maximum):
     Measurement = apps.get_model(
         app_label="measurement", model_name=variable.variable_code
     )
     Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
 
     # where_fechas = condiciones.get('where_fechas')
-    start_date = cambios_lista[0]["fecha"]
-    end_date = cambios_lista[-1]["fecha"]
+    start_date = changes_list[0]["date"]
+    end_date = changes_list[-1]["date"]
     start_date, end_date = set_time_limits(start_date, end_date)
 
     # TODO se puede eliminar
-    reporte_recibido = pd.DataFrame.from_records(cambios_lista)
+    reporte_recibido = pd.DataFrame.from_records(changes_list)
 
     measurement, validated, joined, selected, tx_period = basic_calculations(
         station, variable, start_date, end_date, minimum, maximum
     )
-    if len(condiciones["where_eliminar"]) > 0:
-        where_eliminar = condiciones["where_eliminar"].replace("'", "").split(",")
-        for _date in where_eliminar:
+    if len(conditions["where_delete"]) > 0:
+        where_delete = conditions["where_delete"].replace("'", "").split(",")
+        for _date in where_delete:
             _date = datetime.strptime(_date, "%Y-%m-%d").date()
             condition = selected["date"] == _date
             selected["value"] = np.where(condition, None, selected["value"])

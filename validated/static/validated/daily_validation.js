@@ -1,71 +1,3 @@
-
-var plot_orig_width = 0;
-var plot_adjusted = true;
-var gid = 0;
-
-var bargraph = function(g, series, ctx, cx, cy, color, radius) {
-    ctx.lineWidth = 1.5; // Change as needed. Could use radius
-    ctx.strokeStyle = 'blue';
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx, g.toDomYCoord(0));
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
-};
-
-function format_tuple(data){
-    for (var i in data) {
-        data[i][0] = new Date(data[i][0]);
-        data[i][1] = parseFloat(data[i][1]);
-    }
-    return data;
-}
-
-
-function grafico_barras(data, append_to, variable){
-    var graf_id= 'graf' + variable.var_id;
-    var element = "<div id='graf_id' class='m-2 transp-blanco' style='width:99%; height:300px;'></div>";
-    element = element.replace('graf_id', graf_id);
-    $(append_to).append("<div class='row'><div class='col'>" + element + "</div></div>");
-    var g = new Dygraph(
-        document.getElementById(graf_id),
-        data,
-        {
-            title: variable.var_nombre + ' (' + variable.var_unidad_sigla + ')',
-            labels: ['fecha', 'valor'],
-            drawPoints:true,
-            drawPointCallback : bargraph,
-            strokeWidth: 0.0
-        }
-    );
-}
-
-function grafico_barras_plotly(data, append_to, variable){
-
-}
-
-
-function grafico_dispersion(data, append_to, variable){
-    var graf_id= 'graf' + variable.var_id;
-    var element = "<div id='graf_id' class='m-2 transp-blanco' style='width:99%; height:300px;'></div>";
-    element = element.replace('graf_id', graf_id);
-    $(append_to).append("<div class='row'><div class='col'>" + element + "</div></div>");
-    var g = new Dygraph(
-        document.getElementById(graf_id),
-        data,
-        {
-            title: variable.var_nombre + ' (' + variable.var_unidad_sigla + ')',
-            labels: ['fecha', 'valor'],
-            drawPoints: true,
-            strokeWidth: 0,
-            pointSize: 1.5
-        }
-    );
-
-}
-
 function generate_traces(data, source_type, color){
     var result = [];
     var columns = Object.keys(data);
@@ -107,7 +39,11 @@ function generate_traces(data, source_type, color){
     return result;
 }
 
-function grafico_dispersion_plotly(series, append_to, variable){
+function bar_plot(data, append_to, variable){
+
+}
+
+function dispersion_plot(series, append_to, variable){
     var data_array = [];
 
     let measurement = generate_traces(series.measurement, "Measurement", 'rgb(0, 0, 0)');
@@ -124,36 +60,16 @@ function grafico_dispersion_plotly(series, append_to, variable){
 
     const miDiv = document.querySelector("#" + append_to);
     miDiv.style.height = "450px";
+    miDiv.style.width = "850px";
     Plotly.newPlot(append_to, data_array, layout, {renderer: 'webgl'});
 }
 
-function plot_adjust(){
-    var window_width = $("#div_informacion").width();
-    Plotly.relayout(gid, {width: window_width });
-    $("#" + gid).css("width", "");
-    plot_adjusted = true;
-    $('#resize_plot').html("&gt Un pixel por dato &lt");
-}
+
 var dateFormat = "yy-mm-dd";
-
-function plot_orig(){
-    Plotly.relayout(gid, {width: plot_orig_width });
-    $("#" + gid).css("width", plot_orig_width + "px");
-    plot_adjusted = false;
-    $('#resize_plot').html("&gt Ajustar a pantalla &lt");
-}
-
-function resizePlot(){
-    if (plot_adjusted){
-        plot_orig();
-    }else{
-        plot_adjust();
-    }
-}
 
 tr_ini = '<tr>';
 tr_fin = '</tr>';
-var datos_json = {};
+var json_data = {};
 var data_fecha = [];
 var data_valor = [];
 var data_maximo = [];
@@ -161,101 +77,58 @@ var data_minimo = [];
 //var num_dias = 0;
 var num_datos = 0;
 
-var indicadores_crudos = {
-    num_fecha: 0,
-    num_valor: 0,
-    num_maximo: 0,
-    num_minimo:0,
+var indicators_subhourly = {
+//    num_fecha: 0,
+//    num_valor: 0,
+//    num_maximo: 0,
+//    num_minimo:0,
+//    num_stddev: 0,
+//    num_datos:0
+    num_time: 0,
+    num_value: 0,
+    num_maximum: 0,
+    num_minimum:0,
     num_stddev: 0,
-    num_datos:0
+    // TODO check if renaming num_data is needed
+    num_data:0
 }
 
-var indicadores_diarios = {
-    num_fecha: 0,
-    num_porcentaje: 0,
-    num_valor: 0,
-    num_maximo: 0,
-    num_minimo: 0,
-    num_dias: 0
+var indicators_daily = {
+//    num_fecha: 0,
+//    num_porcentaje: 0,
+//    num_valor: 0,
+//    num_maximo: 0,
+//    num_minimo: 0,
+//    num_dias: 0
+    num_date: 0,
+    num_percentage: 0,
+    num_value: 0,
+    num_maximum: 0,
+    num_minimum: 0,
+    num_days: 0
 }
 
 var num_fecha = 0;
 
-// Valores de prueba
-// M5077 TAI 2015-07-28, valores de -74
-// M5025 TAI 2008-05-02, serie de datos faltantes
 
-
-function mostrar_label_dentro_de_select(){
-    //// Elemento SELECT muestre label dentro de su caja
-     $('select.use-placeholder').each(function(){
-         var op0 = $(this).children('option:first-child');
-         if (op0.is(':selected')) {
-             op0.css( "display", "none" );
-             $(this).addClass('placeholder');
-             var label_text = $(this).parent('div').children('label').text();
-             op0.text(label_text);
-         }
-     });
- 
-     //// Elemento SELECT oculte o muestre selección nula
-     $('select.use-placeholder').change(function() {
-         var op0 = $(this).children('option:first-child');
-         if (op0.is(':selected')) {
-             op0.css( "display", "none" );
-             $(this).addClass('placeholder');
-             var label_text = $(this).parent('div').children('label').text();
-             op0.text(label_text);
-         } else {
-             op0.css( "display", "" );
-             $(this).removeClass('placeholder');
-             op0.text("---------");
-         }
-     });
- }
 $(document).ready(function() {
 
-    $("#btn_nuevo_crudo").attr("disabled", true);
-    //mostrar_label_dentro_de_select();
-    //$("#id_estacion").attr("placeholder", "Estación");
-    //console.log($("#id_estacion").attr("placeholder"));
-    $('#div_grafico').on('hidden.bs.collapse', function () {
-        $("#btn_grafico").text("Mostrar Gráfico");
-    });
-    $('#div_grafico').on('show.bs.collapse', function () {
-        $("#btn_grafico").text("Ocultar Gráfico");
-    });
+    $("#btn_detail_new").attr("disabled", true);
 
+//    $('#div_grafico').on('hidden.bs.collapse', function () {
+//        $("#btn_grafico").text("Mostrar Gráfico");
+//    });
+//    $('#div_grafico').on('show.bs.collapse', function () {
+//        $("#btn_grafico").text("Ocultar Gráfico");
+//    });
 
-
-    $("#btn_buscar").click(actualizar_tabla_diario);
+    $("#btn_submit").click(daily_query_submit);
 
     //consultar los periodos de validacion
     $("#btn_periodos_validacion").click(function(){
         $("#btn_periodos_validacion").attr("disabled", true);
-
-
     });
 
-//    // consultar los limites de la variable
-//    $("#id_variable").change(function () {
-//        var variable = $(this).val();
-//        token = $("input[name='csrfmiddlewaretoken']").val();
-//        $.ajax({
-//            url: '/variable/limites/',
-//            dataType: 'json',
-//            data: {
-//                'csrfmiddlewaretoken': token,
-//                'var_id': variable,
-//            },
-//            type:'POST',
-//            success: function (data) {
-//                $("#id_limite_inferior").val(data.var_minimo);
-//                $("#id_limite_superior").val(data.var_maximo);
-//            }
-//        });
-//
-//    });
 
     // consultar los limites de la variable
     $("#id_variable").change(function () {
@@ -275,95 +148,116 @@ $(document).ready(function() {
           });
     });
 
-
-
     /*Filtros de la tablas*/
     $("#chk_porcentaje").change(filtrar_diario);
     $("#chk_fecha").change(filtrar_diario);
     $("#chk_numero").change(filtrar_diario);
 
-    $("#chk_fecha_crudo").change(filtrar_crudo);
+//    $("#chk_fecha_crudo").change(filtrar_crudo);
+//    $("#chk_valor_crudo").change(filtrar_crudo);
+//    $("#chk_stddev").change(filtrar_crudo);
+//    $("#chk_fila").change(filtrar_crudo);
+//    $("#chk_varcon").change(filtrar_crudo);
+    $("#chk_detail_time").change(filtrar_crudo);
+    $("#chk_detail_value").change(filtrar_crudo);
+    $("#chk_detail_stddev").change(filtrar_crudo);
+    $("#chk_detail_row").change(filtrar_crudo);
+    $("#chk_detail_value_difference").change(filtrar_crudo);
 
-    $("#chk_valor_crudo").change(filtrar_crudo);
-    $("#chk_stddev").change(filtrar_crudo);
-    $("#chk_fila").change(filtrar_crudo);
-    $("#chk_varcon").change(filtrar_crudo);
+    var $table = $('#table_daily');
 
     /*Control de los botones*/
+    var $btn_daily_select = $('#btn_daily_select');
+    var $btn_daily_unselect = $('#btn_daily_unselect');
+    var $btn_daily_unvalidate = $('#btn_daily_unvalidate');
+    var $btn_daily_history = $('#btn_daily_history');
+    var $btn_daily_delete = $('#btn_daily_delete');
+    var $btn_daily_show = $('#btn_daily_show');
+    var $btn_daily_send = $('#btn_daily_send');
 
-    var $btn_enviar = $('#btn_enviar');
-    var $btn_guardar = $('#btn_enviar_crudo');
+//    var $btn_nuevo_promedio = $('#btn_nuevo_promedio');
+//    var $btn_nuevo_acumulado = $('#btn_nuevo_acumulado');
+//    var $btn_modificar_promedio = $('#btn_modificar_promedio');
+//    var $btn_modificar_acumulado = $('#btn_modificar_acumulado');
+//    var $btn_modificar_agua = $('#btn_modificar_agua');
+//    var $btn_graficar = $('#btn_grafico');
 
-    var $btn_mostrar = $('#btn_mostrar');
-    var $btn_mostrar_crudo = $('#btn_mostrar_crudo');
 
-    var $btn_eliminar = $('#btn_eliminar');
-    var $btn_eliminar_crudo = $('#btn_eliminar_crudo');
-
-    var $btn_seleccionar = $('#btn_seleccionar');
-    var $btn_seleccionar_crudo = $('#btn_seleccionar_crudo');
-
-    var $btn_desmarcar = $('#btn_desmarcar');
-    var $btn_desmarcar_crudo = $('#btn_desmarcar_crudo');
-
-    var $btn_nuevo_promedio = $('#btn_nuevo_promedio');
-    var $btn_nuevo_acumulado = $('#btn_nuevo_acumulado');
-
-    var $btn_modificar_promedio = $('#btn_modificar_promedio');
-    var $btn_modificar_acumulado = $('#btn_modificar_acumulado');
-    var $btn_modificar_agua = $('#btn_modificar_agua');
-
-    var $btn_graficar = $('#btn_grafico');
-    var $btn_graficar_crudo = $('#btn_grafico_crudo');
-
-    var $btn_historial = $('#btn_historial');
-
-    var $btn_desvalidar = $('#btn_desvalidar');
-
-    var $table = $('#table_diario');
     ///fondo blnco para la tabal diaria
     //$table.css("background-color","white");
-
-    var $btn_eliminar_valor = $("#btn_eliminar_valor");
-
-    var $btn_nuevo_crudo = $("#btn_nuevo_crudo");
-
-
-    $btn_enviar.click(guardar_validados);
-
-    $btn_mostrar.click(mostrar);
-    $btn_mostrar_crudo.click(mostrar);
-
-    $btn_eliminar.click(eliminar);
-    $btn_eliminar_crudo.click(eliminar);
-
-    $btn_seleccionar.click(marcar);
-    $btn_desmarcar.click(desmarcar);
-
-    $btn_seleccionar_crudo.click(marcar);
-    $btn_desmarcar_crudo.click(desmarcar);
-
-    $btn_nuevo_promedio.click(nuevo_registro);
-    $btn_nuevo_acumulado.click(nuevo_registro);
+//    var $btn_delete_valor = $("#btn_delete_valor");
+    
+    
+    var $btn_detail_select = $('#btn_detail_select');
+    var $btn_detail_unselect = $('#btn_detail_unselect');    
+    var $btn_detail_new = $("#btn_detail_new");
+    var $btn_detail_plot = $('#btn_detail_plot');
+    var $btn_detail_delete = $('#btn_detail_delete');
+    var $btn_detail_undo = $('#btn_detail_undo');
+    var $btn_detail_save = $('#btn_detail_save');
 
 
-    $btn_modificar_acumulado.click(modificar);
-    $btn_modificar_promedio.click(modificar);
-    $btn_modificar_agua.click(modificar);
 
-    $btn_guardar.click(guardar_crudos);
 
-    $btn_graficar.click(graficar);
-    $btn_graficar_crudo.click(graficar);
+//
+//    
+//    var $btn_nuevo_promedio = $('#btn_nuevo_promedio');
+//    var $btn_nuevo_acumulado = $('#btn_nuevo_acumulado');
+//    var $btn_modificar_promedio = $('#btn_modificar_promedio');
+//    var $btn_modificar_acumulado = $('#btn_modificar_acumulado');
+//    var $btn_modificar_agua = $('#btn_modificar_agua');
+//    var $btn_graficar = $('#btn_grafico');
+//
+//    var $btn_history = $('#btn_history');
+//    var $btn_unvalidate = $('#btn_unvalidate');
+//    var $table = $('#table_daily');
+//    ///fondo blnco para la tabal diaria
+//    //$table.css("background-color","white");
+//    var $btn_delete_valor = $("#btn_delete_valor");
+//    var $btn_detail_new = $("#btn_detail_new");
 
-    $btn_historial.click(periodos_validacion);
+//    $btn_send.click(guardar_validados);
+//    $btn_show.click(mostrar);
+//    $btn_delete.click(eliminar);
+//    $btn_select.click(marcar);
+//    $btn_unselect.click(desmarcar);
+//    $btn_nuevo_promedio.click(nuevo_registro);
+//    $btn_nuevo_acumulado.click(nuevo_registro);
+//    $btn_modificar_acumulado.click(modificar);
+//    $btn_modificar_promedio.click(modificar);
+//    $btn_modificar_agua.click(modificar);
+//    $btn_guardar.click(guardar_crudos);
+//    $btn_graficar.click(graficar);
+//    $btn_detail_plot.click(graficar);
+//    $btn_history.click(periodos_validacion);
+//    $btn_delete_valor.click(eliminar_crudo);
+//    $btn_unvalidate.click(desvalidar_datos);
 
-    $btn_eliminar_valor.click(eliminar_crudo);
 
-    $btn_nuevo_crudo.click(abrir_formulario_nuevo);
+    $btn_daily_select.click(marcar);
+    $btn_daily_unselect.click(desmarcar);
+    $btn_daily_unvalidate.click(desvalidar_datos);
+    $btn_daily_history.click(periodos_validacion);
+    $btn_daily_delete.click(eliminar);
+    $btn_daily_show.click(mostrar);
+    $btn_daily_send.click(save_daily);
 
-    $btn_desvalidar.click(desvalidar_datos);
+//    $btn_nuevo_promedio.click(nuevo_registro);
+//    $btn_nuevo_acumulado.click(nuevo_registro);
+//    $btn_modificar_acumulado.click(modificar);
+//    $btn_modificar_promedio.click(modificar);
+//    $btn_modificar_agua.click(modificar);
+//    $btn_guardar.click(guardar_crudos);
+//    $btn_graficar.click(graficar);
+//    $btn_detail_plot.click(graficar);
+//    $btn_delete_valor.click(eliminar_crudo);
 
+
+    $btn_detail_select.click(marcar);
+    $btn_detail_unselect.click(desmarcar);
+    $btn_detail_new.click(abrir_formulario_nuevo);
+    $btn_detail_delete.click(eliminar);
+    $btn_detail_undo.click(mostrar);
 });
 
 //consultar el historial de validacion
@@ -378,7 +272,7 @@ function periodos_validacion(event){
         
             $.ajax({
                 url: '/val2/',
-                data: $("#form_validacion").serialize(),
+                data: $("#form_validation").serialize(),
                 type:'POST',
                 beforeSend: function () {
                     activar_espera("historial");
@@ -402,7 +296,7 @@ function periodos_validacion(event){
         
             $.ajax({
                 url: '/val2/periodos_validacion/',
-                data: $("#form_validacion").serialize(),
+                data: $("#form_validation").serialize(),
                 type:'POST',
                 beforeSend: function () {
                     activar_espera("historial");
@@ -425,9 +319,9 @@ function periodos_validacion(event){
 
 // pasar los datos crudos a validados
 
-function guardar_validados(event){
-    var $table = $('#table_diario');
-    var $table_crudo = $('#table_crudo');
+function save_daily(event){
+    var $table_daily = $('#table_daily');
+    var $table_detail = $('#table_detail');
     //$table.css("background-color","white");
     token = $("input[name='csrfmiddlewaretoken']").val();
     station_id = $("#id_station").val();
@@ -437,8 +331,7 @@ function guardar_validados(event){
     start_date = $("input[name='start_date']").val();
     end_date = $("input[name='end_date']").val();
 
-    //comentario_general = $("textarea[name='comentario_general']").val();
-    cambios = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true, includeHiddenRows: true}));
+    changes = JSON.stringify($table_daily.bootstrapTable('getData',{unfiltered:true, includeHiddenRows: true}));
 
     $.ajax({
         url: '/validated/guardarvalidados/',
@@ -450,42 +343,35 @@ function guardar_validados(event){
             'end_date': end_date,
             'maximum': maximum,
             'minimum': minimum,
-            //'comentario_general' : comentario_general,
-            'cambios': cambios
+            'changes': changes
         },
         type:'POST',
         beforeSend: function () {
-            $table.bootstrapTable('showLoading');
-            $table_crudo.bootstrapTable('showLoading');
+            $table_daily.bootstrapTable('showLoading');
+            $table_detail.bootstrapTable('showLoading');
         },
         success: function (data) {
-//            debugger;
-            if (data.resultado == true){
-                $("#div_body_mensaje").html('Datos Guardados')
+            if (data.result == true){
+                $("#div_body_mensaje").html('Data saved correctly to Validated!')
                 $("#div_mensaje_validacion").modal("show");
                 $("#resize_plot").hide();
                 $("#div_informacion").hide();
-                limpiar_filtros('diario');
-                limpiar_filtros('crudo');
-                $table_crudo.bootstrapTable('removeAll');
-                $table.bootstrapTable('removeAll');
-
-
+                clean_filters('daily');
+                clean_filters('detail');
+                $table_detail.bootstrapTable('removeAll');
+                $table_daily.bootstrapTable('removeAll');
             }
             else{
                 $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
                 $("#div_mensaje_validacion").modal("show");
-
             }
-            $table.bootstrapTable('hideLoading');
-            $table_crudo.bootstrapTable('hideLoading');
-
-
+            $table_daily.bootstrapTable('hideLoading');
+            $table_detail.bootstrapTable('hideLoading');
         },
         error: function () {
             $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
             $("#div_mensaje_validacion").modal("show");
-            $table.bootstrapTable('hideLoading');
+            $table_daily.bootstrapTable('hideLoading');
         }
     });
 
@@ -495,7 +381,7 @@ function guardar_validados(event){
 
 function eliminar_validados(event){
 //    debugger;
-    var $table = $('#table_diario');
+    var $table = $('#table_daily');
     var $table_crudo = $('#table_crudo');
     //$table.css("background-color","white");
     token = $("input[name='csrfmiddlewaretoken']").val();
@@ -523,11 +409,11 @@ function eliminar_validados(event){
                 //$("#div_body_mensaje").html('Datos Guardados')
                 //$("#div_mensaje_validacion").modal("show");
 
-                limpiar_filtros('diario');
-                limpiar_filtros('crudo');
+                clean_filters('daily');
+                clean_filters('detail');
                 //$table_crudo.bootstrapTable('removeAll');
                 //$table.bootstrapTable('removeAll');
-                actualizar_tabla_diario();
+                daily_query_submit();
 
 
             }
@@ -594,7 +480,7 @@ function guardar_crudos(event){
                 $("#div_mensaje_validacion").modal("show");
                 detalle_crudos();
                 modificar_fila();
-                limpiar_filtros('crudo');
+                clean_filters('detail');
             }
             else{
                 $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
@@ -613,21 +499,22 @@ function guardar_crudos(event){
 }
 
 // Consultar la serie de datos diarios desde el servidor de base de datos
-function actualizar_tabla_diario(){
+function daily_query_submit(){
 //    debugger;
-    var $table = $('#table_diario');
+    var $table_daily = $('#table_daily');
     var var_id = $("#id_variable").val();
     var flag_error = false;
     var mensaje = '';
     $("#orig_variable_id").val(var_id);
     $("#div_informacion").html('')
-    $("#resize_plot").hide();
-    limpiar_filtros('diario');
-    limpiar_filtros('crudo');
+//    $("#resize_plot").hide();
+    clean_filters('daily');
+    clean_filters('detail');
     //$("#table_crudo").bootstrapTable('removeAll');
-    fecha_inicio = $("input[name='inicio']").val();
-    fecha_fin = $("input[name='fin']").val();
-    if( fecha_inicio == '' || fecha_fin == '')
+    debugger;
+    start_date = document.querySelector('input[name="start_date"]').value;
+    end_date = document.querySelector('input[name="end_date"]').value;
+    if( start_date == '' || end_date == '')
     {
         $("#div_message_fechas").show("slow");
         $("#div_c").html("");
@@ -636,16 +523,14 @@ function actualizar_tabla_diario(){
         $("#div_message_fechas").hide();
         $("#div_c").html("");
         $.ajax({
-            url: $("#form_validacion").attr('action'),
-            data: $("#form_validacion").serialize(),
+            url: $("#form_validation").attr('action'),
+            data: $("#form_validation").serialize(),
             type:'POST',
             beforeSend: function () {
-                //activar_espera();
-                $table.bootstrapTable('showLoading');
-    
+                $table_daily.bootstrapTable('showLoading');
             },
             success: function (data) {
-                $("#btn_buscar").attr("disabled", false);
+                $("#btn_submit").attr("disabled", false);
                 for (var key in data){
                     if (key == 'error'){
                         flag_error = true;
@@ -653,69 +538,51 @@ function actualizar_tabla_diario(){
                     }
                 }
                 if (flag_error == false){
-                    if (data.grafico === '<div><h1 style="background-color : red">No hay datos</h1></div>'){
+                    if (data.plot_data.length < 1){
                         $("#div_informacion").show("slow");
-                        $("#div_informacion").html(data.grafico);
-                        $("#resize_plot").hide();
+                        $("#div_informacion").html('<div><h1 style="background-color : red">No hay datos</h1></div>');
                     }
                     else {
                         $("#div_c").html(data.curva);
 
-                        // GRÁFICO con DYGRAPH
-//                        var datos_grafico = format_tuple(data.datos_grafico);
-//                        if (data.variable[0].es_acumulada){
-//                            grafico_barras(datos_grafico, "#div_informacion", data.variable[0]);
-//                        }else{
-//                            grafico_dispersion(datos_grafico, "#div_informacion", data.variable[0]);
-//                        }
-
-                        // GRAFICO con Plotly
-//                        debugger;
-//                        if (data.variable[0].es_acumulada){
                         if (data.variable[0].is_cumulative){
-                            grafico_barras_plotly(data.series, "#div_informacion", data.variable[0]);
+                            bar_plot(data.series, "#div_informacion", data.variable[0]);
                         }else{
-                            grafico_dispersion_plotly(data.series, "div_informacion", data.variable[0]);
+                            dispersion_plot(data.series, "div_informacion", data.variable[0]);
                         }
 
 
-
-//                        $("#resize_plot").show("slow");
-//                        $("#div_informacion").show("slow");
-//                        window.gid = $('.plotly-graph-div,.js-plotly-plot').attr('id');
-//                        window.plot_orig_width = $("#" + window.gid).width();
-//                        plot_adjust();
-                        habilitar_nuevo();
+                        enable_new();
                         var_id = data.variable[0]['id'];
                         variable = data.variable[0];
-                        estacion = data.station[0];
-//                        datos_json = data.datos;
-                        datos_json = data.data
+                        station = data.station[0];
+//                        json_data = data.datos;
+                        json_data = data.data
                         //num_dias = data.indicadores[0]['num_dias'];
-                        $table.bootstrapTable('destroy');
+                        $table_daily.bootstrapTable('destroy');
                         for (const index in data.indicators[0]){
-                            indicadores_diarios[index]= data.indicators[0][index];
+                            indicators_daily[index]= data.indicators[0][index];
                         }
-                        debugger;
-                        var columns = get_columns_diario(var_id, data.indicators[0]);
-                        $table.bootstrapTable({
+//                        debugger;
+                        var columns = get_columns_daily(var_id, data.indicators[0]);
+                        $table_daily.bootstrapTable({
                             columns:columns,
-                            data: datos_json,
+                            data: json_data,
                             height: 420,
                             showFooter: true,
                             uniqueId: 'id',
                             rowStyle: style_row
                         });
 
-                        $table.bootstrapTable('hideLoading');
-                        $("#table_crudo").bootstrapTable('removeAll');
+                        $table_daily.bootstrapTable('hideLoading');
+                        $("#table_detail").bootstrapTable('removeAll');
                     }
                     
     
                 }
                 else{
-                    $table.bootstrapTable('hideLoading');
-                    $("#resize_plot").hide();
+                    $table_daily.bootstrapTable('hideLoading');
+//                    $("#resize_plot").hide();
                     $("#div_body_mensaje").html(mensaje)
                     $("#div_mensaje_validacion").modal("show");
     
@@ -724,7 +591,7 @@ function actualizar_tabla_diario(){
             },
             error: function () {
 //                debugger;
-                $table.bootstrapTable('hideLoading');
+                $table_daily.bootstrapTable('hideLoading');
                 $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
                 $("#div_mensaje_validacion").modal("show");
                 //mostrar_mensaje()
@@ -760,7 +627,7 @@ function getTab(evt, tabName) {
 function modificar_fila(){
     var $table = $('#table_crudo');
     //$table.css("background-color","white");
-    var $table_diario = $('#table_diario');
+    var $table_daily = $('#table_daily');
 
     var id_diario = $("#orig_id_diario").val();
     var fecha = $("#orig_fecha_diario").val();
@@ -875,7 +742,7 @@ function modificar_fila(){
     else
         avg_caudal = (avg_caudal / sum_datos).toFixed(2);
 
-    var porcentaje = (sum_datos * 100 / indicadores_crudos['num_datos']).toFixed(2);
+    var porcentaje = (sum_datos * 100 / indicators_subhourly['num_data']).toFixed(2);
 
     var porcentaje_error = false
 
@@ -891,7 +758,7 @@ function modificar_fila(){
 
 
     if (var_id != 1){
-        $table_diario.bootstrapTable('updateByUniqueId', {
+        $table_daily.bootstrapTable('updateByUniqueId', {
             id: id_diario,
             row: {valor: avg_valor, maximo: avg_maximo, minimo: avg_minimo, validado: true,
                 valor_numero: num_valor, maximo_numero: num_maximo, minimo_numero: num_minimo,
@@ -904,7 +771,7 @@ function modificar_fila(){
 
     }
     else if (var_id == 10 || var_id == 11){
-        $table_diario.bootstrapTable('updateByUniqueId', {
+        $table_daily.bootstrapTable('updateByUniqueId', {
             id: id_diario,
             row: {nivel: avg_nivel, caudal: avg_caudal, validado: true,
                 nivel_numero: num_nivel,
@@ -914,7 +781,7 @@ function modificar_fila(){
         });
     }
     else {
-        $table_diario.bootstrapTable('updateByUniqueId', {
+        $table_daily.bootstrapTable('updateByUniqueId', {
             id: id_diario,
             row: {valor: suma_valor.toFixed(2), validado: true, valor_numero: num_valor, porcentaje: porcentaje,
                 porcentaje_error: porcentaje_error, fecha_numero: num_fecha,
@@ -934,7 +801,7 @@ function graficar(event){
     if (name === 'crudo')
         $table = $("#table_crudo");
     else
-        $table = $("#table_diario");
+        $table = $("#table_daily");
 
     var data_fecha = [];
     var data_valor = [];
@@ -1198,7 +1065,7 @@ function mostrar(event){
     if (name === 'crudo')
         $table = $("#table_crudo");
     else
-        $table = $("#table_diario");
+        $table = $("#table_daily");
 
     setTimeout(function(){
         $table.bootstrapTable('showLoading');
@@ -1241,7 +1108,7 @@ function eliminar(event){
     if (name === 'crudo')
         $table = $("#table_crudo");
     else
-        $table = $("#table_diario");
+        $table = $("#table_daily");
 
     setTimeout(function(){
         $table.bootstrapTable('showLoading');
@@ -1282,7 +1149,7 @@ function desvalidar_datos(event){
     if (name === 'crudo')
         $table = $("#table_crudo");
     else
-        $table = $("#table_diario");
+        $table = $("#table_daily");
 
     setTimeout(function(){
         $table.bootstrapTable('showLoading');
@@ -1443,11 +1310,11 @@ function marcar(event){
 
     if (name === 'crudo'){
         $table = $("#table_crudo");
-        cadena = $("#txt_seleccionar_crudo").val().toString();
+        cadena = $("#txt_selection_crudo").val().toString();
     }
     else{
-        cadena = $("#txt_seleccionar").val().toString();
-        $table = $("#table_diario");
+        cadena = $("#txt_selection").val().toString();
+        $table = $("#table_daily");
     }
     $table.bootstrapTable('showLoading');
     var arr_id = cadena.split(',');
@@ -1480,7 +1347,7 @@ function desmarcar(event){
     if (name ==='crudo')
         $table = $("#table_crudo");
     else
-        $table = $("#table_diario");
+        $table = $("#table_daily");
 
 
     $table.bootstrapTable('showLoading');
@@ -1500,26 +1367,33 @@ function detalle_crudos(e, value, row){
     var variable_id = $("#id_variable").val();
 
     var id_diario = 0;
-    var fecha = '';
+//    var fecha = '';
+    var date = '';
 
     var estado = row || false
 
     if (estado == false ){
         id_diario = $("#orig_id_diario").val();
-        fecha = $("#orig_fecha_diario").val();
+//        fecha = $("#orig_fecha_diario").val();
+        date = $("#orig_fecha_diario").val();
     }
     else{
+//        id_diario = row.id;
+//        fecha = row.fecha;
+//        $("#orig_id_diario").val(id_diario);
+//        $("#orig_fecha_diario").val(fecha);
         id_diario = row.id;
-        fecha = row.fecha;
+        date = row.date;
         $("#orig_id_diario").val(id_diario);
-        $("#orig_fecha_diario").val(fecha);
+        $("#orig_fecha_diario").val(date);
     }
 
     var var_maximo = $("#id_maximum").val();
     var var_minimo = $("#id_minimum").val();
 
 
-    enlace = '/validated/lista/' + station_id + '/' + variable_id + '/' + fecha + '/' + var_minimo + '/' + var_maximo;
+//    enlace = '/validated/lista/' + station_id + '/' + variable_id + '/' + fecha + '/' + var_minimo + '/' + var_maximo;
+    enlace = '/validated/lista/' + station_id + '/' + variable_id + '/' + date + '/' + var_minimo + '/' + var_maximo;
 
     $.ajax({
         url: enlace,
@@ -1528,27 +1402,29 @@ function detalle_crudos(e, value, row){
             $table.bootstrapTable('showLoading');
         },
         success: function (data) {
-
             document.getElementById("tab3-tab").style.display = "block";
             document.getElementById("tab3-tab").click();
-            datos_json = data.datos;
+            json_data = data.series;
             $table.bootstrapTable('destroy');
-            for (const index in data.indicadores[0]){
-                indicadores_crudos[index] = data.indicadores[0][index];
-                $("#span_"+index+"_crudo").text(indicadores_crudos[index]);
+            for (const index in data.indicators[0]){
+                indicators_subhourly[index] = data.indicators[0][index];
+                $("#span_"+index+"_crudo").text(indicators_subhourly[index]);
             }
+
+
             /* this is an example for new snippet extension make by me xD */
-            for (const element of datos_json) {
-                element["fecha"] = (element['fecha']).replace('T',' ');
+            for (const element of json_data) {
+                element["time"] = (element['time']).replace('T',' ');
             }
-            var columns = get_column_validado(variable_id, data.indicadores[0]);
+
+            var columns = get_column_validado(variable_id, data.indicators[0]);
             $table.bootstrapTable({
                 columns:columns,
-                data: datos_json,
+                data: json_data,
                 rowStyle: style_row,
                 height: 320,
                 });
-            //$table.bootstrapTable({columns:columns, data: datos_json})
+            //$table.bootstrapTable({columns:columns, data: json_data})
             $table.bootstrapTable('hideLoading');
         },
         error: function () {
@@ -1565,7 +1441,7 @@ function detalle_crudos(e, value, row){
 function eliminar_diario(e, value, row, index){
 //    debugger;
     console.log(row);
-    var $table = $('#table_diario');
+    var $table = $('#table_daily');
     $table.bootstrapTable('updateRow', {
         index: index,
         row: {
@@ -1668,7 +1544,7 @@ function abrir_formulario(e, value, row, index){
 
 
 //Generar las columnas de la tabla de datos diarios
-function get_columns_diario(var_id){
+function get_columns_daily(var_id){
 
     var span = '<span class="badge badge-danger">num</span>';
 
@@ -1721,7 +1597,7 @@ function get_columns_diario(var_id){
 //    var accion = {
 //        field: 'accion',
 //        title: 'Acción',
-//        formatter: operate_table_diario,
+//        formatter: operate_table_daily,
 //        events: {
 //           'click .search': detalle_crudos,
 //           'click .delete': eliminar_diario,
@@ -1732,7 +1608,7 @@ function get_columns_diario(var_id){
     var action = {
         field: 'action',
         title: 'Action',
-        formatter: operate_table_diario,
+        formatter: operate_table_daily,
         events: {
            'click .search': detalle_crudos,
            'click .delete': eliminar_diario,
@@ -1857,7 +1733,7 @@ function get_columns_diario(var_id){
 
 //generar las columnas para la tabla de datos crudos
 function get_column_validado(var_id){
-//    debugger;
+    debugger;
     var columns = [];
 
     var span = '<span id="span_id" class="badge badge-danger">num</span>';
@@ -1874,35 +1750,75 @@ function get_column_validado(var_id){
         footerFormatter: footer_id
     };
 
-    var fecha = {
-        field:'fecha',
-        title:'Fecha',
+//    var fecha = {
+//        field:'fecha',
+//        title:'Fecha',
+//        cellStyle: style_date,
+//        footerFormatter: total_datos
+//    };
+    var time = {
+        field:'time',
+        title:'Time',
         cellStyle: style_date,
         footerFormatter: total_datos
     };
 
-    var valor_atipico = {
+//    var valor_atipico = {
+//        field:'',
+//        title:'Valores Atípicos',
+//        cellStyle: style_stddev,
+//        footerFormatter: footer_stddev
+//    };
+    var outlier = {
         field:'',
-        title:'Valores Atípicos',
+        title:'Outliers',
         cellStyle: style_stddev,
         footerFormatter: footer_stddev
     };
 
-
-    var comentario = {
-        field:'comentario',
-        title:'Comentario'
+//    var comentario = {
+//        field:'comentario',
+//        title:'Comentario'
+//    };
+    var comment = {
+        field:'comment',
+        title:'Comment'
     };
-    var n_valor = {
-        field:'n_valor',
-        title:'Variación Consecutiva',
+
+
+
+//    var n_valor = {
+//        field:'n_valor',
+//        title:'Variación Consecutiva',
+//        cellStyle: style_varia_error,
+//        footerFormatter: footer_variaConse
+//    };
+    var n_value = {
+        field:'value_difference',
+        title:'Value difference',
         cellStyle: style_varia_error,
         footerFormatter: footer_variaConse
     };
 
-    var accion = {
-        field: 'accion',
-        title: 'Acción',
+    var n_value_error = {
+        field:'value_difference_error',
+        title:'Val diff err',
+        visible: false,
+    };
+
+//    var accion = {
+//        field: 'accion',
+//        title: 'Acción',
+//        formatter: operate_table_crudo,
+//        events: {
+//           'click .delete_crudo': abrir_form_eliminar,
+//           'click .update': abrir_formulario
+//
+//        }
+//    };
+    var action = {
+        field: 'action',
+        title: 'Action',
         formatter: operate_table_crudo,
         events: {
            'click .delete_crudo': abrir_form_eliminar,
@@ -1913,40 +1829,68 @@ function get_column_validado(var_id){
 
     columns.push(state);
     columns.push(id);
-    columns.push(fecha);
+    columns.push(time);
     
     if (var_id =='1'){
 
 
-        var valor = {
-            field:'valor',
-            title: 'Valor',
+//        var valor = {
+//            field:'valor',
+//            title: 'Valor',
+//            cellStyle: style_error_crudo,
+//            footerFormatter: footer_suma
+//        };
+        var value = {
+            field:'value',
+            title: 'Value',
             cellStyle: style_error_crudo,
             footerFormatter: footer_suma
         };
-        columns.push(valor);
+        columns.push(value);
 
     }
     else if ( (var_id == '4') || ( var_id == '5') ){
-        var valor = {
-            field:'valor',
-            title:'Valor ',
+//        var valor = {
+//            field:'valor',
+//            title:'Valor ',
+//            cellStyle: style_valor,
+//            //formatter: format_valor,
+//            footerFormatter: footer_promedio
+//        };
+        var value = {
+            field:'value',
+            title:'Value ',
             cellStyle: style_valor,
             //formatter: format_valor,
             footerFormatter: footer_promedio
         };
 
-        var maximo = {
-            field:'maximo',
-            title: 'Máximo',
+
+//        var maximo = {
+//            field:'maximo',
+//            title: 'Máximo',
+//            visible: false,
+//            cellStyle: style_error_crudo,
+//            footerFormatter: footer_promedio
+//        };
+        var maximum = {
+            field:'maximum',
+            title: 'Maximum',
             visible: false,
             cellStyle: style_error_crudo,
             footerFormatter: footer_promedio
         };
 
-        var minimo = {
-            field:'minimo',
-            title: 'Mínimo',
+//        var minimo = {
+//            field:'minimo',
+//            title: 'Mínimo',
+//            visible: false,
+//            cellStyle: style_error_crudo,
+//            footerFormatter: footer_promedio
+//        };
+        var minimum = {
+            field:'minimum',
+            title: 'Minimum',
             visible: false,
             cellStyle: style_error_crudo,
             footerFormatter: footer_promedio
@@ -1967,47 +1911,66 @@ function get_column_validado(var_id){
             //cellStyle: style_valor,
             //footerFormatter: footer_promedio
         };
-        columns.push(valor);
-        columns.push(maximo);
-        columns.push(minimo);
+        columns.push(value);
+        columns.push(maximum);
+        columns.push(minimum);
         columns.push(direccion);
         columns.push(punto_cardinal);
     }
     else{
-        var valor = {
-            field:'valor',
-            title:'Valor',
+//        var valor = {
+//            field:'valor',
+//            title:'Valor',
+//            cellStyle: style_error_crudo,
+//            footerFormatter: footer_promedio
+//        };
+        var value = {
+            field:'value',
+            title:'Value',
             cellStyle: style_error_crudo,
             footerFormatter: footer_promedio
         };
 
-        var maximo = {
-            field:'maximo',
-            title: 'Máximo',
+//        var maximo = {
+//            field:'maximo',
+//            title: 'Máximo',
+//            cellStyle: style_error_crudo,
+//            footerFormatter: footer_promedio
+//        };
+        var maximum = {
+            field:'maximum',
+            title: 'Maximum',
             cellStyle: style_error_crudo,
             footerFormatter: footer_promedio
         };
 
-        var minimo = {
-            field:'minimo',
-            title: 'Mínimo',
+//        var minimo = {
+//            field:'minimo',
+//            title: 'Mínimo',
+//            cellStyle: style_error_crudo,
+//            footerFormatter: footer_promedio
+//        };
+        var minimum = {
+            field:'minimum',
+            title: 'Minimum',
             cellStyle: style_error_crudo,
             footerFormatter: footer_promedio
         };
-        columns.push(valor);
-        columns.push(maximo);
-        columns.push(minimo);
+        columns.push(value);
+        columns.push(maximum);
+        columns.push(minimum);
 
     }
-    columns.push(valor_atipico);
-    columns.push(comentario);
-    columns.push(n_valor);
-    columns.push(accion);
+    columns.push(outlier);
+    columns.push(comment);
+    columns.push(n_value);
+    columns.push(n_value_error);
+    columns.push(action);
     return columns
 }
 
 //Función para generar los iconos de acción de la tabla diario
-function operate_table_diario(value, row, index) {
+function operate_table_daily(value, row, index) {
 //    debugger;
     return [
       '<a class="search" href="javascript:void(0)" title="Detalle">',
@@ -2131,10 +2094,19 @@ function style_var_con(value, row, index){
         clase = '';
     return { classes: clase}
 }
+//function style_varia_error(value, row, index){
+////    debugger;
+//    var clase = ''
+//    if (row.varia_error === true)
+//        clase = 'error';
+//    else
+//        clase = '';
+//    return { classes: clase}
+//}
 function style_varia_error(value, row, index){
 //    debugger;
     var clase = ''
-    if (row.varia_error === true)
+    if (row.value_difference_error === true)
         clase = 'error';
     else
         clase = '';
@@ -2264,7 +2236,7 @@ function format_punto_cardinal(value, row, index, field){
 //}
 
 function footer_id(data){
-    debugger;
+//    debugger;
     var span = '<span class="badge badge-danger">num</span>';
     var num_date = data.reduce(function(num, i){
         // TODO check translation: seleccionado
@@ -2284,7 +2256,7 @@ function footer_id(data){
 
 // Obtener el promedio de los datos
 function footer_promedio(data){
-    debugger;
+//    debugger;
     var field = this.field;
     var field_error = '';
     if ( this.field.includes("value") || this.field.includes("maximum") || this.field.includes("minimum")){
@@ -2411,13 +2383,13 @@ function total_filas(data){
 //    span = span.replace('num',num_fecha.toString());
     span = span.replace('num', num_fecha.toString());
 
-    return suma + ' of ' + indicadores_diarios['num_days'] + ' days ' + span;
+    return suma + ' of ' + indicators_daily['num_days'] + ' days ' + span;
 //    return suma + ' of ' + daily_indicators['num_days'] + ' days ' + span;
 }
 
 //total de datos
 function total_datos(data){
-    debugger;
+//    debugger;
     var span = '<span class="badge badge-danger">num</span>';
 
     var suma = data.reduce(function (sum, i) {
@@ -2439,11 +2411,11 @@ function total_datos(data){
 
     span = span.replace('num',num_fecha.toString());
 
-    return suma + ' de ' + indicadores_crudos['num_datos'] + ' datos ' + span;
+    return suma + ' de ' + indicators_subhourly['num_data'] + ' datos ' + span;
 }
 // valores atípicos
 function footer_stddev(data){
-    debugger;
+//    debugger;
     var span = '<span class="badge badge-danger">num</span>';
     var num_stddev = data.reduce(function(num, i){
         if (i['stddev_error'] && i['estado'])
@@ -2456,11 +2428,28 @@ function footer_stddev(data){
 
     return span;
 }
+//function footer_variaConse(data){
+//    debugger;
+//    var span = '<span class="badge badge-danger">num</span>';
+//    var num_vcr = data.reduce(function(num, i){
+//        if (i['stddev_error'] && i['estado'])
+//            return num +1;
+//        else
+//            return num;
+//    }, 0);
+//
+//    if (num_vcr > 1){
+//        num_vcr -= 1;
+//    }
+//    span = span.replace('num',num_vcr.toString());
+//
+//    return span;
+//}
 function footer_variaConse(data){
-    debugger;
+//    debugger;
     var span = '<span class="badge badge-danger">num</span>';
     var num_vcr = data.reduce(function(num, i){
-        if (i['stddev_error'] && i['estado'])
+        if (i['value_difference_error'] && i['state'])
             return num +1;
         else
             return num;
@@ -2473,6 +2462,7 @@ function footer_variaConse(data){
 
     return span;
 }
+
 function footer_variaConse_cont(data){
 //    debugger;
     var span = '<span class="badge badge-danger">num</span>';
@@ -2502,7 +2492,7 @@ function filtrar_diario(){
     var var_id = $("#id_variable").val();
 
     if (var_id == 10 || var_id == 11){
-        $("#table_diario").bootstrapTable('filterBy', {
+        $("#table_daily").bootstrapTable('filterBy', {
         fecha_error: filtro_fecha,
         porcentaje_error: filtro_porcentaje,
         nivel_error: filtro_valor,
@@ -2511,7 +2501,7 @@ function filtrar_diario(){
 
     }
     else {
-        $("#table_diario").bootstrapTable('filterBy', {
+        $("#table_daily").bootstrapTable('filterBy', {
         fecha_error: filtro_fecha,
         porcentaje_error: filtro_porcentaje,
         valor_error: filtro_valor,
@@ -2524,7 +2514,7 @@ function filtrar_diario(){
 }
 
 function get_filtro_fecha(fecha){
-    debugger;
+//    debugger;
     var filtro_fecha = [];
     if (fecha == 'error')
         filtro_fecha = ['0','2', '3'];
@@ -2537,7 +2527,7 @@ function get_filtro_fecha(fecha){
 }
 
 function get_filtro_porcentaje(porcentaje){
-    debugger;
+//    debugger;
     var filtro_porcentaje = [];
 
     if (porcentaje == 'error')
@@ -2551,7 +2541,7 @@ function get_filtro_porcentaje(porcentaje){
 }
 
 function get_filtro_valor(numero){
-    debugger;
+//    debugger;
     var filtro_valor = [];
 
     if (numero == 'error')
@@ -2565,7 +2555,7 @@ function get_filtro_valor(numero){
 }
 
 function get_filtro_stddev(numero){
-    debugger;
+//    debugger;
     var filtro_valor = [];
 
     if (numero == 'error')
@@ -2579,7 +2569,7 @@ function get_filtro_stddev(numero){
 }
 
 function get_filtro_estado(numero){
-    debugger;
+//    debugger;
     var filtro_valor = [];
 
     if (numero == 'error')
@@ -2592,7 +2582,7 @@ function get_filtro_estado(numero){
     return filtro_valor
 }
 function get_filtro_var_con(numero){
-    debugger;
+//    debugger;
     console.log("Valorfiltro con ", numero);
     var filtro_valor = [];
 
@@ -2606,8 +2596,8 @@ function get_filtro_var_con(numero){
     return filtro_valor
 }
 function filtrar_crudo(){
-//    debugger;
-    console.log("Filtrar Crudo ")
+    debugger;
+
     var fecha = $("#chk_fecha_crudo").val();
     var valor = $("#chk_valor_crudo").val();
     var stddev = $("#chk_stddev").val();
@@ -2621,48 +2611,44 @@ function filtrar_crudo(){
     var filtro_varcon = get_filtro_var_con(varconfil);
     var variable_id = $("#id_variable").val();
 
-    if (variable_id == 10 || variable_id == 11){
+//    if (variable_id == 10 || variable_id == 11){
+//        $("#table_crudo").bootstrapTable('filterBy', {
+//            fecha_error: filtro_fecha,
+//            nivel_error: filtro_valor,
+//            stddev_error: filtro_stddev,
+//            estado:filtro_fila
+//        });
+//    }
+//    else{
+
         $("#table_crudo").bootstrapTable('filterBy', {
-            fecha_error: filtro_fecha,
-            nivel_error: filtro_valor,
-            stddev_error: filtro_stddev,
-            estado:filtro_fila
-        });
-    }
-    else{
-        console.log("En el else 2269");
-        $("#table_crudo").bootstrapTable('filterBy', {
-            fecha_error: filtro_fecha,
-            valor_error: filtro_valor,
-            stddev_error: filtro_stddev,
-            varia_error: filtro_varcon,
-            estado:filtro_fila
+//            fecha_error: filtro_fecha,
+//            valor_error: filtro_valor,
+//            stddev_error: filtro_stddev,
+            value_difference_error: filtro_varcon,
+//            estado:filtro_fila
         });
 
-    }
+//    }
 }
 
 
-function limpiar_filtros(tipo){
-//    debugger;
-    if (tipo == 'crudo'){
-        $("#chk_fecha_crudo").prop('selectedIndex',0);
-        $("#chk_valor_crudo").prop('selectedIndex',0);
-        $("#chk_stddev").prop('selectedIndex',0);
-        $("#chk_fila").prop('selectedIndex',0);
-        $("#chk_varcon").prop('selectedIndex',0);
-        $("#txt_seleccionar_crudo").val('');
+function clean_filters(tipo){
+    if (tipo == 'detail'){
+        $("#chk_detail_time").prop('selectedIndex',0);
+        $("#chk_detail_value").prop('selectedIndex',0);
+        $("#chk_detail_stddev").prop('selectedIndex',0);
+        $("#chk_detail_row").prop('selectedIndex',0);
+        $("#chk_detail_value_difference").prop('selectedIndex',0);
+        $("#txt_detail_selection").val('');
 
     }
     else{
-        $("#chk_fecha").prop('selectedIndex',0);
-        $("#chk_porcentaje").prop('selectedIndex',0);
-        $("#chk_numero").prop('selectedIndex',0);
-        $("#txt_seleccionar").val('');
+//        $("#chk_fecha").prop('selectedIndex',0);
+//        $("#chk_porcentaje").prop('selectedIndex',0);
+//        $("#chk_numero").prop('selectedIndex',0);
+//        $("#txt_selection").val('');
     }
-
-
-
 }
 
 function get_valor_error(valor){
@@ -2682,15 +2668,15 @@ function get_valor_error(valor){
 }
 
 
-function habilitar_nuevo(){
+function enable_new(){
 //    debugger;
     var variable_id = $("#id_variable").val();
 
     //if (variable_id == "1" || variable_id == "10" || variable_id == "11")
     if ( variable_id != "11" || variable_id == "4" || variable_id == "5" )
-        $("#btn_nuevo_crudo").attr("disabled", false);
+        $("#btn_detail_new").attr("disabled", false);
     else
-        $("#btn_nuevo_crudo").attr("disabled", true);
+        $("#btn_detail_new").attr("disabled", true);
 
 
 }
