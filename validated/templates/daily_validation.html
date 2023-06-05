@@ -47,7 +47,7 @@
         width:40%;
         vertical-align: middle;
     }
-    .mensaje{
+    .message{
         vertical-align: middle;
         text-align: center;
     }
@@ -128,14 +128,14 @@
     <div id="div_c"></div>
 
 
-    <div id="div_message_fechas" class="row mt-4" style="display:none;">
+    <div id="div_message_dates" class="row mt-4" style="display:none;">
         <div class="alert alert-danger alert-dismissible" role="alert">
             A problem occurred with the processing of the information, please select Dates.
         </div>
     </div>
 
 
-    <div id="div_mensaje" class="filter row" style="display:none;">
+    <div id="div_message" class="filter row" style="display:none;">
         <div class="alert alert-danger alert-dismissible" role="alert">
             A problem occurred with the processing of the information, please try again.
         </div>
@@ -465,16 +465,16 @@
 
 
     <!-- Modal Mensaje Validacion -->
-    <div class="modal fade" id="div_mensaje_validacion" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="div_mensaje_validacion_label" aria-hidden="true">
+    <div class="modal fade" id="div_validation_message" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="div_message_validacion_label" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Mensaje</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">message</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div id="div_body_mensaje" class="modal-body">
+                <div id="div_body_message" class="modal-body">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -543,7 +543,7 @@
     </div>
 
 
-    <input type="hidden" id="orig_estacion_id">
+    <input type="hidden" id="orig_station_id">
     <input type="hidden" id="orig_variable_id">
     <input type="hidden" id="orig_fecha_inicio">
     <input type="hidden" id="orig_fecha_fin">

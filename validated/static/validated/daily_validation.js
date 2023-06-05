@@ -70,10 +70,10 @@ var dateFormat = "yy-mm-dd";
 tr_ini = '<tr>';
 tr_fin = '</tr>';
 var json_data = {};
-var data_fecha = [];
-var data_valor = [];
-var data_maximo = [];
-var data_minimo = [];
+var data_date = [];
+var data_value = [];
+var data_maximum = [];
+var data_minimum = [];
 //var num_dias = 0;
 var num_datos = 0;
 
@@ -108,7 +108,7 @@ var indicators_daily = {
     num_days: 0
 }
 
-var num_fecha = 0;
+var num_date = 0;
 
 
 $(document).ready(function() {
@@ -258,6 +258,7 @@ $(document).ready(function() {
     $btn_detail_new.click(abrir_formulario_nuevo);
     $btn_detail_delete.click(eliminar);
     $btn_detail_undo.click(mostrar);
+    $btn_detail_save.click(save_detail);
 });
 
 //consultar el historial de validacion
@@ -267,7 +268,7 @@ function periodos_validacion(event){
     if (fecha_inicio == '' && fecha_fin == '')
         {
             token = $("input[name='csrfmiddlewaretoken']").val();
-            estacion_id = $("#id_estacion").val();
+            station_id = $("#id_station").val();
             variable_id = $("#id_variable").val();
         
             $.ajax({
@@ -284,14 +285,14 @@ function periodos_validacion(event){
                 },
                 error: function () {
         
-                    mostrar_mensaje("historial");
+                    show_message("historial");
         
                 }
             });
         }
         else {
             token = $("input[name='csrfmiddlewaretoken']").val();
-            estacion_id = $("#id_estacion").val();
+            station_id = $("#id_station").val();
             variable_id = $("#id_variable").val();
         
             $.ajax({
@@ -308,7 +309,7 @@ function periodos_validacion(event){
                 },
                 error: function () {
         
-                    mostrar_mensaje("historial");
+                    show_message("historial");
         
                 }
             });
@@ -334,7 +335,7 @@ function save_daily(event){
     changes = JSON.stringify($table_daily.bootstrapTable('getData',{unfiltered:true, includeHiddenRows: true}));
 
     $.ajax({
-        url: '/validated/guardarvalidados/',
+        url: '/validated/daily_save/',
         data: {
             'csrfmiddlewaretoken': token,
             'station_id': station_id,
@@ -352,25 +353,25 @@ function save_daily(event){
         },
         success: function (data) {
             if (data.result == true){
-                $("#div_body_mensaje").html('Data saved correctly to Validated!')
-                $("#div_mensaje_validacion").modal("show");
+                $("#div_body_message").html('Data saved correctly to Validated!')
+                $("#div_validation_message").modal("show");
                 $("#resize_plot").hide();
-                $("#div_informacion").hide();
+                $("#div_information").hide();
                 clean_filters('daily');
                 clean_filters('detail');
                 $table_detail.bootstrapTable('removeAll');
                 $table_daily.bootstrapTable('removeAll');
             }
             else{
-                $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-                $("#div_mensaje_validacion").modal("show");
+                $("#div_body_message").html('There was a problem with the validation please contact the administrator')
+                $("#div_validation_message").modal("show");
             }
             $table_daily.bootstrapTable('hideLoading');
             $table_detail.bootstrapTable('hideLoading');
         },
         error: function () {
-            $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-            $("#div_mensaje_validacion").modal("show");
+            $("#div_body_message").html('There was a problem with the validation please contact the administrator')
+            $("#div_validation_message").modal("show");
             $table_daily.bootstrapTable('hideLoading');
         }
     });
@@ -382,22 +383,22 @@ function save_daily(event){
 function eliminar_validados(event){
 //    debugger;
     var $table = $('#table_daily');
-    var $table_crudo = $('#table_crudo');
+    var $table_detail = $('#table_detail');
     //$table.css("background-color","white");
     token = $("input[name='csrfmiddlewaretoken']").val();
-    estacion_id = $("#id_estacion").val();
+    station_id = $("#id_station").val();
     variable_id = $("#id_variable").val();
     //comentario_general = $("textarea[name='comentario_general']").val();
-    cambios = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true, includeHiddenRows: true}));
+    changes = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true, includeHiddenRows: true}));
 
 
     $.ajax({
         url: '/val2/eliminarvalidados/',
         data: {
             'csrfmiddlewaretoken': token,
-            'estacion_id': estacion_id,
+            'station_id': station_id,
             'variable_id': variable_id,
-            'cambios': cambios
+            'changes': changes
         },
         type:'POST',
         beforeSend: function () {
@@ -405,31 +406,31 @@ function eliminar_validados(event){
 
         },
         success: function (data) {
-            if (data.resultado == true){
+            if (data.result == true){
                 //$("#div_body_mensaje").html('Datos Guardados')
                 //$("#div_mensaje_validacion").modal("show");
 
                 clean_filters('daily');
                 clean_filters('detail');
-                //$table_crudo.bootstrapTable('removeAll');
+                //$table_detail.bootstrapTable('removeAll');
                 //$table.bootstrapTable('removeAll');
                 daily_query_submit();
 
 
             }
             else{
-                $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-                $("#div_mensaje_validacion").modal("show");
+                $("#div_body_message").html('There was a problem with the validation please contact the administrator')
+                $("#div_validation_message").modal("show");
 
             }
             $table.bootstrapTable('hideLoading');
-            $table_crudo.bootstrapTable('hideLoading');
+            $table_detail.bootstrapTable('hideLoading');
 
 
         },
         error: function () {
-            $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-            $("#div_mensaje_validacion").modal("show");
+            $("#div_body_message").html('There was a problem with the validation please contact the administrator')
+            $("#div_validation_message").modal("show");
             $table.bootstrapTable('hideLoading');
         }
     });
@@ -437,7 +438,7 @@ function eliminar_validados(event){
 }
 
 // guardar los cambios en los datos crudos
-function guardar_crudos(event){
+function save_detail(event){
 //    debugger;
 //    var $table = $('#table_crudo');
 //    //$table.css("background-color","white");
@@ -451,7 +452,7 @@ function guardar_crudos(event){
 //    //console.log($table.bootstrapTable('getData',{unfiltered:true, }))
 //    //detalle_crudos();
     document.getElementById("tab3-tab").style.display = "none";
-    var $table = $('#table_crudo');
+    var $table = $('#table_detail');
     token = $("input[name='csrfmiddlewaretoken']").val();
     station_id = $("#id_station").val();
     variable_id = $("#id_variable").val();
@@ -460,7 +461,7 @@ function guardar_crudos(event){
     data = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true}));
 
     $.ajax({
-        url: '/validated/guardarcrudos/',
+        url: '/validated/detail_save/',
         data: {
             'csrfmiddlewaretoken': token,
             'station_id': station_id,
@@ -476,21 +477,21 @@ function guardar_crudos(event){
         success: function (response) {
             console.log(typeof response.resultado)
             if (response.resultado == true){
-                $("#div_body_mensaje").html('Datos Guardados')
-                $("#div_mensaje_validacion").modal("show");
-                detalle_crudos();
-                modificar_fila();
+                $("#div_body_message").html('Data saved successfully')
+                $("#div_validation_message").modal("show");
+                detail_details();
+                modify_row();
                 clean_filters('detail');
             }
             else{
-                $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-                $("#div_mensaje_validacion").modal("show");
+                $("#div_body_message").html('There was a problem with the validation please contact the administrator')
+                $("#div_validation_message").modal("show");
                 $table.bootstrapTable('hideLoading');
             }
         },
         error: function () {
-            $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-            $("#div_mensaje_validacion").modal("show");
+            $("#div_body_message").html('There was a problem with the validation please contact the administrator')
+            $("#div_validation_message").modal("show");
             $table.bootstrapTable('hideLoading');
         }
     });
@@ -504,9 +505,9 @@ function daily_query_submit(){
     var $table_daily = $('#table_daily');
     var var_id = $("#id_variable").val();
     var flag_error = false;
-    var mensaje = '';
+    var message = '';
     $("#orig_variable_id").val(var_id);
-    $("#div_informacion").html('')
+    $("#div_information").html('')
 //    $("#resize_plot").hide();
     clean_filters('daily');
     clean_filters('detail');
@@ -516,11 +517,11 @@ function daily_query_submit(){
     end_date = document.querySelector('input[name="end_date"]').value;
     if( start_date == '' || end_date == '')
     {
-        $("#div_message_fechas").show("slow");
+        $("#div_message_dates").show("slow");
         $("#div_c").html("");
     }
     else {
-        $("#div_message_fechas").hide();
+        $("#div_message_dates").hide();
         $("#div_c").html("");
         $.ajax({
             url: $("#form_validation").attr('action'),
@@ -534,21 +535,21 @@ function daily_query_submit(){
                 for (var key in data){
                     if (key == 'error'){
                         flag_error = true;
-                        mensaje = data.error;
+                        message = data.error;
                     }
                 }
                 if (flag_error == false){
                     if (data.plot_data.length < 1){
-                        $("#div_informacion").show("slow");
-                        $("#div_informacion").html('<div><h1 style="background-color : red">No hay datos</h1></div>');
+                        $("#div_information").show("slow");
+                        $("#div_information").html('<div><h1 style="background-color : red">No hay datos</h1></div>');
                     }
                     else {
                         $("#div_c").html(data.curva);
 
                         if (data.variable[0].is_cumulative){
-                            bar_plot(data.series, "#div_informacion", data.variable[0]);
+                            bar_plot(data.series, "#div_information", data.variable[0]);
                         }else{
-                            dispersion_plot(data.series, "div_informacion", data.variable[0]);
+                            dispersion_plot(data.series, "div_information", data.variable[0]);
                         }
 
 
@@ -583,8 +584,8 @@ function daily_query_submit(){
                 else{
                     $table_daily.bootstrapTable('hideLoading');
 //                    $("#resize_plot").hide();
-                    $("#div_body_mensaje").html(mensaje)
-                    $("#div_mensaje_validacion").modal("show");
+                    $("#div_body_message").html(message)
+                    $("#div_validation_message").modal("show");
     
                 }
     
@@ -592,8 +593,8 @@ function daily_query_submit(){
             error: function () {
 //                debugger;
                 $table_daily.bootstrapTable('hideLoading');
-                $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-                $("#div_mensaje_validacion").modal("show");
+                $("#div_body_message").html('Ocurrio un problema con la validación por favor contacte con el administrador')
+                $("#div_validation_message").modal("show");
                 //mostrar_mensaje()
     
             }
@@ -624,8 +625,8 @@ function getTab(evt, tabName) {
 
 
 // actualizar una fila de la tabla de datos diarios
-function modificar_fila(){
-    var $table = $('#table_crudo');
+function modify_row(){
+    var $table = $('#table_detail');
     //$table.css("background-color","white");
     var $table_daily = $('#table_daily');
 
@@ -659,7 +660,7 @@ function modificar_fila(){
     var num_nivel = 0;
     var num_caudal = 0;
 
-    var num_fecha = 0;
+    var num_date = 0;
 
     var sum_datos = 0;
 
@@ -704,7 +705,7 @@ function modificar_fila(){
             }
 
             if (item.seleccionado == false || item.estado == false)
-                num_fecha += 1;
+                num_date += 1;
 
             sum_datos += 1;
 
@@ -762,7 +763,7 @@ function modificar_fila(){
             id: id_diario,
             row: {valor: avg_valor, maximo: avg_maximo, minimo: avg_minimo, validado: true,
                 valor_numero: num_valor, maximo_numero: num_maximo, minimo_numero: num_minimo,
-                porcentaje: porcentaje, porcentaje_error: porcentaje_error, fecha_numero: num_fecha,
+                porcentaje: porcentaje, porcentaje_error: porcentaje_error, fecha_numero: num_date,
                 valor_error: num_valor > 0 ? true : false,
                 maximo_error: num_maximo > 0 ? true: false,
                 minimo_error: num_minimo > 0 ? true: false
@@ -775,7 +776,7 @@ function modificar_fila(){
             id: id_diario,
             row: {nivel: avg_nivel, caudal: avg_caudal, validado: true,
                 nivel_numero: num_nivel,
-                porcentaje: porcentaje, porcentaje_error: porcentaje_error, fecha_numero: num_fecha,
+                porcentaje: porcentaje, porcentaje_error: porcentaje_error, fecha_numero: num_date,
                 nivel_error: num_nivel > 0 ? true : false
             }
         });
@@ -784,7 +785,7 @@ function modificar_fila(){
         $table_daily.bootstrapTable('updateByUniqueId', {
             id: id_diario,
             row: {valor: suma_valor.toFixed(2), validado: true, valor_numero: num_valor, porcentaje: porcentaje,
-                porcentaje_error: porcentaje_error, fecha_numero: num_fecha,
+                porcentaje_error: porcentaje_error, fecha_numero: num_date,
                 valor_error: num_valor > 0 ? true : false
             }
         });
@@ -799,14 +800,14 @@ function modificar_fila(){
 function graficar(event){
     var name = event.currentTarget.name;
     if (name === 'crudo')
-        $table = $("#table_crudo");
+        $table = $("#table_detail");
     else
         $table = $("#table_daily");
 
-    var data_fecha = [];
-    var data_valor = [];
-    var data_maximo = [];
-    var data_minimo = [];
+    var data_date = [];
+    var data_value = [];
+    var data_maximum = [];
+    var data_minimum = [];
     var data_historica = [];
     var data_error_fecha = [];
     var data_error_valor = [];
@@ -819,7 +820,7 @@ function graficar(event){
 
     var var_id = $("#id_variable").val();
     var var_nombre = $('#id_variable option:selected').text();
-    var est_nombre = $('#id_estacion option:selected').text();
+    var est_nombre = $('#id_station option:selected').text();
 
     var datos = $table.bootstrapTable('getData',{unfiltered:true});
     var width_graph = $(".container").width();
@@ -830,14 +831,14 @@ function graficar(event){
 
     $.each(datos, function(i, item) {
         if (item.estado){
-            data_fecha.push(item.fecha);
+            data_date.push(item.fecha);
 
             if (var_id == 1){
-                data_valor.push(item.valor);
+                data_value.push(item.valor);
                 data_historica.push(item.media_historica)
             }
             else if ((var_id == 4) || (var_id == 5)){
-                data_valor.push(item.valor);
+                data_value.push(item.valor);
                 data_direccion.push(item.direccion)
             }
             /*else if( var_id == 10 || var_id == 11){
@@ -845,18 +846,18 @@ function graficar(event){
                 data_caudal.push(item.caudal);
             }*/
             else{
-                data_valor.push(item.valor);
-                data_maximo.push(item.maximo);
-                data_minimo.push(item.minimo);
+                data_value.push(item.valor);
+                data_maximum.push(item.maximo);
+                data_minimum.push(item.minimo);
             }
 
             if(item.fecha_error==2){
                 console.log("fecha error")
-                data_valor.push(null);
-                data_fecha.push(null);
+                data_value.push(null);
+                data_date.push(null);
                 if (var_id != 1){
-                    data_maximo.push(null);
-                    data_minimo.push(null);
+                    data_maximum.push(null);
+                    data_minimum.push(null);
                 }
             }
 
@@ -873,11 +874,11 @@ function graficar(event){
 
         }
         else{
-            data_fecha.push(null);
-            data_valor.push(null);
+            data_date.push(null);
+            data_value.push(null);
             if (var_id != 1){
-                data_maximo.push(null);
-                data_minimo.push(null);
+                data_maximum.push(null);
+                data_minimum.push(null);
             }
         }
     });
@@ -917,13 +918,13 @@ function graficar(event){
 
     if (var_id == 1){
         var trace1 = {
-            x:data_fecha,
-            y:data_valor,
+            x:data_date,
+            y:data_value,
             name: 'Valor',
             type: 'bar'
         };
         var trace2 = {
-            x:data_fecha,
+            x:data_date,
             y:data_historica,
             name: 'Media Histórica',
             type: 'bar'
@@ -935,7 +936,7 @@ function graficar(event){
             name: "Valores",
             type: "scatterpolargl",
             //type: "barpolar",
-            r: data_valor,
+            r: data_value,
             theta: data_direccion,
             thetaunit: 'degrees',
             mode: "markers",
@@ -973,20 +974,20 @@ function graficar(event){
     }*/
     else{
         var trace1 = {
-            x:data_fecha,
-            y:data_valor,
+            x:data_date,
+            y:data_value,
             name: 'Valor',
             type: 'scatter'
         };
         var trace2 = {
-            x:data_fecha,
-            y:data_maximo,
+            x:data_date,
+            y:data_maximum,
             name: 'Maximo',
             type: 'scatter'
         };
         var trace3 = {
-            x:data_fecha,
-            y:data_minimo,
+            x:data_date,
+            y:data_minimum,
             name: 'Minimo',
             type: 'scatter'
         };
@@ -1063,7 +1064,7 @@ function mostrar(event){
 
     var name = event.currentTarget.name;
     if (name === 'crudo')
-        $table = $("#table_crudo");
+        $table = $("#table_detail");
     else
         $table = $("#table_daily");
 
@@ -1106,7 +1107,7 @@ function eliminar(event){
     var name = event.currentTarget.name;
     console.log(name)
     if (name === 'crudo')
-        $table = $("#table_crudo");
+        $table = $("#table_detail");
     else
         $table = $("#table_daily");
 
@@ -1147,7 +1148,7 @@ function desvalidar_datos(event){
     var name = event.currentTarget.name;
     console.log(name)
     if (name === 'crudo')
-        $table = $("#table_crudo");
+        $table = $("#table_detail");
     else
         $table = $("#table_daily");
 
@@ -1201,7 +1202,7 @@ function nuevo_registro(event){
     var inputs =$form.serializeArray();
     var $modal = $("#modal_nuevo_"+name);
     var data = {};
-    var table = $table = $("#table_crudo");
+    var table = $table = $("#table_detail");
 
     $.each(inputs, function(i, field){
         data[field.name] = field.value;
@@ -1273,7 +1274,7 @@ function modificar(event){
     var inputs =$form.serializeArray();
     var $modal = $("#modal_"+name);
     var data = {};
-    var table = $table = $("#table_crudo");
+    var table = $table = $("#table_detail");
     $.each(inputs, function(i, field){
         data[field.name] = field.value;
     });
@@ -1309,7 +1310,7 @@ function marcar(event){
     var $table = '';
 
     if (name === 'crudo'){
-        $table = $("#table_crudo");
+        $table = $("#table_detail");
         cadena = $("#txt_selection_crudo").val().toString();
     }
     else{
@@ -1345,7 +1346,7 @@ function desmarcar(event){
     var $table = '';
     var name = event.currentTarget.name;
     if (name ==='crudo')
-        $table = $("#table_crudo");
+        $table = $("#table_detail");
     else
         $table = $("#table_daily");
 
@@ -1360,9 +1361,9 @@ function desmarcar(event){
 }
 
 // generar la tabla de datos de validacion
-function detalle_crudos(e, value, row){
+function detail_details(e, value, row){
 //    debugger;
-    var $table = $('#table_crudo');
+    var $table = $('#table_detail');
     var station_id = $("#id_station").val();
     var variable_id = $("#id_variable").val();
 
@@ -1428,8 +1429,8 @@ function detalle_crudos(e, value, row){
             $table.bootstrapTable('hideLoading');
         },
         error: function () {
-            $("#div_body_mensaje").html('Ocurrio un problema con la validación por favor contacte con el administrador')
-            $("#div_mensaje_validacion").modal("show");
+            $("#div_body_message").html('Ocurrio un problema con la validación por favor contacte con el administrador')
+            $("#div_validation_message").modal("show");
 
             $table.bootstrapTable('hideLoading');
         }
@@ -1471,7 +1472,7 @@ function eliminar_crudo(event){
     //console.log("row", row);
     var inputs = $("#form_eliminar").serializeArray();
     var $form_modal = $('#modal_eliminar');
-    var table = $table = $("#table_crudo");
+    var table = $table = $("#table_detail");
     var data = {};
     $.each(inputs, function(i, field){
         data[field.name] = field.value;
@@ -1610,7 +1611,7 @@ function get_columns_daily(var_id){
         title: 'Action',
         formatter: operate_table_daily,
         events: {
-           'click .search': detalle_crudos,
+           'click .search': detail_details,
            'click .delete': eliminar_diario,
            //'click .update': abrir_formulario
 
@@ -1819,7 +1820,7 @@ function get_column_validado(var_id){
     var action = {
         field: 'action',
         title: 'Action',
-        formatter: operate_table_crudo,
+        formatter: operate_table_detail,
         events: {
            'click .delete_crudo': abrir_form_eliminar,
            'click .update': abrir_formulario
@@ -1983,7 +1984,7 @@ function operate_table_daily(value, row, index) {
 }
 
 //Función para generar los iconos de acción de la tabla crudos
-function operate_table_crudo(value, row, index) {
+function operate_table_detail(value, row, index) {
 //    debugger;
     return [
       '<a class="delete_crudo" href="javascript:void(0)" title="Eliminar">',
@@ -2371,7 +2372,7 @@ function total_filas(data){
 //    }, 0);
 
 //    debugger;
-    var num_fecha = data.reduce(function(num, i){
+    var num_date = data.reduce(function(num, i){
 //        if (i['fecha_error']>0)
         if (i['date_error']>0)
             return num +1;
@@ -2381,7 +2382,7 @@ function total_filas(data){
 
     // TODO ask the team for prefferred behaviour
 //    span = span.replace('num',num_fecha.toString());
-    span = span.replace('num', num_fecha.toString());
+    span = span.replace('num', num_date.toString());
 
     return suma + ' of ' + indicators_daily['num_days'] + ' days ' + span;
 //    return suma + ' of ' + daily_indicators['num_days'] + ' days ' + span;
@@ -2402,14 +2403,14 @@ function total_datos(data){
 
     }, 0);
 
-    var num_fecha = data.reduce(function(num, i){
+    var num_date = data.reduce(function(num, i){
         if ( (i['fecha_error']==0) || (i['fecha_error']==2) || (i['fecha_error']==3))
             return num +1;
         else
             return num;
     }, 0);
 
-    span = span.replace('num',num_fecha.toString());
+    span = span.replace('num',num_date.toString());
 
     return suma + ' de ' + indicators_subhourly['num_data'] + ' datos ' + span;
 }
@@ -2621,7 +2622,7 @@ function filtrar_crudo(){
 //    }
 //    else{
 
-        $("#table_crudo").bootstrapTable('filterBy', {
+        $("#table_detail").bootstrapTable('filterBy', {
 //            fecha_error: filtro_fecha,
 //            valor_error: filtro_valor,
 //            stddev_error: filtro_stddev,
@@ -2690,7 +2691,7 @@ function activar_espera(type){
         var $div_message = $('#div_message_'+type)
     }
     else{
-        var $div_data = $('#div_informacion');
+        var $div_data = $('#div_information');
         var $div_loading = $('#div_loading');
         var $div_message = $('#div_error')
 
@@ -2698,7 +2699,7 @@ function activar_espera(type){
     $div_loading.show();
     $div_data.hide();
     $div_message.hide();
-    $("#div_informacion").hide();
+    $("#div_information").hide();
 }   
 
 //función para quitar duplicados
@@ -2707,7 +2708,7 @@ Array.prototype.unique=function(a){
 });
 
 
-function mostrar_mensaje(type){
+function show_message(type){
 //    debugger;
     /*var message = '<div class="alert alert-danger alert-dismissible" role="alert">';
     message += 'Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente';
@@ -2720,7 +2721,7 @@ function mostrar_mensaje(type){
         var $div_message = $('#div_message_'+type)
     }
     else{
-        var $div_data = $('#div_informacion');
+        var $div_data = $('#div_information');
         var $div_loading = $('#div_loading');
         var $div_message = $('#div_error');
 
@@ -2743,7 +2744,7 @@ function desactivar_espera(type){
         var $resize_plot = $('#resize_plot'+type);
     }
     else{
-        var $div_data = $('#div_informacion');
+        var $div_data = $('#div_information');
         var $div_loading = $('#div_loading');
         var $div_message = $('#div_error');
         var $resize_plot = $('#resize_plot');
@@ -2753,5 +2754,5 @@ function desactivar_espera(type){
     $div_data.show();
     $div_message.hide();
     $resize_plot.show();
-    $("#div_informacion").show();
+    $("#div_information").show();
 }

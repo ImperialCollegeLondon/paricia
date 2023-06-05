@@ -13,19 +13,19 @@ $(document).ready(function() {
             type:'POST',
             dataType: 'json',
             beforeSend: function () {
-                $("#div_informacion").hide();
+                $("#div_information").hide();
                 $("#div_loading").show();
                 $("#div_error").hide();
             },
             success: function (data) {
-                $("#div_informacion").show();
+                $("#div_information").show();
                 var count = Object.keys(data.data[0].y).length;
                 if (count>0) {
-                    Plotly.newPlot('div_informacion', data.data,data.layout);
+                    Plotly.newPlot('div_information', data.data,data.layout);
 
                 }
                 else{
-                    $("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
+                    $("#div_information").html('<label>No hay información para los parametros ingresados</label>')
                 }
                 $("#btn_graficar").removeAttr('disabled');
 
@@ -51,27 +51,27 @@ $(document).ready(function() {
             type:'POST',
             dataType: 'json',
             beforeSend: function () {
-                $("#div_informacion").hide();
+                $("#div_information").hide();
                 $("#div_loading").show();
                 $("#div_error").hide();
-                $("#div_mensaje").hide();
+                $("#div_message").hide();
             },
             success: function (data) {
 
-                if (Object.keys(data)=="mensaje"){
-                    $("#div_mensaje").html(data.mensaje);
-                    $("#div_mensaje").show();
+                if (Object.keys(data)=="message"){
+                    $("#div_message").html(data.message);
+                    $("#div_message").show();
                 }
                 else{
-                    $("#div_informacion").show();
+                    $("#div_information").show();
                     var count = Object.keys(data.data[0].y).length;
                     if (count>0) {
-                        Plotly.newPlot('div_informacion', data.data,data.layout,{scrollZoom: true});
+                        Plotly.newPlot('div_information', data.data,data.layout,{scrollZoom: true});
                     }
                     else{
                         //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
-                        $("#div_mensaje").html('<label>No hay información para los parametros ingresados</label>');
-                        $("#div_mensaje").show();
+                        $("#div_message").html('<label>No hay información para los parametros ingresados</label>');
+                        $("#div_message").show();
                     }
 
                 }
@@ -102,26 +102,26 @@ $(document).ready(function() {
             type:'POST',
             dataType: 'json',
             beforeSend: function () {
-                $("#div_informacion").hide();
+                $("#div_information").hide();
                 $("#div_loading").show();
                 $("#div_error").hide();
-                $("#div_mensaje").hide();
+                $("#div_message").hide();
             },
             success: function (data) {
-                if (Object.keys(data)=="mensaje"){
-                    $("#div_mensaje").html(data.mensaje);
-                    $("#div_mensaje").show();
+                if (Object.keys(data)=="message"){
+                    $("#div_message").html(data.message);
+                    $("#div_message").show();
                 }
                 else{
-                    $("#div_informacion").show();
+                    $("#div_information").show();
                     var count = Object.keys(data.data[0].y).length;
                     if (count>0) {
-                        Plotly.newPlot('div_informacion', data.data,data.layout, {scrollZoom: true});
+                        Plotly.newPlot('div_information', data.data,data.layout, {scrollZoom: true});
                     }
                     else{
                         //$("#div_informacion").html('<label>No hay información para los parametros ingresados</label>')
-                        $("#div_mensaje").html('<label>No hay información para los parametros ingresados</label>');
-                        $("#div_mensaje").show();
+                        $("#div_message").html('<label>No hay información para los parametros ingresados</label>');
+                        $("#div_message").show();
                     }
                 }
 
@@ -133,7 +133,7 @@ $(document).ready(function() {
             },
             error: function () {
                 $("#btn_filtrar").removeAttr('disabled');
-                $("#div_informacion").hide();
+                $("#div_information").hide();
                 $("#div_loading").hide();
                 $("#div_error").show();
             }
@@ -147,7 +147,7 @@ $(document).ready(function() {
                 $("#div_lista_datos").hide();
                 $("#div_loading_datos").show();
                 $("#div_error_datos").hide();
-                $("#div_mensaje").hide();
+                $("#div_message").hide();
             },
             success: function (data) {
                 $("#div_lista_datos").html(data);
@@ -155,7 +155,7 @@ $(document).ready(function() {
                 $("#btn_filtrar").removeAttr('disabled');
                 $("#div_loading_datos").hide();
                 $("#div_error_datos").hide();
-                $("#div_mensaje").hide();
+                $("#div_message").hide();
 
             },
             error: function () {
@@ -177,7 +177,7 @@ $(document).ready(function() {
 
     //Cargar variables por estacion
 
-    $("#id_estacion").change(function () {
+    $("#id_station").change(function () {
         var estacion = $(this).val();
         $("#id_variable").find('option').remove().end()
         $("#id_variable").append('<option value="">---------</option>');
@@ -202,15 +202,15 @@ $(document).ready(function() {
             data: $("#form_procesar").serialize(),
             type:'POST',
             beforeSend: function () {
-                activar_espera("#div_loading","#div_informacion","#div_error")
+                activar_espera("#div_loading","#div_information","#div_error")
             },
             success: function (data) {
-                $("#div_informacion").html(data)
+                $("#div_information").html(data)
                 $("#btn_procesar").removeAttr('disabled');
-                desactivar_espera("#div_loading","#div_informacion","#div_error")
+                desactivar_espera("#div_loading","#div_information","#div_error")
             },
             error: function () {
-                mostrar_mensaje("#div_loading","#div_informacion","#div_error")
+                show_message("#div_loading","#div_information","#div_error")
                 $("#btn_procesar").removeAttr('disabled');
             }
         });
@@ -280,7 +280,7 @@ $(document).ready(function() {
 
     function periodos_validacion(){
         token = $("input[name='csrfmiddlewaretoken']").val();
-        estacion_id = $("input[name='orig_estacion_id']").val();
+        station_id = $("input[name='orig_station_id']").val();
         variable_id = $("input[name='orig_variable_id']").val();
 
         $.ajax({

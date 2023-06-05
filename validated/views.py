@@ -366,7 +366,7 @@ class DailyValidation(FormView):
 
 # Consulta de datos crudos y/o validados por estacion, variable y hora
 class ListaValidacion(ListView):
-    template_name = "home/mensaje.html"
+    template_name = "home/message.html"
 
     def get(self, request, *args, **kwargs):
         if self.request.is_ajax():
@@ -381,12 +381,12 @@ class ListaValidacion(ListView):
             )
             data_json = json.dumps(datos, allow_nan=True, cls=DjangoJSONEncoder)
             return HttpResponse(data_json, content_type="application/json")
-        mensaje = "Ocurrio un problema con el procesamiento de la información, por favor contacte con el administrador"
-        return render(request, "home/mensaje.html", {"mensaje": mensaje})
+        message = "Ocurrio un problema con el procesamiento de la información, por favor contacte con el administrador"
+        return render(request, "home/message.html", {"message": message})
 
 
 # Pasar los datos crudos a validados
-def guardar_validados(request):
+def daily_save(request):
     station_id = int(request.POST.get("station_id", None))
     variable_id = int(request.POST.get("variable_id", None))
     maximum = float(request.POST.get("maximum", None))
