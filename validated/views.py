@@ -365,7 +365,7 @@ class DailyValidation(FormView):
 
 
 # Consulta de datos crudos y/o validados por estacion, variable y hora
-class ListaValidacion(ListView):
+class DetailList(ListView):
     template_name = "home/message.html"
 
     def get(self, request, *args, **kwargs):
@@ -376,7 +376,7 @@ class ListaValidacion(ListView):
             minimum = kwargs.get("minimum")
             maximum = kwargs.get("maximum")
 
-            datos = functions.detalle_diario(
+            datos = functions.detail_list(
                 station_id, variable_id, date, minimum, maximum
             )
             data_json = json.dumps(datos, allow_nan=True, cls=DjangoJSONEncoder)
@@ -414,7 +414,7 @@ def daily_save(request):
     return JsonResponse(list)
 
 
-def guardar_crudos(request):
+def detail_save(request):
     station_id = int(request.POST.get("station_id", None))
     variable_id = int(request.POST.get("variable_id", None))
     data_json = request.POST.get("data", None)

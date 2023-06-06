@@ -1,11 +1,8 @@
-# from diario.models import Var2Diario
 import decimal as dec
 from datetime import date, datetime, time, timedelta
 
 import numpy as np
 import pandas as pd
-
-# from estacion.models import Estacion
 from django.apps import apps
 from django.db.models import BooleanField, IntegerField, Value
 
@@ -631,7 +628,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
 
 # Consultar datos crudos y/o validados por estacion, variable y fecha de un día en específico
 # def detalle_diario(est_id, var_id, fecha_str, sup_lim_variable, inf_lim_variable):
-def detalle_diario(station_id, variable_id, date, minimum, maximum):
+def detail_list(station_id, variable_id, date, minimum, maximum):
     # SQL fun : reporte_validacion_modelo
     # SQL template: validacion_crudos_prom.sql
 

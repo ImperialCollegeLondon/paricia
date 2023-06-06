@@ -1394,7 +1394,7 @@ function detail_details(e, value, row){
 
 
 //    enlace = '/validated/lista/' + station_id + '/' + variable_id + '/' + fecha + '/' + var_minimo + '/' + var_maximo;
-    enlace = '/validated/lista/' + station_id + '/' + variable_id + '/' + date + '/' + var_minimo + '/' + var_maximo;
+    enlace = '/validated/detail_list/' + station_id + '/' + variable_id + '/' + date + '/' + var_minimo + '/' + var_maximo;
 
     $.ajax({
         url: enlace,
