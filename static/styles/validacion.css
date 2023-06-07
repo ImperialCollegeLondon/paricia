@@ -30,6 +30,9 @@
 .seleccionado > .sospechoso {background-color: rgba(255,255,191,0.55);}
 .seleccionado > .salto {background-color: rgba(255,255,191,0.55);}
 
+
+.seleccionado > .validated {background-color: rgba(191,255,191,0.55);}
+
 .seleccionado > .validado {background-color: rgba(191,255,191,0.55);}
 .seleccionado > .cambio {background-color: rgba(191,255,255,0.55);}
 .seleccionado > .no-validado {background-color: rgba(223,223,233,0.55);}
