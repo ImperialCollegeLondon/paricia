@@ -53,10 +53,9 @@ class BaseMonthly(TimescaleModel):
         if not cls.__name__.startswith("_Mon") and cls.__name__ not in MONTHLYS:
             MONTHLYS.append(cls.__name__)
 
-    # TODO ask if "date" name is OK
     # TODO ask if default=timezone.now is OK,
     # date = models.DateField(default=timezone.now)
-    date = models.DateField("date")
+    time = models.DateField("time")
     station_id = models.PositiveIntegerField("station_id")
     completeness = models.DecimalField(max_digits=4, decimal_places=1)
 
@@ -69,8 +68,21 @@ class BaseMonthly(TimescaleModel):
         ]
         abstract = True
 
+    # TODO Check if this is wanted/needed
+    def clean(self):
+        super().clean()
+        if self.time.day > 1:
+            raise ValidationError("Only day = 1 is allowed in this field.")
 
-def create_Mon_model(digits=14, decimals=6, fields=("Average")) -> Type[TimescaleModel]:
+    # TODO check if this is wanted/needed
+    def save(self, *args, **kwargs):
+        self.time = self.time.replace(day=1)
+        super().save(*args, **kwargs)
+
+
+def create_mont_model(
+    digits=14, decimals=6, fields=("Average", "Maximum", "Minimum")
+) -> Type[TimescaleModel]:
     num = len(MONTHLYS) + 1
     _fields = {
         key.lower(): models.DecimalField(
@@ -95,60 +107,60 @@ def create_Mon_model(digits=14, decimals=6, fields=("Average")) -> Type[Timescal
     )
 
 
-class Precipitation(create_Mon_model(digits=6, decimals=2, fields=("Total",))):
+class Precipitation(create_mont_model(digits=6, decimals=2, fields=("Total",))):
     """Precipitation."""
 
 
-class AirTemperature(create_Mon_model(digits=5, decimals=2)):
+class AirTemperature(create_mont_model(digits=5, decimals=2)):
     """Air temperature."""
 
 
-class Humidity(create_Mon_model()):
+class Humidity(create_mont_model()):
     """Humidity."""
 
 
-class WindVelocity(create_Mon_model()):
+class WindVelocity(create_mont_model()):
     """Wind velocity."""
 
 
-class WindDirection(create_Mon_model()):
+class WindDirection(create_mont_model()):
     """Wind direction."""
 
 
-class SoilMoisture(create_Mon_model()):
+class SoilMoisture(create_mont_model()):
     """Soil moisture."""
 
 
-class SolarRadiation(create_Mon_model()):
+class SolarRadiation(create_mont_model()):
     """Solar radiation."""
 
 
-class AtmosphericPressure(create_Mon_model()):
+class AtmosphericPressure(create_mont_model()):
     """Atmospheric pressure."""
 
 
-class WaterTemperature(create_Mon_model()):
+class WaterTemperature(create_mont_model()):
     """Water temperature."""
 
 
-class Flow(create_Mon_model()):
+class Flow(create_mont_model()):
     """Flow."""
 
 
-class WaterLevel(create_Mon_model()):
+class WaterLevel(create_mont_model()):
     """Water level."""
 
 
-class BatteryVoltage(create_Mon_model()):
+class BatteryVoltage(create_mont_model()):
     """Battery voltage."""
 
 
-class FlowManual(create_Mon_model(fields=("Value",))):
+class FlowManual(create_mont_model(fields=("Value",))):
     """Flow (manual)."""
 
 
 # TODO Check if There id needed StripLevelReading monthly.
-class StripLevelReading(create_Mon_model(fields=("Value", "Uncertainty"))):
+class StripLevelReading(create_mont_model(fields=("Value", "Uncertainty"))):
     """Strip level reading."""
 
     data_import_date = models.DateTimeField("Data import date")
@@ -165,17 +177,17 @@ class StripLevelReading(create_Mon_model(fields=("Value", "Uncertainty"))):
         ]
 
 
-class SoilTemperature(create_Mon_model()):
+class SoilTemperature(create_mont_model()):
     """Soil temperature."""
 
 
-class IndirectRadiation(create_Mon_model()):
+class IndirectRadiation(create_mont_model()):
     """Indirect radiation."""
 
 
 # Variables created for buoy with different depths
 class WaterTemperatureDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),
@@ -192,7 +204,7 @@ class WaterTemperatureDepth(
 
 
 class WaterAcidityDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),
@@ -209,7 +221,7 @@ class WaterAcidityDepth(
 
 
 class RedoxPotentialDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),
@@ -226,7 +238,7 @@ class RedoxPotentialDepth(
 
 
 class WaterTurbidityDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),
@@ -243,7 +255,7 @@ class WaterTurbidityDepth(
 
 
 class ChlorineConcentrationDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),
@@ -260,7 +272,7 @@ class ChlorineConcentrationDepth(
 
 
 class OxygenConcentrationDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),
@@ -277,7 +289,7 @@ class OxygenConcentrationDepth(
 
 
 class PercentageOxygenConcentrationDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),
@@ -298,7 +310,7 @@ class PercentageOxygenConcentrationDepth(
 
 
 class PhycocyaninDepth(
-    create_Mon_model(
+    create_mont_model(
         digits=6,
         decimals=2,
     ),

@@ -54,10 +54,9 @@ class BaseDaily(TimescaleModel):
         if not cls.__name__.startswith("_Dai") and cls.__name__ not in DAILYS:
             DAILYS.append(cls.__name__)
 
-    # TODO ask if "date" name is OK
     # TODO ask if default=timezone.now is OK,
     # date = models.DateField(default=timezone.now)
-    date = models.DateField("date")
+    time = models.DateField("time")
     station_id = models.PositiveIntegerField("station_id")
     used_for_monthly = models.BooleanField("used_for_monthly", default=False)
     completeness = models.DecimalField(max_digits=4, decimal_places=1)

@@ -82,7 +82,7 @@
 
     <div class="row validation-body" >
         <div class="col-md-2">
-            Validation module
+            <label>Validation module</label>
         </div>
         <div class="col-md-6">
             <a id="btn_clean" class="btn btn-light" href="{% url 'validated:daily_validation' %}"><span>Clean form</span></a>
@@ -179,17 +179,17 @@
     </div>
 
     <!-- Modal Formulario Acumulado -->
-    <div class="modal fade" id="modal_acumulado" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_promedio" aria-hidden="true">
+    <div class="modal fade" id="modal_cumulative" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_averaged" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal_label_acumulado">Modificar</h5>
+                    <h5 class="modal-title" id="modal_label_acumulado">modify</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="form_acumulado">
+                    <form id="form_cumulative">
                         <input type="hidden" name="id">
                         <div class="form-group">
                             <label class="col-form-label">Fecha:</label>
@@ -215,43 +215,45 @@
     <!-- End Modal Formulario Acumulado -->
 
     <!-- Modal Formulario Promedio -->
-    <div class="modal fade" id="modal_promedio" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_promedio" aria-hidden="true">
+    <div class="modal fade" id="modal_averaged" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_averaged" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal_label_promedio">Modificar</h5>
+                    <h5 class="modal-title" id="modal_label_averaged">Modify</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="form_promedio">
-                        <input type="hidden" name="id">
+                    <form id="form_averaged">
+                        <input type="hidden" name="detail_id">
                         <div class="form-group">
-                            <label class="col-form-label">Fecha:</label>
-                            <input type="text" class="form-control" name="fecha">
+                            <label class="col-form-label">Time:</label>
+                            <input type="text" class="form-control" name="detail_time">
                         </div>
                         <div class="form-group">
-                            <label class="col-form-label">Valor</label>
-                            <input type="number" step=".000001" class="form-control" name="valor" required>
+                            <label class="col-form-label">Value</label>
+                            <input type="number" step=".000001" class="form-control" name="detail_value" required>
                         </div>
                         <div class="form-group">
-                            <label class="col-form-label">Maximo</label>
-                            <input type="number" step=".000001" class="form-control" name="maximo">
+                            <label class="col-form-label">Maximum</label>
+                            <input type="number" step=".000001" class="form-control" name="detail_maximum">
                         </div>
                         <div class="form-group">
-                            <label class="col-form-label">Mínimo</label>
-                            <input type="number" step=".000001" class="form-control" name="minimo">
+                            <label class="col-form-label">Minimum</label>
+                            <input type="number" step=".000001" class="form-control" name="detail_minimum">
                         </div>
                         <div class="form-group">
-                            <label class="col-form-label">Comentario</label>
-                            <input type="text" class="form-control" name="comentario" required>
+                            <label class="col-form-label">Comment (not implemented yet)</label>
+<!--                            <input type="text" class="form-control" name="detail_comment" required>-->
+                            <input type="text" class="form-control" name="detail_comment" >
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button id="btn_modificar_promedio" name="promedio" type="button" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+<!--                    <button id="btn_modificar_promedio" name="promedio" type="button" class="btn btn-primary">Save</button>-->
+                    <button id="btn_detail_modify_averaged" name="averaged" type="button" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
@@ -264,17 +266,17 @@
 
 
     <!-- Modal Formulario Modificar Agua -->
-    <div class="modal fade" id="modal_agua" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_promedio" aria-hidden="true">
+    <div class="modal fade" id="modal_waterlevel" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_averaged" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modificar</h5>
+                    <h5 class="modal-title">modify</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="form_agua">
+                    <form id="form_waterlevel">
                         <input type="hidden" name="id">
                         <div class="form-group">
                             <label class="col-form-label">Fecha:</label>
@@ -307,7 +309,7 @@
 
 
     <!-- Modal Nuevo Formulario Nuevo Acumulado -->
-    <div class="modal fade" id="modal_nuevo_acumulado" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_promedio" aria-hidden="true">
+    <div class="modal fade" id="modal_nuevo_acumulado" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_averaged" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -353,7 +355,7 @@
     <!-- End Modal Formulario Nuevo Acumulado -->
 
     <!-- Modal Formulario Nuevo Agua -->
-    <div class="modal fade" id="modal_nuevo_promedio" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_promedio" aria-hidden="true">
+    <div class="modal fade" id="modal_nuevo_promedio" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_averaged" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -406,7 +408,7 @@
 
 
     <!-- Modal Formulario Eliminar -->
-    <div class="modal fade" id="modal_eliminar" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_eliminar" aria-hidden="true">
+    <div class="modal fade" id="modal_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modal_label_eliminar" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -416,7 +418,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="form_eliminar">
+                    <form id="form_delete">
                         <input type="hidden" name="id">
                         <input type="hidden" name="estado">
                         <div class="form-group">
@@ -549,8 +551,8 @@
     <input type="hidden" id="orig_fecha_fin">
     <input type="hidden" id="orig_lim_sup">
     <input type="hidden" id="orig_lim_inf">
-    <input type="hidden" id="orig_fecha_diario">
-    <input type="hidden" id="orig_id_diario">
+    <input type="hidden" id="orig_date_daily">
+    <input type="hidden" id="orig_id_daily">
 
 
 <!--</div>-->

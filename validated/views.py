@@ -334,7 +334,7 @@ from rest_framework.generics import ListAPIView
 # from validacion import functions as funcvariable
 from variable.models import Variable
 
-from .forms import DailyValidationForm
+from .forms import DailyValidationForm, DataReportForm
 
 # from estacion.views import listar_anio
 # from val2.functions import guardar_cambios_validacion
@@ -674,3 +674,37 @@ def detail_save(request):
 #
 #         intervalos = functions.periodos_validacion2(estacion_id, variable, inicio)
 #         return render(request, self.template_name, {'intervalos': intervalos})
+
+
+class DataReport(FormView):
+    template_name = "data_report.html"
+    form_class = DataReportForm
+    success_url = "/validated/data_report/"
+
+    # TODO What would be the prefered way to implement this request? POST or GET
+    def post(self, request, *args, **kwargs):
+        form = DataReportForm(self.request.POST or None)
+        if form.is_valid():
+            if self.request.is_ajax():
+                temporality = form.cleaned_data["temporality"]
+                station = form.cleaned_data["station"]
+                variable = form.cleaned_data["variable"]
+                start_date = form.cleaned_data["start_date"]
+                end_date = form.cleaned_data["end_date"]
+                request_type = form.cleaned_data.get("request_type", None)
+                if request_type == "json" or request_type == None:
+                    dict_response = functions.dict_data_report(
+                        temporality, station, variable, start_date, end_date
+                    )
+                    json_response = json.dumps(
+                        dict_response, allow_nan=True, cls=DjangoJSONEncoder
+                    )
+                    return HttpResponse(json_response, content_type="application/json")
+                elif request_type == "csv":
+                    csv_response = functions.csv_data_report(
+                        temporality, station, variable, start_date, end_date
+                    )
+                    response = HttpResponse(csv_response, content_type="text/csv")
+                    response["Content-Disposition"] = 'attachment; filename="datos.csv"'
+                    return response
+        return render(request, "home/form_error.html", {"form": form})

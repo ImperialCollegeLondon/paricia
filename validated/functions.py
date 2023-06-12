@@ -1,5 +1,6 @@
 import decimal as dec
 from datetime import date, datetime, time, timedelta
+from threading import Thread
 
 import numpy as np
 import pandas as pd
@@ -8,6 +9,8 @@ from django.db.models import BooleanField, IntegerField, Value
 
 from station.models import Station
 from variable.models import Variable
+
+threads_report_calculation = {}
 
 
 def set_time_limits(start_time, end_time):
@@ -543,7 +546,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     )
     Daily = apps.get_model(app_label="daily", model_name=variable.variable_code)
     historic_diary = Daily.objects.filter(station_id=station.station_id).extra(
-        where=["(date_part('month', date), date_part('day', date)) in %s"],
+        where=["(date_part('month', time), date_part('day', time)) in %s"],
         params=[month_day_tuples],
     )
     historic_diary = pd.DataFrame(list(historic_diary.values()))
@@ -836,10 +839,11 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
         for _, record in selected.iterrows()
     ]
     insert_result = Validated.objects.bulk_create(model_instances)
-    result = False
-    if len(insert_result) == len(selected):
-        result = True
-    return result
+    if len(insert_result) != len(selected):
+        return False
+    t = Thread(target=launch_report_calculations, args=(variable,))
+    t.start()
+    return True
 
 
 # def guardar_cambios_validacion(
@@ -853,3 +857,131 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
 #         fecha_fin=fecha_fin,
 #     )
 #     sincronizacion.save()
+
+
+def data_report(temporality, station, variable, start_time, end_time):
+    start_time, end_time = set_time_limits(start_time, end_time)
+    if temporality not in ["measurement", "validated", "hourly", "daily", "monthly"]:
+        return None
+    Data = apps.get_model(app_label=temporality, model_name=variable.variable_code)
+    data = Data.objects.filter(
+        station_id=station.station_id, time__gte=start_time, time__lte=end_time
+    ).order_by("time")
+
+    data_columns = [e.name for e in data.model._meta.fields]
+    allowed_fields = ("minimum", "maximum", "value", "average", "total")
+    value_fields = [e for e in data_columns if e in allowed_fields]
+    base_fields = [
+        "time",
+    ]
+    fields = base_fields + value_fields
+    df = pd.DataFrame.from_records(data.values(*fields))
+    if df.empty:
+        df = pd.DataFrame(columns=fields)
+    return df
+
+
+def dict_data_report(temporality, station, variable, start_time, end_time):
+    df = data_report(temporality, station, variable, start_time, end_time)
+    response = {
+        "station": {
+            "id": station.station_id,
+            "code": station.station_code,
+        },
+        "variable": {
+            "id": variable.variable_id,
+            "name": variable.name,
+            "maximum": variable.maximum,
+            "minimum": variable.minimum,
+            "unit_initials": variable.unit.initials,
+            "is_cumulative": variable.is_cumulative,
+        },
+        "series": df.fillna("").to_dict("list"),
+        "temporality": temporality,
+    }
+    return response
+
+
+def csv_data_report(temporality, station, variable, start_time, end_time):
+    df = data_report(temporality, station, variable, start_time, end_time)
+    csv_response = df.to_csv(index=False)
+    return csv_response
+
+
+def calculate_reports(variable):
+    # TODO See where to put the commented lines (automatic_report) in a better place
+    # if not variable.automatic_report:
+    #     del threads_report_calculation[variable.variable_id]
+    #     return
+    global threads_report_calculation
+    threads_report_calculation[variable.variable_id] = True
+    calculate_hourly(variable)
+    calculate_daily(variable)
+    calculate_monthly(variable)
+    del threads_report_calculation[variable.variable_id]
+
+
+def launch_report_calculations(variable):
+    global threads_report_calculation
+    while variable.variable_id in threads_report_calculation:
+        time.sleep(5)
+    t = Thread(target=calculate_reports, args=(variable,))
+    t.start()
+
+
+def calculate_hourly(variable):
+    Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    Hourly = apps.get_model(app_label="hourly", model_name=variable.variable_code)
+    register_exists = True
+    while register_exists:
+        # TODO Check that it seems not filtering by 'used_for_hourly'
+        register = Validated.objects.filter(used_for_hourly=False).first()
+        if not register:
+            register_exists = False
+            return
+
+        start_hour = datetime.combine(register.time, time(0, 0, 0, 0))
+        end_hour = datetime.combine(
+            register.time, time(start_hour.hour, 59, 59, 999999)
+        )
+        validated_block = Validated.objects.filter(
+            station_id=register.station_id, time__gte=start_hour, time__lte=end_hour
+        )
+        data_columns = [e.name for e in validated_block.model._meta.fields]
+        allowed_fields = ("minimum", "maximum", "value", "average", "total")
+        value_fields = [e for e in data_columns if e in allowed_fields]
+        base_fields = [
+            "time",
+        ]
+        fields = base_fields + value_fields
+        block = pd.DataFrame.from_records(validated_block.values(*fields))
+        if block.empty:
+            continue
+        average = block["value"].mean(skipna=True)
+        maximum = block["maximum"].max()
+        minimum = block["minimum"].min()
+        count = block["value"].count()
+        # TODO replace for  delta_t from model DeltaT
+        delta_t = 5
+
+        completeness = (count / (60 / delta_t)) * 100.0
+        Hourly.objects.filter(time=start_hour, station_id=register.station_id).delete()
+        hourly = Hourly(
+            time=start_hour,
+            station_id=register.station_id,
+            used_for_daily=False,
+            completeness=completeness,
+            average=average,
+            maximum=maximum,
+            minimum=minimum,
+        )
+        hourly.save()
+        validated_block.update(used_for_hourly=True)
+
+
+def calculate_daily(variable):
+    pass
+
+
+def calculate_monthly(variable):
+    pass
