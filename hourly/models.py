@@ -82,7 +82,7 @@ class BaseHourly(TimescaleModel):
 
 
 def create_hour_model(
-    digits=14, decimals=6, fields=("Average", "Maximum", "Minimum")
+    digits=14, decimals=6, fields=("Average",)
 ) -> Type[TimescaleModel]:
     num = len(HOURLYS) + 1
     _fields = {

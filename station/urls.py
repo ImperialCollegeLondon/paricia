@@ -36,6 +36,8 @@ urlpatterns = [
     path("placebasin/<int:pk>/", views.PlaceBasinDetail.as_view()),
     path("station/", views.StationList.as_view()),
     path("station/<int:pk>/", views.StationDetail.as_view()),
+    path("delta_t/", views.DeltaTList.as_view()),
+    path("delta_t/<int:pk>/", views.DeltaTDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

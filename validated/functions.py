@@ -1,3 +1,4 @@
+import calendar
 import decimal as dec
 from datetime import date, datetime, time, timedelta
 from threading import Thread
@@ -7,10 +8,10 @@ import pandas as pd
 from django.apps import apps
 from django.db.models import BooleanField, IntegerField, Value
 
-from station.models import Station
+from station.models import DeltaT, Station
 from variable.models import Variable
 
-threads_report_calculation = {}
+threads_report_calculation = []
 
 
 def set_time_limits(start_time, end_time):
@@ -841,8 +842,7 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
     insert_result = Validated.objects.bulk_create(model_instances)
     if len(insert_result) != len(selected):
         return False
-    t = Thread(target=launch_report_calculations, args=(variable,))
-    t.start()
+    launch_report_calculations()
     return True
 
 
@@ -909,23 +909,34 @@ def csv_data_report(temporality, station, variable, start_time, end_time):
 
 
 def calculate_reports(variable):
-    # TODO See where to put the commented lines (automatic_report) in a better place
-    # if not variable.automatic_report:
-    #     del threads_report_calculation[variable.variable_id]
-    #     return
     global threads_report_calculation
-    threads_report_calculation[variable.variable_id] = True
+    threads_report_calculation.append(variable.variable_id)
     calculate_hourly(variable)
     calculate_daily(variable)
     calculate_monthly(variable)
-    del threads_report_calculation[variable.variable_id]
+    threads_report_calculation.remove(variable.variable_id)
 
 
-def launch_report_calculations(variable):
+def thread_launch_report_calculations():
     global threads_report_calculation
-    while variable.variable_id in threads_report_calculation:
-        time.sleep(5)
-    t = Thread(target=calculate_reports, args=(variable,))
+    variables = Variable.objects.all()
+    for variable in variables:
+        if not variable.automatic_report:
+            continue
+        attempt = 0
+        while variable.variable_id in threads_report_calculation:
+            time.sleep(10)
+            attempt = attempt + 1
+            if attempt > 5:
+                break
+        calculate_reports(variable)
+
+
+def launch_report_calculations():
+    global threads_report_calculation
+    if len(threads_report_calculation) > 0:
+        return
+    t = Thread(target=thread_launch_report_calculations, args=())
     t.start()
 
 
@@ -934,18 +945,21 @@ def calculate_hourly(variable):
     Hourly = apps.get_model(app_label="hourly", model_name=variable.variable_code)
     register_exists = True
     while register_exists:
-        # TODO Check that it seems not filtering by 'used_for_hourly'
         register = Validated.objects.filter(used_for_hourly=False).first()
         if not register:
             register_exists = False
-            return
+            return False
 
-        start_hour = datetime.combine(register.time, time(0, 0, 0, 0))
-        end_hour = datetime.combine(
-            register.time, time(start_hour.hour, 59, 59, 999999)
+        start_of_hour = datetime.combine(
+            register.time, time(register.time.hour, 0, 0, 0)
+        )
+        end_of_hour = datetime.combine(
+            register.time, time(start_of_hour.hour, 59, 59, 999999)
         )
         validated_block = Validated.objects.filter(
-            station_id=register.station_id, time__gte=start_hour, time__lte=end_hour
+            station_id=register.station_id,
+            time__gte=start_of_hour,
+            time__lte=end_of_hour,
         )
         data_columns = [e.name for e in validated_block.model._meta.fields]
         allowed_fields = ("minimum", "maximum", "value", "average", "total")
@@ -958,30 +972,112 @@ def calculate_hourly(variable):
         if block.empty:
             continue
         average = block["value"].mean(skipna=True)
-        maximum = block["maximum"].max()
-        minimum = block["minimum"].min()
         count = block["value"].count()
-        # TODO replace for  delta_t from model DeltaT
-        delta_t = 5
 
-        completeness = (count / (60 / delta_t)) * 100.0
-        Hourly.objects.filter(time=start_hour, station_id=register.station_id).delete()
+        try:
+            delta_t = DeltaT.objects.get(station__station_id=register.station_id)
+        except:
+            return False
+
+        completeness = (count / (60 / delta_t.delta_t)) * 100.0
+        Hourly.objects.filter(
+            time=start_of_hour, station_id=register.station_id
+        ).delete()
         hourly = Hourly(
-            time=start_hour,
+            time=start_of_hour,
             station_id=register.station_id,
             used_for_daily=False,
             completeness=completeness,
             average=average,
-            maximum=maximum,
-            minimum=minimum,
         )
         hourly.save()
         validated_block.update(used_for_hourly=True)
+    return True
 
 
 def calculate_daily(variable):
-    pass
+    Hourly = apps.get_model(app_label="hourly", model_name=variable.variable_code)
+    Daily = apps.get_model(app_label="daily", model_name=variable.variable_code)
+    register_exists = True
+    while register_exists:
+        register = Hourly.objects.filter(used_for_daily=False).first()
+        if not register:
+            register_exists = False
+            return
+
+        start_of_day = datetime.combine(register.time, time(0, 0, 0, 0))
+        end_of_day = datetime.combine(register.time, time(23, 59, 59, 999999))
+        hourly_block = Hourly.objects.filter(
+            station_id=register.station_id, time__gte=start_of_day, time__lte=end_of_day
+        )
+        data_columns = [e.name for e in hourly_block.model._meta.fields]
+        allowed_fields = ("minimum", "maximum", "value", "average", "total")
+        value_fields = [e for e in data_columns if e in allowed_fields]
+        base_fields = [
+            "time",
+        ]
+        fields = base_fields + value_fields
+        block = pd.DataFrame.from_records(hourly_block.values(*fields))
+        if block.empty:
+            continue
+        average = block["average"].mean(skipna=True)
+        count = block["average"].count()
+
+        completeness = (count / 24) * 100.0
+        Daily.objects.filter(time=start_of_day, station_id=register.station_id).delete()
+        daily = Daily(
+            time=start_of_day,
+            station_id=register.station_id,
+            used_for_monthly=False,
+            completeness=completeness,
+            average=average,
+        )
+        daily.save()
+        hourly_block.update(used_for_daily=True)
 
 
 def calculate_monthly(variable):
-    pass
+    Daily = apps.get_model(app_label="daily", model_name=variable.variable_code)
+    Monthly = apps.get_model(app_label="monthly", model_name=variable.variable_code)
+    register_exists = True
+    while register_exists:
+        register = Daily.objects.filter(used_for_monthly=False).first()
+        if not register:
+            register_exists = False
+            return
+
+        start_of_month = datetime(register.time.year, register.time.month, 1, 0, 0)
+        last_day = calendar.monthrange(register.time.year, register.time.month)[1]
+        end_of_month = datetime(
+            register.time.year, register.time.month, last_day, 23, 59
+        )
+        daily_block = Daily.objects.filter(
+            station_id=register.station_id,
+            time__gte=start_of_month,
+            time__lte=end_of_month,
+        )
+        data_columns = [e.name for e in daily_block.model._meta.fields]
+        allowed_fields = ("minimum", "maximum", "value", "average", "total")
+        value_fields = [e for e in data_columns if e in allowed_fields]
+        base_fields = [
+            "time",
+        ]
+        fields = base_fields + value_fields
+        block = pd.DataFrame.from_records(daily_block.values(*fields))
+        if block.empty:
+            continue
+        average = block["average"].mean(skipna=True)
+        count = block["average"].count()
+
+        completeness = (count / last_day) * 100.0
+        Monthly.objects.filter(
+            time=start_of_month, station_id=register.station_id
+        ).delete()
+        monthly = Monthly(
+            time=start_of_month,
+            station_id=register.station_id,
+            completeness=completeness,
+            average=average,
+        )
+        monthly.save()
+        daily_block.update(used_for_monthly=True)

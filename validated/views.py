@@ -708,3 +708,9 @@ class DataReport(FormView):
                     response["Content-Disposition"] = 'attachment; filename="datos.csv"'
                     return response
         return render(request, "home/form_error.html", {"form": form})
+
+
+def view_launch_report_calculations(request):
+    functions.launch_report_calculations()
+    response = {"response": "Report calculations launch successfully!"}
+    return JsonResponse(response)

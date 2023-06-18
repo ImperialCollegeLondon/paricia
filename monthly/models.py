@@ -81,7 +81,7 @@ class BaseMonthly(TimescaleModel):
 
 
 def create_mont_model(
-    digits=14, decimals=6, fields=("Average", "Maximum", "Minimum")
+    digits=14, decimals=6, fields=("Average",)
 ) -> Type[TimescaleModel]:
     num = len(MONTHLYS) + 1
     _fields = {

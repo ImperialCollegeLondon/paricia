@@ -56,7 +56,7 @@ class BaseDaily(TimescaleModel):
 
     # TODO ask if default=timezone.now is OK,
     # date = models.DateField(default=timezone.now)
-    time = models.DateField("time")
+    time = models.DateField()
     station_id = models.PositiveIntegerField("station_id")
     used_for_monthly = models.BooleanField("used_for_monthly", default=False)
     completeness = models.DecimalField(max_digits=4, decimal_places=1)
@@ -71,7 +71,9 @@ class BaseDaily(TimescaleModel):
         abstract = True
 
 
-def create_Dai_model(digits=14, decimals=6, fields=("Average")) -> Type[TimescaleModel]:
+def create_Dai_model(
+    digits=14, decimals=6, fields=("Average",)
+) -> Type[TimescaleModel]:
     num = len(DAILYS) + 1
     _fields = {
         key.lower(): models.DecimalField(

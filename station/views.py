@@ -177,3 +177,21 @@ class StationDetail(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = stn.Station.objects.all()
     serializer_class = serializers.StationSerializer
+
+
+class DeltaTList(generics.ListCreateAPIView):
+    """
+    List all DeltaT, or create a new DeltaT.
+    """
+
+    queryset = stn.DeltaT.objects.all()
+    serializer_class = serializers.DeltaTSerializer
+
+
+class DeltaTDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a DeltaT.
+    """
+
+    queryset = stn.DeltaT.objects.all()
+    serializer_class = serializers.DeltaTSerializer

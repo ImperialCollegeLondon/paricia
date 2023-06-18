@@ -75,6 +75,11 @@ urlpatterns = [
     #
     # # path('validacion_v2/', views.ValidacionList.as_view(), name='validacion_v2_index'),
     path("data_report/", views.DataReport.as_view(), name="data_report"),
+    path(
+        "launch_report_calculations/",
+        views.view_launch_report_calculations,
+        name="launch_report_calculations",
+    ),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
