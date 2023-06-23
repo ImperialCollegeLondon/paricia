@@ -12,12 +12,14 @@ function plot(data){
 
     var color;
     for (let i = 0; i < cols.length; i++) {
-        if (cols[i] == 'value'){
+        if (cols[i] == 'value' || cols[i] == 'average' || cols[i] == 'sum'){
             color = colors['black'];
         }else if (cols[i] == 'maximum'){
             color = colors['red'];
         }else if (cols[i] == 'minimum'){
             color = colors['blue'];
+        }else{
+            color = colors['green'];
         }
 
         if (data.variable.is_cumulative){

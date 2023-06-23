@@ -869,7 +869,7 @@ def data_report(temporality, station, variable, start_time, end_time):
     ).order_by("time")
 
     data_columns = [e.name for e in data.model._meta.fields]
-    allowed_fields = ("minimum", "maximum", "value", "average", "total")
+    allowed_fields = ("sum", "average", "minimum", "maximum", "value", "total")
     value_fields = [e for e in data_columns if e in allowed_fields]
     base_fields = [
         "time",
@@ -962,7 +962,7 @@ def calculate_hourly(variable):
             time__lte=end_of_hour,
         )
         data_columns = [e.name for e in validated_block.model._meta.fields]
-        allowed_fields = ("minimum", "maximum", "value", "average", "total")
+        allowed_fields = ("sum", "value", "average")
         value_fields = [e for e in data_columns if e in allowed_fields]
         base_fields = [
             "time",
@@ -971,8 +971,14 @@ def calculate_hourly(variable):
         block = pd.DataFrame.from_records(validated_block.values(*fields))
         if block.empty:
             continue
-        average = block["value"].mean(skipna=True)
-        count = block["value"].count()
+
+        if "sum" in fields:
+            _sum = block["sum"].sum()
+            count = block["sum"].count()
+        else:
+            # else: is average
+            average = block["average"].mean(skipna=True)
+            count = block["average"].count()
 
         try:
             delta_t = DeltaT.objects.get(station__station_id=register.station_id)
@@ -983,13 +989,23 @@ def calculate_hourly(variable):
         Hourly.objects.filter(
             time=start_of_hour, station_id=register.station_id
         ).delete()
-        hourly = Hourly(
-            time=start_of_hour,
-            station_id=register.station_id,
-            used_for_daily=False,
-            completeness=completeness,
-            average=average,
-        )
+
+        if "sum" in fields:
+            hourly = Hourly(
+                time=start_of_hour,
+                station_id=register.station_id,
+                used_for_daily=False,
+                completeness=completeness,
+                sum=_sum,
+            )
+        else:
+            hourly = Hourly(
+                time=start_of_hour,
+                station_id=register.station_id,
+                used_for_daily=False,
+                completeness=completeness,
+                average=average,
+            )
         hourly.save()
         validated_block.update(used_for_hourly=True)
     return True
@@ -1011,7 +1027,7 @@ def calculate_daily(variable):
             station_id=register.station_id, time__gte=start_of_day, time__lte=end_of_day
         )
         data_columns = [e.name for e in hourly_block.model._meta.fields]
-        allowed_fields = ("minimum", "maximum", "value", "average", "total")
+        allowed_fields = ("sum", "average", "total")
         value_fields = [e for e in data_columns if e in allowed_fields]
         base_fields = [
             "time",
@@ -1020,18 +1036,31 @@ def calculate_daily(variable):
         block = pd.DataFrame.from_records(hourly_block.values(*fields))
         if block.empty:
             continue
-        average = block["average"].mean(skipna=True)
-        count = block["average"].count()
-
+        if "sum" in fields:
+            _sum = block["sum"].sum()
+            count = block["sum"].count()
+        else:
+            # else: is average
+            average = block["average"].mean(skipna=True)
+            count = block["average"].count()
         completeness = (count / 24) * 100.0
         Daily.objects.filter(time=start_of_day, station_id=register.station_id).delete()
-        daily = Daily(
-            time=start_of_day,
-            station_id=register.station_id,
-            used_for_monthly=False,
-            completeness=completeness,
-            average=average,
-        )
+        if "sum" in fields:
+            daily = Daily(
+                time=start_of_day,
+                station_id=register.station_id,
+                used_for_monthly=False,
+                completeness=completeness,
+                sum=_sum,
+            )
+        else:
+            daily = Daily(
+                time=start_of_day,
+                station_id=register.station_id,
+                used_for_monthly=False,
+                completeness=completeness,
+                average=average,
+            )
         daily.save()
         hourly_block.update(used_for_daily=True)
 
@@ -1066,18 +1095,30 @@ def calculate_monthly(variable):
         block = pd.DataFrame.from_records(daily_block.values(*fields))
         if block.empty:
             continue
-        average = block["average"].mean(skipna=True)
-        count = block["average"].count()
-
+        if "sum" in fields:
+            _sum = block["sum"].sum()
+            count = block["sum"].count()
+        else:
+            # else: is average
+            average = block["average"].mean(skipna=True)
+            count = block["average"].count()
         completeness = (count / last_day) * 100.0
         Monthly.objects.filter(
             time=start_of_month, station_id=register.station_id
         ).delete()
-        monthly = Monthly(
-            time=start_of_month,
-            station_id=register.station_id,
-            completeness=completeness,
-            average=average,
-        )
+        if "sum" in fields:
+            monthly = Monthly(
+                time=start_of_month,
+                station_id=register.station_id,
+                completeness=completeness,
+                sum=_sum,
+            )
+        else:
+            monthly = Monthly(
+                time=start_of_month,
+                station_id=register.station_id,
+                completeness=completeness,
+                average=average,
+            )
         monthly.save()
         daily_block.update(used_for_monthly=True)

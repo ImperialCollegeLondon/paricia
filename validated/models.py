@@ -66,16 +66,11 @@ class BaseValidated(TimescaleModel):
 
     class Meta:
         default_permissions = ()
-        indexes = [
-            models.Index(fields=["used_for_hourly"]),
-            models.Index(fields=["station_id", "time"]),
-            models.Index(fields=["time", "station_id"]),
-        ]
         abstract = True
 
 
 def create_vali_model(
-    digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
+    digits=14, decimals=6, fields=("Average", "Maximum", "Minimum")
 ) -> Type[TimescaleModel]:
     num = len(VALIDATEDS) + 1
     _fields = {
@@ -90,6 +85,11 @@ def create_vali_model(
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=["used_for_hourly"]),
+            models.Index(fields=["station_id", "time"]),
+            models.Index(fields=["time", "station_id"]),
+        ]
 
     attrs = {"__module__": __name__, "Meta": Meta}
     attrs.update(_fields)
@@ -104,7 +104,7 @@ def create_vali_model(
 # TODO Copy the decimal_places and max_digits from a measurement model
 # meas.Precipitation._meta.get_field('Value').max_digits
 # meas.Precipitation._meta.get_field('Value').decimal_places
-class Precipitation(create_vali_model(digits=6, decimals=2, fields=("Value",))):
+class Precipitation(create_vali_model(digits=6, decimals=2, fields=("Sum",))):
     """Precipitation."""
 
 
@@ -152,7 +152,7 @@ class BatteryVoltage(create_vali_model()):
     """Battery voltage."""
 
 
-class FlowManual(create_vali_model(fields=("Value",))):
+class FlowManual(create_vali_model(fields=("Average",))):
     """Flow (manual)."""
 
 
@@ -184,7 +184,7 @@ class IndirectRadiation(create_vali_model()):
 
 # Variables created for buoy with different depths
 class WaterTemperatureDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Water temperature (degrees celcius) at a depth in cm."""
 
@@ -198,7 +198,7 @@ class WaterTemperatureDepth(
 
 
 class WaterAcidityDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Water acidity (pH) at a depth in cm."""
 
@@ -212,7 +212,7 @@ class WaterAcidityDepth(
 
 
 class RedoxPotentialDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Redox potential (mV) at a depth in cm."""
 
@@ -226,7 +226,7 @@ class RedoxPotentialDepth(
 
 
 class WaterTurbidityDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Water turbidity (NTU) at a depth in cm."""
 
@@ -240,7 +240,7 @@ class WaterTurbidityDepth(
 
 
 class ChlorineConcentrationDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Chlorine concentration (ug/l) at a depth in cm."""
 
@@ -254,7 +254,7 @@ class ChlorineConcentrationDepth(
 
 
 class OxygenConcentrationDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Oxygen concentration (mg/l) at a depth in cm."""
 
@@ -268,7 +268,7 @@ class OxygenConcentrationDepth(
 
 
 class PercentageOxygenConcentrationDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Percentage oxygen concentration (mg/l) at a depth in cm.
 
@@ -286,7 +286,7 @@ class PercentageOxygenConcentrationDepth(
 
 
 class PhycocyaninDepth(
-    create_vali_model(digits=6, decimals=2, fields=("Value",)),
+    create_vali_model(digits=6, decimals=2, fields=("Average",)),
 ):
     """Phycocyanin (?) at a depth in cm."""
 

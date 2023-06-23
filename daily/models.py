@@ -63,11 +63,6 @@ class BaseDaily(TimescaleModel):
 
     class Meta:
         default_permissions = ()
-        indexes = [
-            models.Index(fields=["used_for_monthly"]),
-            models.Index(fields=["station_id", "time"]),
-            models.Index(fields=["time", "station_id"]),
-        ]
         abstract = True
 
 
@@ -87,6 +82,11 @@ def create_Dai_model(
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=["used_for_monthly"]),
+            models.Index(fields=["station_id", "time"]),
+            models.Index(fields=["time", "station_id"]),
+        ]
 
     attrs = {"__module__": __name__, "Meta": Meta}
     attrs.update(_fields)
@@ -98,7 +98,7 @@ def create_Dai_model(
     )
 
 
-class Precipitation(create_Dai_model(digits=6, decimals=2, fields=("Total",))):
+class Precipitation(create_Dai_model(digits=6, decimals=2, fields=("Sum",))):
     """Precipitation."""
 
 

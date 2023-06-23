@@ -5,13 +5,14 @@
 
 {% block extralibraries %}
 <link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<!--<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">-->
+<link rel="stylesheet" href="{% static 'ext/jquery-ui-1.12.1/jquery-ui.css' %}">
 
 <script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
 <script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
 
 
-<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script crossorigin="anonymous" src="{% static 'ext/plotly-latest.min.js' %}"></script>
 <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
 <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
 
