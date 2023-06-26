@@ -177,8 +177,10 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
 
 # Basic calculations is the main functions for calculations
 def basic_calculations(station, variable, start_time, end_time, minimum, maximum):
-    # TODO change tx_period for the code to query from model
-    tx_period = 5
+    try:
+        tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
+    except:
+        return False
     Measurement = apps.get_model(
         app_label="measurement", model_name=variable.variable_code
     )
@@ -197,8 +199,13 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
         .order_by("time")
     )
 
-    value_fields = ("value", "minimum", "maximum")
-    base_fields = ("id", "time", "is_validated", "exists_in_validated", "null_value")
+    data_columns = [e.name for e in validated.model._meta.fields]
+    allowed_fields = ("sum", "minimum", "maximum", "average", "value")
+    value_fields = [e for e in data_columns if e in allowed_fields]
+
+    # value_fields = ("value", "minimum", "maximum")
+    # base_fields = ("id", "time", "is_validated", "exists_in_validated", "null_value")
+    base_fields = ["id", "time", "is_validated", "exists_in_validated", "null_value"]
     fields = base_fields + value_fields
     validated = pd.DataFrame.from_records(validated.values(*fields))
 
@@ -225,8 +232,8 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
         .order_by("time")
     )
 
-    value_fields = ("value", "minimum", "maximum")
-    base_fields = ("id", "time", "is_validated")
+    # value_fields = ("value", "minimum", "maximum")
+    base_fields = ["id", "time", "is_validated"]
     fields = base_fields + value_fields
     measurement = pd.DataFrame.from_records(measurement.values(*fields))
 
@@ -248,6 +255,30 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     # TODO Specially, Check the following line: It´s not doing the right thing.
     measurement["exists_in_validated"] = matches_time["_merge"] == "both"
 
+    ############################################
+    ##### TODO Temporal code: just to works until get a decision about column name for values
+    try:
+        measurement.rename(columns={"sum": "value"}, inplace=True)
+    except:
+        pass
+
+    try:
+        measurement.rename(columns={"average": "value"}, inplace=True)
+    except:
+        pass
+
+    try:
+        validated.rename(columns={"sum": "value"}, inplace=True)
+    except:
+        pass
+
+    try:
+        validated.rename(columns={"average": "value"}, inplace=True)
+    except:
+        pass
+    ##### END of temporal code block
+    #######################################################################
+
     joined = pd.concat([validated, measurement]).sort_values(
         by=["time_truncated", "is_validated", "id"], ascending=[True, False, False]
     )
@@ -261,23 +292,36 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
 
     minimum = float(minimum)
     maximum = float(maximum)
+    # if 'sum' in value_fields:
+    #     joined["suspicious_value"] = np.where(
+    #         (joined["sum"] < minimum) | (joined["sum"] > maximum),
+    #         True,
+    #         False
+    #     )
+    # else:
+    #     joined["suspicious_value"] = np.where(
+    #         (joined["average"] < minimum) | (joined["average"] > maximum),
+    #         True,
+    #         False
+    #     )
+    #     joined["suspicious_maximum"] = np.where(
+    #         (joined["maximum"] < minimum) | (joined["maximum"] > maximum),
+    #         True,
+    #         False
+    #     )
+    #     joined["suspicious_minimum"] = np.where(
+    #         (joined["minimum"] < minimum) | (joined["minimum"] > maximum),
+    #         True,
+    #         False
+    #     )
     joined["suspicious_value"] = np.where(
-        (joined["value"] < minimum) | (joined["value"] > maximum),
-        True,
-        False
-        # (joined["value"] < minimum) | (joined["value"] > maximum), 1, 0
+        (joined["value"] < minimum) | (joined["value"] > maximum), True, False
     )
     joined["suspicious_maximum"] = np.where(
-        (joined["maximum"] < minimum) | (joined["maximum"] > maximum),
-        True,
-        False
-        # (joined["maximum"] < minimum) | (joined["maximum"] > maximum), 1, 0
+        (joined["maximum"] < minimum) | (joined["maximum"] > maximum), True, False
     )
     joined["suspicious_minimum"] = np.where(
-        (joined["minimum"] < minimum) | (joined["minimum"] > maximum),
-        True,
-        False
-        # (joined["minimum"] < minimum) | (joined["minimum"] > maximum), 1, 0
+        (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
     )
 
     # selected
@@ -551,11 +595,24 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
         params=[month_day_tuples],
     )
     historic_diary = pd.DataFrame(list(historic_diary.values()))
+    ############################################
+    ##### TODO Temporal code: just to works until get a decision about column name for values
+    try:
+        historic_diary.rename(columns={"sum": "value"}, inplace=True)
+    except:
+        pass
+
+    try:
+        historic_diary.rename(columns={"average": "value"}, inplace=True)
+    except:
+        pass
+    ##### END of temporal code block
+    #######################################################################
     if not historic_diary.empty:
         historic_diary["month-day"] = (
-            pd.DatetimeIndex(historic_diary["date"]).month.astype(str)
+            pd.DatetimeIndex(historic_diary["time"]).month.astype(str)
             + "-"
-            + pd.DatetimeIndex(historic_diary["date"]).day.astype(str)
+            + pd.DatetimeIndex(historic_diary["time"]).day.astype(str)
         )
         historic_diary_group = historic_diary.groupby(["month-day"])
         daily["historic_diary_avg"] = historic_diary_group["value"].mean().to_numpy()
@@ -609,7 +666,20 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     Measurement = apps.get_model(
         app_label="measurement", model_name=variable.variable_code
     )
-    decimal_places = Measurement._meta.get_field("value").decimal_places
+    ######
+    ## TODO remove or define better:
+    try:
+        decimal_places = Measurement._meta.get_field("value").decimal_places
+    except:
+        try:
+            decimal_places = Measurement._meta.get_field("average").decimal_places
+        except:
+            try:
+                decimal_places = Measurement._meta.get_field("sum").decimal_places
+            except:
+                decimal_places = 2
+    ### END of temporal code block
+
     daily["avg_value"] = daily["avg_value"].astype(np.float64).round(decimal_places)
     daily["max_maximum"] = daily["max_maximum"].astype(np.float64).round(decimal_places)
     daily["min_minimum"] = daily["min_minimum"].astype(np.float64).round(decimal_places)
@@ -869,7 +939,7 @@ def data_report(temporality, station, variable, start_time, end_time):
     ).order_by("time")
 
     data_columns = [e.name for e in data.model._meta.fields]
-    allowed_fields = ("sum", "average", "minimum", "maximum", "value", "total")
+    allowed_fields = ("sum", "average", "minimum", "maximum", "value")
     value_fields = [e for e in data_columns if e in allowed_fields]
     base_fields = [
         "time",
@@ -1027,7 +1097,7 @@ def calculate_daily(variable):
             station_id=register.station_id, time__gte=start_of_day, time__lte=end_of_day
         )
         data_columns = [e.name for e in hourly_block.model._meta.fields]
-        allowed_fields = ("sum", "average", "total")
+        allowed_fields = ("sum", "average", "value")
         value_fields = [e for e in data_columns if e in allowed_fields]
         base_fields = [
             "time",
@@ -1086,7 +1156,7 @@ def calculate_monthly(variable):
             time__lte=end_of_month,
         )
         data_columns = [e.name for e in daily_block.model._meta.fields]
-        allowed_fields = ("minimum", "maximum", "value", "average", "total")
+        allowed_fields = ("sum", "minimum", "maximum", "average", "value")
         value_fields = [e for e in data_columns if e in allowed_fields]
         base_fields = [
             "time",
