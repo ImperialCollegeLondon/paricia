@@ -388,6 +388,7 @@ class DetailList(ListView):
 # Pasar los datos crudos a validados
 def daily_save(request):
     station_id = int(request.POST.get("station_id", None))
+    station_id = int(request.POST.get("station_id", None))
     variable_id = int(request.POST.get("variable_id", None))
     maximum = float(request.POST.get("maximum", None))
     minimum = float(request.POST.get("minimum", None))

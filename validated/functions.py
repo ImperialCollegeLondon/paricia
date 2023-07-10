@@ -28,149 +28,91 @@ def set_time_limits(start_time, end_time):
 
 
 def daily_validation(station, variable, start_time, end_time, minimum, maximum):
+    # num_date = None
+    # num_percentage = None
+    num_value = None
+    num_maximum = None
+    num_minimum = None
+    num_days = None
+
     report, selected, measurement, validated = daily_report(
         station, variable, start_time, end_time, minimum, maximum
     )
-    # reporte, series = calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum)
-    # reporte.rename(
-    #     columns={
-    #         "date": "fecha",
-    #         "date_error": "fecha_error",
-    #         # 'repeated_values_count':'fecha_numero',
-    #         "extra_data_count": "fecha_numero",
-    #         "avg_value": "valor",
-    #         "max_maximum": "maximo",
-    #         "min_minimum": "minimo",
-    #         "percentage": "porcentaje",
-    #         # TODO Confirm if "is_null" must be replaced for "porcentaje_error"
-    #         # "is_null": "porcentaje_error",
-    #         "percentage_error": "porcentaje_error",
-    #         "value_error": "valor_error",
-    #         "maximum_error": "maximo_error",
-    #         "minimum_error": "minimo_error",
-    #         "suspicious_values_count": "valor_numero",
-    #         "suspicious_maximums_count": "maximo_numero",
-    #         "suspicious_minimums_count": "minimo_numero",
-    #         "historic_diary_avg": "media_historica",
-    #         "state": "estado",
-    #         "all_validated": "validado",
-    #         "value_difference_error_count": "c_varia_err",
-    #     },
-    #     inplace=True,
-    # )
+    value_columns = list(measurement.columns.to_numpy())
+    value_columns.remove("time")
 
-    # # response = acumulado.to_dict(orient='list')
-    # # response = _records.to_dict(orient='records')
-    # if variable.variable_id in [4, 5]:
-    #     report["n_valor"] = 0
-    # else:
-    #     report["n_valor"] = report["c_varia_err"]
-    if variable.variable_id in [4, 5]:
-        report["n_value"] = 0
-    else:
-        report["n_value"] = report["value_difference_error_count"]
-
-    # num_fecha = len(
-    #     report[report["fecha_error"].ne(1) & ~report["fecha_error"].isna()].index
-    # )
     num_date = len(
         report[report["date_error"].ne(1) & ~report["date_error"].isna()].index
     )
-
-    # num_porcentaje = len(report[report["porcentaje_error"].eq(True)])
     num_percentage = len(report[report["percentage_error"].eq(True)])
 
-    # num_valor = len(
-    #     report[report["porcentaje_error"].eq(False) & ~report["valor_numero"].isna()]
-    # )
-    num_value = len(
-        report[
-            report["percentage_error"].eq(False)
-            & ~report["suspicious_values_count"].isna()
-        ]
-    )
-
-    # num_maximo = len(
-    #     report[
-    #         report["porcentaje_error"].eq(False) & ~report["maximo_numero"].isna()
-    #     ]
-    # )
-    num_maximum = len(
-        report[
-            report["percentage_error"].eq(False)
-            & ~report["suspicious_maximums_count"].isna()
-        ]
-    )
-
-    # num_minimo = len(
-    #     report[
-    #         report["porcentaje_error"].eq(False) & ~report["minimo_numero"].isna()
-    #     ]
-    # )
-    num_minimum = len(
-        report[
-            report["percentage_error"].eq(False)
-            & ~report["suspicious_minimums_count"].isna()
-        ]
-    )
-
-    # num_dias = len(report.index)
+    if "sum" in value_columns:
+        num_value = len(
+            report[
+                report["percentage_error"].eq(False)
+                & ~report["suspicious_sums_count"].isna()
+            ]
+        )
+    if "average" in value_columns:
+        num_value = len(
+            report[
+                report["percentage_error"].eq(False)
+                & ~report["suspicious_averages_count"].isna()
+            ]
+        )
+    if "value" in value_columns:
+        num_value = len(
+            report[
+                report["percentage_error"].eq(False)
+                & ~report["suspicious_values_count"].isna()
+            ]
+        )
+    if "maximum" in value_columns:
+        num_maximum = len(
+            report[
+                report["percentage_error"].eq(False)
+                & ~report["suspicious_maximums_count"].isna()
+            ]
+        )
+    if "minimum" in value_columns:
+        num_minimum = len(
+            report[
+                report["percentage_error"].eq(False)
+                & ~report["suspicious_minimums_count"].isna()
+            ]
+        )
     num_days = len(report.index)
 
     data = {
-        # "estacion": [
-        "station": [
-            {
-                # "est_id": station.station_id,
-                "id": station.station_id,
-                # "est_nombre": station.station_name,
-                "name": station.station_name,
-            }
-        ],
-        "variable": [
-            {
-                # "var_id": variable.variable_id,
-                "id": variable.variable_id,
-                # "var_nombre": variable.name,
-                "name": variable.name,
-                # "var_maximo": variable.maximum,
-                "maximum": variable.maximum,
-                # "var_minimo": variable.minimum,
-                "minimum": variable.minimum,
-                # "var_unidad_sigla": variable.unit.initials,
-                "unit_initials": variable.unit.initials,
-                # "es_acumulada": variable.is_cumulative,
-                "is_cumulative": variable.is_cumulative,
-            }
-        ],
-        # "datos": reporte.fillna("").to_dict(orient="records"),
+        "station": {
+            "id": station.station_id,
+            "name": station.station_name,
+        },
+        "variable": {
+            "id": variable.variable_id,
+            "name": variable.name,
+            "maximum": variable.maximum,
+            "minimum": variable.minimum,
+            "unit_initials": variable.unit.initials,
+            "is_cumulative": variable.is_cumulative,
+        },
+        "value_columns": value_columns,
         "data": report.fillna("").to_dict(orient="records"),
-        # "indicadores": [
-        "indicators": [
-            {
-                # "num_fecha": num_fecha,
-                "num_date": num_date,
-                # "num_porcentaje": num_porcentaje,
-                "num_percentage": num_percentage,
-                # "num_valor": num_valor,
-                "num_value": num_value,
-                # "num_maximo": num_maximo,
-                "num_maximum": num_maximum,
-                # "num_minimo": num_minimo,
-                "num_minimum": num_minimum,
-                # "num_dias": num_dias,
-                "num_days": num_days,
-            }
-        ],
-        # "datos_grafico": selected.fillna("").values.tolist(),  # datos_grafico,
-        "plot_data": selected.fillna("").values.tolist(),
+        "indicators": {
+            "num_date": num_date,
+            "num_percentage": num_percentage,
+            "num_value": num_value,
+            "num_maximum": num_maximum,
+            "num_minimum": num_minimum,
+            "num_days": num_days,
+        },
+        # "plot_data": selected.fillna("").values.tolist(),
         "series": {
             "selected": selected.fillna("").to_dict("list"),
             "measurement": measurement.fillna("").to_dict("list"),
             "validated": validated.fillna("").to_dict("list"),
         },
-        # "grafico": None,  # grafico_msj,
-        "curva": None,  # mensaje
+        # "curva": None,  # mensaje
     }
     return data
 
@@ -202,9 +144,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     data_columns = [e.name for e in validated.model._meta.fields]
     allowed_fields = ("sum", "minimum", "maximum", "average", "value")
     value_fields = [e for e in data_columns if e in allowed_fields]
-
-    # value_fields = ("value", "minimum", "maximum")
-    # base_fields = ("id", "time", "is_validated", "exists_in_validated", "null_value")
     base_fields = ["id", "time", "is_validated", "exists_in_validated", "null_value"]
     fields = base_fields + value_fields
     validated = pd.DataFrame.from_records(validated.values(*fields))
@@ -232,7 +171,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
         .order_by("time")
     )
 
-    # value_fields = ("value", "minimum", "maximum")
     base_fields = ["id", "time", "is_validated"]
     fields = base_fields + value_fields
     measurement = pd.DataFrame.from_records(measurement.values(*fields))
@@ -255,29 +193,17 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     # TODO Specially, Check the following line: It´s not doing the right thing.
     measurement["exists_in_validated"] = matches_time["_merge"] == "both"
 
-    ############################################
-    ##### TODO Temporal code: just to works until get a decision about column name for values
     try:
         measurement.rename(columns={"sum": "value"}, inplace=True)
-    except:
-        pass
-
-    try:
-        measurement.rename(columns={"average": "value"}, inplace=True)
-    except:
-        pass
-
-    try:
         validated.rename(columns={"sum": "value"}, inplace=True)
     except:
         pass
 
     try:
+        measurement.rename(columns={"average": "value"}, inplace=True)
         validated.rename(columns={"average": "value"}, inplace=True)
     except:
         pass
-    ##### END of temporal code block
-    #######################################################################
 
     joined = pd.concat([validated, measurement]).sort_values(
         by=["time_truncated", "is_validated", "id"], ascending=[True, False, False]
@@ -292,37 +218,18 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
 
     minimum = float(minimum)
     maximum = float(maximum)
-    # if 'sum' in value_fields:
-    #     joined["suspicious_value"] = np.where(
-    #         (joined["sum"] < minimum) | (joined["sum"] > maximum),
-    #         True,
-    #         False
-    #     )
-    # else:
-    #     joined["suspicious_value"] = np.where(
-    #         (joined["average"] < minimum) | (joined["average"] > maximum),
-    #         True,
-    #         False
-    #     )
-    #     joined["suspicious_maximum"] = np.where(
-    #         (joined["maximum"] < minimum) | (joined["maximum"] > maximum),
-    #         True,
-    #         False
-    #     )
-    #     joined["suspicious_minimum"] = np.where(
-    #         (joined["minimum"] < minimum) | (joined["minimum"] > maximum),
-    #         True,
-    #         False
-    #     )
+
     joined["suspicious_value"] = np.where(
         (joined["value"] < minimum) | (joined["value"] > maximum), True, False
     )
-    joined["suspicious_maximum"] = np.where(
-        (joined["maximum"] < minimum) | (joined["maximum"] > maximum), True, False
-    )
-    joined["suspicious_minimum"] = np.where(
-        (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
-    )
+    if "maximum" in value_fields:
+        joined["suspicious_maximum"] = np.where(
+            (joined["maximum"] < minimum) | (joined["maximum"] > maximum), True, False
+        )
+    if "minimum" in value_fields:
+        joined["suspicious_minimum"] = np.where(
+            (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
+        )
 
     # selected
     # TODO check if 'is_selected' is used in later
@@ -375,84 +282,82 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
         True,  # Error
         False,  # No Error
     )
-    # # TODO Basic statistics
-    # mean = selected['value'].mean(skipna=True)
-    # std_dev = selected['value'].astype(float).std(skipna=True)
-    # stddev_inf_limit = mean - (std_dev * float(variable.var_min))
-    # stddev_sup_limit = mean + (std_dev * float(variable.var_min))
-    return measurement, validated, joined, selected, tx_period
+
+    if "sum" in value_fields:
+        measurement.rename(columns={"value": "sum"}, inplace=True)
+        validated.rename(columns={"value": "sum"}, inplace=True)
+        joined.rename(columns={"value": "sum"}, inplace=True)
+        joined.rename(columns={"suspicious_value": "suspicious_sum"}, inplace=True)
+        selected.rename(columns={"value": "sum"}, inplace=True)
+        selected.rename(columns={"suspicious_value": "suspicious_sum"}, inplace=True)
+    if "average" in value_fields:
+        measurement.rename(columns={"value": "average"}, inplace=True)
+        validated.rename(columns={"value": "average"}, inplace=True)
+        joined.rename(columns={"value": "average"}, inplace=True)
+        joined.rename(columns={"suspicious_value": "suspicious_average"}, inplace=True)
+        selected.rename(columns={"value": "average"}, inplace=True)
+        selected.rename(
+            columns={"suspicious_value": "suspicious_average"}, inplace=True
+        )
+    return measurement, validated, joined, selected, tx_period, value_fields
 
 
 # def calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum):
 def daily_report(station, variable, start_time, end_time, minimum, maximum):
     start_time, end_time = set_time_limits(start_time, end_time)
-    measurement, validated, joined, selected, tx_period = basic_calculations(
-        station, variable, start_time, end_time, minimum, maximum
-    )
+    (
+        measurement,
+        validated,
+        joined,
+        selected,
+        tx_period,
+        value_fields,
+    ) = basic_calculations(station, variable, start_time, end_time, minimum, maximum)
 
     # TODO: implement all for
     daily_group_all = joined.groupby("date")
 
-    # REF. NAME: tabla_acumulada
-    # daily calculations
     daily_group = selected.groupby("date")
     daily = daily_group["date"].count()
     daily = daily.reset_index(name="data_count")
-    # daily['date'] = pd.to_datetime(daily['date']).dt.date
+
     # TODO Ask if those aggregation functions must be calculated over 'selected' table instead of 'joined'
-    daily["avg_value"] = daily_group["value"].mean().to_numpy()
-    daily["max_maximum"] = daily_group["maximum"].max().to_numpy()
-    daily["min_minimum"] = daily_group["minimum"].min().to_numpy()
+    if "sum" in value_fields:
+        # TODO IMPORTANT: "value" could change to "sum"
+        daily["sum"] = daily_group["sum"].sum().to_numpy()
+    if "average" in value_fields or "value" in value_fields:
+        # TODO IMPORTANT: "value" could change to "average"
+        daily["average"] = daily_group["average"].mean().to_numpy()
+    if "maximum" in value_fields:
+        daily["maximum"] = daily_group["maximum"].max().to_numpy()
+    if "minimum" in value_fields:
+        daily["minimum"] = daily_group["minimum"].min().to_numpy()
     daily["all_validated"] = daily_group["is_validated"].all().to_numpy()
 
-    # REF. NAME: tabla_datos_esperados
-    # Expected data count for each day. Uses "period"
     # TODO Create a "period" table for storing the period for every station
     # TODO Maybe program for dynamic periods. This happens when a station change the period
-
     expected_data_count = 24 * 60 / tx_period
-
-    # REF. NAME: tabla_calculo
-    # Percentage of data existence
     daily["percentage"] = (daily["data_count"] / expected_data_count) * 100.0
-    # TODO escoger la correcta para PARICIA
     daily["is_null"] = daily["percentage"] < (100.0 - float(variable.null_limit))
-    # daily['is_null'] = daily['percentage'] < variable.null_limit
-
     daily["percentage_error"] = ~daily["percentage"].between(
         100.0 - float(variable.null_limit), 100.0
     )
 
-    # REF. NAME: tabla_valores_sos
-    # Count of suspicious values:  values over variable.maximum or under variable.minimum
     # TODO: change variable_maximun and variable_minimum to apply for PARICIA context
-    # variable.var_minimo -> variable.minimum
-    # variable.var_maximo -> variable.maximum
-
-    # daily['suspicious_values_count'] = daily_group.agg(
-    #     suspicious=pd.NamedAgg(
-    #         column='value',
-    #         aggfunc=lambda x: (x < variable.var_minimo).sum() + (x > variable.var_maximo).sum()
-    #     )).to_numpy()
-    daily["suspicious_values_count"] = daily_group["suspicious_value"].sum().to_numpy()
-
-    # daily['suspicious_maximums_count'] = daily_group.agg(
-    #     suspicious=pd.NamedAgg(
-    #         column='maximum',
-    #         aggfunc=lambda x: (x < variable.var_minimo).sum() + (x > variable.var_maximo).sum()
-    #     )).to_numpy()
-    daily["suspicious_maximums_count"] = (
-        daily_group["suspicious_maximum"].sum().to_numpy()
-    )
-
-    # daily['suspicious_minimums_count'] = daily_group.agg(
-    #     suspicious=pd.NamedAgg(
-    #         column='minimum',
-    #         aggfunc=lambda x: (x < variable.var_minimo).sum() + (x > variable.var_maximo).sum()
-    #     )).to_numpy()
-    daily["suspicious_minimums_count"] = (
-        daily_group["suspicious_minimum"].sum().to_numpy()
-    )
+    if "sum" in value_fields:
+        daily["suspicious_sums_count"] = daily_group["suspicious_sum"].sum().to_numpy()
+    if "average" in value_fields or "value" in value_fields:
+        daily["suspicious_averages_count"] = (
+            daily_group["suspicious_average"].sum().to_numpy()
+        )
+    if "maximum" in value_fields:
+        daily["suspicious_maximums_count"] = (
+            daily_group["suspicious_maximum"].sum().to_numpy()
+        )
+    if "minimum" in value_fields:
+        daily["suspicious_minimums_count"] = (
+            daily_group["suspicious_minimum"].sum().to_numpy()
+        )
 
     # TODO check this for PARAMH2O (tabla_varia_erro)
     # REF. NAME: tabla_varia_erro
@@ -463,8 +368,6 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     #                               2 if 'time_lapse' > 'period'
     #
 
-    # TODO Check what would be the best option
-    # daily['value_difference_error_count'] = daily_group['value_difference_error'].sum(numeric_only=False).to_numpy()
     daily["value_difference_error_count"] = (
         daily_group_all["value_difference_error"].sum(numeric_only=False).to_numpy()
     )
@@ -484,13 +387,13 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
                 "id",
                 "date",
                 "data_count",
-                "avg_value",
-                "max_maximum",
-                "min_minimum",
+                "average",
+                "maximum",
+                "minimum",
                 "all_validated",
                 "percentage",
                 "is_null",
-                "suspicious_values_count",
+                "suspicious_averages_count",
                 "suspicious_maximums_count",
                 "suspicious_minimums_count",
                 "value_difference_error_count",
@@ -499,22 +402,19 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
                 "extra_data_count",
                 "historic_diary_avg",
                 "state",
-                "value_error",
+                "average_error",
                 "maximum_error",
                 "minimum_error",
             ]
         )
         return daily, selected[["time", "value"]]
 
-    # REF. NAME: fecha_error o dia_error
     daily["day_interval"] = (daily["date"] - daily["date"].shift(1)).dt.days
     daily["day_interval"][0] = 1
     daily["date_error"] = np.where(daily["day_interval"].gt(1), 3, 1)
     # TODO hacer un groupby de repeated_values_count por día, para pasar el valor total de repetidos por día
     #      posiblemente convenga hacer un solo cálculo arriba
 
-    # fecha_numero: repeated_values_count
-    # # REF. NAME: tabla_duplicados
     # # count_of_repeated
     repeated_in_validated = validated.groupby(["time_truncated"])[
         "time_truncated"
@@ -567,20 +467,6 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     # TODO the following line makes an override of "date_error"
     #           Discuss if the team are agree
     daily["date_error"] = daily["extra_data_count"]
-
-    # porcentaje : percentage
-    # porcentaje_error : null_value
-    # valor_error : (posiblemente no requiera)
-    # maximo_error : (posiblemente no requiera)
-    # minimo_error : (posiblemente no requiera)
-    # valor_numero : suspicious_values_count
-    # maximo_numero : suspicious_maximums_count
-    # minimo_numero : suspicious_minimums_count
-    # media_historica : historic_mean
-    # SELECT AVG(dp.valor) FROM diario_var2diario dp WHERE dp.estacion_id = 4 AND
-    # date_part('day',dp.fecha)= 13 AND date_part('month',dp.fecha)= 10
-    # historic_diaries = Var2Diario.objects.filter(estacion_id=station.est_id, fecha__day=)
-
     month_day_tuples = tuple(
         list(
             zip(
@@ -595,19 +481,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
         params=[month_day_tuples],
     )
     historic_diary = pd.DataFrame(list(historic_diary.values()))
-    ############################################
-    ##### TODO Temporal code: just to works until get a decision about column name for values
-    try:
-        historic_diary.rename(columns={"sum": "value"}, inplace=True)
-    except:
-        pass
 
-    try:
-        historic_diary.rename(columns={"average": "value"}, inplace=True)
-    except:
-        pass
-    ##### END of temporal code block
-    #######################################################################
     if not historic_diary.empty:
         historic_diary["month-day"] = (
             pd.DatetimeIndex(historic_diary["time"]).month.astype(str)
@@ -615,77 +489,81 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
             + pd.DatetimeIndex(historic_diary["time"]).day.astype(str)
         )
         historic_diary_group = historic_diary.groupby(["month-day"])
-        daily["historic_diary_avg"] = historic_diary_group["value"].mean().to_numpy()
+        if "sum" in value_fields:
+            daily["historic_diary_avg"] = historic_diary_group["sum"].mean().to_numpy()
+        elif "average" in value_fields:
+            daily["historic_diary_avg"] = (
+                historic_diary_group["average"].mean().to_numpy()
+            )
     else:
         daily["historic_diary_avg"] = np.nan
 
-    # estado : state
     daily["state"] = True
-
-    # validado :
-
-    # validated_only = selected[['date', 'is_validated']].loc[selected['is_validated'] == True]
-    # validated_count = validated_only.groupby('date')['date'].count().reset_index(name='validated_count')
-    # daily = daily.merge(validated_count, on='date', how='left')
-    # daily['validated_count'].fillna(0, inplace=True)
-
-    # daily['all_validated'] = daily_group['is_validated'].all().to_numpy()
-
-    # c_varia_err
-
     daily["data_count"].fillna(0, inplace=True)
     daily["percentage"].fillna(0, inplace=True)
-    daily["suspicious_values_count"].fillna(0, inplace=True)
-    daily["suspicious_maximums_count"].fillna(0, inplace=True)
-    daily["suspicious_minimums_count"].fillna(0, inplace=True)
+    if "sum" in value_fields:
+        daily["suspicious_sums_count"].fillna(0, inplace=True)
+    if "average" in value_fields:
+        daily["suspicious_averages_count"].fillna(0, inplace=True)
+    if "maximum" in value_fields:
+        daily["suspicious_maximums_count"].fillna(0, inplace=True)
+    if "minimum" in value_fields:
+        daily["suspicious_minimums_count"].fillna(0, inplace=True)
     daily["value_difference_error_count"].fillna(0, inplace=True)
     daily["historic_diary_avg"].fillna("", inplace=True)
 
     ##
     # TODO check, maybe it's not needed anymore
-    daily["value_error"] = np.where(
-        daily["suspicious_values_count"].gt(0),
-        True,
-        False,
-    )
-    daily["maximum_error"] = np.where(
-        daily["suspicious_maximums_count"].gt(0),
-        True,
-        False,
-    )
-    daily["minimum_error"] = np.where(
-        daily["suspicious_minimums_count"].gt(0),
-        True,
-        False,
-    )
+    if "sum" in value_fields:
+        daily["sum_error"] = np.where(
+            daily["suspicious_sums_count"].gt(0),
+            True,
+            False,
+        )
+    if "average" in value_fields:
+        daily["average_error"] = np.where(
+            daily["suspicious_averages_count"].gt(0),
+            True,
+            False,
+        )
+    if "maximum" in value_fields:
+        daily["maximum_error"] = np.where(
+            daily["suspicious_maximums_count"].gt(0),
+            True,
+            False,
+        )
+    if "minimum" in value_fields:
+        daily["minimum_error"] = np.where(
+            daily["suspicious_minimums_count"].gt(0),
+            True,
+            False,
+        )
     #
     ##
 
-    # Round decimals
-    # TODO cambiar 'valor' por 'value' en pAricia
     Measurement = apps.get_model(
         app_label="measurement", model_name=variable.variable_code
     )
-    ######
-    ## TODO remove or define better:
-    try:
-        decimal_places = Measurement._meta.get_field("value").decimal_places
-    except:
-        try:
-            decimal_places = Measurement._meta.get_field("average").decimal_places
-        except:
-            try:
-                decimal_places = Measurement._meta.get_field("sum").decimal_places
-            except:
-                decimal_places = 2
-    ### END of temporal code block
 
-    daily["avg_value"] = daily["avg_value"].astype(np.float64).round(decimal_places)
-    daily["max_maximum"] = daily["max_maximum"].astype(np.float64).round(decimal_places)
-    daily["min_minimum"] = daily["min_minimum"].astype(np.float64).round(decimal_places)
+    if "sum" in value_fields:
+        decimal_places = Measurement._meta.get_field("sum").decimal_places
+    elif "average" in value_fields:
+        decimal_places = Measurement._meta.get_field("average").decimal_places
+    elif "value" in value_fields:
+        decimal_places = Measurement._meta.get_field("value").decimal_places
+    else:
+        decimal_places = 2
+
+    if "sum" in value_fields:
+        daily["sum"] = daily["sum"].astype(np.float64).round(decimal_places)
+    if "average" in value_fields:
+        daily["average"] = daily["average"].astype(np.float64).round(decimal_places)
+    if "maximum" in value_fields:
+        daily["maximum"] = daily["maximum"].astype(np.float64).round(decimal_places)
+    if "minimum" in value_fields:
+        daily["minimum"] = daily["minimum"].astype(np.float64).round(decimal_places)
     daily["percentage"] = daily["percentage"].astype(np.float64).round(1)
 
-    # daily.reset_index(names='id', inplace=True)
     daily.index.name = "id"
     daily.reset_index(inplace=True)
     ## TODO Eliminar o corregir ids -> id
@@ -694,74 +572,87 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     daily["ids"] = daily["id"]
     #
     ##
-    _selected = selected[["time", "value", "maximum", "minimum"]]
-    _measurement = measurement[["time", "value", "maximum", "minimum"]]
-    _validated = validated[["time", "value", "maximum", "minimum"]]
+
+    _selected = selected[["time"] + value_fields]
+    _measurement = measurement[["time"] + value_fields]
+    _validated = validated[["time"] + value_fields]
     return daily, _selected, _measurement, _validated
 
 
-# Consultar datos crudos y/o validados por estacion, variable y fecha de un día en específico
-# def detalle_diario(est_id, var_id, fecha_str, sup_lim_variable, inf_lim_variable):
 def detail_list(station_id, variable_id, date, minimum, maximum):
-    # SQL fun : reporte_validacion_modelo
-    # SQL template: validacion_crudos_prom.sql
-
     start_time = datetime.strptime(date, "%Y-%m-%d")
     end_time = datetime.combine(start_time.date(), time(23, 59, 59, 999999))
     station = Station.objects.get(station_id=station_id)
     variable = Variable.objects.get(variable_id=variable_id)
 
-    measurement, validated, joined, selected, tx_period = basic_calculations(
-        station, variable, start_time, end_time, minimum, maximum
-    )
+    (
+        measurement,
+        validated,
+        joined,
+        selected,
+        tx_period,
+        value_fields,
+    ) = basic_calculations(station, variable, start_time, end_time, minimum, maximum)
 
-    joined["state"] = ~(
-        joined["value"].isna() & joined["maximum"].isna() & joined["minimum"].isna()
-    )
+    if "average" in value_fields:
+        value_column = "average"
+    elif "sum" in value_fields:
+        value_column = "sum"
+    elif "value" in value_fields:
+        value_column = "value"
+
+    if (
+        "average" in value_fields
+        and "maximum" in value_fields
+        and "minimum" in value_fields
+    ):
+        joined["state"] = ~(
+            joined["average"].isna()
+            & joined["maximum"].isna()
+            & joined["minimum"].isna()
+        )
+    else:
+        joined["state"] = ~(joined[value_column].isna())
+
     # Basic statistics
-    mean = selected["value"].mean(skipna=True)
-    std_dev = selected["value"].astype(float).std(skipna=True)
+    mean = selected[value_column].mean(skipna=True)
+    std_dev = selected[value_column].astype(float).std(skipna=True)
     stddev_inf_limit = mean - (std_dev * float(variable.outlier_limit))
     stddev_sup_limit = mean + (std_dev * float(variable.outlier_limit))
-    joined["stddev_error"] = ~joined["value"].between(
+    joined["stddev_error"] = ~joined[value_column].between(
         stddev_inf_limit, stddev_sup_limit
     )
     joined["comment"] = ""
 
     joined.fillna("", inplace=True)
 
-    report = joined[
-        [
-            "id_joined",
-            "time",
-            "value",
-            "maximum",
-            "minimum",
-            "is_validated",
-            "is_selected",
-            "state",
-            "time_lapse_status",
-            # "value_error",
-            # "maximum_error",
-            # "minimum_error",
-            "suspicious_value",
-            "suspicious_maximum",
-            "suspicious_minimum",
-            "stddev_error",
-            "comment",
-            "value_difference",
-            "value_difference_error",
-        ]
+    columns = [
+        "id_joined",
+        "time",
+        "is_validated",
+        "is_selected",
+        "state",
+        "time_lapse_status",
+        "stddev_error",
+        "comment",
+        "value_difference",
+        "value_difference_error",
     ]
+    suspicious_columns = ["suspicious_" + col for col in value_fields]
+    report = joined[columns + value_fields + suspicious_columns]
     report.rename(
         columns={
             "id_joined": "id",
-            "suspicious_value": "value_error",
-            "suspicious_maximum": "maximum_error",
-            "suspicious_minimum": "minimum_error",
         },
         inplace=True,
     )
+    for col in value_fields:
+        report.rename(
+            columns={
+                "suspicious_" + col: col + "_error",
+            },
+            inplace=True,
+        )
     #######
     joined["n_valor"] = joined["value_difference"]
     _selected = joined[joined["is_selected"] == True]
@@ -777,72 +668,53 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
     # num_maximo = len(_selected[_selected["maximum_error"] == True].index)
     # num_minimo = len(_selected[_selected["minimum_error"] == True].index)
 
-    num_value = len(
-        _selected_NO_TIMELAPSE_ERROR[
-            _selected_NO_TIMELAPSE_ERROR["suspicious_value"] == True
-        ].index
-    )
-    num_maximum = len(_selected[_selected["suspicious_maximum"] == True].index)
-    num_minimum = len(_selected[_selected["suspicious_minimum"] == True].index)
+    indicators = {}
+    if "sum" in value_fields:
+        num_sum = len(
+            _selected_NO_TIMELAPSE_ERROR[
+                _selected_NO_TIMELAPSE_ERROR["suspicious_sum"] == True
+            ].index
+        )
+        indicators["num_sum"] = num_sum
+    if "average" in value_fields:
+        num_average = len(
+            _selected_NO_TIMELAPSE_ERROR[
+                _selected_NO_TIMELAPSE_ERROR["suspicious_average"] == True
+            ].index
+        )
+        indicators["num_average"] = num_average
+    if "value" in value_fields:
+        num_value = len(
+            _selected_NO_TIMELAPSE_ERROR[
+                _selected_NO_TIMELAPSE_ERROR["suspicious_value"] == True
+            ].index
+        )
+        indicators["num_value"] = num_value
+    if "maximum" in value_fields:
+        num_maximum = len(_selected[_selected["suspicious_maximum"] == True].index)
+        indicators["num_maximum"] = num_maximum
+    if "minimum" in value_fields:
+        num_minimum = len(_selected[_selected["suspicious_minimum"] == True].index)
+        indicators["num_minimum"] = num_minimum
 
     num_stddev = len(_selected[_selected["stddev_error"] == True].index)
 
     # TODO check if this es expected number of data
     num_data = int(24 * (60 / tx_period))
 
-    # report.rename(
-    #     columns={
-    #         # 'id': '',
-    #         "time": "fecha",
-    #         "value": "valor",
-    #         "maximum": "maximo",
-    #         "minimum": "minimo",
-    #         "is_validated": "validado",
-    #         "is_selected": "seleccionado",
-    #         "state": "estado",
-    #         "time_lapse_status": "fecha_error",
-    #         # "value_error": "valor_error",
-    #         # "maximum_error": "maximo_error",
-    #         # "minimum_error": "minimo_error",
-    #         "suspicious_value": "valor_error",
-    #         "suspicious_maximum": "maximo_error",
-    #         "suspicious_minimum": "minimo_error",
-    #         "stddev_error": "stddev_error",
-    #         "comment": "comentario",
-    #         "value_difference": "variacion_consecutiva",
-    #         "value_difference_error": "varia_error",
-    #     },
-    #     inplace=True,
-    # )
-
-    # data = {
-    #     "datos": report.to_dict(orient="records"),
-    #     "indicadores": [
-    #         {
-    #             "num_fecha": num_fecha,
-    #             "num_valor": num_valor,
-    #             "num_valor1": num_valor,
-    #             "num_maximo": num_maximo,
-    #             "num_minimo": num_minimo,
-    #             "num_stddev": num_stddev,
-    #             "num_datos": num_datos,
-    #         }
-    #     ],
-    # }
+    indicators = {
+        **{
+            "num_date": num_date,
+            "num_stddev": num_stddev,
+            "num_data": num_data,
+        },
+        **indicators,
+    }
 
     data = {
         "series": report.to_dict(orient="records"),
-        "indicators": [
-            {
-                "num_date": num_date,
-                "num_value": num_value,
-                # "num_valor1": num_value,
-                "num_maximum": num_maximum,
-                "num_minimum": num_minimum,
-                "num_stddev": num_stddev,
-                "num_data": num_data,
-            }
-        ],
+        "indicators": indicators,
+        "value_columns": value_fields,
     }
 
     return data
@@ -883,50 +755,38 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
     # TODO se puede eliminar
     reporte_recibido = pd.DataFrame.from_records(changes_list)
 
-    measurement, validated, joined, selected, tx_period = basic_calculations(
-        station, variable, start_date, end_date, minimum, maximum
-    )
+    (
+        measurement,
+        validated,
+        joined,
+        selected,
+        tx_period,
+        value_fields,
+    ) = basic_calculations(station, variable, start_date, end_date, minimum, maximum)
     if len(conditions["where_delete"]) > 0:
         where_delete = conditions["where_delete"].replace("'", "").split(",")
         for _date in where_delete:
             _date = datetime.strptime(_date, "%Y-%m-%d").date()
             condition = selected["date"] == _date
-            selected["value"] = np.where(condition, None, selected["value"])
-            selected["maximum"] = np.where(condition, None, selected["maximum"])
-            selected["minimum"] = np.where(condition, None, selected["minimum"])
+            for c in value_fields:
+                selected[c] = np.where(condition, None, selected[c])
     Validated.timescale.filter(
         time__range=[start_date, end_date],
         station_id=station.station_id,
     ).delete()
 
-    model_instances = [
-        Validated(
-            time=record["time"],
-            value=record["value"],
-            maximum=record["maximum"],
-            minimum=record["minimum"],
-            station_id=station.station_id,
-        )
-        for _, record in selected.iterrows()
-    ]
+    model_instances = []
+    for _, record in selected.iterrows():
+        row = {"time": record["time"], "station_id": station.station_id}
+        for c in value_fields:
+            row[c] = record[c]
+        model_instances.append(Validated(**row))
+
     insert_result = Validated.objects.bulk_create(model_instances)
     if len(insert_result) != len(selected):
         return False
     launch_report_calculations()
     return True
-
-
-# def guardar_cambios_validacion(
-#     estacion_id, variable, tipo_transaccion, fecha_inicio, fecha_fin
-# ):
-#     sincronizacion = Sincronizacion(
-#         estacion_id=estacion_id,
-#         variable=variable,
-#         tipo_transaccion=tipo_transaccion,
-#         fecha_inicio=fecha_inicio,
-#         fecha_fin=fecha_fin,
-#     )
-#     sincronizacion.save()
 
 
 def data_report(temporality, station, variable, start_time, end_time):
@@ -1043,12 +903,14 @@ def calculate_hourly(variable):
             continue
 
         if "sum" in fields:
-            _sum = block["sum"].sum()
+            result = block["sum"].sum()
             count = block["sum"].count()
-        else:
-            # else: is average
-            average = block["average"].mean(skipna=True)
+        elif "average" in fields:
+            result = block["average"].mean(skipna=True)
             count = block["average"].count()
+        else:
+            result = block["value"].mean(skipna=True)
+            count = block["value"].count()
 
         try:
             delta_t = DeltaT.objects.get(station__station_id=register.station_id)
@@ -1060,22 +922,19 @@ def calculate_hourly(variable):
             time=start_of_hour, station_id=register.station_id
         ).delete()
 
+        record = {
+            "time": start_of_hour,
+            "station_id": register.station_id,
+            "used_for_daily": False,
+            "completeness": completeness,
+        }
         if "sum" in fields:
-            hourly = Hourly(
-                time=start_of_hour,
-                station_id=register.station_id,
-                used_for_daily=False,
-                completeness=completeness,
-                sum=_sum,
-            )
+            record["sum"] = result
+        elif "average" in fields:
+            record["average"] = result
         else:
-            hourly = Hourly(
-                time=start_of_hour,
-                station_id=register.station_id,
-                used_for_daily=False,
-                completeness=completeness,
-                average=average,
-            )
+            record["value"] = result
+        hourly = Hourly(**record)
         hourly.save()
         validated_block.update(used_for_hourly=True)
     return True
@@ -1106,31 +965,32 @@ def calculate_daily(variable):
         block = pd.DataFrame.from_records(hourly_block.values(*fields))
         if block.empty:
             continue
+
         if "sum" in fields:
-            _sum = block["sum"].sum()
+            result = block["sum"].sum()
             count = block["sum"].count()
-        else:
-            # else: is average
-            average = block["average"].mean(skipna=True)
+        elif "average" in fields:
+            result = block["average"].mean(skipna=True)
             count = block["average"].count()
+        else:
+            result = block["value"].mean(skipna=True)
+            count = block["value"].count()
+
         completeness = (count / 24) * 100.0
         Daily.objects.filter(time=start_of_day, station_id=register.station_id).delete()
+        record = {
+            "time": start_of_day,
+            "station_id": register.station_id,
+            "used_for_monthly": False,
+            "completeness": completeness,
+        }
         if "sum" in fields:
-            daily = Daily(
-                time=start_of_day,
-                station_id=register.station_id,
-                used_for_monthly=False,
-                completeness=completeness,
-                sum=_sum,
-            )
+            record["sum"] = result
+        elif "average" in fields:
+            record["average"] = result
         else:
-            daily = Daily(
-                time=start_of_day,
-                station_id=register.station_id,
-                used_for_monthly=False,
-                completeness=completeness,
-                average=average,
-            )
+            record["value"] = result
+        daily = Daily(**record)
         daily.save()
         hourly_block.update(used_for_daily=True)
 
@@ -1166,29 +1026,29 @@ def calculate_monthly(variable):
         if block.empty:
             continue
         if "sum" in fields:
-            _sum = block["sum"].sum()
+            result = block["sum"].sum()
             count = block["sum"].count()
-        else:
-            # else: is average
-            average = block["average"].mean(skipna=True)
+        elif "average" in fields:
+            result = block["average"].mean(skipna=True)
             count = block["average"].count()
+        else:
+            result = block["value"].mean(skipna=True)
+            count = block["value"].count()
         completeness = (count / last_day) * 100.0
         Monthly.objects.filter(
             time=start_of_month, station_id=register.station_id
         ).delete()
+        record = {
+            "time": start_of_month,
+            "station_id": register.station_id,
+            "completeness": completeness,
+        }
         if "sum" in fields:
-            monthly = Monthly(
-                time=start_of_month,
-                station_id=register.station_id,
-                completeness=completeness,
-                sum=_sum,
-            )
+            record["sum"] = result
+        elif "average" in fields:
+            record["average"] = result
         else:
-            monthly = Monthly(
-                time=start_of_month,
-                station_id=register.station_id,
-                completeness=completeness,
-                average=average,
-            )
+            record["value"] = result
+        monthly = Monthly(**record)
         monthly.save()
         daily_block.update(used_for_monthly=True)
