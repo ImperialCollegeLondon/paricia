@@ -106,13 +106,11 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
             "num_minimum": num_minimum,
             "num_days": num_days,
         },
-        # "plot_data": selected.fillna("").values.tolist(),
         "series": {
             "selected": selected.fillna("").to_dict("list"),
             "measurement": measurement.fillna("").to_dict("list"),
             "validated": validated.fillna("").to_dict("list"),
         },
-        # "curva": None,  # mensaje
     }
     return data
 
@@ -133,7 +131,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
             station_id=station.station_id, time__gte=start_time, time__lte=end_time
         )
         .annotate(
-            # is_validated: True is for 'validated' tables, False for raw 'measurement'
             is_validated=Value(True, output_field=BooleanField()),
             exists_in_validated=Value(True, output_field=BooleanField()),
             null_value=Value(False, output_field=BooleanField()),
@@ -151,21 +148,18 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     if validated.empty:
         validated = pd.DataFrame(columns=fields)
 
-    # validated.replace(to_replace=[None], value=np.nan, inplace=True)
-
     # TODO WHich one is faster?
     # validated['time'] = validated['time'].values.astype('<M8[m]')
-    # TODO for testing: time_truncated
-    validated["time_truncated"] = validated["time"].values.astype("<M8[m]")
     # validated['time_truncated2'] = pd.to_datetime(validated['time']).dt.date
     # validated['time_truncated3'] = validated['time'].dt.floor('min')
+    # TODO for testing: time_truncated
+    validated["time_truncated"] = validated["time"].values.astype("<M8[m]")
 
     measurement = (
         Measurement.objects.filter(
             station_id=station.station_id, time__gte=start_time, time__lte=end_time
         )
         .annotate(
-            # is_validated: True is for 'validated' tables, False for raw 'measurement'
             is_validated=Value(False, output_field=BooleanField()),
         )
         .order_by("time")
@@ -178,8 +172,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     if measurement.empty:
         measurement = pd.DataFrame(columns=fields)
     measurement["time_truncated"] = measurement["time"].values.astype("<M8[m]")
-    # measurement['time_truncated2'] = pd.to_datetime(measurement['time']).dt.date
-    # measurement['time_truncated3'] = measurement['time'].dt.floor('min')
 
     # TODO analizar eliminacion campos 'null_value' : parece ser innecesario o fácilmente eliminable
     # measurement['null_value'] = measurement['time_truncated'].isin(validated['time_truncated'])
@@ -214,7 +206,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
 
     joined.index.name = "id_joined"
     joined.reset_index(inplace=True)
-    # joined.reset_index(names='id_joined', inplace=True)
 
     minimum = float(minimum)
     maximum = float(maximum)
@@ -231,11 +222,12 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
             (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
         )
 
-    # selected
+    # Selected: Data that will be used to fill 'Validated' tables
     # TODO check if 'is_selected' is used in later
     selected = joined.drop_duplicates("time_truncated", keep="first")
     selected.reset_index(drop=True, inplace=True)
     selected["is_selected"] = True
+
     joined = joined.merge(
         selected[["id_joined", "is_selected"]],
         on="id_joined",
@@ -244,8 +236,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     )
     joined["is_selected"].fillna(False, inplace=True)
 
-    # Moved from original to reuse code
-    # TODO Ask if using 'time_truncated' is better option
     selected["time_lapse"] = selected["time_truncated"] - selected[
         "time_truncated"
     ].shift(1)
@@ -270,7 +260,7 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     )
 
     joined = joined.merge(
-        selected[["time_truncated", "time_lapse_status", "lagged_value"]],
+        selected[["time_truncated", "time_lapse", "time_lapse_status", "lagged_value"]],
         on="time_truncated",
         how="left",
         indicator=False,
@@ -279,9 +269,15 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     # TODO implement to a error/warning level (variable.diff_error and variable.diff_warning)
     joined["value_difference_error"] = np.where(
         joined["value_difference"].abs().gt(variable.diff_error),
-        True,  # Error
-        False,  # No Error
+        True,
+        False,
     )
+    # joined = joined.merge(
+    #     selected[["time_truncated", "time_lapse", "time_lapse_status", "lagged_value"]],
+    #     on="time_truncated",
+    #     how="left",
+    #     indicator=False,
+    # )
 
     if "sum" in value_fields:
         measurement.rename(columns={"value": "sum"}, inplace=True)
@@ -299,7 +295,18 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
         selected.rename(
             columns={"suspicious_value": "suspicious_average"}, inplace=True
         )
-    return measurement, validated, joined, selected, tx_period, value_fields
+    # Final Filter: If a data is already validated, do not show "Measurement" values for that timestamp
+    selected_full = joined.loc[
+        (joined["is_validated"] & joined["exists_in_validated"])
+        | (~joined["is_validated"] & ~joined["exists_in_validated"])
+    ]
+
+    selected_full.reset_index(inplace=True, drop=True)
+    selected_full.insert(0, "id", selected_full.index)
+    selected.reset_index(inplace=True, drop=True)
+    selected.insert(0, "id", selected.index)
+
+    return measurement, validated, selected_full, selected, tx_period, value_fields
 
 
 # def calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum):
@@ -308,25 +315,29 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     (
         measurement,
         validated,
-        joined,
+        selected_full,
         selected,
         tx_period,
         value_fields,
     ) = basic_calculations(station, variable, start_time, end_time, minimum, maximum)
 
-    # TODO: implement all for
-    daily_group_all = joined.groupby("date")
-
+    daily_group_all = selected_full.groupby("date")
     daily_group = selected.groupby("date")
-    daily = daily_group["date"].count()
+
+    if "sum" in value_fields:
+        principal_field = "sum"
+    elif "average" in value_fields:
+        principal_field = "average"
+    else:
+        principal_field = "value"
+
+    # daily = daily_group[principal_field].count()
+    daily = daily_group_all[principal_field].count()
     daily = daily.reset_index(name="data_count")
 
-    # TODO Ask if those aggregation functions must be calculated over 'selected' table instead of 'joined'
     if "sum" in value_fields:
-        # TODO IMPORTANT: "value" could change to "sum"
-        daily["sum"] = daily_group["sum"].sum().to_numpy()
+        daily["sum"] = daily_group["sum"].sum(min_count=1).to_numpy()
     if "average" in value_fields or "value" in value_fields:
-        # TODO IMPORTANT: "value" could change to "average"
         daily["average"] = daily_group["average"].mean().to_numpy()
     if "maximum" in value_fields:
         daily["maximum"] = daily_group["maximum"].max().to_numpy()
@@ -338,6 +349,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     # TODO Maybe program for dynamic periods. This happens when a station change the period
     expected_data_count = 24 * 60 / tx_period
     daily["percentage"] = (daily["data_count"] / expected_data_count) * 100.0
+    # TODO "is_null" could be removed and use "percentage_error" instead
     daily["is_null"] = daily["percentage"] < (100.0 - float(variable.null_limit))
     daily["percentage_error"] = ~daily["percentage"].between(
         100.0 - float(variable.null_limit), 100.0
@@ -368,6 +380,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     #                               2 if 'time_lapse' > 'period'
     #
 
+    # value_difference_error = daily_group_all["value_difference_error"].sum(numeric_only=False).to_numpy()
     daily["value_difference_error_count"] = (
         daily_group_all["value_difference_error"].sum(numeric_only=False).to_numpy()
     )
@@ -572,7 +585,8 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     daily["ids"] = daily["id"]
     #
     ##
-
+    for _f in value_fields:
+        daily[_f].fillna("", inplace=True)
     _selected = selected[["time"] + value_fields]
     _measurement = measurement[["time"] + value_fields]
     _validated = validated[["time"] + value_fields]
@@ -588,7 +602,7 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
     (
         measurement,
         validated,
-        joined,
+        selected_full,
         selected,
         tx_period,
         value_fields,
@@ -606,27 +620,28 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
         and "maximum" in value_fields
         and "minimum" in value_fields
     ):
-        joined["state"] = ~(
-            joined["average"].isna()
-            & joined["maximum"].isna()
-            & joined["minimum"].isna()
+        selected_full["state"] = ~(
+            selected_full["average"].isna()
+            & selected_full["maximum"].isna()
+            & selected_full["minimum"].isna()
         )
     else:
-        joined["state"] = ~(joined[value_column].isna())
+        selected_full["state"] = ~(selected_full[value_column].isna())
 
     # Basic statistics
     mean = selected[value_column].mean(skipna=True)
     std_dev = selected[value_column].astype(float).std(skipna=True)
     stddev_inf_limit = mean - (std_dev * float(variable.outlier_limit))
     stddev_sup_limit = mean + (std_dev * float(variable.outlier_limit))
-    joined["stddev_error"] = ~joined[value_column].between(
+    selected_full["stddev_error"] = ~selected_full[value_column].between(
         stddev_inf_limit, stddev_sup_limit
     )
-    joined["comment"] = ""
+    selected_full["comment"] = ""
 
-    joined.fillna("", inplace=True)
+    selected_full.fillna("", inplace=True)
 
     columns = [
+        "id",
         "id_joined",
         "time",
         "is_validated",
@@ -639,13 +654,8 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
         "value_difference_error",
     ]
     suspicious_columns = ["suspicious_" + col for col in value_fields]
-    report = joined[columns + value_fields + suspicious_columns]
-    report.rename(
-        columns={
-            "id_joined": "id",
-        },
-        inplace=True,
-    )
+    report = selected_full[columns + value_fields + suspicious_columns]
+
     for col in value_fields:
         report.rename(
             columns={
@@ -654,8 +664,8 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
             inplace=True,
         )
     #######
-    joined["n_valor"] = joined["value_difference"]
-    _selected = joined[joined["is_selected"] == True]
+    selected_full["n_valor"] = selected_full["value_difference"]
+    _selected = selected_full[selected_full["is_selected"] == True]
     num_date = len(_selected[_selected["time_lapse_status"] != 1].index)
 
     # Only take into account 'value_error' when there's no error in timestamp lapse
@@ -758,7 +768,7 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
     (
         measurement,
         validated,
-        joined,
+        selected_full,
         selected,
         tx_period,
         value_fields,
@@ -918,6 +928,9 @@ def calculate_hourly(variable):
             return False
 
         completeness = (count / (60 / delta_t.delta_t)) * 100.0
+        if completeness < (100.0 - float(variable.null_limit)):
+            result = None
+
         Hourly.objects.filter(
             time=start_of_hour, station_id=register.station_id
         ).delete()
@@ -977,6 +990,8 @@ def calculate_daily(variable):
             count = block["value"].count()
 
         completeness = (count / 24) * 100.0
+        if completeness < (100.0 - float(variable.null_limit)):
+            result = None
         Daily.objects.filter(time=start_of_day, station_id=register.station_id).delete()
         record = {
             "time": start_of_day,
@@ -1035,6 +1050,8 @@ def calculate_monthly(variable):
             result = block["value"].mean(skipna=True)
             count = block["value"].count()
         completeness = (count / last_day) * 100.0
+        if completeness < (100.0 - float(variable.null_limit)):
+            result = None
         Monthly.objects.filter(
             time=start_of_month, station_id=register.station_id
         ).delete()

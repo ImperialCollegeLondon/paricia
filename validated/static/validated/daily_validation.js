@@ -43,21 +43,6 @@ function generate_traces_bars(data, source_type, color){
     var result = [];
     var columns = Object.keys(data);
     columns = columns.filter((e) => e !== "time");
-//    for (const c of columns) {
-//      result.push(
-//        {
-//          x: data.time,
-//          y: data[c],
-//          name: c + ' - ' + source_type,
-//          showlegend: true,
-//          marker: {
-//            color: color,
-////            size: 2
-//          },
-//          type: 'bar',
-//        }
-//      );
-//    }
 
     for (const c of columns) {
       result.push(
@@ -136,12 +121,6 @@ var data_minimum = [];
 var num_datos = 0;
 
 var indicators_subhourly = {
-//    num_fecha: 0,
-//    num_valor: 0,
-//    num_maximo: 0,
-//    num_minimo:0,
-//    num_stddev: 0,
-//    num_datos:0
     num_time: 0,
     num_value: 0,
     num_maximum: 0,
@@ -152,12 +131,6 @@ var indicators_subhourly = {
 }
 
 var indicators_daily = {
-//    num_fecha: 0,
-//    num_porcentaje: 0,
-//    num_valor: 0,
-//    num_maximo: 0,
-//    num_minimo: 0,
-//    num_dias: 0
     num_date: 0,
     num_percentage: 0,
     num_value: 0,
@@ -173,16 +146,8 @@ $(document).ready(function() {
 
     $("#btn_detail_new").attr("disabled", true);
 
-//    $('#div_grafico').on('hidden.bs.collapse', function () {
-//        $("#btn_grafico").text("Mostrar Gráfico");
-//    });
-//    $('#div_grafico').on('show.bs.collapse', function () {
-//        $("#btn_grafico").text("Ocultar Gráfico");
-//    });
-
     $("#btn_submit").click(daily_query_submit);
 
-    //consultar los periodos de validacion
     $("#btn_periodos_validacion").click(function(){
         $("#btn_periodos_validacion").attr("disabled", true);
     });
@@ -211,16 +176,11 @@ $(document).ready(function() {
     $("#chk_fecha").change(filtrar_diario);
     $("#chk_numero").change(filtrar_diario);
 
-//    $("#chk_fecha_crudo").change(filtrar_crudo);
-//    $("#chk_valor_crudo").change(filtrar_crudo);
-//    $("#chk_stddev").change(filtrar_crudo);
-//    $("#chk_fila").change(filtrar_crudo);
-//    $("#chk_varcon").change(filtrar_crudo);
-    $("#chk_detail_time").change(filtrar_crudo);
-    $("#chk_detail_value").change(filtrar_crudo);
-    $("#chk_detail_stddev").change(filtrar_crudo);
-    $("#chk_detail_row").change(filtrar_crudo);
-    $("#chk_detail_value_difference").change(filtrar_crudo);
+    $("#chk_detail_time").change(filter_detail_table);
+    $("#chk_detail_value").change(filter_detail_table);
+    $("#chk_detail_stddev").change(filter_detail_table);
+    $("#chk_detail_selected").change(filter_detail_table);
+    $("#chk_detail_value_difference").change(filter_detail_table);
 
     var $table = $('#table_daily');
 
@@ -329,6 +289,39 @@ $(document).ready(function() {
     $btn_detail_modify_cumulative.click(detail_modify);
     $btn_detail_modify_averaged.click(detail_modify);
     $btn_detail_modify_waterlevel.click(detail_modify);
+
+
+    var dateFormat = "yy-mm-dd";
+    $( "#id_start_date" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat:"yy-mm-dd",
+        yearRange: '2000:'+(new Date).getFullYear()
+    });
+    $( "#id_start_date" ).on( "change", function() {
+        $( "#id_end_date" ).datepicker( "option", "minDate", getDate( this ) );
+    });
+    $( "#id_end_date" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat:"yy-mm-dd",
+        yearRange: '2000:'+(new Date).getFullYear()
+    });
+    $( "#id_end_date" ).on( "change", function() {
+        $( "#id_start_time" ).datepicker( "option", "maxDate", getDate( this ) );
+    });
+
+    function getDate( element ) {
+        var date;
+        try {
+            date = $.datepicker.parseDate( dateFormat, element.value );
+        } catch( error ) {
+            date = null;
+        }
+        return date;
+    }
+
+
 });
 
 //consultar el historial de validacion
@@ -395,7 +388,6 @@ function save_daily(event){
 //    debugger;
     var $table_daily = $('#table_daily');
     var $table_detail = $('#table_detail');
-    //$table.css("background-color","white");
     token = $("input[name='csrfmiddlewaretoken']").val();
     station_id = $("#id_station").val();
     variable_id = $("#id_variable").val();
@@ -427,7 +419,6 @@ function save_daily(event){
             if (data.result == true){
                 $("#div_body_message").html('Data saved correctly to Validated!')
                 $("#div_validation_message").modal("show");
-//                $("#resize_plot").hide();
                 $("#div_information").hide();
                 clean_filters('daily');
                 clean_filters('detail');
@@ -512,16 +503,7 @@ function eliminar_validados(event){
 // guardar los cambios en los datos crudos
 function save_detail(event){
     debugger;
-//    var $table = $('#table_crudo');
-//    //$table.css("background-color","white");
-//    token = $("input[name='csrfmiddlewaretoken']").val();
-//    estacion_id = $("#id_station").val();
-//    variable_id = $("#id_variable").val();
-//    fecha_inicio = $("input[name='start_date']").val();
-//    fecha_fin = $("input[name='end_date']").val();
-//    //comentario_general = $("textarea[name='comentario_general']").val();
 //    cambios = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true}));
-//    //console.log($table.bootstrapTable('getData',{unfiltered:true, }))
 //    //detalle_crudos();
     document.getElementById("tab3-tab").style.display = "none";
     var $table = $('#table_detail');
@@ -633,7 +615,7 @@ function daily_query_submit(){
                     dispersion_plot(data.series, "div_information", data.variable);
                 }
 
-                enable_new();
+//                enable_new();
                 var_id = data.variable.id;
                 variable = data.variable;
                 station = data.station;
@@ -682,7 +664,6 @@ function daily_query_submit(){
 
 
 function getTab(evt, tabName) {
-//    debugger;
     var i, tabpane;
     tabpane = document.getElementsByClassName("tab-pane");
     for (i = 0; i < tabpane.length; i++) {
@@ -702,7 +683,6 @@ function getTab(evt, tabName) {
 function modify_row(){
     debugger;
     var $table = $('#table_detail');
-    //$table.css("background-color","white");
     var $table_daily = $('#table_daily');
 
     var id_diario = $("#orig_id_diario").val();
@@ -871,270 +851,6 @@ function modify_row(){
 
 
 
-// Graficar los datos crudos o diarios de la estacion
-function graficar(event){
-    debugger;
-    var name = event.currentTarget.name;
-    if (name === 'crudo')
-        $table = $("#table_detail");
-    else
-        $table = $("#table_daily");
-
-    var data_date = [];
-    var data_value = [];
-    var data_maximum = [];
-    var data_minimum = [];
-    var data_historica = [];
-    var data_error_fecha = [];
-    var data_error_valor = [];
-    var data_porcentaje_fecha = [];
-    var data_porcentaje_error = [];
-    var data_direccion =[];
-    var data_nivel =[];
-    var data_caudal =[];
-
-
-    var var_id = $("#id_variable").val();
-    var var_nombre = $('#id_variable option:selected').text();
-    var est_nombre = $('#id_station option:selected').text();
-
-    var datos = $table.bootstrapTable('getData',{unfiltered:true});
-    var width_graph = $(".container").width();
-
-    var data = [];
-    var layout =  {};
-
-
-    $.each(datos, function(i, item) {
-        if (item.estado){
-            data_date.push(item.fecha);
-
-            if (var_id == 1){
-                data_value.push(item.valor);
-                data_historica.push(item.media_historica)
-            }
-            else if ((var_id == 4) || (var_id == 5)){
-                data_value.push(item.valor);
-                data_direccion.push(item.direccion)
-            }
-            /*else if( var_id == 10 || var_id == 11){
-                data_nivel.push(item.nivel);
-                data_caudal.push(item.caudal);
-            }*/
-            else{
-                data_value.push(item.valor);
-                data_maximum.push(item.maximo);
-                data_minimum.push(item.minimo);
-            }
-
-            if(item.fecha_error==2){
-                console.log("fecha error")
-                data_value.push(null);
-                data_date.push(null);
-                if (var_id != 1){
-                    data_maximum.push(null);
-                    data_minimum.push(null);
-                }
-            }
-
-            if (item.valor_error){
-                data_error_fecha.push(item.fecha);
-                data_error_valor.push(item.valor)
-            }
-
-            if ((name == 'diario') && (item.porcentaje_error)){
-                data_porcentaje_fecha.push(item.fecha);
-                data_porcentaje_error.push(item.valor);
-
-            }
-
-        }
-        else{
-            data_date.push(null);
-            data_value.push(null);
-            if (var_id != 1){
-                data_maximum.push(null);
-                data_minimum.push(null);
-            }
-        }
-    });
-
-    var error_valor = {
-        type: 'scatter',
-        x: data_error_fecha,
-        y: data_error_valor,
-        mode: 'markers',
-        name: 'Errores',
-        showlegend: true,
-        marker: {
-            color: '#dc3545',
-            line: {width: 3},
-            //opacity: 0.5,
-            size: 12,
-            symbol: 'circle-open'
-        }
-    }
-
-
-    var error_porcentaje = {
-        type: 'scatter',
-        x: data_porcentaje_fecha,
-        y: data_porcentaje_error,
-        mode: 'markers',
-        name: '% bajos',
-        showlegend: true,
-        marker: {
-            color: '#ffc107',
-            line: {width: 3},
-            //opacity: 0.5,
-            size: 12,
-            symbol: 'circle-open'
-        }
-    }
-
-    if (var_id == 1){
-        var trace1 = {
-            x:data_date,
-            y:data_value,
-            name: 'Valor',
-            type: 'bar'
-        };
-        var trace2 = {
-            x:data_date,
-            y:data_historica,
-            name: 'Media Histórica',
-            type: 'bar'
-        };
-        data = [trace1, trace2, error_valor, error_porcentaje];
-    }
-    else if ((var_id == 4) || (var_id == 5)){
-        var trace1 =  {
-            name: "Valores",
-            type: "scatterpolargl",
-            //type: "barpolar",
-            r: data_value,
-            theta: data_direccion,
-            thetaunit: 'degrees',
-            mode: "markers",
-            marker: {
-                color: "rgb(217,95,2)",
-                size: 10,
-                line: {
-                  color: "white"
-                },
-                //opacity: 0.10
-            },
-            cliponaxis: false
-        };
-        data = [trace1];
-
-
-
-    }
-    /*else if (var_id == 10 || var_id == 11){
-        console.log(data_nivel, data_caudal);
-        var trace_nivel = {
-            x:data_fecha,
-            y:data_nivel,
-            name: 'Nivel de Agua',
-            type: 'scatter'
-        };
-        var trace_caudal = {
-            x:data_fecha,
-            y:data_caudal,
-            name: 'Caudal',
-            yaxis: 'y2',
-            type: 'scatter'
-        };
-        data = [trace_nivel, trace_caudal];
-    }*/
-    else{
-        var trace1 = {
-            x:data_date,
-            y:data_value,
-            name: 'Valor',
-            type: 'scatter'
-        };
-        var trace2 = {
-            x:data_date,
-            y:data_maximum,
-            name: 'Maximo',
-            type: 'scatter'
-        };
-        var trace3 = {
-            x:data_date,
-            y:data_minimum,
-            name: 'Minimo',
-            type: 'scatter'
-        };
-        data = [trace1, trace2, trace3, error_valor];
-    }
-
-    if ((var_id == 4) || (var_id == 5)){
-
-        layout = {
-            title: var_nombre + ' - '+ est_nombre,
-            showlegend: true,
-            polar: {
-                bgcolor: "rgb(233, 233, 233)",
-
-                angularaxis: {
-                    tickwidth: 2,
-                    linewidth: 3,
-                    direction: 'clockwise',
-                },
-                radialaxis: {
-                    side: "counterclockwise",
-                    showline: true,
-                    linewidth: 2,
-                    tickwidth: 2,
-                    gridcolor: "#FFF",
-                    gridwidth: 2
-                },
-            },
-            paper_bgcolor: "rgb(255, 255, 255)",
-            width: width_graph-40,
-
-        }
-
-    }
-    /*else if (var_id == 10 || var_id == 11){
-        layout = {
-            title: 'Caudal y Nivel' + ' - '+ est_nombre,
-            yaxis: {title: 'Nivel de Agua (cm)'},
-            yaxis2: {
-                title: 'Caudal (l/s)',
-                overlaying: 'y',
-                side: 'right'
-            },
-            width: width_graph-40,
-            //showlegend: false
-        };
-
-    }*/
-    else{
-        layout = {
-            title: var_nombre + ' - '+ est_nombre,
-            width: width_graph-40,
-            //showlegend: false
-        };
-
-    }
-
-
-    Plotly.newPlot('div_grafico', data, layout);
-    // renombrar angular axis
-        var angulo_index = 0;
-        var angulo_dict = {1:'N', 2:'NE', 3:'E', 4:'SE', 5:'S', 6:'SO', 7:'O', 8:'NO'};
-        $("g.polarsublayer").find("g.angularaxistick").each(function(){
-            angulo_index++;
-            $(this).find("text").html(angulo_dict[angulo_index]);
-        });
-
-    $("#div_modal_grafico").modal("show");
-
-}
-
 //Deshacer los cambios realizados en la tabla crudos/diarios
 function mostrar(event){
     debugger;
@@ -1217,6 +933,7 @@ function eliminar(event){
     $(this).attr("disabled", false);
 }
 
+// desvalidar datos
 // desvalidar datos
 function desvalidar_datos(event){
     debugger;
@@ -1496,7 +1213,7 @@ function detail_details(e, value, row){
                 element["time"] = (element['time']).replace('T',' ');
             }
 
-            var columns = get_column_detail(variable_id, data.value_columns);
+            var columns = get_columns_detail(variable_id, data.value_columns);
             $table.bootstrapTable({
                 columns:columns,
                 data: json_data,
@@ -1517,7 +1234,7 @@ function detail_details(e, value, row){
 
 //funcion para eliminar una fila de la tabla diario
 function delete_daily(e, value, row, index){
-//    debugger;
+    debugger;
     var $table = $('#table_daily');
     $table.bootstrapTable('updateRow', {
         index: index,
@@ -1535,6 +1252,7 @@ function delete_daily(e, value, row, index){
 
 //funcion para abrir el formulario de eliminar
 function open_form_delete(e, value, row, index){
+    debugger;
     var $form_modal = $('#modal_delete');
     var inputs = $("#form_delete").serializeArray();
     $.each(inputs, function(i, field){
@@ -1593,7 +1311,7 @@ function open_form_new(event){
 
 //funcion para abrir un formulario de edicion de datos crudos
 function open_form(e, value, row, index){
-//    debugger;
+    debugger;
     var variable_id = parseInt( $("#id_variable").val());
 
     if (variable_id === 1){
@@ -1644,10 +1362,11 @@ function get_columns_daily(var_id, value_columns){
         title: 'Date',
         cellStyle: style_date,
         formatter: format_value,
-        footerFormatter: footer_total_rows,
+        footerFormatter: footer_date,
         //filterControl: 'datepicker'
     };
     columns.push(date);
+
 
     var percentage = {
         field:'percentage',
@@ -1659,14 +1378,14 @@ function get_columns_daily(var_id, value_columns){
     columns.push(percentage);
 
     if (value_columns.includes("sum")){
-        var average = {
+        var sum = {
             field:'sum',
             title:'Sum',
             cellStyle: style_value,
             formatter: format_value,
-            footerFormatter: footer_average
+            footerFormatter: footer_sum
         };
-        columns.push(average);
+        columns.push(sum);
     }
 
     if (value_columns.includes("average")){
@@ -1707,7 +1426,7 @@ function get_columns_daily(var_id, value_columns){
         title:'Diff. Err',
         cellStyle: style_value_diff,
         formatter: format_value,
-        footerFormatter: footer_value_diff_cont
+        footerFormatter: footer_value_diff
     };
     columns.push(value_difference);
 
@@ -1727,14 +1446,15 @@ function get_columns_daily(var_id, value_columns){
 }
 
 //generar las columnas para la tabla de datos crudos
-function get_column_detail(var_id, value_columns){
+function get_columns_detail(var_id, value_columns){
     var columns = [];
     var span = '<span id="span_id" class="badge badge-danger">num</span>';
-    var state = {
-        field:'state',
-        checkbox:true
+
+    var is_selected = {
+        field:'is_selected',
+        checkbox:true,
     };
-    columns.push(state);
+    columns.push(is_selected);
 
     var id = {
         field:'id',
@@ -1769,7 +1489,7 @@ function get_column_detail(var_id, value_columns){
             title:'Average',
             cellStyle: style_error_detail,
 //            formatter: format_value,
-            footerFormatter: footer_detail_value_avg_max_min
+            footerFormatter: footer_average
         };
         columns.push(average);
     }
@@ -1780,7 +1500,7 @@ function get_column_detail(var_id, value_columns){
             title:'Maximum',
             cellStyle: style_error_detail,
 //            formatter: format_value,
-            footerFormatter: footer_detail_value_avg_max_min
+            footerFormatter: footer_average
         };
         columns.push(maximum);
     }
@@ -1791,70 +1511,35 @@ function get_column_detail(var_id, value_columns){
             title:'Minimum',
             cellStyle: style_error_detail,
 //            formatter: format_value,
-            footerFormatter: footer_detail_value_avg_max_min
+            footerFormatter: footer_average
         }
         columns.push(minimum);
     }
 
-
-
-//    var valor_atipico = {
-//        field:'',
-//        title:'Valores Atípicos',
-//        cellStyle: style_stddev,
-//        footerFormatter: footer_stddev
-//    };
-    var outlier = {
-        field:'',
+    var outlier_err = {
+        field:'stddev_error',
         title:'Outliers',
-        cellStyle: style_stddev,
-        footerFormatter: footer_stddev
+        cellStyle: style_stddev_err,
+        formatter: format_stddev_err,
+        footerFormatter: footer_stddev_err
     };
-    columns.push(outlier);
-
-//    var comentario = {
-//        field:'comentario',
-//        title:'Comentario'
-//    };
-//    var comment = {
-//        field:'comment',
-//        title:'Comment'
-//    };
-//    columns.push(comment);
+    columns.push(outlier_err);
 
 
-
-//    var n_valor = {
-//        field:'n_valor',
-//        title:'Variación Consecutiva',
-//        cellStyle: style_varia_error,
-//        footerFormatter: footer_variaConse
-//    };
-    var n_value = {
+    var value_difference = {
         field:'value_difference',
-        title:'Value difference',
-        cellStyle: style_value_diff_detail,
-        footerFormatter: footer_value_diff_detail
+        title:'Value diff.',
+        cellStyle: style_detail_value_diff,
+        footerFormatter: footer_detail_value_diff
     };
-    columns.push(n_value);
+    columns.push(value_difference);
 
-    var n_value_error = {
+    var value_diff_error = {
         field:'value_difference_error',
-        title:'Val diff err',
         visible: false,
     };
-    columns.push(n_value_error);
+    columns.push(value_diff_error);
 
-//    var accion = {
-//        field: 'accion',
-//        title: 'Acción',
-//        formatter: operate_table_crudo,
-//        events: {
-//           'click .delete_crudo': abrir_form_eliminar,
-//           'click .update': abrir_formulario
-//
-//        }
-//    };
     var action = {
         field: 'action',
         title: 'Action',
@@ -1931,24 +1616,20 @@ function style_error_detail(value, row, index, field){
 }
 
 //Formato para la desviación estandar
-function style_stddev(value, row, index){
+function style_stddev_err(value, row, index){
 //    debugger;
-    var _class = ''
-    if (row.stddev_error === true)
+    var _class = '';
+    if (value === true)
         _class = 'error';
-    else
-        _class = '';
     return { classes: _class}
 }
 
 
-function style_value_diff_detail(value, row, index){
+function style_detail_value_diff(value, row, index){
 //    debugger;
     var _class = ''
-    if (row.value_difference_error === true)
+    if (row.value_difference_error)
         _class = 'error';
-    else
-        _class = '';
     return { classes: _class}
 }
 
@@ -2015,7 +1696,6 @@ function style_value_diff(value, row, index){
     return { classes: _class}
 }
 
-
 function format_value(value, row, index, field){
     var span = '<span class="badge badge-light">num</span>';
     var content = value;
@@ -2036,16 +1716,15 @@ function format_value(value, row, index, field){
     return content
 }
 
-
-
-function format_punto_cardinal(value, row, index, field){
-    debugger;
-    puntos_cardinales=['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
-
-    return puntos_cardinales[parseInt(value-1)]
-
-
+function format_stddev_err(value, row, index, field){
+    if (value){
+        return "X";
+    }
+    return "-";
 }
+
+
+
 
 
 
@@ -2067,6 +1746,30 @@ function footer_id(data){
 }
 
 
+function footer_date(data){
+//    debugger;
+    var span = '<span class="badge badge-danger">num</span>';
+    var var_id = $("#id_variable").val();
+    var dates = [];
+
+    $.map(data, function(row){
+        dates.push(row.date);
+    });
+
+    var sum = dates.unique().length;
+    var num_date = data.reduce(function(num, i){
+        if (i['date_error']>0)
+            return num +1;
+        else
+            return num;
+    }, 0);
+
+    // TODO ask the team for prefferred behaviour
+    span = span.replace('num', num_date.toString());
+
+    return sum + ' of ' + indicators_daily['num_days'] + ' days ' + span;
+}
+
 
 // Obtener el promedio de los datos
 function footer_average(data){
@@ -2074,27 +1777,18 @@ function footer_average(data){
     var field = this.field;
     var field_error = '';
 
-    if ( field == "sum"
-        || field == "average"
-        || field == "value"
-        || field == "maximum"
-        || field == "minimum"
-    ){
-        field_error = field + '_error';
-    }else{
-        field_error = field + '_error';
-    }
+    field_error = field + '_error';
 
     var span = '<span class="badge badge-danger">num</span>';
     var mean = 0;
     var sum = data.reduce(function (sum, i) {
-          if (i['state'] && i[field] != null)
+          if (i['state'] && i[field] != null && i[field] != "")
             return sum + parseFloat(i[field])
         else
             return sum;
     }, 0);
     var data_count = data.reduce(function (sum, i) {
-        if (i['state'] && i[field] != null)
+        if (i['state'] && i[field] != null && i[field] != "")
             return sum + 1;
         else
             return sum;
@@ -2118,55 +1812,15 @@ function footer_average(data){
 
 
 
-function footer_detail_value_avg_max_min(data){
-    var field = this.field;
-//    var field_error = '';
-//    if ( this.field.includes("value") || this.field.includes("maximum") || this.field.includes("minimum")){
-//        field_error = this.field.split("_")[1] + '_error';
-//    }else{
-//        field_error = this.field + '_error';
-//    }
-    var field_error = this.field + '_error';
-
-    var span = '<span class="badge badge-danger">num</span>';
-
-//    var mean = 0;
-//    var sum = data.reduce(function (sum, i) {
-////        if (i['estado'] && i[field] != null)
-////           debugger;
-//          if (i['state'] && i[field] != null)
-//            return sum + parseFloat(i[field])
-//        else
-//            return sum;
-//    }, 0);
-    var data_count = data.reduce(function (sum, i) {
-        if (i['state'] && i[field] != null)
-            return sum + 1;
-        else
-            return sum;
-    }, 0);
-
-    var num_value = data.reduce (function (num, i){
-        if (i[field_error] && i['state'])
-            return num + 1;
-        else
-            return num;
-    }, 0);
-
-    span = span.replace('num', num_value);
-    return data_count + ' ' + span;
-}
-
-
 
 //obtener la suma de los datos
 function footer_sum(data){
-    debugger;
+//    debugger;
     var field = this.field;
     var field_error = this.field + '_error';
     var span = '<span class="badge badge-danger">num</span>';
     var sum = data.reduce(function (sum, i) {
-        if (i['state'] && i[field] != null){
+        if (i['state'] && i[field] != null && i[field] != "" ){
             return sum + parseFloat(i[field])
         }
         else{
@@ -2187,29 +1841,21 @@ function footer_sum(data){
 }
 
 
-function footer_total_rows(data){
+function footer_value_diff(data){
 //    debugger;
     var span = '<span class="badge badge-danger">num</span>';
-    var var_id = $("#id_variable").val();
-    var dates = [];
-
-    $.map(data, function(row){
-        dates.push(row.date);
-    });
-
-    var sum = dates.unique().length;
-    var num_date = data.reduce(function(num, i){
-        if (i['date_error']>0)
-            return num +1;
+    var num_vd= data.reduce(function(num, i){
+        if (i['value_difference_error_count'] >= 1 )
+            return num + 1;
         else
             return num;
     }, 0);
 
-    // TODO ask the team for prefferred behaviour
-    span = span.replace('num', num_date.toString());
-
-    return sum + ' of ' + indicators_daily['num_days'] + ' days ' + span;
+    span = span.replace('num',num_vd);
+    return span;
 }
+
+
 
 //total de datos
 function footer_data_count(data){
@@ -2241,7 +1887,7 @@ function footer_data_count(data){
     return sum + ' of ' + indicators_subhourly['num_data'] + '. ' + span;
 }
 // valores atípicos
-function footer_stddev(data){
+function footer_stddev_err(data){
 //    debugger;
     var span = '<span class="badge badge-danger">num</span>';
     var num_stddev = data.reduce(function(num, i){
@@ -2255,59 +1901,29 @@ function footer_stddev(data){
 
     return span;
 }
-//function footer_variaConse(data){
-//    debugger;
-//    var span = '<span class="badge badge-danger">num</span>';
-//    var num_vcr = data.reduce(function(num, i){
-//        if (i['stddev_error'] && i['estado'])
-//            return num +1;
-//        else
-//            return num;
-//    }, 0);
-//
-//    if (num_vcr > 1){
-//        num_vcr -= 1;
-//    }
-//    span = span.replace('num',num_vcr.toString());
-//
-//    return span;
-//}
-function footer_value_diff_detail(data){
+
+function footer_detail_value_diff(data){
 //    debugger;
     var span = '<span class="badge badge-danger">num</span>';
-    var num_vcr = data.reduce(function(num, i){
-        if (i['value_difference_error'] && i['state'])
-            return num +1;
-        else
-            return num;
-    }, 0);
-
-    if (num_vcr > 1){
-        num_vcr -= 1;
-    }
-    span = span.replace('num',num_vcr.toString());
-
-    return span;
-}
-
-function footer_value_diff_cont(data){
-//    debugger;
-    var span = '<span class="badge badge-danger">num</span>';
-    var num_vd= data.reduce(function(num, i){
-        if (i['value_difference_error_count'] >= 1 )
+    var num_vde = data.reduce(function(num, i){
+//        if (i['value_difference_error'] && i['is_selected'])
+        if (i['value_difference_error'])
             return num + 1;
         else
             return num;
     }, 0);
 
-    span = span.replace('num',num_vd);
+    span = span.replace('num', num_vde.toString());
+
     return span;
 }
 
 
+
+
 /* Filtro de las Tablas */
 function filtrar_diario(){
-    debugger;
+//    debugger;
     var fecha = $("#chk_fecha").val();
     var porcentaje = $("#chk_porcentaje").val();
     var numero = $("#chk_numero").val();
@@ -2340,123 +1956,129 @@ function filtrar_diario(){
 
 }
 
-function get_filtro_fecha(fecha){
-    debugger;
-    var filtro_fecha = [];
-    if (fecha == 'error')
-        filtro_fecha = ['0','2', '3'];
-    else if (fecha == 'normal')
-        filtro_fecha = ['1'];
+function get_filter_time(time){
+//    debugger;
+    var filter_time = [];
+    if (time == 'error')
+        filter_time = ['0','2', '3'];
+    else if (time == 'normal')
+        filter_time = ['1'];
     else
-        filtro_fecha = ['0','1', '2', '3'];
+        filter_time = ['0','1', '2', '3'];
 
-    return filtro_fecha
+    return filter_time
 }
 
-function get_filtro_porcentaje(porcentaje){
-    debugger;
-    var filtro_porcentaje = [];
+function get_filter_percentage(percentage){
+//    debugger;
+    var filter_percentage = [];
 
-    if (porcentaje == 'error')
-        filtro_porcentaje = [true];
-    else if (porcentaje == 'normal')
-        filtro_porcentaje = [false];
+    if (percentage == 'error')
+        filter_percentage = [true];
+    else if (percentage == 'normal')
+        filter_percentage = [false];
     else
-        filtro_porcentaje = [true, false];
+        filter_percentage = [true, false];
 
-    return filtro_porcentaje
+    return filter_percentage
 }
 
-function get_filtro_valor(numero){
-    debugger;
-    var filtro_valor = [];
+function get_filter_value(numero){
+//    debugger;
+    var filter_value = [];
 
     if (numero == 'error')
-        filtro_valor = [true];
+        filter_value = [true];
     else if (numero == 'normal')
-        filtro_valor = [false];
+        filter_value = [false];
     else
-        filtro_valor = [true, false, null];
+        filter_value = [true, false, null];
 
-    return filtro_valor
+    return filter_value
 }
 
-function get_filtro_stddev(numero){
+
+function get_filter_stddev(filter){
     debugger;
-    var filtro_valor = [];
+    var filter_value = [];
+
+    if (filter == 'error')
+        filter_value = [true];
+    else if (filter == 'normal')
+        filter_value = [false];
+    else
+        filter_value = [true, false, null];
+
+    return filter_value
+}
+
+
+function get_filter_state(numero){
+//    debugger;
+    var filter_value = [];
 
     if (numero == 'error')
-        filtro_valor = [true];
+        filter_value = [false];
     else if (numero == 'normal')
-        filtro_valor = [false];
+        filter_value = [true];
     else
-        filtro_valor = [true, false, null];
+        filter_value = [true, false];
 
-    return filtro_valor
+    return filter_value
 }
 
-function get_filtro_estado(numero){
-    debugger;
-    var filtro_valor = [];
 
-    if (numero == 'error')
-        filtro_valor = [false];
-    else if (numero == 'normal')
-        filtro_valor = [true];
+function get_filter_selected(option){
+//    debugger;
+    var filter_value = [];
+
+    if (option == 'selected')
+        filter_value = [true];
+    else if (option == 'non-selected')
+        filter_value = [false];
     else
-        filtro_valor = [true, false];
+        filter_value = [true, false];
 
-    return filtro_valor
+    return filter_value
 }
-function get_filtro_var_con(numero){
-    debugger;
-    console.log("Valorfiltro con ", numero);
-    var filtro_valor = [];
 
-    if (numero == 'error')
-        filtro_valor = [true];
-    else if (numero == 'normal')
-        filtro_valor = [false];
+
+function get_filter_value_difference(option){
+//    debugger;
+
+    var filter = [];
+
+    if (option == 'error')
+        filter = [true];
+    else if (option == 'normal')
+        filter = [false];
     else
-        filtro_valor = [true, false, null];
+        filter = [true, false, null];
 
-    return filtro_valor
+    return filter
 }
-function filtrar_crudo(){
-    debugger;
 
-    var fecha = $("#chk_fecha_crudo").val();
-    var valor = $("#chk_valor_crudo").val();
-    var stddev = $("#chk_stddev").val();
-    var fila = $("#chk_fila").val();
-    var varconfil = $("#chk_varcon").val();
+function filter_detail_table(){
+//    debugger;
 
-    var filtro_fecha = get_filtro_fecha(fecha);
-    var filtro_valor = get_filtro_valor(valor);
-    var filtro_stddev = get_filtro_stddev(stddev);
-    var filtro_fila = get_filtro_estado(fila);
-    var filtro_varcon = get_filtro_var_con(varconfil);
-    var variable_id = $("#id_variable").val();
+    var time = $("#chk_detail_time").val();
+    var value = $("#chk_detail_value").val();
+    var stddev = $("#chk_detail_stddev").val();
+    var selected = $("#chk_detail_selected").val();
+    var value_difference = $("#chk_detail_value_difference").val();
 
-//    if (variable_id == 10 || variable_id == 11){
-//        $("#table_crudo").bootstrapTable('filterBy', {
-//            fecha_error: filtro_fecha,
-//            nivel_error: filtro_valor,
-//            stddev_error: filtro_stddev,
-//            estado:filtro_fila
-//        });
-//    }
-//    else{
+    var filter_time = get_filter_time(time);
+    var filter_value = get_filter_value(value);
+    var filter_stddev = get_filter_stddev(stddev);
+    var filter_selected = get_filter_selected(selected);
+    var filter_value_difference = get_filter_value_difference(value_difference);
 
-        $("#table_detail").bootstrapTable('filterBy', {
-//            fecha_error: filtro_fecha,
-//            valor_error: filtro_valor,
-//            stddev_error: filtro_stddev,
-            value_difference_error: filtro_varcon,
-//            estado:filtro_fila
-        });
-
-//    }
+    $("#table_detail").bootstrapTable('filterBy',
+    {
+        stddev_error: filter_stddev,
+        is_selected: filter_selected,
+        value_difference_error: filter_value_difference,
+    });
 }
 
 
@@ -2466,16 +2088,12 @@ function clean_filters(type){
         $("#chk_detail_time").prop('selectedIndex',0);
         $("#chk_detail_value").prop('selectedIndex',0);
         $("#chk_detail_stddev").prop('selectedIndex',0);
-        $("#chk_detail_row").prop('selectedIndex',0);
+        $("#chk_detail_selected").prop('selectedIndex',0);
         $("#chk_detail_value_difference").prop('selectedIndex',0);
         $("#txt_detail_selection").val('');
-
     }
     else{
-//        $("#chk_fecha").prop('selectedIndex',0);
-//        $("#chk_porcentaje").prop('selectedIndex',0);
-//        $("#chk_numero").prop('selectedIndex',0);
-//        $("#txt_selection").val('');
+        // for daily filters
     }
 }
 
@@ -2493,86 +2111,86 @@ function get_value_error(value){
 }
 
 
-function enable_new(){
-    var variable_id = $("#id_variable").val();
+//function enable_new(){
+//    var variable_id = $("#id_variable").val();
+//
+//    if ( variable_id != "11" || variable_id == "4" || variable_id == "5" )
+//        $("#btn_detail_new").attr("disabled", false);
+//    else
+//        $("#btn_detail_new").attr("disabled", true);
+//}
 
-    if ( variable_id != "11" || variable_id == "4" || variable_id == "5" )
-        $("#btn_detail_new").attr("disabled", false);
-    else
-        $("#btn_detail_new").attr("disabled", true);
-}
-
-function activar_espera(type){
-//    debugger;
-    var type = type || ''
-    if (type !== '') {
-        var $div_data = $('#div_'+type);
-        var $div_loading = $('#div_loading_'+type);
-        var $div_message = $('#div_message_'+type)
-    }
-    else{
-        var $div_data = $('#div_information');
-        var $div_loading = $('#div_loading');
-        var $div_message = $('#div_error')
-
-    }
-    $div_loading.show();
-    $div_data.hide();
-    $div_message.hide();
-    $("#div_information").hide();
-}   
+//function activar_espera(type){
+////    debugger;
+//    var type = type || ''
+//    if (type !== '') {
+//        var $div_data = $('#div_'+type);
+//        var $div_loading = $('#div_loading_'+type);
+//        var $div_message = $('#div_message_'+type)
+//    }
+//    else{
+//        var $div_data = $('#div_information');
+//        var $div_loading = $('#div_loading');
+//        var $div_message = $('#div_error')
+//
+//    }
+//    $div_loading.show();
+//    $div_data.hide();
+//    $div_message.hide();
+//    $("#div_information").hide();
+//}
 
 //función para quitar duplicados
 Array.prototype.unique=function(a){
   return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
 });
 
+//
+//function show_message(type){
+////    debugger;
+//    /*var message = '<div class="alert alert-danger alert-dismissible" role="alert">';
+//    message += 'Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente';
+//    message += '</div>'*/
+//
+//    var type = type || ''
+//    if (type !== ''){
+//        var $div_data = $('#div_'+type);
+//        var $div_loading = $('#div_loading_'+type);
+//        var $div_message = $('#div_message_'+type)
+//    }
+//    else{
+//        var $div_data = $('#div_information');
+//        var $div_loading = $('#div_loading');
+//        var $div_message = $('#div_error');
+//
+//    }
+//
+//    $div_loading.hide();
+//    $div_data.hide();
+//    //$div_message.html(message);
+//    $div_message.show();
+//
+//}
 
-function show_message(type){
-//    debugger;
-    /*var message = '<div class="alert alert-danger alert-dismissible" role="alert">';
-    message += 'Ocurrio un problema con el procesamiento de la información, por favor intentelo nuevamente';
-    message += '</div>'*/
-
-    var type = type || ''
-    if (type !== ''){
-        var $div_data = $('#div_'+type);
-        var $div_loading = $('#div_loading_'+type);
-        var $div_message = $('#div_message_'+type)
-    }
-    else{
-        var $div_data = $('#div_information');
-        var $div_loading = $('#div_loading');
-        var $div_message = $('#div_error');
-
-    }
-
-    $div_loading.hide();
-    $div_data.hide();
-    //$div_message.html(message);
-    $div_message.show();
-
-}
-
-function desactivar_espera(type){
-//    debugger;
-    var type = type || ''
-    if (type !== '') {
-        var $div_data = $('#div_'+type);
-        var $div_loading = $('#div_loading_'+type);
-        var $div_message = $('#div_message_'+type);
-        var $resize_plot = $('#resize_plot'+type);
-    }
-    else{
-        var $div_data = $('#div_information');
-        var $div_loading = $('#div_loading');
-        var $div_message = $('#div_error');
-        var $resize_plot = $('#resize_plot');
-
-    }
-    $div_loading.hide();
-    $div_data.show();
-    $div_message.hide();
-    $resize_plot.show();
-    $("#div_information").show();
-}
+//function desactivar_espera(type){
+////    debugger;
+//    var type = type || ''
+//    if (type !== '') {
+//        var $div_data = $('#div_'+type);
+//        var $div_loading = $('#div_loading_'+type);
+//        var $div_message = $('#div_message_'+type);
+//        var $resize_plot = $('#resize_plot'+type);
+//    }
+//    else{
+//        var $div_data = $('#div_information');
+//        var $div_loading = $('#div_loading');
+//        var $div_message = $('#div_error');
+//        var $resize_plot = $('#resize_plot');
+//
+//    }
+//    $div_loading.hide();
+//    $div_data.show();
+//    $div_message.hide();
+//    $resize_plot.show();
+//    $("#div_information").show();
+//}

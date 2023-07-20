@@ -1,6 +1,14 @@
 <div class=" row my-3">
     <div class="col-lg-2 col-md-2 col-sm-6">
+        <b>Selected filter</b>
+        <select id="chk_detail_selected" name="detail" type="text" class="form-control mr-2">
+            <option value="all">All</option>
+            <option value="selected">Selected</option>
+            <option value="non-selected">Non selected</option>
 
+        </select>
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-6">
         <b>Time filter</b>
         <select id="chk_detail_time" name="detail" type="text" class="form-control mr-2">
             <option value="all">All</option>
@@ -27,21 +35,11 @@
         </select>
     </div>
     <div class="col-lg-2 col-md-2 col-sm-6">
-        <b>State filter</b>
-        <select id="chk_detail_row" name="detail" type="text" class="form-control mr-2">
-            <option value="all">All</option>
-            <option value="normal">Active</option>
-            <option value="error">Inactive</option>
-
-        </select>
-    </div>
-    <div class="col-lg-2 col-md-2 col-sm-6">
         <b>Value diff. filter</b>
         <select id="chk_detail_value_difference" name="detail" type="text" class="form-control mr-2">
             <option value="all">All</option>
             <option value="normal">Normal</option>
             <option value="error">Error</option>
-
         </select>
     </div>
 
@@ -49,22 +47,18 @@
 
 
 <div id="toolbar_detail" class="filter row no-gutters">
-    <div class="col-lg-3 col-md-3 col-sm-12">
+    <div class="col-lg-3 col-md-3 col-sm-3">
         <input id="txt_detail_selection" type="text" class="form-control" placeholder="1,5,7 or 1-10">
-
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-12">
+    <div class="col-lg-5 col-md-5 col-sm-5">
         <div class="btn-group ml-lg-2 ml-md-2">
-                <button id="btn_detail_select" name="detail" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="Select rows">Select rows</button>
-                <button id="btn_detail_unselect" name="detail" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="Unselect rows">Unselect rows</button>
-            </div>
-
+            <button id="btn_detail_select" name="detail" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="Select rows">Select rows</button>
+            <button id="btn_detail_unselect" name="detail" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="Unselect rows">Unselect rows</button>
+        </div>
     </div>
-
-    <div class="col-lg-6 col-md-6 col-sm-12">
+    <div class="col-lg-4 col-md-4 col-sm-4">
         <div class="btn-group">
             <button id="btn_detail_new" name="detail" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="New row">New</button>
-            <button id="btn_detail_plot" name="detail" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Plot data">Plot</button>
             <button id="btn_detail_delete" name="detail" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="Delete rows">Delete</button>
             <button id="btn_detail_undo" name="detail" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="Undo changes">Undo</button>
             <button id="btn_detail_save" name="detail" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Save changes">Save</button>
@@ -74,8 +68,9 @@
 
 
 <table id="table_detail"
+       data-maintain-meta-data="true"
         data-toggle="table"
-        data-height="458"
+        data-height="380"
         data-show-footer="true"
         data-unique-id="id"
         data-show-columns="true"
