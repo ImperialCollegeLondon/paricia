@@ -6,7 +6,6 @@
 {% block extralibraries %}
 <link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<!--<link rel="stylesheet" href="{% static 'ext/jquery-ui-1.12.1/jquery-ui.css' %}">-->
 
 <script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
 <script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
@@ -14,21 +13,10 @@
 
 <script crossorigin="anonymous" src="{% static 'ext/plotly-latest.min.js' %}"></script>
 
-<link rel="stylesheet" href="{% static 'styles/style.css' %}">
+<!--<link rel="stylesheet" href="{% static 'styles/style.css' %}">-->
+<link rel="stylesheet" href="{% static 'validated/style.css' %}">
 <script src="{% static 'scripts/global.js' %}"></script>
 <script src="{% static 'validated/data_report.js' %}"></script>
-
-<style type="text/css">
-  .right-panel {
-    height: calc(100vh - 150px);
-    #overflow: auto;
-    overflow: hidden;
-  }
-
-  .report-body {
-    overflow-y: hidden;
-  }
-</style>
 
 {% endblock %}
 

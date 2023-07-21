@@ -15,6 +15,10 @@ threads_report_calculation = []
 
 
 def set_time_limits(start_time, end_time):
+    """
+    Completes the hour in start_date and end_date in order to have a whole day from the first hour (00:00:00) to
+        the last hour of the day (23:59:59)
+    """
     if isinstance(start_time, date):
         start_time = datetime.combine(start_time, time(0, 0, 0, 0))
     elif isinstance(start_time, str):
@@ -28,8 +32,12 @@ def set_time_limits(start_time, end_time):
 
 
 def daily_validation(station, variable, start_time, end_time, minimum, maximum):
-    # num_date = None
-    # num_percentage = None
+    """
+    Returns a daily report and time series for Validation interface.
+    It builds the dictionary response for main Validation interface:
+    It contains:
+        daily report, indicators, time series for plot, variable and station information
+    """
     num_value = None
     num_maximum = None
     num_minimum = None
@@ -115,8 +123,11 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
     return data
 
 
-# Basic calculations is the main functions for calculations
 def basic_calculations(station, variable, start_time, end_time, minimum, maximum):
+    """
+    Returns sub-hourly table with some calculations
+    It is used in main report for Validation interface and it is also called for "save_to_validated" function/request
+    """
     try:
         tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
     except:
@@ -152,7 +163,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     # validated['time'] = validated['time'].values.astype('<M8[m]')
     # validated['time_truncated2'] = pd.to_datetime(validated['time']).dt.date
     # validated['time_truncated3'] = validated['time'].dt.floor('min')
-    # TODO for testing: time_truncated
     validated["time_truncated"] = validated["time"].values.astype("<M8[m]")
 
     measurement = (
@@ -222,8 +232,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
             (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
         )
 
-    # Selected: Data that will be used to fill 'Validated' tables
-    # TODO check if 'is_selected' is used in later
     selected = joined.drop_duplicates("time_truncated", keep="first")
     selected.reset_index(drop=True, inplace=True)
     selected["is_selected"] = True
@@ -272,12 +280,6 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
         True,
         False,
     )
-    # joined = joined.merge(
-    #     selected[["time_truncated", "time_lapse", "time_lapse_status", "lagged_value"]],
-    #     on="time_truncated",
-    #     how="left",
-    #     indicator=False,
-    # )
 
     if "sum" in value_fields:
         measurement.rename(columns={"value": "sum"}, inplace=True)
@@ -309,8 +311,11 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     return measurement, validated, selected_full, selected, tx_period, value_fields
 
 
-# def calculo_reporte_diario(station, variable, start_time, end_time, maximum, minimum):
 def daily_report(station, variable, start_time, end_time, minimum, maximum):
+    """
+    Calculate daily report that will be send to main Validation interface
+    It's built from basic_calculations function
+    """
     start_time, end_time = set_time_limits(start_time, end_time)
     (
         measurement,
@@ -371,8 +376,6 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
             daily_group["suspicious_minimum"].sum().to_numpy()
         )
 
-    # TODO check this for PARAMH2O (tabla_varia_erro)
-    # REF. NAME: tabla_varia_erro
     # Calculating consecutive differences and check for errors.
     # 'time_lapse_status' set to:
     #                               0 if 'time_lapse' < 'period'
@@ -380,12 +383,10 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     #                               2 if 'time_lapse' > 'period'
     #
 
-    # value_difference_error = daily_group_all["value_difference_error"].sum(numeric_only=False).to_numpy()
     daily["value_difference_error_count"] = (
         daily_group_all["value_difference_error"].sum(numeric_only=False).to_numpy()
     )
 
-    # # REF. NAME: lapsos_dias
     # # Generate a sequence of days following in the calendar to compare with data in database and note voids
     # # TODO Analizar que esto pudiera ser incluído en la primera generación de daily
     # calendar_day_seq = pd.DataFrame(
@@ -428,7 +429,6 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     # TODO hacer un groupby de repeated_values_count por día, para pasar el valor total de repetidos por día
     #      posiblemente convenga hacer un solo cálculo arriba
 
-    # # count_of_repeated
     repeated_in_validated = validated.groupby(["time_truncated"])[
         "time_truncated"
     ].count()
@@ -503,11 +503,17 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
         )
         historic_diary_group = historic_diary.groupby(["month-day"])
         if "sum" in value_fields:
-            daily["historic_diary_avg"] = historic_diary_group["sum"].mean().to_numpy()
+            historic_field = "sum"
         elif "average" in value_fields:
+            historic_field = "average"
+        else:
+            historic_field = "value"
+        try:
             daily["historic_diary_avg"] = (
-                historic_diary_group["average"].mean().to_numpy()
+                historic_diary_group[historic_field].mean().to_numpy()
             )
+        except:
+            daily["historic_diary_avg"] = np.nan
     else:
         daily["historic_diary_avg"] = np.nan
 
@@ -594,6 +600,10 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
 
 
 def detail_list(station_id, variable_id, date, minimum, maximum):
+    """
+    Return the datailed information of a day.
+    It is requested when a user wants to see the detailed info of an especific day from the Validation interface
+    """
     start_time = datetime.strptime(date, "%Y-%m-%d")
     end_time = datetime.combine(start_time.date(), time(23, 59, 59, 999999))
     station = Station.objects.get(station_id=station_id)
@@ -670,13 +680,6 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
 
     # Only take into account 'value_error' when there's no error in timestamp lapse
     _selected_NO_TIMELAPSE_ERROR = _selected[_selected["time_lapse_status"] == 1]
-    # num_valor = len(
-    #     _selected_NO_TIMELAPSE_ERROR[
-    #         _selected_NO_TIMELAPSE_ERROR["value_error"] == True
-    #     ].index
-    # )
-    # num_maximo = len(_selected[_selected["maximum_error"] == True].index)
-    # num_minimo = len(_selected[_selected["minimum_error"] == True].index)
 
     indicators = {}
     if "sum" in value_fields:
@@ -709,7 +712,7 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
 
     num_stddev = len(_selected[_selected["stddev_error"] == True].index)
 
-    # TODO check if this es expected number of data
+    # TODO check if this is expected number of data
     num_data = int(24 * (60 / tx_period))
 
     indicators = {
@@ -731,6 +734,10 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
 
 
 def get_conditions(changes_list):
+    """
+    Processes instructions about which days are going to be NULL (remove). The instructions comes from Validation user interface
+    It's called by "save_to_validated" function
+    """
     dates_condition = []
     dates_delete = []
     for row in changes_list:
@@ -750,8 +757,10 @@ def get_conditions(changes_list):
     return conditions
 
 
-# Pasar los datos crudos a validados
 def save_to_validated(changes_list, variable, station, conditions, minimum, maximum):
+    """
+    Processes the request from the user for saving data to "validated" tables.
+    """
     Measurement = apps.get_model(
         app_label="measurement", model_name=variable.variable_code
     )
@@ -799,7 +808,50 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
     return True
 
 
+def save_detail_to_validated(data_list, variable, station):
+    """
+    Processes the request from the user to save "Detail of selected day" data.
+    """
+    start_time = data_list[0]["time"]
+    end_time = data_list[-1]["time"]
+
+    Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    Validated.timescale.filter(
+        time__range=[start_time, end_time],
+        station_id=station.station_id,
+    ).delete()
+
+    columns = [c.name for c in Validated._meta.fields]
+    allowed_fields = ("sum", "average", "minimum", "maximum", "value")
+    value_columns = [c for c in columns if c in allowed_fields]
+    model_instances = []
+    for row in data_list:
+        record = {
+            "time": row["time"],
+            "station_id": station.station_id,
+            "used_for_hourly": False,
+        }
+        if not row["is_selected"]:
+            for c in value_columns:
+                record[c] = None
+        else:
+            for c in value_columns:
+                record[c] = row[c]
+        model_instances.append(Validated(**record))
+
+    # TODO Could send 'bulk_create' activity to a thread
+    insert_result = Validated.objects.bulk_create(model_instances)
+    result = False
+    if len(insert_result) == len(model_instances):
+        result = True
+    return result
+
+
 def data_report(temporality, station, variable, start_time, end_time):
+    """
+    Returns the data for plotting or downloading CSV
+    Menu: Data -> Data report
+    """
     start_time, end_time = set_time_limits(start_time, end_time)
     if temporality not in ["measurement", "validated", "hourly", "daily", "monthly"]:
         return None
@@ -822,6 +874,10 @@ def data_report(temporality, station, variable, start_time, end_time):
 
 
 def dict_data_report(temporality, station, variable, start_time, end_time):
+    """
+    Prepares info and data for plotting
+    Menu: Data -> Data report
+    """
     df = data_report(temporality, station, variable, start_time, end_time)
     response = {
         "station": {
@@ -843,12 +899,20 @@ def dict_data_report(temporality, station, variable, start_time, end_time):
 
 
 def csv_data_report(temporality, station, variable, start_time, end_time):
+    """
+    Format data for dowloading
+    Menu: Data -> Data report
+    """
     df = data_report(temporality, station, variable, start_time, end_time)
     csv_response = df.to_csv(index=False)
     return csv_response
 
 
 def calculate_reports(variable):
+    """
+    Launch hourly, daily, monthly calculations for a given variable
+    It's called by the main thread.
+    """
     global threads_report_calculation
     threads_report_calculation.append(variable.variable_id)
     calculate_hourly(variable)
@@ -858,6 +922,9 @@ def calculate_reports(variable):
 
 
 def thread_launch_report_calculations():
+    """
+    Thread that launch report calculations for every variable
+    """
     global threads_report_calculation
     variables = Variable.objects.all()
     for variable in variables:
@@ -873,6 +940,9 @@ def thread_launch_report_calculations():
 
 
 def launch_report_calculations():
+    """
+    Triggers Report calculations (hourly, daily, monthly) using thread in backgroud
+    """
     global threads_report_calculation
     if len(threads_report_calculation) > 0:
         return
@@ -881,6 +951,10 @@ def launch_report_calculations():
 
 
 def calculate_hourly(variable):
+    """
+    Calculate hourly data from validated data for a specific variable
+    It iterates for every validated record that has "used_for_hourly = False"
+    """
     Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
     Hourly = apps.get_model(app_label="hourly", model_name=variable.variable_code)
     register_exists = True
@@ -954,6 +1028,10 @@ def calculate_hourly(variable):
 
 
 def calculate_daily(variable):
+    """
+    Calculate daily data from hourly data for an especific variable
+    It iterates for every hourly record that has "used_for_daily = False"
+    """
     Hourly = apps.get_model(app_label="hourly", model_name=variable.variable_code)
     Daily = apps.get_model(app_label="daily", model_name=variable.variable_code)
     register_exists = True
@@ -1011,6 +1089,10 @@ def calculate_daily(variable):
 
 
 def calculate_monthly(variable):
+    """
+    Calculate monthly data from daily data for an especific variable
+    It iterates for every daily row that has "used_for_monthly = False"
+    """
     Daily = apps.get_model(app_label="daily", model_name=variable.variable_code)
     Monthly = apps.get_model(app_label="monthly", model_name=variable.variable_code)
     register_exists = True

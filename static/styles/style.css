@@ -65,8 +65,16 @@ margin-bottom:0
 .div-show{
     display:block !important;
 }
+/*
 .normal {background-color: #BFFFBF  !important;}
 .error {background-color: #FFBFBF   !important;}
+.warning {background-color: #FFFFBF  !important;}
+rgba(255, 255, 0, 0.5);
+*/
+.normal {background-color: rgba(0, 255, 0, 0.2) !important;}
+.error {background-color: rgba(255, 0, 0, 0.2) !important;}
+.warning {background-color: rgba(255, 255, 0, 0.2)  !important;}
+
 .sospechoso {background-color: #FFFFBF  !important;}
 .validado {background-color: #cce5ff    !important;}
 .no-seleccionado {background-color: #7F7F7F !important;}

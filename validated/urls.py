@@ -18,10 +18,8 @@ from . import views
 
 app_name = "validated"
 urlpatterns = [
-    # path("polarwind/", views.PolarWindList.as_view()),
     # TODO Verify if it's not really needed
-    # path("dischargecurve/", views.DischargeCurveList.as_view()),
-    # path("levelfunction/", views.LevelFunctionList.as_view()),
+    # path("polarwind/", views.PolarWindList.as_view()),
     path("precipitation/", views.PrecipitationList.as_view()),
     path("airtemperature/", views.AirTemperatureList.as_view()),
     path("humidity/", views.HumidityList.as_view()),
@@ -55,9 +53,6 @@ urlpatterns = [
         views.PercentageOxygenConcentrationDepthList.as_view(),
     ),
     path("phycocyanin_depth/", views.PhycocyaninDepthList.as_view()),
-    ################
-    # # path('validacion_v2/periodos_validacion/', views.PeriodosValidacion.as_view(), name='v2_periodos_validacion'),
-    # # path('validacion_v2/borrar/', views.ValidacionBorrar.as_view(), name='v2_borrar'),
     path("daily_validation/", views.DailyValidation.as_view(), name="daily_validation"),
     path("daily_save/", views.daily_save, name="daily_save"),
     path(
@@ -66,14 +61,6 @@ urlpatterns = [
         name="detail_list",
     ),
     path("detail_save/", views.detail_save, name="detail_save"),
-    # path("guardarcrudos/", views.guardar_crudos, name="guardar_crudos"),
-    # path('val2/diaria/', views.ValidationReport.as_view(), name='diaria'),
-    # path('val2/lista/<int:estacion>/<int:variable>/<str:fecha>/<str:maximo>/<str:minimo>/',
-    #      views.ListaValidacion.as_view(),
-    #      name='horario'),
-    # # path('validacion_v2/eliminarvalidados/', views.eliminar_validados, name='v2_eliminar_validados'),
-    #
-    # # path('validacion_v2/', views.ValidacionList.as_view(), name='validacion_v2_index'),
     path("data_report/", views.DataReport.as_view(), name="data_report"),
     path(
         "launch_report_calculations/",

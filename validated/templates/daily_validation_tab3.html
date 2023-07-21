@@ -1,3 +1,4 @@
+<input type="hidden" id="orig_detail_date">
 <div class=" row my-3">
     <div class="col-lg-2 col-md-2 col-sm-6">
         <b>Selected filter</b>
@@ -12,8 +13,8 @@
         <b>Time filter</b>
         <select id="chk_detail_time" name="detail" type="text" class="form-control mr-2">
             <option value="all">All</option>
-            <option value="normal">Normal</option>
-            <option value="error">Error</option>
+            <option value="shorter_than_tx_period">&lt; Tx Period</option>
+            <option value="greater_than_tx_period">&gt; Tx Period</option>
         </select>
     </div>
     <div class="col-lg-2 col-md-2 col-sm-6">
@@ -56,12 +57,14 @@
             <button id="btn_detail_unselect" name="detail" class="btn btn-warning btn-xs" data-toggle="tooltip" data-placement="top" title="Unselect rows">Unselect rows</button>
         </div>
     </div>
-    <div class="col-lg-4 col-md-4 col-sm-4">
+    <div class="col-lg-2 col-md-2 col-sm-2">
         <div class="btn-group">
             <button id="btn_detail_new" name="detail" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="New row">New</button>
-            <button id="btn_detail_delete" name="detail" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="Delete rows">Delete</button>
-            <button id="btn_detail_undo" name="detail" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="Undo changes">Undo</button>
-            <button id="btn_detail_save" name="detail" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Save changes">Save</button>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-2">
+        <div class="btn-group">
+            <button id="btn_detail_save" name="detail" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Save changes">Save day to Validated</button>
         </div>
     </div>
 </div>
