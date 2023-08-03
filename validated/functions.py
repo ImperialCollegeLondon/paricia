@@ -15,10 +15,13 @@ threads_report_calculation = []
 
 
 @overload
-def set_time_limits(start_time: str, end_time: str) -> Tuple[str, str]: ...
+def set_time_limits(start_time: str, end_time: str) -> Tuple[str, str]:
+    ...
 
 
-def set_time_limits(start_time: datetime, end_time: datetime) -> Tuple[datetime, datetime]:
+def set_time_limits(
+    start_time: datetime, end_time: datetime
+) -> Tuple[datetime, datetime]:
     """Complete the datetime objects to cover a whole day.
 
     Completes the hour in start_date and end_date in order to have a whole day from the
@@ -136,22 +139,29 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
     return data
 
 
-def basic_calculations(station, variable, start_time, end_time, minimum, maximum):
+def validated_to_df(
+    station: Station,
+    variable: Variable,
+    start_time: datetime,
+    end_time: datetime,
+) -> pd.DataFrame:
+    """Extracts validated data of a variable within date range into a dataframe.
+
+    Also annotates the objects to indicate that they have been validated.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+
+    Returns:
+        A pandas Dataframe with the requested data.
     """
-    Returns sub-hourly table with some calculations
-    It is used in main report for Validation interface and it is also called for "save_to_validated" function/request
-    """
-    try:
-        tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
-    except:
-        return False
-    Measurement = apps.get_model(
-        app_label="measurement", model_name=variable.variable_code
-    )
-    Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
 
     validated = (
-        Validated.objects.filter(
+        validated.objects.filter(
             station_id=station.station_id, time__gte=start_time, time__lte=end_time
         )
         .annotate(
@@ -172,14 +182,37 @@ def basic_calculations(station, variable, start_time, end_time, minimum, maximum
     if validated.empty:
         validated = pd.DataFrame(columns=fields)
 
+    return validated
+
+
+def basic_calculations(
+    station: Station,
+    variable: Variable,
+    start_time: Union[datetime, str],
+    end_time: Union[datetime, str],
+    minimum: float,
+    maximum: float,
+):
+    """
+    Returns sub-hourly table with some calculations
+    It is used in main report for Validation interface and it is also called for "save_to_validated" function/request
+    """
+    tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
+
+    validated = validated_to_df(station, variable, start_time, end_time)
+
     # TODO WHich one is faster?
     # validated['time'] = validated['time'].values.astype('<M8[m]')
     # validated['time_truncated2'] = pd.to_datetime(validated['time']).dt.date
     # validated['time_truncated3'] = validated['time'].dt.floor('min')
     validated["time_truncated"] = validated["time"].values.astype("<M8[m]")
 
+    measurement = apps.get_model(
+        app_label="measurement", model_name=variable.variable_code
+    )
+
     measurement = (
-        Measurement.objects.filter(
+        measurement.objects.filter(
             station_id=station.station_id, time__gte=start_time, time__lte=end_time
         )
         .annotate(
