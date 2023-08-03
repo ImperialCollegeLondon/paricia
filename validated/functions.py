@@ -1,6 +1,7 @@
 import calendar
 from datetime import date, datetime, time
 from threading import Thread
+from typing import Tuple, Union, overload
 
 import numpy as np
 import pandas as pd
@@ -13,10 +14,22 @@ from variable.models import Variable
 threads_report_calculation = []
 
 
-def set_time_limits(start_time, end_time):
-    """
-    Completes the hour in start_date and end_date in order to have a whole day from the first hour (00:00:00) to
-        the last hour of the day (23:59:59)
+@overload
+def set_time_limits(start_time: str, end_time: str) -> Tuple[str, str]: ...
+
+
+def set_time_limits(start_time: datetime, end_time: datetime) -> Tuple[datetime, datetime]:
+    """Complete the datetime objects to cover a whole day.
+
+    Completes the hour in start_date and end_date in order to have a whole day from the
+    first hour (00:00:00) to the last hour of the day (23:59:59)
+
+    Args:
+        start_time: The start date, where the time will be set as 00:00:00
+        end_time: The end date, where the time will be set as 00:00:00
+
+    Returns:
+        A tuple with the same objects updated
     """
     if isinstance(start_time, date):
         start_time = datetime.combine(start_time, time(0, 0, 0, 0))
@@ -27,6 +40,7 @@ def set_time_limits(start_time, end_time):
         end_time = datetime.combine(end_time, time(23, 59, 59, 999999))
     elif isinstance(end_time, str):
         end_time = end_time + " 23:59:59"
+
     return start_time, end_time
 
 
