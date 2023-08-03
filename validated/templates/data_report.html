@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+{% load static %}
+
+{% block extralibraries %}
+<link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
+<script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
+
+
+<script crossorigin="anonymous" src="{% static 'ext/plotly-latest.min.js' %}"></script>
+
+<!--<link rel="stylesheet" href="{% static 'styles/style.css' %}">-->
+<link rel="stylesheet" href="{% static 'validated/style.css' %}">
+<script src="{% static 'scripts/global.js' %}"></script>
+<script src="{% static 'validated/data_report.js' %}"></script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div style="height: 70px;"></div>
+    <div class="row report-body" >
+        <div class="col-md-2">
+            <label>Data report</label>
+        </div>
+        <div class="col-md-6">
+            <a id="btn_clean" class="btn btn-light" href="{% url 'validated:data_report' %}"><span>Clean form</span></a>
+        </div>
+    </div>
+
+<div style="height: 20px;"></div>
+
+<div class="row">
+    <div class="col-md-3 left-panel">
+        <form id="form_data" class="form" method="post" action="{% url 'validated:data_report' %}">
+            {% csrf_token %}
+            {% bootstrap_form form show_label=True  %}
+            <button id="btn_submit" type="button" class="btn btn-primary">Plot</button>
+            <a id="btn_export" class="btn btn-success">Export CSV</a>
+        </form>
+    </div>
+
+    <div class="col-md-9 right-panel ">
+
+
+        <div id="div_information" style="overflow-x: scroll;"  class="col-lg-12 col-md-12 col-sm-12 nopadding">
+        </div>
+
+        <div id="div_message" class="filter row" style="display:none;">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                A problem occurred with the processing of the information, please try again.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import (
     Basin,
     Country,
+    DeltaT,
     Ecosystem,
     Institution,
     Place,
@@ -64,4 +65,10 @@ class PlaceBasinSerializer(serializers.ModelSerializer):
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
+        exclude = []
+
+
+class DeltaTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeltaT
         exclude = []

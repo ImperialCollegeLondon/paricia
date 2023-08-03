@@ -55,6 +55,7 @@ urlpatterns = [
     path("measurement/", include("measurement.urls", namespace="measurement")),
     path("importing/", include("importing.urls", namespace="importing")),
     path("management/", include("management.urls", namespace="management")),
+    path("validated/", include("validated.urls", namespace="validated")),
     re_path(
         r"^swagger(?P<format>\.json|\.yaml)$",
         schema_view.without_ui(cache_timeout=0),

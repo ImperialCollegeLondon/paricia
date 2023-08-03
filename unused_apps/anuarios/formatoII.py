@@ -20,7 +20,6 @@ from home.functions import dictfetchall
 
 
 def get_precipitacion(estacion, variable, periodo, tipo):
-
     if tipo == "validado":
         tabla = "validacion_var" + str(variable) + "validado"
     else:

@@ -14,6 +14,7 @@ If installing this system from scratch:
 - If you want to load initial data (variables, units, stations...):
   - In a separate terminal run `docker exec -it <name_of_docker_container> bash` e.g. `docker exec -it paricia_web_1 bash` to start a bash session in the container. You can find the name of the container in the Docker Desktop GUI, or by running `docker container ls`.
   - Run `python manage.py shell < utilities/load_initial_data.py`.
+  - Create **admin** user running `python manage.py createsuperuser`.
 
 ## Database Schema
 
@@ -90,3 +91,4 @@ The tests are run with `python manage.py test` from inside the docker container.
 
 Pre-commit hooks are set up to run code quality checks (isort and black) before committing. To run these locally, you will need to `pip install pre-commit` then `pre-commit install`.
 Github workflows are set up to run the pre-commit actions and the tests automatically on every push action.
+Run before commit: `pre-commit run --all-files`

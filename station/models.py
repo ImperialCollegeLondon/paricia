@@ -274,3 +274,27 @@ class Station(models.Model):
 
     class Meta:
         ordering = ("station_id",)
+
+
+# TODO Discuss if it's really necessary to implement multiple deltaTs for different dates
+class DeltaT(models.Model):
+    """
+    Delta T: Interval of data adquisition (In minutes)
+    """
+
+    id = models.AutoField("Id", primary_key=True)
+    station = models.ForeignKey(
+        Station,
+        on_delete=models.CASCADE,
+        verbose_name="Station",
+    )
+    delta_t = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return str(self.station.station_code + " - " + str(self.delta_t))
+
+    def get_absolute_url(self):
+        return reverse("station:delta_t_detail", kwargs={"pk": self.pk})
+
+    class Meta:
+        ordering = ("id",)

@@ -252,7 +252,6 @@ def comparar_variable(form):
 
 
 def trace_graph(variable, estacion, tiempo, valor):
-
     if variable.var_id == 1:
         trace = go.Bar(
             x=tiempo,
