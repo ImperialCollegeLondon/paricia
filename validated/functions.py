@@ -1,12 +1,11 @@
 import calendar
-import decimal as dec
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time
 from threading import Thread
 
 import numpy as np
 import pandas as pd
 from django.apps import apps
-from django.db.models import BooleanField, IntegerField, Value
+from django.db.models import BooleanField, Value
 
 from station.models import DeltaT, Station
 from variable.models import Variable
