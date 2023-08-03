@@ -31,6 +31,8 @@ data_files = [
     "station_institution",
     "station_station",
     "formatting_association",
+    "measurement_airtemperature",
+    "station_delta_t",
 ]
 
 for file in data_files:

@@ -3,7 +3,9 @@ FROM python:3.8-buster as python
 FROM python
 
 # ssh
+RUN apt-get update && apt-get install -y dos2unix
 COPY utilities/install_ssh.sh .
+RUN dos2unix /install_ssh.sh
 RUN chmod u+x install_ssh.sh
 RUN ./install_ssh.sh
 COPY utilities/sshd_config /etc/ssh/
@@ -11,6 +13,7 @@ COPY utilities/sshd_config /etc/ssh/
 # Initialization
 COPY utilities/init.sh /usr/local/bin/
 RUN chmod u+x /usr/local/bin/init.sh
+RUN dos2unix /usr/local/bin/init.sh
 CMD ["/usr/local/bin/init.sh"]
 
 # django

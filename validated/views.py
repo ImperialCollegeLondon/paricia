@@ -310,7 +310,7 @@ class DailyValidation(FormView):
                 data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
                 return HttpResponse(data_json, content_type="application/json")
 
-        return render(request, "home/form_error.html", {"form": form})
+        # return render(request, "home/form_error.html", {"form": form})
 
 
 class DetailList(ListView):
@@ -421,7 +421,7 @@ class DataReport(FormView):
                     response = HttpResponse(csv_response, content_type="text/csv")
                     response["Content-Disposition"] = 'attachment; filename="datos.csv"'
                     return response
-        return render(request, "home/form_error.html", {"form": form})
+        return render(request, "home/message.html", {"message": form})
 
 
 def view_launch_report_calculations(request):

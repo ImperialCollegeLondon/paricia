@@ -13,4 +13,4 @@ repos:
     rev: "23.1.0"
     hooks:
       - id: black
-        exclude: ^migrations/|data/
+        exclude: ^migrations/|data/|venv
