@@ -182,7 +182,57 @@ def validated_to_df(
     if validated.empty:
         validated = pd.DataFrame(columns=fields)
 
+    validated["time_truncated"] = validated["time"].values.astype("<M8[m]")
+
     return validated
+
+
+def measurement_to_df(
+    station: Station,
+    variable: Variable,
+    start_time: datetime,
+    end_time: datetime,
+) -> pd.DataFrame:
+    """Extracts measurement data of a variable within date range into a dataframe.
+
+    Also annotates the objects to indicate that they have not been validated.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+
+    Returns:
+        A pandas Dataframe with the requested data.
+    """
+    measurement = apps.get_model(
+        app_label="measurement", model_name=variable.variable_code
+    )
+
+    measurement = (
+        measurement.objects.filter(
+            station_id=station.station_id, time__gte=start_time, time__lte=end_time
+        )
+        .annotate(
+            is_validated=Value(False, output_field=BooleanField()),
+        )
+        .order_by("time")
+    )
+
+    data_columns = [e.name for e in measurement.model._meta.fields]
+    allowed_fields = ("sum", "minimum", "maximum", "average", "value")
+    value_fields = [e for e in data_columns if e in allowed_fields]
+    base_fields = ["id", "time", "is_validated"]
+    fields = base_fields + value_fields
+    measurement = pd.DataFrame.from_records(measurement.values(*fields))
+
+    if measurement.empty:
+        measurement = pd.DataFrame(columns=fields)
+
+    measurement["time_truncated"] = measurement["time"].values.astype("<M8[m]")
+
+    return measurement
 
 
 def basic_calculations(
@@ -200,39 +250,7 @@ def basic_calculations(
     tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
 
     validated = validated_to_df(station, variable, start_time, end_time)
-
-    # TODO WHich one is faster?
-    # validated['time'] = validated['time'].values.astype('<M8[m]')
-    # validated['time_truncated2'] = pd.to_datetime(validated['time']).dt.date
-    # validated['time_truncated3'] = validated['time'].dt.floor('min')
-    validated["time_truncated"] = validated["time"].values.astype("<M8[m]")
-
-    measurement = apps.get_model(
-        app_label="measurement", model_name=variable.variable_code
-    )
-
-    measurement = (
-        measurement.objects.filter(
-            station_id=station.station_id, time__gte=start_time, time__lte=end_time
-        )
-        .annotate(
-            is_validated=Value(False, output_field=BooleanField()),
-        )
-        .order_by("time")
-    )
-
-    base_fields = ["id", "time", "is_validated"]
-    fields = base_fields + value_fields
-    measurement = pd.DataFrame.from_records(measurement.values(*fields))
-
-    if measurement.empty:
-        measurement = pd.DataFrame(columns=fields)
-    measurement["time_truncated"] = measurement["time"].values.astype("<M8[m]")
-
-    # TODO analizar eliminacion campos 'null_value' : parece ser innecesario o fácilmente eliminable
-    # measurement['null_value'] = measurement['time_truncated'].isin(validated['time_truncated'])
-    # TODO Probabliy is not necessary to math 'time' and 'value'
-    # matches_time_and_value = pd.merge(measurement, validated, on=['time_truncated', 'value'], how='outer', indicator=True)
+    measurement = measurement_to_df(station, variable, start_time, end_time)
 
     # TODO IMPORTANT: Verify all of matches_time and 'exists_in_validated' computations
     matches_time = pd.merge(
