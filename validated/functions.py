@@ -359,11 +359,7 @@ def flag_value_difference_error(
             - value_difference_error: Flag indicating if the difference is significant.
     """
     joined["value_difference"] = joined["value"] - joined["lagged_value"]
-    joined["value_difference_error"] = np.where(
-        joined["value_difference"].abs().gt(diff_error),
-        True,
-        False,
-    )
+    joined["value_difference_error"] = joined["value_difference"].abs().gt(diff_error)
     return joined
 
 
@@ -382,6 +378,24 @@ def normalize_column_names(data: Sequence[pd.DataFrame], old: str, new: str) -> 
         for col in list(df):
             if old in col:
                 df.rename(columns={col: col.replace(old, new)}, inplace=True)
+
+
+def verify_validated(
+    validated: pd.DataFrame, measurement: pd.DataFrame
+) -> pd.Series:
+    """Labels those entries in measurement that have already been validated.
+
+    Args:
+        validated: Dataframe with validated data.
+        measurement: Dataframe with raw measurements.
+
+    Returns:
+        A series with flags indicating which entries have already been validated.
+    """
+    matches_time = pd.merge(
+        measurement, validated, on=["time_truncated"], how="outer", indicator=True
+    )
+    return matches_time["_merge"] == "both"
 
 
 def basic_calculations(
@@ -412,15 +426,9 @@ def basic_calculations(
 
     validated = validated_to_df(station, variable, start_time, end_time)
     measurement = measurement_to_df(station, variable, start_time, end_time)
+    measurement["exists_in_validated"] = verify_validated(validated, measurement)
+
     value_fields = [v for v in validated.columns if v in ALLOWED_FIELDS]
-
-    # TODO IMPORTANT: Verify all of matches_time and 'exists_in_validated' computations
-    matches_time = pd.merge(
-        measurement, validated, on=["time_truncated"], how="outer", indicator=True
-    )
-    # TODO Specially, Check the following line: It´s not doing the right thing.
-    measurement["exists_in_validated"] = matches_time["_merge"] == "both"
-
     if "sum" in value_fields:
         normalize_column_names([measurement, validated], "sum", "value")
     elif "average" in value_fields:
