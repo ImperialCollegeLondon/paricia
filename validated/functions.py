@@ -398,7 +398,7 @@ def verify_validated(
     return matches_time["_merge"] == "both"
 
 
-def basic_calculations(
+def preprocessing(
     station: Station,
     variable: Variable,
     start_time: Union[datetime, str],
@@ -420,7 +420,14 @@ def basic_calculations(
         minimum: Minimum value expected for the variable.
 
     Returns:
-
+        Returns a tuple with the following Dataframes and processed data:
+            - measurement: DataFrame with the raw measurement data in the interval.
+            - validated: Dataframe with the validated data in the interval.
+            - selected_full: All validated data and that still to be validated,
+                without duplicate timestamps.
+            - selected: Selected data without duplicate time stamps.
+            - tx_period (Decimal): The expected period for the measurements.
+            - value_fields: Data fields that are expected in this data.
     """
     tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
 
@@ -477,7 +484,7 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
         selected,
         tx_period,
         value_fields,
-    ) = basic_calculations(station, variable, start_time, end_time, minimum, maximum)
+    ) = preprocessing(station, variable, start_time, end_time, minimum, maximum)
 
     daily_group_all = selected_full.groupby("date")
     daily_group = selected.groupby("date")
@@ -769,7 +776,7 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
         selected,
         tx_period,
         value_fields,
-    ) = basic_calculations(station, variable, start_time, end_time, minimum, maximum)
+    ) = preprocessing(station, variable, start_time, end_time, minimum, maximum)
 
     if "average" in value_fields:
         value_column = "average"
@@ -934,7 +941,7 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
         selected,
         tx_period,
         value_fields,
-    ) = basic_calculations(station, variable, start_date, end_date, minimum, maximum)
+    ) = preprocessing(station, variable, start_date, end_date, minimum, maximum)
     if len(conditions["where_delete"]) > 0:
         where_delete = conditions["where_delete"].replace("'", "").split(",")
         for _date in where_delete:
