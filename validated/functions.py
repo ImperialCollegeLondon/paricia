@@ -237,18 +237,18 @@ def measurement_to_df(
 
 
 def join_data_and_preprocess(
-    data: Sequence[pd.DataFrame], maximum: float, minimum: float, fields: Sequence
+    data: Sequence[pd.DataFrame], maximum: Decimal, minimum: Decimal, fields: Sequence
 ) -> pd.DataFrame:
-    """
+    """Joins data frames and perform some validation of the data limits.
 
     Args:
-        data:
-        maximum:
-        minimum:
-        fields:
+        data: List of data frames to join and pre-process together.
+        maximum: Maximum value expected for the variable.
+        minimum: Minimum value expected for the variable.
+        fields: Data fields that are expected in this data.
 
     Returns:
-
+        The joint data frame.
     """
     joined = pd.concat(data).sort_values(
         by=["time_truncated", "is_validated", "id"], ascending=[True, False, False]
@@ -275,13 +275,19 @@ def join_data_and_preprocess(
 
 
 def select_values(joined: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """
+    """Select the first values with a given time, labelling them in the dataframe.
+
+    When the times are truncated to the appropriate resolution, several entries might
+    have the same time. This function selects only the first of such duplicated entries,
+    providing as output the original dataframe with  the selected entries labelled and
+    also the selected entries themselves as a separate dataframe.
 
     Args:
-        joined:
+        joined: The data frame with all the data.
 
     Returns:
-
+        The joined dataframe with the selected entries labelled and the dataframe only
+        with the selected entries.
     """
     selected = joined.drop_duplicates("time_truncated", keep="first")
     selected.reset_index(drop=True, inplace=True)
@@ -293,21 +299,26 @@ def select_values(joined: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         indicator=False,
     )
     joined["is_selected"].fillna(False, inplace=True)
-    return selected
+    return joined, selected
 
 
 def verify_time_lapse_status(
     joined: pd.DataFrame, selected: pd.DataFrame, period: float
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """
+    """Verifies if period of the time entries is correct, labelling them appropriately.
 
     Args:
-        joined:
-        selected:
-        period:
+        joined: The full dataframe with the joined data.
+        selected: The subset of the selected data.
+        period: The expected period for the measurements.
 
     Returns:
-
+        Both input arrays with updated columns:
+            - time_lapse: with the time separation between entries.
+            - time_lapse_status: flag that indicates if the period is correct (1), too
+                small (0) or too large (2)
+            - lagged_value: with the variable value of the next record, used to identify
+                suspicious changes in value.
     """
     selected["time_lapse"] = selected["time_truncated"] - selected[
         "time_truncated"
@@ -334,36 +345,38 @@ def verify_time_lapse_status(
 
 
 def flag_value_difference_error(
-    data: pd.DataFrame, diff_error: Decimal
+    joined: pd.DataFrame, diff_error: Decimal
 ) -> pd.DataFrame:
-    """
+    """Identifies suspicious values based on the difference with the lagged ones.
 
     Args:
-        data:
-        diff_error:
+        joined: The full dataframe with the joined data.
+        diff_error: The value difference allowed for this variable.
 
     Returns:
-
+        The input arrays with two new columns:
+            - value_difference: With the difference in values.
+            - value_difference_error: Flag indicating if the difference is significant.
     """
-    data["value_difference"] = data["value"] - data["lagged_value"]
-    data["value_difference_error"] = np.where(
-        data["value_difference"].abs().gt(diff_error),
+    joined["value_difference"] = joined["value"] - joined["lagged_value"]
+    joined["value_difference_error"] = np.where(
+        joined["value_difference"].abs().gt(diff_error),
         True,
         False,
     )
-    return data
+    return joined
 
 
 def normalize_column_names(data: Sequence[pd.DataFrame], old: str, new: str) -> None:
-    """
+    """Switch column names between two patterns.
+
+    Used to normalize dataframes to a common column names pattern before a calculation
+    and returning them to the correct names afterward.
 
     Args:
-        data:
-        old:
-        new:
-
-    Returns:
-
+        data: List of dataframes to be normalized.
+        old: The string to be looked for in the column names.
+        new: The replacement.
     """
     for df in data:
         for col in list(df):
@@ -376,17 +389,25 @@ def basic_calculations(
     variable: Variable,
     start_time: Union[datetime, str],
     end_time: Union[datetime, str],
-    minimum: float,
-    maximum: float,
+    minimum: Decimal,
+    maximum: Decimal,
 ):
-    """
-    Returns sub-hourly table with some calculations
-    It is used in main report for Validation interface and it is also called for "save_to_validated" function/request
-    """
-    # TODO: Is this needed?
-    minimum = float(minimum)
-    maximum = float(maximum)
+    """Returns sub-hourly tables with some validation information
 
+    It is used in main report for Validation interface, and it is also called for
+    "save_to_validated" function/request.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+        maximum: Maximum value expected for the variable.
+        minimum: Minimum value expected for the variable.
+
+    Returns:
+
+    """
     tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
 
     validated = validated_to_df(station, variable, start_time, end_time)
