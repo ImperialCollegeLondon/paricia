@@ -2,6 +2,7 @@ import calendar
 from datetime import date, datetime, time
 from threading import Thread
 from typing import Tuple, Union, overload, Sequence
+from decimal import Decimal
 
 import numpy as np
 import pandas as pd
@@ -273,6 +274,103 @@ def join_data_and_preprocess(
     return joined
 
 
+def select_values(joined: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+
+    Args:
+        joined:
+
+    Returns:
+
+    """
+    selected = joined.drop_duplicates("time_truncated", keep="first")
+    selected.reset_index(drop=True, inplace=True)
+    selected["is_selected"] = True
+    joined = joined.merge(
+        selected[["id_joined", "is_selected"]],
+        on="id_joined",
+        how="left",
+        indicator=False,
+    )
+    joined["is_selected"].fillna(False, inplace=True)
+    return selected
+
+
+def verify_time_lapse_status(
+    joined: pd.DataFrame, selected: pd.DataFrame, period: float
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+
+    Args:
+        joined:
+        selected:
+        period:
+
+    Returns:
+
+    """
+    selected["time_lapse"] = selected["time_truncated"] - selected[
+        "time_truncated"
+    ].shift(1)
+    selected["time_lapse"] = selected["time_lapse"].dt.total_seconds() / 60
+    selected["time_lapse_status"] = 1
+    selected.loc[selected["time_lapse"] < period, "time_lapse_status"] = 0
+    selected.loc[selected["time_lapse"] > period, "time_lapse_status"] = 2
+
+    selected["lagged_value"] = np.where(
+        selected["time_lapse_status"].le(1),
+        selected["value"].shift(1),
+        np.nan,
+    )
+
+    joined = joined.merge(
+        selected[["time_truncated", "time_lapse", "time_lapse_status", "lagged_value"]],
+        on="time_truncated",
+        how="left",
+        indicator=False,
+    )
+
+    return joined, selected
+
+
+def flag_value_difference_error(
+    data: pd.DataFrame, diff_error: Decimal
+) -> pd.DataFrame:
+    """
+
+    Args:
+        data:
+        diff_error:
+
+    Returns:
+
+    """
+    data["value_difference"] = data["value"] - data["lagged_value"]
+    data["value_difference_error"] = np.where(
+        data["value_difference"].abs().gt(diff_error),
+        True,
+        False,
+    )
+    return data
+
+
+def normalize_column_names(data: Sequence[pd.DataFrame], old: str, new: str) -> None:
+    """
+
+    Args:
+        data:
+        old:
+        new:
+
+    Returns:
+
+    """
+    for df in data:
+        for col in list(df):
+            if old in col:
+                df.rename(columns={col: col.replace(old, new)}, inplace=True)
+
+
 def basic_calculations(
     station: Station,
     variable: Variable,
@@ -302,83 +400,27 @@ def basic_calculations(
     # TODO Specially, Check the following line: It´s not doing the right thing.
     measurement["exists_in_validated"] = matches_time["_merge"] == "both"
 
-    # TODO: This can be moved to the records to DF function
-    if "sum" in measurement.columns:
-        measurement.rename(columns={"sum": "value"}, inplace=True)
-        validated.rename(columns={"sum": "value"}, inplace=True)
-    elif "average" in measurement.columns:
-        measurement.rename(columns={"average": "value"}, inplace=True)
-        validated.rename(columns={"average": "value"}, inplace=True)
+    if "sum" in value_fields:
+        normalize_column_names([measurement, validated], "sum", "value")
+    elif "average" in value_fields:
+        normalize_column_names([measurement, validated], "average", "value")
 
     joined = join_data_and_preprocess(
         [validated, measurement], maximum, minimum, value_fields
     )
-
-    selected = joined.drop_duplicates("time_truncated", keep="first")
-    selected.reset_index(drop=True, inplace=True)
-    selected["is_selected"] = True
-
-    joined = joined.merge(
-        selected[["id_joined", "is_selected"]],
-        on="id_joined",
-        how="left",
-        indicator=False,
-    )
-    joined["is_selected"].fillna(False, inplace=True)
-
-    selected["time_lapse"] = selected["time_truncated"] - selected[
-        "time_truncated"
-    ].shift(1)
-    selected["time_lapse"] = selected["time_lapse"].dt.total_seconds() / 60
-    selected["time_lapse_status"] = np.where(
-        selected["time_lapse"] < tx_period,
-        0,
-        np.where(
-            selected["time_lapse"] == tx_period,
-            1,
-            2
-            # TODO check again, in validation_report too
-            # When is 2 or 3
-        ),
-    )
-    selected["time_lapse_status"][0] = 1
-
-    selected["lagged_value"] = np.where(
-        selected["time_lapse_status"].le(1),
-        selected["value"].shift(1),
-        np.nan,
-    )
-
-    joined = joined.merge(
-        selected[["time_truncated", "time_lapse", "time_lapse_status", "lagged_value"]],
-        on="time_truncated",
-        how="left",
-        indicator=False,
-    )
-    joined["value_difference"] = joined["value"] - joined["lagged_value"]
-    # TODO implement to a error/warning level (variable.diff_error and variable.diff_warning)
-    joined["value_difference_error"] = np.where(
-        joined["value_difference"].abs().gt(variable.diff_error),
-        True,
-        False,
-    )
+    joined, selected = select_values(joined)
+    joined, selected = verify_time_lapse_status(joined, selected, tx_period)
+    joined = flag_value_difference_error(joined, variable.diff_error)
 
     if "sum" in value_fields:
-        measurement.rename(columns={"value": "sum"}, inplace=True)
-        validated.rename(columns={"value": "sum"}, inplace=True)
-        joined.rename(columns={"value": "sum"}, inplace=True)
-        joined.rename(columns={"suspicious_value": "suspicious_sum"}, inplace=True)
-        selected.rename(columns={"value": "sum"}, inplace=True)
-        selected.rename(columns={"suspicious_value": "suspicious_sum"}, inplace=True)
-    if "average" in value_fields:
-        measurement.rename(columns={"value": "average"}, inplace=True)
-        validated.rename(columns={"value": "average"}, inplace=True)
-        joined.rename(columns={"value": "average"}, inplace=True)
-        joined.rename(columns={"suspicious_value": "suspicious_average"}, inplace=True)
-        selected.rename(columns={"value": "average"}, inplace=True)
-        selected.rename(
-            columns={"suspicious_value": "suspicious_average"}, inplace=True
+        normalize_column_names(
+            [measurement, validated, joined, selected], "value", "sum"
         )
+    elif "average" in value_fields:
+        normalize_column_names(
+            [measurement, validated, joined, selected], "value", "average"
+        )
+
     # Final Filter: If a data is already validated, do not show "Measurement" values for that timestamp
     selected_full = joined.loc[
         (joined["is_validated"] & joined["exists_in_validated"])
