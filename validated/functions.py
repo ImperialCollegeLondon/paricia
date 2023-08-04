@@ -1,7 +1,7 @@
 import calendar
 from datetime import date, datetime, time
 from threading import Thread
-from typing import Tuple, Union, overload
+from typing import Tuple, Union, overload, Sequence
 
 import numpy as np
 import pandas as pd
@@ -12,6 +12,8 @@ from station.models import DeltaT, Station
 from variable.models import Variable
 
 threads_report_calculation = []
+
+ALLOWED_FIELDS = ("sum", "minimum", "maximum", "average", "value")
 
 
 @overload
@@ -173,8 +175,7 @@ def validated_to_df(
     )
 
     data_columns = [e.name for e in validated.model._meta.fields]
-    allowed_fields = ("sum", "minimum", "maximum", "average", "value")
-    value_fields = [e for e in data_columns if e in allowed_fields]
+    value_fields = [e for e in data_columns if e in ALLOWED_FIELDS]
     base_fields = ["id", "time", "is_validated", "exists_in_validated", "null_value"]
     fields = base_fields + value_fields
     validated = pd.DataFrame.from_records(validated.values(*fields))
@@ -221,8 +222,7 @@ def measurement_to_df(
     )
 
     data_columns = [e.name for e in measurement.model._meta.fields]
-    allowed_fields = ("sum", "minimum", "maximum", "average", "value")
-    value_fields = [e for e in data_columns if e in allowed_fields]
+    value_fields = [e for e in data_columns if e in ALLOWED_FIELDS]
     base_fields = ["id", "time", "is_validated"]
     fields = base_fields + value_fields
     measurement = pd.DataFrame.from_records(measurement.values(*fields))
@@ -233,6 +233,44 @@ def measurement_to_df(
     measurement["time_truncated"] = measurement["time"].values.astype("<M8[m]")
 
     return measurement
+
+
+def join_data_and_preprocess(
+    data: Sequence[pd.DataFrame], maximum: float, minimum: float, fields: Sequence
+) -> pd.DataFrame:
+    """
+
+    Args:
+        data:
+        maximum:
+        minimum:
+        fields:
+
+    Returns:
+
+    """
+    joined = pd.concat(data).sort_values(
+        by=["time_truncated", "is_validated", "id"], ascending=[True, False, False]
+    )
+    joined["date"] = pd.to_datetime(joined["time"]).dt.date
+    joined.rename(columns={"id": "db_row_id"}, inplace=True)
+    joined.reset_index(drop=True, inplace=True)
+    joined.index.name = "id_joined"
+    joined.reset_index(inplace=True)
+
+    joined["suspicious_value"] = np.where(
+        (joined["value"] < minimum) | (joined["value"] > maximum), True, False
+    )
+    if "maximum" in fields:
+        joined["suspicious_maximum"] = np.where(
+            (joined["maximum"] < minimum) | (joined["maximum"] > maximum), True, False
+        )
+    if "minimum" in fields:
+        joined["suspicious_minimum"] = np.where(
+            (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
+        )
+
+    return joined
 
 
 def basic_calculations(
@@ -247,10 +285,15 @@ def basic_calculations(
     Returns sub-hourly table with some calculations
     It is used in main report for Validation interface and it is also called for "save_to_validated" function/request
     """
+    # TODO: Is this needed?
+    minimum = float(minimum)
+    maximum = float(maximum)
+
     tx_period = DeltaT.objects.get(station__station_id=station.station_id).delta_t
 
     validated = validated_to_df(station, variable, start_time, end_time)
     measurement = measurement_to_df(station, variable, start_time, end_time)
+    value_fields = [v for v in validated.columns if v in ALLOWED_FIELDS]
 
     # TODO IMPORTANT: Verify all of matches_time and 'exists_in_validated' computations
     matches_time = pd.merge(
@@ -259,42 +302,17 @@ def basic_calculations(
     # TODO Specially, Check the following line: It´s not doing the right thing.
     measurement["exists_in_validated"] = matches_time["_merge"] == "both"
 
-    try:
+    # TODO: This can be moved to the records to DF function
+    if "sum" in measurement.columns:
         measurement.rename(columns={"sum": "value"}, inplace=True)
         validated.rename(columns={"sum": "value"}, inplace=True)
-    except:
-        pass
-
-    try:
+    elif "average" in measurement.columns:
         measurement.rename(columns={"average": "value"}, inplace=True)
         validated.rename(columns={"average": "value"}, inplace=True)
-    except:
-        pass
 
-    joined = pd.concat([validated, measurement]).sort_values(
-        by=["time_truncated", "is_validated", "id"], ascending=[True, False, False]
+    joined = join_data_and_preprocess(
+        [validated, measurement], maximum, minimum, value_fields
     )
-    joined["date"] = pd.to_datetime(joined["time"]).dt.date
-    joined.rename(columns={"id": "db_row_id"}, inplace=True)
-    joined.reset_index(drop=True, inplace=True)
-
-    joined.index.name = "id_joined"
-    joined.reset_index(inplace=True)
-
-    minimum = float(minimum)
-    maximum = float(maximum)
-
-    joined["suspicious_value"] = np.where(
-        (joined["value"] < minimum) | (joined["value"] > maximum), True, False
-    )
-    if "maximum" in value_fields:
-        joined["suspicious_maximum"] = np.where(
-            (joined["maximum"] < minimum) | (joined["maximum"] > maximum), True, False
-        )
-    if "minimum" in value_fields:
-        joined["suspicious_minimum"] = np.where(
-            (joined["minimum"] < minimum) | (joined["minimum"] > maximum), True, False
-        )
 
     selected = joined.drop_duplicates("time_truncated", keep="first")
     selected.reset_index(drop=True, inplace=True)
