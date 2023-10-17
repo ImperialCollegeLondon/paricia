@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from django.apps import apps
 from django.db.models import BooleanField, Value
+import logging
 
 from station.models import DeltaT, Station
 from variable.models import Variable
@@ -15,6 +16,8 @@ from variable.models import Variable
 threads_report_calculation = []
 
 ALLOWED_FIELDS = ("sum", "minimum", "maximum", "average", "value")
+
+logger = logging.getLogger(__name__)
 
 
 @overload
@@ -289,7 +292,7 @@ def select_values(joined: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         The joined dataframe with the selected entries labelled and the dataframe only
         with the selected entries.
     """
-    selected = joined.drop_duplicates("time_truncated", keep="first")
+    selected = joined.drop_duplicates("time_truncated", keep="first").copy()
     selected.reset_index(drop=True, inplace=True)
     selected["is_selected"] = True
     joined = joined.merge(
@@ -376,13 +379,11 @@ def normalize_column_names(data: Sequence[pd.DataFrame], old: str, new: str) -> 
     """
     for df in data:
         for col in list(df):
-            if old in col:
+            if old in col and col not in ("value_difference_error", "value_difference"):
                 df.rename(columns={col: col.replace(old, new)}, inplace=True)
 
 
-def verify_validated(
-    validated: pd.DataFrame, measurement: pd.DataFrame
-) -> pd.Series:
+def verify_validated(validated: pd.DataFrame, measurement: pd.DataFrame) -> pd.Series:
     """Labels those entries in measurement that have already been validated.
 
     Args:
@@ -461,7 +462,7 @@ def preprocessing(
     selected_full = joined.loc[
         (joined["is_validated"] & joined["exists_in_validated"])
         | (~joined["is_validated"] & ~joined["exists_in_validated"])
-    ]
+    ].copy()
 
     selected_full.reset_index(inplace=True, drop=True)
     selected_full.insert(0, "id", selected_full.index)
