@@ -59,6 +59,8 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
     It builds the dictionary response for main Validation interface:
     It contains:
         daily report, indicators, time series for plot, variable and station information
+
+    TODO: Refactor
     """
     num_value = None
     num_maximum = None
@@ -282,7 +284,7 @@ def select_values(joined: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
     When the times are truncated to the appropriate resolution, several entries might
     have the same time. This function selects only the first of such duplicated entries,
-    providing as output the original dataframe with  the selected entries labelled and
+    providing as output the original dataframe with the selected entries labelled and
     also the selected entries themselves as a separate dataframe.
 
     Args:
