@@ -474,125 +474,96 @@ def preprocessing(
     return measurement, validated, selected_full, selected, tx_period, value_fields
 
 
-def daily_report(station, variable, start_time, end_time, minimum, maximum):
-    """
-    Calculate daily report that will be send to main Validation interface
-    It's built from basic_calculations function
-    """
-    start_time, end_time = set_time_limits(start_time, end_time)
-    (
-        measurement,
-        validated,
-        selected_full,
-        selected,
-        tx_period,
-        value_fields,
-    ) = preprocessing(station, variable, start_time, end_time, minimum, maximum)
+def create_daily_df(
+    selected: pd.DataFrame,
+    selected_full: pd.DataFrame,
+    principal_field: str,
+    maximum: bool,
+    minimum: bool,
+    tx_period: Decimal,
+    null_limit: Decimal,
+) -> pd.DataFrame:
+    """Summarises the data available in daily entries.
 
+    Args:
+        selected: Selected data without duplicate time stamps.
+        selected_full: All validated data and that still to be validated,
+            without duplicate timestamps.
+        principal_field: Principal field with the value (value, average or sum),
+            depending on what is relevant for the magnitude.
+        maximum: If there is a maximum field.
+        minimum: If there is a minimum field.
+        tx_period: Expected period of the measurements.
+        null_limit:
+
+    Returns:
+        Dataframe with the report for the chosen days.
+    """
     daily_group_all = selected_full.groupby("date")
     daily_group = selected.groupby("date")
 
-    if "sum" in value_fields:
-        principal_field = "sum"
-    elif "average" in value_fields:
-        principal_field = "average"
-    else:
-        principal_field = "value"
-
-    # daily = daily_group[principal_field].count()
     daily = daily_group_all[principal_field].count()
     daily = daily.reset_index(name="data_count")
 
-    if "sum" in value_fields:
-        daily["sum"] = daily_group["sum"].sum(min_count=1).to_numpy()
-    if "average" in value_fields or "value" in value_fields:
-        daily["average"] = daily_group["average"].mean().to_numpy()
-    if "maximum" in value_fields:
+    # Calculate daily principal magnitude
+    if principal_field == "sum":
+        daily[principal_field] = (
+            daily_group[principal_field].sum(min_count=1).to_numpy()
+        )
+    else:
+        daily[principal_field] = daily_group[principal_field].mean().to_numpy()
+
+    daily[f"suspicious_{principal_field}s_count"] = (
+        daily_group[f"suspicious_{principal_field}"].sum().to_numpy()
+    )
+
+    # And daily maximum and minimum
+    if maximum:
         daily["maximum"] = daily_group["maximum"].max().to_numpy()
-    if "minimum" in value_fields:
+        daily[f"suspicious_maximums_count"] = (
+            daily_group[f"suspicious_maximum"].sum().to_numpy()
+        )
+    if minimum:
         daily["minimum"] = daily_group["minimum"].min().to_numpy()
+        daily[f"suspicious_minimums_count"] = (
+            daily_group[f"suspicious_minimum"].sum().to_numpy()
+        )
+
     daily["all_validated"] = daily_group["is_validated"].all().to_numpy()
 
     # TODO Create a "period" table for storing the period for every station
     # TODO Maybe program for dynamic periods. This happens when a station change the period
     expected_data_count = 24 * 60 / tx_period
     daily["percentage"] = (daily["data_count"] / expected_data_count) * 100.0
-    # TODO "is_null" could be removed and use "percentage_error" instead
-    daily["is_null"] = daily["percentage"] < (100.0 - float(variable.null_limit))
     daily["percentage_error"] = ~daily["percentage"].between(
-        100.0 - float(variable.null_limit), 100.0
+        100.0 - float(null_limit), 100.0
     )
-
-    # TODO: change variable_maximun and variable_minimum to apply for PARICIA context
-    if "sum" in value_fields:
-        daily["suspicious_sums_count"] = daily_group["suspicious_sum"].sum().to_numpy()
-    if "average" in value_fields or "value" in value_fields:
-        daily["suspicious_averages_count"] = (
-            daily_group["suspicious_average"].sum().to_numpy()
-        )
-    if "maximum" in value_fields:
-        daily["suspicious_maximums_count"] = (
-            daily_group["suspicious_maximum"].sum().to_numpy()
-        )
-    if "minimum" in value_fields:
-        daily["suspicious_minimums_count"] = (
-            daily_group["suspicious_minimum"].sum().to_numpy()
-        )
-
-    # Calculating consecutive differences and check for errors.
-    # 'time_lapse_status' set to:
-    #                               0 if 'time_lapse' < 'period'
-    #                               1 if 'time_lapse' == 'period'
-    #                               2 if 'time_lapse' > 'period'
-    #
-
     daily["value_difference_error_count"] = (
         daily_group_all["value_difference_error"].sum(numeric_only=False).to_numpy()
     )
-
-    # # Generate a sequence of days following in the calendar to compare with data in database and note voids
-    # # TODO Analizar que esto pudiera ser incluído en la primera generación de daily
-    # calendar_day_seq = pd.DataFrame(
-    #     pd.date_range(start=start_time, end=end_time).date,
-    #     columns=['date']
-    # )
-    # daily = calendar_day_seq.merge(daily, on='date', how='left')
-
-    if daily.empty:
-        col = "value" if "value" in selected.columns else "average"
-        daily = pd.DataFrame(
-            columns=[
-                "id",
-                "date",
-                "data_count",
-                col,
-                "maximum",
-                "minimum",
-                "all_validated",
-                "percentage",
-                "is_null",
-                "suspicious_averages_count",
-                "suspicious_maximums_count",
-                "suspicious_minimums_count",
-                "value_difference_error_count",
-                "day_interval",
-                "date_error",
-                "extra_data_count",
-                "historic_diary_avg",
-                "state",
-                "average_error",
-                "maximum_error",
-                "minimum_error",
-            ]
-        )
-        return daily, selected[["time", col]]
 
     daily["day_interval"] = (daily["date"] - daily["date"].shift(1)).dt.days
     daily.loc[0, "day_interval"] = 1
     daily["date_error"] = np.where(daily["day_interval"].gt(1), 3, 1)
     # TODO hacer un groupby de repeated_values_count por día, para pasar el valor total de repetidos por día
     #      posiblemente convenga hacer un solo cálculo arriba
+    # TODO explain what the error numbers mean. 1 = OK, but what 3 means?
 
+    return daily
+
+
+def calculate_extra_data_daily(
+    validated: pd.DataFrame, measurement: pd.DataFrame
+) -> pd.DataFrame:
+    """Calculate extra data inputs in the daily report.
+
+    Args:
+        validated: Dataframe with the validated data in the interval.
+        measurement: DataFrame with the raw measurement data in the interval.
+
+    Returns:
+        Dataframe with the extra entries per date.
+    """
     repeated_in_validated = validated.groupby(["time_truncated"])[
         "time_truncated"
     ].count()
@@ -636,9 +607,67 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     extra_data_daily_group = extra_data_count[
         extra_data_count["extra_values_count"] > 0
     ].groupby("date")
-    extra_data_daily = extra_data_daily_group["extra_values_count"].sum()
-    extra_data_daily = extra_data_daily.reset_index(name="extra_data_count")
-    daily = daily.merge(extra_data_daily, on="date", how="left")
+
+    return (
+        extra_data_daily_group["extra_values_count"]
+        .sum()
+        .reset_index(name="extra_data_count")
+    )
+
+
+def daily_report(
+    station: Station,
+    variable: Variable,
+    start_time: Union[datetime, str],
+    end_time: Union[datetime, str],
+    minimum: Decimal,
+    maximum: Decimal,
+):
+    """Calculate daily report that will be sent to main Validation interface.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+        maximum: Maximum value expected for the variable.
+        minimum: Minimum value expected for the variable.
+    """
+    start_time, end_time = set_time_limits(start_time, end_time)
+    (
+        measurement,
+        validated,
+        selected_full,
+        selected,
+        tx_period,
+        value_fields,
+    ) = preprocessing(station, variable, start_time, end_time, minimum, maximum)
+
+    if selected.empty:
+        raise ValueError(
+            f"No data for variable {variable.name} in the selected ranges."
+        )
+
+    if "sum" in value_fields:
+        principal_field = "sum"
+    elif "average" in value_fields:
+        principal_field = "average"
+    else:
+        principal_field = "value"
+
+    daily = create_daily_df(
+        selected,
+        selected_full,
+        principal_field,
+        "maximum" in value_fields,
+        "minimum" in value_fields,
+        tx_period,
+        variable.null_limit,
+    )
+
+    daily = daily.merge(
+        calculate_extra_data_daily(validated, measurement), on="date", how="left"
+    )
     daily["extra_data_count"].fillna(0, inplace=True)
 
     # TODO the following line makes an override of "date_error"
