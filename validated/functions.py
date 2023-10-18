@@ -731,20 +731,13 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
         value_fields,
     ) = preprocessing(station, variable, start_time, end_time, minimum, maximum)
 
-    if "average" in value_fields:
-        value_column = "average"
-    elif "sum" in value_fields:
-        value_column = "sum"
-    elif "value" in value_fields:
-        value_column = "value"
+    for value_column in ("value", "average", "sum"):
+        if value_column in value_fields:
+            break
 
-    if (
-        "average" in value_fields
-        and "maximum" in value_fields
-        and "minimum" in value_fields
-    ):
+    if "maximum" in value_fields and "minimum" in value_fields:
         selected_full["state"] = ~(
-            selected_full["average"].isna()
+            selected_full[value_column].isna()
             & selected_full["maximum"].isna()
             & selected_full["minimum"].isna()
         )
@@ -760,9 +753,9 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
         stddev_inf_limit, stddev_sup_limit
     )
     selected_full["comment"] = ""
-
     selected_full.fillna("", inplace=True)
 
+    # Select the columns that will be output
     columns = [
         "id",
         "id_joined",
@@ -786,64 +779,34 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
             },
             inplace=True,
         )
-    #######
+
+    # TODO: What's the purpose of duplicating this? Why not renaming the column?
     selected_full["n_valor"] = selected_full["value_difference"]
-    _selected = selected_full[selected_full["is_selected"] == True]
-    num_date = len(_selected[_selected["time_lapse_status"] != 1].index)
+    _selected = selected_full[selected_full["is_selected"]]
 
-    # Only take into account 'value_error' when there's no error in timestamp lapse
-    _selected_NO_TIMELAPSE_ERROR = _selected[_selected["time_lapse_status"] == 1]
-
-    indicators = {}
-    if "sum" in value_fields:
-        num_sum = len(
-            _selected_NO_TIMELAPSE_ERROR[
-                _selected_NO_TIMELAPSE_ERROR["suspicious_sum"] == True
-            ].index
-        )
-        indicators["num_sum"] = num_sum
-    if "average" in value_fields:
-        num_average = len(
-            _selected_NO_TIMELAPSE_ERROR[
-                _selected_NO_TIMELAPSE_ERROR["suspicious_average"] == True
-            ].index
-        )
-        indicators["num_average"] = num_average
-    if "value" in value_fields:
-        num_value = len(
-            _selected_NO_TIMELAPSE_ERROR[
-                _selected_NO_TIMELAPSE_ERROR["suspicious_value"] == True
-            ].index
-        )
-        indicators["num_value"] = num_value
-    if "maximum" in value_fields:
-        num_maximum = len(_selected[_selected["suspicious_maximum"] == True].index)
-        indicators["num_maximum"] = num_maximum
-    if "minimum" in value_fields:
-        num_minimum = len(_selected[_selected["suspicious_minimum"] == True].index)
-        indicators["num_minimum"] = num_minimum
-
-    num_stddev = len(_selected[_selected["stddev_error"] == True].index)
-
-    # TODO check if this is expected number of data
-    num_data = int(24 * (60 / tx_period))
+    # Only account for value errors when there's no error in timestamp lapse
+    _selected_no_error = _selected[_selected["time_lapse_status"] == 1]
 
     indicators = {
-        **{
-            "num_date": num_date,
-            "num_stddev": num_stddev,
-            "num_data": num_data,
-        },
-        **indicators,
+        # Number of dates with timestamp lapse errors
+        "num_date": int((_selected["time_lapse_status"] != 1).sum()),
+        "num_stddev": int(_selected["stddev_error"].sum()),
+        "num_data": int(24 * (60 / tx_period)),
+        f"num_{value_column}": int(
+            _selected_no_error[f"suspicious_{value_column}"].sum()
+        ),
     }
 
-    data = {
+    if "maximum" in value_fields:
+        indicators["num_maximum"] = int(_selected["suspicious_maximum"].sum())
+    if "minimum" in value_fields:
+        indicators["num_minimum"] = int(_selected["suspicious_minimum"].sum())
+
+    return {
         "series": report.to_dict(orient="records"),
         "indicators": indicators,
         "value_columns": value_fields,
     }
-
-    return data
 
 
 def get_conditions(changes_list):
