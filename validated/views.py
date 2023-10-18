@@ -327,8 +327,8 @@ class DetailList(ListView):
             station_id = kwargs.get("station_id")
             variable_id = kwargs.get("variable_id")
             date = kwargs.get("date")
-            minimum = kwargs.get("minimum")
-            maximum = kwargs.get("maximum")
+            minimum = float(kwargs.get("minimum"))
+            maximum = float(kwargs.get("maximum"))
 
             datos = functions.detail_list(
                 station_id, variable_id, date, minimum, maximum
