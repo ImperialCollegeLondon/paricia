@@ -494,7 +494,8 @@ def create_daily_df(
         maximum: If there is a maximum field.
         minimum: If there is a minimum field.
         tx_period: Expected period of the measurements.
-        null_limit:
+        null_limit: The max % of null values data. Cumulative values are not deemed
+            trustworthy if the number of missing values in a given period > null_limit.
 
     Returns:
         Dataframe with the report for the chosen days.
@@ -655,6 +656,7 @@ def daily_report(
     else:
         principal_field = "value"
 
+    # Create a summary of daily data
     daily = create_daily_df(
         selected,
         selected_full,
@@ -665,131 +667,49 @@ def daily_report(
         variable.null_limit,
     )
 
+    # Ensure no nans are present
     daily = daily.merge(
         calculate_extra_data_daily(validated, measurement), on="date", how="left"
     )
     daily["extra_data_count"].fillna(0, inplace=True)
-
-    # TODO the following line makes an override of "date_error"
-    #           Discuss if the team are agree
-    daily["date_error"] = daily["extra_data_count"]
-    month_day_tuples = tuple(
-        list(
-            zip(
-                pd.DatetimeIndex(daily["date"]).month,
-                pd.DatetimeIndex(daily["date"]).day,
-            )
-        )
-    )
-    Daily = apps.get_model(app_label="daily", model_name=variable.variable_code)
-    historic_diary = Daily.objects.filter(station_id=station.station_id).extra(
-        where=["(date_part('month', time), date_part('day', time)) in %s"],
-        params=[month_day_tuples],
-    )
-    historic_diary = pd.DataFrame(list(historic_diary.values()))
-
-    if not historic_diary.empty:
-        historic_diary["month-day"] = (
-            pd.DatetimeIndex(historic_diary["time"]).month.astype(str)
-            + "-"
-            + pd.DatetimeIndex(historic_diary["time"]).day.astype(str)
-        )
-        historic_diary_group = historic_diary.groupby(["month-day"])
-        if "sum" in value_fields:
-            historic_field = "sum"
-        elif "average" in value_fields:
-            historic_field = "average"
-        else:
-            historic_field = "value"
-        try:
-            daily["historic_diary_avg"] = (
-                historic_diary_group[historic_field].mean().to_numpy()
-            )
-        except:
-            daily["historic_diary_avg"] = np.nan
-    else:
-        daily["historic_diary_avg"] = np.nan
-
     daily["state"] = True
     daily["data_count"].fillna(0, inplace=True)
     daily["percentage"].fillna(0, inplace=True)
-    if "sum" in value_fields:
-        daily["suspicious_sums_count"].fillna(0, inplace=True)
-    if "average" in value_fields:
-        daily["suspicious_averages_count"].fillna(0, inplace=True)
+    daily[f"suspicious_{principal_field}s_count"].fillna(0, inplace=True)
+    daily["value_difference_error_count"].fillna(0, inplace=True)
     if "maximum" in value_fields:
         daily["suspicious_maximums_count"].fillna(0, inplace=True)
     if "minimum" in value_fields:
         daily["suspicious_minimums_count"].fillna(0, inplace=True)
-    daily["value_difference_error_count"].fillna(0, inplace=True)
-    daily["historic_diary_avg"].fillna("", inplace=True)
 
-    ##
-    # TODO check, maybe it's not needed anymore
-    if "sum" in value_fields:
-        daily["sum_error"] = np.where(
-            daily["suspicious_sums_count"].gt(0),
-            True,
-            False,
-        )
-    if "average" in value_fields:
-        daily["average_error"] = np.where(
-            daily["suspicious_averages_count"].gt(0),
-            True,
-            False,
-        )
-    if "maximum" in value_fields:
-        daily["maximum_error"] = np.where(
-            daily["suspicious_maximums_count"].gt(0),
-            True,
-            False,
-        )
-    if "minimum" in value_fields:
-        daily["minimum_error"] = np.where(
-            daily["suspicious_minimums_count"].gt(0),
-            True,
-            False,
-        )
-    #
-    ##
+    # TODO the following line makes an override of "date_error"
+    #           Discuss if the team are agree
+    daily["date_error"] = daily["extra_data_count"]
 
-    Measurement = apps.get_model(
-        app_label="measurement", model_name=variable.variable_code
+    # Round to appropriate decimal places
+    decimal_places = (
+        apps.get_model(app_label="measurement", model_name=variable.variable_code)
+        ._meta.get_field(principal_field)
+        .decimal_places
     )
-
-    if "sum" in value_fields:
-        decimal_places = Measurement._meta.get_field("sum").decimal_places
-    elif "average" in value_fields:
-        decimal_places = Measurement._meta.get_field("average").decimal_places
-    elif "value" in value_fields:
-        decimal_places = Measurement._meta.get_field("value").decimal_places
-    else:
-        decimal_places = 2
-
-    if "sum" in value_fields:
-        daily["sum"] = daily["sum"].astype(np.float64).round(decimal_places)
-    if "average" in value_fields:
-        daily["average"] = daily["average"].astype(np.float64).round(decimal_places)
+    daily[principal_field] = (
+        daily[principal_field].astype(np.float64).round(decimal_places)
+    )
     if "maximum" in value_fields:
         daily["maximum"] = daily["maximum"].astype(np.float64).round(decimal_places)
     if "minimum" in value_fields:
         daily["minimum"] = daily["minimum"].astype(np.float64).round(decimal_places)
     daily["percentage"] = daily["percentage"].astype(np.float64).round(1)
 
+    # Final touches and extracting relevant parts from other dataframes
     daily.index.name = "id"
     daily.reset_index(inplace=True)
-    ## TODO Eliminar o corregir ids -> id
-    #
-    # daily.rename(columns={'id':'ids',}, inplace=True)
-    daily["ids"] = daily["id"]
-    #
-    ##
-    for _f in value_fields:
-        daily[_f].fillna("", inplace=True)
-    _selected = selected[["time"] + value_fields]
-    _measurement = measurement[["time"] + value_fields]
-    _validated = validated[["time"] + value_fields]
-    return daily, _selected, _measurement, _validated
+    return (
+        daily,
+        selected[["time"] + value_fields],
+        measurement[["time"] + value_fields],
+        validated[["time"] + value_fields],
+    )
 
 
 def detail_list(station_id, variable_id, date, minimum, maximum):
