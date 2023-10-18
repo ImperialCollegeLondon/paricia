@@ -53,19 +53,31 @@ def set_time_limits(
     return start_time, end_time
 
 
-def daily_validation(station, variable, start_time, end_time, minimum, maximum):
-    """
-    Returns a daily report and time series for Validation interface.
-    It builds the dictionary response for main Validation interface:
-    It contains:
-        daily report, indicators, time series for plot, variable and station information
+def daily_validation(
+    station: Station,
+    variable: Variable,
+    start_time: Union[datetime, str],
+    end_time: Union[datetime, str],
+    minimum: Decimal,
+    maximum: Decimal,
+):
+    """Generates a daily report and formats the data to be displayed in tables.
 
-    TODO: Refactor
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+        maximum: Maximum value expected for the variable.
+        minimum: Minimum value expected for the variable.
+
+    Returns:
+        A dictionary response for main Validation interface containing the daily report
+        of values and statistics, indicators, time series for plot, variable and station
+        information
     """
-    num_value = None
     num_maximum = None
     num_minimum = None
-    num_days = None
 
     report, selected, measurement, validated = daily_report(
         station, variable, start_time, end_time, minimum, maximum
@@ -73,32 +85,20 @@ def daily_validation(station, variable, start_time, end_time, minimum, maximum):
     value_columns = list(measurement.columns.to_numpy())
     value_columns.remove("time")
 
+    for var in ("value", "average", "sum"):
+        if var in value_columns:
+            break
+
     num_date = len(
         report[report["date_error"].ne(1) & ~report["date_error"].isna()].index
     )
     num_percentage = len(report[report["percentage_error"].eq(True)])
-
-    if "sum" in value_columns:
-        num_value = len(
-            report[
-                report["percentage_error"].eq(False)
-                & ~report["suspicious_sums_count"].isna()
-            ]
-        )
-    if "average" in value_columns:
-        num_value = len(
-            report[
-                report["percentage_error"].eq(False)
-                & ~report["suspicious_averages_count"].isna()
-            ]
-        )
-    if "value" in value_columns:
-        num_value = len(
-            report[
-                report["percentage_error"].eq(False)
-                & ~report["suspicious_values_count"].isna()
-            ]
-        )
+    num_value = len(
+        report[
+            report["percentage_error"].eq(False)
+            & ~report[f"suspicious_{var}s_count"].isna()
+        ]
+    )
     if "maximum" in value_columns:
         num_maximum = len(
             report[
