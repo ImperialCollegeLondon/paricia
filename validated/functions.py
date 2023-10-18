@@ -557,12 +557,13 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
     # daily = calendar_day_seq.merge(daily, on='date', how='left')
 
     if daily.empty:
-        daily = df = pd.DataFrame(
+        col = "value" if "value" in selected.columns else "average"
+        daily = pd.DataFrame(
             columns=[
                 "id",
                 "date",
                 "data_count",
-                "average",
+                col,
                 "maximum",
                 "minimum",
                 "all_validated",
@@ -582,10 +583,10 @@ def daily_report(station, variable, start_time, end_time, minimum, maximum):
                 "minimum_error",
             ]
         )
-        return daily, selected[["time", "value"]]
+        return daily, selected[["time", col]]
 
     daily["day_interval"] = (daily["date"] - daily["date"].shift(1)).dt.days
-    daily["day_interval"][0] = 1
+    daily.loc[0, "day_interval"] = 1
     daily["date_error"] = np.where(daily["day_interval"].gt(1), 3, 1)
     # TODO hacer un groupby de repeated_values_count por día, para pasar el valor total de repetidos por día
     #      posiblemente convenga hacer un solo cálculo arriba
