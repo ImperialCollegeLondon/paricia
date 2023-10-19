@@ -25,9 +25,14 @@ def set_time_limits(start_time: str, end_time: str) -> Tuple[str, str]:
     ...
 
 
+@overload
 def set_time_limits(
     start_time: datetime, end_time: datetime
 ) -> Tuple[datetime, datetime]:
+    ...
+
+
+def set_time_limits(start_time, end_time):
     """Complete the datetime objects to cover a whole day.
 
     Completes the hour in start_date and end_date in order to have a whole day from the
@@ -712,13 +717,31 @@ def daily_report(
     )
 
 
-def detail_list(station_id, variable_id, date, minimum, maximum):
+def detail_list(
+    station_id: str,
+    variable_id: str,
+    date: str,
+    minimum: Decimal,
+    maximum: Decimal,
+):
+    """Return the datailled information of a day.
+
+    It is requested when a user wants to see the detailed info of an specific day from
+    the Validation interface.
+
+    Args:
+        station_id: ID for the station of interest.
+        variable_id: ID for the variable of interest.
+        date: Date to find out detailed information about.
+        minimum: Minimum value.
+        maximum: Maximum value.
+
+    Returns:
+        A dictionary response for the detailed day table containing the report
+        of values and statistics, indicators, time series for plot, etc.
     """
-    Return the datailed information of a day.
-    It is requested when a user wants to see the detailed info of an especific day from the Validation interface
-    """
-    start_time = datetime.strptime(date, "%Y-%m-%d")
-    end_time = datetime.combine(start_time.date(), time(23, 59, 59, 999999))
+    date = datetime.strptime(date, "%Y-%m-%d")
+    start_time, end_time = set_time_limits(date, date)
     station = Station.objects.get(station_id=station_id)
     variable = Variable.objects.get(variable_id=variable_id)
 
@@ -735,6 +758,7 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
         if value_column in value_fields:
             break
 
+    # TODO: What's state and what it is used for?
     if "maximum" in value_fields and "minimum" in value_fields:
         selected_full["state"] = ~(
             selected_full[value_column].isna()
@@ -755,7 +779,8 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
     selected_full["comment"] = ""
     selected_full.fillna("", inplace=True)
 
-    # Select the columns that will be output
+    # Select the columns that will be output.
+    # TODO: Maybe worth including some damage control if not all columns are present.
     columns = [
         "id",
         "id_joined",
@@ -780,13 +805,15 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
             inplace=True,
         )
 
-    # TODO: What's the purpose of duplicating this? Why not renaming the column?
+    # TODO: What's the purpose of duplicating this? Why not just renaming the column?
     selected_full["n_valor"] = selected_full["value_difference"]
+
     _selected = selected_full[selected_full["is_selected"]]
 
     # Only account for value errors when there's no error in timestamp lapse
     _selected_no_error = _selected[_selected["time_lapse_status"] == 1]
 
+    # JSON cannot encode numpy.int64, so all need to be transformed to int.
     indicators = {
         # Number of dates with timestamp lapse errors
         "num_date": int((_selected["time_lapse_status"] != 1).sum()),
@@ -796,7 +823,6 @@ def detail_list(station_id, variable_id, date, minimum, maximum):
             _selected_no_error[f"suspicious_{value_column}"].sum()
         ),
     }
-
     if "maximum" in value_fields:
         indicators["num_maximum"] = int(_selected["suspicious_maximum"].sum())
     if "minimum" in value_fields:
