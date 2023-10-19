@@ -350,8 +350,8 @@ def daily_save(request):
     """
     station_id = int(request.POST.get("station_id", None))
     variable_id = int(request.POST.get("variable_id", None))
-    maximum = float(request.POST.get("maximum", None))
-    minimum = float(request.POST.get("minimum", None))
+    maximum = Decimal(request.POST.get("maximum", None))
+    minimum = Decimal(request.POST.get("minimum", None))
     changes_json = request.POST.get("changes", None)
 
     station = Station.objects.get(station_id=station_id)
@@ -361,18 +361,16 @@ def daily_save(request):
     conditions = functions.get_conditions(changes_list)
 
     result = functions.save_to_validated(
-        changes_list,
         variable,
         station,
         conditions,
+        changes_list[0]["date"],
+        changes_list[-1]["date"],
         minimum,
         maximum,
     )
-    if result:
-        list = {"result": result}
-    else:
-        list = {"result": False}
-    return JsonResponse(list)
+
+    return JsonResponse({"result": result})
 
 
 def detail_save(request):

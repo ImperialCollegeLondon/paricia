@@ -832,77 +832,80 @@ def detail_list(
     }
 
 
-def get_conditions(changes_list):
+def get_conditions(changes_list: List[Dict[str, Any]]) -> List[date]:
+    """Processes instructions about which days are going to be NULL (remove).
+
+    The instructions come from Validation user. It's called by "save_to_validated"
+    function.
+
+    Args:
+        changes_list: Complete list of records to consider.
+
+    Returns:
+        A list of the dates that need deleting.
     """
-    Processes instructions about which days are going to be NULL (remove). The instructions comes from Validation user interface
-    It's called by "save_to_validated" function
+    return [
+        datetime.strptime(row["date"], "%Y-%m-%d").date()
+        for row in changes_list
+        if not row["state"]
+    ]
+
+
+def save_to_validated(
+    variable: Variable,
+    station: Station,
+    to_delete: List[date],
+    start_date: Union[datetime, str],
+    end_date: Union[datetime, str],
+    minimum: Decimal,
+    maximum: Decimal,
+):
+    """Processes the request from the user for saving data to "validated" tables.
+
+    All the records in the range are selected. Then, those labelled to delete are set
+    their relevant magnitudes to None. The old records in that time range are deleted
+    and the new, possibly updated records, in that range, are saved.
+
+    After all is done, the creation of the reports is launched.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        to_delete: List of dates to delete from the validation.
+        start_date: Start date.
+        end_date: End date.
+        maximum: Maximum value expected for the variable.
+        minimum: Minimum value expected for the variable.
+
+    Returns:
+        True if the data saving to validation succeeds.
     """
-    dates_condition = []
-    dates_delete = []
-    for row in changes_list:
-        # TODO check "validado" has equivalence
-        # if fila["validado"]:
-        #     fechas_condicion.append("'" + fila["fecha"] + "'")
-        if not row["state"]:
-            dates_delete.append("'" + row["date"] + "'")
+    validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
 
-    dates_condition = set(dates_condition)
-    dates_delete = set(dates_delete)
-
-    where_dates = ",".join(dates_condition)
-    where_delete = ",".join(dates_delete)
-
-    conditions = {"where_delete": where_delete, "where_dates": where_dates}
-    return conditions
-
-
-def save_to_validated(changes_list, variable, station, conditions, minimum, maximum):
-    """
-    Processes the request from the user for saving data to "validated" tables.
-    """
-    Measurement = apps.get_model(
-        app_label="measurement", model_name=variable.variable_code
-    )
-    Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
-
-    # where_fechas = condiciones.get('where_fechas')
-    start_date = changes_list[0]["date"]
-    end_date = changes_list[-1]["date"]
     start_date, end_date = set_time_limits(start_date, end_date)
+    _, _, _, selected, _, value_fields = preprocessing(
+        station, variable, start_date, end_date, minimum, maximum
+    )
 
-    # TODO se puede eliminar
-    reporte_recibido = pd.DataFrame.from_records(changes_list)
+    for d in to_delete:
+        selected.loc[selected.date == d, value_fields] = None
 
-    (
-        measurement,
-        validated,
-        selected_full,
-        selected,
-        tx_period,
-        value_fields,
-    ) = preprocessing(station, variable, start_date, end_date, minimum, maximum)
-    if len(conditions["where_delete"]) > 0:
-        where_delete = conditions["where_delete"].replace("'", "").split(",")
-        for _date in where_delete:
-            _date = datetime.strptime(_date, "%Y-%m-%d").date()
-            condition = selected["date"] == _date
-            for c in value_fields:
-                selected[c] = np.where(condition, None, selected[c])
-    Validated.timescale.filter(
+    validated.timescale.filter(
         time__range=[start_date, end_date],
         station_id=station.station_id,
     ).delete()
 
-    model_instances = []
-    for _, record in selected.iterrows():
-        row = {"time": record["time"], "station_id": station.station_id}
-        for c in value_fields:
-            row[c] = record[c]
-        model_instances.append(Validated(**row))
+    selected["station_id"] = station.station_id
+    insert_result = validated.objects.bulk_create(
+        [
+            validated(**record.to_dict())
+            for _, record in selected[["time", "station_id"] + value_fields].iterrows()
+        ]
+    )
 
-    insert_result = Validated.objects.bulk_create(model_instances)
     if len(insert_result) != len(selected):
         return False
+
     launch_report_calculations()
     return True
 
