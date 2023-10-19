@@ -13,6 +13,8 @@
 
 from __future__ import unicode_literals
 
+from datetime import datetime
+from decimal import Decimal
 import json
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -327,13 +329,15 @@ class DetailList(ListView):
             station_id = kwargs.get("station_id")
             variable_id = kwargs.get("variable_id")
             date = kwargs.get("date")
-            minimum = float(kwargs.get("minimum"))
-            maximum = float(kwargs.get("maximum"))
+            minimum = Decimal(kwargs.get("minimum"))
+            maximum = Decimal(kwargs.get("maximum"))
 
-            datos = functions.detail_list(
-                station_id, variable_id, date, minimum, maximum
-            )
-            data_json = json.dumps(datos, allow_nan=True, cls=DjangoJSONEncoder)
+            station = Station.objects.get(station_id=station_id)
+            variable = Variable.objects.get(variable_id=variable_id)
+            date = datetime.strptime(date, "%Y-%m-%d")
+
+            data = functions.detail_list(station, variable, date, minimum, maximum)
+            data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
             return HttpResponse(data_json, content_type="application/json")
         message = "Ocurrio un problema con el procesamiento de la información, por favor contacte con el administrador"
         return render(request, "home/message.html", {"message": message})

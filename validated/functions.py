@@ -718,21 +718,21 @@ def daily_report(
 
 
 def detail_list(
-    station_id: str,
-    variable_id: str,
-    date: str,
+    station: Station,
+    variable: Variable,
+    date_of_interest: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
-    """Return the datailled information of a day.
+    """Return the detailed information of a day.
 
-    It is requested when a user wants to see the detailed info of an specific day from
+    It is requested when a user wants to see the detailed info of a specific day from
     the Validation interface.
 
     Args:
-        station_id: ID for the station of interest.
-        variable_id: ID for the variable of interest.
-        date: Date to find out detailed information about.
+        station: Station of interest.
+        variable: Variable of interest.
+        date_of_interest: Date to find out detailed information about.
         minimum: Minimum value.
         maximum: Maximum value.
 
@@ -740,10 +740,7 @@ def detail_list(
         A dictionary response for the detailed day table containing the report
         of values and statistics, indicators, time series for plot, etc.
     """
-    date = datetime.strptime(date, "%Y-%m-%d")
-    start_time, end_time = set_time_limits(date, date)
-    station = Station.objects.get(station_id=station_id)
-    variable = Variable.objects.get(variable_id=variable_id)
+    start_time, end_time = set_time_limits(date_of_interest, date_of_interest)
 
     (
         measurement,
