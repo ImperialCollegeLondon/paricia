@@ -1,7 +1,7 @@
 import calendar
 from datetime import date, datetime, time
 from threading import Thread
-from typing import Tuple, Union, overload, Sequence
+from typing import Tuple, Union, overload, Sequence, List, Dict, Any
 from decimal import Decimal
 
 import numpy as np
@@ -907,20 +907,36 @@ def save_to_validated(changes_list, variable, station, conditions, minimum, maxi
     return True
 
 
-def save_detail_to_validated(data_list, variable, station):
-    """
-    Processes the request from the user to save "Detail of selected day" data.
+def save_detail_to_validated(
+    data_list: List[Dict[str, Any]], variable: Variable, station: Station
+) -> bool:
+    """Processes the request from the user to save "Detail of selected day" data.
+
+    in summary, all the data in the selected time range already in the validated
+    table is deleted and the new data is inserted. If the entry was not selected, then
+    its entry in the table only has "None" values.
+
+    # TODO Why do we store empty values when not selected? Why not simply skip the
+    # TODO record altogether?
+
+    Args:
+        data_list: List with the information of the records to update.
+        variable: The variable to update.
+        station: The station this records relate to.
+
+    Returns:
+        True if the selected data is inserted successfully in the database.
     """
     start_time = data_list[0]["time"]
     end_time = data_list[-1]["time"]
 
-    Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
-    Validated.timescale.filter(
+    validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    validated.timescale.filter(
         time__range=[start_time, end_time],
         station_id=station.station_id,
     ).delete()
 
-    columns = [c.name for c in Validated._meta.fields]
+    columns = [c.name for c in validated._meta.fields]
     allowed_fields = ("sum", "average", "minimum", "maximum", "value")
     value_columns = [c for c in columns if c in allowed_fields]
     model_instances = []
@@ -936,14 +952,10 @@ def save_detail_to_validated(data_list, variable, station):
         else:
             for c in value_columns:
                 record[c] = row[c]
-        model_instances.append(Validated(**record))
+        model_instances.append(validated(**record))
 
-    # TODO Could send 'bulk_create' activity to a thread
-    insert_result = Validated.objects.bulk_create(model_instances)
-    result = False
-    if len(insert_result) == len(model_instances):
-        result = True
-    return result
+    insert_result = validated.objects.bulk_create(model_instances)
+    return len(insert_result) == len(model_instances)
 
 
 def data_report(temporality, station, variable, start_time, end_time):
