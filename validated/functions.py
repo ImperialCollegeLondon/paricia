@@ -1106,19 +1106,26 @@ def launch_report_calculations():
     t.start()
 
 
-def calculate_hourly(variable):
+def calculate_hourly(variable: Variable) -> None:
+    """Calculate hourly data from validated data for a specific variable.
+
+    It iterates for every validated record that has "used_for_hourly = False". For every
+    of these records found, all the values for that hour and station are
+    summed/averaged and the result store din the `hourly` table, replacing existing
+    values for that hour and station, if any.
+
+    If the number of records does not match the expected value based on the
+    periodicity, the result is set to None.
+
+    Args:
+        variable: Variable to calculate things for.
     """
-    Calculate hourly data from validated data for a specific variable
-    It iterates for every validated record that has "used_for_hourly = False"
-    """
-    Validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
-    Hourly = apps.get_model(app_label="hourly", model_name=variable.variable_code)
-    register_exists = True
-    while register_exists:
-        register = Validated.objects.filter(used_for_hourly=False).first()
-        if not register:
-            register_exists = False
-            return False
+    validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    hourly = apps.get_model(app_label="hourly", model_name=variable.variable_code)
+    register = validated.objects.filter(used_for_hourly=False).first()
+
+    while register:
+        delta_t = DeltaT.objects.get(station__station_id=register.station_id)
 
         start_of_hour = datetime.combine(
             register.time, time(register.time.hour, 0, 0, 0)
@@ -1126,61 +1133,45 @@ def calculate_hourly(variable):
         end_of_hour = datetime.combine(
             register.time, time(start_of_hour.hour, 59, 59, 999999)
         )
-        validated_block = Validated.objects.filter(
+        validated_block = validated.objects.filter(
             station_id=register.station_id,
             time__gte=start_of_hour,
             time__lte=end_of_hour,
         )
         data_columns = [e.name for e in validated_block.model._meta.fields]
-        allowed_fields = ("sum", "value", "average")
-        value_fields = [e for e in data_columns if e in allowed_fields]
-        base_fields = [
-            "time",
-        ]
-        fields = base_fields + value_fields
+        val_name = {"sum", "value", "average"}.intersection(data_columns).pop()
+        fields = ["time", val_name]
         block = pd.DataFrame.from_records(validated_block.values(*fields))
-        if block.empty:
-            continue
 
-        if "sum" in fields:
+        if "sum" == val_name:
             result = block["sum"].sum()
             count = block["sum"].count()
-        elif "average" in fields:
-            result = block["average"].mean(skipna=True)
-            count = block["average"].count()
         else:
-            result = block["value"].mean(skipna=True)
-            count = block["value"].count()
-
-        try:
-            delta_t = DeltaT.objects.get(station__station_id=register.station_id)
-        except:
-            return False
+            result = block[val_name].mean(skipna=True)
+            count = block[val_name].count()
 
         completeness = (count / (60 / delta_t.delta_t)) * 100.0
         if completeness < (100.0 - float(variable.null_limit)):
             result = None
 
-        Hourly.objects.filter(
+        # Delete the existing value in hourly (if any) and create a new one.
+        hourly.objects.filter(
             time=start_of_hour, station_id=register.station_id
         ).delete()
 
-        record = {
-            "time": start_of_hour,
-            "station_id": register.station_id,
-            "used_for_daily": False,
-            "completeness": completeness,
-        }
-        if "sum" in fields:
-            record["sum"] = result
-        elif "average" in fields:
-            record["average"] = result
-        else:
-            record["value"] = result
-        hourly = Hourly(**record)
-        hourly.save()
+        hourly(
+            **{
+                "time": start_of_hour,
+                "station_id": register.station_id,
+                "used_for_daily": False,
+                "completeness": completeness,
+                val_name: result,
+            }
+        ).save()
         validated_block.update(used_for_hourly=True)
-    return True
+
+        # And we check the next never used validated data
+        register = validated.objects.filter(used_for_hourly=False).first()
 
 
 def calculate_daily(variable):
