@@ -961,26 +961,45 @@ def save_detail_to_validated(
     return len(insert_result) == len(model_instances)
 
 
-def data_report(temporality, station, variable, start_time, end_time):
+def data_report(
+    temporality: str,
+    station: Station,
+    variable: Variable,
+    start_time: str,
+    end_time: str,
+) -> pd.DataFrame:
+    """Returns the data that will be downloaded or plotted.
+
+    Args:
+        temporality: The temporality of the data to plot (measurement, validated,
+            hourly, daily, monthly)
+        station: The station the data is related to.
+        variable: The variable to get information for.
+        start_time: The start date and time.
+        end_time: The final date and time.
+
+    Returns:
+        Dataframe with the relevant data.
     """
-    Returns the data for plotting or downloading CSV
-    Menu: Data -> Data report
-    """
+    valid = ("measurement", "validated", "hourly", "daily", "monthly")
+    if temporality not in valid:
+        raise ValueError(
+            f"Invalid temporality: {temporality}. Valid values are: {', '.join(valid)}"
+        )
+
     start_time, end_time = set_time_limits(start_time, end_time)
-    if temporality not in ["measurement", "validated", "hourly", "daily", "monthly"]:
-        return None
-    Data = apps.get_model(app_label=temporality, model_name=variable.variable_code)
-    data = Data.objects.filter(
-        station_id=station.station_id, time__gte=start_time, time__lte=end_time
-    ).order_by("time")
+    data = (
+        apps.get_model(app_label=temporality, model_name=variable.variable_code)
+        .objects.filter(
+            station_id=station.station_id, time__gte=start_time, time__lte=end_time
+        )
+        .order_by("time")
+    )
 
     data_columns = [e.name for e in data.model._meta.fields]
     allowed_fields = ("sum", "average", "minimum", "maximum", "value")
-    value_fields = [e for e in data_columns if e in allowed_fields]
-    base_fields = [
-        "time",
-    ]
-    fields = base_fields + value_fields
+    fields = ["time"] + [e for e in data_columns if e in allowed_fields]
+
     df = pd.DataFrame.from_records(data.values(*fields))
     if df.empty:
         df = pd.DataFrame(columns=fields)
