@@ -551,8 +551,6 @@ def create_daily_df(
     daily["day_interval"] = (daily["date"] - daily["date"].shift(1)).dt.days
     daily.loc[0, "day_interval"] = 1
     daily["date_error"] = np.where(daily["day_interval"].gt(1), 3, 1)
-    # TODO hacer un groupby de repeated_values_count por día, para pasar el valor total de repetidos por día
-    #      posiblemente convenga hacer un solo cálculo arriba
     # TODO explain what the error numbers mean. 1 = OK, but what 3 means?
 
     return daily
@@ -687,8 +685,7 @@ def daily_report(
     if "minimum" in value_fields:
         daily["suspicious_minimums_count"].fillna(0, inplace=True)
 
-    # TODO the following line makes an override of "date_error"
-    #           Discuss if the team are agree
+    # TODO the following line makes an override of "date_error". Why?
     daily["date_error"] = daily["extra_data_count"]
 
     # Round to appropriate decimal places
@@ -755,7 +752,6 @@ def detail_list(
         if value_column in value_fields:
             break
 
-    # TODO: What's state and what it is used for?
     if "maximum" in value_fields and "minimum" in value_fields:
         selected_full["state"] = ~(
             selected_full[value_column].isna()
@@ -777,7 +773,6 @@ def detail_list(
     selected_full.fillna("", inplace=True)
 
     # Select the columns that will be output.
-    # TODO: Maybe worth including some damage control if not all columns are present.
     columns = [
         "id",
         "id_joined",
@@ -918,9 +913,6 @@ def save_detail_to_validated(
     in summary, all the data in the selected time range already in the validated
     table is deleted and the new data is inserted. If the entry was not selected, then
     its entry in the table only has "None" values.
-
-    # TODO Why do we store empty values when not selected? Why not simply skip the
-    # TODO record altogether?
 
     Args:
         data_list: List with the information of the records to update.
