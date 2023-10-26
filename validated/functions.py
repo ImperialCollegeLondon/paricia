@@ -932,8 +932,7 @@ def save_detail_to_validated(
     ).delete()
 
     columns = [c.name for c in validated._meta.fields]
-    allowed_fields = ("sum", "average", "minimum", "maximum", "value")
-    value_columns = [c for c in columns if c in allowed_fields]
+    value_columns = [c for c in columns if c in ALLOWED_FIELDS]
     model_instances = []
     for row in data_list:
         record = {
@@ -989,8 +988,7 @@ def data_report(
     )
 
     data_columns = [e.name for e in data.model._meta.fields]
-    allowed_fields = ("sum", "average", "minimum", "maximum", "value")
-    fields = ["time"] + [e for e in data_columns if e in allowed_fields]
+    fields = ["time"] + [e for e in data_columns if e in ALLOWED_FIELDS]
 
     df = pd.DataFrame.from_records(data.values(*fields))
     if df.empty:
@@ -1271,8 +1269,7 @@ def calculate_monthly(variable):
             time__lte=end_of_month,
         )
         data_columns = [e.name for e in daily_block.model._meta.fields]
-        allowed_fields = ("sum", "minimum", "maximum", "average", "value")
-        value_fields = [e for e in data_columns if e in allowed_fields]
+        value_fields = [e for e in data_columns if e in ALLOWED_FIELDS]
         base_fields = [
             "time",
         ]
