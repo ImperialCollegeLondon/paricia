@@ -1030,14 +1030,29 @@ def dict_data_report(
     return response
 
 
-def csv_data_report(temporality, station, variable, start_time, end_time):
+def csv_data_report(
+    temporality: str,
+    station: Station,
+    variable: Variable,
+    start_time: str,
+    end_time: str,
+) -> str:
+    """Prepares info and data for exporting as CSV.
+
+    Args:
+        temporality: The temporality of the data to plot (measurements, validated,
+            hourly, daily, monthly)
+        station: The station the data is related to.
+        variable: The variable to get information for.
+        start_time: The start date and time.
+        end_time: The final date and time.
+
+    Returns:
+        Data in CSV format as a string.
     """
-    Format data for dowloading
-    Menu: Data -> Data report
-    """
-    df = data_report(temporality, station, variable, start_time, end_time)
-    csv_response = df.to_csv(index=False)
-    return csv_response
+    return data_report(temporality, station, variable, start_time, end_time).to_csv(
+        index=False
+    )
 
 
 def calculate_reports(variable):
