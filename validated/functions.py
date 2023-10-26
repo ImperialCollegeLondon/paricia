@@ -987,12 +987,28 @@ def data_report(temporality, station, variable, start_time, end_time):
     return df
 
 
-def dict_data_report(temporality, station, variable, start_time, end_time):
+def dict_data_report(
+    temporality: str,
+    station: Station,
+    variable: Variable,
+    start_time: str,
+    end_time: str,
+) -> Dict[str, Any]:
+    """Prepares info and data for plotting
+
+    Args:
+        temporality: The temporality of the data to plot (measurements, validated,
+            hourly, daily, monthly)
+        station: The station the data is related to.
+        variable: The variable to get information for.
+        start_time: The start date and time.
+        end_time: The final date and time.
+
+    Returns:
+        Dictionary with all the relevant information required for plotting, to be used
+        by the JS side of the front end.
     """
-    Prepares info and data for plotting
-    Menu: Data -> Data report
-    """
-    df = data_report(temporality, station, variable, start_time, end_time)
+    logger.warning(temporality)
     response = {
         "station": {
             "id": station.station_id,
@@ -1006,7 +1022,9 @@ def dict_data_report(temporality, station, variable, start_time, end_time):
             "unit_initials": variable.unit.initials,
             "is_cumulative": variable.is_cumulative,
         },
-        "series": df.fillna("").to_dict("list"),
+        "series": data_report(temporality, station, variable, start_time, end_time)
+        .fillna("")
+        .to_dict("list"),
         "temporality": temporality,
     }
     return response
