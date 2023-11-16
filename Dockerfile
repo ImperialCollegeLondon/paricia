@@ -1,4 +1,4 @@
-FROM python:3.8-buster as python
+FROM python:3.11-buster as python
 
 FROM python
 
