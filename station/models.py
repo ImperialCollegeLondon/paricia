@@ -15,6 +15,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 
+import zoneinfo
+
+TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
+
 # Global variables used in Basin model
 BASIN_IMAGE_PATH = "station/basin_image/"
 BASIN_FILE_PATH = "station/basin_file/"
@@ -265,6 +269,7 @@ class Station(models.Model):
     influence_km = models.DecimalField(
         "Área of input (km)", max_digits=12, decimal_places=4, null=True, blank=True
     )
+    timezone = models.CharField("Timezone", max_length=100, choices=TIMEZONES)
 
     def __str__(self):
         return str(self.station_code)
