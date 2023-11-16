@@ -299,7 +299,7 @@ class DailyValidation(FormView):
     def post(self, request, *args, **kwargs):
         form = DailyValidationForm(self.request.POST or None)
         if form.is_valid():
-            if self.request.is_ajax():
+            if functions.is_ajax(self.request):
                 variable = form.cleaned_data["variable"]
                 station = form.cleaned_data["station"]
                 start_date = form.cleaned_data["start_date"]
@@ -325,7 +325,7 @@ class DetailList(ListView):
     template_name = "home/message.html"
 
     def get(self, request, *args, **kwargs):
-        if self.request.is_ajax():
+        if functions.is_ajax(self.request):
             station_id = kwargs.get("station_id")
             variable_id = kwargs.get("variable_id")
             date = kwargs.get("date")
@@ -401,7 +401,7 @@ class DataReport(FormView):
     def post(self, request, *args, **kwargs):
         form = DataReportForm(self.request.POST or None)
         if form.is_valid():
-            if self.request.is_ajax():
+            if functions.is_ajax(self.request):
                 temporality = form.cleaned_data["temporality"]
                 station = form.cleaned_data["station"]
                 variable = form.cleaned_data["variable"]

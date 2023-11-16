@@ -547,7 +547,7 @@ def create_daily_df(
     daily["value_difference_error_count"] = (
         daily_group_all["value_difference_error"].sum(numeric_only=False).to_numpy()
     )
-
+    daily["date"] = pd.to_datetime(daily["date"])
     daily["day_interval"] = (daily["date"] - daily["date"].shift(1)).dt.days
     daily.loc[0, "day_interval"] = 1
     daily["date_error"] = np.where(daily["day_interval"].gt(1), 3, 1)
@@ -606,7 +606,7 @@ def calculate_extra_data_daily(
     )
     extra_data_count["date"] = pd.to_datetime(
         extra_data_count["time_truncated"]
-    ).dt.date
+    )
 
     extra_data_daily_group = extra_data_count[
         extra_data_count["extra_values_count"] > 0
@@ -706,6 +706,7 @@ def daily_report(
     # Final touches and extracting relevant parts from other dataframes
     daily.index.name = "id"
     daily.reset_index(inplace=True)
+    daily["date"] = daily["date"].dt.date
     return (
         daily,
         selected[["time"] + value_fields],
@@ -1297,3 +1298,11 @@ def calculate_monthly(variable):
         monthly = Monthly(**record)
         monthly.save()
         daily_block.update(used_for_monthly=True)
+
+
+def is_ajax(request):
+    """Check if a requests is an Ajax one.
+
+    Following suggestion in https://stackoverflow.com/a/70419609/3778792
+    """
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
