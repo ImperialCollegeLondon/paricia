@@ -93,7 +93,7 @@ def get_last_uploaded_date(station_id, var_code):
     return datetime
 
 
-def preformat_matrix(source_file, file_format):
+def preformat_matrix(source_file, file_format, timezone: str):
     """
     First step for importing data. Works out what sort of file is being read and adds
     standardised columns for date and datetime (str). This is used in construct_matrix.
@@ -152,7 +152,6 @@ def preformat_matrix(source_file, file_format):
                 skipfooter=skipfooter,
                 engine=engine,
                 encoding="ISO-8859-1",
-                error_bad_lines=False,
             )
         else:
             file = pd.read_csv(
@@ -164,7 +163,6 @@ def preformat_matrix(source_file, file_format):
                 skipfooter=skipfooter,
                 engine=engine,
                 encoding="ISO-8859-1",
-                error_bad_lines=False,
             )
 
     datetime_format = file_format.date.code + " " + file_format.time.code

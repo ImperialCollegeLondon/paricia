@@ -18,7 +18,9 @@ import mimetypes
 import os
 import shutil
 import urllib
+from logging import getLogger
 
+import pandas as pd
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
@@ -58,6 +60,8 @@ class DataImportTempCreate(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         file = copy.deepcopy(self.request.FILES["file"])
+        timezone = serializer.validated_data["station"].timezone
+        getLogger().warning(timezone)
         matrix = preformat_matrix(file, serializer.validated_data["format"])
         del file
         # Set start and end date based on cleaned data from the file
