@@ -1,14 +1,15 @@
 import calendar
-from datetime import date, datetime, time
-from threading import Thread
-from typing import Tuple, Union, overload, Sequence, List, Dict, Any
+import logging
+import zoneinfo
+from datetime import date, datetime, time, tzinfo
 from decimal import Decimal
+from threading import Thread
+from typing import Any, Dict, List, Sequence, Tuple, Union, overload
 
 import numpy as np
 import pandas as pd
 from django.apps import apps
 from django.db.models import BooleanField, Value
-import logging
 
 from station.models import DeltaT, Station
 from variable.models import Variable
@@ -21,18 +22,18 @@ logger = logging.getLogger(__name__)
 
 
 @overload
-def set_time_limits(start_time: str, end_time: str) -> Tuple[str, str]:
+def set_time_limits(start_time: str, end_time: str, tz: tzinfo) -> Tuple[str, str]:
     ...
 
 
 @overload
 def set_time_limits(
-    start_time: datetime, end_time: datetime
+    start_time: datetime, end_time: datetime, tz: tzinfo
 ) -> Tuple[datetime, datetime]:
     ...
 
 
-def set_time_limits(start_time, end_time):
+def set_time_limits(start_time, end_time, tz):
     """Complete the datetime objects to cover a whole day.
 
     Completes the hour in start_date and end_date in order to have a whole day from the
@@ -45,15 +46,13 @@ def set_time_limits(start_time, end_time):
     Returns:
         A tuple with the same objects updated
     """
-    if isinstance(start_time, date):
-        start_time = datetime.combine(start_time, time(0, 0, 0, 0))
-    elif isinstance(start_time, str):
-        start_time = start_time + " 00:00:00"
+    if isinstance(start_time, str):
+        start_time = date(*[int(val) for val in start_time.split("-")])
+    if isinstance(end_time, str):
+        end_time = date(*[int(val) for val in end_time.split("-")])
 
-    if isinstance(end_time, date):
-        end_time = datetime.combine(end_time, time(23, 59, 59, 999999))
-    elif isinstance(end_time, str):
-        end_time = end_time + " 23:59:59"
+    start_time = datetime.combine(start_time, time(0, 0, 0, 0)).replace(tzinfo=tz)
+    end_time = datetime.combine(end_time, time(23, 59, 59, 999999)).replace(tzinfo=tz)
 
     return start_time, end_time
 
@@ -61,8 +60,8 @@ def set_time_limits(start_time, end_time):
 def daily_validation(
     station: Station,
     variable: Variable,
-    start_time: Union[datetime, str],
-    end_time: Union[datetime, str],
+    start_time: datetime,
+    end_time: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -409,8 +408,8 @@ def verify_validated(validated: pd.DataFrame, measurement: pd.DataFrame) -> pd.S
 def preprocessing(
     station: Station,
     variable: Variable,
-    start_time: Union[datetime, str],
-    end_time: Union[datetime, str],
+    start_time: datetime,
+    end_time: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -604,9 +603,7 @@ def calculate_extra_data_daily(
         extra_data_count["repeated_in_validated"]
         + extra_data_count["repeated_in_measurement"]
     )
-    extra_data_count["date"] = pd.to_datetime(
-        extra_data_count["time_truncated"]
-    )
+    extra_data_count["date"] = pd.to_datetime(extra_data_count["time_truncated"])
 
     extra_data_daily_group = extra_data_count[
         extra_data_count["extra_values_count"] > 0
@@ -622,8 +619,8 @@ def calculate_extra_data_daily(
 def daily_report(
     station: Station,
     variable: Variable,
-    start_time: Union[datetime, str],
-    end_time: Union[datetime, str],
+    start_time: datetime,
+    end_time: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -637,7 +634,8 @@ def daily_report(
         maximum: Maximum value expected for the variable.
         minimum: Minimum value expected for the variable.
     """
-    start_time, end_time = set_time_limits(start_time, end_time)
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    start_time, end_time = set_time_limits(start_time, end_time, tz)
     (
         measurement,
         validated,
@@ -738,8 +736,8 @@ def detail_list(
         A dictionary response for the detailed day table containing the report
         of values and statistics, indicators, time series for plot, etc.
     """
-    start_time, end_time = set_time_limits(date_of_interest, date_of_interest)
-
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    start_time, end_time = set_time_limits(date_of_interest, date_of_interest, tz)
     (
         measurement,
         validated,
@@ -851,8 +849,8 @@ def save_to_validated(
     variable: Variable,
     station: Station,
     to_delete: List[date],
-    start_date: Union[datetime, str],
-    end_date: Union[datetime, str],
+    start_date: datetime,
+    end_date: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -877,8 +875,9 @@ def save_to_validated(
         True if the data saving to validation succeeds.
     """
     validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    start_date, end_date = set_time_limits(start_date, end_date, tz)
 
-    start_date, end_date = set_time_limits(start_date, end_date)
     _, _, _, selected, _, value_fields = preprocessing(
         station, variable, start_date, end_date, minimum, maximum
     )
@@ -978,8 +977,8 @@ def data_report(
         raise ValueError(
             f"Invalid temporality: {temporality}. Valid values are: {', '.join(valid)}"
         )
-
-    start_time, end_time = set_time_limits(start_time, end_time)
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    start_time, end_time = set_time_limits(start_time, end_time, tz)
     data = (
         apps.get_model(app_label=temporality, model_name=variable.variable_code)
         .objects.filter(
@@ -1127,13 +1126,15 @@ def calculate_hourly(variable: Variable) -> None:
 
     while register:
         delta_t = DeltaT.objects.get(station__station_id=register.station_id)
-
+        tz = zoneinfo.ZoneInfo(
+            Station.objects.get(station_id=register.station_id).timezone
+        )
         start_of_hour = datetime.combine(
             register.time, time(register.time.hour, 0, 0, 0)
-        )
+        ).replace(tzinfo=tz)
         end_of_hour = datetime.combine(
             register.time, time(start_of_hour.hour, 59, 59, 999999)
-        )
+        ).replace(tzinfo=tz)
         validated_block = validated.objects.filter(
             station_id=register.station_id,
             time__gte=start_of_hour,
@@ -1188,9 +1189,15 @@ def calculate_daily(variable):
         if not register:
             register_exists = False
             return
-
-        start_of_day = datetime.combine(register.time, time(0, 0, 0, 0))
-        end_of_day = datetime.combine(register.time, time(23, 59, 59, 999999))
+        tz = zoneinfo.ZoneInfo(
+            Station.objects.get(station_id=register.station_id).timezone
+        )
+        start_of_day = datetime.combine(register.time, time(0, 0, 0, 0)).replace(
+            tzinfo=tz
+        )
+        end_of_day = datetime.combine(register.time, time(23, 59, 59, 999999)).replace(
+            tzinfo=tz
+        )
         hourly_block = Hourly.objects.filter(
             station_id=register.station_id, time__gte=start_of_day, time__lte=end_of_day
         )
@@ -1249,12 +1256,16 @@ def calculate_monthly(variable):
         if not register:
             register_exists = False
             return
-
-        start_of_month = datetime(register.time.year, register.time.month, 1, 0, 0)
+        tz = zoneinfo.ZoneInfo(
+            Station.objects.get(station_id=register.station_id).timezone
+        )
+        start_of_month = datetime(
+            register.time.year, register.time.month, 1, 0, 0
+        ).replace(tzinfo=tz)
         last_day = calendar.monthrange(register.time.year, register.time.month)[1]
         end_of_month = datetime(
             register.time.year, register.time.month, last_day, 23, 59
-        )
+        ).replace(tzinfo=tz)
         daily_block = Daily.objects.filter(
             station_id=register.station_id,
             time__gte=start_of_month,
@@ -1305,4 +1316,4 @@ def is_ajax(request):
 
     Following suggestion in https://stackoverflow.com/a/70419609/3778792
     """
-    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    return request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"

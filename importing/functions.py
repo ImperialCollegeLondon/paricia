@@ -14,6 +14,7 @@
 import os
 import shutil
 import time
+import zoneinfo
 from datetime import datetime
 from logging import getLogger
 from numbers import Number
@@ -93,19 +94,21 @@ def get_last_uploaded_date(station_id, var_code):
     return datetime
 
 
-def preformat_matrix(source_file, file_format):
+def preformat_matrix(source_file, file_format, timezone: str):
     """
     First step for importing data. Works out what sort of file is being read and adds
     standardised columns for date and datetime (str). This is used in construct_matrix.
     Args:
         source_file: path to raw data file.
         file_format: formatting.models.Format object.
+        timezone: Timezone name, eg. 'America/Chicago'.
     Returns:
         Pandas.DataFrame with raw data read and extra column(s) for date and datetime
         (Str), which should be parsed correctly here.
     """
     firstline = file_format.first_row if file_format.first_row else 0
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
+    tz = zoneinfo.ZoneInfo(timezone)
 
     if file_format.extension.value in ["xlsx", "xlx"]:
         # If in Excel format
@@ -152,7 +155,6 @@ def preformat_matrix(source_file, file_format):
                 skipfooter=skipfooter,
                 engine=engine,
                 encoding="ISO-8859-1",
-                error_bad_lines=False,
             )
         else:
             file = pd.read_csv(
@@ -164,14 +166,13 @@ def preformat_matrix(source_file, file_format):
                 skipfooter=skipfooter,
                 engine=engine,
                 encoding="ISO-8859-1",
-                error_bad_lines=False,
             )
 
     datetime_format = file_format.date.code + " " + file_format.time.code
     if file_format.date_column == file_format.time_column:
         file["date"] = pd.Series(
             [
-                standardise_datetime(row, datetime_format)
+                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
                 for row in file[file_format.date_column - 1].values
             ],
             index=file.index,
@@ -198,7 +199,7 @@ def preformat_matrix(source_file, file_format):
         )
         file["date"] = pd.Series(
             [
-                standardise_datetime(row, datetime_format)
+                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
                 for row in file["datetime_str"].values
             ],
             index=file.index,
@@ -208,7 +209,7 @@ def preformat_matrix(source_file, file_format):
     return file.reset_index(drop=True)
 
 
-def standardise_datetime(date_time, datetime_format):
+def standardise_datetime(date_time, datetime_format) -> datetime:
     """
     Returns a datetime object in the case that date_time is not already in that form.
     Args:
@@ -220,7 +221,9 @@ def standardise_datetime(date_time, datetime_format):
     if isinstance(date_time, datetime):
         return date_time
     elif isinstance(date_time, np.datetime64):
-        date_time = datetime.utcfromtimestamp((date_time - unix_epoch) / one_second)
+        date_time = datetime.utcfromtimestamp(
+            float((date_time - unix_epoch) / one_second)
+        )
         return date_time
     elif isinstance(date_time, str):
         pass
@@ -271,36 +274,52 @@ def save_temp_data_to_permanent(data_import_temp):
             station_id=station.station_id,
         ).delete()
 
+        # The following is a hack to account for the different possible name of the
+        # fields that the models might have. Will be made "nicer" at some point.
+        # This should always work as a measurement model should always have one and only
+        # one of "value", "average", "sum" fields.
+        value_field = (
+            set([field.name for field in Model._meta.fields])
+            .intersection(["value", "average", "sum"])
+            .pop()
+        )
+
         # Bulk add new data
         # TODO improve this logic to cope with variables that might have max/min
         # AND depth.
         if "maximum" in table.columns:
             model_instances = [
                 Model(
-                    time=record["date"],
-                    value=record["value"],
-                    station_id=record["station_id"],
-                    maximum=record["maximum"],
-                    minimum=record["minimum"],
+                    {
+                        "time": record["date"],
+                        value_field: record["value"],
+                        "station_id": record["station_id"],
+                        "maximum": record["maximum"],
+                        "minimum": record["minimum"],
+                    },
                 )
                 for record in records
             ]
         elif "depth" in [f.name for f in Model._meta.fields]:
             model_instances = [
                 Model(
-                    time=record["date"],
-                    value=record["value"],
-                    depth=record["depth"],
-                    station_id=record["station_id"],
+                    {
+                        "time": record["date"],
+                        value_field: record["value"],
+                        "depth": record["depth"],
+                        "station_id": record["station_id"],
+                    },
                 )
                 for record in records
             ]
         else:
             model_instances = [
                 Model(
-                    time=record["date"],
-                    value=record["value"],
-                    station_id=record["station_id"],
+                    {
+                        "time": record["date"],
+                        value_field: record["value"],
+                        "station_id": record["station_id"],
+                    },
                 )
                 for record in records
             ]
@@ -321,7 +340,7 @@ def construct_matrix(matrix_source, file_format, station):
     """
 
     # Get the "preformatted matrix" sorted by date col
-    matrix = preformat_matrix(matrix_source, file_format)
+    matrix = preformat_matrix(matrix_source, file_format, station.timezone)
     # Find start and end dates from top and bottom row
     start_date = matrix.loc[0, "date"]
     end_date = matrix.loc[matrix.shape[0] - 1, "date"]

@@ -26,13 +26,14 @@ class TestSaveImportModels(TestCase):
 
     def setUp(self):
         from formatting.models import Format
-        from station.models import Station
+        from station.models import TIMEZONES, Station
 
         self.file_format = Format.objects.get(format_id=45)
         self.data_file = str(
             Path(__file__).parent.parent / "test_data/iMHEA_HMT_01_HI_01_raw.csv"
         )
         self.station = Station.objects.get(station_id=8)
+        self.station.timezone = TIMEZONES[0][0]
 
     def test_save_import_temp(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
@@ -40,7 +41,9 @@ class TestSaveImportModels(TestCase):
         from importing.functions import preformat_matrix
         from importing.models import DataImportTemp
 
-        matrix = preformat_matrix(self.data_file, self.file_format)
+        matrix = preformat_matrix(
+            self.data_file, self.file_format, self.station.timezone
+        )
         start_date = matrix.loc[0, "date"]
         end_date = matrix.loc[matrix.shape[0] - 1, "date"]
 

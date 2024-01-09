@@ -13,22 +13,22 @@ class TestModelCreation(TestCase):
         flow1 = Flow.objects.create(
             station_id=1,
             time=datetime(2015, 10, 9, 23, 55, 59, tzinfo=pytz.UTC),
-            value=10.2,
+            average=10.2,
         )
         flow2 = Flow.objects.create(
             station_id=1,
             time=datetime(2016, 11, 9, 23, 55, 59, tzinfo=pytz.UTC),
-            value=5.7,
+            average=5.7,
         )
         precip1 = Precipitation.objects.create(
             station_id=2,
             time=datetime(2017, 12, 9, 23, 55, 59, tzinfo=pytz.UTC),
-            value=11.1,
+            sum=11.1,
         )
         precip2 = Precipitation.objects.create(
             station_id=2,
             time=datetime(2018, 1, 9, 23, 55, 59, tzinfo=pytz.UTC),
-            value=0.3,
+            sum=0.3,
         )
 
     def test_flow(self):
