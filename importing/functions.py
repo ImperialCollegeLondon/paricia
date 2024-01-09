@@ -274,36 +274,52 @@ def save_temp_data_to_permanent(data_import_temp):
             station_id=station.station_id,
         ).delete()
 
+        # The following is a hack to account for the different possible name of the
+        # fields that the models might have. Will be made "nicer" at some point.
+        # This should always work as a measurement model should always have one and only
+        # one of "value", "average", "sum" fields.
+        value_field = (
+            set([field.name for field in Model._meta.fields])
+            .intersection(["value", "average", "sum"])
+            .pop()
+        )
+
         # Bulk add new data
         # TODO improve this logic to cope with variables that might have max/min
         # AND depth.
         if "maximum" in table.columns:
             model_instances = [
                 Model(
-                    time=record["date"],
-                    value=record["value"],
-                    station_id=record["station_id"],
-                    maximum=record["maximum"],
-                    minimum=record["minimum"],
+                    {
+                        "time": record["date"],
+                        value_field: record["value"],
+                        "station_id": record["station_id"],
+                        "maximum": record["maximum"],
+                        "minimum": record["minimum"],
+                    },
                 )
                 for record in records
             ]
         elif "depth" in [f.name for f in Model._meta.fields]:
             model_instances = [
                 Model(
-                    time=record["date"],
-                    value=record["value"],
-                    depth=record["depth"],
-                    station_id=record["station_id"],
+                    {
+                        "time": record["date"],
+                        value_field: record["value"],
+                        "depth": record["depth"],
+                        "station_id": record["station_id"],
+                    },
                 )
                 for record in records
             ]
         else:
             model_instances = [
                 Model(
-                    time=record["date"],
-                    value=record["value"],
-                    station_id=record["station_id"],
+                    {
+                        "time": record["date"],
+                        value_field: record["value"],
+                        "station_id": record["station_id"],
+                    },
                 )
                 for record in records
             ]
