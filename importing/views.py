@@ -62,7 +62,7 @@ class DataImportTempCreate(generics.CreateAPIView):
         file = copy.deepcopy(self.request.FILES["file"])
         timezone = serializer.validated_data["station"].timezone
         getLogger().warning(timezone)
-        matrix = preformat_matrix(file, serializer.validated_data["format"])
+        matrix = preformat_matrix(file, serializer.validated_data["format"], timezone)
         del file
         # Set start and end date based on cleaned data from the file
         serializer.validated_data["start_date"] = matrix.loc[0, "date"]

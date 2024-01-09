@@ -17,6 +17,7 @@ import time
 from datetime import datetime
 from logging import getLogger
 from numbers import Number
+import zoneinfo
 
 import numpy as np
 import pandas as pd
@@ -100,12 +101,14 @@ def preformat_matrix(source_file, file_format, timezone: str):
     Args:
         source_file: path to raw data file.
         file_format: formatting.models.Format object.
+        timezone: Timezone name, eg. 'America/Chicago'.
     Returns:
         Pandas.DataFrame with raw data read and extra column(s) for date and datetime
         (Str), which should be parsed correctly here.
     """
     firstline = file_format.first_row if file_format.first_row else 0
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
+    tz = zoneinfo.ZoneInfo(timezone)
 
     if file_format.extension.value in ["xlsx", "xlx"]:
         # If in Excel format
@@ -169,7 +172,7 @@ def preformat_matrix(source_file, file_format, timezone: str):
     if file_format.date_column == file_format.time_column:
         file["date"] = pd.Series(
             [
-                standardise_datetime(row, datetime_format)
+                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
                 for row in file[file_format.date_column - 1].values
             ],
             index=file.index,
@@ -196,7 +199,7 @@ def preformat_matrix(source_file, file_format, timezone: str):
         )
         file["date"] = pd.Series(
             [
-                standardise_datetime(row, datetime_format)
+                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
                 for row in file["datetime_str"].values
             ],
             index=file.index,
@@ -206,7 +209,7 @@ def preformat_matrix(source_file, file_format, timezone: str):
     return file.reset_index(drop=True)
 
 
-def standardise_datetime(date_time, datetime_format):
+def standardise_datetime(date_time, datetime_format) -> datetime:
     """
     Returns a datetime object in the case that date_time is not already in that form.
     Args:
@@ -218,7 +221,9 @@ def standardise_datetime(date_time, datetime_format):
     if isinstance(date_time, datetime):
         return date_time
     elif isinstance(date_time, np.datetime64):
-        date_time = datetime.utcfromtimestamp((date_time - unix_epoch) / one_second)
+        date_time = datetime.utcfromtimestamp(
+            float((date_time - unix_epoch) / one_second)
+        )
         return date_time
     elif isinstance(date_time, str):
         pass
@@ -319,7 +324,7 @@ def construct_matrix(matrix_source, file_format, station):
     """
 
     # Get the "preformatted matrix" sorted by date col
-    matrix = preformat_matrix(matrix_source, file_format)
+    matrix = preformat_matrix(matrix_source, file_format, station.timezone)
     # Find start and end dates from top and bottom row
     start_date = matrix.loc[0, "date"]
     end_date = matrix.loc[matrix.shape[0] - 1, "date"]

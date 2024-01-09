@@ -40,7 +40,9 @@ class TestSaveImportModels(TestCase):
         from importing.functions import preformat_matrix
         from importing.models import DataImportTemp
 
-        matrix = preformat_matrix(self.data_file, self.file_format)
+        matrix = preformat_matrix(
+            self.data_file, self.file_format, self.station.timezone
+        )
         start_date = matrix.loc[0, "date"]
         end_date = matrix.loc[matrix.shape[0] - 1, "date"]
 

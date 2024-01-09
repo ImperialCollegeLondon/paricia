@@ -39,7 +39,7 @@ class TestMatrixFunctions(TestCase):
     def test_preformat_matrix(self):
         from importing.functions import preformat_matrix
 
-        df = preformat_matrix(self.data_file, self.file_format)
+        df = preformat_matrix(self.data_file, self.file_format, self.station.timezone)
         self.assertEqual(df.shape, (263371, 5))
 
     def test_construct_matrix(self):
