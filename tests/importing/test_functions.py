@@ -28,13 +28,14 @@ class TestMatrixFunctions(TestCase):
 
     def setUp(self):
         from formatting.models import Format
-        from station.models import Station
+        from station.models import TIMEZONES, Station
 
         self.file_format = Format.objects.get(format_id=45)
         self.data_file = str(
             Path(__file__).parent.parent / "test_data/iMHEA_HMT_01_HI_01_raw.csv"
         )
         self.station = Station.objects.get(station_id=8)
+        self.station.timezone = TIMEZONES[0][0]
 
     def test_preformat_matrix(self):
         from importing.functions import preformat_matrix
@@ -85,15 +86,18 @@ class TestDateFunctions(TestCase):
         from importing.functions import preformat_matrix
         from importing.models import DataImportTemp
         from measurement.models import Flow
-        from station.models import Station
+        from station.models import TIMEZONES, Station
 
         self.file_format = Format.objects.get(format_id=45)
         self.data_file = str(
             Path(__file__).parent.parent / "test_data" / "iMHEA_HMT_01_HI_01_raw.csv"
         )
         self.station = Station.objects.get(station_id=8)
+        self.station.timezone = TIMEZONES[0][0]
 
-        matrix = preformat_matrix(self.data_file, self.file_format)
+        matrix = preformat_matrix(
+            self.data_file, self.file_format, self.station.timezone
+        )
         start_date = matrix.loc[0, "date"]
         end_date = matrix.loc[matrix.shape[0] - 1, "date"]
 
@@ -114,12 +118,12 @@ class TestDateFunctions(TestCase):
         flow1 = Flow.objects.create(
             station_id=8,
             time=datetime(2014, 6, 28, 0, 35, 0, tzinfo=pytz.UTC),
-            value=3.4,
+            average=3.4,
         )
         flow2 = Flow.objects.create(
             station_id=8,
             time=datetime(2016, 3, 7, 18, 5, 0, tzinfo=pytz.UTC),
-            value=5.7,
+            average=5.7,
         )
 
     def test_get_last_uploaded_date(self):
