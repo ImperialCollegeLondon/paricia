@@ -3,6 +3,7 @@ from datetime import date, datetime, time
 from threading import Thread
 from typing import Tuple, Union, overload, Sequence, List, Dict, Any
 from decimal import Decimal
+import zoneinfo
 
 import numpy as np
 import pandas as pd
@@ -61,8 +62,8 @@ def set_time_limits(start_time, end_time):
 def daily_validation(
     station: Station,
     variable: Variable,
-    start_time: Union[datetime, str],
-    end_time: Union[datetime, str],
+    start_time: datetime,
+    end_time: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -409,8 +410,8 @@ def verify_validated(validated: pd.DataFrame, measurement: pd.DataFrame) -> pd.S
 def preprocessing(
     station: Station,
     variable: Variable,
-    start_time: Union[datetime, str],
-    end_time: Union[datetime, str],
+    start_time: datetime,
+    end_time: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -604,9 +605,7 @@ def calculate_extra_data_daily(
         extra_data_count["repeated_in_validated"]
         + extra_data_count["repeated_in_measurement"]
     )
-    extra_data_count["date"] = pd.to_datetime(
-        extra_data_count["time_truncated"]
-    )
+    extra_data_count["date"] = pd.to_datetime(extra_data_count["time_truncated"])
 
     extra_data_daily_group = extra_data_count[
         extra_data_count["extra_values_count"] > 0
@@ -622,8 +621,8 @@ def calculate_extra_data_daily(
 def daily_report(
     station: Station,
     variable: Variable,
-    start_time: Union[datetime, str],
-    end_time: Union[datetime, str],
+    start_time: datetime,
+    end_time: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -638,6 +637,9 @@ def daily_report(
         minimum: Minimum value expected for the variable.
     """
     start_time, end_time = set_time_limits(start_time, end_time)
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    start_time = start_time.replace(tzinfo=tz)
+    end_time = end_time.replace(tzinfo=tz)
     (
         measurement,
         validated,
@@ -851,8 +853,8 @@ def save_to_validated(
     variable: Variable,
     station: Station,
     to_delete: List[date],
-    start_date: Union[datetime, str],
-    end_date: Union[datetime, str],
+    start_date: datetime,
+    end_date: datetime,
     minimum: Decimal,
     maximum: Decimal,
 ):
@@ -879,6 +881,9 @@ def save_to_validated(
     validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
 
     start_date, end_date = set_time_limits(start_date, end_date)
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    start_date = start_date.replace(tzinfo=tz)
+    end_date = end_date.replace(tzinfo=tz)
     _, _, _, selected, _, value_fields = preprocessing(
         station, variable, start_date, end_date, minimum, maximum
     )
@@ -1305,4 +1310,4 @@ def is_ajax(request):
 
     Following suggestion in https://stackoverflow.com/a/70419609/3778792
     """
-    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    return request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
