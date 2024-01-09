@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "management",
     "crispy_forms",
+    "crispy_bootstrap4",
 ]
 
 MIDDLEWARE = [
@@ -242,3 +243,6 @@ SIMPLE_JWT = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
