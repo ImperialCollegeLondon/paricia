@@ -11,11 +11,11 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
+import zoneinfo
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-
-import zoneinfo
 
 TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
 
