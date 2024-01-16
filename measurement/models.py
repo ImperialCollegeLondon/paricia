@@ -63,10 +63,49 @@ class MeasurementBase(TimescaleModel):
         default_permissions = ()
         abstract = True
         indexes = [
-            models.Index(fields=["station", "variable", "time"]),
-            models.Index(fields=["variable", "station", "time"]),
-            models.Index(fields=["time", "station", "variable"]),
+            models.Index(fields=["station", "time", "variable"]),
         ]
+
+
+class ReportType(models.TextChoices):
+    HOURLY = "hourly"
+    DAILY = "daily"
+    MONTLY = "monthly"
+
+
+class Report(MeasurementBase):
+    """Holds the different reporting data.
+
+    It also keeps track of which data has already been used when creating the reports.
+    """
+
+    report_type = models.CharField(max_length=7, choices=ReportType.choices, null=False)
+    used_for_daily = models.BooleanField(
+        verbose_name="Has data been used already for a daily report?", default=False
+    )
+    used_for_monthly = models.BooleanField(
+        verbose_name="Has data been used already for a montly report?", default=False
+    )
+
+    class Meta:
+        default_permissions = ()
+        indexes = [
+            models.Index(fields=["report_type", "station", "time", "variable"]),
+        ]
+
+    def clean(self) -> None:
+        """Validate that the report type and use of the data is consistent."""
+        if self.used_for_daily and self.report_type != ReportType.HOURLY:
+            raise ValueError(
+                "Only hourly data can be used for daily report calculations."
+            )
+        if self.used_for_monthly and self.report_type != ReportType.DAILY:
+            raise ValueError(
+                "Only daily data can be used for monthly report calculations."
+            )
+
+
+## Legacy models - to be removed
 
 
 class PermissionsMeasurement(models.Model):
