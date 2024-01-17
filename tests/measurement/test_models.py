@@ -142,6 +142,21 @@ class TestMeasurement(TestCase):
         self.model.clean()
         self.assertEqual(self.model.value, self.model.raw_value)
 
+    def test_clean_validation(self):
+        # When not validated and active, all should be ok
+        self.model.clean()
+
+        # If becomes inactive but is not validated, there's an error
+        self.model.is_validated = False
+        self.model.is_active = False
+        with self.assertRaises(ValueError):
+            self.model.clean()
+
+        # If it is inactive but has been validated, then it is ok again
+        self.model.is_validated = True
+        self.model.is_active = False
+        self.model.clean()
+
     def test_overwritten(self):
         # If we start fresh, it is not overwritten
         self.model.clean()
