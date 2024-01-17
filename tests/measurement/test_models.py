@@ -134,6 +134,14 @@ class TestMeasurement(TestCase):
             value=42,
         )
 
+    def test_clean_backup_raws(self):
+        # Initially, there's no raw
+        self.assertIsNone(self.model.raw_value)
+
+        # But after running clean, there is and is equal to value
+        self.model.clean()
+        self.assertEqual(self.model.value, self.model.raw_value)
+
     def test_overwritten(self):
         # If we start fresh, it is not overwritten
         self.model.clean()
