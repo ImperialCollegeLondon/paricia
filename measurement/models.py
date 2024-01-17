@@ -91,7 +91,16 @@ class Report(MeasurementBase):
 
 
 class Measurement(MeasurementBase):
-    """_summary_"""
+    """Class to store the measurements and their validation status.
+
+    This class holds the value of a given variable and station at a specific time, as
+    well as auxiliary information such as maximum and minimum values, depth and
+    direction, for vector quantities. All of these hava a `raw` version where a backup
+    of the original data is kept, should this change at any point.
+
+    Flgas to monitor its validation status, if the data is active (and therefore can be
+    used for reporting) and if it has actually been used for that is also included.
+    """
 
     depth = models.PositiveSmallIntegerField("depth", null=True)
     direction = models.DecimalField(
@@ -115,6 +124,25 @@ class Measurement(MeasurementBase):
     )
     is_validated = models.BooleanField("Has data been validated?", default=False)
     is_active = models.BooleanField("Is data active?", default=True)
+
+    def clean(self) -> None:
+        """Check consistency of validation, reporting and backs-up values."""
+        # Check consistency of validation
+        if not self.is_validated and not self.is_active:
+            raise ValueError("Only validated entries can be delcared as inactive.")
+
+        # Check consistency of the reporting
+        if self.used_for_hourly and not (self.is_validated and self.is_active):
+            raise ValueError(
+                "Only validated, active data can be used for hourly reports."
+            )
+
+        # Backup values to raws, if needed
+        raws = (r for r in dir(self) if r.startswith("raw_"))
+        for r in raws:
+            value = getattr(self, r.removeprefix("raw_"))
+            if value and not getattr(self, r):
+                setattr(self, r, value)
 
 
 ## Legacy models - to be removed
