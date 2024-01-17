@@ -40,24 +40,9 @@ class MeasurementBase(TimescaleModel):
     variable = models.ForeignKey(
         Variable, on_delete=models.PROTECT, null=False, verbose_name="Variable"
     )
-    value = models.DecimalField(
-        "value",
-        max_digits=14,
-        decimal_places=6,
-        null=False,
-    )
-    maximum = models.DecimalField(
-        "maximum",
-        max_digits=14,
-        decimal_places=6,
-        null=True,
-    )
-    minimum = models.DecimalField(
-        "minimum",
-        max_digits=14,
-        decimal_places=6,
-        null=True,
-    )
+    value = models.DecimalField("value", max_digits=14, decimal_places=6, null=False)
+    maximum = models.DecimalField("maximum", max_digits=14, decimal_places=6, null=True)
+    minimum = models.DecimalField("minimum", max_digits=14, decimal_places=6, null=True)
 
     class Meta:
         default_permissions = ()
@@ -103,6 +88,33 @@ class Report(MeasurementBase):
             raise ValueError(
                 "Only daily data can be used for monthly report calculations."
             )
+
+
+class Measurement(MeasurementBase):
+    """_summary_"""
+
+    depth = models.PositiveSmallIntegerField("depth", null=True)
+    direction = models.DecimalField(
+        "direction", max_digits=14, decimal_places=6, null=True
+    )
+    raw_value = models.DecimalField(
+        "raw value", max_digits=14, decimal_places=6, null=True, editable=False
+    )
+    raw_maximum = models.DecimalField(
+        "raw maximum", max_digits=14, decimal_places=6, null=True, editable=False
+    )
+    raw_minimum = models.DecimalField(
+        "raw minimum", max_digits=14, decimal_places=6, null=True, editable=False
+    )
+    raw_direction = models.DecimalField(
+        "raw direction", max_digits=14, decimal_places=6, null=True, editable=False
+    )
+    raw_depth = models.PositiveSmallIntegerField("raw depth", null=True, editable=False)
+    used_for_hourly = models.BooleanField(
+        verbose_name="Has data been used already for an hourly report?", default=False
+    )
+    is_validated = models.BooleanField("Has data been validated?", default=False)
+    is_active = models.BooleanField("Is data active?", default=True)
 
 
 ## Legacy models - to be removed
