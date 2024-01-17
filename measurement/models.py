@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 from typing import List, Type
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from timescale.db.models.models import TimescaleModel
@@ -81,11 +82,11 @@ class Report(MeasurementBase):
     def clean(self) -> None:
         """Validate that the report type and use of the data is consistent."""
         if self.used_for_daily and self.report_type != ReportType.HOURLY:
-            raise ValueError(
+            raise ValidationError(
                 "Only hourly data can be used for daily report calculations."
             )
         if self.used_for_monthly and self.report_type != ReportType.DAILY:
-            raise ValueError(
+            raise ValidationError(
                 "Only daily data can be used for monthly report calculations."
             )
 
