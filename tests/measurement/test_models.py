@@ -157,6 +157,29 @@ class TestMeasurement(TestCase):
         self.model.is_active = False
         self.model.clean()
 
+    def test_clean_reporting(self):
+        # If it is validated and active, then it can be used for hourly reporting
+        self.model.is_validated = True
+        self.model.is_active = True
+        self.model.used_for_hourly = True
+        self.model.clean()
+
+        # If either is false, then it cannot be used
+        self.model.is_validated = True
+        self.model.is_active = False
+        with self.assertRaises(ValueError):
+            self.model.clean()
+
+        self.model.is_validated = False
+        self.model.is_active = True
+        with self.assertRaises(ValueError):
+            self.model.clean()
+
+        self.model.is_validated = False
+        self.model.is_active = False
+        with self.assertRaises(ValueError):
+            self.model.clean()
+
     def test_overwritten(self):
         # If we start fresh, it is not overwritten
         self.model.clean()
