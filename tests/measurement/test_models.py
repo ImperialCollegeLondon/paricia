@@ -96,11 +96,11 @@ class TestReport(TestCase):
 
         # But fails for the other two
         self.model.report_type = ReportType.DAILY
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
         self.model.report_type = ReportType.MONTLY
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
         # We check 'used_for_monthly' compatibility
@@ -112,11 +112,11 @@ class TestReport(TestCase):
 
         # But not for the other two
         self.model.report_type = ReportType.HOURLY
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
         self.model.report_type = ReportType.MONTLY
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
 
