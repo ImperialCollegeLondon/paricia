@@ -144,6 +144,22 @@ class Measurement(MeasurementBase):
             if value and not getattr(self, r):
                 setattr(self, r, value)
 
+    @property
+    def overwritten(self) -> bool:
+        """Indicates if any of the values associated to the entry have been overwritten.
+
+        Returns:
+            bool: True if any raw field is different to the corresponding standard
+                field.
+        """
+        raws = (r for r in dir(self) if r.startswith("raw_"))
+        for r in raws:
+            value = getattr(self, r.removeprefix("raw_"))
+            if value and value != getattr(self, r):
+                return True
+
+        return False
+
 
 ## Legacy models - to be removed
 
