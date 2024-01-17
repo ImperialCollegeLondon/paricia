@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytz
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from model_bakery import baker
 
@@ -149,7 +150,7 @@ class TestMeasurement(TestCase):
         # If becomes inactive but is not validated, there's an error
         self.model.is_validated = False
         self.model.is_active = False
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
         # If it is inactive but has been validated, then it is ok again
@@ -167,17 +168,17 @@ class TestMeasurement(TestCase):
         # If either is false, then it cannot be used
         self.model.is_validated = True
         self.model.is_active = False
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
         self.model.is_validated = False
         self.model.is_active = True
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
         self.model.is_validated = False
         self.model.is_active = False
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             self.model.clean()
 
     def test_overwritten(self):
