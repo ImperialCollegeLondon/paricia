@@ -117,3 +117,28 @@ class TestReport(TestCase):
         self.model.report_type = ReportType.MONTLY
         with self.assertRaises(ValueError):
             self.model.clean()
+
+
+class TestMeasurement(TestCase):
+    def setUp(self) -> None:
+        from measurement.models import Measurement
+        from station.models import Station
+        from variable.models import Variable
+
+        station = baker.make(Station)
+        variable = baker.make(Variable)
+        self.model: Measurement = Measurement(
+            time=datetime(2018, 1, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            station=station,
+            variable=variable,
+            value=42,
+        )
+
+    def test_overwritten(self):
+        # If we start fresh, it is not overwritten
+        self.model.clean()
+        self.assertFalse(self.model.overwritten)
+
+        # But if we change it, it should be overwritten
+        self.model.value = 32
+        self.assertTrue(self.model.overwritten)
