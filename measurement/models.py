@@ -19,9 +19,54 @@ from django.urls import reverse
 from timescale.db.models.models import TimescaleModel
 
 from station.models import Station
+from variable.models import Variable
 
 MEASUREMENTS: List[str] = []
 """Available measurement variables."""
+
+
+class MeasurementBase(TimescaleModel):
+    """Base class for all the measurement related entries.
+
+    It contains the barebone attributes that any measurement entry will likely need,
+    although this is enforced only for station, variable and value. Maximum and minimum
+    are very likely to be present in most cases, but might not be there in some
+    occasions, therefore the possibility of nulling them.
+    """
+
+    station = models.ForeignKey(
+        Station, on_delete=models.PROTECT, null=False, verbose_name="Station"
+    )
+    variable = models.ForeignKey(
+        Variable, on_delete=models.PROTECT, null=False, verbose_name="Variable"
+    )
+    value = models.DecimalField(
+        "value",
+        max_digits=14,
+        decimal_places=6,
+        null=False,
+    )
+    maximum = models.DecimalField(
+        "maximum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+    )
+    minimum = models.DecimalField(
+        "minimum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+    )
+
+    class Meta:
+        default_permissions = ()
+        abstract = True
+        indexes = [
+            models.Index(fields=["station", "variable", "time"]),
+            models.Index(fields=["variable", "station", "time"]),
+            models.Index(fields=["time", "station", "variable"]),
+        ]
 
 
 class PermissionsMeasurement(models.Model):
