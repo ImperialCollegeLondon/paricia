@@ -118,3 +118,74 @@ class TestReport(TestCase):
         self.model.report_type = ReportType.MONTLY
         with self.assertRaises(ValidationError):
             self.model.clean()
+
+
+class TestMeasurement(TestCase):
+    def setUp(self) -> None:
+        from measurement.models import Measurement
+        from station.models import Station
+        from variable.models import Variable
+
+        station = baker.make(Station)
+        variable = baker.make(Variable)
+        self.model: Measurement = Measurement(
+            time=datetime(2018, 1, 9, 23, 55, 59, tzinfo=pytz.UTC),
+            station=station,
+            variable=variable,
+            value=42,
+        )
+
+    def test_clean_backup_raws(self):
+        # Initially, there's no raw
+        self.assertIsNone(self.model.raw_value)
+
+        # But after running clean, there is and is equal to value
+        self.model.clean()
+        self.assertEqual(self.model.value, self.model.raw_value)
+
+    def test_clean_validation(self):
+        # When not validated and active, all should be ok
+        self.model.clean()
+
+        # If becomes inactive but is not validated, there's an error
+        self.model.is_validated = False
+        self.model.is_active = False
+        with self.assertRaises(ValidationError):
+            self.model.clean()
+
+        # If it is inactive but has been validated, then it is ok again
+        self.model.is_validated = True
+        self.model.is_active = False
+        self.model.clean()
+
+    def test_clean_reporting(self):
+        # If it is validated and active, then it can be used for hourly reporting
+        self.model.is_validated = True
+        self.model.is_active = True
+        self.model.used_for_hourly = True
+        self.model.clean()
+
+        # If either is false, then it cannot be used
+        self.model.is_validated = True
+        self.model.is_active = False
+        with self.assertRaises(ValidationError):
+            self.model.clean()
+
+        self.model.is_validated = False
+        self.model.is_active = True
+        with self.assertRaises(ValidationError):
+            self.model.clean()
+
+        self.model.is_validated = False
+        self.model.is_active = False
+        with self.assertRaises(ValidationError):
+            self.model.clean()
+
+    def test_overwritten(self):
+        # If we start fresh, it is not overwritten
+        self.model.clean()
+        self.assertFalse(self.model.overwritten)
+
+        # But if we change it, it should be overwritten
+        self.model.value = 32
+        self.assertTrue(self.model.overwritten)
