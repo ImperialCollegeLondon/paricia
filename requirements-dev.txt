@@ -2,3 +2,4 @@ black
 isort
 flake8
 pre-commit
+model_bakery

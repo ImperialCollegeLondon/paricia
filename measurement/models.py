@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 from typing import List, Type
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from timescale.db.models.models import TimescaleModel
@@ -40,33 +41,152 @@ class MeasurementBase(TimescaleModel):
     variable = models.ForeignKey(
         Variable, on_delete=models.PROTECT, null=False, verbose_name="Variable"
     )
-    value = models.DecimalField(
-        "value",
-        max_digits=14,
-        decimal_places=6,
-        null=False,
-    )
+    value = models.DecimalField("value", max_digits=14, decimal_places=6, null=False)
     maximum = models.DecimalField(
-        "maximum",
-        max_digits=14,
-        decimal_places=6,
-        null=True,
+        "maximum", max_digits=14, decimal_places=6, null=True, blank=True
     )
     minimum = models.DecimalField(
-        "minimum",
-        max_digits=14,
-        decimal_places=6,
-        null=True,
+        "minimum", max_digits=14, decimal_places=6, null=True, blank=True
     )
 
     class Meta:
         default_permissions = ()
         abstract = True
         indexes = [
-            models.Index(fields=["station", "variable", "time"]),
-            models.Index(fields=["variable", "station", "time"]),
-            models.Index(fields=["time", "station", "variable"]),
+            models.Index(fields=["station", "time", "variable"]),
         ]
+
+
+class ReportType(models.TextChoices):
+    HOURLY = "hourly"
+    DAILY = "daily"
+    MONTLY = "monthly"
+
+
+class Report(MeasurementBase):
+    """Holds the different reporting data.
+
+    It also keeps track of which data has already been used when creating the reports.
+    """
+
+    report_type = models.CharField(max_length=7, choices=ReportType.choices, null=False)
+    used_for_daily = models.BooleanField(verbose_name="Used for daily?", default=False)
+    used_for_monthly = models.BooleanField(
+        verbose_name="Used for monthly?", default=False
+    )
+
+    class Meta:
+        default_permissions = ()
+        indexes = [
+            models.Index(fields=["report_type", "station", "time", "variable"]),
+        ]
+
+    def clean(self) -> None:
+        """Validate that the report type and use of the data is consistent."""
+        if self.used_for_daily and self.report_type != ReportType.HOURLY:
+            raise ValidationError(
+                "Only hourly data can be used for daily report calculations."
+            )
+        if self.used_for_monthly and self.report_type != ReportType.DAILY:
+            raise ValidationError(
+                "Only daily data can be used for monthly report calculations."
+            )
+
+
+class Measurement(MeasurementBase):
+    """Class to store the measurements and their validation status.
+
+    This class holds the value of a given variable and station at a specific time, as
+    well as auxiliary information such as maximum and minimum values, depth and
+    direction, for vector quantities. All of these hava a `raw` version where a backup
+    of the original data is kept, should this change at any point.
+
+    Flags to monitor its validation status, if the data is active (and therefore can be
+    used for reporting) and if it has actually been used for that is also included.
+    """
+
+    depth = models.PositiveSmallIntegerField("depth", null=True, blank=True)
+    direction = models.DecimalField(
+        "direction", max_digits=14, decimal_places=6, null=True, blank=True
+    )
+    raw_value = models.DecimalField(
+        "raw value",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+    )
+    raw_maximum = models.DecimalField(
+        "raw maximum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+    )
+    raw_minimum = models.DecimalField(
+        "raw minimum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+    )
+    raw_direction = models.DecimalField(
+        "raw direction",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+    )
+    raw_depth = models.PositiveSmallIntegerField(
+        "raw depth", null=True, blank=True, editable=False
+    )
+    used_for_hourly = models.BooleanField(
+        verbose_name="Used for hourly?", default=False
+    )
+    is_validated = models.BooleanField("Validated?", default=False)
+    is_active = models.BooleanField("Active?", default=True)
+
+    def clean(self) -> None:
+        """Check consistency of validation, reporting and backs-up values."""
+        # Check consistency of validation
+        if not self.is_validated and not self.is_active:
+            raise ValidationError("Only validated entries can be delcared as inactive.")
+
+        # Check consistency of the reporting
+        if self.used_for_hourly and not (self.is_validated and self.is_active):
+            raise ValidationError(
+                "Only validated, active data can be used for hourly reports."
+            )
+
+        # Backup values to raws, if needed
+        raws = (r for r in dir(self) if r.startswith("raw_"))
+        for r in raws:
+            value = getattr(self, r.removeprefix("raw_"))
+            if value and not getattr(self, r):
+                setattr(self, r, value)
+
+    @property
+    def overwritten(self) -> bool:
+        """Indicates if any of the values associated to the entry have been overwritten.
+
+        Returns:
+            bool: True if any raw field is different to the corresponding standard
+                field.
+        """
+        raws = (r for r in dir(self) if r.startswith("raw_"))
+        for r in raws:
+            value = getattr(self, r.removeprefix("raw_"))
+            if value and value != getattr(self, r):
+                return True
+
+        return False
+
+
+## Legacy models - to be removed
 
 
 class PermissionsMeasurement(models.Model):

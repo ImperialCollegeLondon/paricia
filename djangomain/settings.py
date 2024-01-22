@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     "sensor.apps.SensorConfig",
     "variable.apps.VariableConfig",
     "formatting.apps.FormattingConfig",
-    "measurement.apps.MeasurementConfig",
+    "measurement",
     "validated.apps.ValidatedConfig",
     "hourly.apps.HourlyConfig",
     "daily.apps.DailyConfig",
