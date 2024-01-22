@@ -108,7 +108,6 @@ class Report(MeasurementBase):
 
 ## Legacy models - to be removed
 
-
 class PermissionsMeasurement(models.Model):
     """
     Model used to define the permission "validar".
