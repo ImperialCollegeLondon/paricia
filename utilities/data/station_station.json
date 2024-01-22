@@ -17,7 +17,8 @@
     "station_altitude": null,
     "station_file": "",
     "station_external": false,
-    "influence_km": null
+    "influence_km": null,
+    "timezone": "America/Lima"
   }
 },
 {
@@ -38,7 +39,8 @@
     "station_altitude": null,
     "station_file": "",
     "station_external": false,
-    "influence_km": null
+    "influence_km": null,
+    "timezone": "America/Lima"
   }
 },
 {
