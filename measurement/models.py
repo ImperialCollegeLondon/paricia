@@ -101,7 +101,7 @@ class Measurement(MeasurementBase):
     direction, for vector quantities. All of these hava a `raw` version where a backup
     of the original data is kept, should this change at any point.
 
-    Flgas to monitor its validation status, if the data is active (and therefore can be
+    Flags to monitor its validation status, if the data is active (and therefore can be
     used for reporting) and if it has actually been used for that is also included.
     """
 
