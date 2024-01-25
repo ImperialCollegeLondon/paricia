@@ -72,7 +72,7 @@ class TestModelCreation(TestCase):
 
 class TestReport(TestCase):
     def setUp(self) -> None:
-        from measurement.models import Report
+        from measurement.models import Report, ReportType
         from station.models import Station
         from variable.models import Variable
 
@@ -83,7 +83,7 @@ class TestReport(TestCase):
             station=station,
             variable=variable,
             value=42,
-            report_type=Report.HOURLY,
+            report_type=ReportType.HOURLY,
             completeness=1,
         )
 
