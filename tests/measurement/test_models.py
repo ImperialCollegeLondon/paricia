@@ -72,7 +72,7 @@ class TestModelCreation(TestCase):
 
 class TestReport(TestCase):
     def setUp(self) -> None:
-        from measurement.models import Report, ReportType
+        from measurement.models import Report
         from station.models import Station
         from variable.models import Variable
 
@@ -83,41 +83,69 @@ class TestReport(TestCase):
             station=station,
             variable=variable,
             value=42,
-            report_type=ReportType.HOURLY,
+            report_type=Report.HOURLY,
+            completeness=1,
         )
 
-    def test_clean(self):
+    def test_clean_report_type_hourly(self):
         from measurement.models import ReportType
 
-        # We check 'used_for_daily' compatibility
-        # Works if report type is Hourly
         self.model.used_for_daily = True
-        self.model.clean()
+        self.model.report_type = ReportType.HOURLY
+        self.model.clean()  # Should not raise any exception
 
-        # But fails for the other two
-        self.model.report_type = ReportType.DAILY
-        with self.assertRaises(ValidationError):
-            self.model.clean()
+    def test_clean_report_type_daily(self):
+        from measurement.models import ReportType
 
-        self.model.report_type = ReportType.MONTLY
-        with self.assertRaises(ValidationError):
-            self.model.clean()
-
-        # We check 'used_for_monthly' compatibility
-        # Works if report type is Daily
-        self.model.used_for_daily = False
         self.model.used_for_monthly = True
         self.model.report_type = ReportType.DAILY
-        self.model.clean()
+        self.model.clean()  # Should not raise any exception
 
-        # But not for the other two
+    def test_clean_report_type_monthly(self):
+        from measurement.models import ReportType
+
+        self.model.report_type = ReportType.MONTLY
+        self.model.clean()  # Should not raise any exception
+
+    def test_clean_inconsistent_report_type_hourly(self):
+        from measurement.models import ReportType
+
+        self.model.used_for_daily = True
+        self.model.report_type = ReportType.DAILY
+        with self.assertRaises(ValidationError):
+            self.model.clean()
+
+    def test_clean_inconsistent_report_type_daily(self):
+        from measurement.models import ReportType
+
+        self.model.used_for_monthly = True
         self.model.report_type = ReportType.HOURLY
         with self.assertRaises(ValidationError):
             self.model.clean()
 
+    def test_clean_time_hourly(self):
+        from measurement.models import ReportType
+
+        self.model.report_type = ReportType.HOURLY
+        self.model.clean()
+        expected_time = datetime(2018, 1, 9, 23, 0, 0, tzinfo=pytz.UTC)
+        self.assertEqual(self.model.time, expected_time)
+
+    def test_clean_time_daily(self):
+        from measurement.models import ReportType
+
+        self.model.report_type = ReportType.DAILY
+        self.model.clean()
+        expected_time = datetime(2018, 1, 9, 0, 0, 0, tzinfo=pytz.UTC)
+        self.assertEqual(self.model.time, expected_time)
+
+    def test_clean_time_monthly(self):
+        from measurement.models import ReportType
+
         self.model.report_type = ReportType.MONTLY
-        with self.assertRaises(ValidationError):
-            self.model.clean()
+        self.model.clean()
+        expected_time = datetime(2018, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
+        self.assertEqual(self.model.time, expected_time)
 
 
 class TestMeasurement(TestCase):
