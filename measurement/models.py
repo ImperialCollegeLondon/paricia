@@ -74,6 +74,7 @@ class Report(MeasurementBase):
     used_for_monthly = models.BooleanField(
         verbose_name="Used for monthly?", default=False
     )
+    completeness = models.DecimalField(max_digits=4, decimal_places=1, null=False)
 
     class Meta:
         default_permissions = ()
@@ -90,6 +91,15 @@ class Report(MeasurementBase):
         if self.used_for_monthly and self.report_type != ReportType.DAILY:
             raise ValidationError(
                 "Only daily data can be used for monthly report calculations."
+            )
+
+        if self.report_type == ReportType.HOURLY:
+            self.time = self.time.replace(minute=0, second=0, microsecond=0)
+        elif self.report_type == ReportType.DAILY:
+            self.time = self.time.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif self.report_type == ReportType.MONTLY:
+            self.time = self.time.replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0
             )
 
 
