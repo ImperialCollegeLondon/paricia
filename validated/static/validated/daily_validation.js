@@ -19,23 +19,23 @@ var num_datos = 0;
 
 // Define an object to hold the subhourly indicators
 var indicators_subhourly = {
-    num_time: 0, // Number of time data points
-    num_value: 0, // Number of value data points
-    num_maximum: 0, // Number of maximum data points
-    num_minimum:0, // Number of minimum data points
-    num_stddev: 0, // Number of standard deviation data points
+    num_time: 0,
+    num_value: 0,
+    num_maximum: 0,
+    num_minimum:0,
+    num_stddev: 0,
     // TODO check if renaming num_data is needed
-    num_data:0 // Number of data points
+    num_data:0 
 }
 
 // Define an object to hold the daily indicators
 var indicators_daily = {
-    num_date: 0, // Number of date data points
-    num_percentage: 0, // Number of percentage data points
-    num_value: 0, // Number of value data points
-    num_maximum: 0, // Number of maximum data points
-    num_minimum: 0, // Number of minimum data points
-    num_days: 0 // Number of days
+    num_date: 0, 
+    num_percentage: 0, 
+    num_value: 0, 
+    num_maximum: 0, 
+    num_minimum: 0, 
+    num_days: 0 
 }
 
 // Initialize a counter for the number of date data points
@@ -165,17 +165,17 @@ function generate_traces_dispersion(data, source_type, color){
             // Push a new trace object to the result array
             result.push(
                 {
-                    x: data.time, // The x-axis data is the "time" column
-                    y: data[c], // The y-axis data is the current column
-                    mode: 'markers', // The mode of the trace is 'markers'
-                    name: c, // The name of the trace is the column name
-                    showlegend: false, // Do not show the legend for this trace
+                    x: data.time, 
+                    y: data[c],
+                    mode: 'markers', 
+                    name: c, 
+                    showlegend: false,
                     marker: {
-                        color: color, // The color of the trace is the provided color
-                        size: 2 // The size of the trace is 2
+                        color: color, 
+                        size: 2 
                     },
-                    type: 'scattergl', // The type of the trace is 'scattergl'
-                    legendgroup: source_type // The legend group of the trace is the source type
+                    type: 'scattergl', 
+                    legendgroup: source_type 
                 }
             );
         }
@@ -183,16 +183,16 @@ function generate_traces_dispersion(data, source_type, color){
         // Add a legend trace to the result array
         result.push(
                 {
-                    x: [null], // The x-axis data is null
-                    y: [null], // The y-axis data is null
-                    mode: 'markers', // The mode of the trace is 'markers'
-                    name: source_type, // The name of the trace is the source type
-                    showlegend: true, // Show the legend for this trace
+                    x: [null], 
+                    y: [null], 
+                    mode: 'markers', 
+                    name: source_type, 
+                    showlegend: true, 
                     marker: {
-                        color: color, // The color of the trace is the provided color
+                        color: color, 
                     },
-                    type: 'scattergl', // The type of the trace is 'scattergl'
-                    legendgroup: source_type // The legend group of the trace is the source type
+                    type: 'scattergl', 
+                    legendgroup: source_type 
                 }
         );
 
@@ -222,16 +222,16 @@ function generate_traces_bars(data, source_type, color){
             // Push a new trace object to the result array
             result.push(
                 {
-                    x: data.time, // The x-axis data is the "time" column
-                    y: data[c], // The y-axis data is the current column
-                    mode: 'lines', // The mode of the trace is 'lines'
-                    name: c + ' - ' + source_type, // The name of the trace is the column name and the source type
+                    x: data.time,
+                    y: data[c],
+                    mode: 'lines', 
+                    name: c + ' - ' + source_type, 
                     marker: {
-                        color: color, // The color of the trace is the provided color
-                        size: 2 // The size of the trace is 2
+                        color: color, 
+                        size: 2
                     },
-                    showlegend: true, // Show the legend for this trace
-                    type: 'scattergl', // The type of the trace is 'scattergl'
+                    showlegend: true, 
+                    type: 'scattergl', 
                 }
             );
         }
@@ -625,7 +625,6 @@ function detail_modify_row(event){
     $.each(inputs, function(i, field){
         // If the input name includes 'detail_', process it
         if (field.name.includes('detail_')) {
-            // Get the field name by splitting the input name on '_'
             var _field = field.name.split("_")[1];
 
             // If the field is included in the detail table value columns or is 'id' or 'time', add it to the data object
@@ -682,7 +681,6 @@ function detail_new_save(event){
     $.each(inputs, function(i, field){
         // If the input name includes 'new_', process it
         if (field.name.includes('new_')) {
-            // Get the field name by splitting the input name on '_'
             var _field = field.name.split("_")[1];
 
             // If the field is included in the detail table value columns or is 'date' or 'hour', add it to the data object
@@ -949,7 +947,6 @@ function open_form_new(event){
     $.each(inputs, function(i, field){
         // If the input name includes 'new_', process it
         if (field.name.includes('new_')) {
-            // Get the field name by splitting the input name on '_'
             var _field = field.name.split("_")[1];
 
             // If the field is included in the detail table value columns or is 'date' or 'hour', show the input field
@@ -985,7 +982,6 @@ function open_form_update(e, value, row, index){
     $.each(inputs, function(i, field){
         // If the input name includes 'detail_', process it
         if (field.name.includes('detail_')) {
-            // Get the field name by splitting the input name on '_'
             var _field = field.name.split("_")[1];
 
             // If the field is included in the detail table value columns or is 'id' or 'time', show the input field and set its value to the corresponding row value
