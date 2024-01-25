@@ -30,12 +30,12 @@ var indicators_subhourly = {
 
 // Define an object to hold the daily indicators
 var indicators_daily = {
-    num_date: 0, 
-    num_percentage: 0, 
-    num_value: 0, 
-    num_maximum: 0, 
-    num_minimum: 0, 
-    num_days: 0 
+    num_date: 0,
+    num_percentage: 0,
+    num_value: 0,
+    num_maximum: 0,
+    num_minimum: 0,
+    num_days: 0
 }
 
 // Initialize a counter for the number of date data points
@@ -151,53 +151,53 @@ $(document).ready(function() {
  * @returns {Array} An array of trace objects to be used in a dispersion chart.
  */
 function generate_traces_dispersion(data, source_type, color){
-        // Initialize an empty array to hold the result
-        var result = [];
+    // Initialize an empty array to hold the result
+    var result = [];
 
-        // Get the column names from the data
-        var columns = Object.keys(data);
+    // Get the column names from the data
+    var columns = Object.keys(data);
 
-        // Filter out the "time" column
-        columns = columns.filter((e) => e !== "time");
+    // Filter out the "time" column
+    columns = columns.filter((e) => e !== "time");
 
-        // For each column in the data
-        for (const c of columns) {
-            // Push a new trace object to the result array
-            result.push(
-                {
-                    x: data.time, 
-                    y: data[c],
-                    mode: 'markers', 
-                    name: c, 
-                    showlegend: false,
-                    marker: {
-                        color: color, 
-                        size: 2 
-                    },
-                    type: 'scattergl', 
-                    legendgroup: source_type 
-                }
-            );
-        }
-
-        // Add a legend trace to the result array
+    // For each column in the data
+    for (const c of columns) {
+        // Push a new trace object to the result array
         result.push(
-                {
-                    x: [null], 
-                    y: [null], 
-                    mode: 'markers', 
-                    name: source_type, 
-                    showlegend: true, 
-                    marker: {
-                        color: color, 
-                    },
-                    type: 'scattergl', 
-                    legendgroup: source_type 
-                }
+            {
+                x: data.time, 
+                y: data[c],
+                mode: 'markers', 
+                name: c, 
+                showlegend: false,
+                marker: {
+                    color: color, 
+                    size: 2 
+                },
+                type: 'scattergl', 
+                legendgroup: source_type 
+            }
         );
+    }
 
-        // Return the result array
-        return result;
+    // Add a legend trace to the result array
+    result.push(
+            {
+                x: [null], 
+                y: [null], 
+                mode: 'markers', 
+                name: source_type, 
+                showlegend: true, 
+                marker: {
+                    color: color, 
+                },
+                type: 'scattergl', 
+                legendgroup: source_type 
+            }
+    );
+
+    // Return the result array
+    return result;
 }
 
 /**
@@ -208,36 +208,36 @@ function generate_traces_dispersion(data, source_type, color){
  * @returns {Array} An array of trace objects to be used in a bar chart.
  */
 function generate_traces_bars(data, source_type, color){
-        // Initialize an empty array to hold the result
-        var result = [];
+    // Initialize an empty array to hold the result
+    var result = [];
 
-        // Get the column names from the data
-        var columns = Object.keys(data);
+    // Get the column names from the data
+    var columns = Object.keys(data);
 
-        // Filter out the "time" column
-        columns = columns.filter((e) => e !== "time");
+    // Filter out the "time" column
+    columns = columns.filter((e) => e !== "time");
 
-        // For each column in the data
-        for (const c of columns) {
-            // Push a new trace object to the result array
-            result.push(
-                {
-                    x: data.time,
-                    y: data[c],
-                    mode: 'lines', 
-                    name: c + ' - ' + source_type, 
-                    marker: {
-                        color: color, 
-                        size: 2
-                    },
-                    showlegend: true, 
-                    type: 'scattergl', 
-                }
-            );
-        }
+    // For each column in the data
+    for (const c of columns) {
+        // Push a new trace object to the result array
+        result.push(
+            {
+                x: data.time,
+                y: data[c],
+                mode: 'lines', 
+                name: c + ' - ' + source_type, 
+                marker: {
+                    color: color, 
+                    size: 2
+                },
+                showlegend: true, 
+                type: 'scattergl', 
+            }
+        );
+    }
 
-        // Return the result array
-        return result;
+    // Return the result array
+    return result;
 }
 
 
@@ -318,16 +318,16 @@ function save_daily(event){
     var $table_detail = $('#table_detail');
 
     // Gather various pieces of data from the page
-    var token = $("input[name='csrfmiddlewaretoken']").val();
-    var station_id = $("#id_station").val();
-    var variable_id = $("#id_variable").val();
-    var maximum = $("#id_maximum").val();
-    var minimum = $("#id_minimum").val();
-    var start_date = $("input[name='start_date']").val();
-    var end_date = $("input[name='end_date']").val();
+    token = $("input[name='csrfmiddlewaretoken']").val();
+    station_id = $("#id_station").val();
+    variable_id = $("#id_variable").val();
+    maximum = $("#id_maximum").val();
+    minimum = $("#id_minimum").val();
+    start_date = $("input[name='start_date']").val();
+    end_date = $("input[name='end_date']").val();
 
     // Get the current data in the daily table
-    var changes = JSON.stringify($table_daily.bootstrapTable('getData',{unfiltered:true, includeHiddenRows: true}));
+    changes = JSON.stringify($table_daily.bootstrapTable('getData',{unfiltered:true, includeHiddenRows: true}));
 
     // Send an AJAX POST request to the '/validated/daily_save/' endpoint with the gathered data
     $.ajax({
@@ -388,12 +388,12 @@ function save_detail(event){
     var $table = $('#table_detail');
 
     // Gather various pieces of data from the page
-    var token = $("input[name='csrfmiddlewaretoken']").val();
-    var station_id = $("#id_station").val();
-    var variable_id = $("#id_variable").val();
+    token = $("input[name='csrfmiddlewaretoken']").val();
+    station_id = $("#id_station").val();
+    variable_id = $("#id_variable").val();
 
     // Get the current data in the detail table
-    var data = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true}));
+    data = JSON.stringify($table.bootstrapTable('getData',{unfiltered:true}));
 
     // Send an AJAX POST request to the '/validated/detail_save/' endpoint with the gathered data
     $.ajax({
@@ -410,6 +410,8 @@ function save_detail(event){
             $table.bootstrapTable('showLoading');
         },
         success: function (response) {
+            document.getElementById("tab3-tab").style.display = "none";
+            console.log(typeof response.resultado)
             // If the request is successful and the server responds with `result: true`
             if (response.result == true){
                 // Show a success message, hide the detail tab, clean the filters, destroy the detail table, and refresh the daily data
@@ -579,8 +581,7 @@ function getTab(evt, tabName) {
  * @returns {Array} - An array of data that matches the given date.
  */
 function get_existe_en_tabla(fecha, datos){
-    // The 'debugger' statement has been commented out as it's used for debugging purposes and should not be in production code
-    //debugger;
+    debugger;
 
     // Initialize a flag to check if the date exists in the data
     var existe = false;
@@ -1128,6 +1129,7 @@ function get_columns_daily(var_id, value_columns){
 function get_columns_detail(var_id, value_columns){
     // Initialize an empty array for the columns
     var columns = [];
+    var span = '<span id="span_id" class="badge badge-danger">num</span>';
 
     // Define the is_selected column and add it to the columns array
     var is_selected = {
@@ -1235,13 +1237,13 @@ function get_columns_detail(var_id, value_columns){
  * @returns {string} The HTML string for the action buttons.
  */
 function operate_table_daily(value, row, index) {
-        // Return the HTML string for the action buttons
-        // The 'search' button is used to view the details of the row
-        return [
-            '<a class="search" href="javascript:void(0)" title="Detail">',
-            '<i class="fa fa-search"></i>',
-            '</a>  ',
-        ].join('')
+    // Return the HTML string for the action buttons
+    // The 'search' button is used to view the details of the row
+    return [
+        '<a class="search" href="javascript:void(0)" title="Detail">',
+        '<i class="fa fa-search"></i>',
+        '</a>  ',
+    ].join('')
 }
 
 
@@ -1254,13 +1256,13 @@ function operate_table_daily(value, row, index) {
  * @returns {string} The HTML string for the action buttons.
  */
 function operate_table_detail(value, row, index) {
-        // Return the HTML string for the action buttons
-        // The 'update' button is used to modify the details of the row
-        return [
-            '<a class="update" href="javascript:void(0)" title="Modify">',
-            '<i class="fa fa-edit"></i>',
-            '</a>  ',
-        ].join('')
+    // Return the HTML string for the action buttons
+    // The 'update' button is used to modify the details of the row
+    return [
+        '<a class="update" href="javascript:void(0)" title="Modify">',
+        '<i class="fa fa-edit"></i>',
+        '</a>  ',
+    ].join('')
 }
 
 
@@ -1271,27 +1273,27 @@ function operate_table_detail(value, row, index) {
  * @returns {Object} The class to apply to the row.
  */
 function style_row(row, index){
-        // Initialize an empty string for the class
-        var _class = '';
+    // Initialize an empty string for the class
+    var _class = '';
 
-        // If the state of the row is false, set the class to 'error'
-        if (row.state == false) {
-            _class = 'error';
-        }
-        // Otherwise, keep the class as an empty string
-        else {
-                _class = '';
-        }
+    // If the state of the row is false, set the class to 'error'
+    if (row.state == false) {
+        _class = 'error';
+    }
+    // Otherwise, keep the class as an empty string
+    else {
+            _class = '';
+    }
 
-        // Return the class to apply to the row
-        return {classes: _class}
+    // Return the class to apply to the row
+    return {classes: _class}
 
-        // The following commented out code would set the class to 'normal' if the row is selected
-        // var _class = '';
-        // if (row.is_selected) {
-        //   _class = 'normal';
-        // }
-        // return {classes: _class}
+    // The following commented out code would set the class to 'normal' if the row is selected
+    // var _class = '';
+    // if (row.is_selected) {
+    //   _class = 'normal';
+    // }
+    // return {classes: _class}
 }
 
 
@@ -1384,7 +1386,7 @@ function style_value(value, row, index, field){
     var _class = '';
 
     // Create the field value by appending "suspicious_" and "s_count" to the field
-    var field_value = "suspicious_" + field +"s_count";
+    field_value = "suspicious_" + field +"s_count";
 
     // If the suspicious count for the field in the row is greater than 0, set the class to 'error'
     if (row[field_value]>0 )
@@ -1407,7 +1409,7 @@ function style_value(value, row, index, field){
  */
 function style_value_diff(value, row, index){
     // Initialize an empty string for the class
-    var _class = '';
+    var _class = ''
 
     // If the value difference error count of the row is greater than or equal to 1, set the class to 'error'
     if (row.value_difference_error_count >= 1)
@@ -1431,25 +1433,18 @@ function style_value_diff(value, row, index){
  * @returns {Object} The class to apply to the cell.
  */
 function style_detail_time(value, row, index){
-    // Initialize an empty string for the class
     var _class = '';
-
-    // If the time lapse status of the row is 0 or any other value not covered by the conditions, set the class to 'error'
-    if (row.time_lapse_status == 0 || row.time_lapse_status != 1 && row.time_lapse_status != 2){
+    if (row.time_lapse_status == 0){
         _class = 'error';
-    }
-    // If the time lapse status of the row is 2, set the class to 'warning'
-    else if (row.time_lapse_status == 2){
+    }else if (row.time_lapse_status == 2){
         _class = 'warning';
-    }
-    // If the time lapse status of the row is 1 and the row is selected, set the class to 'normal'
-    else if (row.time_lapse_status == 1){
+    }else if (row.time_lapse_status == 1){
         if (row.is_selected){
             _class = 'normal';
         }
+    }else {
+        _class = 'error';
     }
-
-    // Return the class to apply to the cell
     return { classes: _class}
 }
 
@@ -1466,7 +1461,7 @@ function style_detail_value_error(value, row, index, field){
     var _class = '';
 
     // Create the field error by appending "_error" to the field
-    var field_error = field + '_error';
+    field_error = field + '_error';
 
     // If the field error status of the row is true, set the class to 'error'
     if (row[field_error] === true){
@@ -1974,27 +1969,17 @@ function get_filter_stddev(option){
 }
 
 
-/**
- * This function returns a filter based on the provided option.
- * @param {string} option - The option to determine the filter.
- * @returns {Array} The filter to be used.
- */
-function get_filter_stddev(option){
-    // Initialize an empty filter array
+function get_filter_state(option){
     var filter = [];
 
-    // If the option is 'error', set the filter to [true]
     if (option == 'error')
-        filter = [true];
-    // If the option is 'normal', set the filter to [false]
-    else if (option == 'normal')
         filter = [false];
-    // For any other option, set the filter to [true, false, null]
+    else if (option == 'normal')
+        filter = [true];
     else
-        filter = [true, false, null];
+        filter = [true, false];
 
-    // Return the filter
-    return filter;
+    return filter
 }
 
 
