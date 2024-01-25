@@ -18,8 +18,10 @@ CMD ["/usr/local/bin/init.sh"]
 
 # django
 COPY requirements.txt .
+COPY requirements-dev.txt .
 RUN apt-get update && apt-get install -y --no-install-recommends libmagic1 && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-dev.txt
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN mkdir log
