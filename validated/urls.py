@@ -13,9 +13,9 @@
 
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
-from .dash_apps.finished_apps import daily_validation
 
 from . import views
+from .dash_apps.finished_apps import daily_validation
 
 app_name = "validated"
 urlpatterns = [

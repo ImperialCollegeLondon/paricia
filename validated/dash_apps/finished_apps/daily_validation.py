@@ -1,12 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
+
 import plotly.express as px
 from dash import dcc, html
 from django_plotly_dash import DjangoDash
 
 from station.models import Station
-from variable.models import Variable
 from validated.functions import daily_validation
+from variable.models import Variable
 
 # Create a Dash app
 app = DjangoDash("DailyValidation")
