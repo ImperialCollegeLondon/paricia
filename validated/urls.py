@@ -13,6 +13,7 @@
 
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
+from .dash_apps.finished_apps import daily_validation
 
 from . import views
 
@@ -66,6 +67,11 @@ urlpatterns = [
         "launch_report_calculations/",
         views.view_launch_report_calculations,
         name="launch_report_calculations",
+    ),
+    path(
+        "daily_validation_dash/",
+        views.DailyValidationDash.as_view(),
+        name="daily_validation_dash",
     ),
 ]
 

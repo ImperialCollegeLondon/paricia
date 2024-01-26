@@ -20,6 +20,7 @@ from decimal import Decimal
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.views import View
 from django.views.generic import FormView, ListView
 from rest_framework import generics
 
@@ -424,6 +425,11 @@ class DataReport(FormView):
                     response["Content-Disposition"] = 'attachment; filename="datos.csv"'
                     return response
         return render(request, "home/message.html", {"message": form})
+
+
+class DailyValidationDash(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "daily_validation_dash.html")
 
 
 def view_launch_report_calculations(request):

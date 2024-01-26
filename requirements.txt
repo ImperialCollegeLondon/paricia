@@ -19,6 +19,7 @@ pytz==2023.3.post1
 PyYAML==6.0.1
 uritemplate==4.1.1
 crispy-bootstrap4==2023.1
+django-plotly-dash==2.2.2
 
 ## Legacy dependency versions
 # asgiref==3.3.4
