@@ -429,6 +429,8 @@ class DataReport(FormView):
 
 class DailyValidationDev(View):
     def get(self, request, *args, **kwargs):
+        from .dash_apps.finished_apps import daily_validation
+
         return render(request, "daily_validation_dev.html")
 
 
