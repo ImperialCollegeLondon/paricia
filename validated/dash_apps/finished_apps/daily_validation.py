@@ -67,7 +67,7 @@ DAILY TABLE
 
 
 def get_columns_daily(value_columns):
-    styles = get_style_data_conditional()
+    styles = get_daily_style_data_conditional()
 
     # Essential columns
     essental_columns = [
@@ -97,7 +97,7 @@ def get_columns_daily(value_columns):
     return columns
 
 
-def get_style_data_conditional():
+def get_daily_style_data_conditional():
     styles = {}
 
     styles["date"] = {
@@ -180,16 +180,82 @@ DETAIL TABLE
 """
 
 
+def get_columns_detail(value_columns):
+    styles = get_detail_style_data_conditional(value_columns)
+
+    columns = [
+        {"field": "id", "headerName": "Id"},
+        {"field": "time", "headerName": "Time", **styles["time"]},
+    ]
+    columns += [
+        {"field": c, "headerName": c[0].upper() + c[1:], **styles[c]}
+        for c in value_columns
+    ]
+    return columns
+
+
+def get_detail_style_data_conditional(value_columns):
+    styles = {}
+
+    styles["time"] = {
+        "cellStyle": {
+            "styleConditions": [
+                {
+                    "condition": f"params.data['time_lapse_status'] == {val}",
+                    "style": {"backgroundColor": f"{col}"},
+                }
+                for val, col in zip([0, 2], ["sandybrown", "yellow"])
+            ]
+        },
+    }
+
+    for field in value_columns:
+        styles[field] = {
+            "cellStyle": {
+                "styleConditions": [
+                    {
+                        "condition": f"params.data['{field}_error']",
+                        "style": {"backgroundColor": "sandybrown"},
+                    },
+                ]
+            },
+        }
+
+    return styles
+
+
+def create_detail_table(data_detail):
+    table = AgGrid(
+        id="table_detail",
+        rowData=data_detail["series"],
+        columnDefs=get_columns_detail(value_columns=data_detail["value_columns"]),
+        columnSize="sizeToFit",
+        defaultColDef={
+            "resizable": False,
+            "sortable": True,
+            "filter": True,
+            "checkboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+            "headerCheckboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+        },
+        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
+    )
+    return table
+
+
 """
 LAYOUT
 
 """
 
-# table = create_daily_table(data)
-table = create_daily_table(data)
+table_daily = create_daily_table(data)
+table_detail = create_detail_table(data_detail)
 
 # Create layout
-app.layout = html.Div([table, dcc.Graph(figure=plot)])
+app.layout = html.Div([table_daily, table_detail, dcc.Graph(figure=plot)])
 
 
 """
@@ -197,5 +263,7 @@ To do:
 - Add action buttons
 - Add error counts
 - Have chackboxes selected by default
+- Reformat time column
+- Better filters
 
 """
