@@ -3,16 +3,20 @@ from decimal import Decimal
 
 import plotly.express as px
 from dash import dcc, html
-from dash.dash_table import DataTable
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
 
 from station.models import Station
-from validated.functions import daily_validation
+from validated.functions import daily_validation, detail_list
 from variable.models import Variable
 
 # Create a Dash app
 app = DjangoDash("DailyValidation")
+
+"""
+DAILY DATA
+
+"""
 
 # Filters (in final app this will get data from forms)
 station: Station = Station.objects.order_by("station_code")[7]
@@ -32,7 +36,26 @@ data: dict = daily_validation(
     maximum=maximum,
 )
 
-# Create plot
+"""
+DETAIL DATA
+
+"""
+
+date: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
+
+data_detail = detail_list(
+    station=station,
+    variable=variable,
+    date_of_interest=date,
+    minimum=minimum,
+    maximum=maximum,
+)
+
+"""
+PLOT
+
+"""
+
 x = data["series"]["measurement"]["time"]
 y = data["series"]["measurement"]["average"]
 plot = px.line(x=x, y=y)
@@ -44,123 +67,96 @@ DAILY TABLE
 
 
 def get_columns_daily(value_columns):
+    styles = get_style_data_conditional()
+
     # Essential columns
-    always_present_columns = [
-        ("id", "Id"),
-        ("date", "Date"),
-        ("percentage", "Percnt."),
-        ("value_difference_error_count", "Diff. Err"),
-    ]
-    columns = [{"id": id, "name": name} for id, name in always_present_columns]
-
-    # Optional columns
-    optional_columns = {
-        "sum": "Sum",
-        "average": "Average",
-        "maximum": "Max. of Maxs.",
-        "minimum": "Min. of Mins.",
-    }
-    columns += [
-        {"id": id, "name": name}
-        for id, name in optional_columns.items()
-        if id in value_columns
-    ]
-
-    # Action column
-    columns.append({"id": "action", "name": "Action"})
-    return columns
-
-
-def get_style_data_conditional():
-    style_date = {
-        "if": {"column_id": "date", "filter_query": "{date_error} > 0"},
-        "backgroundColor": "red",
-    }
-
-    # This isn't working
-    style_percentage = {
-        "if": {"column_id": "percentage", "filter_query": "{percentage_error} eq true"},
-        "backgroundColor": "red",
-    }
-
-    style_value_diff = {
-        "if": {
-            "column_id": "value_difference_error_count",
-            "filter_query": "{value_difference_error_count} > 0",
-        },
-        "backgroundColor": "red",
-    }
-
-    style_value = [
+    essental_columns = [
+        {"field": "id", "headerName": "Id"},
+        {"field": "date", "headerName": "Date", **styles["date"]},
+        {"field": "percentage", "headerName": "Percnt.", **styles["percentage"]},
         {
-            "if": {
-                "column_id": "value",
-                "filter_query": "{{suspicious_{field}s_count}} > 0".format(field=field),
-            },
-            "backgroundColor": "red",
-        }
-        for field in ["sum", "average", "maximum", "minimum"]
+            "field": "value_difference_error_count",
+            "headerName": "Diff. Err",
+            **styles["value_difference_error_count"],
+        },
     ]
-
-    style_data_conditional = [
-        style_date,
-        style_percentage,
-        style_value_diff,
-    ] + style_value
-    return style_data_conditional
-
-
-def create_daily_table(data):
-    table = DataTable(
-        id="table",
-        columns=get_columns_daily(value_columns=data["value_columns"]),
-        data=data["data"],
-        row_selectable="multi",
-        style_header={"fontWeight": "bold"},
-        style_data_conditional=get_style_data_conditional(),
-    )
-    return table
-
-
-"""
-AG GRID
-
-"""
-
-
-def get_columns_daily_ag(value_columns):
-    # Essential columns
-    always_present_columns = [
-        ("id", "Id"),
-        ("date", "Date"),
-        ("percentage", "Percnt."),
-        ("value_difference_error_count", "Diff. Err"),
-    ]
-    columns = [{"field": id, "headerName": name} for id, name in always_present_columns]
 
     # Optional columns
-    optional_columns = {
-        "sum": "Sum",
-        "average": "Average",
-        "maximum": "Max. of Maxs.",
-        "minimum": "Min. of Mins.",
-    }
-    columns += [
-        {"field": id, "headerName": name}
-        for id, name in optional_columns.items()
-        if id in value_columns
+    optional_columns = [
+        {"field": "sum", "headerName": "Sum"},
+        {"field": "average", "headerName": "Average", **styles["average"]},
+        {"field": "maximum", "headerName": "Max. of Maxs.", **styles["maximum"]},
+        {"field": "minimum", "headerName": "Min. of Mins.", **styles["minimum"]},
     ]
+
+    columns = essental_columns
+    columns += [d for d in optional_columns if d["field"] in value_columns]
 
     # Action column
     columns.append({"field": "action", "headerName": "Action"})
     return columns
 
 
-def create_daily_table_ag(data):
+def get_style_data_conditional():
+    styles = {}
+
+    styles["date"] = {
+        "cellStyle": {
+            "styleConditions": [
+                {
+                    "condition": "params.data['date_error'] > 0",
+                    "style": {"backgroundColor": "sandybrown"},
+                },
+            ]
+        },
+    }
+
+    styles["percentage"] = {
+        "cellStyle": {
+            "styleConditions": [
+                {
+                    "condition": "params.data['percentage_error']",
+                    "style": {"backgroundColor": "sandybrown"},
+                },
+            ]
+        },
+    }
+
+    styles["value_difference_error_count"] = {
+        "cellStyle": {
+            "styleConditions": [
+                {
+                    "condition": "params.data['value_difference_error_count'] > 0",
+                    "style": {"backgroundColor": "sandybrown"},
+                },
+            ]
+        },
+    }
+
+    for field in ["sum", "average", "maximum", "minimum"]:
+        styles[field] = {
+            "cellStyle": {
+                "styleConditions": [
+                    {
+                        "condition": f"params.data['suspicious_{field}s_count'] > 0",
+                        "style": {"backgroundColor": "sandybrown"},
+                    },
+                ]
+            },
+        }
+
+    return styles
+
+
+def create_daily_table(data):
+    table_data = data["data"].copy()
+    for d in table_data:
+        d["action"] = "Action"
+
     table = AgGrid(
         id="table",
-        rowData=data["data"],
-        columnDefs=get_columns_daily_ag(value_columns=data["value_columns"]),
+        rowData=table_data,
+        columnDefs=get_columns_daily(value_columns=data["value_columns"]),
         columnSize="sizeToFit",
         defaultColDef={
             "resizable": False,
@@ -178,8 +174,19 @@ def create_daily_table_ag(data):
     return table
 
 
+"""
+DETAIL TABLE
+
+"""
+
+
+"""
+LAYOUT
+
+"""
+
 # table = create_daily_table(data)
-table = create_daily_table_ag(data)
+table = create_daily_table(data)
 
 # Create layout
 app.layout = html.Div([table, dcc.Graph(figure=plot)])
@@ -188,7 +195,7 @@ app.layout = html.Div([table, dcc.Graph(figure=plot)])
 """
 To do:
 - Add action buttons
-- Fix percentage column formatting
 - Add error counts
+- Have chackboxes selected by default
 
 """
