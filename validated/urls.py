@@ -69,9 +69,9 @@ urlpatterns = [
         name="launch_report_calculations",
     ),
     path(
-        "daily_validation_dash/",
-        views.DailyValidationDash.as_view(),
-        name="daily_validation_dash",
+        "daily_validation_dev/",
+        views.DailyValidationDev.as_view(),
+        name="daily_validation_dev",
     ),
 ]
 

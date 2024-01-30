@@ -427,9 +427,9 @@ class DataReport(FormView):
         return render(request, "home/message.html", {"message": form})
 
 
-class DailyValidationDash(View):
+class DailyValidationDev(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "daily_validation_dash.html")
+        return render(request, "daily_validation_dev.html")
 
 
 def view_launch_report_calculations(request):
