@@ -110,21 +110,6 @@ def get_style_data_conditional():
     return style_data_conditional
 
 
-def create_daily_table_ag(data):
-    table = AgGrid(
-        id="table",
-        data=data["data"],
-        columns=get_columns_daily(value_columns=data["value_columns"]),
-        rowMultiSelect=True,
-        gridOptions={
-            "defaultColDef": {
-                "cellStyle": get_style_data_conditional(),
-            },
-        },
-    )
-    return table
-
-
 def create_daily_table(data):
     table = DataTable(
         id="table",
@@ -137,12 +122,67 @@ def create_daily_table(data):
     return table
 
 
-table = create_daily_table(data)
-# table = create_daily_table_ag(data)
+"""
+AG GRID
+
+"""
+
+
+def get_columns_daily_ag(value_columns):
+    # Essential columns
+    always_present_columns = [
+        ("id", "Id"),
+        ("date", "Date"),
+        ("percentage", "Percnt."),
+        ("value_difference_error_count", "Diff. Err"),
+    ]
+    columns = [{"field": id, "headerName": name} for id, name in always_present_columns]
+
+    # Optional columns
+    optional_columns = {
+        "sum": "Sum",
+        "average": "Average",
+        "maximum": "Max. of Maxs.",
+        "minimum": "Min. of Mins.",
+    }
+    columns += [
+        {"field": id, "headerName": name}
+        for id, name in optional_columns.items()
+        if id in value_columns
+    ]
+
+    # Action column
+    columns.append({"field": "action", "headerName": "Action"})
+    return columns
+
+
+def create_daily_table_ag(data):
+    table = AgGrid(
+        id="table",
+        rowData=data["data"],
+        columnDefs=get_columns_daily_ag(value_columns=data["value_columns"]),
+        columnSize="sizeToFit",
+        defaultColDef={
+            "resizable": False,
+            "sortable": True,
+            "filter": False,
+            "checkboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+            "headerCheckboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+        },
+        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
+    )
+    return table
+
+
+# table = create_daily_table(data)
+table = create_daily_table_ag(data)
 
 # Create layout
-# app.layout = html.Div([dcc.Graph(figure=plot)])
-app.layout = html.Div([table])
+app.layout = html.Div([table, dcc.Graph(figure=plot)])
 
 
 """
