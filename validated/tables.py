@@ -11,9 +11,9 @@ def create_daily_table(data: dict) -> AgGrid:
         AgGrid: Daily report table
     """
     table = AgGrid(
-        id="table",
+        id="table_daily",
         rowData=data["data"],
-        columnDefs=get_columns_daily(value_columns=data["value_columns"]),
+        columnDefs=create_columns_daily(value_columns=data["value_columns"]),
         columnSize="sizeToFit",
         defaultColDef={
             "resizable": True,
@@ -44,7 +44,7 @@ def create_detail_table(data: dict) -> AgGrid:
     table = AgGrid(
         id="table_detail",
         rowData=data["series"],
-        columnDefs=get_columns_detail(value_columns=data["value_columns"]),
+        columnDefs=create_columns_detail(value_columns=data["value_columns"]),
         columnSize="sizeToFit",
         defaultColDef={
             "resizable": True,
@@ -63,7 +63,7 @@ def create_detail_table(data: dict) -> AgGrid:
     return table
 
 
-def get_columns_daily(value_columns: list) -> list:
+def create_columns_daily(value_columns: list) -> list:
     """Creates columns for Daily Report table
 
     Args:
@@ -72,7 +72,7 @@ def get_columns_daily(value_columns: list) -> list:
     Returns:
         list: List of columns
     """
-    styles = get_daily_style_data_conditional()
+    styles = create_style_conditions_daily()
 
     columns = [
         {
@@ -135,7 +135,7 @@ def get_columns_daily(value_columns: list) -> list:
     return columns
 
 
-def get_columns_detail(value_columns: list) -> list:
+def create_columns_detail(value_columns: list) -> list:
     """Creates columns for Detail table
 
     Args:
@@ -144,7 +144,7 @@ def get_columns_detail(value_columns: list) -> list:
     Returns:
         list: List of columns
     """
-    styles = get_detail_style_data_conditional(value_columns)
+    styles = create_style_conditions_detail(value_columns)
 
     columns = [
         {
@@ -181,7 +181,7 @@ def get_columns_detail(value_columns: list) -> list:
     return columns
 
 
-def get_daily_style_data_conditional() -> dict:
+def create_style_conditions_daily() -> dict:
     """Creates style conditions for Daily Report table
 
     Returns:
@@ -248,7 +248,7 @@ def get_daily_style_data_conditional() -> dict:
     return styles
 
 
-def get_detail_style_data_conditional(value_columns: list) -> dict:
+def create_style_conditions_detail(value_columns: list) -> dict:
     """Creates style conditions for Detail table
 
     Args:

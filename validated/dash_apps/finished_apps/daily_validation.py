@@ -42,6 +42,9 @@ data_detail = detail_list(
     maximum=maximum,
 )
 
+# Tables
+table_daily = create_daily_table(data)
+table_detail = create_detail_table(data_detail)
 
 # Plot
 plot = go.Figure()
@@ -72,10 +75,6 @@ plot.add_trace(
         line=dict(color="#00CC96"),
     )
 )
-
-# Tables
-table_daily = create_daily_table(data)
-table_detail = create_detail_table(data_detail)
 
 # Layout
 app.layout = html.Div(
