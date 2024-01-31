@@ -1,7 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
 
-import plotly.express as px
 import plotly.graph_objects as go
 from dash import dcc, html
 from django_plotly_dash import DjangoDash
@@ -83,6 +82,5 @@ app.layout = html.Div([table_daily, table_detail, dcc.Graph(figure=plot)])
 """
 To do:
 - Reformat time column
-- Add outliers and value diffs to detail table
 
 """

@@ -22,15 +22,9 @@ def get_columns_daily(value_columns):
             "filter": "agNumberColumnFilter",
             **styles["percentage"],
         },
-        {
-            "field": "value_difference_error_count",
-            "headerName": "Diff. Err",
-            "filter": "agNumberColumnFilter",
-            **styles["value_difference_error_count"],
-        },
     ]
 
-    optional_columns = [
+    additional_columns = [
         {
             "field": "sum",
             "headerName": "Sum",
@@ -57,7 +51,16 @@ def get_columns_daily(value_columns):
         },
     ]
 
-    columns += [d for d in optional_columns if d["field"] in value_columns]
+    columns += [d for d in additional_columns if d["field"] in value_columns]
+
+    columns += [
+        {
+            "field": "value_difference_error_count",
+            "headerName": "Diff. Err",
+            "filter": "agNumberColumnFilter",
+            **styles["value_difference_error_count"],
+        },
+    ]
     return columns
 
 
@@ -83,7 +86,11 @@ def get_columns_detail(value_columns):
         for c in value_columns
     ]
     columns += [
-        {"field": "stdev_error", "headerName": "Outliers"},
+        {
+            "field": "stdev_error",
+            "headerName": "Outliers",
+            "valueFormatter": {"function": "params.value ? 'X' : '-'"},
+        },
         {"field": "value_difference", "headerName": "Value diff."},
     ]
     return columns
