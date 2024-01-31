@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     "management",
     "crispy_forms",
     "crispy_bootstrap4",
+    "django_plotly_dash.apps.DjangoPlotlyDashConfig",
 ]
 
 MIDDLEWARE = [
@@ -91,6 +92,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_plotly_dash.middleware.BaseMiddleware",
 ]
 
 ROOT_URLCONF = "djangomain.urls"
@@ -246,3 +248,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+X_FRAME_OPTIONS = "SAMEORIGIN"

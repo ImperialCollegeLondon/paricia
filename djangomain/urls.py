@@ -67,6 +67,7 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     re_path(r"^redoc/$", schema_view.with_ui("redoc"), name="schema-redoc"),
+    path("django_plotly_dash/", include("django_plotly_dash.urls")),
 ]
 
 urlpatterns += [

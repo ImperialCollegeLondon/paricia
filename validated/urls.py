@@ -67,6 +67,11 @@ urlpatterns = [
         views.view_launch_report_calculations,
         name="launch_report_calculations",
     ),
+    path(
+        "daily_validation_dev/",
+        views.DailyValidationDev.as_view(),
+        name="daily_validation_dev",
+    ),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
