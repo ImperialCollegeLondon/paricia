@@ -10,7 +10,8 @@ from validated.functions import daily_validation, detail_list
 from validated.tables import create_daily_table, create_detail_table
 from variable.models import Variable
 
-# Create a Dash app
+DEFAULT_FONT = "Open Sans, Raleway, Dosis, Ubuntu, sans-serif"
+
 app = DjangoDash("DailyValidation")
 
 # Filters (in final app this will get data from forms)
@@ -50,14 +51,7 @@ plot.add_trace(
         y=data["series"]["measurement"]["average"],
         mode="lines",
         name="Measurement",
-    )
-)
-plot.add_trace(
-    go.Scatter(
-        x=data["series"]["validated"]["time"],
-        y=data["series"]["validated"]["average"],
-        mode="lines",
-        name="Validated",
+        line=dict(color="black"),
     )
 )
 plot.add_trace(
@@ -66,6 +60,16 @@ plot.add_trace(
         y=data["series"]["selected"]["average"],
         mode="lines",
         name="Selected",
+        line=dict(color="#636EFA"),
+    )
+)
+plot.add_trace(
+    go.Scatter(
+        x=data["series"]["validated"]["time"],
+        y=data["series"]["validated"]["average"],
+        mode="lines",
+        name="Validated",
+        line=dict(color="#00CC96"),
     )
 )
 
@@ -74,13 +78,22 @@ table_daily = create_daily_table(data)
 table_detail = create_detail_table(data_detail)
 
 # Layout
-app.layout = html.Div([table_daily, table_detail, dcc.Graph(figure=plot)])
-
-# Callback: check boxes
-
-
-"""
-To do:
-- Reformat time column
-
-"""
+app.layout = html.Div(
+    children=[
+        html.H1(
+            children="Daily Report",
+            style={"font-family": DEFAULT_FONT},
+        ),
+        table_daily,
+        html.H1(
+            children="Detail of Selected Day",
+            style={"font-family": DEFAULT_FONT},
+        ),
+        table_detail,
+        html.H1(
+            children="Plot",
+            style={"font-family": DEFAULT_FONT},
+        ),
+        dcc.Graph(figure=plot),
+    ]
+)

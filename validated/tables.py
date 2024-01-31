@@ -1,7 +1,77 @@
 from dash_ag_grid import AgGrid
 
 
-def get_columns_daily(value_columns):
+def create_daily_table(data: dict) -> AgGrid:
+    """Creates Daily Report table
+
+    Args:
+        data (dict): Daily report data (from functions.daily_validation)
+
+    Returns:
+        AgGrid: Daily report table
+    """
+    table = AgGrid(
+        id="table",
+        rowData=data["data"],
+        columnDefs=get_columns_daily(value_columns=data["value_columns"]),
+        columnSize="sizeToFit",
+        defaultColDef={
+            "resizable": True,
+            "sortable": True,
+            "checkboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+            "headerCheckboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+            "headerCheckboxSelectionFilteredOnly": True,
+        },
+        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
+        selectAll=True,
+    )
+    return table
+
+
+def create_detail_table(data: dict) -> AgGrid:
+    """Creates Detail table for a specific date
+
+    Args:
+        data (dict): Detail data (from functions.detail_list)
+
+    Returns:
+        AgGrid: Detail table
+    """
+    table = AgGrid(
+        id="table_detail",
+        rowData=data["series"],
+        columnDefs=get_columns_detail(value_columns=data["value_columns"]),
+        columnSize="sizeToFit",
+        defaultColDef={
+            "resizable": True,
+            "sortable": True,
+            "checkboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+            "headerCheckboxSelection": {
+                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            },
+            "headerCheckboxSelectionFilteredOnly": True,
+        },
+        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
+        selectAll=True,
+    )
+    return table
+
+
+def get_columns_daily(value_columns: list) -> list:
+    """Creates columns for Daily Report table
+
+    Args:
+        value_columns (list): List of value columns
+
+    Returns:
+        list: List of columns
+    """
     styles = get_daily_style_data_conditional()
 
     columns = [
@@ -9,6 +79,7 @@ def get_columns_daily(value_columns):
             "field": "id",
             "headerName": "Id",
             "filter": "agNumberColumnFilter",
+            "maxWidth": 150,
         },
         {
             "field": "date",
@@ -64,13 +135,27 @@ def get_columns_daily(value_columns):
     return columns
 
 
-def get_columns_detail(value_columns):
+def get_columns_detail(value_columns: list) -> list:
+    """Creates columns for Detail table
+
+    Args:
+        value_columns (list): List of value columns
+
+    Returns:
+        list: List of columns
+    """
     styles = get_detail_style_data_conditional(value_columns)
 
     columns = [
-        {"field": "id", "headerName": "Id", "filter": "agNumberColumnFilter"},
+        {
+            "field": "id",
+            "headerName": "Id",
+            "filter": "agNumberColumnFilter",
+            "maxWidth": 150,
+        },
         {
             "field": "time",
+            "valueFormatter": {"function": "params.value.split('T')[1].split('+')[0]"},
             "headerName": "Time",
             **styles["time"],
         },
@@ -96,15 +181,31 @@ def get_columns_detail(value_columns):
     return columns
 
 
-def get_daily_style_data_conditional():
+def get_daily_style_data_conditional() -> dict:
+    """Creates style conditions for Daily Report table
+
+    Returns:
+        dict: Style conditions
+    """
     styles = {}
+
+    styles["id"] = {
+        "cellStyle": {
+            "styleConditions": [
+                {
+                    "condition": "params.data['all_validated']",
+                    "style": {"backgroundColor": "#00CC96"},
+                },
+            ]
+        },
+    }
 
     styles["date"] = {
         "cellStyle": {
             "styleConditions": [
                 {
                     "condition": "params.data['date_error'] > 0",
-                    "style": {"backgroundColor": "sandybrown"},
+                    "style": {"backgroundColor": "#E45756"},
                 },
             ]
         },
@@ -115,7 +216,7 @@ def get_daily_style_data_conditional():
             "styleConditions": [
                 {
                     "condition": "params.data['percentage_error']",
-                    "style": {"backgroundColor": "sandybrown"},
+                    "style": {"backgroundColor": "#E45756"},
                 },
             ]
         },
@@ -126,7 +227,7 @@ def get_daily_style_data_conditional():
             "styleConditions": [
                 {
                     "condition": "params.data['value_difference_error_count'] > 0",
-                    "style": {"backgroundColor": "sandybrown"},
+                    "style": {"backgroundColor": "#E45756"},
                 },
             ]
         },
@@ -138,7 +239,7 @@ def get_daily_style_data_conditional():
                 "styleConditions": [
                     {
                         "condition": f"params.data['suspicious_{field}s_count'] > 0",
-                        "style": {"backgroundColor": "sandybrown"},
+                        "style": {"backgroundColor": "#E45756"},
                     },
                 ]
             },
@@ -147,7 +248,15 @@ def get_daily_style_data_conditional():
     return styles
 
 
-def get_detail_style_data_conditional(value_columns):
+def get_detail_style_data_conditional(value_columns: list) -> dict:
+    """Creates style conditions for Detail table
+
+    Args:
+        value_columns (list): List of value columns
+
+    Returns:
+        dict: Style conditions
+    """
     styles = {}
 
     styles["time"] = {
@@ -157,7 +266,7 @@ def get_detail_style_data_conditional(value_columns):
                     "condition": f"params.data['time_lapse_status'] == {val}",
                     "style": {"backgroundColor": f"{col}"},
                 }
-                for val, col in zip([0, 2], ["sandybrown", "yellow"])
+                for val, col in zip([0, 2], ["#E45756", "#FFA15A"])
             ]
         },
     }
@@ -168,56 +277,10 @@ def get_detail_style_data_conditional(value_columns):
                 "styleConditions": [
                     {
                         "condition": f"params.data['{field}_error']",
-                        "style": {"backgroundColor": "sandybrown"},
+                        "style": {"backgroundColor": "#E45756"},
                     },
                 ]
             },
         }
 
     return styles
-
-
-def create_daily_table(data):
-    table = AgGrid(
-        id="table",
-        rowData=data["data"],
-        columnDefs=get_columns_daily(value_columns=data["value_columns"]),
-        columnSize="sizeToFit",
-        defaultColDef={
-            "resizable": False,
-            "sortable": True,
-            "checkboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelectionFilteredOnly": True,
-        },
-        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
-        selectAll=True,
-    )
-    return table
-
-
-def create_detail_table(data_detail):
-    table = AgGrid(
-        id="table_detail",
-        rowData=data_detail["series"],
-        columnDefs=get_columns_detail(value_columns=data_detail["value_columns"]),
-        columnSize="sizeToFit",
-        defaultColDef={
-            "resizable": False,
-            "sortable": True,
-            "checkboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelectionFilteredOnly": True,
-        },
-        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
-        selectAll=True,
-    )
-    return table
