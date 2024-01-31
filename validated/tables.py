@@ -82,9 +82,10 @@ def create_columns_daily(value_columns: list) -> list:
             "maxWidth": 150,
         },
         {
-            "field": "date",
+            "valueGetter": {"function": "d3.timeParse('%Y-%m-%d')(params.data.date)"},
             "headerName": "Date",
             "filter": "agDateColumnFilter",
+            "valueFormatter": {"function": "params.data.date"},
             **styles["date"],
         },
         {
