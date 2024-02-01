@@ -952,6 +952,28 @@ def save_detail_to_validated(
     return len(insert_result) == len(model_instances)
 
 
+def reset_detail_validated(data_list, variable: Variable, station: Station):
+    """TODO.
+
+    Args:
+        start_time: TODO.
+        end_time: TODO.
+        variable: The variable to update.
+        station: The station this records relate to.
+
+    Returns:
+        True if the selected data is inserted successfully in the database.
+    """
+    start_time = data_list[0]["time"]
+    end_time = data_list[-1]["time"]
+
+    validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    validated.timescale.filter(
+        time__range=[start_time, end_time],
+        station_id=station.station_id,
+    ).delete()
+
+
 def data_report(
     temporality: str,
     station: Station,
