@@ -905,6 +905,30 @@ def save_to_validated(
     return True
 
 
+def reset_daily_validated(
+    variable: Variable,
+    station: Station,
+    start_date: datetime,
+    end_date: datetime,
+):
+    """Removes selected daily data from  the Validated table.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_date: Start date.
+        end_date: End date.
+    """
+    validated = apps.get_model(app_label="validated", model_name=variable.variable_code)
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    start_date, end_date = set_time_limits(start_date, end_date, tz)
+
+    validated.timescale.filter(
+        time__range=[start_date, end_date],
+        station_id=station.station_id,
+    ).delete()
+
+
 def save_detail_to_validated(
     data_list: List[Dict[str, Any]], variable: Variable, station: Station
 ) -> bool:
@@ -953,16 +977,12 @@ def save_detail_to_validated(
 
 
 def reset_detail_validated(data_list, variable: Variable, station: Station):
-    """TODO.
+    """Removes selected detail data from the validated table.
 
     Args:
-        start_time: TODO.
-        end_time: TODO.
+        data_list: List of data covering the time range to remove.
         variable: The variable to update.
         station: The station this records relate to.
-
-    Returns:
-        True if the selected data is inserted successfully in the database.
     """
     start_time = data_list[0]["time"]
     end_time = data_list[-1]["time"]

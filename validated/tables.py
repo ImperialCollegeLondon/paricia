@@ -1,68 +1,3 @@
-from dash_ag_grid import AgGrid
-
-
-def create_daily_table(data: dict) -> AgGrid:
-    """Creates Daily Report table
-
-    Args:
-        data (dict): Daily report data (from functions.daily_validation)
-
-    Returns:
-        AgGrid: Daily report table
-    """
-    table = AgGrid(
-        id="table_daily",
-        rowData=data["data"],
-        columnDefs=create_columns_daily(value_columns=data["value_columns"]),
-        columnSize="sizeToFit",
-        defaultColDef={
-            "resizable": True,
-            "sortable": True,
-            "checkboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelectionFilteredOnly": True,
-        },
-        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
-        selectAll=True,
-    )
-    return table
-
-
-def create_detail_table(data: dict) -> AgGrid:
-    """Creates Detail table for a specific date
-
-    Args:
-        data (dict): Detail data (from functions.detail_list)
-
-    Returns:
-        AgGrid: Detail table
-    """
-    table = AgGrid(
-        id="table_detail",
-        rowData=data["series"],
-        columnDefs=create_columns_detail(value_columns=data["value_columns"]),
-        columnSize="sizeToFit",
-        defaultColDef={
-            "resizable": True,
-            "sortable": True,
-            "checkboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelection": {
-                "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
-            },
-            "headerCheckboxSelectionFilteredOnly": True,
-        },
-        dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
-        selectAll=True,
-    )
-    return table
-
-
 def create_columns_daily(value_columns: list) -> list:
     """Creates columns for Daily Report table
 
@@ -173,7 +108,7 @@ def create_columns_detail(value_columns: list) -> list:
     ]
     columns += [
         {
-            "field": "stdev_error",
+            "field": "stddev_error",
             "headerName": "Outliers",
             "valueFormatter": {"function": "params.value ? 'X' : '-'"},
         },
