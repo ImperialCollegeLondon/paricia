@@ -69,7 +69,11 @@ table_daily = AgGrid(
         },
         "headerCheckboxSelectionFilteredOnly": True,
     },
-    dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
+    dashGridOptions={
+        "rowSelection": "multiple",
+        "suppressRowClickSelection": True,
+        "suppressScrollOnNewData": True,
+    },
     selectAll=True,
 )
 
@@ -89,7 +93,11 @@ table_detail = AgGrid(
         },
         "headerCheckboxSelectionFilteredOnly": True,
     },
-    dashGridOptions={"rowSelection": "multiple", "suppressRowClickSelection": True},
+    dashGridOptions={
+        "rowSelection": "multiple",
+        "suppressRowClickSelection": True,
+        "suppressScrollOnNewData": True,
+    },
     selectAll=True,
 )
 
@@ -119,6 +127,8 @@ def create_validation_plot(data: dict) -> go.Figure:
                 y=data["series"][dataset["key"]]["average"],
                 name=dataset["name"],
                 line=dict(color=dataset["color"]),
+                mode="markers",
+                marker_size=3,
             )
         )
 
@@ -168,6 +178,10 @@ app.layout = html.Div(
         Output("daily-status-message", "children"),
         Output("detail-status-message", "children"),
         Output("plot", "figure"),
+        Output("table_daily", "rowData"),
+        Output("table_detail", "rowData"),
+        Output("table_daily", "selectedRows"),
+        Output("table_detail", "selectedRows"),
     ],
     [
         Input("daily-save-button", "n_clicks"),
@@ -255,7 +269,7 @@ def combined_callback(
         daily_status = dash.no_update
         detail_status = dash.no_update
 
-    # Reload data and redraw plot
+    # Reload
     data_daily = daily_validation(
         station=station,
         variable=variable,
@@ -264,5 +278,32 @@ def combined_callback(
         minimum=minimum,
         maximum=maximum,
     )
+    data_detail = detail_list(
+        station=station,
+        variable=variable,
+        date_of_interest=selected_day,
+        minimum=minimum,
+        maximum=maximum,
+    )
+
+    # Reset tables
+    daily_selected_ids = {row["id"] for row in daily_selected_rows}
+    daily_selected_rows = [
+        row for row in data_daily["data"] if row["id"] in daily_selected_ids
+    ]
+    detail_selected_ids = {row["id"] for row in detail_selected_rows}
+    detail_selected_rows = [
+        row for row in data_detail["series"] if row["id"] in detail_selected_ids
+    ]
+
+    # Redraw plot
     figure = create_validation_plot(data_daily)
-    return daily_status, detail_status, figure
+    return (
+        daily_status,
+        detail_status,
+        figure,
+        data_daily["data"],
+        data_detail["series"],
+        daily_selected_rows,
+        detail_selected_rows,
+    )
