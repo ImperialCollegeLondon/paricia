@@ -1,3 +1,9 @@
+"""
+Functions defining columns and style conditions for tables in the validation app
+  
+"""
+
+
 def create_columns_daily(value_columns: list) -> list:
     """Creates columns for Daily Report table
 
