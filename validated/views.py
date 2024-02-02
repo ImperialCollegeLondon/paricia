@@ -400,6 +400,8 @@ class DataReport(FormView):
     success_url = "/validated/data_report/"
 
     def post(self, request, *args, **kwargs):
+        from .dash_apps.finished_apps import data_report
+        
         form = DataReportForm(self.request.POST or None)
         if form.is_valid():
             if functions.is_ajax(self.request):
@@ -425,7 +427,6 @@ class DataReport(FormView):
                     response["Content-Disposition"] = 'attachment; filename="datos.csv"'
                     return response
 
-        from .dash_apps.finished_apps import data_report
         return render(request, "home/message.html", {"message": form})
 
 
