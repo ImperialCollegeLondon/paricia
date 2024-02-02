@@ -3,6 +3,8 @@
 {% load bootstrap4 %}
 {% load static %}
 
+{% load plotly_dash %}
+
 {% block extralibraries %}
 <link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -48,7 +50,8 @@
     <div class="col-md-9 right-panel ">
 
 
-        <div id="div_information" style="overflow-x: scroll;"  class="col-lg-12 col-md-12 col-sm-12 nopadding">
+        <div class="{% plotly_class name='DataReportDash' %} card" style="height: 100%; width: 100%">
+        {% plotly_app name="DataReportDash" initial_arguments=form ratio=1 %}
         </div>
 
         <div id="div_message" class="filter row" style="display:none;">

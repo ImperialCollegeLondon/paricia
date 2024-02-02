@@ -424,6 +424,8 @@ class DataReport(FormView):
                     response = HttpResponse(csv_response, content_type="text/csv")
                     response["Content-Disposition"] = 'attachment; filename="datos.csv"'
                     return response
+
+        from .dash_apps.finished_apps import data_report
         return render(request, "home/message.html", {"message": form})
 
 
