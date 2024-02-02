@@ -196,17 +196,30 @@ app.layout = html.Div(
     ],
     prevent_initial_call=True,
 )
-def combined_callback(
-    daily_save_clicks,
-    daily_reset_clicks,
-    detail_save_clicks,
-    detail_reset_clicks,
-    daily_selected_rows,
-    detail_selected_rows,
-    detail_row_data,
-):
-    global data_detail
-    global data_daily
+def buttons_callback(
+    daily_save_clicks: int,
+    daily_reset_clicks: int,
+    detail_save_clicks: int,
+    detail_reset_clicks: int,
+    in_daily_selected_rows: list[dict],
+    in_detail_selected_rows: list[dict],
+    in_detail_row_data: list[dict],
+) -> tuple[str, str, go.Figure, list[dict], list[dict], list[dict], list[dict]]:
+    """Callback for buttons adding and resetting Validated data
+
+    Args:
+        daily_save_clicks (int): Number of times daily-save-button was clicked
+        daily_reset_clicks (int): Number of times daily-reset-button was clicked
+        detail_save_clicks (int): Number of times detail-save-button was clicked
+        detail_reset_clicks (int): Number of times detail-reset-button was clicked
+        in_daily_selected_rows (list[dict]): Selected rows in table_daily
+        in_detail_selected_rows (list[dict]): Selected rows in table_detail
+        in_detail_row_data (list[dict]): Full row data for table_detail
+
+    Returns:
+        tuple[str, str, go.Figure, list[dict], list[dict], list[dict], list[dict]]:
+            Callback outputs
+    """
 
     ctx = dash.callback_context
     if not ctx.triggered:
@@ -214,9 +227,17 @@ def combined_callback(
     else:
         button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
+    out_daily_status = dash.no_update
+    out_detail_status = dash.no_update
+    out_plot = dash.no_update
+    out_daily_row_data = dash.no_update
+    out_detail_row_data = dash.no_update
+    out_daily_selected_rows = dash.no_update
+    out_detail_selected_rows = dash.no_update
+
     # Daily save
-    if button_id == "daily-save-button" and daily_selected_rows is not None:
-        conditions = get_conditions(daily_selected_rows)
+    if button_id == "daily-save-button" and in_daily_selected_rows is not None:
+        conditions = get_conditions(in_daily_selected_rows)
         save_to_validated(
             variable=variable,
             station=station,
@@ -226,8 +247,7 @@ def combined_callback(
             minimum=minimum,
             maximum=maximum,
         )
-        daily_status = f"{len(daily_selected_rows)} entries saved to Validated"
-        detail_status = dash.no_update
+        out_daily_status = f"{len(in_daily_selected_rows)} days saved to Validated"
 
     # Daily reset
     elif button_id == "daily-reset-button":
@@ -237,39 +257,30 @@ def combined_callback(
             start_date=start_date,
             end_date=end_date,
         )
-        daily_status = "Validation reset"
-        detail_status = dash.no_update
+        out_daily_status = "Validation reset"
 
     # Detail save
-    elif button_id == "detail-save-button" and detail_selected_rows is not None:
-        selected_ids = {row["id"] for row in detail_selected_rows}
-        for row in detail_row_data:
+    elif button_id == "detail-save-button" and in_detail_selected_rows is not None:
+        selected_ids = {row["id"] for row in in_detail_selected_rows}
+        for row in in_detail_row_data:
             row["is_selected"] = row["id"] in selected_ids
         save_detail_to_validated(
-            data_list=detail_row_data,
+            data_list=in_detail_row_data,
             variable=variable,
             station=station,
         )
-
-        daily_status = dash.no_update
-        detail_status = f"{len(detail_selected_rows)} entries saved to Validated"
+        out_detail_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
 
     # Detail reset
     elif button_id == "detail-reset-button":
         reset_detail_validated(
-            data_list=detail_row_data,
+            data_list=in_detail_row_data,
             variable=variable,
             station=station,
         )
+        out_detail_status = "Validation reset"
 
-        daily_status = dash.no_update
-        detail_status = "Validation reset"
-
-    else:
-        daily_status = dash.no_update
-        detail_status = dash.no_update
-
-    # Reload
+    # Reload daily data
     data_daily = daily_validation(
         station=station,
         variable=variable,
@@ -278,32 +289,37 @@ def combined_callback(
         minimum=minimum,
         maximum=maximum,
     )
-    data_detail = detail_list(
-        station=station,
-        variable=variable,
-        date_of_interest=selected_day,
-        minimum=minimum,
-        maximum=maximum,
-    )
-
-    # Reset tables
-    daily_selected_ids = {row["id"] for row in daily_selected_rows}
-    daily_selected_rows = [
-        row for row in data_daily["data"] if row["id"] in daily_selected_ids
-    ]
-    detail_selected_ids = {row["id"] for row in detail_selected_rows}
-    detail_selected_rows = [
-        row for row in data_detail["series"] if row["id"] in detail_selected_ids
-    ]
 
     # Redraw plot
-    figure = create_validation_plot(data_daily)
+    out_plot = create_validation_plot(data_daily)
+
+    # Reset tables
+    if out_daily_status != dash.no_update:
+        out_daily_row_data = data_daily["data"]
+        daily_selected_ids = {row["id"] for row in in_daily_selected_rows}
+        out_daily_selected_rows = [
+            row for row in out_daily_row_data if row["id"] in daily_selected_ids
+        ]
+    elif out_detail_status != dash.no_update:
+        data_detail = detail_list(
+            station=station,
+            variable=variable,
+            date_of_interest=selected_day,
+            minimum=minimum,
+            maximum=maximum,
+        )
+        out_detail_row_data = data_detail["series"]
+        detail_selected_ids = {row["id"] for row in in_detail_selected_rows}
+        out_detail_selected_rows = [
+            row for row in out_detail_row_data if row["id"] in detail_selected_ids
+        ]
+
     return (
-        daily_status,
-        detail_status,
-        figure,
-        data_daily["data"],
-        data_detail["series"],
-        daily_selected_rows,
-        detail_selected_rows,
+        out_daily_status,
+        out_detail_status,
+        out_plot,
+        out_daily_row_data,
+        out_detail_row_data,
+        out_daily_selected_rows,
+        out_detail_selected_rows,
     )
