@@ -157,6 +157,7 @@ app.layout = html.Div(
             style={"font-family": DEFAULT_FONT},
         ),
         table_detail,
+        html.Button("Add row", id="detail-add-button"),
         html.Button("Save to Validated", id="detail-save-button"),
         html.Button("Reset Validated", id="detail-reset-button"),
         html.Div(
@@ -323,3 +324,34 @@ def buttons_callback(
         out_daily_selected_rows,
         out_detail_selected_rows,
     )
+
+
+@app.callback(
+    [Output("table_detail", "rowTransaction"), Output("table_detail", "scrollTo")],
+    [Input("detail-add-button", "n_clicks")],
+    [State("table_detail", "rowData")],
+    prevent_initial_call=True,
+)
+def add_detail_row(detail_add_clicks: int, detail_row_data: list[dict]):
+    # TODO: restore selection status
+    # TODO: scroll to bottom
+    last_id = detail_row_data[-1]["id"]
+    last_time = detail_row_data[-1]["time"]
+    new_row = {
+        "id": last_id + 1,
+        "time": last_time,
+        **{key: None for key in data_daily["value_columns"]},
+        "outlier": False,
+        "value_difference": None,
+        "is_selected": True,
+    }
+    return ({"add": [new_row]}, {"rowPosition": "bottom"})
+
+
+@app.callback(
+    [Output("table_detail", "scrollTo")],
+    [Input("table_detail", "rowTransaction")],
+    prevent_initial_call=True,
+)
+def scroll_to_bottom(row_transaction: dict):
+    return ({"rowPosition": "bottom"},)
