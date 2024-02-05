@@ -31,7 +31,7 @@ start_date: datetime = datetime.strptime("2023-03-01", "%Y-%m-%d")
 end_date: datetime = datetime.strptime("2023-03-31", "%Y-%m-%d")
 minimum: Decimal = Decimal(-5)
 maximum: Decimal = Decimal(28)
-selected_day: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
+SELECTED_DAY: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
 
 # Daily data
 DATA_DAILY = daily_validation(
@@ -47,7 +47,7 @@ DATA_DAILY = daily_validation(
 DATA_DETAIL = detail_list(
     station=station,
     variable=variable,
-    date_of_interest=selected_day,
+    date_of_interest=SELECTED_DAY,
     minimum=minimum,
     maximum=maximum,
 )
@@ -148,6 +148,16 @@ app.layout = html.Div(
         html.Button("Save to Validated", id="daily-save-button"),
         html.Button("Reset Validated", id="daily-reset-button"),
         html.Div(
+            children=["Open detailed view:"],
+            style={"font-family": DEFAULT_FONT},
+        ),
+        dcc.Input(
+            id="input-daily-id",
+            type="text",
+            debounce=True,
+            placeholder="YYYY-MM-DD",
+        ),
+        html.Div(
             id="daily-status-message",
             children=[""],
             style={"font-family": DEFAULT_FONT},
@@ -190,6 +200,7 @@ app.layout = html.Div(
         Input("detail-save-button", "n_clicks"),
         Input("detail-reset-button", "n_clicks"),
         Input("detail-add-button", "n_clicks"),
+        Input("input-daily-id", "value"),
     ],
     [
         State("table_daily", "selectedRows"),
@@ -204,6 +215,7 @@ def buttons_callback(
     detail_save_clicks: int,
     detail_reset_clicks: int,
     detail_add_clicks: int,
+    value: str,
     in_daily_selected_rows: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
@@ -223,7 +235,7 @@ def buttons_callback(
         tuple[str, str, go.Figure, list[dict], list[dict], list[dict], list[dict]]:
             Callback outputs
     """
-    global DATA_DAILY, DATA_DETAIL
+    global DATA_DAILY, DATA_DETAIL, SELECTED_DAY
 
     ctx = dash.callback_context
     if not ctx.triggered:
@@ -310,6 +322,11 @@ def buttons_callback(
         out_detail_row_transaction = {"add": [new_row]}
         out_detail_scroll = {"data": new_row}
 
+    # Input: Daily date
+    elif button_id == "input-daily-id":
+        SELECTED_DAY = datetime.strptime(value, "%Y-%m-%d")
+        detail_refresh_required = True
+
     # Refresh plot
     if plot_refresh_required:
         DATA_DAILY = daily_validation(
@@ -331,7 +348,7 @@ def buttons_callback(
         DATA_DETAIL = detail_list(
             station=station,
             variable=variable,
-            date_of_interest=selected_day,
+            date_of_interest=SELECTED_DAY,
             minimum=minimum,
             maximum=maximum,
         )
