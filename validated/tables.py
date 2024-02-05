@@ -99,6 +99,7 @@ def create_columns_detail(value_columns: list) -> list:
             "field": "time",
             "valueFormatter": {"function": "params.value.split('T')[1].split('+')[0]"},
             "headerName": "Time",
+            "editable": True,
             **styles["time"],
         },
     ]
