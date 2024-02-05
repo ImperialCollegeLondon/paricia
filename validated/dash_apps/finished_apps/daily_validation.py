@@ -227,9 +227,8 @@ def buttons_callback(
 
     ctx = dash.callback_context
     if not ctx.triggered:
-        return dash.no_update
-    else:
-        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+        return (dash.no_update,) * 7
+    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
     out_daily_status = dash.no_update
     out_detail_status = dash.no_update
@@ -306,7 +305,7 @@ def buttons_callback(
             **{key: None for key in DATA_DAILY["value_columns"]},
             "outlier": False,
             "value_difference": None,
-            "is_selected": True,
+            "is_selected": False,
         }
         out_detail_row_transaction = {"add": [new_row]}
         out_detail_scroll = {"data": new_row}
