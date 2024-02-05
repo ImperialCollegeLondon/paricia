@@ -153,9 +153,9 @@ app.layout = html.Div(
         ),
         dcc.Input(
             id="input-daily-id",
-            type="text",
+            type="number",
             debounce=True,
-            placeholder="YYYY-MM-DD",
+            placeholder="ID",
         ),
         html.Div(
             id="daily-status-message",
@@ -209,13 +209,13 @@ app.layout = html.Div(
     ],
     prevent_initial_call=True,
 )
-def buttons_callback(
+def callbacks(
     daily_save_clicks: int,
     daily_reset_clicks: int,
     detail_save_clicks: int,
     detail_reset_clicks: int,
     detail_add_clicks: int,
-    value: str,
+    daily_id: int,
     in_daily_selected_rows: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
@@ -324,8 +324,14 @@ def buttons_callback(
 
     # Input: Daily date
     elif button_id == "input-daily-id":
-        SELECTED_DAY = datetime.strptime(value, "%Y-%m-%d")
-        detail_refresh_required = True
+        SELECTED_DAY = next(
+            (d["date"] for d in DATA_DAILY["data"] if d["id"] == daily_id),
+            dash.no_update,
+        )
+        if SELECTED_DAY != dash.no_update:
+            detail_refresh_required = True
+        else:
+            out_daily_status = "Invalid ID"
 
     # Refresh plot
     if plot_refresh_required:
