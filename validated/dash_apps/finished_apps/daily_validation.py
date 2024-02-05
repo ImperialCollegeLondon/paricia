@@ -34,7 +34,7 @@ maximum: Decimal = Decimal(28)
 selected_day: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
 
 # Daily data
-data_daily = daily_validation(
+DATA_DAILY = daily_validation(
     station=station,
     variable=variable,
     start_time=start_date,
@@ -44,7 +44,7 @@ data_daily = daily_validation(
 )
 
 # Detail data
-data_detail = detail_list(
+DATA_DETAIL = detail_list(
     station=station,
     variable=variable,
     date_of_interest=selected_day,
@@ -55,8 +55,8 @@ data_detail = detail_list(
 # Tables
 table_daily = AgGrid(
     id="table_daily",
-    rowData=data_daily["data"],
-    columnDefs=create_columns_daily(value_columns=data_daily["value_columns"]),
+    rowData=DATA_DAILY["data"],
+    columnDefs=create_columns_daily(value_columns=DATA_DAILY["value_columns"]),
     columnSize="sizeToFit",
     defaultColDef={
         "resizable": True,
@@ -72,15 +72,15 @@ table_daily = AgGrid(
     dashGridOptions={
         "rowSelection": "multiple",
         "suppressRowClickSelection": True,
-        "suppressScrollOnNewData": True,
     },
     selectAll=True,
+    getRowId="params.data.id",
 )
 
 table_detail = AgGrid(
     id="table_detail",
-    rowData=data_detail["series"],
-    columnDefs=create_columns_detail(value_columns=data_detail["value_columns"]),
+    rowData=DATA_DETAIL["series"],
+    columnDefs=create_columns_detail(value_columns=DATA_DETAIL["value_columns"]),
     columnSize="sizeToFit",
     defaultColDef={
         "resizable": True,
@@ -96,9 +96,9 @@ table_detail = AgGrid(
     dashGridOptions={
         "rowSelection": "multiple",
         "suppressRowClickSelection": True,
-        "suppressScrollOnNewData": True,
     },
     selectAll=True,
+    getRowId="params.data.id",
 )
 
 
@@ -135,7 +135,7 @@ def create_validation_plot(data: dict) -> go.Figure:
     return plot
 
 
-plot = create_validation_plot(data=data_daily)
+plot = create_validation_plot(data=DATA_DAILY)
 
 # Layout
 app.layout = html.Div(
@@ -181,14 +181,15 @@ app.layout = html.Div(
         Output("plot", "figure"),
         Output("table_daily", "rowData"),
         Output("table_detail", "rowData"),
-        Output("table_daily", "selectedRows"),
-        Output("table_detail", "selectedRows"),
+        Output("table_detail", "rowTransaction"),
+        Output("table_detail", "scrollTo"),
     ],
     [
         Input("daily-save-button", "n_clicks"),
         Input("daily-reset-button", "n_clicks"),
         Input("detail-save-button", "n_clicks"),
         Input("detail-reset-button", "n_clicks"),
+        Input("detail-add-button", "n_clicks"),
     ],
     [
         State("table_daily", "selectedRows"),
@@ -202,6 +203,7 @@ def buttons_callback(
     daily_reset_clicks: int,
     detail_save_clicks: int,
     detail_reset_clicks: int,
+    detail_add_clicks: int,
     in_daily_selected_rows: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
@@ -221,6 +223,7 @@ def buttons_callback(
         tuple[str, str, go.Figure, list[dict], list[dict], list[dict], list[dict]]:
             Callback outputs
     """
+    global DATA_DAILY, DATA_DETAIL
 
     ctx = dash.callback_context
     if not ctx.triggered:
@@ -233,10 +236,14 @@ def buttons_callback(
     out_plot = dash.no_update
     out_daily_row_data = dash.no_update
     out_detail_row_data = dash.no_update
-    out_daily_selected_rows = dash.no_update
-    out_detail_selected_rows = dash.no_update
+    out_detail_row_transaction = dash.no_update
+    out_detail_scroll = dash.no_update
 
-    # Daily save
+    daily_refresh_required = False
+    detail_refresh_required = False
+    plot_refresh_required = False
+
+    # Button: Daily save
     if button_id == "daily-save-button" and in_daily_selected_rows is not None:
         conditions = get_conditions(in_daily_selected_rows)
         save_to_validated(
@@ -249,8 +256,10 @@ def buttons_callback(
             maximum=maximum,
         )
         out_daily_status = f"{len(in_daily_selected_rows)} days saved to Validated"
+        plot_refresh_required = True
+        daily_refresh_required = True
 
-    # Daily reset
+    # Button: Daily reset
     elif button_id == "daily-reset-button":
         reset_daily_validated(
             variable=variable,
@@ -259,8 +268,10 @@ def buttons_callback(
             end_date=end_date,
         )
         out_daily_status = "Validation reset"
+        plot_refresh_required = True
+        daily_refresh_required = True
 
-    # Detail save
+    # Button: Detail save
     elif button_id == "detail-save-button" and in_detail_selected_rows is not None:
         selected_ids = {row["id"] for row in in_detail_selected_rows}
         for row in in_detail_row_data:
@@ -271,8 +282,10 @@ def buttons_callback(
             station=station,
         )
         out_detail_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
+        plot_refresh_required = True
+        detail_refresh_required = True
 
-    # Detail reset
+    # Button: Detail reset
     elif button_id == "detail-reset-button":
         reset_detail_validated(
             data_list=in_detail_row_data,
@@ -280,40 +293,50 @@ def buttons_callback(
             station=station,
         )
         out_detail_status = "Validation reset"
+        plot_refresh_required = True
+        detail_refresh_required = True
 
-    # Reload daily data
-    data_daily = daily_validation(
-        station=station,
-        variable=variable,
-        start_time=start_date,
-        end_time=end_date,
-        minimum=minimum,
-        maximum=maximum,
-    )
+    # Button: Detail new row
+    elif button_id == "detail-add-button":
+        last_id = in_detail_row_data[-1]["id"]
+        last_time = in_detail_row_data[-1]["time"]
+        new_row = {
+            "id": last_id + 1,
+            "time": last_time,
+            **{key: None for key in DATA_DAILY["value_columns"]},
+            "outlier": False,
+            "value_difference": None,
+            "is_selected": True,
+        }
+        out_detail_row_transaction = {"add": [new_row]}
+        out_detail_scroll = {"data": new_row}
 
-    # Redraw plot
-    out_plot = create_validation_plot(data_daily)
+    # Refresh plot
+    if plot_refresh_required:
+        DATA_DAILY = daily_validation(
+            station=station,
+            variable=variable,
+            start_time=start_date,
+            end_time=end_date,
+            minimum=minimum,
+            maximum=maximum,
+        )
+        out_plot = create_validation_plot(DATA_DAILY)
 
-    # Reset tables
-    if out_daily_status != dash.no_update:
-        out_daily_row_data = data_daily["data"]
-        daily_selected_ids = {row["id"] for row in in_daily_selected_rows}
-        out_daily_selected_rows = [
-            row for row in out_daily_row_data if row["id"] in daily_selected_ids
-        ]
-    elif out_detail_status != dash.no_update:
-        data_detail = detail_list(
+    # Refresh daily table
+    if daily_refresh_required:
+        out_daily_row_data = DATA_DAILY["data"]
+
+    # Refresh detail table
+    if detail_refresh_required:
+        DATA_DETAIL = detail_list(
             station=station,
             variable=variable,
             date_of_interest=selected_day,
             minimum=minimum,
             maximum=maximum,
         )
-        out_detail_row_data = data_detail["series"]
-        detail_selected_ids = {row["id"] for row in in_detail_selected_rows}
-        out_detail_selected_rows = [
-            row for row in out_detail_row_data if row["id"] in detail_selected_ids
-        ]
+        out_detail_row_data = DATA_DETAIL["series"]
 
     return (
         out_daily_status,
@@ -321,37 +344,6 @@ def buttons_callback(
         out_plot,
         out_daily_row_data,
         out_detail_row_data,
-        out_daily_selected_rows,
-        out_detail_selected_rows,
+        out_detail_row_transaction,
+        out_detail_scroll,
     )
-
-
-@app.callback(
-    [Output("table_detail", "rowTransaction"), Output("table_detail", "scrollTo")],
-    [Input("detail-add-button", "n_clicks")],
-    [State("table_detail", "rowData")],
-    prevent_initial_call=True,
-)
-def add_detail_row(detail_add_clicks: int, detail_row_data: list[dict]):
-    # TODO: restore selection status
-    # TODO: scroll to bottom
-    last_id = detail_row_data[-1]["id"]
-    last_time = detail_row_data[-1]["time"]
-    new_row = {
-        "id": last_id + 1,
-        "time": last_time,
-        **{key: None for key in data_daily["value_columns"]},
-        "outlier": False,
-        "value_difference": None,
-        "is_selected": True,
-    }
-    return ({"add": [new_row]}, {"rowPosition": "bottom"})
-
-
-@app.callback(
-    [Output("table_detail", "scrollTo")],
-    [Input("table_detail", "rowTransaction")],
-    prevent_initial_call=True,
-)
-def scroll_to_bottom(row_transaction: dict):
-    return ({"rowPosition": "bottom"},)
