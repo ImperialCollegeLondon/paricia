@@ -212,6 +212,7 @@ app.layout = html.Div(
         Output("table_daily", "selectedRows"),
         Output("table_detail", "selectedRows"),
         Output("tab-detail", "disabled"),
+        Output("tab-detail", "label"),
     ],
     [
         Input("daily-save-button", "n_clicks"),
@@ -266,7 +267,7 @@ def callbacks(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool]:
+        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str]:
             Callback outputs
     """
     global DATA_DAILY, DATA_DETAIL, SELECTED_DAY
@@ -284,6 +285,7 @@ def callbacks(
     out_daily_selected_rows = dash.no_update
     out_detail_selected_rows = dash.no_update
     out_tab_detail_disabled = dash.no_update
+    out_tab_detail_label = dash.no_update
 
     daily_refresh_required = False
     detail_refresh_required = False
@@ -373,6 +375,9 @@ def callbacks(
         if SELECTED_DAY != dash.no_update:
             detail_refresh_required = True
             out_tab_detail_disabled = False
+            out_tab_detail_label = (
+                f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
+            )
         else:
             out_daily_status = "Invalid ID"
 
@@ -418,4 +423,5 @@ def callbacks(
         out_daily_selected_rows,
         out_detail_selected_rows,
         out_tab_detail_disabled,
+        out_tab_detail_label,
     )
