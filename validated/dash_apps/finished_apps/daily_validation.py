@@ -107,7 +107,7 @@ def create_validation_plot(data: dict) -> go.Figure:
     """Creates plot for Validation app
 
     Args:
-        data (dict): Daily data
+        data (dict): Daily data series
 
     Returns:
         go.Figure: Plot
@@ -123,8 +123,8 @@ def create_validation_plot(data: dict) -> go.Figure:
     for dataset in datasets:
         plot.add_trace(
             go.Scatter(
-                x=data["series"][dataset["key"]]["time"],
-                y=data["series"][dataset["key"]]["average"],
+                x=data[dataset["key"]]["time"],
+                y=data[dataset["key"]]["average"],
                 name=dataset["name"],
                 line=dict(color=dataset["color"]),
                 mode="markers",
@@ -135,7 +135,7 @@ def create_validation_plot(data: dict) -> go.Figure:
     return plot
 
 
-plot = create_validation_plot(data=DATA_DAILY)
+plot = create_validation_plot(data=DATA_DAILY["series"])
 
 # Layout
 app.layout = html.Div(
@@ -193,6 +193,7 @@ app.layout = html.Div(
     ],
     [
         State("table_daily", "selectedRows"),
+        State("table_daily", "rowData"),
         State("table_detail", "selectedRows"),
         State("table_detail", "rowData"),
     ],
@@ -205,6 +206,7 @@ def buttons_callback(
     detail_reset_clicks: int,
     detail_add_clicks: int,
     in_daily_selected_rows: list[dict],
+    in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
 ) -> tuple[str, str, go.Figure, list[dict], list[dict], list[dict], list[dict]]:
@@ -243,7 +245,10 @@ def buttons_callback(
 
     # Button: Daily save
     if button_id == "daily-save-button" and in_daily_selected_rows is not None:
-        conditions = get_conditions(in_daily_selected_rows)
+        selected_ids = {row["id"] for row in in_daily_selected_rows}
+        for row in in_daily_row_data:
+            row["state"] = row["id"] in selected_ids
+        conditions = get_conditions(in_daily_row_data)
         save_to_validated(
             variable=variable,
             station=station,
@@ -319,7 +324,7 @@ def buttons_callback(
             minimum=minimum,
             maximum=maximum,
         )
-        out_plot = create_validation_plot(DATA_DAILY)
+        out_plot = create_validation_plot(DATA_DAILY["series"])
 
     # Refresh daily table
     if daily_refresh_required:
