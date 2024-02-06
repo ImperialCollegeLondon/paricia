@@ -227,8 +227,6 @@ def buttons_callback(
     global DATA_DAILY, DATA_DETAIL
 
     ctx = dash.callback_context
-    if not ctx.triggered:
-        return (dash.no_update,) * 7
     button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
     out_daily_status = dash.no_update
