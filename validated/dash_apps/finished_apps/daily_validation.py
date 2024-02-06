@@ -243,6 +243,7 @@ def callbacks(
         detail_save_clicks (int): Number of times detail-save-button was clicked
         detail_reset_clicks (int): Number of times detail-reset-button was clicked
         detail_add_clicks (int): Number of times detail-add-button was clicked
+        daily_id (int): ID of selected day
         in_daily_selected_rows (list[dict]): Selected rows in table_daily
         in_detail_selected_rows (list[dict]): Selected rows in table_detail
         in_detail_row_data (list[dict]): Full row data for table_detail
