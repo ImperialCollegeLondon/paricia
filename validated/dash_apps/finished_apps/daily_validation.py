@@ -25,31 +25,31 @@ DEFAULT_FONT = "Open Sans, Raleway, Dosis, Ubuntu, sans-serif"
 app = DjangoDash("DailyValidation")
 
 # Filters (in final app this will get data from forms)
-station: Station = Station.objects.order_by("station_code")[7]
-variable: Variable = Variable.objects.order_by("variable_code")[0]
-start_date: datetime = datetime.strptime("2023-03-01", "%Y-%m-%d")
-end_date: datetime = datetime.strptime("2023-03-31", "%Y-%m-%d")
-minimum: Decimal = Decimal(-5)
-maximum: Decimal = Decimal(28)
-selected_day: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
+STATION: Station = Station.objects.order_by("station_code")[7]
+VARIABLE: Variable = Variable.objects.order_by("variable_code")[0]
+START_DATE: datetime = datetime.strptime("2023-03-01", "%Y-%m-%d")
+END_DATE: datetime = datetime.strptime("2023-03-31", "%Y-%m-%d")
+MINIMUM: Decimal = Decimal(-5)
+MAXIMUM: Decimal = Decimal(28)
+SELECTED_DAY: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
 
 # Daily data
 DATA_DAILY = daily_validation(
-    station=station,
-    variable=variable,
-    start_time=start_date,
-    end_time=end_date,
-    minimum=minimum,
-    maximum=maximum,
+    station=STATION,
+    variable=VARIABLE,
+    start_time=START_DATE,
+    end_time=END_DATE,
+    minimum=MINIMUM,
+    maximum=MAXIMUM,
 )
 
 # Detail data
 DATA_DETAIL = detail_list(
-    station=station,
-    variable=variable,
-    date_of_interest=selected_day,
-    minimum=minimum,
-    maximum=maximum,
+    station=STATION,
+    variable=VARIABLE,
+    date_of_interest=SELECTED_DAY,
+    minimum=MINIMUM,
+    maximum=MAXIMUM,
 )
 
 # Tables
@@ -250,13 +250,13 @@ def buttons_callback(
             row["state"] = row["id"] in selected_ids
         conditions = get_conditions(in_daily_row_data)
         save_to_validated(
-            variable=variable,
-            station=station,
+            variable=VARIABLE,
+            station=STATION,
             to_delete=conditions,
-            start_date=start_date,
-            end_date=end_date,
-            minimum=minimum,
-            maximum=maximum,
+            start_date=START_DATE,
+            end_date=END_DATE,
+            minimum=MINIMUM,
+            maximum=MAXIMUM,
         )
         out_daily_status = f"{len(in_daily_selected_rows)} days saved to Validated"
         plot_refresh_required = True
@@ -265,10 +265,10 @@ def buttons_callback(
     # Button: Daily reset
     elif button_id == "daily-reset-button":
         reset_daily_validated(
-            variable=variable,
-            station=station,
-            start_date=start_date,
-            end_date=end_date,
+            variable=VARIABLE,
+            station=STATION,
+            start_date=START_DATE,
+            end_date=END_DATE,
         )
         out_daily_status = "Validation reset"
         plot_refresh_required = True
@@ -281,8 +281,8 @@ def buttons_callback(
             row["is_selected"] = row["id"] in selected_ids
         save_detail_to_validated(
             data_list=in_detail_row_data,
-            variable=variable,
-            station=station,
+            variable=VARIABLE,
+            station=STATION,
         )
         out_detail_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
         plot_refresh_required = True
@@ -292,8 +292,8 @@ def buttons_callback(
     elif button_id == "detail-reset-button":
         reset_detail_validated(
             data_list=in_detail_row_data,
-            variable=variable,
-            station=station,
+            variable=VARIABLE,
+            station=STATION,
         )
         out_detail_status = "Validation reset"
         plot_refresh_required = True
@@ -317,27 +317,27 @@ def buttons_callback(
     # Refresh plot
     if plot_refresh_required:
         DATA_DAILY = daily_validation(
-            station=station,
-            variable=variable,
-            start_time=start_date,
-            end_time=end_date,
-            minimum=minimum,
-            maximum=maximum,
+            station=STATION,
+            variable=VARIABLE,
+            start_time=START_DATE,
+            end_time=END_DATE,
+            minimum=MINIMUM,
+            maximum=MAXIMUM,
         )
         out_plot = create_validation_plot(DATA_DAILY["series"])
 
-    # Refresh daily table
-    if daily_refresh_required:
-        out_daily_row_data = DATA_DAILY["data"]
+        # Refresh daily table
+        if daily_refresh_required:
+            out_daily_row_data = DATA_DAILY["data"]
 
     # Refresh detail table
     if detail_refresh_required:
         DATA_DETAIL = detail_list(
-            station=station,
-            variable=variable,
-            date_of_interest=selected_day,
-            minimum=minimum,
-            maximum=maximum,
+            station=STATION,
+            variable=VARIABLE,
+            date_of_interest=SELECTED_DAY,
+            minimum=MINIMUM,
+            maximum=MAXIMUM,
         )
         out_detail_row_data = DATA_DETAIL["series"]
 

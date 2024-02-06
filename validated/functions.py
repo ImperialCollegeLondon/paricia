@@ -911,7 +911,7 @@ def reset_daily_validated(
     start_date: datetime,
     end_date: datetime,
 ):
-    """Removes selected daily data from  the Validated table.
+    """Removes selected daily data from the Validated table.
 
     Args:
         station: Station of interest.
@@ -977,7 +977,7 @@ def save_detail_to_validated(
 
 
 def reset_detail_validated(data_list, variable: Variable, station: Station):
-    """Removes selected detail data from the validated table.
+    """Removes detail data in selected time range from the validated table.
 
     Args:
         data_list: List of data covering the time range to remove.

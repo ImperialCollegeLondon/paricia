@@ -124,67 +124,92 @@ def create_columns_detail(value_columns: list) -> list:
     return columns
 
 
+def create_style_condition(
+    condition: str, style_true: dict, style_false: dict
+) -> list[dict]:
+    """Create a cell style condition
+
+    Args:
+        condition (str): Javascript code to evaluate
+        style_true (dict): Style to apply when condition is true
+        style_false (dict): Style to apply when condition is false
+
+    Returns:
+        list[dict]: Style condition
+    """
+
+    return [
+        {
+            "condition": condition,
+            "style": style_true,
+        },
+        {
+            "condition": f"!({condition})",
+            "style": style_false,
+        },
+    ]
+
+
 def create_style_conditions_daily() -> dict:
     """Creates style conditions for Daily Report table
 
     Returns:
         dict: Style conditions
     """
+    style_error = {"backgroundColor": "#E45756"}
+    style_normal = {"backgroundColor": "transparent"}
+    style_validated = {"backgroundColor": "#00CC96"}
+
     styles = {}
 
     styles["id"] = {
         "cellStyle": {
-            "styleConditions": [
-                {
-                    "condition": "params.data['all_validated']",
-                    "style": {"backgroundColor": "#00CC96"},
-                },
-            ]
+            "styleConditions": create_style_condition(
+                condition="params.data['all_validated']",
+                style_true=style_validated,
+                style_false=style_normal,
+            )
         },
     }
 
     styles["date"] = {
         "cellStyle": {
-            "styleConditions": [
-                {
-                    "condition": "params.data['date_error'] > 0",
-                    "style": {"backgroundColor": "#E45756"},
-                },
-            ]
+            "styleConditions": create_style_condition(
+                condition="params.data['date_error'] > 0",
+                style_true=style_error,
+                style_false=style_normal,
+            )
         },
     }
 
     styles["percentage"] = {
         "cellStyle": {
-            "styleConditions": [
-                {
-                    "condition": "params.data['percentage_error']",
-                    "style": {"backgroundColor": "#E45756"},
-                },
-            ]
+            "styleConditions": create_style_condition(
+                condition="params.data['percentage_error']",
+                style_true=style_error,
+                style_false=style_normal,
+            )
         },
     }
 
     styles["value_difference_error_count"] = {
         "cellStyle": {
-            "styleConditions": [
-                {
-                    "condition": "params.data['value_difference_error_count'] > 0",
-                    "style": {"backgroundColor": "#E45756"},
-                },
-            ]
+            "styleConditions": create_style_condition(
+                condition="params.data['value_difference_error_count'] > 0",
+                style_true=style_error,
+                style_false=style_normal,
+            )
         },
     }
 
     for field in ["sum", "average", "maximum", "minimum"]:
         styles[field] = {
             "cellStyle": {
-                "styleConditions": [
-                    {
-                        "condition": f"params.data['suspicious_{field}s_count'] > 0",
-                        "style": {"backgroundColor": "#E45756"},
-                    },
-                ]
+                "styleConditions": create_style_condition(
+                    condition=f"params.data['suspicious_{field}s_count'] > 0",
+                    style_true=style_error,
+                    style_false=style_normal,
+                )
             },
         }
 
@@ -202,14 +227,18 @@ def create_style_conditions_detail(value_columns: list) -> dict:
     """
     styles = {}
 
+    style_error = {"backgroundColor": "#E45756"}
+    style_warning = {"backgroundColor": "#FFA15A"}
+    style_normal = {"backgroundColor": "transparent"}
+
     styles["time"] = {
         "cellStyle": {
             "styleConditions": [
                 {
                     "condition": f"params.data['time_lapse_status'] == {val}",
-                    "style": {"backgroundColor": f"{col}"},
+                    "style": s,
                 }
-                for val, col in zip([0, 2], ["#E45756", "#FFA15A"])
+                for val, s in zip([0, 1, 2], [style_error, style_normal, style_warning])
             ]
         },
     }
@@ -217,12 +246,11 @@ def create_style_conditions_detail(value_columns: list) -> dict:
     for field in value_columns + ["stdev", "value_difference"]:
         styles[field] = {
             "cellStyle": {
-                "styleConditions": [
-                    {
-                        "condition": f"params.data['{field}_error']",
-                        "style": {"backgroundColor": "#E45756"},
-                    },
-                ]
+                "styleConditions": create_style_condition(
+                    condition=f"params.data['{field}_error']",
+                    style_true=style_error,
+                    style_false=style_normal,
+                )
             },
         }
 
