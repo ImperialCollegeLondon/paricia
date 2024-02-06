@@ -183,6 +183,8 @@ app.layout = html.Div(
         Output("table_detail", "rowData"),
         Output("table_detail", "rowTransaction"),
         Output("table_detail", "scrollTo"),
+        Output("table_daily", "selectedRows"),
+        Output("table_detail", "selectedRows"),
     ],
     [
         Input("daily-save-button", "n_clicks"),
@@ -209,7 +211,17 @@ def buttons_callback(
     in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
-) -> tuple[str, str, go.Figure, list[dict], list[dict], list[dict], list[dict]]:
+) -> tuple[
+    str,
+    str,
+    go.Figure,
+    list[dict],
+    list[dict],
+    dict,
+    dict,
+    list[dict],
+    list[dict],
+]:
     """Callback for buttons adding and resetting Validated data
 
     Args:
@@ -223,7 +235,7 @@ def buttons_callback(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict]:
+        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict]]:
             Callback outputs
     """
     global DATA_DAILY, DATA_DETAIL
@@ -238,13 +250,17 @@ def buttons_callback(
     out_detail_row_data = dash.no_update
     out_detail_row_transaction = dash.no_update
     out_detail_scroll = dash.no_update
+    out_daily_selected_rows = dash.no_update
+    out_detail_selected_rows = dash.no_update
 
     daily_refresh_required = False
     detail_refresh_required = False
+    daily_reset_selection = False
+    detail_reset_selection = False
     plot_refresh_required = False
 
     # Button: Daily save
-    if button_id == "daily-save-button" and in_daily_selected_rows is not None:
+    if button_id == "daily-save-button":
         selected_ids = {row["id"] for row in in_daily_selected_rows}
         for row in in_daily_row_data:
             row["state"] = row["id"] in selected_ids
@@ -273,9 +289,10 @@ def buttons_callback(
         out_daily_status = "Validation reset"
         plot_refresh_required = True
         daily_refresh_required = True
+        daily_reset_selection = True
 
     # Button: Detail save
-    elif button_id == "detail-save-button" and in_detail_selected_rows is not None:
+    elif button_id == "detail-save-button":
         selected_ids = {row["id"] for row in in_detail_selected_rows}
         for row in in_detail_row_data:
             row["is_selected"] = row["id"] in selected_ids
@@ -298,6 +315,7 @@ def buttons_callback(
         out_detail_status = "Validation reset"
         plot_refresh_required = True
         detail_refresh_required = True
+        detail_reset_selection = True
 
     # Button: Detail new row
     elif button_id == "detail-add-button":
@@ -329,6 +347,8 @@ def buttons_callback(
         # Refresh daily table
         if daily_refresh_required:
             out_daily_row_data = DATA_DAILY["data"]
+            if daily_reset_selection:
+                out_daily_selected_rows = out_daily_row_data
 
     # Refresh detail table
     if detail_refresh_required:
@@ -340,6 +360,8 @@ def buttons_callback(
             maximum=MAXIMUM,
         )
         out_detail_row_data = DATA_DETAIL["series"]
+        if detail_reset_selection:
+            out_detail_selected_rows = out_detail_row_data
 
     return (
         out_daily_status,
@@ -349,4 +371,6 @@ def buttons_callback(
         out_detail_row_data,
         out_detail_row_transaction,
         out_detail_scroll,
+        out_daily_selected_rows,
+        out_detail_selected_rows,
     )
