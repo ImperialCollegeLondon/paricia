@@ -143,10 +143,12 @@ app.layout = html.Div(
     children=[
         dcc.Tabs(
             id="tabs",
+            value="tab-daily",
             children=[
                 dcc.Tab(
                     label="Daily Report",
                     id="tab-daily",
+                    value="tab-daily",
                     style={"font-family": DEFAULT_FONT},
                     selected_style={"font-family": DEFAULT_FONT},
                     children=[
@@ -173,6 +175,7 @@ app.layout = html.Div(
                 dcc.Tab(
                     label="Detail of Selected Day",
                     id="tab-detail",
+                    value="tab-detail",
                     disabled=True,
                     style={"font-family": DEFAULT_FONT},
                     selected_style={"font-family": DEFAULT_FONT},
@@ -190,10 +193,6 @@ app.layout = html.Div(
                     ],
                 ),
             ],
-        ),
-        html.H1(
-            children="Plot",
-            style={"font-family": DEFAULT_FONT},
         ),
         dcc.Graph(id="plot", figure=plot),
     ]
@@ -213,6 +212,7 @@ app.layout = html.Div(
         Output("table_detail", "selectedRows"),
         Output("tab-detail", "disabled"),
         Output("tab-detail", "label"),
+        Output("tabs", "value"),
     ],
     [
         Input("daily-save-button", "n_clicks"),
@@ -267,7 +267,7 @@ def callbacks(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str]:
+        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
             Callback outputs
     """
     global DATA_DAILY, DATA_DETAIL, SELECTED_DAY
@@ -286,6 +286,7 @@ def callbacks(
     out_detail_selected_rows = dash.no_update
     out_tab_detail_disabled = dash.no_update
     out_tab_detail_label = dash.no_update
+    out_tabs_value = dash.no_update
 
     daily_refresh_required = False
     detail_refresh_required = False
@@ -378,6 +379,7 @@ def callbacks(
             out_tab_detail_label = (
                 f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
             )
+            out_tabs_value = "tab-detail"
         else:
             out_daily_status = "Invalid ID"
 
@@ -424,4 +426,5 @@ def callbacks(
         out_detail_selected_rows,
         out_tab_detail_disabled,
         out_tab_detail_label,
+        out_tabs_value,
     )
