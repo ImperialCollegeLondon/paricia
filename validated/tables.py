@@ -106,7 +106,7 @@ def create_columns_detail(value_columns: list) -> list:
     columns += [
         {
             "field": c,
-            "headerName": c[0].upper() + c[1:],
+            "headerName": c.capitalize(),
             "filter": "agNumberColumnFilter",
             "editable": True,
             **styles[c],
