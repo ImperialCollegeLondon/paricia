@@ -4,7 +4,7 @@ This scenario creates synthetic data for a set of stations and variables for a s
 year. It results in a database structure where the number of records is
 spread evenly across the years and variables. As the default chunk time interval for
 the TimescaleDB is 1 day, this scenario results in not that many chunks (365) and a
-higher number of records per chunk that the previous scenario (~66000), althoguh the
+higher number of records per chunk that the previous scenario (~66000), although the
 total number of records is the same. Even per chunk, the number of records is still
 pretty small, sugesting that the performance will not be that different.
 """
