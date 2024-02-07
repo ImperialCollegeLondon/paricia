@@ -116,8 +116,13 @@ menu_daily = html.Div(
         html.Div(
             children=[
                 html.Div(
-                    children=["Open detailed view   "],
-                    style={"display": "inline-block", "font-family": DEFAULT_FONT},
+                    children=["Open detailed view"],
+                    style={
+                        "display": "inline-block",
+                        "font-family": DEFAULT_FONT,
+                        "padding-right": "5px",
+                        "font-size": "14px",
+                    },
                 ),
                 dcc.Input(
                     id="input-daily-id",
@@ -129,16 +134,39 @@ menu_daily = html.Div(
             style={"display": "inline-block", "width": "50%", "text-align": "right"},
         ),
     ],
-    style={"width": "100%"},
+    style={
+        "background-color": "#f0f0f0",
+        "width": "100%",
+    },
 )
 
 menu_detail = html.Div(
     children=[
-        html.Button("Save to Validated", id="detail-save-button"),
-        html.Button("Reset Validated", id="detail-reset-button"),
-        html.Button("Add row", id="detail-add-button"),
+        html.Div(
+            children=[
+                html.Button("Save to Validated", id="detail-save-button"),
+                html.Button("Reset Validated", id="detail-reset-button"),
+            ],
+            style={
+                "display": "inline-block",
+                "width": "50%",
+            },
+        ),
+        html.Div(
+            children=[
+                html.Button("Add row", id="detail-add-button"),
+            ],
+            style={
+                "display": "inline-block",
+                "text-align": "right",
+                "width": "50%",
+            },
+        ),
     ],
-    style={"display": "inline-block"},
+    style={
+        "background-color": "#f0f0f0",
+        "width": "100%",
+    },
 )
 
 
@@ -152,7 +180,7 @@ def create_validation_plot(data: dict) -> go.Figure:
     Returns:
         go.Figure: Plot
     """
-    plot = go.Figure()
+    fig = go.Figure()
 
     datasets = [
         {"key": "measurement", "name": "Measurement", "color": "black"},
@@ -161,7 +189,7 @@ def create_validation_plot(data: dict) -> go.Figure:
     ]
 
     for dataset in datasets:
-        plot.add_trace(
+        fig.add_trace(
             go.Scatter(
                 x=data[dataset["key"]]["time"],
                 y=data[dataset["key"]]["average"],
@@ -172,7 +200,24 @@ def create_validation_plot(data: dict) -> go.Figure:
             )
         )
 
-    return plot
+    fig.update_yaxes(title_text=f"{str(VARIABLE)} (Average)")
+    fig.update_layout(
+        legend=dict(
+            x=1,
+            y=1,
+            xanchor="auto",
+            yanchor="auto",
+        ),
+        autosize=True,
+        margin=dict(
+            l=50,
+            r=0,
+            b=0,
+            t=20,
+        ),
+    )
+
+    return fig
 
 
 plot = create_validation_plot(data=DATA_DAILY["series"])
@@ -183,6 +228,7 @@ app.layout = html.Div(
         dcc.Tabs(
             id="tabs",
             value="tab-daily",
+            style={"width": "100%"},
             children=[
                 dcc.Tab(
                     label="Daily Report",
@@ -213,9 +259,13 @@ app.layout = html.Div(
         html.Div(
             id="status-message",
             children=[""],
-            style={"font-family": DEFAULT_FONT},
+            style={
+                "font-family": DEFAULT_FONT,
+                "font-size": "14px",
+                "min-height": "14px",
+            },
         ),
-        dcc.Graph(id="plot", figure=plot),
+        dcc.Graph(id="plot", figure=plot, style={"width": "100%"}),
     ]
 )
 
