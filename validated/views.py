@@ -432,7 +432,7 @@ class DailyValidationDev(View):
         from .dash_apps.finished_apps import daily_validation
 
         return render(request, "daily_validation_dev.html")
-    
+
 
 class DataReportDev(View):
     def get(self, request, *args, **kwargs):

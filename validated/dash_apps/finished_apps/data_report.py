@@ -1,11 +1,10 @@
 from datetime import datetime
 from decimal import Decimal
 
-import plotly.express as px
-from dash import dcc, html, Input, Output
-from django_plotly_dash import DjangoDash
-
 import pandas as pd
+import plotly.express as px
+from dash import Input, Output, dcc, html
+from django_plotly_dash import DjangoDash
 
 from station.models import Station
 from validated.functions import dict_data_report
@@ -57,37 +56,44 @@ plot = plot_graph(
 
 
 # Create layout
-app.layout = html.Div([
-    dcc.Dropdown(
-        id="temporality_drop",
-        options=[
-            {'label': 'Raw measurement', 'value': 'measurement'},
-            {'label': 'Validated measurement', 'value': 'validated'},
-            {'label': 'Hourly', 'value': 'hourly'},
-            {'label': 'Daily', 'value': 'daily'},
-            {'label': 'Monthly', 'value': 'monthly'},
-        ],
-        value="measurement",
-    ),
-    dcc.Dropdown(
-        id="station_drop",
-        #options=Station.objects.order_by("station_code"),
-        options=[item.station_code for item in Station.objects.order_by("station_code")],
-        value=station.station_code,
-    ),
-    dcc.Dropdown(
-        id="variable_drop",
-        options=[{'label': item.name, 'value': item.variable_code} for item in Variable.objects.order_by("variable_code")],
-        value=variable.variable_code,
-    ),
-    dcc.DatePickerRange(
-        id="date_range_picker",
-        display_format="YYYY-MM-DD",
-        start_date="2023-03-01",
-        end_date="2023-03-31",
-    ),
-    dcc.Graph(id="data_report_graph", figure=plot)
-])
+app.layout = html.Div(
+    [
+        dcc.Dropdown(
+            id="temporality_drop",
+            options=[
+                {"label": "Raw measurement", "value": "measurement"},
+                {"label": "Validated measurement", "value": "validated"},
+                {"label": "Hourly", "value": "hourly"},
+                {"label": "Daily", "value": "daily"},
+                {"label": "Monthly", "value": "monthly"},
+            ],
+            value="measurement",
+        ),
+        dcc.Dropdown(
+            id="station_drop",
+            # options=Station.objects.order_by("station_code"),
+            options=[
+                item.station_code for item in Station.objects.order_by("station_code")
+            ],
+            value=station.station_code,
+        ),
+        dcc.Dropdown(
+            id="variable_drop",
+            options=[
+                {"label": item.name, "value": item.variable_code}
+                for item in Variable.objects.order_by("variable_code")
+            ],
+            value=variable.variable_code,
+        ),
+        dcc.DatePickerRange(
+            id="date_range_picker",
+            display_format="YYYY-MM-DD",
+            start_date="2023-03-01",
+            end_date="2023-03-31",
+        ),
+        dcc.Graph(id="data_report_graph", figure=plot),
+    ]
+)
 
 
 @app.callback(
@@ -100,17 +106,16 @@ app.layout = html.Div([
         Input("date_range_picker", "end_date"),
     ],
 )
-def update_button_click(
+def update_graph(
     temporality: str,
     station: str,
     variable: str,
     start_time: str,
     end_time: str,
 ) -> px.line:
-
     station = Station.objects.get(station_code=station)
     variable = Variable.objects.get(variable_code=variable)
-    
+
     plot = plot_graph(
         temporality,
         station,
