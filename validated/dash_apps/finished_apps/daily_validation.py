@@ -25,6 +25,7 @@ DEFAULT_FONT = "Open Sans, Raleway, Dosis, Ubuntu, sans-serif"
 app = DjangoDash("DailyValidation")
 
 # Filters (in final app this will get data from forms)
+
 STATION: Station = Station.objects.order_by("station_code")[7]
 VARIABLE: Variable = Variable.objects.order_by("variable_code")[0]
 START_DATE: datetime = datetime.strptime("2023-03-01", "%Y-%m-%d")
@@ -102,6 +103,73 @@ table_detail = AgGrid(
 )
 
 
+# Menus
+menu_daily = html.Div(
+    children=[
+        html.Div(
+            children=[
+                html.Button("Save to Validated", id="daily-save-button"),
+                html.Button("Reset Validated", id="daily-reset-button"),
+            ],
+            style={"display": "inline-block", "width": "50%"},
+        ),
+        html.Div(
+            children=[
+                html.Div(
+                    children=["Open detailed view"],
+                    style={
+                        "display": "inline-block",
+                        "font-family": DEFAULT_FONT,
+                        "padding-right": "5px",
+                        "font-size": "14px",
+                    },
+                ),
+                dcc.Input(
+                    id="input-daily-id",
+                    type="number",
+                    debounce=True,
+                    placeholder="ID",
+                ),
+            ],
+            style={"display": "inline-block", "width": "50%", "text-align": "right"},
+        ),
+    ],
+    style={
+        "background-color": "#f0f0f0",
+        "width": "100%",
+    },
+)
+
+menu_detail = html.Div(
+    children=[
+        html.Div(
+            children=[
+                html.Button("Save to Validated", id="detail-save-button"),
+                html.Button("Reset Validated", id="detail-reset-button"),
+            ],
+            style={
+                "display": "inline-block",
+                "width": "50%",
+            },
+        ),
+        html.Div(
+            children=[
+                html.Button("Add row", id="detail-add-button"),
+            ],
+            style={
+                "display": "inline-block",
+                "text-align": "right",
+                "width": "50%",
+            },
+        ),
+    ],
+    style={
+        "background-color": "#f0f0f0",
+        "width": "100%",
+    },
+)
+
+
 # Plot
 def create_validation_plot(data: dict) -> go.Figure:
     """Creates plot for Validation app
@@ -112,7 +180,7 @@ def create_validation_plot(data: dict) -> go.Figure:
     Returns:
         go.Figure: Plot
     """
-    plot = go.Figure()
+    fig = go.Figure()
 
     datasets = [
         {"key": "measurement", "name": "Measurement", "color": "black"},
@@ -121,7 +189,7 @@ def create_validation_plot(data: dict) -> go.Figure:
     ]
 
     for dataset in datasets:
-        plot.add_trace(
+        fig.add_trace(
             go.Scatter(
                 x=data[dataset["key"]]["time"],
                 y=data[dataset["key"]]["average"],
@@ -132,7 +200,24 @@ def create_validation_plot(data: dict) -> go.Figure:
             )
         )
 
-    return plot
+    fig.update_yaxes(title_text=f"{str(VARIABLE)} (Average)")
+    fig.update_layout(
+        legend=dict(
+            x=1,
+            y=1,
+            xanchor="auto",
+            yanchor="auto",
+        ),
+        autosize=True,
+        margin=dict(
+            l=50,
+            r=0,
+            b=0,
+            t=20,
+        ),
+    )
+
+    return fig
 
 
 plot = create_validation_plot(data=DATA_DAILY["series"])
@@ -140,44 +225,54 @@ plot = create_validation_plot(data=DATA_DAILY["series"])
 # Layout
 app.layout = html.Div(
     children=[
-        html.H1(
-            children="Daily Report",
-            style={"font-family": DEFAULT_FONT},
+        dcc.Tabs(
+            id="tabs",
+            value="tab-daily",
+            style={"width": "100%"},
+            children=[
+                dcc.Tab(
+                    label="Daily Report",
+                    id="tab-daily",
+                    value="tab-daily",
+                    style={"font-family": DEFAULT_FONT},
+                    selected_style={"font-family": DEFAULT_FONT},
+                    children=[
+                        table_daily,
+                        menu_daily,
+                    ],
+                ),
+                dcc.Tab(
+                    label="Detail of Selected Day",
+                    id="tab-detail",
+                    value="tab-detail",
+                    disabled=True,
+                    style={"font-family": DEFAULT_FONT},
+                    selected_style={"font-family": DEFAULT_FONT},
+                    disabled_style={"font-family": DEFAULT_FONT},
+                    children=[
+                        table_detail,
+                        menu_detail,
+                    ],
+                ),
+            ],
         ),
-        table_daily,
-        html.Button("Save to Validated", id="daily-save-button"),
-        html.Button("Reset Validated", id="daily-reset-button"),
         html.Div(
-            id="daily-status-message",
+            id="status-message",
             children=[""],
-            style={"font-family": DEFAULT_FONT},
+            style={
+                "font-family": DEFAULT_FONT,
+                "font-size": "14px",
+                "min-height": "14px",
+            },
         ),
-        html.H1(
-            children="Detail of Selected Day",
-            style={"font-family": DEFAULT_FONT},
-        ),
-        table_detail,
-        html.Button("Add row", id="detail-add-button"),
-        html.Button("Save to Validated", id="detail-save-button"),
-        html.Button("Reset Validated", id="detail-reset-button"),
-        html.Div(
-            id="detail-status-message",
-            children=[""],
-            style={"font-family": DEFAULT_FONT},
-        ),
-        html.H1(
-            children="Plot",
-            style={"font-family": DEFAULT_FONT},
-        ),
-        dcc.Graph(id="plot", figure=plot),
+        dcc.Graph(id="plot", figure=plot, style={"width": "100%"}),
     ]
 )
 
 
 @app.callback(
     [
-        Output("daily-status-message", "children"),
-        Output("detail-status-message", "children"),
+        Output("status-message", "children"),
         Output("plot", "figure"),
         Output("table_daily", "rowData"),
         Output("table_detail", "rowData"),
@@ -185,6 +280,9 @@ app.layout = html.Div(
         Output("table_detail", "scrollTo"),
         Output("table_daily", "selectedRows"),
         Output("table_detail", "selectedRows"),
+        Output("tab-detail", "disabled"),
+        Output("tab-detail", "label"),
+        Output("tabs", "value"),
     ],
     [
         Input("daily-save-button", "n_clicks"),
@@ -192,6 +290,7 @@ app.layout = html.Div(
         Input("detail-save-button", "n_clicks"),
         Input("detail-reset-button", "n_clicks"),
         Input("detail-add-button", "n_clicks"),
+        Input("input-daily-id", "value"),
     ],
     [
         State("table_daily", "selectedRows"),
@@ -201,18 +300,18 @@ app.layout = html.Div(
     ],
     prevent_initial_call=True,
 )
-def buttons_callback(
+def callbacks(
     daily_save_clicks: int,
     daily_reset_clicks: int,
     detail_save_clicks: int,
     detail_reset_clicks: int,
     detail_add_clicks: int,
+    daily_id: int,
     in_daily_selected_rows: list[dict],
     in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
 ) -> tuple[
-    str,
     str,
     go.Figure,
     list[dict],
@@ -221,6 +320,9 @@ def buttons_callback(
     dict,
     list[dict],
     list[dict],
+    bool,
+    str,
+    str,
 ]:
     """Callback for buttons adding and resetting Validated data
 
@@ -230,21 +332,21 @@ def buttons_callback(
         detail_save_clicks (int): Number of times detail-save-button was clicked
         detail_reset_clicks (int): Number of times detail-reset-button was clicked
         detail_add_clicks (int): Number of times detail-add-button was clicked
+        daily_id (int): ID of selected day
         in_daily_selected_rows (list[dict]): Selected rows in table_daily
         in_detail_selected_rows (list[dict]): Selected rows in table_detail
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict]]:
+        tuple[str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
             Callback outputs
     """
-    global DATA_DAILY, DATA_DETAIL
+    global DATA_DAILY, DATA_DETAIL, SELECTED_DAY
 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
-    out_daily_status = dash.no_update
-    out_detail_status = dash.no_update
+    out_status = dash.no_update
     out_plot = dash.no_update
     out_daily_row_data = dash.no_update
     out_detail_row_data = dash.no_update
@@ -252,6 +354,9 @@ def buttons_callback(
     out_detail_scroll = dash.no_update
     out_daily_selected_rows = dash.no_update
     out_detail_selected_rows = dash.no_update
+    out_tab_detail_disabled = dash.no_update
+    out_tab_detail_label = dash.no_update
+    out_tabs_value = dash.no_update
 
     daily_refresh_required = False
     detail_refresh_required = False
@@ -274,7 +379,7 @@ def buttons_callback(
             minimum=MINIMUM,
             maximum=MAXIMUM,
         )
-        out_daily_status = f"{len(in_daily_selected_rows)} days saved to Validated"
+        out_status = f"{len(in_daily_selected_rows)} days saved to Validated"
         plot_refresh_required = True
         daily_refresh_required = True
 
@@ -286,7 +391,7 @@ def buttons_callback(
             start_date=START_DATE,
             end_date=END_DATE,
         )
-        out_daily_status = "Validation reset"
+        out_status = "Validation reset"
         plot_refresh_required = True
         daily_refresh_required = True
         daily_reset_selection = True
@@ -301,7 +406,7 @@ def buttons_callback(
             variable=VARIABLE,
             station=STATION,
         )
-        out_detail_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
+        out_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
         plot_refresh_required = True
         detail_refresh_required = True
 
@@ -312,7 +417,7 @@ def buttons_callback(
             variable=VARIABLE,
             station=STATION,
         )
-        out_detail_status = "Validation reset"
+        out_status = "Validation reset"
         plot_refresh_required = True
         detail_refresh_required = True
         detail_reset_selection = True
@@ -331,6 +436,23 @@ def buttons_callback(
         }
         out_detail_row_transaction = {"add": [new_row]}
         out_detail_scroll = {"data": new_row}
+
+    # Input: Daily date
+    elif button_id == "input-daily-id":
+        SELECTED_DAY = next(
+            (d["date"] for d in DATA_DAILY["data"] if d["id"] == daily_id),
+            dash.no_update,
+        )
+        if SELECTED_DAY != dash.no_update:
+            detail_refresh_required = True
+            out_tab_detail_disabled = False
+            out_tab_detail_label = (
+                f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
+            )
+            out_tabs_value = "tab-detail"
+            out_status = ""
+        else:
+            out_status = "Invalid ID"
 
     # Refresh plot
     if plot_refresh_required:
@@ -364,8 +486,7 @@ def buttons_callback(
             out_detail_selected_rows = out_detail_row_data
 
     return (
-        out_daily_status,
-        out_detail_status,
+        out_status,
         out_plot,
         out_daily_row_data,
         out_detail_row_data,
@@ -373,4 +494,7 @@ def buttons_callback(
         out_detail_scroll,
         out_daily_selected_rows,
         out_detail_selected_rows,
+        out_tab_detail_disabled,
+        out_tab_detail_label,
+        out_tabs_value,
     )
