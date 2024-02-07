@@ -17,6 +17,7 @@ from validated.functions import (
     save_detail_to_validated,
     save_to_validated,
 )
+from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
 
@@ -33,6 +34,7 @@ END_DATE: datetime = datetime.strptime("2023-03-31", "%Y-%m-%d")
 MINIMUM: Decimal = Decimal(-5)
 MAXIMUM: Decimal = Decimal(28)
 SELECTED_DAY: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
+PLOT_TYPE = "average"
 
 # Daily data
 DATA_DAILY = daily_validation(
@@ -171,56 +173,18 @@ menu_detail = html.Div(
 
 
 # Plot
-def create_validation_plot(data: dict) -> go.Figure:
-    """Creates plot for Validation app
+plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
 
-    Args:
-        data (dict): Daily data series
-
-    Returns:
-        go.Figure: Plot
-    """
-    fig = go.Figure()
-
-    datasets = [
-        {"key": "measurement", "name": "Measurement", "color": "black"},
-        {"key": "selected", "name": "Selected", "color": "#636EFA"},
-        {"key": "validated", "name": "Validated", "color": "#00CC96"},
-    ]
-
-    for dataset in datasets:
-        fig.add_trace(
-            go.Scatter(
-                x=data[dataset["key"]]["time"],
-                y=data[dataset["key"]]["average"],
-                name=dataset["name"],
-                line=dict(color=dataset["color"]),
-                mode="markers",
-                marker_size=3,
-            )
-        )
-
-    fig.update_yaxes(title_text=f"{str(VARIABLE)} (Average)")
-    fig.update_layout(
-        legend=dict(
-            x=1,
-            y=1,
-            xanchor="auto",
-            yanchor="auto",
-        ),
-        autosize=True,
-        margin=dict(
-            l=50,
-            r=0,
-            b=0,
-            t=20,
-        ),
-    )
-
-    return fig
-
-
-plot = create_validation_plot(data=DATA_DAILY["series"])
+# Plot radio
+plot_radio = dcc.RadioItems(
+    id="plot_radio",
+    options=[
+        {"value": c, "label": c.capitalize()} for c in DATA_DAILY["value_columns"]
+    ],
+    value=PLOT_TYPE,
+    inline=True,
+    style={"font-family": DEFAULT_FONT, "font-size": "14px"},
+)
 
 # Layout
 app.layout = html.Div(
@@ -262,9 +226,12 @@ app.layout = html.Div(
             style={
                 "font-family": DEFAULT_FONT,
                 "font-size": "14px",
-                "min-height": "14px",
+                "min-height": "20px",
+                "padding-top": "5px",
+                "padding-bottom": "10px",
             },
         ),
+        plot_radio,
         dcc.Graph(id="plot", figure=plot, style={"width": "100%"}),
     ]
 )
@@ -291,6 +258,7 @@ app.layout = html.Div(
         Input("detail-reset-button", "n_clicks"),
         Input("detail-add-button", "n_clicks"),
         Input("input-daily-id", "value"),
+        Input("plot_radio", "value"),
     ],
     [
         State("table_daily", "selectedRows"),
@@ -307,6 +275,7 @@ def callbacks(
     detail_reset_clicks: int,
     detail_add_clicks: int,
     daily_id: int,
+    plot_radio_value: str,
     in_daily_selected_rows: list[dict],
     in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
@@ -333,6 +302,7 @@ def callbacks(
         detail_reset_clicks (int): Number of times detail-reset-button was clicked
         detail_add_clicks (int): Number of times detail-add-button was clicked
         daily_id (int): ID of selected day
+        plot_radio_value (str): Value of plot radio button
         in_daily_selected_rows (list[dict]): Selected rows in table_daily
         in_detail_selected_rows (list[dict]): Selected rows in table_detail
         in_detail_row_data (list[dict]): Full row data for table_detail
@@ -341,7 +311,7 @@ def callbacks(
         tuple[str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
             Callback outputs
     """
-    global DATA_DAILY, DATA_DETAIL, SELECTED_DAY
+    global DATA_DAILY, DATA_DETAIL, SELECTED_DAY, PLOT_TYPE
 
     ctx = dash.callback_context
     button_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -358,10 +328,12 @@ def callbacks(
     out_tab_detail_label = dash.no_update
     out_tabs_value = dash.no_update
 
-    daily_refresh_required = False
-    detail_refresh_required = False
-    daily_reset_selection = False
-    detail_reset_selection = False
+    daily_data_refresh_required = False
+    detail_data_refresh_required = False
+    daily_table_refresh_required = False
+    detail_table_refresh_required = False
+    daily_table_reset_selection = False
+    detail_table_reset_selection = False
     plot_refresh_required = False
 
     # Button: Daily save
@@ -380,8 +352,9 @@ def callbacks(
             maximum=MAXIMUM,
         )
         out_status = f"{len(in_daily_selected_rows)} days saved to Validated"
+        daily_data_refresh_required = True
+        daily_table_refresh_required = True
         plot_refresh_required = True
-        daily_refresh_required = True
 
     # Button: Daily reset
     elif button_id == "daily-reset-button":
@@ -392,9 +365,10 @@ def callbacks(
             end_date=END_DATE,
         )
         out_status = "Validation reset"
+        daily_data_refresh_required = True
+        daily_table_refresh_required = True
+        daily_table_reset_selection = True
         plot_refresh_required = True
-        daily_refresh_required = True
-        daily_reset_selection = True
 
     # Button: Detail save
     elif button_id == "detail-save-button":
@@ -407,8 +381,11 @@ def callbacks(
             station=STATION,
         )
         out_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
+        daily_data_refresh_required = True
+        daily_table_refresh_required = True
+        detail_data_refresh_required = True
+        detail_table_refresh_required = True
         plot_refresh_required = True
-        detail_refresh_required = True
 
     # Button: Detail reset
     elif button_id == "detail-reset-button":
@@ -418,9 +395,12 @@ def callbacks(
             station=STATION,
         )
         out_status = "Validation reset"
+        daily_data_refresh_required = True
+        daily_table_refresh_required = True
+        detail_data_refresh_required = True
+        detail_table_refresh_required = True
+        detail_table_reset_selection = True
         plot_refresh_required = True
-        detail_refresh_required = True
-        detail_reset_selection = True
 
     # Button: Detail new row
     elif button_id == "detail-add-button":
@@ -437,14 +417,15 @@ def callbacks(
         out_detail_row_transaction = {"add": [new_row]}
         out_detail_scroll = {"data": new_row}
 
-    # Input: Daily date
+    # Input: Daily ID
     elif button_id == "input-daily-id":
         SELECTED_DAY = next(
             (d["date"] for d in DATA_DAILY["data"] if d["id"] == daily_id),
             dash.no_update,
         )
         if SELECTED_DAY != dash.no_update:
-            detail_refresh_required = True
+            detail_data_refresh_required = True
+            detail_table_refresh_required = True
             out_tab_detail_disabled = False
             out_tab_detail_label = (
                 f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
@@ -454,8 +435,13 @@ def callbacks(
         else:
             out_status = "Invalid ID"
 
-    # Refresh plot
-    if plot_refresh_required:
+    # Plot radio
+    elif button_id == "plot_radio":
+        PLOT_TYPE = plot_radio_value
+        plot_refresh_required = True
+
+    # Reload daily data
+    if daily_data_refresh_required:
         DATA_DAILY = daily_validation(
             station=STATION,
             variable=VARIABLE,
@@ -464,16 +450,9 @@ def callbacks(
             minimum=MINIMUM,
             maximum=MAXIMUM,
         )
-        out_plot = create_validation_plot(DATA_DAILY["series"])
 
-        # Refresh daily table
-        if daily_refresh_required:
-            out_daily_row_data = DATA_DAILY["data"]
-            if daily_reset_selection:
-                out_daily_selected_rows = out_daily_row_data
-
-    # Refresh detail table
-    if detail_refresh_required:
+    # Reload detail data
+    if detail_data_refresh_required:
         DATA_DETAIL = detail_list(
             station=STATION,
             variable=VARIABLE,
@@ -481,8 +460,25 @@ def callbacks(
             minimum=MINIMUM,
             maximum=MAXIMUM,
         )
+
+    # Refresh plot
+    if plot_refresh_required:
+        out_plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
+
+    # Refresh daily table
+    if daily_table_refresh_required:
+        out_daily_row_data = DATA_DAILY["data"]
+
+        # Reset daily table selection
+        if daily_table_reset_selection:
+            out_daily_selected_rows = out_daily_row_data
+
+    # Refresh detail table
+    if detail_table_refresh_required:
         out_detail_row_data = DATA_DETAIL["series"]
-        if detail_reset_selection:
+
+        # Reset detail table selection
+        if detail_table_reset_selection:
             out_detail_selected_rows = out_detail_row_data
 
     return (
