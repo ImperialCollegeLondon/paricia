@@ -165,11 +165,6 @@ app.layout = html.Div(
                             debounce=True,
                             placeholder="ID",
                         ),
-                        html.Div(
-                            id="daily-status-message",
-                            children=[""],
-                            style={"font-family": DEFAULT_FONT},
-                        ),
                     ],
                 ),
                 dcc.Tab(
@@ -185,14 +180,14 @@ app.layout = html.Div(
                         html.Button("Add row", id="detail-add-button"),
                         html.Button("Save to Validated", id="detail-save-button"),
                         html.Button("Reset Validated", id="detail-reset-button"),
-                        html.Div(
-                            id="detail-status-message",
-                            children=[""],
-                            style={"font-family": DEFAULT_FONT},
-                        ),
                     ],
                 ),
             ],
+        ),
+        html.Div(
+            id="status-message",
+            children=[""],
+            style={"font-family": DEFAULT_FONT},
         ),
         dcc.Graph(id="plot", figure=plot),
     ]
@@ -201,8 +196,7 @@ app.layout = html.Div(
 
 @app.callback(
     [
-        Output("daily-status-message", "children"),
-        Output("detail-status-message", "children"),
+        Output("status-message", "children"),
         Output("plot", "figure"),
         Output("table_daily", "rowData"),
         Output("table_detail", "rowData"),
@@ -243,7 +237,6 @@ def callbacks(
     in_detail_row_data: list[dict],
 ) -> tuple[
     str,
-    str,
     go.Figure,
     list[dict],
     list[dict],
@@ -252,6 +245,8 @@ def callbacks(
     list[dict],
     list[dict],
     bool,
+    str,
+    str,
 ]:
     """Callback for buttons adding and resetting Validated data
 
@@ -267,7 +262,7 @@ def callbacks(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
+        tuple[str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
             Callback outputs
     """
     global DATA_DAILY, DATA_DETAIL, SELECTED_DAY
@@ -275,8 +270,7 @@ def callbacks(
     ctx = dash.callback_context
     button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
-    out_daily_status = dash.no_update
-    out_detail_status = dash.no_update
+    out_status = dash.no_update
     out_plot = dash.no_update
     out_daily_row_data = dash.no_update
     out_detail_row_data = dash.no_update
@@ -309,7 +303,7 @@ def callbacks(
             minimum=MINIMUM,
             maximum=MAXIMUM,
         )
-        out_daily_status = f"{len(in_daily_selected_rows)} days saved to Validated"
+        out_status = f"{len(in_daily_selected_rows)} days saved to Validated"
         plot_refresh_required = True
         daily_refresh_required = True
 
@@ -321,7 +315,7 @@ def callbacks(
             start_date=START_DATE,
             end_date=END_DATE,
         )
-        out_daily_status = "Validation reset"
+        out_status = "Validation reset"
         plot_refresh_required = True
         daily_refresh_required = True
         daily_reset_selection = True
@@ -336,7 +330,7 @@ def callbacks(
             variable=VARIABLE,
             station=STATION,
         )
-        out_detail_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
+        out_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
         plot_refresh_required = True
         detail_refresh_required = True
 
@@ -347,7 +341,7 @@ def callbacks(
             variable=VARIABLE,
             station=STATION,
         )
-        out_detail_status = "Validation reset"
+        out_status = "Validation reset"
         plot_refresh_required = True
         detail_refresh_required = True
         detail_reset_selection = True
@@ -380,8 +374,9 @@ def callbacks(
                 f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
             )
             out_tabs_value = "tab-detail"
+            out_status = ""
         else:
-            out_daily_status = "Invalid ID"
+            out_status = "Invalid ID"
 
     # Refresh plot
     if plot_refresh_required:
@@ -415,8 +410,7 @@ def callbacks(
             out_detail_selected_rows = out_detail_row_data
 
     return (
-        out_daily_status,
-        out_detail_status,
+        out_status,
         out_plot,
         out_daily_row_data,
         out_detail_row_data,
