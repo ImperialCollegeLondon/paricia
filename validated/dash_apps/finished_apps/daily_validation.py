@@ -424,6 +424,7 @@ def callbacks(
             dash.no_update,
         )
         if SELECTED_DAY != dash.no_update:
+            detail_data_refresh_required = True
             detail_table_refresh_required = True
             out_tab_detail_disabled = False
             out_tab_detail_label = (
