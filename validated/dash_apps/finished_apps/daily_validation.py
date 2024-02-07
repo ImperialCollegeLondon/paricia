@@ -103,6 +103,45 @@ table_detail = AgGrid(
 )
 
 
+# Menus
+menu_daily = html.Div(
+    children=[
+        html.Div(
+            children=[
+                html.Button("Save to Validated", id="daily-save-button"),
+                html.Button("Reset Validated", id="daily-reset-button"),
+            ],
+            style={"display": "inline-block", "width": "50%"},
+        ),
+        html.Div(
+            children=[
+                html.Div(
+                    children=["Open detailed view   "],
+                    style={"display": "inline-block", "font-family": DEFAULT_FONT},
+                ),
+                dcc.Input(
+                    id="input-daily-id",
+                    type="number",
+                    debounce=True,
+                    placeholder="ID",
+                ),
+            ],
+            style={"display": "inline-block", "width": "50%", "text-align": "right"},
+        ),
+    ],
+    style={"width": "100%"},
+)
+
+menu_detail = html.Div(
+    children=[
+        html.Button("Save to Validated", id="detail-save-button"),
+        html.Button("Reset Validated", id="detail-reset-button"),
+        html.Button("Add row", id="detail-add-button"),
+    ],
+    style={"display": "inline-block"},
+)
+
+
 # Plot
 def create_validation_plot(data: dict) -> go.Figure:
     """Creates plot for Validation app
@@ -153,18 +192,7 @@ app.layout = html.Div(
                     selected_style={"font-family": DEFAULT_FONT},
                     children=[
                         table_daily,
-                        html.Button("Save to Validated", id="daily-save-button"),
-                        html.Button("Reset Validated", id="daily-reset-button"),
-                        html.Div(
-                            children=["Open detailed view:"],
-                            style={"font-family": DEFAULT_FONT},
-                        ),
-                        dcc.Input(
-                            id="input-daily-id",
-                            type="number",
-                            debounce=True,
-                            placeholder="ID",
-                        ),
+                        menu_daily,
                     ],
                 ),
                 dcc.Tab(
@@ -177,9 +205,7 @@ app.layout = html.Div(
                     disabled_style={"font-family": DEFAULT_FONT},
                     children=[
                         table_detail,
-                        html.Button("Add row", id="detail-add-button"),
-                        html.Button("Save to Validated", id="detail-save-button"),
-                        html.Button("Reset Validated", id="detail-reset-button"),
+                        menu_detail,
                     ],
                 ),
             ],
