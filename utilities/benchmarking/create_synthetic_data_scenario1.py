@@ -1,3 +1,12 @@
+"""Scenario for creating synthetic data for benchmarking purposes.
+
+This scenario creates synthetic data for a single station and a set of variables for a
+range of years. It results in a database structure where the number of records is
+spread evenly across the years and variables. As the default chunk time interval for
+the TimescaleDB is 1 day, this scenario results in many chunks (>8000) with just a few
+records each (~3000).
+"""
+
 import itertools
 import os
 import random
