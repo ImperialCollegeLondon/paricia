@@ -38,10 +38,11 @@ def plot_graph(
         end_time=end_time,
     )
 
+    # Convert data to DataFrame
+    df = pd.DataFrame.from_dict(data["series"])
+
     # Create plot
-    x = data["series"]["time"]
-    y = data["series"]["average"]
-    plot = px.line(x=x, y=y)
+    plot = px.line(df, x="time", y=["average", "minimum", "maximum"])
 
     return plot
 
