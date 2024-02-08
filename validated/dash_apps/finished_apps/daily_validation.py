@@ -105,37 +105,41 @@ table_detail = AgGrid(
 )
 
 
-# Menus
-menu_daily = html.Div(
+# Date picker
+detail_date_picker = html.Div(
+    children=[
+        html.Div(
+            children=["Open detailed view"],
+            style={
+                "display": "inline-block",
+                "font-family": DEFAULT_FONT,
+                "padding-right": "5px",
+                "font-size": "14px",
+            },
+        ),
+        dcc.DatePickerSingle(
+            id="detail-date-picker",
+            display_format="YYYY-MM-DD",
+            min_date_allowed=DATA_DAILY["data"][0]["date"],
+            max_date_allowed=DATA_DAILY["data"][-1]["date"],
+            style={"font-family": DEFAULT_FONT},
+        ),
+    ],
+    style={"display": "inline-block", "width": "50%", "text-align": "right"},
+)
+
+# Menu
+menu = html.Div(
     children=[
         html.Div(
             children=[
-                html.Button("Save to Validated", id="daily-save-button"),
-                html.Button("Reset Validated", id="daily-reset-button"),
+                html.Button("Save to Validated", id="save-button"),
+                html.Button("Reset Validated", id="reset-button"),
+                html.Button("Add row", id="add-button", style={"display": "none"}),
             ],
             style={"display": "inline-block", "width": "50%"},
         ),
-        html.Div(
-            children=[
-                html.Div(
-                    children=["Open detailed view"],
-                    style={
-                        "display": "inline-block",
-                        "font-family": DEFAULT_FONT,
-                        "padding-right": "5px",
-                        "font-size": "14px",
-                    },
-                ),
-                dcc.DatePickerSingle(
-                    id="detail-date-picker",
-                    display_format="YYYY-MM-DD",
-                    min_date_allowed=DATA_DAILY["data"][0]["date"],
-                    max_date_allowed=DATA_DAILY["data"][-1]["date"],
-                    style={"font-family": DEFAULT_FONT},
-                ),
-            ],
-            style={"display": "inline-block", "width": "50%", "text-align": "right"},
-        ),
+        detail_date_picker,
     ],
     style={
         "background-color": "#f0f0f0",
@@ -143,35 +147,20 @@ menu_daily = html.Div(
     },
 )
 
-menu_detail = html.Div(
-    children=[
-        html.Div(
-            children=[
-                html.Button("Save to Validated", id="detail-save-button"),
-                html.Button("Reset Validated", id="detail-reset-button"),
-            ],
-            style={
-                "display": "inline-block",
-                "width": "50%",
-            },
-        ),
-        html.Div(
-            children=[
-                html.Button("Add row", id="detail-add-button"),
-            ],
-            style={
-                "display": "inline-block",
-                "text-align": "right",
-                "width": "50%",
-            },
-        ),
-    ],
-    style={
-        "background-color": "#f0f0f0",
-        "width": "100%",
-    },
+# Status message
+status_message = (
+    html.Div(
+        id="status-message",
+        children=[""],
+        style={
+            "font-family": DEFAULT_FONT,
+            "font-size": "14px",
+            "min-height": "20px",
+            "padding-top": "5px",
+            "padding-bottom": "10px",
+        },
+    ),
 )
-
 
 # Plot
 plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
@@ -203,7 +192,6 @@ app.layout = html.Div(
                     selected_style={"font-family": DEFAULT_FONT},
                     children=[
                         table_daily,
-                        menu_daily,
                     ],
                 ),
                 dcc.Tab(
@@ -216,22 +204,12 @@ app.layout = html.Div(
                     disabled_style={"font-family": DEFAULT_FONT},
                     children=[
                         table_detail,
-                        menu_detail,
                     ],
                 ),
             ],
         ),
-        html.Div(
-            id="status-message",
-            children=[""],
-            style={
-                "font-family": DEFAULT_FONT,
-                "font-size": "14px",
-                "min-height": "20px",
-                "padding-top": "5px",
-                "padding-bottom": "10px",
-            },
-        ),
+        menu,
+        status_message,
         dcc.Loading(
             type="dot",
             children=html.Div(id="loading"),
@@ -256,15 +234,15 @@ app.layout = html.Div(
         Output("tab-detail", "disabled"),
         Output("tab-detail", "label"),
         Output("tabs", "value"),
+        Output("add-button", "style"),
     ],
     [
-        Input("daily-save-button", "n_clicks"),
-        Input("daily-reset-button", "n_clicks"),
-        Input("detail-save-button", "n_clicks"),
-        Input("detail-reset-button", "n_clicks"),
-        Input("detail-add-button", "n_clicks"),
+        Input("save-button", "n_clicks"),
+        Input("reset-button", "n_clicks"),
+        Input("add-button", "n_clicks"),
         Input("detail-date-picker", "date"),
         Input("plot_radio", "value"),
+        Input("tabs", "value"),
     ],
     [
         State("table_daily", "selectedRows"),
@@ -275,13 +253,12 @@ app.layout = html.Div(
     prevent_initial_call=True,
 )
 def callbacks(
-    daily_save_clicks: int,
-    daily_reset_clicks: int,
-    detail_save_clicks: int,
-    detail_reset_clicks: int,
-    detail_add_clicks: int,
+    save_clicks: int,
+    reset_clicks: int,
+    add_clicks: int,
     detail_date: datetime.date,
     plot_radio_value: str,
+    tabs_value: str,
     in_daily_selected_rows: list[dict],
     in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
@@ -335,6 +312,7 @@ def callbacks(
     out_tab_detail_disabled = dash.no_update
     out_tab_detail_label = dash.no_update
     out_tabs_value = dash.no_update
+    out_add_button_style = dash.no_update
 
     daily_data_refresh_required = False
     detail_data_refresh_required = False
@@ -344,8 +322,8 @@ def callbacks(
     detail_table_reset_selection = False
     plot_refresh_required = False
 
-    # Button: Daily save
-    if button_id == "daily-save-button":
+    # Button: Save (daily)
+    if button_id == "save-button" and tabs_value == "tab-daily":
         selected_ids = {row["id"] for row in in_daily_selected_rows}
         for row in in_daily_row_data:
             row["state"] = row["id"] in selected_ids
@@ -364,22 +342,8 @@ def callbacks(
         daily_table_refresh_required = True
         plot_refresh_required = True
 
-    # Button: Daily reset
-    elif button_id == "daily-reset-button":
-        reset_daily_validated(
-            variable=VARIABLE,
-            station=STATION,
-            start_date=START_DATE,
-            end_date=END_DATE,
-        )
-        out_status = "Validation reset"
-        daily_data_refresh_required = True
-        daily_table_refresh_required = True
-        daily_table_reset_selection = True
-        plot_refresh_required = True
-
-    # Button: Detail save
-    elif button_id == "detail-save-button":
+    # Button: Save (detail)
+    elif button_id == "save-button" and tabs_value == "tab-detail":
         selected_ids = {row["id"] for row in in_detail_selected_rows}
         for row in in_detail_row_data:
             row["is_selected"] = row["id"] in selected_ids
@@ -395,8 +359,22 @@ def callbacks(
         detail_table_refresh_required = True
         plot_refresh_required = True
 
-    # Button: Detail reset
-    elif button_id == "detail-reset-button":
+    # Button: Reset (daily)
+    elif button_id == "reset-button" and tabs_value == "tab-daily":
+        reset_daily_validated(
+            variable=VARIABLE,
+            station=STATION,
+            start_date=START_DATE,
+            end_date=END_DATE,
+        )
+        out_status = "Validation reset"
+        daily_data_refresh_required = True
+        daily_table_refresh_required = True
+        daily_table_reset_selection = True
+        plot_refresh_required = True
+
+    # Button: Reset (detail)
+    elif button_id == "reset-button" and tabs_value == "tab-detail":
         reset_detail_validated(
             data_list=in_detail_row_data,
             variable=VARIABLE,
@@ -410,8 +388,8 @@ def callbacks(
         detail_table_reset_selection = True
         plot_refresh_required = True
 
-    # Button: Detail new row
-    elif button_id == "detail-add-button":
+    # Button: New row (detail)
+    elif button_id == "add-button" and tabs_value == "tab-detail":
         last_id = in_detail_row_data[-1]["id"]
         last_time = in_detail_row_data[-1]["time"]
         new_row = {
@@ -439,11 +417,13 @@ def callbacks(
             SELECTED_DAY = new_selected_day
             detail_data_refresh_required = True
             detail_table_refresh_required = True
+            detail_table_reset_selection = True
             out_tab_detail_disabled = False
             out_tab_detail_label = (
                 f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
             )
             out_tabs_value = "tab-detail"
+            out_add_button_style = {"display": "inline-block"}
             out_status = ""
         else:
             out_status = "Invalid ID"
@@ -452,6 +432,13 @@ def callbacks(
     elif button_id == "plot_radio":
         PLOT_TYPE = plot_radio_value
         plot_refresh_required = True
+
+    # Switching tabs
+    elif button_id == "tabs":
+        if tabs_value == "tab-detail":
+            out_add_button_style = {"display": "inline-block"}
+        else:
+            out_add_button_style = {"display": "none"}
 
     # Reload daily data
     if daily_data_refresh_required:
@@ -507,4 +494,5 @@ def callbacks(
         out_tab_detail_disabled,
         out_tab_detail_label,
         out_tabs_value,
+        out_add_button_style,
     )
