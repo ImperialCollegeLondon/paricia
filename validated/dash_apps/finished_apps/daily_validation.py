@@ -135,7 +135,7 @@ menu = html.Div(
             children=[
                 html.Button("Save to Validated", id="save-button"),
                 html.Button("Reset Validated", id="reset-button"),
-                html.Button("Add row", id="add-button", style={"display": "none"}),
+                html.Button("Add row", id="add-button", disabled=True),
             ],
             style={"display": "inline-block", "width": "50%"},
         ),
@@ -148,19 +148,18 @@ menu = html.Div(
 )
 
 # Status message
-status_message = (
-    html.Div(
-        id="status-message",
-        children=[""],
-        style={
-            "font-family": DEFAULT_FONT,
-            "font-size": "14px",
-            "min-height": "20px",
-            "padding-top": "5px",
-            "padding-bottom": "10px",
-        },
-    ),
+status_message = html.Div(
+    id="status-message",
+    children=[""],
+    style={
+        "font-family": DEFAULT_FONT,
+        "font-size": "14px",
+        "min-height": "20px",
+        "padding-top": "5px",
+        "padding-bottom": "10px",
+    },
 )
+
 
 # Plot
 plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
@@ -234,7 +233,7 @@ app.layout = html.Div(
         Output("tab-detail", "disabled"),
         Output("tab-detail", "label"),
         Output("tabs", "value"),
-        Output("add-button", "style"),
+        Output("add-button", "disabled"),
     ],
     [
         Input("save-button", "n_clicks"),
@@ -276,6 +275,7 @@ def callbacks(
     bool,
     str,
     str,
+    bool,
 ]:
     """Callback for buttons adding and resetting Validated data
 
@@ -312,7 +312,7 @@ def callbacks(
     out_tab_detail_disabled = dash.no_update
     out_tab_detail_label = dash.no_update
     out_tabs_value = dash.no_update
-    out_add_button_style = dash.no_update
+    out_add_button_disabled = dash.no_update
 
     daily_data_refresh_required = False
     detail_data_refresh_required = False
@@ -423,7 +423,7 @@ def callbacks(
                 f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
             )
             out_tabs_value = "tab-detail"
-            out_add_button_style = {"display": "inline-block"}
+            out_add_button_disabled = False
             out_status = ""
         else:
             out_status = "Invalid ID"
@@ -436,9 +436,9 @@ def callbacks(
     # Switching tabs
     elif button_id == "tabs":
         if tabs_value == "tab-detail":
-            out_add_button_style = {"display": "inline-block"}
+            out_add_button_disabled = False
         else:
-            out_add_button_style = {"display": "none"}
+            out_add_button_disabled = True
 
     # Reload daily data
     if daily_data_refresh_required:
@@ -494,5 +494,5 @@ def callbacks(
         out_tab_detail_disabled,
         out_tab_detail_label,
         out_tabs_value,
-        out_add_button_style,
+        out_add_button_disabled,
     )
