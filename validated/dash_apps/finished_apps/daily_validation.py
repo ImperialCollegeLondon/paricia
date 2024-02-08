@@ -231,6 +231,10 @@ app.layout = html.Div(
                 "padding-bottom": "10px",
             },
         ),
+        dcc.Loading(
+            type="dot",
+            children=html.Div(id="loading"),
+        ),
         plot_radio,
         dcc.Graph(id="plot", figure=plot, style={"width": "100%"}),
     ]
@@ -239,6 +243,7 @@ app.layout = html.Div(
 
 @app.callback(
     [
+        Output("loading", "children"),
         Output("status-message", "children"),
         Output("plot", "figure"),
         Output("table_daily", "rowData"),
@@ -282,6 +287,7 @@ def callbacks(
     in_detail_row_data: list[dict],
 ) -> tuple[
     str,
+    str,
     go.Figure,
     list[dict],
     list[dict],
@@ -308,7 +314,7 @@ def callbacks(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
+        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
             Callback outputs
     """
     global DATA_DAILY, DATA_DETAIL, SELECTED_DAY, PLOT_TYPE
@@ -316,6 +322,7 @@ def callbacks(
     ctx = dash.callback_context
     button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
+    out_loading = dash.no_update
     out_status = dash.no_update
     out_plot = dash.no_update
     out_daily_row_data = dash.no_update
@@ -482,6 +489,7 @@ def callbacks(
             out_detail_selected_rows = out_detail_row_data
 
     return (
+        out_loading,
         out_status,
         out_plot,
         out_daily_row_data,
