@@ -126,11 +126,12 @@ menu_daily = html.Div(
                         "font-size": "14px",
                     },
                 ),
-                dcc.Input(
-                    id="input-daily-id",
-                    type="number",
-                    debounce=True,
-                    placeholder="ID",
+                dcc.DatePickerSingle(
+                    id="detail-date-picker",
+                    display_format="YYYY-MM-DD",
+                    min_date_allowed=DATA_DAILY["data"][0]["date"],
+                    max_date_allowed=DATA_DAILY["data"][-1]["date"],
+                    style={"font-family": DEFAULT_FONT},
                 ),
             ],
             style={"display": "inline-block", "width": "50%", "text-align": "right"},
@@ -262,7 +263,7 @@ app.layout = html.Div(
         Input("detail-save-button", "n_clicks"),
         Input("detail-reset-button", "n_clicks"),
         Input("detail-add-button", "n_clicks"),
-        Input("input-daily-id", "value"),
+        Input("detail-date-picker", "date"),
         Input("plot_radio", "value"),
     ],
     [
@@ -279,7 +280,7 @@ def callbacks(
     detail_save_clicks: int,
     detail_reset_clicks: int,
     detail_add_clicks: int,
-    daily_id: int,
+    detail_date: datetime.date,
     plot_radio_value: str,
     in_daily_selected_rows: list[dict],
     in_daily_row_data: list[dict],
@@ -424,13 +425,18 @@ def callbacks(
         out_detail_row_transaction = {"add": [new_row]}
         out_detail_scroll = {"data": new_row}
 
-    # Input: Daily ID
-    elif button_id == "input-daily-id":
-        SELECTED_DAY = next(
-            (d["date"] for d in DATA_DAILY["data"] if d["id"] == daily_id),
-            dash.no_update,
+    # Date picker
+    elif button_id == "detail-date-picker":
+        new_selected_day = next(
+            (
+                d["date"]
+                for d in DATA_DAILY["data"]
+                if d["date"].strftime("%Y-%m-%d") == detail_date
+            ),
+            None,
         )
-        if SELECTED_DAY != dash.no_update:
+        if new_selected_day is not None:
+            SELECTED_DAY = new_selected_day
             detail_data_refresh_required = True
             detail_table_refresh_required = True
             out_tab_detail_disabled = False
