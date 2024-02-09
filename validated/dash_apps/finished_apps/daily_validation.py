@@ -57,31 +57,67 @@ DATA_DETAIL = detail_list(
 # Filters
 filters = html.Div(
     children=[
-        dcc.Dropdown(
-            id="station_drop",
-            options=[
-                item.station_code for item in Station.objects.order_by("station_code")
+        html.Div(
+            [
+                html.Label("Station:", style={"display": "block"}),
+                dcc.Dropdown(
+                    id="station_drop",
+                    options=[
+                        {"label": item.station_code, "value": item.station_code}
+                        for item in Station.objects.order_by("station_code")
+                    ],
+                    value=STATION.station_code,
+                ),
             ],
-            value=STATION.station_code,
+            style={"margin-right": "10px", "width": "250px"},
         ),
-        dcc.Dropdown(
-            id="variable_drop",
-            options=[
-                {"label": item.name, "value": item.variable_code}
-                for item in Variable.objects.order_by("variable_code")
+        html.Div(
+            [
+                html.Label("Variable:", style={"display": "block"}),
+                dcc.Dropdown(
+                    id="variable_drop",
+                    options=[
+                        {"label": item.name, "value": item.variable_code}
+                        for item in Variable.objects.order_by("variable_code")
+                    ],
+                    value=VARIABLE.variable_code,
+                ),
             ],
-            value=VARIABLE.variable_code,
+            style={"margin-right": "10px", "width": "250px"},
         ),
-        dcc.DatePickerRange(
-            id="date_range_picker",
-            display_format="YYYY-MM-DD",
-            start_date=START_DATE.strftime("%Y-%m-%d"),
-            end_date=END_DATE.strftime("%Y-%m-%d"),
+        html.Div(
+            [
+                html.Label("Date Range:", style={"display": "block"}),
+                dcc.DatePickerRange(
+                    id="date_range_picker",
+                    display_format="YYYY-MM-DD",
+                    start_date=START_DATE.strftime("%Y-%m-%d"),
+                    end_date=END_DATE.strftime("%Y-%m-%d"),
+                ),
+            ],
+            style={"margin-right": "10px", "width": "300px"},
         ),
-        # dcc.Input(id="minimum_input", type="number", value=MINIMUM),
-        # dcc.Input(id="maximum_input", type="number", value=MAXIMUM),
-        html.Button("Submit", id="submit-button"),
-    ]
+        html.Div(
+            [
+                html.Label("Minimum:", style={"display": "block"}),
+                dcc.Input(id="minimum_input", type="number", value=MINIMUM),
+            ],
+            style={"margin-right": "10px", "width": "200px"},
+        ),
+        html.Div(
+            [
+                html.Label("Maximum:", style={"display": "block"}),
+                dcc.Input(id="maximum_input", type="number", value=MAXIMUM),
+            ],
+            style={"margin-right": "10px", "width": "200px"},
+        ),
+    ],
+    style={
+        "display": "flex",
+        "justify-content": "flex-start",
+        "font-family": DEFAULT_FONT,
+        "font-size": "14px",
+    },
 )
 
 # Tables
@@ -141,7 +177,6 @@ detail_date_picker = html.Div(
             children=["Open detailed view"],
             style={
                 "display": "inline-block",
-                "font-family": DEFAULT_FONT,
                 "padding-right": "5px",
                 "font-size": "14px",
             },
@@ -151,10 +186,14 @@ detail_date_picker = html.Div(
             display_format="YYYY-MM-DD",
             min_date_allowed=DATA_DAILY["data"][0]["date"],
             max_date_allowed=DATA_DAILY["data"][-1]["date"],
-            style={"font-family": DEFAULT_FONT},
         ),
     ],
-    style={"display": "inline-block", "width": "50%", "text-align": "right"},
+    style={
+        "display": "inline-block",
+        "width": "50%",
+        "text-align": "right",
+        "font-family": DEFAULT_FONT,
+    },
 )
 
 # Table menu
@@ -164,7 +203,12 @@ menu = html.Div(
             children=[
                 html.Button("Save to Validated", id="save-button"),
                 html.Button("Reset Validated", id="reset-button"),
-                html.Button("Add row", id="add-button", disabled=True),
+                html.Button(
+                    "Add row",
+                    id="add-button",
+                    disabled=True,
+                    style={"margin-left": "10px"},
+                ),
             ],
             style={"display": "inline-block", "width": "50%"},
         ),
@@ -208,6 +252,12 @@ plot_radio = dcc.RadioItems(
 app.layout = html.Div(
     children=[
         filters,
+        html.Button("Submit", id="submit-button"),
+        dcc.Loading(
+            type="dot",
+            children=html.Div(id="loading_top"),
+        ),
+        html.Hr(),
         dcc.Tabs(
             id="tabs",
             value="tab-daily",
@@ -243,6 +293,7 @@ app.layout = html.Div(
             type="dot",
             children=html.Div(id="loading"),
         ),
+        html.Hr(),
         plot_radio,
         dcc.Graph(id="plot", figure=plot, style={"width": "100%"}),
     ]
@@ -251,6 +302,7 @@ app.layout = html.Div(
 
 @app.callback(
     [
+        Output("loading_top", "children"),
         Output("loading", "children"),
         Output("status-message", "children"),
         Output("plot", "figure"),
@@ -279,6 +331,8 @@ app.layout = html.Div(
         State("variable_drop", "value"),
         State("date_range_picker", "start_date"),
         State("date_range_picker", "end_date"),
+        State("minimum_input", "value"),
+        State("maximum_input", "value"),
         State("table_daily", "selectedRows"),
         State("table_daily", "rowData"),
         State("table_detail", "selectedRows"),
@@ -298,12 +352,15 @@ def callbacks(
     in_variable: str,
     in_start_date: str,
     in_end_date: str,
+    in_minimum: float,
+    in_maximum: float,
     in_daily_selected_rows: list[dict],
     in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
 ) -> tuple[
-    str,
+    dash.no_update,
+    dash.no_update,
     str,
     go.Figure,
     list[dict],
@@ -340,6 +397,7 @@ def callbacks(
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
+    out_loading_top = dash.no_update
     out_loading = dash.no_update
     out_status = dash.no_update
     out_plot = dash.no_update
@@ -368,6 +426,8 @@ def callbacks(
         VARIABLE = Variable.objects.get(variable_code=in_variable)
         START_DATE = datetime.strptime(in_start_date, "%Y-%m-%d")
         END_DATE = datetime.strptime(in_end_date, "%Y-%m-%d")
+        MINIMUM = Decimal(in_minimum)
+        MAXIMUM = Decimal(in_maximum)
         daily_data_refresh_required = True
         detail_data_refresh_required = True
         daily_table_refresh_required = True
@@ -536,6 +596,7 @@ def callbacks(
             out_detail_selected_rows = out_detail_row_data
 
     return (
+        out_loading_top,
         out_loading,
         out_status,
         out_plot,
