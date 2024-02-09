@@ -374,23 +374,29 @@ def callbacks(
     str,
     bool,
 ]:
-    """Callback for buttons adding and resetting Validated data
+    """Callbacks for daily validation app
 
     Args:
-        daily_save_clicks (int): Number of times daily-save-button was clicked
-        daily_reset_clicks (int): Number of times daily-reset-button was clicked
-        detail_save_clicks (int): Number of times detail-save-button was clicked
-        detail_reset_clicks (int): Number of times detail-reset-button was clicked
-        detail_add_clicks (int): Number of times detail-add-button was clicked
-        daily_id (int): ID of selected day
-        plot_radio_value (str): Value of plot radio button
+        in_submit_clicks (int): Number of times submit-button was clicked
+        in_save_clicks (int): Number of times save-button was clicked
+        in_reset_clicks (int): Number of times reset-button was clicked
+        in_add_clicks (int): Number of times add-button was clicked
+        in_detail_date (datetime.date): Date for detail view
+        in_plot_radio_value (str): Value of plot radio button
+        in_tabs_value (str): Value of tabs
+        in_station (str): Station from filters
+        in_variable (str): Variable from filters
+        in_start_date (str): Start date from filters
+        in_end_date (str): End date from filters
+        in_minimum (float): Minimum from filters
+        in_maximum (float): Maximum from filters
         in_daily_selected_rows (list[dict]): Selected rows in table_daily
+        in_daily_row_data (list[dict]): Full row data for table_daily
         in_detail_selected_rows (list[dict]): Selected rows in table_detail
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[str, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str]:
-            Callback outputs
+        tuple[ dash.no_update, dash.no_update, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str, bool, ]: Outputs
     """
     global DATA_DAILY, DATA_DETAIL, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_TYPE
 
@@ -426,8 +432,9 @@ def callbacks(
         VARIABLE = Variable.objects.get(variable_code=in_variable)
         START_DATE = datetime.strptime(in_start_date, "%Y-%m-%d")
         END_DATE = datetime.strptime(in_end_date, "%Y-%m-%d")
-        MINIMUM = Decimal(in_minimum)
-        MAXIMUM = Decimal(in_maximum)
+        MINIMUM = Decimal(in_minimum) if in_minimum is not None else None
+        MAXIMUM = Decimal(in_maximum) if in_maximum is not None else None
+        out_status = ""
         daily_data_refresh_required = True
         detail_data_refresh_required = True
         daily_table_refresh_required = True
