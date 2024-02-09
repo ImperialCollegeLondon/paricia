@@ -21,9 +21,9 @@ from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
 
-DEFAULT_FONT = "Open Sans, Raleway, Dosis, Ubuntu, sans-serif"
-
-app = DjangoDash("DailyValidation")
+app = DjangoDash(
+    "DailyValidation", external_stylesheets=["/static/styles/dashstyle.css"]
+)
 
 # Initial filters
 STATION: Station = Station.objects.order_by("station_code")[7]
@@ -115,7 +115,6 @@ filters = html.Div(
     style={
         "display": "flex",
         "justify-content": "flex-start",
-        "font-family": DEFAULT_FONT,
         "font-size": "14px",
     },
 )
@@ -192,7 +191,6 @@ detail_date_picker = html.Div(
         "display": "inline-block",
         "width": "50%",
         "text-align": "right",
-        "font-family": DEFAULT_FONT,
     },
 )
 
@@ -225,7 +223,6 @@ status_message = html.Div(
     id="status-message",
     children=[""],
     style={
-        "font-family": DEFAULT_FONT,
         "font-size": "14px",
         "min-height": "20px",
         "padding-top": "5px",
@@ -245,14 +242,14 @@ plot_radio = dcc.RadioItems(
     ],
     value=PLOT_TYPE,
     inline=True,
-    style={"font-family": DEFAULT_FONT, "font-size": "14px"},
+    style={"font-size": "14px"},
 )
 
 # Layout
 app.layout = html.Div(
     children=[
         filters,
-        html.Button("Submit", id="submit-button"),
+        html.Button("Submit", id="submit-button", style={"margin-top": "10px"}),
         dcc.Loading(
             type="dot",
             children=html.Div(id="loading_top"),
@@ -267,8 +264,6 @@ app.layout = html.Div(
                     label="Daily Report",
                     id="tab-daily",
                     value="tab-daily",
-                    style={"font-family": DEFAULT_FONT},
-                    selected_style={"font-family": DEFAULT_FONT},
                     children=[
                         table_daily,
                     ],
@@ -278,9 +273,6 @@ app.layout = html.Div(
                     id="tab-detail",
                     value="tab-detail",
                     disabled=True,
-                    style={"font-family": DEFAULT_FONT},
-                    selected_style={"font-family": DEFAULT_FONT},
-                    disabled_style={"font-family": DEFAULT_FONT},
                     children=[
                         table_detail,
                     ],
