@@ -15,11 +15,11 @@ app = DjangoDash("DataReport")
 
 
 # Initial values
-station: Station = Station.objects.order_by("station_code")[7]
-variable: Variable = Variable.objects.order_by("variable_code")[0]
-start_time: str = datetime.strptime("2023-03-01", "%Y-%m-%d")
-end_time: str = datetime.strptime("2023-03-31", "%Y-%m-%d")
-temporality: str = "measurement"
+init_station: Station = Station.objects.order_by("station_code")[7]
+init_variable: Variable = Variable.objects.order_by("variable_code")[0]
+init_start_time: str = "2023-03-01"
+init_end_time: str = "2023-03-31"
+init_temporality: str = "measurement"
 
 
 def plot_graph(
@@ -48,52 +48,73 @@ def plot_graph(
 
 
 plot = plot_graph(
-    temporality,
-    station,
-    variable,
-    start_time,
-    end_time,
+    init_temporality,
+    init_station,
+    init_variable,
+    init_start_time,
+    init_end_time,
 )
 
 
 # Create layout
 app.layout = html.Div(
-    [
-        dcc.Dropdown(
-            id="temporality_drop",
-            options=[
-                {"label": "Raw measurement", "value": "measurement"},
-                {"label": "Validated measurement", "value": "validated"},
-                {"label": "Hourly", "value": "hourly"},
-                {"label": "Daily", "value": "daily"},
-                {"label": "Monthly", "value": "monthly"},
+    style={"display": "flex", "justify-content": "space-around"},
+    children=[
+        html.Div(
+            style={"width": "35%"},
+            children=[
+                html.H2("Data Report"),
+                html.Button("Clear form", id="clear_button"),
+                html.H3("Temporality"),
+                dcc.Dropdown(
+                    id="temporality_drop",
+                    options=[
+                        {"label": "Raw measurement", "value": "measurement"},
+                        {"label": "Validated measurement", "value": "validated"},
+                        {"label": "Hourly", "value": "hourly"},
+                        {"label": "Daily", "value": "daily"},
+                        {"label": "Monthly", "value": "monthly"},
+                    ],
+                    value=init_temporality,
+                ),
+                html.H3("Station"),
+                dcc.Dropdown(
+                    id="station_drop",
+                    # options=Station.objects.order_by("station_code"),
+                    options=[
+                        item.station_code
+                        for item in Station.objects.order_by("station_code")
+                    ],
+                    value=init_station.station_code,
+                ),
+                html.H3("Variable"),
+                dcc.Dropdown(
+                    id="variable_drop",
+                    options=[
+                        {"label": item.name, "value": item.variable_code}
+                        for item in Variable.objects.order_by("variable_code")
+                    ],
+                    value=init_variable.variable_code,
+                ),
+                html.H3("Start date - End date"),
+                dcc.DatePickerRange(
+                    id="date_range_picker",
+                    display_format="YYYY-MM-DD",
+                    start_date=init_start_time,
+                    end_date=init_end_time,
+                ),
             ],
-            value="measurement",
         ),
-        dcc.Dropdown(
-            id="station_drop",
-            # options=Station.objects.order_by("station_code"),
-            options=[
-                item.station_code for item in Station.objects.order_by("station_code")
+        html.Div(
+            style={"width": "65%"},
+            children=[
+                dcc.Graph(
+                    id="data_report_graph",
+                    figure=plot,
+                ),
             ],
-            value=station.station_code,
         ),
-        dcc.Dropdown(
-            id="variable_drop",
-            options=[
-                {"label": item.name, "value": item.variable_code}
-                for item in Variable.objects.order_by("variable_code")
-            ],
-            value=variable.variable_code,
-        ),
-        dcc.DatePickerRange(
-            id="date_range_picker",
-            display_format="YYYY-MM-DD",
-            start_date="2023-03-01",
-            end_date="2023-03-31",
-        ),
-        dcc.Graph(id="data_report_graph", figure=plot),
-    ]
+    ],
 )
 
 
@@ -126,3 +147,24 @@ def update_graph(
     )
 
     return plot
+
+
+@app.callback(
+    [
+        Output("temporality_drop", "value"),
+        Output("station_drop", "value"),
+        Output("variable_drop", "value"),
+        Output("date_range_picker", "start_date"),
+        Output("date_range_picker", "end_date"),
+    ],
+    Input("clear_button", "n_clicks"),
+)
+def clear_form(n_clicks):
+    print("CLICKED!######################")
+    return (
+        init_temporality,
+        init_station.station_code,
+        init_variable.variable_code,
+        init_start_time,
+        init_end_time,
+    )
