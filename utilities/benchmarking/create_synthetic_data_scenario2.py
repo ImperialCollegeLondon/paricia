@@ -37,6 +37,8 @@ variables = list(Variable.objects.all())[:10]
 
 stations = list(Station.objects.all())[:23]
 for s in stations:
+    if s.timezone is not None:
+        continue
     s.timezone = "UTC"
     s.save()
 tz = zoneinfo.ZoneInfo(stations[0].timezone)
