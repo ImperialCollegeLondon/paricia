@@ -1,6 +1,3 @@
-from datetime import datetime
-from decimal import Decimal
-
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, dcc, html
@@ -30,19 +27,34 @@ def plot_graph(
     end_time: str,
 ):
     # Load data
-    data: dict = dict_data_report(
-        temporality=temporality,
-        station=station,
-        variable=variable,
-        start_time=start_time,
-        end_time=end_time,
+    try:
+        data: dict = dict_data_report(
+            temporality=temporality,
+            station=station,
+            variable=variable,
+            start_time=start_time,
+            end_time=end_time,
+        )
+
+        # Convert data to DataFrame
+        df = pd.DataFrame.from_dict(data["series"])
+
+        # Create plot
+        plot = px.line(
+            df,
+            x="time",
+            y=["average", "minimum", "maximum"],
+            title=f"{station.station_code} - {variable.name}",
+        )
+
+    except Exception as e:
+        print("Error:", e)
+        plot = px.line()
+
+    plot.update_layout(
+        yaxis_title="",
+        xaxis_title="",
     )
-
-    # Convert data to DataFrame
-    df = pd.DataFrame.from_dict(data["series"])
-
-    # Create plot
-    plot = px.line(df, x="time", y=["average", "minimum", "maximum"])
 
     return plot
 
@@ -106,7 +118,7 @@ app.layout = html.Div(
             ],
         ),
         html.Div(
-            style={"width": "65%"},
+            style={"width": "65%", "padding-top": "5%"},
             children=[
                 dcc.Graph(
                     id="data_report_graph",
@@ -158,9 +170,9 @@ def update_graph(
         Output("date_range_picker", "end_date"),
     ],
     Input("clear_button", "n_clicks"),
+    prevent_initial_call=True,
 )
-def clear_form(n_clicks):
-    print("CLICKED!######################")
+def clear_form(n_clicks: int):
     return (
         init_temporality,
         init_station.station_code,
