@@ -22,10 +22,11 @@ class TestValidationFunctions(TestCase):
             self.station.save()
         tz = zoneinfo.ZoneInfo(self.station.timezone)
 
+        self.period = 20
         self.start = datetime(2023, 1, 1, tzinfo=tz)
         self.end = datetime(2023, 2, 1, tzinfo=tz)
         self.date_range = pd.date_range(
-            self.start, self.end, freq="20min", inclusive="left"
+            self.start, self.end, freq=f"{self.period}min", inclusive="left"
         )
 
         minimum = random.randint(-5, 5)
@@ -66,3 +67,39 @@ class TestValidationFunctions(TestCase):
 
         # The validated object should not be in the data
         self.assertNotIn(obj.id, data.id.values)
+
+    def test_verify_time_lapse_status(self):
+        from measurement.validation import (
+            TimeLapseStatus,
+            get_data_to_validate,
+            verify_time_lapse_status,
+        )
+
+        data = get_data_to_validate(
+            station=self.station.station_code,
+            variable=self.variable.variable_code,
+            start_time=self.start.strftime("%Y-%m-%d"),
+            end_time=self.end.strftime("%Y-%m-%d"),
+        )
+
+        period = 20
+        data = verify_time_lapse_status(data, period)
+        self.assertEqual(len(data), len(self.date_range))
+        self.assertSetEqual(
+            set(data.time_lapse_status.unique()),
+            set([TimeLapseStatus.OK, TimeLapseStatus.NAN]),
+        )
+
+        period = 30
+        data = verify_time_lapse_status(data, period)
+        self.assertSetEqual(
+            set(data.time_lapse_status.unique()),
+            set([TimeLapseStatus.TOO_SMALL, TimeLapseStatus.NAN]),
+        )
+
+        period = 10
+        data = verify_time_lapse_status(data, period)
+        self.assertSetEqual(
+            set(data.time_lapse_status.unique()),
+            set([TimeLapseStatus.TOO_LARGE, TimeLapseStatus.NAN]),
+        )
