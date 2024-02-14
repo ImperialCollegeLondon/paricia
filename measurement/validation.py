@@ -64,14 +64,16 @@ def get_data_to_validate(
     return data
 
 
-def verify_time_lapse_status(data: pd.DataFrame, period: float) -> pd.DataFrame:
+def flag_time_lapse_status(data: pd.DataFrame, period: float) -> pd.Series:
     """Verifies if period of the time entries is correct, labelling them appropriately.
 
     Args:
         data: The dataframe with all the data.
         period: The expected period for the measurements, in minutes.
+
+    Returns:
+        A series with the status of the time lapse.
     """
-    data["time_lapse_status"] = (
-        data.time.diff().dt.total_seconds() / 60 / period
-    ).apply(TimeLapseStatus.evaluate)
-    return data
+    return (data.time.diff().dt.total_seconds() / 60 / period).apply(
+        TimeLapseStatus.evaluate
+    )

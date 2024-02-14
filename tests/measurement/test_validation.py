@@ -51,7 +51,7 @@ class TestValidationFunctions(TestCase):
         from measurement.validation import get_data_to_validate
 
         # Make one data point already validated
-        obj = Measurement.objects.get(id=1)
+        obj = Measurement.objects.first()
         obj.is_validated = True
         obj.clean()
         obj.save()
@@ -68,11 +68,11 @@ class TestValidationFunctions(TestCase):
         # The validated object should not be in the data
         self.assertNotIn(obj.id, data.id.values)
 
-    def test_verify_time_lapse_status(self):
+    def test_flag_time_lapse_status(self):
         from measurement.validation import (
             TimeLapseStatus,
+            flag_time_lapse_status,
             get_data_to_validate,
-            verify_time_lapse_status,
         )
 
         data = get_data_to_validate(
@@ -83,23 +83,23 @@ class TestValidationFunctions(TestCase):
         )
 
         period = 20
-        data = verify_time_lapse_status(data, period)
-        self.assertEqual(len(data), len(self.date_range))
+        time_lapse = flag_time_lapse_status(data, period)
+        self.assertEqual(len(time_lapse), len(self.date_range))
         self.assertSetEqual(
-            set(data.time_lapse_status.unique()),
+            set(time_lapse.unique()),
             set([TimeLapseStatus.OK, TimeLapseStatus.NAN]),
         )
 
         period = 30
-        data = verify_time_lapse_status(data, period)
+        time_lapse = flag_time_lapse_status(data, period)
         self.assertSetEqual(
-            set(data.time_lapse_status.unique()),
+            set(time_lapse.unique()),
             set([TimeLapseStatus.TOO_SMALL, TimeLapseStatus.NAN]),
         )
 
         period = 10
-        data = verify_time_lapse_status(data, period)
+        time_lapse = flag_time_lapse_status(data, period)
         self.assertSetEqual(
-            set(data.time_lapse_status.unique()),
+            set(time_lapse.unique()),
             set([TimeLapseStatus.TOO_LARGE, TimeLapseStatus.NAN]),
         )
