@@ -82,24 +82,51 @@ class TestValidationFunctions(TestCase):
             end_time=self.end.strftime("%Y-%m-%d"),
         )
 
-        period = 20
-        time_lapse = flag_time_lapse_status(data, period)
+        time_lapse = flag_time_lapse_status(data, self.period)
         self.assertEqual(len(time_lapse), len(self.date_range))
         self.assertSetEqual(
             set(time_lapse.unique()),
             set([TimeLapseStatus.OK, TimeLapseStatus.NAN]),
         )
 
-        period = 30
+        period = self.period * 2
         time_lapse = flag_time_lapse_status(data, period)
         self.assertSetEqual(
             set(time_lapse.unique()),
             set([TimeLapseStatus.TOO_SMALL, TimeLapseStatus.NAN]),
         )
 
-        period = 10
+        period = self.period / 2
         time_lapse = flag_time_lapse_status(data, period)
         self.assertSetEqual(
             set(time_lapse.unique()),
             set([TimeLapseStatus.TOO_LARGE, TimeLapseStatus.NAN]),
+        )
+
+    def test_flag_value_status(self):
+        from measurement.validation import (
+            ValueStatus,
+            flag_value_status,
+            get_data_to_validate,
+        )
+
+        data = get_data_to_validate(
+            station=self.station.station_code,
+            variable=self.variable.variable_code,
+            start_time=self.start.strftime("%Y-%m-%d"),
+            end_time=self.end.strftime("%Y-%m-%d"),
+        )
+
+        # Allowed difference is large and possitive, so all values should be ok
+        value_flag = flag_value_status(data, data.value.max() * 2)
+        self.assertSetEqual(
+            set(value_flag.unique()),
+            set([ValueStatus.OK, ValueStatus.NAN]),
+        )
+
+        # Allowed difference is large and negative, so all values should be too large
+        value_flag = flag_value_status(data, -data.value.max() * 2)
+        self.assertSetEqual(
+            set(value_flag.unique()),
+            set([ValueStatus.TOO_LARGE, ValueStatus.NAN]),
         )

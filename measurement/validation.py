@@ -1,6 +1,7 @@
 import enum
 import zoneinfo
 from datetime import datetime
+from decimal import Decimal
 
 import numpy as np
 import pandas as pd
@@ -35,6 +36,31 @@ class TimeLapseStatus(enum.Enum):
             return cls.NAN
 
 
+class ValueStatus(enum.Enum):
+    OK = "ok"
+    TOO_LARGE = "too_large"
+    NAN = np.NAN
+
+    @classmethod
+    def evaluate(cls, value: float, allowed_difference: Decimal) -> "ValueStatus":
+        """Returns the status of the value.
+
+        Args:
+            value (float): The value to evaluate.
+
+        Returns:
+            ValueStatus: The associated value status.
+        """
+        val = abs(value)
+        diff = float(allowed_difference)
+        if val <= diff:
+            return cls.OK
+        elif val > diff:
+            return cls.TOO_LARGE
+        else:
+            return cls.NAN
+
+
 def get_data_to_validate(
     station: str, variable: str, start_time: str, end_time: str
 ) -> pd.DataFrame:
@@ -65,7 +91,7 @@ def get_data_to_validate(
 
 
 def flag_time_lapse_status(data: pd.DataFrame, period: float) -> pd.Series:
-    """Verifies if period of the time entries is correct, labelling them appropriately.
+    """Flags if period of the time entries is correct.
 
     Args:
         data: The dataframe with all the data.
@@ -76,4 +102,19 @@ def flag_time_lapse_status(data: pd.DataFrame, period: float) -> pd.Series:
     """
     return (data.time.diff().dt.total_seconds() / 60 / period).apply(
         TimeLapseStatus.evaluate
+    )
+
+
+def flag_value_status(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Series:
+    """Flags if the value of the measurements is correct.
+
+    Args:
+        data: The dataframe with all the data.
+        allowed_difference: The allowed difference between the measurements.
+
+    Returns:
+        A series with the status of the value.
+    """
+    return data.value.diff().apply(
+        lambda x: ValueStatus.evaluate(x, allowed_difference)
     )
