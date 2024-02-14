@@ -1,542 +1,512 @@
 [
-{
-  "model": "variable.variable",
-  "pk": 1,
-  "fields": {
-    "variable_code": "precipitation",
-    "name": "Precipitaci\u00f3n",
-    "unit": 6,
-    "maximum": "13.00",
-    "minimum": "0.00",
-    "diff_warning": "3.50",
-    "diff_error": "4.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": true,
-    "automatic_report": true,
-    "null_limit": "20.0"
+  {
+    "model": "variable.variable",
+    "pk": 1,
+    "fields": {
+      "variable_code": "precipitation",
+      "name": "Precipitaci\u00f3n",
+      "unit": 6,
+      "maximum": "13.00",
+      "minimum": "0.00",
+      "diff_warning": "3.50",
+      "diff_error": "4.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "20.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 2,
+    "fields": {
+      "variable_code": "airtemperature",
+      "name": "Temperatura ambiente",
+      "unit": 8,
+      "maximum": "28.00",
+      "minimum": "-5.00",
+      "diff_warning": "2.00",
+      "diff_error": "3.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 3,
+    "fields": {
+      "variable_code": "humidity",
+      "name": "Humedad relativa",
+      "unit": 3,
+      "maximum": "100.00",
+      "minimum": "0.00",
+      "diff_warning": "10.00",
+      "diff_error": "20.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 4,
+    "fields": {
+      "variable_code": "windvelocity",
+      "name": "Velocidad de viento",
+      "unit": 9,
+      "maximum": "15.00",
+      "minimum": "0.00",
+      "diff_warning": "5.00",
+      "diff_error": "10.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 5,
+    "fields": {
+      "variable_code": "winddirection",
+      "name": "Direcci\u00f3n de viento",
+      "unit": 2,
+      "maximum": "360.00",
+      "minimum": "0.00",
+      "diff_warning": "361.00",
+      "diff_error": "370.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 6,
+    "fields": {
+      "variable_code": "soilmoisture",
+      "name": "Humedad de suelo",
+      "unit": 3,
+      "maximum": "100.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": false,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 7,
+    "fields": {
+      "variable_code": "solarradiation",
+      "name": "Radiaci\u00f3n solar",
+      "unit": 13,
+      "maximum": "1353.00",
+      "minimum": "0.00",
+      "diff_warning": "700.00",
+      "diff_error": "800.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 8,
+    "fields": {
+      "variable_code": "atmosphericpressure",
+      "name": "Presion atmosf\u00e9rica",
+      "unit": 5,
+      "maximum": "740.00",
+      "minimum": "630.00",
+      "diff_warning": "0.12",
+      "diff_error": "0.22",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 9,
+    "fields": {
+      "variable_code": "watertemperature",
+      "name": "Temperatura de agua",
+      "unit": 8,
+      "maximum": "17.00",
+      "minimum": "0.00",
+      "diff_warning": "2.00",
+      "diff_error": "3.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 10,
+    "fields": {
+      "variable_code": "flow",
+      "name": "Caudal",
+      "unit": 22,
+      "maximum": "8.00",
+      "minimum": "0.00",
+      "diff_warning": "2.00",
+      "diff_error": "3.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 11,
+    "fields": {
+      "variable_code": "waterlevel",
+      "name": "Nivel de agua",
+      "unit": 4,
+      "maximum": "250.00",
+      "minimum": "0.00",
+      "diff_warning": "15.00",
+      "diff_error": "20.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 12,
+    "fields": {
+      "variable_code": "batteryvoltage",
+      "name": "Voltaje de bater\u00eda",
+      "unit": 12,
+      "maximum": "15.00",
+      "minimum": "12.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": false,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 13,
+    "fields": {
+      "variable_code": "flowmanual",
+      "name": "Caudal de aforo",
+      "unit": 14,
+      "maximum": "8.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": false,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 14,
+    "fields": {
+      "variable_code": "striplevelreading",
+      "name": "Nivel de regleta",
+      "unit": 4,
+      "maximum": "300.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": false,
+      "null_limit": null
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 15,
+    "fields": {
+      "variable_code": "dvr",
+      "name": "Direcci\u00f3n de viento r\u00e1faga",
+      "unit": 2,
+      "maximum": "360.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": false,
+      "automatic_report": false,
+      "null_limit": null
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 16,
+    "fields": {
+      "variable_code": "rvi",
+      "name": "Recorrido de viento",
+      "unit": 10,
+      "maximum": "17.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": false,
+      "automatic_report": false,
+      "null_limit": null
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 17,
+    "fields": {
+      "variable_code": "gustdir",
+      "name": "GustDir",
+      "unit": 1,
+      "maximum": "1.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": false,
+      "automatic_report": false,
+      "null_limit": null
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 18,
+    "fields": {
+      "variable_code": "gusth",
+      "name": "GustH",
+      "unit": 1,
+      "maximum": "1.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": false,
+      "automatic_report": false,
+      "null_limit": null
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 19,
+    "fields": {
+      "variable_code": "gustm",
+      "name": "GustM",
+      "unit": 1,
+      "maximum": "1.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": false,
+      "automatic_report": false,
+      "null_limit": null
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 20,
+    "fields": {
+      "variable_code": "soiltemperature",
+      "name": "Temperatura de suelo",
+      "unit": 8,
+      "maximum": "20.00",
+      "minimum": "-3.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": false,
+      "automatic_report": false,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 21,
+    "fields": {
+      "variable_code": "indirectradiation",
+      "name": "Radiacion indirecta",
+      "unit": 13,
+      "maximum": "1.00",
+      "minimum": "0.00",
+      "diff_warning": "100.00",
+      "diff_error": "100.00",
+      "outlier_limit": "3.00",
+      "is_active": true,
+      "automatic_report": false,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 22,
+    "fields": {
+      "variable_code": "radsum",
+      "name": "Radiacion solar suma",
+      "unit": 13,
+      "maximum": "6000.00",
+      "minimum": "0.00",
+      "diff_warning": "35000.00",
+      "diff_error": "40000.00",
+      "outlier_limit": "3.00",
+      "is_active": false,
+      "automatic_report": false,
+      "null_limit": null
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 101,
+    "fields": {
+      "variable_code": "watertemperaturedepth",
+      "name": "Temperatura agua",
+      "unit": 8,
+      "maximum": "99.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 102,
+    "fields": {
+      "variable_code": "wateraciditydepth",
+      "name": "pH",
+      "unit": 16,
+      "maximum": "14.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 103,
+    "fields": {
+      "variable_code": "redoxpotentialdepth",
+      "name": "Potencial REDOX",
+      "unit": 17,
+      "maximum": "2000.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 104,
+    "fields": {
+      "variable_code": "waterturbiditydepth",
+      "name": "Turbidez",
+      "unit": 18,
+      "maximum": "10000.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 105,
+    "fields": {
+      "variable_code": "chlorineconcentrationdepth",
+      "name": "Clorofila",
+      "unit": 19,
+      "maximum": "100.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 106,
+    "fields": {
+      "variable_code": "oxygenconcentrationdepth",
+      "name": "Ox\u00edgeno disuelto",
+      "unit": 20,
+      "maximum": "14.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 107,
+    "fields": {
+      "variable_code": "percentageoxygenconcentrationdepth",
+      "name": "Porcentaje de Ox\u00edgeno disuelto",
+      "unit": 3,
+      "maximum": "100.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
+  },
+  {
+    "model": "variable.variable",
+    "pk": 108,
+    "fields": {
+      "variable_code": "phycocyanindepth",
+      "name": "Ficocianina",
+      "unit": 21,
+      "maximum": "99999.00",
+      "minimum": "0.00",
+      "diff_warning": null,
+      "diff_error": null,
+      "outlier_limit": null,
+      "is_active": true,
+      "automatic_report": true,
+      "null_limit": "30.0"
+    }
   }
-},
-{
-  "model": "variable.variable",
-  "pk": 2,
-  "fields": {
-    "variable_code": "airtemperature",
-    "name": "Temperatura ambiente",
-    "unit": 8,
-    "maximum": "28.00",
-    "minimum": "-5.00",
-    "diff_warning": "2.00",
-    "diff_error": "3.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 3,
-  "fields": {
-    "variable_code": "humidity",
-    "name": "Humedad relativa",
-    "unit": 3,
-    "maximum": "100.00",
-    "minimum": "0.00",
-    "diff_warning": "10.00",
-    "diff_error": "20.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 4,
-  "fields": {
-    "variable_code": "windvelocity",
-    "name": "Velocidad de viento",
-    "unit": 9,
-    "maximum": "15.00",
-    "minimum": "0.00",
-    "diff_warning": "5.00",
-    "diff_error": "10.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 5,
-  "fields": {
-    "variable_code": "winddirection",
-    "name": "Direcci\u00f3n de viento",
-    "unit": 2,
-    "maximum": "360.00",
-    "minimum": "0.00",
-    "diff_warning": "361.00",
-    "diff_error": "370.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 6,
-  "fields": {
-    "variable_code": "soilmoisture",
-    "name": "Humedad de suelo",
-    "unit": 3,
-    "maximum": "100.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 7,
-  "fields": {
-    "variable_code": "solarradiation",
-    "name": "Radiaci\u00f3n solar",
-    "unit": 13,
-    "maximum": "1353.00",
-    "minimum": "0.00",
-    "diff_warning": "700.00",
-    "diff_error": "800.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 8,
-  "fields": {
-    "variable_code": "atmosphericpressure",
-    "name": "Presion atmosf\u00e9rica",
-    "unit": 5,
-    "maximum": "740.00",
-    "minimum": "630.00",
-    "diff_warning": "0.12",
-    "diff_error": "0.22",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 9,
-  "fields": {
-    "variable_code": "watertemperature",
-    "name": "Temperatura de agua",
-    "unit": 8,
-    "maximum": "17.00",
-    "minimum": "0.00",
-    "diff_warning": "2.00",
-    "diff_error": "3.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 10,
-  "fields": {
-    "variable_code": "flow",
-    "name": "Caudal",
-    "unit": 22,
-    "maximum": "8.00",
-    "minimum": "0.00",
-    "diff_warning": "2.00",
-    "diff_error": "3.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 11,
-  "fields": {
-    "variable_code": "waterlevel",
-    "name": "Nivel de agua",
-    "unit": 4,
-    "maximum": "250.00",
-    "minimum": "0.00",
-    "diff_warning": "15.00",
-    "diff_error": "20.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 12,
-  "fields": {
-    "variable_code": "batteryvoltage",
-    "name": "Voltaje de bater\u00eda",
-    "unit": 12,
-    "maximum": "15.00",
-    "minimum": "12.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 13,
-  "fields": {
-    "variable_code": "flowmanual",
-    "name": "Caudal de aforo",
-    "unit": 14,
-    "maximum": "8.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 14,
-  "fields": {
-    "variable_code": "striplevelreading",
-    "name": "Nivel de regleta",
-    "unit": 4,
-    "maximum": "300.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": null
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 15,
-  "fields": {
-    "variable_code": "dvr",
-    "name": "Direcci\u00f3n de viento r\u00e1faga",
-    "unit": 2,
-    "maximum": "360.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": false,
-    "is_cumulative": true,
-    "automatic_report": false,
-    "null_limit": null
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 16,
-  "fields": {
-    "variable_code": "rvi",
-    "name": "Recorrido de viento",
-    "unit": 10,
-    "maximum": "17.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": false,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": null
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 17,
-  "fields": {
-    "variable_code": "gustdir",
-    "name": "GustDir",
-    "unit": 1,
-    "maximum": "1.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": false,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": null
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 18,
-  "fields": {
-    "variable_code": "gusth",
-    "name": "GustH",
-    "unit": 1,
-    "maximum": "1.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": false,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": null
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 19,
-  "fields": {
-    "variable_code": "gustm",
-    "name": "GustM",
-    "unit": 1,
-    "maximum": "1.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": false,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": null
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 20,
-  "fields": {
-    "variable_code": "soiltemperature",
-    "name": "Temperatura de suelo",
-    "unit": 8,
-    "maximum": "20.00",
-    "minimum": "-3.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": false,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 21,
-  "fields": {
-    "variable_code": "indirectradiation",
-    "name": "Radiacion indirecta",
-    "unit": 13,
-    "maximum": "1.00",
-    "minimum": "0.00",
-    "diff_warning": "100.00",
-    "diff_error": "100.00",
-    "outlier_limit": "3.00",
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": false,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 22,
-  "fields": {
-    "variable_code": "radsum",
-    "name": "Radiacion solar suma",
-    "unit": 13,
-    "maximum": "6000.00",
-    "minimum": "0.00",
-    "diff_warning": "35000.00",
-    "diff_error": "40000.00",
-    "outlier_limit": "3.00",
-    "is_active": false,
-    "is_cumulative": true,
-    "automatic_report": false,
-    "null_limit": null
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 101,
-  "fields": {
-    "variable_code": "watertemperaturedepth",
-    "name": "Temperatura agua",
-    "unit": 8,
-    "maximum": "99.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 102,
-  "fields": {
-    "variable_code": "wateraciditydepth",
-    "name": "pH",
-    "unit": 16,
-    "maximum": "14.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 103,
-  "fields": {
-    "variable_code": "redoxpotentialdepth",
-    "name": "Potencial REDOX",
-    "unit": 17,
-    "maximum": "2000.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 104,
-  "fields": {
-    "variable_code": "waterturbiditydepth",
-    "name": "Turbidez",
-    "unit": 18,
-    "maximum": "10000.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 105,
-  "fields": {
-    "variable_code": "chlorineconcentrationdepth",
-    "name": "Clorofila",
-    "unit": 19,
-    "maximum": "100.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 106,
-  "fields": {
-    "variable_code": "oxygenconcentrationdepth",
-    "name": "Ox\u00edgeno disuelto",
-    "unit": 20,
-    "maximum": "14.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 107,
-  "fields": {
-    "variable_code": "percentageoxygenconcentrationdepth",
-    "name": "Porcentaje de Ox\u00edgeno disuelto",
-    "unit": 3,
-    "maximum": "100.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-},
-{
-  "model": "variable.variable",
-  "pk": 108,
-  "fields": {
-    "variable_code": "phycocyanindepth",
-    "name": "Ficocianina",
-    "unit": 21,
-    "maximum": "99999.00",
-    "minimum": "0.00",
-    "diff_warning": null,
-    "diff_error": null,
-    "outlier_limit": null,
-    "is_active": true,
-    "is_cumulative": false,
-    "automatic_report": true,
-    "null_limit": "30.0"
-  }
-}
 ]
