@@ -35,7 +35,8 @@ variables = list(Variable.objects.all())[:10]
 years = list(range(2000, 2023))
 
 station = Station.objects.first()
-station.timezone = "UTC"
+if station.timezone is None:
+    station.timezone = "UTC"
 station.save()
 tz = zoneinfo.ZoneInfo(station.timezone)
 
