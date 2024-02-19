@@ -1,3 +1,4 @@
+import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, dcc, html
@@ -8,7 +9,10 @@ from validated.functions import dict_data_report
 from variable.models import Variable
 
 # Create a Dash app
-app = DjangoDash("DataReport")
+app = DjangoDash(
+    "DataReport",
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+)
 
 
 # Initial values
@@ -49,7 +53,7 @@ def plot_graph(
 
     except Exception as e:
         print("Error:", e)
-        plot = px.line()
+        plot = px.line(title="Data not found")
 
     plot.update_layout(
         yaxis_title="",
@@ -70,63 +74,71 @@ plot = plot_graph(
 
 # Create layout
 app.layout = html.Div(
-    style={"display": "flex", "justify-content": "space-around"},
     children=[
+        html.Div(id="alert_div"),
         html.Div(
-            style={"width": "35%"},
+            style={"display": "flex", "justify-content": "space-around"},
             children=[
-                html.H2("Data Report"),
-                html.Button("Clear form", id="clear_button"),
-                html.H3("Temporality"),
-                dcc.Dropdown(
-                    id="temporality_drop",
-                    options=[
-                        {"label": "Raw measurement", "value": "measurement"},
-                        {"label": "Validated measurement", "value": "validated"},
-                        {"label": "Hourly", "value": "hourly"},
-                        {"label": "Daily", "value": "daily"},
-                        {"label": "Monthly", "value": "monthly"},
+                html.Div(
+                    style={"width": "35%"},
+                    children=[
+                        html.H2("Data Report"),
+                        html.Button("Clear form", id="clear_button"),
+                        html.H3("Temporality"),
+                        dcc.Dropdown(
+                            id="temporality_drop",
+                            options=[
+                                {"label": "Raw measurement", "value": "measurement"},
+                                {
+                                    "label": "Validated measurement",
+                                    "value": "validated",
+                                },
+                                {"label": "Hourly", "value": "hourly"},
+                                {"label": "Daily", "value": "daily"},
+                                {"label": "Monthly", "value": "monthly"},
+                            ],
+                            value=init_temporality,
+                        ),
+                        html.H3("Station"),
+                        dcc.Dropdown(
+                            id="station_drop",
+                            # options=Station.objects.order_by("station_code"),
+                            options=[
+                                item.station_code
+                                for item in Station.objects.order_by("station_code")
+                            ],
+                            value=init_station.station_code,
+                        ),
+                        html.H3("Variable"),
+                        dcc.Dropdown(
+                            id="variable_drop",
+                            options=[
+                                {"label": item.name, "value": item.variable_code}
+                                for item in Variable.objects.order_by("variable_code")
+                            ],
+                            value=init_variable.variable_code,
+                        ),
+                        html.H3("Start date - End date"),
+                        dcc.DatePickerRange(
+                            id="date_range_picker",
+                            display_format="YYYY-MM-DD",
+                            start_date=init_start_time,
+                            end_date=init_end_time,
+                        ),
                     ],
-                    value=init_temporality,
                 ),
-                html.H3("Station"),
-                dcc.Dropdown(
-                    id="station_drop",
-                    # options=Station.objects.order_by("station_code"),
-                    options=[
-                        item.station_code
-                        for item in Station.objects.order_by("station_code")
+                html.Div(
+                    style={"width": "65%"},
+                    children=[
+                        dcc.Graph(
+                            id="data_report_graph",
+                            figure=plot,
+                        ),
                     ],
-                    value=init_station.station_code,
-                ),
-                html.H3("Variable"),
-                dcc.Dropdown(
-                    id="variable_drop",
-                    options=[
-                        {"label": item.name, "value": item.variable_code}
-                        for item in Variable.objects.order_by("variable_code")
-                    ],
-                    value=init_variable.variable_code,
-                ),
-                html.H3("Start date - End date"),
-                dcc.DatePickerRange(
-                    id="date_range_picker",
-                    display_format="YYYY-MM-DD",
-                    start_date=init_start_time,
-                    end_date=init_end_time,
                 ),
             ],
         ),
-        html.Div(
-            style={"width": "65%", "padding-top": "5%"},
-            children=[
-                dcc.Graph(
-                    id="data_report_graph",
-                    figure=plot,
-                ),
-            ],
-        ),
-    ],
+    ]
 )
 
 
@@ -180,3 +192,16 @@ def clear_form(n_clicks: int):
         init_start_time,
         init_end_time,
     )
+
+
+@app.callback(
+    Output("alert_div", "children"),
+    Input("data_report_graph", "figure"),
+)
+def clear_form(figure):
+    if figure["layout"]["title"]["text"] == "Data not found":
+        return [
+            dbc.Alert("No data was found with the selected criteria", color="warning")
+        ]
+    else:
+        return []
