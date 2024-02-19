@@ -7,12 +7,12 @@ db.sqlite3
 media
 */db/*
 
-# Migrations 
+# Migrations
 # We don't want to ignore migrations because we have data migrations to set up groups
 # and permissions.
 
-# Backup files # 
-*.bak 
+# Backup files #
+*.bak
 
 # If you are using PyCharm # 
 .idea/
@@ -111,3 +111,4 @@ GitHub.sublime-settings
 # Other excluded
 _other/
 log/
+scratch/
