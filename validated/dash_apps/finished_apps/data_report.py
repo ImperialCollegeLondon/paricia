@@ -198,7 +198,7 @@ def clear_form(n_clicks: int):
     Output("alert_div", "children"),
     Input("data_report_graph", "figure"),
 )
-def clear_form(figure):
+def invalid_data_alert(figure):
     if figure["layout"]["title"]["text"] == "Data not found":
         return [
             dbc.Alert("No data was found with the selected criteria", color="warning")
