@@ -25,12 +25,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 from datetime import timedelta
+from pathlib import Path
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 FILE_UPLOAD_MAX_MEMORY_SIZE = 27000000
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
 
 
 # Quick-start development settings - unsuitable for production
@@ -199,7 +200,7 @@ AUTHENTICATION_BACKENDS = (
 #########################################################################
 
 # Fixtures for tests
-PROJECT_ROOT = os.path.dirname(os.path.dirname((os.path.realpath(__file__))))
+PROJECT_ROOT = str(Path(__file__).resolve().parent.parent.parent)
 FIXTURE_DIRS = [os.path.join(PROJECT_ROOT, "utilities/data")]
 
 # Custom User model
