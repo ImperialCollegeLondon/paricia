@@ -75,12 +75,11 @@ class TestValidationFunctions(TestCase):
         times = pd.date_range(
             "2023-01-01", "2023-01-2", freq=f"{period}min"
         ).to_series()
-        times[3] = times[3] + pd.Timedelta("1min")
-        times[10] = times[10] + pd.Timedelta("1min")
-
+        times.iloc[3] = times.iloc[3] + pd.Timedelta("1min")
+        times.iloc[10] = times.iloc[10] + pd.Timedelta("1min")
         data = pd.DataFrame({"time": times})
         expected = times.diff() == pd.Timedelta(f"{period}min")
-        expected[0] = True
+        expected.iloc[0] = True
         time_lapse = flag_time_lapse_status(data, period)
         assert (time_lapse.suspicius_time_lapse.values == expected).all()
 

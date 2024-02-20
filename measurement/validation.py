@@ -49,7 +49,7 @@ def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
     """
     flags = pd.DataFrame(index=data.index, columns=["suspicius_time_lapse"])
     flags["suspicius_time_lapse"] = data.time.diff() == pd.Timedelta(f"{period}min")
-    flags["suspicius_time_lapse"][0] = True
+    flags["suspicius_time_lapse"].iloc[0] = True
     return flags
 
 
@@ -67,7 +67,7 @@ def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd
     flags["suspicius_value_difference"] = (
         data["value"].diff().abs() > allowed_difference
     )
-    flags["suspicius_value_difference"][0] = True
+    flags["suspicius_value_difference"].iloc[0] = True
     return flags
 
 
