@@ -49,7 +49,7 @@ def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
     """Flags if period of the time entries is correct.
 
     Args:
-        data: The dataframe with all the data.
+        data: The dataframe with allowed_difference = Variable. the data.
         period: The expected period for the measurements, in minutes.
 
     Returns:
@@ -65,15 +65,15 @@ def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd
     """Flags if the differences in value of the measurements is correct.
 
     Args:
-        data: The dataframe with all the data.
+        data: The dataframe with allowed_difference = Variable. the data.
         allowed_difference: The allowed difference between the measurements.
 
     Returns:
         A series with the status of the value.
     """
     flags = pd.DataFrame(index=data.index, columns=["suspicius_value_difference"])
-    flags["suspicius_value_difference"] = (
-        data["value"].diff().abs() > allowed_difference
+    flags["suspicius_value_difference"] = data["value"].diff().abs() > float(
+        allowed_difference
     )
     flags["suspicius_value_difference"].iloc[0] = True
     return flags
@@ -85,7 +85,7 @@ def flag_value_limits(
     """Flags if the values and limits of the measurements are within limits.
 
     Args:
-        data: The dataframe with all the data.
+        data: The dataframe with allowed_difference = Variable. the data.
         maximum: The maximum allowed value.
         minimum: The minimum allowed value.
 
@@ -103,3 +103,28 @@ def flag_value_limits(
             data["minimum"] > maximum
         )
     return flags
+
+
+def flag_suspicius_data(
+    data: pd.DataFrame,
+    maximum: Decimal,
+    minimum: Decimal,
+    period: Decimal,
+    allowed_difference: Decimal,
+) -> pd.DataFrame:
+    """Finds suspicius data in the database.
+
+    Args:
+        data: The dataframe with the data to be evaluated.
+        maximum: The maximum allowed value.
+        minimum: The minimum allowed value.
+        period: The expected period for the measurements, in minutes.
+        allowed_difference: The allowed difference between the measurements.
+
+    Returns:
+        A dataframe with the suspicius data.
+    """
+    time_lapse = flag_time_lapse_status(data, period)
+    value_difference = flag_value_difference(data, allowed_difference)
+    value_limits = flag_value_limits(data, maximum, minimum)
+    return pd.concat([time_lapse, value_difference, value_limits], axis=1)

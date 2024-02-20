@@ -3,6 +3,7 @@ import zoneinfo
 from datetime import datetime
 from decimal import Decimal
 
+import numpy as np
 import pandas as pd
 from django.test import TestCase
 from model_bakery import baker
@@ -127,3 +128,36 @@ class TestValidationFunctions(TestCase):
         assert (flags.suspicius_value.values == svalue).all()
         assert (flags.suspicius_maximum.values == smax).all()
         assert (flags.suspicius_minimum.values == smin).all()
+
+    def test_find_suspicious_data(self):
+        from measurement.validation import flag_suspicius_data
+
+        # Create a sample dataframe
+        time = pd.date_range("2023-01-01", "2023-01-02", freq="5min")
+        data = pd.DataFrame(
+            {
+                "time": time,
+                "value": np.arange(len(time)),
+                "minimum": np.arange(len(time)),
+                "maximum": np.arange(len(time)),
+            }
+        )
+
+        maximum = Decimal(4)
+        minimum = Decimal(3)
+        period = Decimal(5)
+        allowed_difference = Decimal(1.5)
+
+        # Call the function under test
+        result = flag_suspicius_data(data, maximum, minimum, period, allowed_difference)
+
+        # Assert the expected output
+        expected_columns = [
+            "suspicius_time_lapse",
+            "suspicius_value_difference",
+            "suspicius_value",
+            "suspicius_maximum",
+            "suspicius_minimum",
+        ]
+        self.assertListEqual(list(result.columns), expected_columns)
+        self.assertEqual(len(result), len(data))
