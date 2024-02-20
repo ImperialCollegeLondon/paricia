@@ -104,32 +104,14 @@ class TestValidationFunctions(TestCase):
         )
 
     def test_flag_value_status(self):
-        from measurement.validation import (
-            ValueStatus,
-            flag_value_status,
-            get_data_to_validate,
-        )
+        from measurement.validation import flag_value_difference
 
-        data = get_data_to_validate(
-            station=self.station.station_code,
-            variable=self.variable.variable_code,
-            start_time=self.start.strftime("%Y-%m-%d"),
-            end_time=self.end.strftime("%Y-%m-%d"),
-        )
-
-        # Allowed difference is large and possitive, so all values should be ok
-        value_flag = flag_value_status(data, data.value.max() * 2)
-        self.assertSetEqual(
-            set(value_flag.unique()),
-            set([ValueStatus.OK, ValueStatus.NAN]),
-        )
-
-        # Allowed difference is large and negative, so all values should be too large
-        value_flag = flag_value_status(data, -data.value.max() * 2)
-        self.assertSetEqual(
-            set(value_flag.unique()),
-            set([ValueStatus.TOO_LARGE, ValueStatus.NAN]),
-        )
+        data = pd.DataFrame({"value": [1, 3, 5, 6, 6]})
+        allowed_difference = 1.5
+        expected = data.value.diff().abs().values > allowed_difference
+        expected[0] = True
+        flags = flag_value_difference(data, allowed_difference)
+        assert (flags.suspicius_value_difference.values == expected).all()
 
     def test_flag_value_limits(self):
         from measurement.validation import flag_value_limits

@@ -105,8 +105,8 @@ def flag_time_lapse_status(data: pd.DataFrame, period: float) -> pd.Series:
     )
 
 
-def flag_value_status(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Series:
-    """Flags if the value of the measurements is correct.
+def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Series:
+    """Flags if the differences in value of the measurements is correct.
 
     Args:
         data: The dataframe with all the data.
@@ -115,9 +115,12 @@ def flag_value_status(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Ser
     Returns:
         A series with the status of the value.
     """
-    return data.value.diff().apply(
-        lambda x: ValueStatus.evaluate(x, allowed_difference)
+    flags = pd.DataFrame(index=data.index, columns=["suspicius_value_difference"])
+    flags["suspicius_value_difference"] = (
+        data["value"].diff().abs() > allowed_difference
     )
+    flags["suspicius_value_difference"][0] = True
+    return flags
 
 
 def flag_value_limits(
