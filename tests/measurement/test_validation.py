@@ -130,3 +130,25 @@ class TestValidationFunctions(TestCase):
             set(value_flag.unique()),
             set([ValueStatus.TOO_LARGE, ValueStatus.NAN]),
         )
+
+    def test_flag_value_limits(self):
+        from measurement.validation import flag_value_limits
+
+        data = pd.DataFrame(
+            {
+                "value": [1, 2, 3, 4, 5],
+                "minimum": [0, 1, 2, 3, 4],
+                "maximum": [2, 3, 4, 5, 6],
+            }
+        )
+        maximum = 4
+        minimum = 3
+        svalue = (data.value.values < minimum) | (data.value.values > maximum)
+        smax = (data.maximum.values < minimum) | (data.maximum.values > maximum)
+        smin = (data.minimum.values < minimum) | (data.minimum.values > maximum)
+
+        flags = flag_value_limits(data, maximum, minimum)
+        assert len(flags.columns) == 3
+        assert (flags.suspicius_value.values == svalue).all()
+        assert (flags.suspicius_maximum.values == smax).all()
+        assert (flags.suspicius_minimum.values == smin).all()

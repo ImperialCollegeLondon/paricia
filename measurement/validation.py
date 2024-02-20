@@ -118,3 +118,29 @@ def flag_value_status(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Ser
     return data.value.diff().apply(
         lambda x: ValueStatus.evaluate(x, allowed_difference)
     )
+
+
+def flag_value_limits(
+    data: pd.DataFrame, maximum: Decimal, minimum: Decimal
+) -> pd.DataFrame:
+    """Flags if the values and limits of the measurements are within limits.
+
+    Args:
+        data: The dataframe with all the data.
+        maximum: The maximum allowed value.
+        minimum: The minimum allowed value.
+
+    Returns:
+        A dataframe with suspicius columns indicating a problem.
+    """
+    flags = pd.DataFrame(index=data.index)
+    flags["suspicius_value"] = (data["value"] < minimum) | (data["value"] > maximum)
+    if "maximum" in data.columns:
+        flags["suspicius_maximum"] = (data["maximum"] < minimum) | (
+            data["maximum"] > maximum
+        )
+    if "minimum" in data.columns:
+        flags["suspicius_minimum"] = (data["minimum"] < minimum) | (
+            data["minimum"] > maximum
+        )
+    return flags
