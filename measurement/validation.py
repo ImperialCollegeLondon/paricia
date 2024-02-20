@@ -100,9 +100,10 @@ def flag_time_lapse_status(data: pd.DataFrame, period: float) -> pd.Series:
     Returns:
         A series with the status of the time lapse.
     """
-    return (data.time.diff().dt.total_seconds() / 60 / period).apply(
-        TimeLapseStatus.evaluate
-    )
+    flags = pd.DataFrame(index=data.index, columns=["suspicius_time_lapse"])
+    flags["suspicius_time_lapse"] = data.time.diff() == pd.Timedelta(f"{period}min")
+    flags["suspicius_time_lapse"][0] = True
+    return flags
 
 
 def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Series:

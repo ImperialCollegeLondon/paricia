@@ -69,39 +69,20 @@ class TestValidationFunctions(TestCase):
         self.assertNotIn(obj.id, data.id.values)
 
     def test_flag_time_lapse_status(self):
-        from measurement.validation import (
-            TimeLapseStatus,
-            flag_time_lapse_status,
-            get_data_to_validate,
-        )
+        from measurement.validation import flag_time_lapse_status
 
-        data = get_data_to_validate(
-            station=self.station.station_code,
-            variable=self.variable.variable_code,
-            start_time=self.start.strftime("%Y-%m-%d"),
-            end_time=self.end.strftime("%Y-%m-%d"),
-        )
+        period = 5
+        times = pd.date_range(
+            "2023-01-01", "2023-01-2", freq=f"{period}min"
+        ).to_series()
+        times[3] = times[3] + pd.Timedelta("1min")
+        times[10] = times[10] + pd.Timedelta("1min")
 
-        time_lapse = flag_time_lapse_status(data, self.period)
-        self.assertEqual(len(time_lapse), len(self.date_range))
-        self.assertSetEqual(
-            set(time_lapse.unique()),
-            set([TimeLapseStatus.OK, TimeLapseStatus.NAN]),
-        )
-
-        period = self.period * 2
+        data = pd.DataFrame({"time": times})
+        expected = times.diff() == pd.Timedelta(f"{period}min")
+        expected[0] = True
         time_lapse = flag_time_lapse_status(data, period)
-        self.assertSetEqual(
-            set(time_lapse.unique()),
-            set([TimeLapseStatus.TOO_SMALL, TimeLapseStatus.NAN]),
-        )
-
-        period = self.period / 2
-        time_lapse = flag_time_lapse_status(data, period)
-        self.assertSetEqual(
-            set(time_lapse.unique()),
-            set([TimeLapseStatus.TOO_LARGE, TimeLapseStatus.NAN]),
-        )
+        assert (time_lapse.suspicius_time_lapse.values == expected).all()
 
     def test_flag_value_status(self):
         from measurement.validation import flag_value_difference
