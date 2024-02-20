@@ -68,6 +68,19 @@ class TestValidationFunctions(TestCase):
         # The validated object should not be in the data
         self.assertNotIn(obj.id, data.id.values)
 
+        # This should return the full date range, including the validated object
+        data = get_data_to_validate(
+            station=self.station.station_code,
+            variable=self.variable.variable_code,
+            start_time=self.start.strftime("%Y-%m-%d"),
+            end_time=self.end.strftime("%Y-%m-%d"),
+            include_validated=True,
+        )
+        self.assertEqual(len(data), len(self.date_range))
+
+        # The validated object should be in the data
+        self.assertIn(obj.id, data.id.values)
+
     def test_flag_time_lapse_status(self):
         from measurement.validation import flag_time_lapse_status
 

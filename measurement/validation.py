@@ -9,7 +9,11 @@ from station.models import Station
 
 
 def get_data_to_validate(
-    station: str, variable: str, start_time: str, end_time: str
+    station: str,
+    variable: str,
+    start_time: str,
+    end_time: str,
+    include_validated: bool = False,
 ) -> pd.DataFrame:
     """Retrieves data to be validated.
 
@@ -18,6 +22,7 @@ def get_data_to_validate(
         variable: Variable of interest.
         start_time: Start time.
         end_time: End time.
+        include_validated: If validated data should be included.
 
     Returns:
         A dictionary with the report for the chosen days.
@@ -25,16 +30,19 @@ def get_data_to_validate(
     tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
     start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(tzinfo=tz)
     end_time_ = datetime.strptime(end_time, "%Y-%m-%d").replace(tzinfo=tz)
-    data = pd.DataFrame.from_records(
+    extra = {}
+    if not include_validated:
+        extra = {"is_validated": False}
+
+    return pd.DataFrame.from_records(
         Measurement.objects.filter(
             station__station_code=station,
             variable__variable_code=variable,
             time__gte=start_time_,
             time__lte=end_time_,
-            is_validated=False,
+            **extra,
         ).values()
     )
-    return data
 
 
 def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
