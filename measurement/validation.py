@@ -128,3 +128,36 @@ def flag_suspicius_data(
     value_difference = flag_value_difference(data, allowed_difference)
     value_limits = flag_value_limits(data, maximum, minimum)
     return pd.concat([time_lapse, value_difference, value_limits], axis=1)
+
+
+def generate_daily_report(
+    data: pd.DataFrame, suspicius: pd.DataFrame, operation: str
+) -> pd.DataFrame:
+    """Generates a daily report of the data.
+
+    Args:
+        data: The dataframe with the data to be evaluated.
+        suspicius: The dataframe with the suspicius data.
+        operation: The operation to be performed on the data.
+
+    Returns:
+        A dataframe with the daily report.
+    """
+    report = pd.DataFrame(index=data.time.dt.date.unique())
+
+    # Group the data by day and calculate the mean or sum
+    datagroup = data.groupby(data.time.dt.date)
+    if operation == "sum":
+        report["value"] = datagroup["value"].sum()
+    else:
+        report["value"] = datagroup["value"].mean()
+    if "maximum" in data.columns:
+        report["maximum"] = datagroup["maximum"].max()
+    if "minimum" in data.columns:
+        report["minimum"] = datagroup["minimum"].min()
+
+    # Group the suspicius data by day and calculate the sum
+    suspiciusgroup = suspicius.groupby(data.time.dt.date)
+    report = pd.concat([report, suspiciusgroup.sum().astype(int)], axis=1)
+    report.index = pd.to_datetime(report.index)
+    return report

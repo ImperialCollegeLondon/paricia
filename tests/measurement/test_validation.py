@@ -161,3 +161,61 @@ class TestValidationFunctions(TestCase):
         ]
         self.assertListEqual(list(result.columns), expected_columns)
         self.assertEqual(len(result), len(data))
+
+    def test_generate_daily_report(self):
+        from measurement.validation import generate_daily_report
+
+        time = pd.date_range("2023-01-01", "2023-01-02", periods=5)
+
+        # Create sample data
+        data = pd.DataFrame(
+            {
+                "time": time,
+                "value": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "maximum": [2.0, 3.0, 4.0, 5.0, 6.0],
+                "minimum": [0.0, 1.0, 2.0, 3.0, 4.0],
+            }
+        )
+        suspicius = pd.DataFrame(
+            {
+                "suspicius_value": [0, 1, 0, 1, 0],
+                "suspicius_maximum": [0, 0, 1, 0, 1],
+                "suspicius_minimum": [1, 0, 0, 1, 0],
+            }
+        ).astype(int)
+
+        # Call the function under test using 'sum' as operation
+        operation = "sum"
+        result = generate_daily_report(data, suspicius, operation)
+
+        # Assert the expected output
+        expected = pd.DataFrame(
+            {
+                "value": [10.0, 5.0],
+                "maximum": [5.0, 6.0],
+                "minimum": [0.0, 4.0],
+                "suspicius_value": [2, 0],
+                "suspicius_maximum": [1, 1],
+                "suspicius_minimum": [2, 0],
+            },
+            index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
+        )
+        pd.testing.assert_frame_equal(result, expected)
+
+        # Call the function under test using 'mean' as operation
+        operation = "mean"
+        result = generate_daily_report(data, suspicius, operation)
+
+        # Assert the expected output
+        expected = pd.DataFrame(
+            {
+                "value": [2.5, 5.0],
+                "maximum": [5.0, 6.0],
+                "minimum": [0.0, 4.0],
+                "suspicius_value": [2, 0],
+                "suspicius_maximum": [1, 1],
+                "suspicius_minimum": [2, 0],
+            },
+            index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
+        )
+        pd.testing.assert_frame_equal(result, expected)
