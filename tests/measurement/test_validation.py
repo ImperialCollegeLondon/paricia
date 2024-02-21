@@ -97,7 +97,7 @@ class TestValidationFunctions(TestCase):
         expected = times.diff() != pd.Timedelta(f"{period}min")
         expected.iloc[0] = False
         time_lapse = flag_time_lapse_status(data, period)
-        assert (time_lapse.suspicius_time_lapse.values == expected).all()
+        assert (time_lapse.suspicious_time_lapse.values == expected).all()
 
     def test_flag_value_status(self):
         from measurement.validation import flag_value_difference
@@ -107,7 +107,7 @@ class TestValidationFunctions(TestCase):
         expected = data.value.diff().abs().values > allowed_difference
         expected[0] = False
         flags = flag_value_difference(data, allowed_difference)
-        assert (flags.suspicius_value_difference.values == expected).all()
+        assert (flags.suspicious_value_difference.values == expected).all()
 
     def test_flag_value_limits(self):
         from measurement.validation import flag_value_limits
@@ -127,12 +127,12 @@ class TestValidationFunctions(TestCase):
 
         flags = flag_value_limits(data, maximum, minimum)
         assert len(flags.columns) == 3
-        assert (flags.suspicius_value_limits.values == svalue).all()
-        assert (flags.suspicius_maximum_limits.values == smax).all()
-        assert (flags.suspicius_minimum_limits.values == smin).all()
+        assert (flags.suspicious_value_limits.values == svalue).all()
+        assert (flags.suspicious_maximum_limits.values == smax).all()
+        assert (flags.suspicious_minimum_limits.values == smin).all()
 
     def test_find_suspicious_data(self):
-        from measurement.validation import flag_suspicius_data
+        from measurement.validation import flag_suspicious_data
 
         # Create a sample dataframe
         time = pd.date_range("2023-01-01", "2023-01-02", freq="5min")
@@ -151,21 +151,23 @@ class TestValidationFunctions(TestCase):
         allowed_difference = Decimal(1.5)
 
         # Call the function under test
-        result = flag_suspicius_data(data, maximum, minimum, period, allowed_difference)
+        result = flag_suspicious_data(
+            data, maximum, minimum, period, allowed_difference
+        )
 
         # Assert the expected output
         expected_columns = [
-            "suspicius_time_lapse",
-            "suspicius_value_difference",
-            "suspicius_value_limits",
-            "suspicius_maximum_limits",
-            "suspicius_minimum_limits",
+            "suspicious_time_lapse",
+            "suspicious_value_difference",
+            "suspicious_value_limits",
+            "suspicious_maximum_limits",
+            "suspicious_minimum_limits",
         ]
         self.assertListEqual(list(result.columns), expected_columns)
         self.assertEqual(len(result), len(data))
 
-    def test_flag_suspicius_daily_count(self):
-        from measurement.validation import flag_suspicius_daily_count
+    def test_flag_suspicious_daily_count(self):
+        from measurement.validation import flag_suspicious_daily_count
 
         # Create sample data
         data = pd.Series([60, 30, 70, 55, 20])
@@ -176,20 +178,20 @@ class TestValidationFunctions(TestCase):
         expected_data_count = 24 * 60 / float(period)
 
         # Call the function under test
-        result = flag_suspicius_daily_count(data, period, null_limit)
+        result = flag_suspicious_daily_count(data, period, null_limit)
 
         # Assert the expected output
         expected = pd.DataFrame(
             {
                 "daily_count_fraction": (data.values / expected_data_count).round(2),
-                "suspicius_daily_count": [False, True, True, False, True],
+                "suspicious_daily_count": [False, True, True, False, True],
             }
         )
 
         pd.testing.assert_frame_equal(result, expected)
 
-    def test_generate_daily_report(self):
-        from measurement.validation import generate_summary_report
+    def test_generate_daily_summary(self):
+        from measurement.validation import generate_daily_summary
 
         time = pd.date_range("2023-01-01", "2023-01-02", periods=5)
         period = (time[1] - time[0]) / pd.Timedelta("1min")
@@ -203,19 +205,19 @@ class TestValidationFunctions(TestCase):
                 "minimum": [0.0, 1.0, 2.0, 3.0, 4.0],
             }
         )
-        suspicius = pd.DataFrame(
+        suspicious = pd.DataFrame(
             {
-                "suspicius_value_limits": [0, 1, 0, 1, 0],
-                "suspicius_maximum_limits": [0, 0, 1, 0, 1],
-                "suspicius_minimum_limits": [1, 0, 0, 1, 0],
+                "suspicious_value_limits": [0, 1, 0, 1, 0],
+                "suspicious_maximum_limits": [0, 0, 1, 0, 1],
+                "suspicious_minimum_limits": [1, 0, 0, 1, 0],
             }
         ).astype(int)
 
         # Call the function under test when value is cummulative
         is_cumulative = True
         null_limit = Decimal(10)
-        result = generate_summary_report(
-            data, suspicius, period, null_limit, is_cumulative
+        result = generate_daily_summary(
+            data, suspicious, period, null_limit, is_cumulative
         )
 
         # Assert the expected output
@@ -224,12 +226,12 @@ class TestValidationFunctions(TestCase):
                 "value": [10.0, 5.0],
                 "maximum": [5.0, 6.0],
                 "minimum": [0.0, 4.0],
-                "suspicius_value_limits": [2, 0],
-                "suspicius_maximum_limits": [1, 1],
-                "suspicius_minimum_limits": [2, 0],
-                "total_suspicius_entries": [5, 1],
+                "suspicious_value_limits": [2, 0],
+                "suspicious_maximum_limits": [1, 1],
+                "suspicious_minimum_limits": [2, 0],
+                "total_suspicious_entries": [5, 1],
                 "daily_count_fraction": [1.0, 0.25],
-                "suspicius_daily_count": [False, True],
+                "suspicious_daily_count": [False, True],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
@@ -237,8 +239,8 @@ class TestValidationFunctions(TestCase):
 
         # Call the function under test when value is NOT cummulative
         is_cumulative = False
-        result = generate_summary_report(
-            data, suspicius, period, null_limit, is_cumulative
+        result = generate_daily_summary(
+            data, suspicious, period, null_limit, is_cumulative
         )
 
         # Assert the expected output
@@ -247,12 +249,12 @@ class TestValidationFunctions(TestCase):
                 "value": [2.5, 5.0],
                 "maximum": [5.0, 6.0],
                 "minimum": [0.0, 4.0],
-                "suspicius_value_limits": [2, 0],
-                "suspicius_maximum_limits": [1, 1],
-                "suspicius_minimum_limits": [2, 0],
-                "total_suspicius_entries": [5, 1],
+                "suspicious_value_limits": [2, 0],
+                "suspicious_maximum_limits": [1, 1],
+                "suspicious_minimum_limits": [2, 0],
+                "total_suspicious_entries": [5, 1],
                 "daily_count_fraction": [1.0, 0.25],
-                "suspicius_daily_count": [False, True],
+                "suspicious_daily_count": [False, True],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
@@ -282,34 +284,34 @@ class TestValidationFunctions(TestCase):
         )
         get_data_to_validate_mock.return_value = data
 
-        flag_suspicius_data_mock = self.create_patch(
-            "measurement.validation.flag_suspicius_data"
+        flag_suspicious_data_mock = self.create_patch(
+            "measurement.validation.flag_suspicious_data"
         )
-        suspicius = pd.DataFrame(
+        suspicious = pd.DataFrame(
             {
-                "suspicius_value_limits": [0, 1, 0, 1, 0],
-                "suspicius_maximum_limits": [0, 0, 1, 0, 1],
-                "suspicius_minimum_limits": [1, 0, 0, 1, 0],
+                "suspicious_value_limits": [0, 1, 0, 1, 0],
+                "suspicious_maximum_limits": [0, 0, 1, 0, 1],
+                "suspicious_minimum_limits": [1, 0, 0, 1, 0],
             }
         ).astype(int)
-        flag_suspicius_data_mock.return_value = suspicius
+        flag_suspicious_data_mock.return_value = suspicious
 
-        generate_summary_report_mock = self.create_patch(
-            "measurement.validation.generate_summary_report"
+        generate_daily_summary_mock = self.create_patch(
+            "measurement.validation.generate_daily_summary"
         )
         summary_report = pd.DataFrame(
             {
                 "value": [10.0, 5.0],
                 "maximum": [5.0, 6.0],
                 "minimum": [0.0, 4.0],
-                "suspicius_value_limits": [2, 0],
-                "suspicius_maximum_limits": [1, 1],
-                "suspicius_minimum_limits": [2, 0],
-                "total_suspicius": [5, 1],
+                "suspicious_value_limits": [2, 0],
+                "suspicious_maximum_limits": [1, 1],
+                "suspicious_minimum_limits": [2, 0],
+                "total_suspicious": [5, 1],
             },
             index=pd.date_range(start_time, end_time, periods=2),
         )
-        generate_summary_report_mock.return_value = summary_report
+        generate_daily_summary_mock.return_value = summary_report
 
         # Call the function under test
         summary, granular = generate_validation_report(
@@ -324,7 +326,7 @@ class TestValidationFunctions(TestCase):
 
         # Assert the expected output
         pd.testing.assert_frame_equal(summary_report, summary)
-        pd.testing.assert_frame_equal(data.join(suspicius), granular)
+        pd.testing.assert_frame_equal(data.join(suspicious), granular)
 
     def create_patch(self, target):
         patcher = patch(target)
