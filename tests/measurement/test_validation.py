@@ -184,9 +184,9 @@ class TestValidationFunctions(TestCase):
             }
         ).astype(int)
 
-        # Call the function under test using 'sum' as operation
-        operation = "sum"
-        result = generate_daily_report(data, suspicius, operation)
+        # Call the function under test when value is cummulative
+        is_cumulative = True
+        result = generate_daily_report(data, suspicius, is_cumulative)
 
         # Assert the expected output
         expected = pd.DataFrame(
@@ -202,9 +202,9 @@ class TestValidationFunctions(TestCase):
         )
         pd.testing.assert_frame_equal(result, expected)
 
-        # Call the function under test using 'mean' as operation
-        operation = "mean"
-        result = generate_daily_report(data, suspicius, operation)
+        # Call the function under test when value is NOT cummulative
+        is_cumulative = False
+        result = generate_daily_report(data, suspicius, is_cumulative)
 
         # Assert the expected output
         expected = pd.DataFrame(

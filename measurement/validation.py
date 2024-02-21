@@ -137,14 +137,14 @@ def flag_suspicius_data(
 
 
 def generate_daily_report(
-    data: pd.DataFrame, suspicius: pd.DataFrame, operation: str
+    data: pd.DataFrame, suspicius: pd.DataFrame, is_cumulative: bool
 ) -> pd.DataFrame:
     """Generates a daily report of the data.
 
     Args:
         data: The dataframe with the data to be evaluated.
         suspicius: The dataframe with the suspicius data.
-        operation: The operation to be performed on the data.
+        is_cumulative: If the data is cumulative and should be aggregated by sum.
 
     Returns:
         A dataframe with the daily report.
@@ -153,10 +153,10 @@ def generate_daily_report(
 
     # Group the data by day and calculate the mean or sum
     datagroup = data.groupby(data.time.dt.date)
-    if operation == "sum":
-        report["value"] = datagroup["value"].sum()
-    else:
-        report["value"] = datagroup["value"].mean()
+    report["value"] = (
+        datagroup["value"].sum() if is_cumulative else datagroup["value"].mean()
+    )
+
     if "maximum" in data.columns:
         report["maximum"] = datagroup["maximum"].max()
     if "minimum" in data.columns:
