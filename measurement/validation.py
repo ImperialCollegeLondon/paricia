@@ -137,14 +137,43 @@ def flag_suspicius_data(
     return pd.concat([time_lapse, value_difference, value_limits], axis=1)
 
 
+def flag_suspicius_daily_count(
+    data: pd.Series, period: Decimal, null_limit: Decimal
+) -> pd.DataFrame:
+    """Finds suspicius records count for daily data.
+
+    Args:
+        data: The count of records per day.
+        period: The expected period for the measurements, in minutes.
+        null_limit: The percentage of null data allowed.
+
+    Returns:
+        A dataframe with the suspicius data.
+    """
+    expected_data_count = 24 * 60 / float(period)
+    suspicius = pd.DataFrame(index=data.index)
+    suspicius["daily_count_fraction"] = (data / expected_data_count).round(2)
+    suspicius["suspicius_daily_count"] = ~suspicius["daily_count_fraction"].between(
+        1 - float(null_limit) / 100, 1
+    ) | (suspicius["daily_count_fraction"] > 1)
+
+    return suspicius
+
+
 def generate_summary_report(
-    data: pd.DataFrame, suspicius: pd.DataFrame, is_cumulative: bool
+    data: pd.DataFrame,
+    suspicius: pd.DataFrame,
+    period: Decimal,
+    null_limit: Decimal,
+    is_cumulative: bool,
 ) -> pd.DataFrame:
     """Generates a daily report of the data.
 
     Args:
         data: The dataframe with the data to be evaluated.
         suspicius: The dataframe with the suspicius data.
+        period: The expected period for the measurements, in minutes.
+        null_limit: The percentage of null data allowed.
         is_cumulative: If the data is cumulative and should be aggregated by sum.
 
     Returns:
@@ -163,13 +192,18 @@ def generate_summary_report(
     if "minimum" in data.columns:
         report["minimum"] = datagroup["minimum"].min()
 
+    # Count the number of entries per day and flag the suspicius ones
+    count_report = flag_suspicius_daily_count(
+        datagroup["value"].count(), period, null_limit
+    )
+
     # Group the suspicius data by day and calculate the sum
     suspiciusgroup = suspicius.groupby(data.time.dt.date)
     suspicius_report = suspiciusgroup.sum().astype(int)
-    suspicius_report["total_suspicius"] = suspicius_report.sum(axis=1)
+    suspicius_report["total_suspicius_entries"] = suspicius_report.sum(axis=1)
 
     # Put together the final report
-    report = pd.concat([report, suspicius_report], axis=1)
+    report = pd.concat([report, suspicius_report, count_report], axis=1)
     report.index = pd.to_datetime(report.index)
     return report
 
@@ -204,6 +238,8 @@ def generate_validation_report(
         station, variable, start_time, end_time, include_validated
     )
     suspicius = flag_suspicius_data(data, maximum, minimum, period, var.diff_error)
-    summary_report = generate_summary_report(data, suspicius, var.is_cumulative)
+    summary_report = generate_summary_report(
+        data, suspicius, period, var.null_limit, var.is_cumulative
+    )
     granular_report = pd.concat([data, suspicius], axis=1)
     return summary_report, granular_report

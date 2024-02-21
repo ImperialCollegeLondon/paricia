@@ -164,10 +164,35 @@ class TestValidationFunctions(TestCase):
         self.assertListEqual(list(result.columns), expected_columns)
         self.assertEqual(len(result), len(data))
 
+    def test_flag_suspicius_daily_count(self):
+        from measurement.validation import flag_suspicius_daily_count
+
+        # Create sample data
+        data = pd.Series([60, 30, 70, 55, 20])
+
+        # This period results in 60 measurements per day
+        period = Decimal(24)
+        null_limit = Decimal(10)
+        expected_data_count = 24 * 60 / float(period)
+
+        # Call the function under test
+        result = flag_suspicius_daily_count(data, period, null_limit)
+
+        # Assert the expected output
+        expected = pd.DataFrame(
+            {
+                "daily_count_fraction": (data.values / expected_data_count).round(2),
+                "suspicius_daily_count": [False, True, True, False, True],
+            }
+        )
+
+        pd.testing.assert_frame_equal(result, expected)
+
     def test_generate_daily_report(self):
         from measurement.validation import generate_summary_report
 
         time = pd.date_range("2023-01-01", "2023-01-02", periods=5)
+        period = (time[1] - time[0]) / pd.Timedelta("1min")
 
         # Create sample data
         data = pd.DataFrame(
@@ -188,7 +213,10 @@ class TestValidationFunctions(TestCase):
 
         # Call the function under test when value is cummulative
         is_cumulative = True
-        result = generate_summary_report(data, suspicius, is_cumulative)
+        null_limit = Decimal(10)
+        result = generate_summary_report(
+            data, suspicius, period, null_limit, is_cumulative
+        )
 
         # Assert the expected output
         expected = pd.DataFrame(
@@ -199,7 +227,9 @@ class TestValidationFunctions(TestCase):
                 "suspicius_value_limits": [2, 0],
                 "suspicius_maximum_limits": [1, 1],
                 "suspicius_minimum_limits": [2, 0],
-                "total_suspicius": [5, 1],
+                "total_suspicius_entries": [5, 1],
+                "daily_count_fraction": [1.0, 0.25],
+                "suspicius_daily_count": [False, True],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
@@ -207,7 +237,9 @@ class TestValidationFunctions(TestCase):
 
         # Call the function under test when value is NOT cummulative
         is_cumulative = False
-        result = generate_summary_report(data, suspicius, is_cumulative)
+        result = generate_summary_report(
+            data, suspicius, period, null_limit, is_cumulative
+        )
 
         # Assert the expected output
         expected = pd.DataFrame(
@@ -218,7 +250,9 @@ class TestValidationFunctions(TestCase):
                 "suspicius_value_limits": [2, 0],
                 "suspicius_maximum_limits": [1, 1],
                 "suspicius_minimum_limits": [2, 0],
-                "total_suspicius": [5, 1],
+                "total_suspicius_entries": [5, 1],
+                "daily_count_fraction": [1.0, 0.25],
+                "suspicius_daily_count": [False, True],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
