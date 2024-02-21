@@ -125,9 +125,9 @@ class TestValidationFunctions(TestCase):
 
         flags = flag_value_limits(data, maximum, minimum)
         assert len(flags.columns) == 3
-        assert (flags.suspicius_value.values == svalue).all()
-        assert (flags.suspicius_maximum.values == smax).all()
-        assert (flags.suspicius_minimum.values == smin).all()
+        assert (flags.suspicius_value_limits.values == svalue).all()
+        assert (flags.suspicius_maximum_limits.values == smax).all()
+        assert (flags.suspicius_minimum_limits.values == smin).all()
 
     def test_find_suspicious_data(self):
         from measurement.validation import flag_suspicius_data
@@ -155,9 +155,9 @@ class TestValidationFunctions(TestCase):
         expected_columns = [
             "suspicius_time_lapse",
             "suspicius_value_difference",
-            "suspicius_value",
-            "suspicius_maximum",
-            "suspicius_minimum",
+            "suspicius_value_limits",
+            "suspicius_maximum_limits",
+            "suspicius_minimum_limits",
         ]
         self.assertListEqual(list(result.columns), expected_columns)
         self.assertEqual(len(result), len(data))
@@ -178,9 +178,9 @@ class TestValidationFunctions(TestCase):
         )
         suspicius = pd.DataFrame(
             {
-                "suspicius_value": [0, 1, 0, 1, 0],
-                "suspicius_maximum": [0, 0, 1, 0, 1],
-                "suspicius_minimum": [1, 0, 0, 1, 0],
+                "suspicius_value_limits": [0, 1, 0, 1, 0],
+                "suspicius_maximum_limits": [0, 0, 1, 0, 1],
+                "suspicius_minimum_limits": [1, 0, 0, 1, 0],
             }
         ).astype(int)
 
@@ -194,9 +194,9 @@ class TestValidationFunctions(TestCase):
                 "value": [10.0, 5.0],
                 "maximum": [5.0, 6.0],
                 "minimum": [0.0, 4.0],
-                "suspicius_value": [2, 0],
-                "suspicius_maximum": [1, 1],
-                "suspicius_minimum": [2, 0],
+                "suspicius_value_limits": [2, 0],
+                "suspicius_maximum_limits": [1, 1],
+                "suspicius_minimum_limits": [2, 0],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
@@ -212,9 +212,9 @@ class TestValidationFunctions(TestCase):
                 "value": [2.5, 5.0],
                 "maximum": [5.0, 6.0],
                 "minimum": [0.0, 4.0],
-                "suspicius_value": [2, 0],
-                "suspicius_maximum": [1, 1],
-                "suspicius_minimum": [2, 0],
+                "suspicius_value_limits": [2, 0],
+                "suspicius_maximum_limits": [1, 1],
+                "suspicius_minimum_limits": [2, 0],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )

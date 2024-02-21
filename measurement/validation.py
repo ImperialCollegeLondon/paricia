@@ -97,13 +97,15 @@ def flag_value_limits(
         A dataframe with suspicius columns indicating a problem.
     """
     flags = pd.DataFrame(index=data.index)
-    flags["suspicius_value"] = (data["value"] < minimum) | (data["value"] > maximum)
+    flags["suspicius_value_limits"] = (data["value"] < minimum) | (
+        data["value"] > maximum
+    )
     if "maximum" in data.columns:
-        flags["suspicius_maximum"] = (data["maximum"] < minimum) | (
+        flags["suspicius_maximum_limits"] = (data["maximum"] < minimum) | (
             data["maximum"] > maximum
         )
     if "minimum" in data.columns:
-        flags["suspicius_minimum"] = (data["minimum"] < minimum) | (
+        flags["suspicius_minimum_limits"] = (data["minimum"] < minimum) | (
             data["minimum"] > maximum
         )
     return flags
