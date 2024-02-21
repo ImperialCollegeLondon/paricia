@@ -164,6 +164,10 @@ def generate_daily_report(
 
     # Group the suspicius data by day and calculate the sum
     suspiciusgroup = suspicius.groupby(data.time.dt.date)
-    report = pd.concat([report, suspiciusgroup.sum().astype(int)], axis=1)
+    suspicius_report = suspiciusgroup.sum().astype(int)
+    suspicius_report["total_suspicius"] = suspicius_report.sum(axis=1)
+
+    # Put together the final report
+    report = pd.concat([report, suspicius_report], axis=1)
     report.index = pd.to_datetime(report.index)
     return report

@@ -197,6 +197,7 @@ class TestValidationFunctions(TestCase):
                 "suspicius_value_limits": [2, 0],
                 "suspicius_maximum_limits": [1, 1],
                 "suspicius_minimum_limits": [2, 0],
+                "total_suspicius": [5, 1],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
@@ -215,6 +216,7 @@ class TestValidationFunctions(TestCase):
                 "suspicius_value_limits": [2, 0],
                 "suspicius_maximum_limits": [1, 1],
                 "suspicius_minimum_limits": [2, 0],
+                "total_suspicius": [5, 1],
             },
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
