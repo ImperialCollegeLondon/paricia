@@ -92,8 +92,8 @@ class TestValidationFunctions(TestCase):
         times.iloc[3] = times.iloc[3] + pd.Timedelta("1min")
         times.iloc[10] = times.iloc[10] + pd.Timedelta("1min")
         data = pd.DataFrame({"time": times})
-        expected = times.diff() == pd.Timedelta(f"{period}min")
-        expected.iloc[0] = True
+        expected = times.diff() != pd.Timedelta(f"{period}min")
+        expected.iloc[0] = False
         time_lapse = flag_time_lapse_status(data, period)
         assert (time_lapse.suspicius_time_lapse.values == expected).all()
 
@@ -103,7 +103,7 @@ class TestValidationFunctions(TestCase):
         data = pd.DataFrame({"value": [1, 3, 5, 6, 6]})
         allowed_difference = 1.5
         expected = data.value.diff().abs().values > allowed_difference
-        expected[0] = True
+        expected[0] = False
         flags = flag_value_difference(data, allowed_difference)
         assert (flags.suspicius_value_difference.values == expected).all()
 

@@ -48,6 +48,8 @@ def get_data_to_validate(
 def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
     """Flags if period of the time entries is correct.
 
+    It is assume that the first entry is correct.
+
     Args:
         data: The dataframe with allowed_difference = Variable. the data.
         period: The expected period for the measurements, in minutes.
@@ -56,13 +58,15 @@ def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
         A series with the status of the time lapse.
     """
     flags = pd.DataFrame(index=data.index, columns=["suspicius_time_lapse"])
-    flags["suspicius_time_lapse"] = data.time.diff() == pd.Timedelta(f"{period}min")
-    flags["suspicius_time_lapse"].iloc[0] = True
+    flags["suspicius_time_lapse"] = data.time.diff() != pd.Timedelta(f"{period}min")
+    flags["suspicius_time_lapse"].iloc[0] = False
     return flags
 
 
 def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Series:
     """Flags if the differences in value of the measurements is correct.
+
+    It is assume that the first entry is correct.
 
     Args:
         data: The dataframe with allowed_difference = Variable. the data.
@@ -75,7 +79,7 @@ def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd
     flags["suspicius_value_difference"] = data["value"].diff().abs() > float(
         allowed_difference
     )
-    flags["suspicius_value_difference"].iloc[0] = True
+    flags["suspicius_value_difference"].iloc[0] = False
     return flags
 
 
