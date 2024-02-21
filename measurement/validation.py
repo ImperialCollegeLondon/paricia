@@ -5,7 +5,8 @@ from decimal import Decimal
 import pandas as pd
 
 from measurement.models import Measurement
-from station.models import Station
+from station.models import DeltaT, Station
+from variable.models import Variable
 
 
 def get_data_to_validate(
@@ -136,7 +137,7 @@ def flag_suspicius_data(
     return pd.concat([time_lapse, value_difference, value_limits], axis=1)
 
 
-def generate_daily_report(
+def generate_summary_report(
     data: pd.DataFrame, suspicius: pd.DataFrame, is_cumulative: bool
 ) -> pd.DataFrame:
     """Generates a daily report of the data.
@@ -171,3 +172,38 @@ def generate_daily_report(
     report = pd.concat([report, suspicius_report], axis=1)
     report.index = pd.to_datetime(report.index)
     return report
+
+
+def generate_validation_report(
+    station: str,
+    variable: str,
+    start_time: str,
+    end_time: str,
+    maximum: Decimal,
+    minimum: Decimal,
+    include_validated: bool = False,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Generates a report of the data.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+        maximum: The maximum allowed value.
+        minimum: The minimum allowed value.
+        include_validated: If validated data should be included.
+
+    Returns:
+        A tuple with the summary report and the granular report.
+    """
+    period = DeltaT.objects.get(station__station_code=station).delta_t
+    var = Variable.objects.get(variable_code=variable)
+
+    data = get_data_to_validate(
+        station, variable, start_time, end_time, include_validated
+    )
+    suspicius = flag_suspicius_data(data, maximum, minimum, period, var.diff_error)
+    summary_report = generate_summary_report(data, suspicius, var.is_cumulative)
+    granular_report = pd.concat([data, suspicius], axis=1)
+    return summary_report, granular_report

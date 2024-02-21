@@ -2,6 +2,7 @@ import random
 import zoneinfo
 from datetime import datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -12,11 +13,12 @@ from model_bakery import baker
 class TestValidationFunctions(TestCase):
     def setUp(self):
         from measurement.models import Measurement
-        from station.models import Station
+        from station.models import DeltaT, Station
         from variable.models import Variable
 
         self.station = baker.make(Station)
         self.variable = baker.make(Variable)
+        self.delta_t = baker.make(DeltaT, station=self.station)
 
         if self.station.timezone is None:
             self.station.timezone = "UTC"
@@ -163,7 +165,7 @@ class TestValidationFunctions(TestCase):
         self.assertEqual(len(result), len(data))
 
     def test_generate_daily_report(self):
-        from measurement.validation import generate_daily_report
+        from measurement.validation import generate_summary_report
 
         time = pd.date_range("2023-01-01", "2023-01-02", periods=5)
 
@@ -186,7 +188,7 @@ class TestValidationFunctions(TestCase):
 
         # Call the function under test when value is cummulative
         is_cumulative = True
-        result = generate_daily_report(data, suspicius, is_cumulative)
+        result = generate_summary_report(data, suspicius, is_cumulative)
 
         # Assert the expected output
         expected = pd.DataFrame(
@@ -205,7 +207,7 @@ class TestValidationFunctions(TestCase):
 
         # Call the function under test when value is NOT cummulative
         is_cumulative = False
-        result = generate_daily_report(data, suspicius, is_cumulative)
+        result = generate_summary_report(data, suspicius, is_cumulative)
 
         # Assert the expected output
         expected = pd.DataFrame(
@@ -221,3 +223,77 @@ class TestValidationFunctions(TestCase):
             index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
         pd.testing.assert_frame_equal(result, expected)
+
+    def test_generate_validation_report(self):
+        from measurement.validation import generate_validation_report
+
+        # Create sample data
+        start_time = "2023-01-01"
+        end_time = "2023-01-02"
+        maximum = Decimal(4)
+        minimum = Decimal(3)
+        include_validated = False
+
+        # Generate data for testing
+        data = pd.DataFrame(
+            {
+                "time": pd.date_range(start_time, end_time, periods=5),
+                "value": [1.0, 2.0, 3.0, 4.0, 5.0],
+            }
+        )
+
+        # Mock the required functions
+        get_data_to_validate_mock = self.create_patch(
+            "measurement.validation.get_data_to_validate"
+        )
+        get_data_to_validate_mock.return_value = data
+
+        flag_suspicius_data_mock = self.create_patch(
+            "measurement.validation.flag_suspicius_data"
+        )
+        suspicius = pd.DataFrame(
+            {
+                "suspicius_value_limits": [0, 1, 0, 1, 0],
+                "suspicius_maximum_limits": [0, 0, 1, 0, 1],
+                "suspicius_minimum_limits": [1, 0, 0, 1, 0],
+            }
+        ).astype(int)
+        flag_suspicius_data_mock.return_value = suspicius
+
+        generate_summary_report_mock = self.create_patch(
+            "measurement.validation.generate_summary_report"
+        )
+        summary_report = pd.DataFrame(
+            {
+                "value": [10.0, 5.0],
+                "maximum": [5.0, 6.0],
+                "minimum": [0.0, 4.0],
+                "suspicius_value_limits": [2, 0],
+                "suspicius_maximum_limits": [1, 1],
+                "suspicius_minimum_limits": [2, 0],
+                "total_suspicius": [5, 1],
+            },
+            index=pd.date_range(start_time, end_time, periods=2),
+        )
+        generate_summary_report_mock.return_value = summary_report
+
+        # Call the function under test
+        summary, granular = generate_validation_report(
+            self.station.station_code,
+            self.variable.variable_code,
+            start_time,
+            end_time,
+            maximum,
+            minimum,
+            include_validated,
+        )
+
+        # Assert the expected output
+        pd.testing.assert_frame_equal(summary_report, summary)
+        pd.testing.assert_frame_equal(data.join(suspicius), granular)
+
+    def create_patch(self, target):
+        patcher = patch(target)
+        mock = patcher.start()
+        self.addCleanup(patcher.stop)
+        return mock
