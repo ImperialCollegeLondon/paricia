@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pandas as pd
 
-from measurement.models import Measurement
+from measurement.models import Measurement, Report
 from station.models import Station
 
 
@@ -119,3 +119,29 @@ def get_data_to_report(
             is_active=True,
         ).values()
     )
+
+
+def remove_report_data_in_range(
+    station: str,
+    variable: str,
+    start_time: datetime,
+    end_time: datetime,
+) -> None:
+    """Removes data in the range from the database.
+
+    It enforces to use the station timezone.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+    """
+    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+
+    Report.objects.filter(
+        station__station_code=station,
+        variable__variable_code=variable,
+        time__gte=start_time.replace(tzinfo=tz),
+        time__lte=end_time.replace(tzinfo=tz),
+    ).delete()

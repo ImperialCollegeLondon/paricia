@@ -132,3 +132,46 @@ class TestReporting(TestCase):
         self.assertEqual(result["variable_id"].unique()[0], self.variable.variable_id)
         self.assertEqual(result["time"].min(), start_time)
         self.assertEqual(result["time"].max(), end_time)
+
+    def test_remove_report_data_in_range(self):
+        from measurement.models import Report
+        from measurement.reporting import remove_report_data_in_range
+
+        # Create sample data
+        tz = zoneinfo.ZoneInfo(self.station.timezone)
+        start_time = datetime(2023, 1, 1, 0, 0, tzinfo=tz)
+        end_time = datetime(2023, 1, 3, 0, 0, tzinfo=tz)
+
+        # Create mock Report objects
+        reports = [
+            Report(
+                station=self.station,
+                variable=self.variable,
+                time=start_time,
+                value=1.0,
+                completeness=1.0,
+                report_type="hourly",
+            ),
+            Report(
+                station=self.station,
+                variable=self.variable,
+                time=end_time,
+                value=5.0,
+                completeness=1.0,
+                report_type="hourly",
+            ),
+        ]
+        Report.objects.bulk_create(reports)
+
+        # Call the function under test
+        remove_report_data_in_range(
+            self.station.station_code, self.variable.variable_code, start_time, end_time
+        )
+
+        # Assert the data is removed from the database
+        self.assertEqual(
+            Report.objects.filter(
+                station__station_code=self.station.station_code
+            ).count(),
+            0,
+        )
