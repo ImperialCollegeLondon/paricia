@@ -13,6 +13,7 @@
 
 import zoneinfo
 
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
@@ -22,6 +23,8 @@ TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())]
 # Global variables used in Basin model
 BASIN_IMAGE_PATH = "station/basin_image/"
 BASIN_FILE_PATH = "station/basin_file/"
+
+User = get_user_model()
 
 
 class Country(models.Model):
@@ -198,6 +201,18 @@ class Station(models.Model):
     Main representation of a station with lots of metadata, according to
     the other models in this app, along with some geographical data.
     """
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    PERMISSIONS_LEVELS = [
+        ("public", "Public"),
+        ("internal", "Internal"),
+        ("private", "Private"),
+    ]
+
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
 
     station_id = models.AutoField("Id", primary_key=True)
     station_code = models.CharField("Code", max_length=32)
