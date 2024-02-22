@@ -22,6 +22,8 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import FormView, ListView
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 from rest_framework import generics
 
 import validated.functions as functions
@@ -286,7 +288,7 @@ class PhycocyaninDepthList(ValidatedDepthListBase):
 ########################################################################################
 
 
-class DailyValidation(View):
+class DailyValidation(LoginRequiredMixin, View):
     """
     View for displaying the Daily Validation dash app.
     """
@@ -294,6 +296,8 @@ class DailyValidation(View):
     def get(self, request, *args, **kwargs):
         from .dash_apps.finished_apps import daily_validation
 
+        stations = get_objects_for_user(request.user, "change_station", klass=Station)
+        # TODO: pass this to the dash app
         return render(request, "daily_validation.html")
 
 
