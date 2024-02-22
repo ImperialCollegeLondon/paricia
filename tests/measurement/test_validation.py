@@ -2,7 +2,7 @@ import random
 import zoneinfo
 from datetime import datetime
 from decimal import Decimal
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pandas as pd
@@ -336,7 +336,7 @@ class TestValidationFunctions(TestCase):
 
     def test_save_validated_data(self):
         from measurement.models import Measurement
-        from measurement.validation import save_validated_data
+        from measurement.validation import save_validated_entries
 
         # Create sample data
         data = pd.DataFrame(
@@ -393,7 +393,7 @@ class TestValidationFunctions(TestCase):
         measurement_3.save()
 
         # Call the function under test
-        save_validated_data(data)
+        save_validated_entries(data)
 
         # Retrieve the updated Measurement objects
         updated_measurement_1 = Measurement.objects.get(id=1)
@@ -421,3 +421,43 @@ class TestValidationFunctions(TestCase):
         self.assertNotEqual(updated_measurement_3.value, measurement_3.value)
         self.assertNotEqual(updated_measurement_3.maximum, measurement_3.maximum)
         self.assertNotEqual(updated_measurement_3.minimum, measurement_3.minimum)
+
+    def test_save_validated_days(self):
+        from measurement.models import Measurement
+        from measurement.validation import save_validated_days
+
+        # Create sample data
+        data = pd.DataFrame(
+            {
+                "station": ["station1", "station2"],
+                "variable": ["variable1", "variable2"],
+                "date": ["2023-01-01", "2023-01-02"],
+                "validate?": [True, False],
+                "deactivate?": [False, True],
+            }
+        )
+
+        # Mock the Measurement.objects.filter and Measurement.objects.update methods
+        with patch.object(Measurement.objects, "filter") as mock_filter:
+            # Configure the mocks
+            class MockQuerySet:
+                update = MagicMock()
+
+            mock_query_set = MockQuerySet()
+            mock_filter.return_value = mock_query_set
+
+            # Call the function under test
+            save_validated_days(data)
+
+            # Assert that the filter method was called with the correct arguments
+            mock_filter.assert_called_once_with(
+                station__station_code="station1",
+                variable__variable_code="variable1",
+                time__date="2023-01-01",
+            )
+
+            # Assert that the update method was called with the correct arguments
+            mock_query_set.update.assert_called_once_with(
+                is_validated=True,
+                is_active=True,
+            )
