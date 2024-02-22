@@ -6,6 +6,7 @@ import pandas as pd
 
 from measurement.models import Measurement, Report
 from station.models import Station
+from variable.models import Variable
 
 
 def calculate_reports(
@@ -145,3 +146,26 @@ def remove_report_data_in_range(
         time__gte=start_time.replace(tzinfo=tz),
         time__lte=end_time.replace(tzinfo=tz),
     ).delete()
+
+
+def save_report_data(data: pd.DataFrame) -> None:
+    """Saves the report data into the database.
+
+    Args:
+        data: The dataframe with the report data.
+    """
+    Report.objects.bulk_create(
+        [
+            Report(
+                station=Station.objects.get(station_code=row["station"]),
+                variable=Variable.objects.get(variable_code=row["variable"]),
+                time=time,
+                value=row["value"],
+                maximum=row.get("maximum", None),
+                minimum=row.get("minimum", None),
+                completeness=row["completeness"],
+                report_type=row["report_type"],
+            )
+            for time, row in data.iterrows()
+        ]
+    )

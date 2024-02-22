@@ -175,3 +175,43 @@ class TestReporting(TestCase):
             ).count(),
             0,
         )
+
+    def test_save_report_data(self):
+        from measurement.models import Report
+        from measurement.reporting import save_report_data
+
+        # Create sample data
+        time = (
+            pd.Timestamp("2023-01-01")
+            .replace(tzinfo=ZoneInfo(self.station.timezone))
+            .to_pydatetime()
+        )
+        data = pd.DataFrame(
+            {
+                "station": [self.station.station_code],
+                "variable": [self.variable.variable_code],
+                "time": time,
+                "value": [1.0],
+                "completeness": [1.0],
+                "report_type": ["hourly"],
+            }
+        ).set_index("time")
+
+        # Call the function under test
+        save_report_data(data)
+
+        # Assert the data is saved in the database
+        report = Report.objects.get(
+            station=self.station,
+            variable=self.variable,
+            time=time,
+            value=1.0,
+            completeness=1.0,
+            report_type="hourly",
+        )
+        self.assertEqual(report.station, self.station)
+        self.assertEqual(report.variable, self.variable)
+        self.assertEqual(report.time, time)
+        self.assertEqual(report.value, 1.0)
+        self.assertEqual(report.completeness, 1.0)
+        self.assertEqual(report.report_type, "hourly")
