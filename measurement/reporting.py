@@ -60,12 +60,12 @@ def calculate_reports(
     return report
 
 
-def get_dates_to_validate(
+def reformat_dates(
     station: str,
     start_time: str,
     end_time: str,
 ) -> pd.Series:
-    """Retrieves dates to be validated.
+    """Reformat dates so they have the right timezone and cover full days.
 
     The start date is always the first day of the first month and the end date is the
     last day of the last month.
@@ -169,3 +169,35 @@ def save_report_data(data: pd.DataFrame) -> None:
             for time, row in data.iterrows()
         ]
     )
+
+
+def get_report_data_from_db(
+    station: str,
+    variable: str,
+    start_time: str,
+    end_time: str,
+    report_type: str,
+) -> pd.DataFrame:
+    """Retrieves the report data from the database.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+        report_type: Type of report to retrieve.
+
+    Returns:
+        A dataframe with the report data.
+    """
+    start_time_, end_time_ = reformat_dates(station, start_time, end_time)
+
+    return pd.DataFrame.from_records(
+        Report.objects.filter(
+            station__station_code=station,
+            variable__variable_code=variable,
+            time__gte=start_time_,
+            time__lte=end_time_,
+            report_type=report_type,
+        ).values()
+    ).rename(columns={"station_id": "station", "variable_id": "variable"})

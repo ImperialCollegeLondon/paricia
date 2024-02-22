@@ -70,8 +70,8 @@ class TestReporting(TestCase):
         times = result.index.to_series()
         pd.testing.assert_series_equal(times, times.dt.round("H"))
 
-    def test_get_dates_to_validate(self):
-        from measurement.reporting import get_dates_to_validate
+    def test_reformat_dates(self):
+        from measurement.reporting import reformat_dates
 
         # Define test parameters
         station = self.station.station_code
@@ -79,7 +79,7 @@ class TestReporting(TestCase):
         end_time = "2023-12-31"
 
         # Call the function under test
-        result = get_dates_to_validate(station, start_time, end_time)
+        result = reformat_dates(station, start_time, end_time)
 
         # Assert the start and end dates
         expected_start_time = datetime(
@@ -215,3 +215,74 @@ class TestReporting(TestCase):
         self.assertEqual(report.value, 1.0)
         self.assertEqual(report.completeness, 1.0)
         self.assertEqual(report.report_type, "hourly")
+
+    def test_get_report_data(self):
+        from measurement.models import Report
+        from measurement.reporting import get_report_data_from_db
+
+        # Create sample data
+        start_time = "2023-01-01"
+        end_time = "2023-01-03"
+        report_type = "hourly"
+
+        # Create mock Report objects
+        time1 = (
+            pd.Timestamp("2023-01-01")
+            .replace(tzinfo=ZoneInfo(self.station.timezone))
+            .to_pydatetime()
+        )
+        time2 = (
+            pd.Timestamp("2023-01-02")
+            .replace(tzinfo=ZoneInfo(self.station.timezone))
+            .to_pydatetime()
+        )
+        reports = [
+            Report(
+                station=self.station,
+                variable=self.variable,
+                time=time1,
+                value=1.0,
+                completeness=1.0,
+                report_type=report_type,
+            ),
+            Report(
+                station=self.station,
+                variable=self.variable,
+                time=time2,
+                value=2.0,
+                completeness=1.0,
+                report_type=report_type,
+            ),
+        ]
+        Report.objects.bulk_create(reports)
+
+        # Call the function under test
+        result = get_report_data_from_db(
+            self.station.station_code,
+            self.variable.variable_code,
+            start_time,
+            end_time,
+            report_type,
+        )
+
+        # Assert the result
+        self.assertIsInstance(result, pd.DataFrame)
+        self.assertEqual(len(result), 2)
+        self.assertListEqual(
+            list(result.columns),
+            [
+                "id",
+                "time",
+                "station",
+                "variable",
+                "value",
+                "maximum",
+                "minimum",
+                "report_type",
+                "completeness",
+            ],
+        )
+        self.assertEqual(result["station"].unique()[0], self.station.station_id)
+        self.assertEqual(result["variable"].unique()[0], self.variable.variable_id)
+        self.assertEqual(result["time"].min(), time1)
+        self.assertEqual(result["time"].max(), time2)
