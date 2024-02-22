@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import pandas as pd
 
+from measurement.models import Measurement
 from station.models import Station
 
 
@@ -86,3 +87,35 @@ def get_dates_to_validate(
     )
 
     return start_time_, end_time_
+
+
+def get_data_to_report(
+    station: str,
+    variable: str,
+    start_time: datetime,
+    end_time: datetime,
+) -> pd.DataFrame:
+    """Retrieves data to be reported about.
+
+    It enforces to retrieve only active measurements and to use the station timezone.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+
+    Returns:
+        A dataframe with the data to report about.
+    """
+    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+
+    return pd.DataFrame.from_records(
+        Measurement.objects.filter(
+            station__station_code=station,
+            variable__variable_code=variable,
+            time__gte=start_time.replace(tzinfo=tz),
+            time__lte=end_time.replace(tzinfo=tz),
+            is_active=True,
+        ).values()
+    )

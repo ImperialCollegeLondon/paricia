@@ -1,3 +1,4 @@
+import zoneinfo
 from datetime import datetime
 from decimal import Decimal
 from zoneinfo import ZoneInfo
@@ -11,8 +12,10 @@ from model_bakery import baker
 class TestReporting(TestCase):
     def setUp(self):
         from station.models import Station
+        from variable.models import Variable
 
         self.station = baker.make(Station)
+        self.variable = baker.make(Variable)
 
     def test_calculate_reports(self):
         from measurement.reporting import calculate_reports
@@ -87,3 +90,45 @@ class TestReporting(TestCase):
         )
         self.assertEqual(result[0], expected_start_time)
         self.assertEqual(result[1], expected_end_time)
+
+    def test_get_data_to_report(self):
+        from measurement.models import Measurement
+        from measurement.reporting import get_data_to_report
+
+        # Create sample data
+        tz = zoneinfo.ZoneInfo(self.station.timezone)
+        start_time = datetime(2023, 1, 1, 0, 0, tzinfo=tz)
+        end_time = datetime(2023, 1, 3, 0, 0, tzinfo=tz)
+
+        # Create mock Measurement objects
+        measurements = [
+            Measurement(
+                station=self.station,
+                variable=self.variable,
+                time=start_time,
+                value=1.0,
+                is_active=True,
+            ),
+            Measurement(
+                station=self.station,
+                variable=self.variable,
+                time=end_time,
+                value=5.0,
+                is_active=True,
+            ),
+        ]
+        Measurement.objects.bulk_create(measurements)
+
+        # Call the function under test
+        result = get_data_to_report(
+            self.station.station_code, self.variable.variable_code, start_time, end_time
+        )
+
+        # Assert the result
+        self.assertEqual(len(result), 2)
+        self.assertIn("value", result.columns)
+        self.assertIn("time", result.columns)
+        self.assertEqual(result["station_id"].unique()[0], self.station.station_id)
+        self.assertEqual(result["variable_id"].unique()[0], self.variable.variable_id)
+        self.assertEqual(result["time"].min(), start_time)
+        self.assertEqual(result["time"].max(), end_time)
