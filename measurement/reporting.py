@@ -1,6 +1,10 @@
+import zoneinfo
+from datetime import datetime
 from decimal import Decimal
 
 import pandas as pd
+
+from station.models import Station
 
 
 def calculate_reports(
@@ -52,3 +56,33 @@ def calculate_reports(
     report["variable"] = variable
 
     return report
+
+
+def get_dates_to_validate(
+    station: str,
+    start_time: str,
+    end_time: str,
+) -> pd.Series:
+    """Retrieves dates to be validated.
+
+    The start date is always the first day of the first month and the end date is the
+    last day of the last month.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+
+    Returns:
+        A series with the dates to be validated.
+    """
+    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+    start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(day=1, tzinfo=tz)
+    end_time_ = (
+        datetime.strptime(end_time, "%Y-%m-%d").replace(day=1, tzinfo=tz)
+        + pd.DateOffset(months=1)
+        - pd.DateOffset(seconds=1)
+    )
+
+    return start_time_, end_time_

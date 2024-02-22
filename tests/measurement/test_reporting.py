@@ -1,11 +1,19 @@
+from datetime import datetime
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
 from django.test import TestCase
+from model_bakery import baker
 
 
 class TestReporting(TestCase):
+    def setUp(self):
+        from station.models import Station
+
+        self.station = baker.make(Station)
+
     def test_calculate_reports(self):
         from measurement.reporting import calculate_reports
 
@@ -58,3 +66,24 @@ class TestReporting(TestCase):
         # Assert the time column is rounded to the nearest hour
         times = result.index.to_series()
         pd.testing.assert_series_equal(times, times.dt.round("H"))
+
+    def test_get_dates_to_validate(self):
+        from measurement.reporting import get_dates_to_validate
+
+        # Define test parameters
+        station = self.station.station_code
+        start_time = "2023-01-01"
+        end_time = "2023-12-31"
+
+        # Call the function under test
+        result = get_dates_to_validate(station, start_time, end_time)
+
+        # Assert the start and end dates
+        expected_start_time = datetime(
+            2023, 1, 1, tzinfo=ZoneInfo(self.station.timezone)
+        )
+        expected_end_time = datetime(
+            2023, 12, 31, 23, 59, 59, tzinfo=ZoneInfo(self.station.timezone)
+        )
+        self.assertEqual(result[0], expected_start_time)
+        self.assertEqual(result[1], expected_end_time)
