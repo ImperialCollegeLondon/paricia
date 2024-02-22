@@ -333,3 +333,91 @@ class TestValidationFunctions(TestCase):
         mock = patcher.start()
         self.addCleanup(patcher.stop)
         return mock
+
+    def test_save_validated_data(self):
+        from measurement.models import Measurement
+        from measurement.validation import save_validated_data
+
+        # Create sample data
+        data = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "time": ["2023-01-01", "2023-01-02", "2023-01-03"],
+                "value": [10.0, 20.0, 30.0],
+                "maximum": [15.0, 25.0, 35.0],
+                "minimum": [5.0, 15.0, 25.0],
+                "validate?": [True, False, True],
+                "deactivate?": [False, True, True],
+            }
+        )
+        data["station"] = self.station.station_code
+        data["variable"] = self.variable.variable_code
+
+        # Create some times
+        times = [
+            datetime(2023, 1, i, tzinfo=zoneinfo.ZoneInfo(self.station.timezone))
+            for i in range(1, 4)
+        ]
+        # Create sample Measurement objects
+        measurement_1 = Measurement(
+            id=1,
+            time=times[0],
+            station=self.station,
+            variable=self.variable,
+            value=5.0,
+            maximum=10.0,
+            minimum=0.0,
+        )
+        measurement_2 = Measurement(
+            id=2,
+            time=times[1],
+            station=self.station,
+            variable=self.variable,
+            value=15.0,
+            maximum=20.0,
+            minimum=10.0,
+        )
+        measurement_3 = Measurement(
+            id=3,
+            time=times[2],
+            station=self.station,
+            variable=self.variable,
+            value=25.0,
+            maximum=30.0,
+            minimum=20.0,
+        )
+
+        # Save the sample Measurement objects
+        measurement_1.save()
+        measurement_2.save()
+        measurement_3.save()
+
+        # Call the function under test
+        save_validated_data(data)
+
+        # Retrieve the updated Measurement objects
+        updated_measurement_1 = Measurement.objects.get(id=1)
+        updated_measurement_2 = Measurement.objects.get(id=2)
+        updated_measurement_3 = Measurement.objects.get(id=3)
+
+        # Assert the expected updates
+        # The first object should be validated, active and updated
+        self.assertTrue(updated_measurement_1.is_validated)
+        self.assertTrue(updated_measurement_1.is_active)
+        self.assertNotEqual(updated_measurement_1.value, measurement_1.value)
+        self.assertNotEqual(updated_measurement_1.maximum, measurement_1.maximum)
+        self.assertNotEqual(updated_measurement_1.minimum, measurement_1.minimum)
+
+        # The second object should not be validated neither updated
+        self.assertFalse(updated_measurement_2.is_validated)
+        self.assertTrue(updated_measurement_2.is_active)
+        self.assertEqual(updated_measurement_2.value, measurement_2.value)
+        self.assertEqual(updated_measurement_2.maximum, measurement_2.maximum)
+        self.assertEqual(updated_measurement_2.minimum, measurement_2.minimum)
+
+        # The third object should be validated, not active and updated
+        self.assertTrue(updated_measurement_3.is_validated)
+        self.assertFalse(updated_measurement_3.is_active)
+        self.assertNotEqual(updated_measurement_3.value, measurement_3.value)
+        self.assertNotEqual(updated_measurement_3.maximum, measurement_3.maximum)
+        self.assertNotEqual(updated_measurement_3.minimum, measurement_3.minimum)
