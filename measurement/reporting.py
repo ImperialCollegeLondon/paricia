@@ -5,7 +5,7 @@ from decimal import Decimal
 import pandas as pd
 
 from measurement.models import Measurement, Report
-from station.models import Station
+from station.models import DeltaT, Station
 from variable.models import Variable
 
 
@@ -151,9 +151,13 @@ def remove_report_data_in_range(
 def save_report_data(data: pd.DataFrame) -> None:
     """Saves the report data into the database.
 
+    Before saving, the function removes maximum and minimum columns if they have all NaN
+    and removes rows with NaN in the value column.
+
     Args:
         data: The dataframe with the report data.
     """
+    data_ = data.dropna(axis=1, how="all").dropna(axis=0, subset=["value"])
     Report.objects.bulk_create(
         [
             Report(
@@ -166,7 +170,7 @@ def save_report_data(data: pd.DataFrame) -> None:
                 completeness=row["completeness"],
                 report_type=row["report_type"],
             )
-            for time, row in data.iterrows()
+            for time, row in data_.iterrows()
         ]
     )
 
@@ -201,3 +205,28 @@ def get_report_data_from_db(
             report_type=report_type,
         ).values()
     ).rename(columns={"station_id": "station", "variable_id": "variable"})
+
+
+def launch_reports_calculation(
+    station: str,
+    variable: str,
+    start_time: str,
+    end_time: str,
+) -> None:
+    """Launches the calculation of the reports.
+
+    Args:
+        station: Station of interest.
+        variable: Variable of interest.
+        start_time: Start time.
+        end_time: End time.
+    """
+    operation = (
+        "sum" if Variable.objects.get(variable_code=variable).is_cumulative else "mean"
+    )
+    period = DeltaT.objects.get(station__station_code=station).delta_t
+    start_time_, end_time_ = reformat_dates(station, start_time, end_time)
+    data = get_data_to_report(station, variable, start_time_, end_time_)
+    report = calculate_reports(data, station, variable, operation, period)
+    remove_report_data_in_range(station, variable, start_time_, end_time_)
+    save_report_data(report)

@@ -286,3 +286,65 @@ class TestReporting(TestCase):
         self.assertEqual(result["variable"].unique()[0], self.variable.variable_id)
         self.assertEqual(result["time"].min(), time1)
         self.assertEqual(result["time"].max(), time2)
+
+    def test_launch_reports_calculation(self):
+        from measurement.models import Measurement
+        from measurement.reporting import (
+            get_report_data_from_db,
+            launch_reports_calculation,
+            reformat_dates,
+        )
+
+        # Define test parameters
+        station = self.station.station_code
+        variable = self.variable.variable_code
+        start_time = "2023-01-01"
+        end_time = "2023-01-03"
+
+        # Create mock objects
+        baker.make(
+            "station.DeltaT",
+            station=self.station,
+            delta_t=5,
+        )
+        self.variable.nature = "value"
+        self.variable.save()
+
+        start_time_, end_time_ = reformat_dates(station, start_time, end_time)
+
+        # Create mock Measurement objects
+        measurements = [
+            Measurement(
+                station=self.station,
+                variable=self.variable,
+                time=start_time_,
+                value=1.0,
+                is_active=True,
+            ),
+            Measurement(
+                station=self.station,
+                variable=self.variable,
+                time=end_time_,
+                value=5.0,
+                is_active=True,
+            ),
+        ]
+        Measurement.objects.bulk_create(measurements)
+
+        # Assert no report data is present in the database
+        for report_type in ["hourly", "daily", "monthly"]:
+            report = get_report_data_from_db(
+                station, variable, start_time, end_time, report_type
+            )
+            self.assertEqual(len(report), 0)
+
+        # Call the function under test. If the function is working correctly, it will
+        # serves as integration tests for all the functions used in the process.
+        launch_reports_calculation(station, variable, start_time, end_time)
+
+        # Assert report data is present in the database
+        for report_type in ["hourly", "daily", "monthly"]:
+            report = get_report_data_from_db(
+                station, variable, start_time, end_time, report_type
+            )
+            self.assertGreaterEqual(len(report), 1)
