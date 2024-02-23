@@ -12,6 +12,8 @@ class StationAdmin(GuardedModelAdmin):
     list_display = [
         "station_id",
         "station_code",
+        "owner",
+        "permissions_level",
         "station_name",
         "station_type",
         "country",
