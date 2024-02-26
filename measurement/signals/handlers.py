@@ -8,7 +8,6 @@ from measurement.models import Measurement, Report
 User = get_user_model()
 
 
-
 @receiver(post_save, sender=Measurement)
 @receiver(post_save, sender=Report)
 def set_permissions(sender, instance, **kwargs):

@@ -21,7 +21,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
-from django.views.generic import FormView, ListView
+from django.views.generic import ListView
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import generics
@@ -36,7 +36,6 @@ from .filters import (  # DischargeCurveFilter,; LevelFunctionFilter,; PolarWind
     ValidatedFilter,
     ValidatedFilterDepth,
 )
-from .forms import DailyValidationForm, DataReportForm
 
 # class PolarWindList(generics.ListAPIView):
 #     """
@@ -384,20 +383,6 @@ class DataReport(View):
         from .dash_apps.finished_apps import data_report
 
         return render(request, "data_report.html")
-
-
-class DailyValidationDev(View):
-    def get(self, request, *args, **kwargs):
-        from .dash_apps.finished_apps import daily_validation
-
-        return render(request, "daily_validation_dev.html")
-
-
-class DataReportDev(View):
-    def get(self, request, *args, **kwargs):
-        from .dash_apps.finished_apps import data_report
-
-        return render(request, "data_report_dev.html")
 
 
 def view_launch_report_calculations(request):
