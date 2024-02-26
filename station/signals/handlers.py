@@ -19,8 +19,9 @@ def set_permissions(sender, instance, **kwargs):
         assign_perm(view, user, instance)
 
     # Assign change and delete permissions for owner
-    for perm in [change, delete]:
-        assign_perm(perm, instance.owner, instance)
+    if instance.owner:
+        for perm in [change, delete]:
+            assign_perm(perm, instance.owner, instance)
 
 
 def _get_perm_codenames(model):

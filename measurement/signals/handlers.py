@@ -16,8 +16,9 @@ def set_permissions(sender, instance, **kwargs):
     delete, change, view = _get_perm_codenames(sender)
 
     # Assign change and delete permissions for owner
-    for perm in [change, delete]:
-        assign_perm(perm, instance.station.owner, instance)
+    if instance.station.owner:
+        for perm in [change, delete]:
+            assign_perm(perm, instance.station.owner, instance)
 
     # Assign view permissions based on permissions level
     if instance.station.permissions_level == "public":
@@ -27,7 +28,8 @@ def set_permissions(sender, instance, **kwargs):
         for user in User.objects.filter(is_active=True):
             assign_perm(view, user, instance)
     else:  # private
-        assign_perm(view, instance.station.owner, instance)
+        if instance.station.owner:
+            assign_perm(view, instance.station.owner, instance)
 
 
 def _get_perm_codenames(model):
