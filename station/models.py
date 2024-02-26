@@ -202,7 +202,7 @@ class Station(models.Model):
     the other models in this app, along with some geographical data.
     """
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     PERMISSIONS_LEVELS = [
         ("public", "Public"),
