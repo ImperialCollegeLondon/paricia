@@ -4,7 +4,7 @@ services:
   db:
     image: timescale/timescaledb-ha:pg14-latest
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - "db:/home/postgres/pgdata/data"
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
