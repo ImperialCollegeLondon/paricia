@@ -3,12 +3,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from guardian.shortcuts import assign_perm
 
-from measurement.models import MeasurementBase
+from measurement.models import Measurement, Report
 
 User = get_user_model()
 
 
-@receiver(post_save, sender=MeasurementBase)
+@receiver(post_save, sender=Measurement)
+@receiver(post_save, sender=Report)
 def set_permissions(sender, instance, **kwargs):
     """Set object-level permissions"."""
     # Get permissions for model
@@ -16,7 +17,7 @@ def set_permissions(sender, instance, **kwargs):
 
     # Assign change and delete permissions for owner
     for perm in [change, delete]:
-        assign_perm(perm, instance.owner, instance)
+        assign_perm(perm, instance.station.owner, instance)
 
     # Assign view permissions based on permissions level
     if instance.station.permissions_level == "public":
