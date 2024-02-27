@@ -18,3 +18,6 @@ from django.apps import AppConfig
 
 class MeasurementConfig(AppConfig):
     name = "measurement"
+
+    def ready(self):
+        import measurement.signals.handlers

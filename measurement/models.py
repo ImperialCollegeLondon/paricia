@@ -50,7 +50,6 @@ class MeasurementBase(TimescaleModel):
     )
 
     class Meta:
-        default_permissions = ()
         abstract = True
         indexes = [
             models.Index(fields=["station", "time", "variable"]),
@@ -70,29 +69,15 @@ class Report(MeasurementBase):
     """
 
     report_type = models.CharField(max_length=7, choices=ReportType.choices, null=False)
-    used_for_daily = models.BooleanField(verbose_name="Used for daily?", default=False)
-    used_for_monthly = models.BooleanField(
-        verbose_name="Used for monthly?", default=False
-    )
     completeness = models.DecimalField(max_digits=4, decimal_places=1, null=False)
 
     class Meta:
-        default_permissions = ()
         indexes = [
             models.Index(fields=["report_type", "station", "time", "variable"]),
         ]
 
     def clean(self) -> None:
         """Validate that the report type and use of the data is consistent."""
-        if self.used_for_daily and self.report_type != ReportType.HOURLY:
-            raise ValidationError(
-                "Only hourly data can be used for daily report calculations."
-            )
-        if self.used_for_monthly and self.report_type != ReportType.DAILY:
-            raise ValidationError(
-                "Only daily data can be used for monthly report calculations."
-            )
-
         if self.report_type == ReportType.HOURLY:
             self.time = self.time.replace(minute=0, second=0, microsecond=0)
         elif self.report_type == ReportType.DAILY:
@@ -154,9 +139,6 @@ class Measurement(MeasurementBase):
     raw_depth = models.PositiveSmallIntegerField(
         "raw depth", null=True, blank=True, editable=False
     )
-    used_for_hourly = models.BooleanField(
-        verbose_name="Used for hourly?", default=False
-    )
     is_validated = models.BooleanField("Validated?", default=False)
     is_active = models.BooleanField("Active?", default=True)
 
@@ -165,12 +147,6 @@ class Measurement(MeasurementBase):
         # Check consistency of validation
         if not self.is_validated and not self.is_active:
             raise ValidationError("Only validated entries can be delcared as inactive.")
-
-        # Check consistency of the reporting
-        if self.used_for_hourly and not (self.is_validated and self.is_active):
-            raise ValidationError(
-                "Only validated, active data can be used for hourly reports."
-            )
 
         # Backup values to raws, if needed
         raws = (r for r in dir(self) if r.startswith("raw_"))
