@@ -27,8 +27,8 @@ from rest_framework import generics
 
 from djangomain.settings import BASE_DIR
 from importing.functions import (
-    preformat_matrix,
     query_formats,
+    read_data_to_import,
     save_temp_data_to_permanent,
     validate_dates,
 )
@@ -62,7 +62,9 @@ class DataImportTempCreate(generics.CreateAPIView):
         file = copy.deepcopy(self.request.FILES["file"])
         timezone = serializer.validated_data["station"].timezone
         getLogger().warning(timezone)
-        matrix = preformat_matrix(file, serializer.validated_data["format"], timezone)
+        matrix = read_data_to_import(
+            file, serializer.validated_data["format"], timezone
+        )
         del file
         # Set start and end date based on cleaned data from the file
         serializer.validated_data["start_date"] = matrix.loc[0, "date"]

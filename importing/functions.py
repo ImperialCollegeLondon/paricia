@@ -18,7 +18,7 @@ import zoneinfo
 from datetime import datetime
 from logging import getLogger
 from numbers import Number
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -26,7 +26,7 @@ from django.apps import apps
 from django.db import transaction
 
 from djangomain.settings import BASE_DIR
-from formatting.models import Association, Classification
+from formatting.models import Association, Classification, Format
 from importing.models import DataImportFull, DataImportTemp
 from measurement.models import Measurement, StripLevelReading, WaterLevel
 from variable.models import Variable
@@ -103,119 +103,129 @@ def get_last_uploaded_date(station_id: int, var_code: str) -> Optional[datetime]
     return None
 
 
-def preformat_matrix(source_file, file_format, timezone: str):
-    """
-    First step for importing data. Works out what sort of file is being read and adds
-    standardised columns for date and datetime (str). This is used in construct_matrix.
+def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
+    """Reads an Excel file into a pandas DataFrame.
+
     Args:
-        source_file: path to raw data file.
-        file_format: formatting.models.Format object.
-        timezone: Timezone name, eg. 'America/Chicago'.
+        file_path: The path to the file to be read.
+        file_format: The file format.
+
     Returns:
-        Pandas.DataFrame with raw data read and extra column(s) for date and datetime
-        (Str), which should be parsed correctly here.
+        A pandas DataFrame containing the data from the file.
     """
     firstline = file_format.first_row if file_format.first_row else 0
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
+    return pd.read_excel(
+        file_path,
+        header=None,
+        skiprows=firstline - 1,
+        skipfooter=skipfooter,
+        engine=None,
+        error_bad_lines=False,
+        index_col=None,
+    )
+
+
+def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
+    """Reads a CSV file into a pandas DataFrame.
+
+    Args:
+        source_file: Stream of data to be parsed.
+        file_format: The file format.
+
+    Returns:
+        A pandas DataFrame containing the data from the file.
+    """
+    firstline = file_format.first_row if file_format.first_row else 0
+    skipfooter = file_format.footer_rows if file_format.footer_rows else 0
+    delimiter = file_format.delimiter.character
+
+    skiprows: int | list[int] = firstline - 1
+    if not isinstance(source_file, str):
+        # The file was uploaded as binary
+        lines = len(source_file.readlines())
+        source_file.seek(0)
+        skiprows = [i for i in range(0, firstline - 1)] + [
+            i - 1 for i in range(lines, lines - firstline, -1)
+        ]
+        skipfooter = 0
+
+    # Deal with the delimiter
+    if "\\x" in delimiter:
+        delim_hexcode = delimiter.replace("\\x", "")
+        delim_intcode = eval("0x" + delim_hexcode)
+        delimiter = chr(delim_intcode)
+    elif delimiter == " ":
+        delimiter = "\s+"  # This is a regex for whitespace
+
+    return pd.read_csv(
+        source_file,
+        sep=delimiter,
+        header=None,
+        index_col=False,
+        skiprows=skiprows,
+        skipfooter=skipfooter,
+        encoding="ISO-8859-1",
+    )
+
+
+def process_datetime_columns(
+    data: pd.DataFrame, file_format: Format, timezone: str
+) -> pd.DataFrame:
+    """Process the datetime columns in a DataFrame.
+
+    Args:
+        data: The DataFrame to process.
+        file_format: The file format.
+        timezone: The timezone to use.
+
+    Returns:
+        The DataFrame with the datetime columns processed.
+    """
     tz = zoneinfo.ZoneInfo(timezone)
-
-    if file_format.extension.value in ["xlsx", "xlx"]:
-        # If in Excel format
-        file = pd.read_excel(
-            source_file,
-            header=None,
-            skiprows=firstline - 1,
-            skipfooter=skipfooter,
-            engine=None,
-            error_bad_lines=False,
-            index_col=None,
-        )
-    else:
-        # Is not Excel format e.g. CSV
-        engine = "c"
-        if not isinstance(source_file, str):
-            # The file was uploaded as binary
-            lines = len(source_file.readlines())
-            source_file.seek(0)
-            skiprows = [i - 1 for i in range(1, firstline)] + [
-                i - 1 for i in range(lines, lines - skipfooter, -1)
-            ]
-            skipfooter = 0
-        else:
-            # The file can be read as a string
-            skiprows = firstline - 1
-            if skipfooter > 0:
-                engine = "python"
-
-        # Deal with the delimiter
-        delimiter = file_format.delimiter.character
-        if "\\x" in delimiter:
-            delim_hexcode = delimiter.replace("\\x", "")
-            delim_intcode = eval("0x" + delim_hexcode)
-            delimiter = chr(delim_intcode)
-
-        if delimiter == " ":
-            file = pd.read_csv(
-                source_file,
-                delim_whitespace=True,
-                header=None,
-                index_col=False,
-                skiprows=skiprows,
-                skipfooter=skipfooter,
-                engine=engine,
-                encoding="ISO-8859-1",
-            )
-        else:
-            file = pd.read_csv(
-                source_file,
-                sep=delimiter,
-                header=None,
-                index_col=False,
-                skiprows=skiprows,
-                skipfooter=skipfooter,
-                engine=engine,
-                encoding="ISO-8859-1",
-            )
-
-    datetime_format = file_format.date.code + " " + file_format.time.code
+    dt_format = file_format.datetime_format
     if file_format.date_column == file_format.time_column:
-        file["date"] = pd.Series(
+        data["date"] = pd.Series(
             [
-                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
-                for row in file[file_format.date_column - 1].values
+                standardise_datetime(row, dt_format).replace(tzinfo=tz)
+                for row in data[file_format.date_column - 1].values
             ],
-            index=file.index,
+            index=data.index,
         )
     else:
-        date_items = file_format.date.code.split(delimiter)
-        date_cols = list(
-            range(
-                file_format.date_column - 1,
-                file_format.date_column - 1 + len(date_items),
-            )
+        cols = file_format.datetime_columns(file_format.delimiter.character)
+        data["datetime_str"] = data[cols].agg(
+            lambda row: " ".join([r.astype(str) for r in row]), axis=1
         )
-        time_items = file_format.time.code.split(delimiter)
-        time_cols = list(
-            range(
-                file_format.for_col_hora - 1,
-                file_format.for_col_hora - 1 + len(time_items),
-            )
+        data["date"] = data["datime_str"].apply(
+            lambda row: standardise_datetime(row, dt_format).replace(tzinfo=tz)
         )
-        cols = date_cols + time_cols
-        file["datetime_str"] = pd.Series(
-            [" ".join(row.astype(str)) for row in file[cols].values],
-            index=file.index,
-        )
-        file["date"] = pd.Series(
-            [
-                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
-                for row in file["datetime_str"].values
-            ],
-            index=file.index,
-        )
+        data.drop(columns=["datetime_str"], inplace=True)
 
-    file = file.sort_values("date")
-    return file.reset_index(drop=True)
+    return data.sort_values("date").reset_index(drop=True)
+
+
+def read_data_to_import(source_file: Any, file_format: Format, timezone: str):
+    """Reads the data from file into a pandas DataFrame.
+
+    Works out what sort of file is being read and adds standardised columns for
+    datetime.
+
+    Args:
+        source_file: Stream of data to be parsed.
+        file_format: Format of the data to be parsed.
+        timezone: Timezone name, eg. 'America/Chicago'.
+
+    Returns:
+        Pandas.DataFrame with raw data read and extra column(s) for datetime
+        correctly parsed.
+    """
+    if file_format.extension.value in ["xlsx", "xlx"]:
+        data = read_file_excel(source_file, file_format)
+    else:
+        data = read_file_csv(source_file, file_format)
+
+    return process_datetime_columns(data, file_format, timezone)
 
 
 def standardise_datetime(date_time, datetime_format) -> datetime:
@@ -349,7 +359,7 @@ def construct_matrix(matrix_source, file_format, station):
     """
 
     # Get the "preformatted matrix" sorted by date col
-    matrix = preformat_matrix(matrix_source, file_format, station.timezone)
+    matrix = read_data_to_import(matrix_source, file_format, station.timezone)
     # Find start and end dates from top and bottom row
     start_date = matrix.loc[0, "date"]
     end_date = matrix.loc[matrix.shape[0] - 1, "date"]

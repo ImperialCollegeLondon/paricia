@@ -38,9 +38,11 @@ class TestMatrixFunctions(TestCase):
         self.station.timezone = TIMEZONES[0][0]
 
     def test_preformat_matrix(self):
-        from importing.functions import preformat_matrix
+        from importing.functions import read_data_to_import
 
-        df = preformat_matrix(self.data_file, self.file_format, self.station.timezone)
+        df = read_data_to_import(
+            self.data_file, self.file_format, self.station.timezone
+        )
         self.assertEqual(df.shape, (263371, 5))
 
     def test_construct_matrix(self):
@@ -83,7 +85,7 @@ class TestDateFunctions(TestCase):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
         from formatting.models import Format
-        from importing.functions import preformat_matrix
+        from importing.functions import read_data_to_import
         from importing.models import DataImportTemp
         from measurement.models import Flow
         from station.models import TIMEZONES, Station
@@ -95,7 +97,7 @@ class TestDateFunctions(TestCase):
         self.station = Station.objects.get(station_id=8)
         self.station.timezone = TIMEZONES[0][0]
 
-        matrix = preformat_matrix(
+        matrix = read_data_to_import(
             self.data_file, self.file_format, self.station.timezone
         )
         start_date = matrix.loc[0, "date"]
