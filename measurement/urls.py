@@ -18,6 +18,8 @@ from . import views
 
 app_name = "measurement"
 urlpatterns = [
+    path("api/measurement/", views.MeasurementList.as_view()),
+    path("api/report/", views.ReportList.as_view()),
     path("polarwind/", views.PolarWindList.as_view()),
     path("dischargecurve/", views.DischargeCurveList.as_view()),
     path("levelfunction/", views.LevelFunctionList.as_view()),

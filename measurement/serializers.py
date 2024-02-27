@@ -11,12 +11,14 @@ from .models import (
     Humidity,
     IndirectRadiation,
     LevelFunction,
+    Measurement,
     OxygenConcentrationDepth,
     PercentageOxygenConcentrationDepth,
     PhycocyaninDepth,
     PolarWind,
     Precipitation,
     RedoxPotentialDepth,
+    Report,
     SoilMoisture,
     SoilTemperature,
     SolarRadiation,
@@ -29,6 +31,18 @@ from .models import (
     WindDirection,
     WindVelocity,
 )
+
+
+class MeasurementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Measurement
+        fields = "__all__"
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = "__all__"
 
 
 class PolarWindSerializer(serializers.ModelSerializer):
