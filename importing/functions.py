@@ -80,7 +80,7 @@ def validate_dates(data_import):
 
 
 def get_last_uploaded_date(station_id: int, var_code: str) -> Optional[datetime]:
-    """Get the last date that data uploaded for a given station ID and variable code.
+    """Get the last date of uploaded data for a given station ID and variable code.
 
     Args:
         station_id: The station ID.
@@ -228,13 +228,16 @@ def read_data_to_import(source_file: Any, file_format: Format, timezone: str):
     return process_datetime_columns(data, file_format, timezone)
 
 
-def standardise_datetime(date_time, datetime_format) -> datetime:
-    """
-    Returns a datetime object in the case that date_time is not already in that form.
+def standardise_datetime(date_time: Any, datetime_format: str) -> Optional[datetime]:
+    """Returns a datetime object in the case that date_time is not already in that form.
+
     Args:
         date_time: The date_time to be transformed.
         datetime_format: The format that date_time is in (to be passed to
             datetime.strptime()).
+
+    Returns:
+        A datetime object or None if date_time is not in a recognised format.
     """
 
     if isinstance(date_time, datetime):
@@ -246,21 +249,18 @@ def standardise_datetime(date_time, datetime_format) -> datetime:
         return date_time
     elif isinstance(date_time, str):
         pass
-
     elif isinstance(date_time, list):
         date_time = " ".join(date_time)
-
     elif isinstance(date_time, pd.Series):
         date_time = " ".join([str(val) for val in list(date_time[:])])
-
     else:
         date_time = ""
 
     # Now try converting the resulting string into a datetime obj
     try:
         _date_time = datetime.strptime(date_time, datetime_format)
-    except:
-        # TODO: Fix bare except statement
+    except Exception as e:
+        getLogger().error(f"Error parsing date: {date_time} - {e}")
         _date_time = None
     return _date_time
 
