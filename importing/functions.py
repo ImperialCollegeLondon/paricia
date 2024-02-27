@@ -18,6 +18,7 @@ import zoneinfo
 from datetime import datetime
 from logging import getLogger
 from numbers import Number
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -27,7 +28,7 @@ from django.db import transaction
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification
 from importing.models import DataImportFull, DataImportTemp
-from measurement.models import StripLevelReading, WaterLevel
+from measurement.models import Measurement, StripLevelReading, WaterLevel
 from variable.models import Variable
 
 unix_epoch = np.datetime64(0, "s")
@@ -78,20 +79,28 @@ def validate_dates(data_import):
     return result, overwrite
 
 
-def get_last_uploaded_date(station_id, var_code):
+def get_last_uploaded_date(station_id: int, var_code: str) -> Optional[datetime]:
+    """Get the last date that data uploaded for a given station ID and variable code.
+
+    Args:
+        station_id: The station ID.
+        var_code: The variable code.
+
+    Returns:
+        The last date that data was uploaded for the given station ID and variable code
+        or None if no data was found.
     """
-    Retrieves the last date that data was uploaded for a given station ID and variable
-    code. Variable code will be the name of some measurement table.
-    """
-    getLogger().info("current_time: " + str(time.ctime()))
-    model = apps.get_model("measurement", var_code)
-    # The first entry will be the most recent
-    query = model.timescale.filter(station_id=station_id).order_by("-time")
+    query = (
+        Measurement.timescale.filter(
+            station__station_id=station_id, variable__variable_code=var_code
+        )
+        .order_by("time")
+        .last()
+    )
     if query:
-        datetime = query[0].time
-    else:
-        datetime = "Data does not exist"
-    return datetime
+        return query.time
+
+    return None
 
 
 def preformat_matrix(source_file, file_format, timezone: str):
