@@ -68,7 +68,8 @@ def reformat_dates(
     """Reformat dates so they have the right timezone and cover full days.
 
     The start date is always the first day of the first month and the end date is the
-    last day of the last month.
+    last day of the last month. Times are set to 00:00:00 and 23:59:59, respectively,
+    and the timezone is set to the station timezone.
 
     Args:
         station: Station of interest.
@@ -184,6 +185,9 @@ def get_report_data_from_db(
 ) -> pd.DataFrame:
     """Retrieves the report data from the database.
 
+    Time is set to the station timezone and the time range is inclusive of both
+    start and end times.
+
     Args:
         station: Station of interest.
         variable: Variable of interest.
@@ -214,6 +218,9 @@ def launch_reports_calculation(
     end_time: str,
 ) -> None:
     """Launches the calculation of the reports.
+
+    Time is set to the station timezone and the time range is inclusive of both
+    start and end times.
 
     Args:
         station: Station of interest.
