@@ -95,7 +95,7 @@ filters = html.Div(
                     end_date=END_DATE.strftime("%Y-%m-%d"),
                 ),
             ],
-            style={"margin-right": "10px", "width": "300px"},
+            style={"margin-right": "10px", "width": "350px"},
         ),
         html.Div(
             [

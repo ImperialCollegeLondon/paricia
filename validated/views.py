@@ -286,34 +286,15 @@ class PhycocyaninDepthList(ValidatedDepthListBase):
 ########################################################################################
 
 
-class DailyValidation(FormView):
+class DailyValidation(View):
     """
-    Main form to perform data validation
-    Select variable, station, and dates, and the system shows a table with indicators.
-    Once accepted, a message to save to 'validated' is sent table via 'daily_save' function
+    View for displaying the Daily Validation dash app.
     """
 
-    template_name = "daily_validation.html"
-    form_class = DailyValidationForm
-    success_url = "/validated/daily_validation/"
+    def get(self, request, *args, **kwargs):
+        from .dash_apps.finished_apps import daily_validation
 
-    def post(self, request, *args, **kwargs):
-        form = DailyValidationForm(self.request.POST or None)
-        if form.is_valid():
-            if functions.is_ajax(self.request):
-                variable = form.cleaned_data["variable"]
-                station = form.cleaned_data["station"]
-                start_date = form.cleaned_data["start_date"]
-                end_date = form.cleaned_data["end_date"]
-                maximum = form.cleaned_data["maximum"]
-                minimum = form.cleaned_data["minimum"]
-                data = functions.daily_validation(
-                    station, variable, start_date, end_date, minimum, maximum
-                )
-                data_json = json.dumps(data, allow_nan=True, cls=DjangoJSONEncoder)
-                return HttpResponse(data_json, content_type="application/json")
-
-        # return render(request, "home/form_error.html", {"form": form})
+        return render(request, "daily_validation.html")
 
 
 class DetailList(ListView):
@@ -390,41 +371,15 @@ def detail_save(request):
     return JsonResponse({"result": result})
 
 
-class DataReport(FormView):
+class DataReport(View):
     """
-    Form for plotting and downloading data from differente tables: measurement, validated, hourly, daily, monthly.
+    View for displaying the Data Report dash app.
     """
 
-    template_name = "data_report.html"
-    form_class = DataReportForm
-    success_url = "/validated/data_report/"
+    def get(self, request, *args, **kwargs):
+        from .dash_apps.finished_apps import data_report
 
-    def post(self, request, *args, **kwargs):
-        form = DataReportForm(self.request.POST or None)
-        if form.is_valid():
-            if functions.is_ajax(self.request):
-                temporality = form.cleaned_data["temporality"]
-                station = form.cleaned_data["station"]
-                variable = form.cleaned_data["variable"]
-                start_date = form.cleaned_data["start_date"]
-                end_date = form.cleaned_data["end_date"]
-                request_type = form.cleaned_data.get("request_type", None)
-                if request_type == "json" or request_type == None:
-                    dict_response = functions.dict_data_report(
-                        temporality, station, variable, start_date, end_date
-                    )
-                    json_response = json.dumps(
-                        dict_response, allow_nan=True, cls=DjangoJSONEncoder
-                    )
-                    return HttpResponse(json_response, content_type="application/json")
-                elif request_type == "csv":
-                    csv_response = functions.csv_data_report(
-                        temporality, station, variable, start_date, end_date
-                    )
-                    response = HttpResponse(csv_response, content_type="text/csv")
-                    response["Content-Disposition"] = 'attachment; filename="datos.csv"'
-                    return response
-        return render(request, "home/message.html", {"message": form})
+        return render(request, "data_report.html")
 
 
 class DailyValidationDev(View):
@@ -432,6 +387,13 @@ class DailyValidationDev(View):
         from .dash_apps.finished_apps import daily_validation
 
         return render(request, "daily_validation_dev.html")
+
+
+class DataReportDev(View):
+    def get(self, request, *args, **kwargs):
+        from .dash_apps.finished_apps import data_report
+
+        return render(request, "data_report_dev.html")
 
 
 def view_launch_report_calculations(request):
