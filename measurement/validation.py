@@ -243,3 +243,43 @@ def generate_validation_report(
     )
     granular = pd.concat([data, suspicious], axis=1)
     return summary, granular
+
+
+def save_validated_entries(data: pd.DataFrame) -> None:
+    """Saves the validated data to the database.
+
+    Only the data that is flagged as "validate?" will be saved. Possible updated fields
+    are: value, maximum, minimum and is_active.
+
+    Args:
+        data: The dataframe with the validated data.
+    """
+    for _, row in data[data["validate?"]].iterrows():
+        current = Measurement.objects.get(id=row["id"])
+
+        update = {"is_validated": True, "is_active": not row["deactivate?"]}
+        if current.value != row["value"]:
+            update["value"] = row["value"]
+        if "maximum" in row and current.maximum != row["maximum"]:
+            update["maximum"] = row["maximum"]
+        if "minimum" in row and current.minimum != row["minimum"]:
+            update["minimum"] = row["minimum"]
+
+        Measurement.objects.filter(id=row["id"]).update(**update)
+
+
+def save_validated_days(data: pd.DataFrame) -> None:
+    """Saves the validated days to the database.
+
+    Only the data that is flagged as "validate?" will be saved. The only updated field
+    is is_active. To update the value, maximum or minimum, use save_validated_entries.
+
+    Args:
+        data: The dataframe with the validated data.
+    """
+    for _, row in data[data["validate?"]].iterrows():
+        Measurement.objects.filter(
+            station__station_code=row["station"],
+            variable__variable_code=row["variable"],
+            time__date=row["date"],
+        ).update(is_validated=True, is_active=not row["deactivate?"])

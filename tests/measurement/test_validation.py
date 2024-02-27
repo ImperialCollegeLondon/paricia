@@ -2,7 +2,7 @@ import random
 import zoneinfo
 from datetime import datetime
 from decimal import Decimal
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pandas as pd
@@ -333,3 +333,131 @@ class TestValidationFunctions(TestCase):
         mock = patcher.start()
         self.addCleanup(patcher.stop)
         return mock
+
+    def test_save_validated_data(self):
+        from measurement.models import Measurement
+        from measurement.validation import save_validated_entries
+
+        # Create sample data
+        data = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "time": ["2023-01-01", "2023-01-02", "2023-01-03"],
+                "value": [10.0, 20.0, 30.0],
+                "maximum": [15.0, 25.0, 35.0],
+                "minimum": [5.0, 15.0, 25.0],
+                "validate?": [True, False, True],
+                "deactivate?": [False, True, True],
+            }
+        )
+        data["station"] = self.station.station_code
+        data["variable"] = self.variable.variable_code
+
+        # Create some times
+        times = [
+            datetime(2023, 1, i, tzinfo=zoneinfo.ZoneInfo(self.station.timezone))
+            for i in range(1, 4)
+        ]
+        # Create sample Measurement objects
+        measurement_1 = Measurement(
+            id=1,
+            time=times[0],
+            station=self.station,
+            variable=self.variable,
+            value=5.0,
+            maximum=10.0,
+            minimum=0.0,
+        )
+        measurement_2 = Measurement(
+            id=2,
+            time=times[1],
+            station=self.station,
+            variable=self.variable,
+            value=15.0,
+            maximum=20.0,
+            minimum=10.0,
+        )
+        measurement_3 = Measurement(
+            id=3,
+            time=times[2],
+            station=self.station,
+            variable=self.variable,
+            value=25.0,
+            maximum=30.0,
+            minimum=20.0,
+        )
+
+        # Save the sample Measurement objects
+        measurement_1.save()
+        measurement_2.save()
+        measurement_3.save()
+
+        # Call the function under test
+        save_validated_entries(data)
+
+        # Retrieve the updated Measurement objects
+        updated_measurement_1 = Measurement.objects.get(id=1)
+        updated_measurement_2 = Measurement.objects.get(id=2)
+        updated_measurement_3 = Measurement.objects.get(id=3)
+
+        # Assert the expected updates
+        # The first object should be validated, active and updated
+        self.assertTrue(updated_measurement_1.is_validated)
+        self.assertTrue(updated_measurement_1.is_active)
+        self.assertNotEqual(updated_measurement_1.value, measurement_1.value)
+        self.assertNotEqual(updated_measurement_1.maximum, measurement_1.maximum)
+        self.assertNotEqual(updated_measurement_1.minimum, measurement_1.minimum)
+
+        # The second object should not be validated neither updated
+        self.assertFalse(updated_measurement_2.is_validated)
+        self.assertTrue(updated_measurement_2.is_active)
+        self.assertEqual(updated_measurement_2.value, measurement_2.value)
+        self.assertEqual(updated_measurement_2.maximum, measurement_2.maximum)
+        self.assertEqual(updated_measurement_2.minimum, measurement_2.minimum)
+
+        # The third object should be validated, not active and updated
+        self.assertTrue(updated_measurement_3.is_validated)
+        self.assertFalse(updated_measurement_3.is_active)
+        self.assertNotEqual(updated_measurement_3.value, measurement_3.value)
+        self.assertNotEqual(updated_measurement_3.maximum, measurement_3.maximum)
+        self.assertNotEqual(updated_measurement_3.minimum, measurement_3.minimum)
+
+    def test_save_validated_days(self):
+        from measurement.models import Measurement
+        from measurement.validation import save_validated_days
+
+        # Create sample data
+        data = pd.DataFrame(
+            {
+                "station": ["station1", "station2"],
+                "variable": ["variable1", "variable2"],
+                "date": ["2023-01-01", "2023-01-02"],
+                "validate?": [True, False],
+                "deactivate?": [False, True],
+            }
+        )
+
+        # Mock the Measurement.objects.filter and Measurement.objects.update methods
+        with patch.object(Measurement.objects, "filter") as mock_filter:
+            # Configure the mocks
+            class MockQuerySet:
+                update = MagicMock()
+
+            mock_query_set = MockQuerySet()
+            mock_filter.return_value = mock_query_set
+
+            # Call the function under test
+            save_validated_days(data)
+
+            # Assert that the filter method was called with the correct arguments
+            mock_filter.assert_called_once_with(
+                station__station_code="station1",
+                variable__variable_code="variable1",
+                time__date="2023-01-01",
+            )
+
+            # Assert that the update method was called with the correct arguments
+            mock_query_set.update.assert_called_once_with(
+                is_validated=True,
+                is_active=True,
+            )
