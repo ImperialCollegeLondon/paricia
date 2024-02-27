@@ -4,7 +4,7 @@ import zoneinfo
 from datetime import date, datetime, time, tzinfo
 from decimal import Decimal
 from threading import Thread
-from typing import Any, Dict, List, Sequence, Tuple, Union, overload
+from typing import Any, Dict, List, Sequence, Tuple, overload
 
 import numpy as np
 import pandas as pd
@@ -464,7 +464,8 @@ def preprocessing(
             [measurement, validated, joined, selected], "value", "average"
         )
 
-    # Final Filter: If a data is already validated, do not show "Measurement" values for that timestamp
+    # Final Filter: If a data is already validated, do not show "Measurement" values
+    # for that timestamp
     selected_full = joined.loc[
         (joined["is_validated"] & joined["exists_in_validated"])
         | (~joined["is_validated"] & ~joined["exists_in_validated"])
@@ -525,19 +526,20 @@ def create_daily_df(
     # And daily maximum and minimum
     if maximum:
         daily["maximum"] = daily_group["maximum"].max().to_numpy()
-        daily[f"suspicious_maximums_count"] = (
-            daily_group[f"suspicious_maximum"].sum().to_numpy()
+        daily["suspicious_maximums_count"] = (
+            daily_group["suspicious_maximum"].sum().to_numpy()
         )
     if minimum:
         daily["minimum"] = daily_group["minimum"].min().to_numpy()
-        daily[f"suspicious_minimums_count"] = (
-            daily_group[f"suspicious_minimum"].sum().to_numpy()
+        daily["suspicious_minimums_count"] = (
+            daily_group["suspicious_minimum"].sum().to_numpy()
         )
 
     daily["all_validated"] = daily_group["is_validated"].all().to_numpy()
 
     # TODO Create a "period" table for storing the period for every station
-    # TODO Maybe program for dynamic periods. This happens when a station change the period
+    # TODO Maybe program for dynamic periods. This happens when a station change the
+    # period
     expected_data_count = 24 * 60 / tx_period
     daily["percentage"] = (daily["data_count"] / expected_data_count) * 100.0
     daily["percentage_error"] = ~daily["percentage"].between(
