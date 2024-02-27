@@ -58,6 +58,9 @@ class Country(BaseModel):
     def get_absolute_url(self):
         return reverse("station:country_detail", kwargs={"pk": self.pk})
 
+    class Meta(BaseModel.Meta):
+        verbose_name_plural = "countries"
+
 
 class Region(BaseModel):
     """
@@ -129,12 +132,11 @@ class Basin(BaseModel):
         return reverse("station:basin_detail", kwargs={"pk": self.pk})
 
 
-class PlaceBasin(models.Model):
+class PlaceBasin(BaseModel):
     """
     Associates a Basin with a Place and an image.
     """
 
-    id = models.AutoField("Id", primary_key=True)
     place = models.ForeignKey(
         Place, on_delete=models.SET_NULL, null=True, verbose_name="Place"
     )
