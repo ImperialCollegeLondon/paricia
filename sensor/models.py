@@ -20,7 +20,23 @@ from django.urls import reverse
 User = get_user_model()
 
 
-class SensorType(models.Model):
+class SensorBaseModel(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    PERMISSIONS_LEVELS = [
+        ("public", "Public"),
+        ("private", "Private"),
+    ]
+
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
+
+    class Meta:
+        abstract = True
+
+
+class SensorType(SensorBaseModel):
     """
     Type of sensor, eg. pluviometric, wind sensor, etc.
     """
@@ -35,7 +51,7 @@ class SensorType(models.Model):
         return reverse("sensor:type_detail", kwargs={"pk": self.pk})
 
 
-class SensorBrand(models.Model):
+class SensorBrand(SensorBaseModel):
     """
     Brand of the sensor, eg. Davis, Texas Electronics, etc.
     """
@@ -53,22 +69,10 @@ class SensorBrand(models.Model):
         ordering = ("brand_id",)
 
 
-class Sensor(models.Model):
+class Sensor(SensorBaseModel):
     """
     Specific sensor details
     """
-
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-
-    PERMISSIONS_LEVELS = [
-        ("public", "Public"),
-        ("internal", "Internal"),
-        ("private", "Private"),
-    ]
-
-    permissions_level = models.CharField(
-        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
-    )
 
     sensor_id = models.AutoField("Id", primary_key=True)
     code = models.CharField("Code", max_length=32, null=True, unique=True)

@@ -3,7 +3,8 @@ from django.core.exceptions import PermissionDenied
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_perms
 
-from .models import Measurement, Report
+from measurement.models import Measurement, Report
+from station.models import Station
 
 admin.site.site_header = "Paricia Administration - Measurements"
 
@@ -11,6 +12,11 @@ admin.site.site_header = "Paricia Administration - Measurements"
 class MeasurementBaseAdmin(GuardedModelAdmin):
     list_display = ["id", "station", "variable", "maximum", "minimum"]
     list_filter = ["station", "variable"]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "station":
+            kwargs["queryset"] = Station.objects.filter(owner=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def has_add_permission(self, request):
         return request.user.is_authenticated
@@ -34,7 +40,6 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
         if obj.station.owner != request.user:
             raise PermissionDenied("You are not the owner of this station.")
         super().save_model(request, obj, form, change)
-        # TODO: user should only see available stations
 
 
 @admin.register(Report)

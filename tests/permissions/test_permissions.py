@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from measurement.models import Measurement
+from sensor.models import Sensor
 from station.models import Station, StationType
 from variable.models import Variable
 
@@ -91,6 +92,27 @@ class StationPermissionsTest(BasePermissionsTest):
     def test_view_permissions(self):
         """Test that all users can view the station."""
         self._assert_perms("view", self.station, True, True, True)
+
+
+class SensorPermissionsTest(BasePermissionsTest):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.app = "sensor"
+        cls.model = "sensor"
+        cls.sensor = Sensor.objects.create(owner=cls.user_owner)
+
+    def test_change_permissions(self):
+        """Test that only the owner can change the sensor."""
+        self._assert_perms("change", self.sensor, True, False, False)
+
+    def test_delete_permissions(self):
+        """Test that only the owner can delete the sensor."""
+        self._assert_perms("delete", self.sensor, True, False, False)
+
+    def test_view_permissions(self):
+        """Test that all users can view the sensor."""
+        self._assert_perms("view", self.sensor, True, True, True)
 
 
 class MeasurementPermissionsTest(BasePermissionsTest):
