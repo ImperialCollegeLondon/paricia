@@ -17,8 +17,6 @@ channels==4.0.0
     # via django-plotly-dash
 click==8.1.7
     # via flask
-colorama==0.4.6
-    # via click
 crispy-bootstrap4==2024.1
     # via -r requirements.in
 dash==2.9.3
@@ -140,9 +138,7 @@ sqlparse==0.4.4
 tenacity==8.2.3
     # via plotly
 tzdata==2024.1
-    # via
-    #   django
-    #   pandas
+    # via pandas
 uritemplate==4.1.1
     # via
     #   -r requirements.in
