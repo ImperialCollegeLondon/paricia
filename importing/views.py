@@ -73,7 +73,7 @@ class DataImportTempCreate(generics.CreateAPIView):
         del file
         # Set start and end date based on cleaned data from the file
         serializer.validated_data["start_date"] = data.loc[0, "date"]
-        serializer.validated_data["end_date"] = data.loc[data.shape[0] - 1, "date"]
+        serializer.validated_data["end_date"] = data.loc[-1, "date"]
         # Set user from the request
         serializer.validated_data["user"] = self.request.user
         serializer.save()

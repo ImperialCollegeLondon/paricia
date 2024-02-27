@@ -362,7 +362,7 @@ def construct_matrix(matrix_source, file_format, station):
     matrix = read_data_to_import(matrix_source, file_format, station.timezone)
     # Find start and end dates from top and bottom row
     start_date = matrix.loc[0, "date"]
-    end_date = matrix.loc[matrix.shape[0] - 1, "date"]
+    end_date = matrix.loc[-1, "date"]
 
     classifications = list(Classification.objects.filter(format=file_format))
     variables_data = {}
@@ -382,25 +382,24 @@ def construct_matrix(matrix_source, file_format, station):
         # Validation of maximum
         if classification.maximum:
             columns.append((classification.maximum - 1, "maximum"))
-        if classification.maximum_validator_column:
-            matrix.loc[
-                matrix[classification.maximum_validator_column - 1]
-                != classification.maximum_validator_text,
-                classification.maximum - 1,
-            ] = np.nan
+            if classification.maximum_validator_column:
+                matrix.loc[
+                    matrix[classification.maximum_validator_column - 1]
+                    != classification.maximum_validator_text,
+                    classification.maximum - 1,
+                ] = np.nan
 
         # Validation of minimum
         if classification.minimum:
             columns.append((classification.minimum - 1, "minimum"))
-        if classification.minimum_validator_column:
-            matrix.loc[
-                matrix[classification.minimum_validator_column - 1]
-                != classification.minimum_validator_text,
-                classification.minimum - 1,
-            ] = np.nan
+            if classification.minimum_validator_column:
+                matrix.loc[
+                    matrix[classification.minimum_validator_column - 1]
+                    != classification.minimum_validator_text,
+                    classification.minimum - 1,
+                ] = np.nan
 
-        data = matrix.loc[:, [v[0] for v in columns]]
-        data.rename(columns=dict(columns), inplace=True)
+        data = matrix.loc[:, [v[0] for v in columns]].rename(columns=dict(columns))
 
         # More data cleaning, column by column, deal with decimal comma vs point.
         for col in data:
