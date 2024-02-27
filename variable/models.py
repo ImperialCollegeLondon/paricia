@@ -63,6 +63,8 @@ class Variable(models.Model):
         trustworthy if the number of missing values in a given period > null_limit.
     """
 
+    NATURES = [("sum", "sum"), ("average", "average"), ("value", "value")]
+
     variable_id = models.AutoField("Id", primary_key=True)
     variable_code = models.CharField("Code", max_length=100)
     name = models.CharField("Name", max_length=50)
@@ -81,19 +83,21 @@ class Variable(models.Model):
         "Sigmas (outliers)", max_digits=7, decimal_places=2, null=True, blank=True
     )
     is_active = models.BooleanField("Active", default=True)
-    is_cumulative = models.BooleanField(
-        "Cumulative (True) or Averaged (False)", default=True
-    )
     automatic_report = models.BooleanField("Automatic report", default=True)
     null_limit = models.DecimalField(
         "Null limit (%)", max_digits=4, decimal_places=1, null=True
     )
+    nature = models.CharField("Nature", max_length=10, choices=NATURES, default="value")
 
     def __str__(self):
         return str(self.name)
 
     def get_absolute_url(self):
         return reverse("variable:variable_detail", kwargs={"pk": self.pk})
+
+    @property
+    def is_cumulative(self) -> bool:
+        return self.nature == "sum"
 
     class Meta:
         ordering = ["variable_id"]

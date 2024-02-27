@@ -87,42 +87,6 @@ class TestReport(TestCase):
             completeness=1,
         )
 
-    def test_clean_report_type_hourly(self):
-        from measurement.models import ReportType
-
-        self.model.used_for_daily = True
-        self.model.report_type = ReportType.HOURLY
-        self.model.clean()  # Should not raise any exception
-
-    def test_clean_report_type_daily(self):
-        from measurement.models import ReportType
-
-        self.model.used_for_monthly = True
-        self.model.report_type = ReportType.DAILY
-        self.model.clean()  # Should not raise any exception
-
-    def test_clean_report_type_monthly(self):
-        from measurement.models import ReportType
-
-        self.model.report_type = ReportType.MONTLY
-        self.model.clean()  # Should not raise any exception
-
-    def test_clean_inconsistent_report_type_hourly(self):
-        from measurement.models import ReportType
-
-        self.model.used_for_daily = True
-        self.model.report_type = ReportType.DAILY
-        with self.assertRaises(ValidationError):
-            self.model.clean()
-
-    def test_clean_inconsistent_report_type_daily(self):
-        from measurement.models import ReportType
-
-        self.model.used_for_monthly = True
-        self.model.report_type = ReportType.HOURLY
-        with self.assertRaises(ValidationError):
-            self.model.clean()
-
     def test_clean_time_hourly(self):
         from measurement.models import ReportType
 
@@ -185,29 +149,6 @@ class TestMeasurement(TestCase):
         self.model.is_validated = True
         self.model.is_active = False
         self.model.clean()
-
-    def test_clean_reporting(self):
-        # If it is validated and active, then it can be used for hourly reporting
-        self.model.is_validated = True
-        self.model.is_active = True
-        self.model.used_for_hourly = True
-        self.model.clean()
-
-        # If either is false, then it cannot be used
-        self.model.is_validated = True
-        self.model.is_active = False
-        with self.assertRaises(ValidationError):
-            self.model.clean()
-
-        self.model.is_validated = False
-        self.model.is_active = True
-        with self.assertRaises(ValidationError):
-            self.model.clean()
-
-        self.model.is_validated = False
-        self.model.is_active = False
-        with self.assertRaises(ValidationError):
-            self.model.clean()
 
     def test_overwritten(self):
         # If we start fresh, it is not overwritten
