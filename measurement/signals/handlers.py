@@ -22,11 +22,9 @@ def set_permissions(sender, instance, **kwargs):
 
     # Assign view permissions based on permissions level
     if instance.station.permissions_level == "public":
-        for user in User.objects.all():
-            assign_perm(view, user, instance)
+        assign_perm(view, User.objects.all(), instance)
     elif instance.station.permissions_level == "internal":
-        for user in User.objects.filter(is_active=True):
-            assign_perm(view, user, instance)
+        assign_perm(view, User.objects.filter(is_active=True), instance)
     else:  # private
         if instance.station.owner:
             assign_perm(view, instance.station.owner, instance)
