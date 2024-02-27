@@ -88,7 +88,6 @@ class InstitutionAdmin(BaseAdmin):
 class PlaceBasinAdmin(BaseAdmin):
     model = "placebasin"
     list_display = [
-        "name",
         "id",
         "owner",
         "permissions_level",

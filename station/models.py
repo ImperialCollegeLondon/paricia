@@ -27,7 +27,7 @@ BASIN_FILE_PATH = "station/basin_file/"
 User = get_user_model()
 
 
-class BaseModel(models.Model):
+class StationBaseModel(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     PERMISSIONS_LEVELS = [
@@ -50,7 +50,7 @@ class BaseModel(models.Model):
         ordering = ("id",)
 
 
-class Country(BaseModel):
+class Country(StationBaseModel):
     """
     The country that a station or region is in.
     """
@@ -58,11 +58,11 @@ class Country(BaseModel):
     def get_absolute_url(self):
         return reverse("station:country_detail", kwargs={"pk": self.pk})
 
-    class Meta(BaseModel.Meta):
+    class Meta(StationBaseModel.Meta):
         verbose_name_plural = "countries"
 
 
-class Region(BaseModel):
+class Region(StationBaseModel):
     """
     A region within a country.
     """
@@ -75,7 +75,7 @@ class Region(BaseModel):
         return reverse("station:region_detail", kwargs={"pk": self.pk})
 
 
-class Ecosystem(BaseModel):
+class Ecosystem(StationBaseModel):
     """
     The ecosystem associated with a station e.g. rain forest.
     """
@@ -84,7 +84,7 @@ class Ecosystem(BaseModel):
         return reverse("station:ecosystem_detail", kwargs={"pk": self.pk})
 
 
-class Institution(BaseModel):
+class Institution(StationBaseModel):
     """
     Institutional partner e.g. Imperial College London.
     """
@@ -93,7 +93,7 @@ class Institution(BaseModel):
         return reverse("station:institution_detail", kwargs={"pk": self.pk})
 
 
-class StationType(BaseModel):
+class StationType(StationBaseModel):
     """
     Station type e.g. pluvometric, hydrological.
     """
@@ -102,7 +102,7 @@ class StationType(BaseModel):
         return reverse("station:station_type_detail", kwargs={"pk": self.pk})
 
 
-class Place(BaseModel):
+class Place(StationBaseModel):
     """
     Specific place that a station is situated e.g. Huaraz.
     """
@@ -115,7 +115,7 @@ class Place(BaseModel):
         return reverse("station:place_detail", kwargs={"pk": self.pk})
 
 
-class Basin(BaseModel):
+class Basin(StationBaseModel):
     """
     Basin e.g. El Carmen.
     TODO: Is there a more specific definition we can use? e.g. a river basin?
@@ -132,11 +132,23 @@ class Basin(BaseModel):
         return reverse("station:basin_detail", kwargs={"pk": self.pk})
 
 
-class PlaceBasin(BaseModel):
+class PlaceBasin(models.Model):
     """
     Associates a Basin with a Place and an image.
     """
 
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    PERMISSIONS_LEVELS = [
+        ("public", "Public"),
+        ("private", "Private"),
+    ]
+
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
+
+    id = models.AutoField("Id", primary_key=True)
     place = models.ForeignKey(
         Place, on_delete=models.SET_NULL, null=True, verbose_name="Place"
     )
