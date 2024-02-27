@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_perms
 
@@ -28,6 +29,12 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
         if obj is not None:
             return "view_measurementbase" in get_perms(request.user, obj)
         return True
+
+    def save_model(self, request, obj, form, change):
+        if obj.station.owner != request.user:
+            raise PermissionDenied("You are not the owner of this station.")
+        super().save_model(request, obj, form, change)
+        # TODO: user should only see available stations
 
 
 @admin.register(Report)

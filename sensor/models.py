@@ -13,8 +13,11 @@
 
 from __future__ import unicode_literals
 
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
+
+User = get_user_model()
 
 
 class SensorType(models.Model):
@@ -54,6 +57,18 @@ class Sensor(models.Model):
     """
     Specific sensor details
     """
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    PERMISSIONS_LEVELS = [
+        ("public", "Public"),
+        ("internal", "Internal"),
+        ("private", "Private"),
+    ]
+
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
 
     sensor_id = models.AutoField("Id", primary_key=True)
     code = models.CharField("Code", max_length=32, null=True, unique=True)
