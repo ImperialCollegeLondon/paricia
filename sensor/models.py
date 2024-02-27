@@ -66,6 +66,10 @@ class Sensor(models.Model):
         ("private", "Private"),
     ]
 
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
+
     sensor_id = models.AutoField("Id", primary_key=True)
     code = models.CharField("Code", max_length=32, null=True, unique=True)
     sensor_type = models.ForeignKey(

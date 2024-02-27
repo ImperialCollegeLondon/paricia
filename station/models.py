@@ -27,128 +27,97 @@ BASIN_FILE_PATH = "station/basin_file/"
 User = get_user_model()
 
 
-class Country(models.Model):
+class BaseModel(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    PERMISSIONS_LEVELS = [
+        ("public", "Public"),
+        ("private", "Private"),
+    ]
+
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
+
+    id = models.AutoField("Id", primary_key=True)
+    name = models.CharField(max_length=32)
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        abstract = True
+        ordering = ("id",)
+
+
+class Country(BaseModel):
     """
     The country that a station or region is in.
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32)
-
-    def __str__(self):
-        return str(self.name)
-
     def get_absolute_url(self):
         return reverse("station:country_detail", kwargs={"pk": self.pk})
 
-    class Meta:
-        ordering = ("id",)
 
-
-class Region(models.Model):
+class Region(BaseModel):
     """
     A region within a country.
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32, verbose_name="Name")
     country = models.ForeignKey(
         Country, on_delete=models.SET_NULL, null=True, verbose_name="Country"
     )
 
-    def __str__(self):
-        return str(self.name)
-
     def get_absolute_url(self):
         return reverse("station:region_detail", kwargs={"pk": self.pk})
 
-    class Meta:
-        ordering = ("id",)
 
-
-class Ecosystem(models.Model):
+class Ecosystem(BaseModel):
     """
     The ecosystem associated with a station e.g. rain forest.
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32)
-
-    def __str__(self):
-        return str(self.name)
-
     def get_absolute_url(self):
         return reverse("station:ecosystem_detail", kwargs={"pk": self.pk})
 
-    class Meta:
-        ordering = ("id",)
 
-
-class Institution(models.Model):
+class Institution(BaseModel):
     """
     Institutional partner e.g. Imperial College London.
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32)
-
-    def __str__(self):
-        return str(self.name)
-
     def get_absolute_url(self):
         return reverse("station:institution_detail", kwargs={"pk": self.pk})
 
-    class Meta:
-        ordering = ("id",)
 
-
-class StationType(models.Model):
+class StationType(BaseModel):
     """
     Station type e.g. pluvometric, hydrological.
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=40)
-
-    def __str__(self):
-        return str(self.name)
-
     def get_absolute_url(self):
         return reverse("station:station_type_detail", kwargs={"pk": self.pk})
 
-    class Meta:
-        ordering = ("id",)
 
-
-class Place(models.Model):
+class Place(BaseModel):
     """
     Specific place that a station is situated e.g. Huaraz.
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=40)
     image = models.FileField(
         "Photography/Map", upload_to="station/place_image/", null=True, blank=True
     )
 
-    def __str__(self):
-        return str(self.name)
-
     def get_absolute_url(self):
         return reverse("station:place_detail", kwargs={"pk": self.pk})
 
-    class Meta:
-        ordering = ("id",)
 
-
-class Basin(models.Model):
+class Basin(BaseModel):
     """
     Basin e.g. El Carmen.
     TODO: Is there a more specific definition we can use? e.g. a river basin?
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=40)
     image = models.FileField(
         "Photography/Map", upload_to=BASIN_IMAGE_PATH, null=True, blank=True
     )
@@ -156,14 +125,8 @@ class Basin(models.Model):
         "File(PDF)", upload_to=BASIN_FILE_PATH, null=True, blank=True
     )
 
-    def __str__(self):
-        return str(self.name)
-
     def get_absolute_url(self):
         return reverse("station:basin_detail", kwargs={"pk": self.pk})
-
-    class Meta:
-        ordering = ("id",)
 
 
 class PlaceBasin(models.Model):
