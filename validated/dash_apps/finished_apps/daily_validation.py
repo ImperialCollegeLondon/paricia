@@ -614,5 +614,7 @@ def callbacks(
 
 
 @app.callback(Output("station_drop", "options"), Input("stations_list", "children"))
-def populate_stations_dropdown(value):
-    return [{"label": station_code, "value": station_code} for station_code in value]
+def populate_stations_dropdown(station_codes):
+    return [
+        {"label": station_code, "value": station_code} for station_code in station_codes
+    ]
