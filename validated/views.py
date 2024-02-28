@@ -293,10 +293,12 @@ class DailyValidation(LoginRequiredMixin, View):
     """
 
     def get(self, request, *args, **kwargs):
+        stations = get_objects_for_user(request.user, "change_station", klass=Station)
+        station_codes = list(stations.values_list("station_code", flat=True))
+        request.session["station_codes"] = station_codes
+
         from .dash_apps.finished_apps import daily_validation
 
-        stations = get_objects_for_user(request.user, "change_station", klass=Station)
-        # TODO: pass this to the dash app
         return render(request, "daily_validation.html")
 
 
