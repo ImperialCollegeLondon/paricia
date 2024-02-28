@@ -248,7 +248,7 @@ plot_radio = dcc.RadioItems(
 # Layout
 app.layout = html.Div(
     children=[
-        html.Div(id="dummy_input", children=""),
+        html.Div(id="stations_list", hidden=True),
         filters,
         html.Button("Submit", id="submit-button", style={"margin-top": "10px"}),
         dcc.Loading(
@@ -613,11 +613,6 @@ def callbacks(
     )
 
 
-@app.callback(Output("station_drop", "options"), Input("dummy_input", "children"))
+@app.callback(Output("station_drop", "options"), Input("stations_list", "children"))
 def populate_stations_dropdown(value):
-    station_codes = dash.callback_context.inputs.get("django_request").session.get(
-        "station_codes"
-    )
-    return [
-        {"label": station_code, "value": station_code} for station_code in station_codes
-    ]
+    return [{"label": station_code, "value": station_code} for station_code in value]
