@@ -44,6 +44,7 @@ django==5.0.2
     #   django-excel-response
     #   django-extensions
     #   django-filter
+    #   django-guardian
     #   django-plotly-dash
     #   djangorestframework
     #   djangorestframework-simplejwt
@@ -59,6 +60,8 @@ django-excel-response==2.0.5
 django-extensions==3.2.3
     # via -r requirements.in
 django-filter==23.5
+    # via -r requirements.in
+django-guardian==2.4.0
     # via -r requirements.in
 django-plotly-dash==2.3.0
     # via -r requirements.in
