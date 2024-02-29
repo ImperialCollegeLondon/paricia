@@ -201,12 +201,6 @@ menu = html.Div(
             children=[
                 html.Button("Save to Validated", id="save-button"),
                 html.Button("Reset Validated", id="reset-button"),
-                html.Button(
-                    "Add row",
-                    id="add-button",
-                    disabled=True,
-                    style={"margin-left": "10px"},
-                ),
             ],
             style={"display": "inline-block", "width": "50%"},
         ),
@@ -300,25 +294,21 @@ app.layout = html.Div(
         Output("plot", "figure"),
         Output("table_daily", "rowData"),
         Output("table_detail", "rowData"),
-        Output("table_detail", "rowTransaction"),
-        Output("table_detail", "scrollTo"),
         Output("table_daily", "selectedRows"),
         Output("table_detail", "selectedRows"),
         Output("tab-detail", "disabled"),
         Output("tab-detail", "label"),
         Output("tabs", "value"),
-        Output("add-button", "disabled"),
     ],
     [
         Input("submit-button", "n_clicks"),
         Input("save-button", "n_clicks"),
         Input("reset-button", "n_clicks"),
-        Input("add-button", "n_clicks"),
         Input("detail-date-picker", "date"),
         Input("plot_radio", "value"),
-        Input("tabs", "value"),
     ],
     [
+        State("tabs", "value"),
         State("station_drop", "value"),
         State("variable_drop", "value"),
         State("date_range_picker", "start_date"),
@@ -336,7 +326,6 @@ def callbacks(
     in_submit_clicks: int,
     in_save_clicks: int,
     in_reset_clicks: int,
-    in_add_clicks: int,
     in_detail_date: datetime.date,
     in_plot_radio_value: str,
     in_tabs_value: str,
@@ -356,7 +345,6 @@ def callbacks(
     str,
     go.Figure,
     list[dict],
-    list[dict],
     dict,
     dict,
     list[dict],
@@ -364,7 +352,6 @@ def callbacks(
     bool,
     str,
     str,
-    bool,
 ]:
     """Callbacks for daily validation app
 
@@ -372,7 +359,6 @@ def callbacks(
         in_submit_clicks (int): Number of times submit-button was clicked
         in_save_clicks (int): Number of times save-button was clicked
         in_reset_clicks (int): Number of times reset-button was clicked
-        in_add_clicks (int): Number of times add-button was clicked
         in_detail_date (datetime.date): Date for detail view
         in_plot_radio_value (str): Value of plot radio button
         in_tabs_value (str): Value of tabs
@@ -388,7 +374,7 @@ def callbacks(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[ dash.no_update, dash.no_update, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str, bool, ]: Outputs
+        tuple[dash.no_update, dash.no_update, str, go.Figure, list[dict], list[dict], list[dict], list[dict], bool, str, str]: Outputs
     """
     global DATA_DAILY, DATA_DETAIL, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_TYPE
 
@@ -401,14 +387,11 @@ def callbacks(
     out_plot = dash.no_update
     out_daily_row_data = dash.no_update
     out_detail_row_data = dash.no_update
-    out_detail_row_transaction = dash.no_update
-    out_detail_scroll = dash.no_update
     out_daily_selected_rows = dash.no_update
     out_detail_selected_rows = dash.no_update
     out_tab_detail_disabled = dash.no_update
     out_tab_detail_label = dash.no_update
     out_tabs_value = dash.no_update
-    out_add_button_disabled = dash.no_update
 
     daily_data_refresh_required = False
     detail_data_refresh_required = False
@@ -501,21 +484,6 @@ def callbacks(
         detail_table_reset_selection = True
         plot_refresh_required = True
 
-    # Button: New row (detail)
-    elif input_id == "add-button" and in_tabs_value == "tab-detail":
-        last_id = in_detail_row_data[-1]["id"]
-        last_time = in_detail_row_data[-1]["time"]
-        new_row = {
-            "id": last_id + 1,
-            "time": last_time,
-            **{key: None for key in DATA_DAILY["value_columns"]},
-            "outlier": False,
-            "value_difference": None,
-            "is_selected": False,
-        }
-        out_detail_row_transaction = {"add": [new_row]}
-        out_detail_scroll = {"data": new_row}
-
     # Date picker
     elif input_id == "detail-date-picker":
         new_selected_day = next(
@@ -536,7 +504,6 @@ def callbacks(
                 f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
             )
             out_tabs_value = "tab-detail"
-            out_add_button_disabled = False
             out_status = ""
         else:
             out_status = "Invalid ID"
@@ -545,13 +512,6 @@ def callbacks(
     elif input_id == "plot_radio":
         PLOT_TYPE = in_plot_radio_value
         plot_refresh_required = True
-
-    # Switching tabs
-    elif input_id == "tabs":
-        if in_tabs_value == "tab-detail":
-            out_add_button_disabled = False
-        else:
-            out_add_button_disabled = True
 
     # Reload daily data
     if daily_data_refresh_required:
@@ -601,12 +561,9 @@ def callbacks(
         out_plot,
         out_daily_row_data,
         out_detail_row_data,
-        out_detail_row_transaction,
-        out_detail_scroll,
         out_daily_selected_rows,
         out_detail_selected_rows,
         out_tab_detail_disabled,
         out_tab_detail_label,
         out_tabs_value,
-        out_add_button_disabled,
     )
