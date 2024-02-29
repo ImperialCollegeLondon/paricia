@@ -248,6 +248,7 @@ plot_radio = dcc.RadioItems(
 # Layout
 app.layout = html.Div(
     children=[
+        html.Div(id="stations_list", hidden=True),
         filters,
         html.Button("Submit", id="submit-button", style={"margin-top": "10px"}),
         dcc.Loading(
@@ -610,3 +611,10 @@ def callbacks(
         out_tabs_value,
         out_add_button_disabled,
     )
+
+
+@app.callback(Output("station_drop", "options"), Input("stations_list", "children"))
+def populate_stations_dropdown(station_codes):
+    return [
+        {"label": station_code, "value": station_code} for station_code in station_codes
+    ]
