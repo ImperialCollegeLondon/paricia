@@ -2,12 +2,14 @@ import pandas as pd
 import plotly.express as px
 
 
-def create_validation_plot(data: pd.DataFrame, variable: str, field: str) -> px.scatter:
+def create_validation_plot(
+    data: pd.DataFrame, variable_name: str, field: str
+) -> px.scatter:
     """Creates plot for Validation app
 
     Args:
         data (pd.DataFrame): Data
-        variable (str): Variable name
+        variable_name (str): Variable name
         field (str): 'value', 'minimum' or 'maximum'
 
     Returns:
@@ -26,9 +28,10 @@ def create_validation_plot(data: pd.DataFrame, variable: str, field: str) -> px.
         x="time",
         y=field,
         color=data.apply(status, axis=1),
-        labels={"time": "Date", field: f"{variable} ({field.capitalize()})"},
+        labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
     )
 
+    fig.update_traces(marker=dict(size=3))
     fig.update_layout(
         legend=dict(
             title=dict(text="Status", font=dict(size=12)),

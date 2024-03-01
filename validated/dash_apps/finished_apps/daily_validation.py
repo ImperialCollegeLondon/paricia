@@ -221,7 +221,11 @@ status_message = html.Div(
 
 
 # Plot
-plot = create_validation_plot(data=DATA_GRANULAR, variable=VARIABLE, field=PLOT_FIELD)
+plot = create_validation_plot(
+    data=DATA_GRANULAR,
+    variable_name=Variable.objects.get(variable_code=VARIABLE).name,
+    field=PLOT_FIELD,
+)
 
 # Plot radio
 plot_radio = dcc.RadioItems(
@@ -532,7 +536,9 @@ def callbacks(
     # Refresh plot
     if plot_refresh_required:
         out_plot = create_validation_plot(
-            data=DATA_GRANULAR, variable=VARIABLE, field=PLOT_FIELD
+            data=DATA_GRANULAR,
+            variable_name=Variable.objects.get(variable_code=VARIABLE).name,
+            field=PLOT_FIELD,
         )
 
     # Refresh daily table

@@ -17,10 +17,12 @@ def create_columns_daily() -> list:
 
     columns = [
         {
-            "valueGetter": {"function": "d3.timeParse('%Y-%m-%d')(params.data.index)"},
+            "valueGetter": {
+                "function": "d3.timeParse('%Y-%m-%d')(params.data.index.split('T')[0])"
+            },
             "headerName": "Date",
             "filter": "agDateColumnFilter",
-            "valueFormatter": {"function": "params.data.index"},
+            "valueFormatter": {"function": "params.data.index.split('T')[0]"},
             **styles["date"],
         },
         *[
@@ -28,6 +30,7 @@ def create_columns_daily() -> list:
                 "field": c,
                 "headerName": c.capitalize(),
                 "filter": "agNumberColumnFilter",
+                "valueFormatter": {"function": "d3.format(',.2f')(params.value)"},
                 **styles[c],
             }
             for c in ["value", "minimum", "maximum"]
@@ -36,6 +39,7 @@ def create_columns_daily() -> list:
             "field": "daily_count_fraction",
             "headerName": "Daily count fraction",
             "filter": "agNumberColumnFilter",
+            "valueFormatter": {"function": "d3.format(',.2f')(params.value)"},
             **styles["daily_count_fraction"],
         },
         {
