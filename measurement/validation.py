@@ -303,6 +303,8 @@ def reset_validated_days(
 ) -> None:
     """Resets validation status for the selected data.
 
+    TODO: should this also reset any modified value, minimum or maximum entries?
+
     Args:
         station (str): Station code
         variable (str): Variable code
