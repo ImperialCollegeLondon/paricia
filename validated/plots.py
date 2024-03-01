@@ -23,11 +23,18 @@ def create_validation_plot(
             return "Active"
         return "Inactive"
 
+    color_map = {
+        "Validated": "#00CC96",
+        "Active": "#636EFA",
+        "Inactive": "black",
+    }
+
     fig = px.scatter(
         data,
         x="time",
         y=field,
         color=data.apply(status, axis=1),
+        color_discrete_map=color_map,
         labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
     )
 

@@ -10,11 +10,12 @@ from django_plotly_dash import DjangoDash
 
 from measurement.validation import (
     generate_validation_report,
+    reset_validated_days,
+    reset_validated_entries,
     save_validated_days,
     save_validated_entries,
 )
 from station.models import Station
-from validated.functions import reset_daily_validated, reset_detail_validated
 from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
@@ -41,8 +42,11 @@ DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
     end_time=END_DATE,
     minimum=MINIMUM,
     maximum=MAXIMUM,
+    include_validated=True,
 )
-DATA_SUMMARY = DATA_SUMMARY.reset_index().rename(columns={"index": "date"})
+DATA_SUMMARY = (
+    DATA_SUMMARY.reset_index().rename(columns={"index": "date"}).sort_values(by="date")
+)
 
 # Filters
 filters = html.Div(
@@ -131,7 +135,7 @@ table_daily = AgGrid(
         "suppressRowClickSelection": True,
     },
     selectAll=True,
-    getRowId="params.data.id",
+    getRowId="params.data.date",
 )
 
 table_detail = AgGrid(
@@ -312,7 +316,6 @@ app.layout = html.Div(
         State("minimum_input", "value"),
         State("maximum_input", "value"),
         State("table_daily", "selectedRows"),
-        State("table_daily", "rowData"),
         State("table_detail", "selectedRows"),
         State("table_detail", "rowData"),
     ],
@@ -332,7 +335,6 @@ def callbacks(
     in_minimum: float,
     in_maximum: float,
     in_daily_selected_rows: list[dict],
-    in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
 ) -> tuple[
@@ -341,8 +343,7 @@ def callbacks(
     str,
     go.Figure,
     list[dict],
-    dict,
-    dict,
+    list[dict],
     list[dict],
     list[dict],
     bool,
@@ -365,7 +366,6 @@ def callbacks(
         in_minimum (float): Minimum from filters
         in_maximum (float): Maximum from filters
         in_daily_selected_rows (list[dict]): Selected rows in table_daily
-        in_daily_row_data (list[dict]): Full row data for table_daily
         in_detail_selected_rows (list[dict]): Selected rows in table_detail
         in_detail_row_data (list[dict]): Full row data for table_detail
 
@@ -452,7 +452,7 @@ def callbacks(
 
     # Button: Reset (daily)
     elif input_id == "reset-button" and in_tabs_value == "tab-daily":
-        reset_daily_validated(
+        reset_validated_days(
             variable=VARIABLE,
             station=STATION,
             start_date=START_DATE,
@@ -466,11 +466,7 @@ def callbacks(
 
     # Button: Reset (detail)
     elif input_id == "reset-button" and in_tabs_value == "tab-detail":
-        reset_detail_validated(
-            data_list=in_detail_row_data,
-            variable=VARIABLE,
-            station=STATION,
-        )
+        reset_validated_entries(ids=[row["id"] for row in in_detail_row_data])
         out_status = "Validation reset"
         data_refresh_required = True
         daily_table_refresh_required = True
@@ -499,7 +495,7 @@ def callbacks(
             out_tabs_value = "tab-detail"
             out_status = ""
         else:
-            out_status = "Invalid date"
+            out_status = "No data for selected day"
 
     # Plot radio
     elif input_id == "plot_radio":
@@ -515,8 +511,13 @@ def callbacks(
             end_time=END_DATE,
             minimum=MINIMUM,
             maximum=MAXIMUM,
+            include_validated=True,
         )
-        DATA_SUMMARY = DATA_SUMMARY.reset_index().rename(columns={"index": "date"})
+        DATA_SUMMARY = (
+            DATA_SUMMARY.reset_index()
+            .rename(columns={"index": "date"})
+            .sort_values(by="date")
+        )
 
     # Refresh plot
     if plot_refresh_required:

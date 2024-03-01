@@ -268,6 +268,19 @@ def save_validated_entries(data: pd.DataFrame) -> None:
         Measurement.objects.filter(id=row["id"]).update(**update)
 
 
+def reset_validated_entries(ids: list) -> None:
+    """Resets validation status for the selected data.
+
+    TODO: should this also reset any modified value, minimum or maximum entries?
+
+    Args:
+        ids (list): List of measurement ids to reset.
+    """
+    update = {"is_validated": False}
+    for _id in ids:
+        Measurement.objects.filter(id=_id).update(**update)
+
+
 def save_validated_days(data: pd.DataFrame) -> None:
     """Saves the validated days to the database.
 
@@ -283,3 +296,24 @@ def save_validated_days(data: pd.DataFrame) -> None:
             variable__variable_code=row["variable"],
             time__date=row["date"],
         ).update(is_validated=True, is_active=not row["deactivate?"])
+
+
+def reset_validated_days(
+    station: str, variable: str, start_date: datetime.date, end_date: datetime.date
+) -> None:
+    """Resets validation status for the selected data.
+
+    Args:
+        station (str): Station code
+        variable (str): Variable code
+        start_date (str): Start date
+        end_date (str): End date
+    """
+    Measurement.objects.filter(
+        station__station_code=station,
+        variable__variable_code=variable,
+        time__date__range=(
+            datetime.strptime(start_date, "%Y-%m-%d").date(),
+            datetime.strptime(end_date, "%Y-%m-%d").date(),
+        ),
+    ).update(is_validated=False)

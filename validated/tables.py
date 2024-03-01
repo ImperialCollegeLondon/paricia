@@ -23,6 +23,7 @@ def create_columns_daily() -> list:
             "headerName": "Date",
             "filter": "agDateColumnFilter",
             "valueFormatter": {"function": "params.data.date.split('T')[0]"},
+            "sort": "asc",
             **styles["date"],
         },
         *[
@@ -75,6 +76,7 @@ def create_columns_detail() -> list:
             "valueFormatter": {"function": "params.value.split('T')[1].split('+')[0]"},
             "headerName": "Time",
             "editable": True,
+            "sort": "asc",
             **styles["time"],
         },
         *[
