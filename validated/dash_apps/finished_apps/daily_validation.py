@@ -7,6 +7,7 @@ from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
 
+from measurement.validation import generate_validation_report
 from station.models import Station
 from validated.functions import (
     daily_validation,
@@ -26,17 +27,17 @@ app = DjangoDash(
 )
 
 # Initial filters
-STATION: Station = Station.objects.order_by("station_code")[7]
-VARIABLE: Variable = Variable.objects.order_by("variable_code")[0]
-START_DATE: datetime = datetime.strptime("2023-03-01", "%Y-%m-%d")
-END_DATE: datetime = datetime.strptime("2023-03-31", "%Y-%m-%d")
+STATION: str = "CAR_02_HC_01"
+VARIABLE: str = "airtemperature"
+START_DATE: str = "2023-03-01"
+END_DATE: str = "2023-03-31"
 MINIMUM: Decimal = Decimal(-5)
 MAXIMUM: Decimal = Decimal(28)
 SELECTED_DAY: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
-PLOT_TYPE = "average"
+PLOT_FIELD = "value"
 
-# Daily data
-DATA_DAILY = daily_validation(
+# Load initial data
+DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
     station=STATION,
     variable=VARIABLE,
     start_time=START_DATE,
@@ -44,15 +45,7 @@ DATA_DAILY = daily_validation(
     minimum=MINIMUM,
     maximum=MAXIMUM,
 )
-
-# Detail data
-DATA_DETAIL = detail_list(
-    station=STATION,
-    variable=VARIABLE,
-    date_of_interest=SELECTED_DAY,
-    minimum=MINIMUM,
-    maximum=MAXIMUM,
-)
+DATA_SUMMARY = DATA_SUMMARY.reset_index()
 
 # Filters
 filters = html.Div(
@@ -66,7 +59,7 @@ filters = html.Div(
                         {"label": item.station_code, "value": item.station_code}
                         for item in Station.objects.order_by("station_code")
                     ],
-                    value=STATION.station_code,
+                    value=STATION,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -80,7 +73,7 @@ filters = html.Div(
                         {"label": item.name, "value": item.variable_code}
                         for item in Variable.objects.order_by("variable_code")
                     ],
-                    value=VARIABLE.variable_code,
+                    value=VARIABLE,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -91,8 +84,8 @@ filters = html.Div(
                 dcc.DatePickerRange(
                     id="date_range_picker",
                     display_format="YYYY-MM-DD",
-                    start_date=START_DATE.strftime("%Y-%m-%d"),
-                    end_date=END_DATE.strftime("%Y-%m-%d"),
+                    start_date=START_DATE,
+                    end_date=END_DATE,
                 ),
             ],
             style={"margin-right": "10px", "width": "350px"},
@@ -122,8 +115,8 @@ filters = html.Div(
 # Tables
 table_daily = AgGrid(
     id="table_daily",
-    rowData=DATA_DAILY["data"],
-    columnDefs=create_columns_daily(value_columns=DATA_DAILY["value_columns"]),
+    rowData=DATA_SUMMARY.to_dict("records"),
+    columnDefs=create_columns_daily(),
     columnSize="sizeToFit",
     defaultColDef={
         "resizable": True,
@@ -146,8 +139,10 @@ table_daily = AgGrid(
 
 table_detail = AgGrid(
     id="table_detail",
-    rowData=DATA_DETAIL["series"],
-    columnDefs=create_columns_detail(value_columns=DATA_DETAIL["value_columns"]),
+    rowData=DATA_GRANULAR[DATA_GRANULAR.time.dt.date == SELECTED_DAY.date()].to_dict(
+        "records"
+    ),
+    columnDefs=create_columns_detail(),
     columnSize="sizeToFit",
     defaultColDef={
         "resizable": True,
@@ -183,8 +178,8 @@ detail_date_picker = html.Div(
         dcc.DatePickerSingle(
             id="detail-date-picker",
             display_format="YYYY-MM-DD",
-            min_date_allowed=DATA_DAILY["data"][0]["date"],
-            max_date_allowed=DATA_DAILY["data"][-1]["date"],
+            min_date_allowed=DATA_SUMMARY.index[0],
+            max_date_allowed=DATA_SUMMARY.index[-1],
         ),
     ],
     style={
@@ -226,15 +221,15 @@ status_message = html.Div(
 
 
 # Plot
-plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
+plot = create_validation_plot(data=DATA_GRANULAR, variable=VARIABLE, field=PLOT_FIELD)
 
 # Plot radio
 plot_radio = dcc.RadioItems(
     id="plot_radio",
     options=[
-        {"value": c, "label": c.capitalize()} for c in DATA_DAILY["value_columns"]
+        {"value": c, "label": c.capitalize()} for c in ["value", "maximum", "minimum"]
     ],
-    value=PLOT_TYPE,
+    value=PLOT_FIELD,
     inline=True,
     style={"font-size": "14px"},
 )
@@ -376,7 +371,7 @@ def callbacks(
     Returns:
         tuple[dash.no_update, dash.no_update, str, go.Figure, list[dict], list[dict], list[dict], list[dict], bool, str, str]: Outputs
     """
-    global DATA_DAILY, DATA_DETAIL, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_TYPE
+    global DATA_SUMMARY, DATA_GRANULAR, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_FIELD
 
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -403,10 +398,10 @@ def callbacks(
 
     # Button: Submit
     if input_id == "submit-button":
-        STATION = Station.objects.get(station_code=in_station)
-        VARIABLE = Variable.objects.get(variable_code=in_variable)
-        START_DATE = datetime.strptime(in_start_date, "%Y-%m-%d")
-        END_DATE = datetime.strptime(in_end_date, "%Y-%m-%d")
+        STATION = in_station
+        VARIABLE = in_variable
+        START_DATE = in_start_date
+        END_DATE = in_end_date
         MINIMUM = Decimal(in_minimum) if in_minimum is not None else None
         MAXIMUM = Decimal(in_maximum) if in_maximum is not None else None
         out_status = ""
@@ -510,7 +505,7 @@ def callbacks(
 
     # Plot radio
     elif input_id == "plot_radio":
-        PLOT_TYPE = in_plot_radio_value
+        PLOT_FIELD = in_plot_radio_value
         plot_refresh_required = True
 
     # Reload daily data
@@ -536,7 +531,9 @@ def callbacks(
 
     # Refresh plot
     if plot_refresh_required:
-        out_plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
+        out_plot = create_validation_plot(
+            data=DATA_GRANULAR, variable=VARIABLE, field=PLOT_FIELD
+        )
 
     # Refresh daily table
     if daily_table_refresh_required:
