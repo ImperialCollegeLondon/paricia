@@ -66,7 +66,7 @@ def create_columns_detail() -> list:
     columns = [
         {
             "field": "id",
-            "headerName": "Id",
+            "headerName": "ID",
             "filter": "agNumberColumnFilter",
             "maxWidth": 150,
         },
@@ -83,6 +83,7 @@ def create_columns_detail() -> list:
                 "headerName": c.capitalize(),
                 "filter": "agNumberColumnFilter",
                 "editable": True,
+                "valueFormatter": {"function": "d3.format(',.2f')(params.value)"},
                 **styles[c],
             }
             for c in ["value", "minimum", "maximum"]

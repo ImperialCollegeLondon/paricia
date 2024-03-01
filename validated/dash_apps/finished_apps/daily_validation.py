@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 
 import dash
@@ -31,7 +31,7 @@ START_DATE: str = "2023-03-01"
 END_DATE: str = "2023-03-31"
 MINIMUM: Decimal = Decimal(-5)
 MAXIMUM: Decimal = Decimal(28)
-SELECTED_DAY: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
+SELECTED_DAY: date = date(2023, 3, 14)
 PLOT_FIELD = "value"
 
 # Load initial data
@@ -137,7 +137,7 @@ table_daily = AgGrid(
 
 table_detail = AgGrid(
     id="table_detail",
-    rowData=DATA_GRANULAR[DATA_GRANULAR.time.dt.date == SELECTED_DAY.date()].to_dict(
+    rowData=DATA_GRANULAR[DATA_GRANULAR.time.dt.date == SELECTED_DAY].to_dict(
         "records"
     ),
     columnDefs=create_columns_detail(),
@@ -323,7 +323,7 @@ def callbacks(
     in_submit_clicks: int,
     in_save_clicks: int,
     in_reset_clicks: int,
-    in_detail_date: datetime.date,
+    in_detail_date: str,
     in_plot_radio_value: str,
     in_tabs_value: str,
     in_station: str,
@@ -481,7 +481,7 @@ def callbacks(
     elif input_id == "detail-date-picker":
         new_selected_day = next(
             (
-                d
+                d.date()
                 for d in DATA_SUMMARY["date"]
                 if d.strftime("%Y-%m-%d") == in_detail_date
             ),
@@ -536,7 +536,7 @@ def callbacks(
     # Refresh detail table
     if detail_table_refresh_required:
         out_detail_row_data = DATA_GRANULAR[
-            DATA_GRANULAR.time.dt.date == SELECTED_DAY.date()
+            DATA_GRANULAR.time.dt.date == SELECTED_DAY
         ].to_dict("records")
 
         # Reset detail table selection
