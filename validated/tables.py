@@ -18,11 +18,11 @@ def create_columns_daily() -> list:
     columns = [
         {
             "valueGetter": {
-                "function": "d3.timeParse('%Y-%m-%d')(params.data.index.split('T')[0])"
+                "function": "d3.timeParse('%Y-%m-%d')(params.data.date.split('T')[0])"
             },
             "headerName": "Date",
             "filter": "agDateColumnFilter",
-            "valueFormatter": {"function": "params.data.index.split('T')[0]"},
+            "valueFormatter": {"function": "params.data.date.split('T')[0]"},
             **styles["date"],
         },
         *[

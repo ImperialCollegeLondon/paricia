@@ -10,8 +10,6 @@ from django_plotly_dash import DjangoDash
 from measurement.validation import generate_validation_report
 from station.models import Station
 from validated.functions import (
-    daily_validation,
-    detail_list,
     get_conditions,
     reset_daily_validated,
     reset_detail_validated,
@@ -45,7 +43,7 @@ DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
     minimum=MINIMUM,
     maximum=MAXIMUM,
 )
-DATA_SUMMARY = DATA_SUMMARY.reset_index()
+DATA_SUMMARY = DATA_SUMMARY.reset_index().rename(columns={"index": "date"})
 
 # Filters
 filters = html.Div(
@@ -178,8 +176,8 @@ detail_date_picker = html.Div(
         dcc.DatePickerSingle(
             id="detail-date-picker",
             display_format="YYYY-MM-DD",
-            min_date_allowed=DATA_SUMMARY.index[0],
-            max_date_allowed=DATA_SUMMARY.index[-1],
+            min_date_allowed=DATA_SUMMARY["date"].iloc[0].date(),
+            max_date_allowed=DATA_SUMMARY["date"].iloc[-1].date(),
         ),
     ],
     style={
@@ -358,7 +356,7 @@ def callbacks(
         in_submit_clicks (int): Number of times submit-button was clicked
         in_save_clicks (int): Number of times save-button was clicked
         in_reset_clicks (int): Number of times reset-button was clicked
-        in_detail_date (datetime.date): Date for detail view
+        in_detail_date (str): Date for detail view
         in_plot_radio_value (str): Value of plot radio button
         in_tabs_value (str): Value of tabs
         in_station (str): Station from filters
@@ -392,8 +390,7 @@ def callbacks(
     out_tab_detail_label = dash.no_update
     out_tabs_value = dash.no_update
 
-    daily_data_refresh_required = False
-    detail_data_refresh_required = False
+    data_refresh_required = False
     daily_table_refresh_required = False
     detail_table_refresh_required = False
     daily_table_reset_selection = False
@@ -409,8 +406,7 @@ def callbacks(
         MINIMUM = Decimal(in_minimum) if in_minimum is not None else None
         MAXIMUM = Decimal(in_maximum) if in_maximum is not None else None
         out_status = ""
-        daily_data_refresh_required = True
-        detail_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
         detail_table_refresh_required = True
         daily_table_reset_selection = True
@@ -433,7 +429,7 @@ def callbacks(
             maximum=MAXIMUM,
         )
         out_status = f"{len(in_daily_selected_rows)} days saved to Validated"
-        daily_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
         plot_refresh_required = True
 
@@ -448,9 +444,8 @@ def callbacks(
             station=STATION,
         )
         out_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
-        daily_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
-        detail_data_refresh_required = True
         detail_table_refresh_required = True
         plot_refresh_required = True
 
@@ -463,7 +458,7 @@ def callbacks(
             end_date=END_DATE,
         )
         out_status = "Validation reset"
-        daily_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
         daily_table_reset_selection = True
         plot_refresh_required = True
@@ -476,9 +471,8 @@ def callbacks(
             station=STATION,
         )
         out_status = "Validation reset"
-        daily_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
-        detail_data_refresh_required = True
         detail_table_refresh_required = True
         detail_table_reset_selection = True
         plot_refresh_required = True
@@ -487,15 +481,14 @@ def callbacks(
     elif input_id == "detail-date-picker":
         new_selected_day = next(
             (
-                d["date"]
-                for d in DATA_DAILY["data"]
-                if d["date"].strftime("%Y-%m-%d") == in_detail_date
+                d
+                for d in DATA_SUMMARY["date"]
+                if d.strftime("%Y-%m-%d") == in_detail_date
             ),
             None,
         )
         if new_selected_day is not None:
             SELECTED_DAY = new_selected_day
-            detail_data_refresh_required = True
             detail_table_refresh_required = True
             detail_table_reset_selection = True
             out_tab_detail_disabled = False
@@ -505,16 +498,16 @@ def callbacks(
             out_tabs_value = "tab-detail"
             out_status = ""
         else:
-            out_status = "Invalid ID"
+            out_status = "Invalid date"
 
     # Plot radio
     elif input_id == "plot_radio":
         PLOT_FIELD = in_plot_radio_value
         plot_refresh_required = True
 
-    # Reload daily data
-    if daily_data_refresh_required:
-        DATA_DAILY = daily_validation(
+    # Reload data
+    if data_refresh_required:
+        DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
             station=STATION,
             variable=VARIABLE,
             start_time=START_DATE,
@@ -522,16 +515,7 @@ def callbacks(
             minimum=MINIMUM,
             maximum=MAXIMUM,
         )
-
-    # Reload detail data
-    if detail_data_refresh_required:
-        DATA_DETAIL = detail_list(
-            station=STATION,
-            variable=VARIABLE,
-            date_of_interest=SELECTED_DAY,
-            minimum=MINIMUM,
-            maximum=MAXIMUM,
-        )
+        DATA_SUMMARY = DATA_SUMMARY.reset_index().rename(columns={"index": "date"})
 
     # Refresh plot
     if plot_refresh_required:
@@ -543,7 +527,7 @@ def callbacks(
 
     # Refresh daily table
     if daily_table_refresh_required:
-        out_daily_row_data = DATA_DAILY["data"]
+        out_daily_row_data = DATA_SUMMARY.to_dict("records")
 
         # Reset daily table selection
         if daily_table_reset_selection:
@@ -551,7 +535,9 @@ def callbacks(
 
     # Refresh detail table
     if detail_table_refresh_required:
-        out_detail_row_data = DATA_DETAIL["series"]
+        out_detail_row_data = DATA_GRANULAR[
+            DATA_GRANULAR.time.dt.date == SELECTED_DAY.date()
+        ].to_dict("records")
 
         # Reset detail table selection
         if detail_table_reset_selection:
