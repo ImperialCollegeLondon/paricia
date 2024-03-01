@@ -1,21 +1,20 @@
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 
 import dash
+import pandas as pd
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
 
-from measurement.validation import generate_validation_report
-from station.models import Station
-from validated.functions import (
-    get_conditions,
-    reset_daily_validated,
-    reset_detail_validated,
-    save_detail_to_validated,
-    save_to_validated,
+from measurement.validation import (
+    generate_validation_report,
+    save_validated_days,
+    save_validated_entries,
 )
+from station.models import Station
+from validated.functions import reset_daily_validated, reset_detail_validated
 from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
@@ -415,35 +414,37 @@ def callbacks(
 
     # Button: Save (daily)
     if input_id == "save-button" and in_tabs_value == "tab-daily":
-        selected_ids = {row["id"] for row in in_daily_selected_rows}
-        for row in in_daily_row_data:
-            row["state"] = row["id"] in selected_ids
-        conditions = get_conditions(in_daily_row_data)
-        save_to_validated(
-            variable=VARIABLE,
-            station=STATION,
-            to_delete=conditions,
-            start_date=START_DATE,
-            end_date=END_DATE,
-            minimum=MINIMUM,
-            maximum=MAXIMUM,
-        )
-        out_status = f"{len(in_daily_selected_rows)} days saved to Validated"
+        data_to_validate = [
+            {
+                "date": row["date"].split("T")[0],
+                "validate?": True,
+                "deactivate?": False,
+                "station": STATION,
+                "variable": VARIABLE,
+            }
+            for row in in_daily_selected_rows
+        ]
+        save_validated_days(pd.DataFrame.from_records(data_to_validate))
+        out_status = f"{len(data_to_validate)} days saved to Validated"
         data_refresh_required = True
         daily_table_refresh_required = True
         plot_refresh_required = True
 
     # Button: Save (detail)
     elif input_id == "save-button" and in_tabs_value == "tab-detail":
-        selected_ids = {row["id"] for row in in_detail_selected_rows}
-        for row in in_detail_row_data:
-            row["is_selected"] = row["id"] in selected_ids
-        save_detail_to_validated(
-            data_list=in_detail_row_data,
-            variable=VARIABLE,
-            station=STATION,
-        )
-        out_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
+        data_to_validate = [
+            {
+                "id": row["id"],
+                "validate?": True,
+                "deactivate?": False,
+                "value": row["value"],
+                "minimum": row["minimum"],
+                "maximum": row["maximum"],
+            }
+            for row in in_detail_selected_rows
+        ]
+        save_validated_entries(pd.DataFrame.from_records(data_to_validate))
+        out_status = f"{len(data_to_validate)} entries saved to Validated"
         data_refresh_required = True
         daily_table_refresh_required = True
         detail_table_refresh_required = True
