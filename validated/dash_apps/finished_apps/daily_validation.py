@@ -316,6 +316,7 @@ app.layout = html.Div(
         State("minimum_input", "value"),
         State("maximum_input", "value"),
         State("table_daily", "selectedRows"),
+        State("table_daily", "rowData"),
         State("table_detail", "selectedRows"),
         State("table_detail", "rowData"),
     ],
@@ -335,6 +336,7 @@ def callbacks(
     in_minimum: float,
     in_maximum: float,
     in_daily_selected_rows: list[dict],
+    in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
 ) -> tuple[
@@ -366,6 +368,7 @@ def callbacks(
         in_minimum (float): Minimum from filters
         in_maximum (float): Maximum from filters
         in_daily_selected_rows (list[dict]): Selected rows in table_daily
+        in_daily_row_data (list[dict]): Full row data for table_daily
         in_detail_selected_rows (list[dict]): Selected rows in table_detail
         in_detail_row_data (list[dict]): Full row data for table_detail
 
@@ -414,37 +417,39 @@ def callbacks(
 
     # Button: Save (daily)
     if input_id == "save-button" and in_tabs_value == "tab-daily":
+        selected_dates = {row["date"] for row in in_daily_selected_rows}
         data_to_validate = [
             {
                 "date": row["date"].split("T")[0],
                 "validate?": True,
-                "deactivate?": False,
+                "deactivate?": row["date"] not in selected_dates,
                 "station": STATION,
                 "variable": VARIABLE,
             }
-            for row in in_daily_selected_rows
+            for row in in_daily_row_data
         ]
         save_validated_days(pd.DataFrame.from_records(data_to_validate))
-        out_status = f"{len(data_to_validate)} days saved to Validated"
+        out_status = f"{len(data_to_validate)} days validated"
         data_refresh_required = True
         daily_table_refresh_required = True
         plot_refresh_required = True
 
     # Button: Save (detail)
     elif input_id == "save-button" and in_tabs_value == "tab-detail":
+        selected_ids = {row["id"] for row in in_detail_selected_rows}
         data_to_validate = [
             {
                 "id": row["id"],
                 "validate?": True,
-                "deactivate?": False,
+                "deactivate?": row["id"] not in selected_ids,
                 "value": row["value"],
                 "minimum": row["minimum"],
                 "maximum": row["maximum"],
             }
-            for row in in_detail_selected_rows
+            for row in in_detail_row_data
         ]
         save_validated_entries(pd.DataFrame.from_records(data_to_validate))
-        out_status = f"{len(data_to_validate)} entries saved to Validated"
+        out_status = f"{len(data_to_validate)} entries validated"
         data_refresh_required = True
         daily_table_refresh_required = True
         detail_table_refresh_required = True
