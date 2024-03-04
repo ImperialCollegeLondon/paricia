@@ -18,7 +18,7 @@ def create_validation_plot(
 
     def status(row):
         if not row["is_validated"]:
-            return "Unvalidated"
+            return "Not validated"
         if row["is_active"]:
             return "Active"
         return "Inactive"
