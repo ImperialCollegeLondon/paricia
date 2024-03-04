@@ -192,8 +192,8 @@ menu = html.Div(
     children=[
         html.Div(
             children=[
-                html.Button("Save to Validated", id="save-button"),
-                html.Button("Reset Validated", id="reset-button"),
+                html.Button("Validate", id="save-button"),
+                html.Button("Reset Validation", id="reset-button"),
             ],
             style={"display": "inline-block", "width": "50%"},
         ),
@@ -426,7 +426,7 @@ def callbacks(
             for row in in_daily_row_data
         ]
         save_validated_days(pd.DataFrame.from_records(data_to_validate))
-        out_status = f"{len(data_to_validate)} days validated"
+        out_status = "Validation successful"
         data_refresh_required = True
         daily_table_refresh_required = True
         plot_refresh_required = True
@@ -446,7 +446,7 @@ def callbacks(
             for row in in_detail_row_data
         ]
         save_validated_entries(pd.DataFrame.from_records(data_to_validate))
-        out_status = f"{len(data_to_validate)} entries validated"
+        out_status = "Validation successful"
         data_refresh_required = True
         daily_table_refresh_required = True
         detail_table_refresh_required = True

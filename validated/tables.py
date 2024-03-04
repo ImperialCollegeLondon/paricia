@@ -67,9 +67,8 @@ def create_columns_detail() -> list:
     columns = [
         {
             "field": "id",
-            "headerName": "ID",
+            "headerName": "Measurement ID",
             "filter": "agNumberColumnFilter",
-            "maxWidth": 150,
         },
         {
             "field": "time",

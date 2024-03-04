@@ -17,16 +17,16 @@ def create_validation_plot(
     """
 
     def status(row):
-        if row["is_validated"]:
-            return "Validated"
+        if not row["is_validated"]:
+            return "Unvalidated"
         if row["is_active"]:
             return "Active"
         return "Inactive"
 
     color_map = {
-        "Validated": "#00CC96",
-        "Active": "#636EFA",
-        "Inactive": "black",
+        "Active": "#00CC96",
+        "Inactive": "#636EFA",
+        "Unvalidated": "black",
     }
 
     fig = px.scatter(
