@@ -44,9 +44,6 @@ DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
     maximum=MAXIMUM,
     include_validated=True,
 )
-DATA_SUMMARY = (
-    DATA_SUMMARY.reset_index().rename(columns={"index": "date"}).sort_values(by="date")
-)
 
 # Filters
 filters = html.Div(
@@ -517,11 +514,6 @@ def callbacks(
             minimum=MINIMUM,
             maximum=MAXIMUM,
             include_validated=True,
-        )
-        DATA_SUMMARY = (
-            DATA_SUMMARY.reset_index()
-            .rename(columns={"index": "date"})
-            .sort_values(by="date")
         )
 
     # Refresh plot

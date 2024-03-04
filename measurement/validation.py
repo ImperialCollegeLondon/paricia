@@ -204,7 +204,8 @@ def generate_daily_summary(
 
     # Put together the final report
     report = pd.concat([report, suspicious_report, count_report], axis=1)
-    report.index = pd.to_datetime(report.index)
+    report = report.sort_index().reset_index().rename(columns={"index": "date"})
+    report.date = pd.to_datetime(report.date)
     return report
 
 
