@@ -26,7 +26,7 @@ def create_validation_plot(
     color_map = {
         "Active": "#00CC96",
         "Inactive": "#636EFA",
-        "Unvalidated": "black",
+        "Not validated": "black",
     }
 
     fig = px.scatter(
