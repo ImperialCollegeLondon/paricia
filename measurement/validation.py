@@ -43,7 +43,7 @@ def get_data_to_validate(
             time__lte=end_time_,
             **extra,
         ).values()
-    )
+    ).sort_values("time")
 
 
 def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
