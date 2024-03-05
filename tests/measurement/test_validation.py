@@ -223,6 +223,7 @@ class TestValidationFunctions(TestCase):
         # Assert the expected output
         expected = pd.DataFrame(
             {
+                "date": pd.date_range("2023-01-01", "2023-01-02", periods=2),
                 "value": [10.0, 5.0],
                 "maximum": [5.0, 6.0],
                 "minimum": [0.0, 4.0],
@@ -233,7 +234,6 @@ class TestValidationFunctions(TestCase):
                 "daily_count_fraction": [1.0, 0.25],
                 "suspicious_daily_count": [False, True],
             },
-            index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
         pd.testing.assert_frame_equal(result, expected)
 
@@ -246,6 +246,7 @@ class TestValidationFunctions(TestCase):
         # Assert the expected output
         expected = pd.DataFrame(
             {
+                "date": pd.date_range("2023-01-01", "2023-01-02", periods=2),
                 "value": [2.5, 5.0],
                 "maximum": [5.0, 6.0],
                 "minimum": [0.0, 4.0],
@@ -256,7 +257,6 @@ class TestValidationFunctions(TestCase):
                 "daily_count_fraction": [1.0, 0.25],
                 "suspicious_daily_count": [False, True],
             },
-            index=pd.date_range("2023-01-01", "2023-01-02", periods=2),
         )
         pd.testing.assert_frame_equal(result, expected)
 

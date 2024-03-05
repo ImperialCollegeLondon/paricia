@@ -1,44 +1,47 @@
-import plotly.graph_objects as go
+import pandas as pd
+import plotly.express as px
 
 
-def create_validation_plot(data: dict, plot_type: str) -> go.Figure:
+def create_validation_plot(
+    data: pd.DataFrame, variable_name: str, field: str
+) -> px.scatter:
     """Creates plot for Validation app
 
     Args:
-        data (dict): Daily data
-        plot_type (str): Type of plot
+        data (pd.DataFrame): Data
+        variable_name (str): Variable name
+        field (str): 'value', 'minimum' or 'maximum'
 
     Returns:
-        go.Figure: Plot
+        px.Scatter: Plot
     """
-    variable: str = data["variable"]["name"]
-    data_series: dict = data["series"]
-    is_cumulative: bool = data["variable"]["is_cumulative"]
-    mode = "lines" if is_cumulative else "markers"
 
-    fig = go.Figure()
+    def status(row):
+        if not row["is_validated"]:
+            return "Not validated"
+        if row["is_active"]:
+            return "Active"
+        return "Inactive"
 
-    datasets = [
-        {"key": "measurement", "name": "Measurement", "color": "black"},
-        {"key": "selected", "name": "Selected", "color": "#636EFA"},
-        {"key": "validated", "name": "Validated", "color": "#00CC96"},
-    ]
+    color_map = {
+        "Active": "#00CC96",
+        "Inactive": "#636EFA",
+        "Not validated": "black",
+    }
 
-    for dataset in datasets:
-        fig.add_trace(
-            go.Scatter(
-                x=data_series[dataset["key"]]["time"],
-                y=data_series[dataset["key"]][plot_type],
-                name=dataset["name"],
-                line=dict(color=dataset["color"]),
-                mode=mode,
-                marker_size=3,
-            )
-        )
+    fig = px.scatter(
+        data,
+        x="time",
+        y=field,
+        color=data.apply(status, axis=1),
+        color_discrete_map=color_map,
+        labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
+    )
 
-    fig.update_yaxes(title_text=f"{variable} ({plot_type.capitalize()})")
+    fig.update_traces(marker=dict(size=3))
     fig.update_layout(
         legend=dict(
+            title=dict(text="Status", font=dict(size=12)),
             x=1,
             y=1,
             xanchor="auto",
