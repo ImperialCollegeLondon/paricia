@@ -1,22 +1,21 @@
-from datetime import datetime
+from datetime import date
 from decimal import Decimal
 
 import dash
+import pandas as pd
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
 
-from station.models import Station
-from validated.functions import (
-    daily_validation,
-    detail_list,
-    get_conditions,
-    reset_daily_validated,
-    reset_detail_validated,
-    save_detail_to_validated,
-    save_to_validated,
+from measurement.validation import (
+    generate_validation_report,
+    reset_validated_days,
+    reset_validated_entries,
+    save_validated_days,
+    save_validated_entries,
 )
+from station.models import Station
 from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
@@ -26,32 +25,24 @@ app = DjangoDash(
 )
 
 # Initial filters
-STATION: Station = Station.objects.order_by("station_code")[7]
-VARIABLE: Variable = Variable.objects.order_by("variable_code")[0]
-START_DATE: datetime = datetime.strptime("2023-03-01", "%Y-%m-%d")
-END_DATE: datetime = datetime.strptime("2023-03-31", "%Y-%m-%d")
+STATION: str = "CAR_02_HC_01"
+VARIABLE: str = "airtemperature"
+START_DATE: str = "2023-03-01"
+END_DATE: str = "2023-03-31"
 MINIMUM: Decimal = Decimal(-5)
 MAXIMUM: Decimal = Decimal(28)
-SELECTED_DAY: datetime = datetime.strptime("2023-03-14", "%Y-%m-%d")
-PLOT_TYPE = "average"
+SELECTED_DAY: date = date(2023, 3, 14)
+PLOT_FIELD = "value"
 
-# Daily data
-DATA_DAILY = daily_validation(
+# Load initial data
+DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
     station=STATION,
     variable=VARIABLE,
     start_time=START_DATE,
     end_time=END_DATE,
     minimum=MINIMUM,
     maximum=MAXIMUM,
-)
-
-# Detail data
-DATA_DETAIL = detail_list(
-    station=STATION,
-    variable=VARIABLE,
-    date_of_interest=SELECTED_DAY,
-    minimum=MINIMUM,
-    maximum=MAXIMUM,
+    include_validated=True,
 )
 
 # Filters
@@ -66,7 +57,7 @@ filters = html.Div(
                         {"label": item.station_code, "value": item.station_code}
                         for item in Station.objects.order_by("station_code")
                     ],
-                    value=STATION.station_code,
+                    value=STATION,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -80,7 +71,7 @@ filters = html.Div(
                         {"label": item.name, "value": item.variable_code}
                         for item in Variable.objects.order_by("variable_code")
                     ],
-                    value=VARIABLE.variable_code,
+                    value=VARIABLE,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -91,8 +82,8 @@ filters = html.Div(
                 dcc.DatePickerRange(
                     id="date_range_picker",
                     display_format="YYYY-MM-DD",
-                    start_date=START_DATE.strftime("%Y-%m-%d"),
-                    end_date=END_DATE.strftime("%Y-%m-%d"),
+                    start_date=START_DATE,
+                    end_date=END_DATE,
                 ),
             ],
             style={"margin-right": "10px", "width": "350px"},
@@ -122,8 +113,8 @@ filters = html.Div(
 # Tables
 table_daily = AgGrid(
     id="table_daily",
-    rowData=DATA_DAILY["data"],
-    columnDefs=create_columns_daily(value_columns=DATA_DAILY["value_columns"]),
+    rowData=DATA_SUMMARY.to_dict("records"),
+    columnDefs=create_columns_daily(),
     columnSize="sizeToFit",
     defaultColDef={
         "resizable": True,
@@ -141,13 +132,15 @@ table_daily = AgGrid(
         "suppressRowClickSelection": True,
     },
     selectAll=True,
-    getRowId="params.data.id",
+    getRowId="params.data.date",
 )
 
 table_detail = AgGrid(
     id="table_detail",
-    rowData=DATA_DETAIL["series"],
-    columnDefs=create_columns_detail(value_columns=DATA_DETAIL["value_columns"]),
+    rowData=DATA_GRANULAR[DATA_GRANULAR.time.dt.date == SELECTED_DAY].to_dict(
+        "records"
+    ),
+    columnDefs=create_columns_detail(),
     columnSize="sizeToFit",
     defaultColDef={
         "resizable": True,
@@ -183,8 +176,8 @@ detail_date_picker = html.Div(
         dcc.DatePickerSingle(
             id="detail-date-picker",
             display_format="YYYY-MM-DD",
-            min_date_allowed=DATA_DAILY["data"][0]["date"],
-            max_date_allowed=DATA_DAILY["data"][-1]["date"],
+            min_date_allowed=DATA_SUMMARY["date"].iloc[0].date(),
+            max_date_allowed=DATA_SUMMARY["date"].iloc[-1].date(),
         ),
     ],
     style={
@@ -199,14 +192,8 @@ menu = html.Div(
     children=[
         html.Div(
             children=[
-                html.Button("Save to Validated", id="save-button"),
-                html.Button("Reset Validated", id="reset-button"),
-                html.Button(
-                    "Add row",
-                    id="add-button",
-                    disabled=True,
-                    style={"margin-left": "10px"},
-                ),
+                html.Button("Validate", id="save-button"),
+                html.Button("Reset Validation", id="reset-button"),
             ],
             style={"display": "inline-block", "width": "50%"},
         ),
@@ -232,15 +219,19 @@ status_message = html.Div(
 
 
 # Plot
-plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
+plot = create_validation_plot(
+    data=DATA_GRANULAR,
+    variable_name=Variable.objects.get(variable_code=VARIABLE).name,
+    field=PLOT_FIELD,
+)
 
 # Plot radio
 plot_radio = dcc.RadioItems(
     id="plot_radio",
     options=[
-        {"value": c, "label": c.capitalize()} for c in DATA_DAILY["value_columns"]
+        {"value": c, "label": c.capitalize()} for c in ["value", "maximum", "minimum"]
     ],
-    value=PLOT_TYPE,
+    value=PLOT_FIELD,
     inline=True,
     style={"font-size": "14px"},
 )
@@ -301,25 +292,21 @@ app.layout = html.Div(
         Output("plot", "figure"),
         Output("table_daily", "rowData"),
         Output("table_detail", "rowData"),
-        Output("table_detail", "rowTransaction"),
-        Output("table_detail", "scrollTo"),
         Output("table_daily", "selectedRows"),
         Output("table_detail", "selectedRows"),
         Output("tab-detail", "disabled"),
         Output("tab-detail", "label"),
         Output("tabs", "value"),
-        Output("add-button", "disabled"),
     ],
     [
         Input("submit-button", "n_clicks"),
         Input("save-button", "n_clicks"),
         Input("reset-button", "n_clicks"),
-        Input("add-button", "n_clicks"),
         Input("detail-date-picker", "date"),
         Input("plot_radio", "value"),
-        Input("tabs", "value"),
     ],
     [
+        State("tabs", "value"),
         State("station_drop", "value"),
         State("variable_drop", "value"),
         State("date_range_picker", "start_date"),
@@ -337,8 +324,7 @@ def callbacks(
     in_submit_clicks: int,
     in_save_clicks: int,
     in_reset_clicks: int,
-    in_add_clicks: int,
-    in_detail_date: datetime.date,
+    in_detail_date: str,
     in_plot_radio_value: str,
     in_tabs_value: str,
     in_station: str,
@@ -358,14 +344,11 @@ def callbacks(
     go.Figure,
     list[dict],
     list[dict],
-    dict,
-    dict,
     list[dict],
     list[dict],
     bool,
     str,
     str,
-    bool,
 ]:
     """Callbacks for daily validation app
 
@@ -373,8 +356,7 @@ def callbacks(
         in_submit_clicks (int): Number of times submit-button was clicked
         in_save_clicks (int): Number of times save-button was clicked
         in_reset_clicks (int): Number of times reset-button was clicked
-        in_add_clicks (int): Number of times add-button was clicked
-        in_detail_date (datetime.date): Date for detail view
+        in_detail_date (str): Date for detail view
         in_plot_radio_value (str): Value of plot radio button
         in_tabs_value (str): Value of tabs
         in_station (str): Station from filters
@@ -389,9 +371,9 @@ def callbacks(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[ dash.no_update, dash.no_update, str, go.Figure, list[dict], list[dict], dict, dict, list[dict], list[dict], bool, str, str, bool, ]: Outputs
+        tuple[dash.no_update, dash.no_update, str, go.Figure, list[dict], list[dict], list[dict], list[dict], bool, str, str]: Outputs
     """
-    global DATA_DAILY, DATA_DETAIL, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_TYPE
+    global DATA_SUMMARY, DATA_GRANULAR, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_FIELD
 
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -402,17 +384,13 @@ def callbacks(
     out_plot = dash.no_update
     out_daily_row_data = dash.no_update
     out_detail_row_data = dash.no_update
-    out_detail_row_transaction = dash.no_update
-    out_detail_scroll = dash.no_update
     out_daily_selected_rows = dash.no_update
     out_detail_selected_rows = dash.no_update
     out_tab_detail_disabled = dash.no_update
     out_tab_detail_label = dash.no_update
     out_tabs_value = dash.no_update
-    out_add_button_disabled = dash.no_update
 
-    daily_data_refresh_required = False
-    detail_data_refresh_required = False
+    data_refresh_required = False
     daily_table_refresh_required = False
     detail_table_refresh_required = False
     daily_table_reset_selection = False
@@ -421,15 +399,14 @@ def callbacks(
 
     # Button: Submit
     if input_id == "submit-button":
-        STATION = Station.objects.get(station_code=in_station)
-        VARIABLE = Variable.objects.get(variable_code=in_variable)
-        START_DATE = datetime.strptime(in_start_date, "%Y-%m-%d")
-        END_DATE = datetime.strptime(in_end_date, "%Y-%m-%d")
+        STATION = in_station
+        VARIABLE = in_variable
+        START_DATE = in_start_date
+        END_DATE = in_end_date
         MINIMUM = Decimal(in_minimum) if in_minimum is not None else None
         MAXIMUM = Decimal(in_maximum) if in_maximum is not None else None
         out_status = ""
-        daily_data_refresh_required = True
-        detail_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
         detail_table_refresh_required = True
         daily_table_reset_selection = True
@@ -438,98 +415,80 @@ def callbacks(
 
     # Button: Save (daily)
     if input_id == "save-button" and in_tabs_value == "tab-daily":
-        selected_ids = {row["id"] for row in in_daily_selected_rows}
-        for row in in_daily_row_data:
-            row["state"] = row["id"] in selected_ids
-        conditions = get_conditions(in_daily_row_data)
-        save_to_validated(
-            variable=VARIABLE,
-            station=STATION,
-            to_delete=conditions,
-            start_date=START_DATE,
-            end_date=END_DATE,
-            minimum=MINIMUM,
-            maximum=MAXIMUM,
-        )
-        out_status = f"{len(in_daily_selected_rows)} days saved to Validated"
-        daily_data_refresh_required = True
+        selected_dates = {row["date"] for row in in_daily_selected_rows}
+        data_to_validate = [
+            {
+                "date": row["date"].split("T")[0],
+                "validate?": True,
+                "deactivate?": row["date"] not in selected_dates,
+                "station": STATION,
+                "variable": VARIABLE,
+            }
+            for row in in_daily_row_data
+        ]
+        save_validated_days(pd.DataFrame.from_records(data_to_validate))
+        out_status = "Validation successful"
+        data_refresh_required = True
         daily_table_refresh_required = True
         plot_refresh_required = True
 
     # Button: Save (detail)
     elif input_id == "save-button" and in_tabs_value == "tab-detail":
         selected_ids = {row["id"] for row in in_detail_selected_rows}
-        for row in in_detail_row_data:
-            row["is_selected"] = row["id"] in selected_ids
-        save_detail_to_validated(
-            data_list=in_detail_row_data,
-            variable=VARIABLE,
-            station=STATION,
-        )
-        out_status = f"{len(in_detail_selected_rows)} entries saved to Validated"
-        daily_data_refresh_required = True
+        data_to_validate = [
+            {
+                "id": row["id"],
+                "validate?": True,
+                "deactivate?": row["id"] not in selected_ids,
+                "value": row["value"],
+                "minimum": row["minimum"],
+                "maximum": row["maximum"],
+            }
+            for row in in_detail_row_data
+        ]
+        save_validated_entries(pd.DataFrame.from_records(data_to_validate))
+        out_status = "Validation successful"
+        data_refresh_required = True
         daily_table_refresh_required = True
-        detail_data_refresh_required = True
         detail_table_refresh_required = True
         plot_refresh_required = True
 
     # Button: Reset (daily)
     elif input_id == "reset-button" and in_tabs_value == "tab-daily":
-        reset_daily_validated(
+        reset_validated_days(
             variable=VARIABLE,
             station=STATION,
             start_date=START_DATE,
             end_date=END_DATE,
         )
         out_status = "Validation reset"
-        daily_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
         daily_table_reset_selection = True
         plot_refresh_required = True
 
     # Button: Reset (detail)
     elif input_id == "reset-button" and in_tabs_value == "tab-detail":
-        reset_detail_validated(
-            data_list=in_detail_row_data,
-            variable=VARIABLE,
-            station=STATION,
-        )
+        reset_validated_entries(ids=[row["id"] for row in in_detail_row_data])
         out_status = "Validation reset"
-        daily_data_refresh_required = True
+        data_refresh_required = True
         daily_table_refresh_required = True
-        detail_data_refresh_required = True
         detail_table_refresh_required = True
         detail_table_reset_selection = True
         plot_refresh_required = True
-
-    # Button: New row (detail)
-    elif input_id == "add-button" and in_tabs_value == "tab-detail":
-        last_id = in_detail_row_data[-1]["id"]
-        last_time = in_detail_row_data[-1]["time"]
-        new_row = {
-            "id": last_id + 1,
-            "time": last_time,
-            **{key: None for key in DATA_DAILY["value_columns"]},
-            "outlier": False,
-            "value_difference": None,
-            "is_selected": False,
-        }
-        out_detail_row_transaction = {"add": [new_row]}
-        out_detail_scroll = {"data": new_row}
 
     # Date picker
     elif input_id == "detail-date-picker":
         new_selected_day = next(
             (
-                d["date"]
-                for d in DATA_DAILY["data"]
-                if d["date"].strftime("%Y-%m-%d") == in_detail_date
+                d.date()
+                for d in DATA_SUMMARY["date"]
+                if d.strftime("%Y-%m-%d") == in_detail_date
             ),
             None,
         )
         if new_selected_day is not None:
             SELECTED_DAY = new_selected_day
-            detail_data_refresh_required = True
             detail_table_refresh_required = True
             detail_table_reset_selection = True
             out_tab_detail_disabled = False
@@ -537,51 +496,38 @@ def callbacks(
                 f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
             )
             out_tabs_value = "tab-detail"
-            out_add_button_disabled = False
             out_status = ""
         else:
-            out_status = "Invalid ID"
+            out_status = "No data for selected day"
 
     # Plot radio
     elif input_id == "plot_radio":
-        PLOT_TYPE = in_plot_radio_value
+        PLOT_FIELD = in_plot_radio_value
         plot_refresh_required = True
 
-    # Switching tabs
-    elif input_id == "tabs":
-        if in_tabs_value == "tab-detail":
-            out_add_button_disabled = False
-        else:
-            out_add_button_disabled = True
-
-    # Reload daily data
-    if daily_data_refresh_required:
-        DATA_DAILY = daily_validation(
+    # Reload data
+    if data_refresh_required:
+        DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
             station=STATION,
             variable=VARIABLE,
             start_time=START_DATE,
             end_time=END_DATE,
             minimum=MINIMUM,
             maximum=MAXIMUM,
-        )
-
-    # Reload detail data
-    if detail_data_refresh_required:
-        DATA_DETAIL = detail_list(
-            station=STATION,
-            variable=VARIABLE,
-            date_of_interest=SELECTED_DAY,
-            minimum=MINIMUM,
-            maximum=MAXIMUM,
+            include_validated=True,
         )
 
     # Refresh plot
     if plot_refresh_required:
-        out_plot = create_validation_plot(data=DATA_DAILY, plot_type=PLOT_TYPE)
+        out_plot = create_validation_plot(
+            data=DATA_GRANULAR,
+            variable_name=Variable.objects.get(variable_code=VARIABLE).name,
+            field=PLOT_FIELD,
+        )
 
     # Refresh daily table
     if daily_table_refresh_required:
-        out_daily_row_data = DATA_DAILY["data"]
+        out_daily_row_data = DATA_SUMMARY.to_dict("records")
 
         # Reset daily table selection
         if daily_table_reset_selection:
@@ -589,7 +535,9 @@ def callbacks(
 
     # Refresh detail table
     if detail_table_refresh_required:
-        out_detail_row_data = DATA_DETAIL["series"]
+        out_detail_row_data = DATA_GRANULAR[
+            DATA_GRANULAR.time.dt.date == SELECTED_DAY
+        ].to_dict("records")
 
         # Reset detail table selection
         if detail_table_reset_selection:
@@ -602,14 +550,11 @@ def callbacks(
         out_plot,
         out_daily_row_data,
         out_detail_row_data,
-        out_detail_row_transaction,
-        out_detail_scroll,
         out_daily_selected_rows,
         out_detail_selected_rows,
         out_tab_detail_disabled,
         out_tab_detail_label,
         out_tabs_value,
-        out_add_button_disabled,
     )
 
 
