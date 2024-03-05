@@ -62,10 +62,7 @@ class DataImportTempCreate(generics.CreateAPIView):
         file = copy.deepcopy(self.request.FILES["file"])
         timezone = serializer.validated_data["station"].timezone
         if not timezone:
-            timezone = "UTC"
-            serializer.validated_data["station"].timezone = timezone
-            serializer.validated_data["station"].save()
-            getLogger().warning(
+            raise ValueError(
                 f"No timezone found! Setting timezone {timezone} for station "
                 f"{serializer.validated_data['station']}."
             )

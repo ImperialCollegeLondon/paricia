@@ -265,84 +265,49 @@ def standardise_datetime(date_time: Any, datetime_format: str) -> Optional[datet
     return _date_time
 
 
-def save_temp_data_to_permanent(data_import_temp):
-    """
-    Function to pass the temporary import to the final table. Uses the data_import_temp
-    object only to get all required information from its fields.
+def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
+    """Function to pass the temporary import to the final table.
+
+    Uses the data_import_temp object only to get all required information from its
+    fields.
+
     This function carries out the following steps:
-    1.  Bulk delete of existing data between two times on a given measurement table for
+
+    - Bulk delete of existing data between two times on a given measurement table for
     the station in question.
-    2.  Bulk create to add the new data from the uploaded file.
-    Steps 1. and 2. are carried out for each columns (variable) in the uploaded file.
-    Args: data_import_id (int): DataImportTemp ID
-    Returns: None
+    - Bulk create to add the new data from the uploaded file.
+
+    Args:
+        data_import_temp: DataImportTemp object.
     """
     file_format = data_import_temp.format
     station = data_import_temp.station
+
     file_path = str(BASE_DIR) + "/data/media/" + str(data_import_temp.file)
 
     all_data = construct_matrix(file_path, file_format, station)
-    for var_code, table in all_data.items():
-        table = table.where((pd.notnull(table)), None)
+    must_cols = ["station_id", "variable_id", "time", "value"]
+    for table in all_data:
+        cols = [
+            c for c in table.columns if c in Measurement._meta.fields or c in must_cols
+        ]
+        table = table[cols].dropna(axis=0, subset=must_cols)
         records = table.to_dict("records")
-        Model = apps.get_model("measurement", var_code)
+        variable_id = table["variable_id"].iloc[0]
 
         # Delete existing data between the date ranges
-        Model.timescale.filter(
+        Measurement.timescale.filter(
             time__range=[data_import_temp.start_date, data_import_temp.end_date],
             station_id=station.station_id,
+            variable_id=variable_id,
         ).delete()
 
-        # The following is a hack to account for the different possible name of the
-        # fields that the models might have. Will be made "nicer" at some point.
-        # This should always work as a measurement model should always have one and only
-        # one of "value", "average", "sum" fields.
-        value_field = (
-            set([field.name for field in Model._meta.fields])
-            .intersection(["value", "average", "sum"])
-            .pop()
-        )
-
         # Bulk add new data
-        # TODO improve this logic to cope with variables that might have max/min
-        # AND depth.
-        if "maximum" in table.columns:
-            model_instances = [
-                Model(
-                    {
-                        "time": record["date"],
-                        value_field: record["value"],
-                        "station_id": record["station_id"],
-                        "maximum": record["maximum"],
-                        "minimum": record["minimum"],
-                    },
-                )
-                for record in records
-            ]
-        elif "depth" in [f.name for f in Model._meta.fields]:
-            model_instances = [
-                Model(
-                    {
-                        "time": record["date"],
-                        value_field: record["value"],
-                        "depth": record["depth"],
-                        "station_id": record["station_id"],
-                    },
-                )
-                for record in records
-            ]
-        else:
-            model_instances = [
-                Model(
-                    {
-                        "time": record["date"],
-                        value_field: record["value"],
-                        "station_id": record["station_id"],
-                    },
-                )
-                for record in records
-            ]
-        Model.objects.bulk_create(model_instances)
+        model_instances = [Measurement(**record) for record in records]
+
+        # WARNING: This is a bulk insert, so it will not call the save()
+        # method nor send the pre_save or post_save signals for each instance.
+        Measurement.objects.bulk_create(model_instances)
 
 
 def construct_matrix(matrix_source, file_format, station):
@@ -361,11 +326,11 @@ def construct_matrix(matrix_source, file_format, station):
     # Get the "preformatted matrix" sorted by date col
     matrix = read_data_to_import(matrix_source, file_format, station.timezone)
     # Find start and end dates from top and bottom row
-    start_date = matrix.loc[0, "date"]
-    end_date = matrix.loc[-1, "date"]
+    start_date = matrix["date"].iloc[0]
+    end_date = matrix["date"].iloc[-1]
 
     classifications = list(Classification.objects.filter(format=file_format))
-    variables_data = {}
+    to_ingest = []
     for classification in classifications:
         columns = []
         columns.append(("date", "date"))
@@ -464,10 +429,12 @@ def construct_matrix(matrix_source, file_format, station):
             if classification.resolution:
                 data["value"] = data["value"] * float(classification.resolution)
         data["station_id"] = station.station_id
-        # Add the data to the main dict
-        variables_data[classification.variable.variable_code] = data
+        data["variable_id"] = classification.variable.variable_id
 
-    return variables_data
+        # Add the data to the main list
+        to_ingest.append(data)
+
+    return to_ingest
 
 
 def standardise_float(val_str):
