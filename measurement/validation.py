@@ -312,11 +312,11 @@ def reset_validated_days(
         start_date (str): Start date
         end_date (str): End date
     """
+    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+    start_date_ = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz).date()
+    end_date_ = datetime.strptime(end_date, "%Y-%m-%d").replace(tzinfo=tz).date()
     Measurement.objects.filter(
         station__station_code=station,
         variable__variable_code=variable,
-        time__date__range=(
-            datetime.strptime(start_date, "%Y-%m-%d").date(),
-            datetime.strptime(end_date, "%Y-%m-%d").date(),
-        ),
+        time__date__range=(start_date_, end_date_),
     ).update(is_validated=False, is_active=True)
