@@ -20,7 +20,7 @@ class MeasurementBaseAdmin(PermissionsBaseAdmin):
 
     def has_view_permission(self, request, obj=None):
         if obj is not None:
-            return "view_measurementbase" in get_perms(request.user, obj)
+            return f"view_{self.model}" in get_perms(request.user, obj)
         return True
 
     def save_model(self, request, obj, form, change):
@@ -31,12 +31,14 @@ class MeasurementBaseAdmin(PermissionsBaseAdmin):
 
 @admin.register(Report)
 class ReportAdmin(MeasurementBaseAdmin):
+    model = "report"
     list_display = ["id", "report_type"] + MeasurementBaseAdmin.list_display[1:]
     list_filter = ["report_type"] + MeasurementBaseAdmin.list_filter
 
 
 @admin.register(Measurement)
 class MeasurementAdmin(MeasurementBaseAdmin):
+    model = "measurement"
     list_display = [
         "id",
         "is_validated",
