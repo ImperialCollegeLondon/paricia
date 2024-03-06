@@ -183,16 +183,16 @@ def process_datetime_columns(
         data["date"] = pd.Series(
             [
                 standardise_datetime(row, dt_format).replace(tzinfo=tz)
-                for row in data[file_format.date_column - 1].values
+                for row in data.iloc[:, file_format.date_column - 1].values
             ],
             index=data.index,
         )
     else:
         cols = file_format.datetime_columns(file_format.delimiter.character)
-        data["datetime_str"] = data[cols].agg(
-            lambda row: " ".join([r.astype(str) for r in row]), axis=1
+        data["datetime_str"] = data.iloc[:, cols].agg(
+            lambda row: " ".join([str(r) for r in row]), axis=1
         )
-        data["date"] = data["datime_str"].apply(
+        data["date"] = data["datetime_str"].apply(
             lambda row: standardise_datetime(row, dt_format).replace(tzinfo=tz)
         )
         data.drop(columns=["datetime_str"], inplace=True)

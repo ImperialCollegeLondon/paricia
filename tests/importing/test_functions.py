@@ -192,3 +192,86 @@ class TestReadFileCSV(TestCase):
         result = read_file_csv(csv_file, file_format)
         expected_result = [[1, 2, 3], [4, 5, 6]]
         self.assertEqual(result.values.tolist(), expected_result)
+
+
+class TestProcessDatetimeColumns(TestCase):
+    def test_process_datetime_columns_same_column(self):
+        import pandas as pd
+
+        from formatting.models import Date, Delimiter, Time
+        from importing.functions import process_datetime_columns
+        from importing.models import Format
+
+        # Prepare test data
+        data = pd.DataFrame(
+            {
+                "datetime": ["2022-01-01 10:00:00", "2022-01-02 12:00:00"],
+                "value": [1, 2],
+            }
+        )
+        file_format = Format(
+            date_column=1,
+            time_column=1,
+            date=Date(date_format="", code="%Y-%m-%d"),
+            time=Time(time_format="", code="%H:%M:%S"),
+            delimiter=Delimiter(name="coma", character=","),
+        )
+        timezone = "America/New_York"
+
+        # Call the function
+        processed_data = process_datetime_columns(data, file_format, timezone)
+
+        # Assert the result
+        expected_data = pd.DataFrame(
+            {
+                "date": [
+                    pd.Timestamp("2022-01-01 10:00:00", tz="America/New_York"),
+                    pd.Timestamp("2022-01-02 12:00:00", tz="America/New_York"),
+                ],
+                "value": [1, 2],
+            }
+        )
+        pd.testing.assert_frame_equal(
+            processed_data[["date", "value"]], expected_data, check_dtype=False
+        )
+
+    def test_process_datetime_columns_different_columns(self):
+        import pandas as pd
+
+        from formatting.models import Date, Delimiter, Time
+        from importing.functions import process_datetime_columns
+        from importing.models import Format
+
+        # Prepare test data
+        data = pd.DataFrame(
+            {
+                "date": ["2022-01-01", "2022-01-02"],
+                "time": ["10:00:00", "12:00:00"],
+                "value": [1, 2],
+            }
+        )
+        file_format = Format(
+            date_column=1,
+            time_column=2,
+            date=Date(date_format="", code="%Y-%m-%d"),
+            time=Time(time_format="", code="%H:%M:%S"),
+            delimiter=Delimiter(name="coma", character=","),
+        )
+        timezone = "America/New_York"
+
+        # Call the function
+        processed_data = process_datetime_columns(data, file_format, timezone)
+
+        # Assert the result
+        expected_data = pd.DataFrame(
+            {
+                "date": [
+                    pd.Timestamp("2022-01-01 10:00:00", tz="America/New_York"),
+                    pd.Timestamp("2022-01-02 12:00:00", tz="America/New_York"),
+                ],
+                "value": [1, 2],
+            }
+        )
+        pd.testing.assert_frame_equal(
+            processed_data[["date", "value"]], expected_data, check_dtype=False
+        )
