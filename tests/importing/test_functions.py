@@ -47,17 +47,26 @@ class TestMatrixFunctions(TestCase):
 
     def test_construct_matrix(self):
         from importing.functions import construct_matrix
+        from variable.models import Variable
 
         variables_data = construct_matrix(
             self.data_file, self.file_format, self.station
         )
-        self.assertEqual(list(variables_data.keys()), ["flow", "waterlevel"])
+        self.assertEqual(len(variables_data), 2)
+        vars = list(
+            Variable.objects.filter(
+                variable_id__in=[var["variable_id"][0] for var in variables_data]
+            ).values_list("variable_code", flat=True)
+        )
+        self.assertListEqual(vars, ["flow", "waterlevel"])
 
-        self.assertEqual(variables_data["flow"].value.min(), 0.0)
-        self.assertEqual(variables_data["flow"].value.max(), 1624.4041)
+        data_dict = {var: data for var, data in zip(vars, variables_data)}
 
-        self.assertEqual(variables_data["waterlevel"].value.min(), 0.0)
-        self.assertEqual(variables_data["waterlevel"].value.max(), 96.54)
+        self.assertEqual(data_dict["flow"].value.min(), 0.0)
+        self.assertEqual(data_dict["flow"].value.max(), 1624.4041)
+
+        self.assertEqual(data_dict["waterlevel"].value.min(), 0.0)
+        self.assertEqual(data_dict["waterlevel"].value.max(), 96.54)
 
 
 class TestDateFunctions(TestCase):
@@ -87,14 +96,16 @@ class TestDateFunctions(TestCase):
         from formatting.models import Format
         from importing.functions import read_data_to_import
         from importing.models import DataImportTemp
-        from measurement.models import Flow
+        from measurement.models import Measurement
         from station.models import TIMEZONES, Station
+        from variable.models import Variable
 
         self.file_format = Format.objects.get(format_id=45)
         self.data_file = str(
             Path(__file__).parent.parent / "test_data" / "iMHEA_HMT_01_HI_01_raw.csv"
         )
         self.station = Station.objects.get(station_id=8)
+        self.variable = Variable.objects.get(variable_id=10)
         self.station.timezone = TIMEZONES[0][0]
 
         matrix = read_data_to_import(
@@ -117,15 +128,17 @@ class TestDateFunctions(TestCase):
         )
 
         # Two lines of dummy data from the actual file
-        flow1 = Flow.objects.create(
-            station_id=8,
+        Measurement.objects.create(
+            station=self.station,
+            variable=self.variable,
             time=datetime(2014, 6, 28, 0, 35, 0, tzinfo=pytz.UTC),
-            average=3.4,
+            value=3.4,
         )
-        flow2 = Flow.objects.create(
-            station_id=8,
+        Measurement.objects.create(
+            station=self.station,
+            variable=self.variable,
             time=datetime(2016, 3, 7, 18, 5, 0, tzinfo=pytz.UTC),
-            average=5.7,
+            value=5.7,
         )
 
     def test_get_last_uploaded_date(self):

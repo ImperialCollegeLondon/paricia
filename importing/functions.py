@@ -61,10 +61,11 @@ def validate_dates(data_import):
         var_code = str(classification.variable.variable_code)
         last_upload_date = get_last_uploaded_date(station.station_id, var_code)
 
-        # Check if data exists between dates
-        model = apps.get_model("measurement", var_code)
-        query = model.timescale.filter(
-            time__range=[start_date, end_date], station_id=station.station_id
+        # Check if data exists between dates)
+        query = Measurement.timescale.filter(
+            time__range=[start_date, end_date],
+            station_id=station.station_id,
+            variable_id=classification.variable.variable_id,
         )
         exists = True if query else False
         overwrite = overwrite or exists
@@ -310,7 +311,7 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
         Measurement.objects.bulk_create(model_instances)
 
 
-def construct_matrix(matrix_source, file_format, station):
+def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
     """
     Construct the "matrix" or results table. Does various cleaning / simple
     transformations depending on the date format, type of data (accumulated,
