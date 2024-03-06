@@ -1,15 +1,15 @@
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
-from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_perms
 
+from management.admin import PermissionsBaseAdmin
 from measurement.models import Measurement, Report
 from station.models import Station
 
 admin.site.site_header = "Paricia Administration - Measurements"
 
 
-class MeasurementBaseAdmin(GuardedModelAdmin):
+class MeasurementBaseAdmin(PermissionsBaseAdmin):
     list_display = ["id", "station", "variable", "maximum", "minimum"]
     list_filter = ["station", "variable"]
 
@@ -17,19 +17,6 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
         if db_field.name == "station":
             kwargs["queryset"] = Station.objects.filter(owner=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def has_add_permission(self, request):
-        return request.user.is_authenticated
-
-    def has_change_permission(self, request, obj=None):
-        if obj is not None:
-            return "change_measurementbase" in get_perms(request.user, obj)
-        return True
-
-    def has_delete_permission(self, request, obj=None):
-        if obj is not None:
-            return "delete_measurementbase" in get_perms(request.user, obj)
-        return True
 
     def has_view_permission(self, request, obj=None):
         if obj is not None:

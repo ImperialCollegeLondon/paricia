@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.core.exceptions import PermissionDenied
-from django.db.models import Q
-from guardian.admin import GuardedModelAdmin
-from guardian.shortcuts import get_perms
+
+from management.admin import PermissionsBaseAdmin
 
 from .models import (
     Basin,
@@ -19,53 +17,20 @@ from .models import (
 admin.site.site_header = "Paricia Administration - Stations"
 
 
-class BaseAdmin(GuardedModelAdmin):
-    foreign_key_fields: list[str] = []
-
-    def has_add_permission(self, request):
-        return request.user.is_authenticated
-
-    def has_change_permission(self, request, obj=None):
-        if obj is not None:
-            return f"change_{self.model}" in get_perms(request.user, obj)
-        return True
-
-    def has_delete_permission(self, request, obj=None):
-        if obj is not None:
-            return f"delete_{self.model}" in get_perms(request.user, obj)
-        return True
-
-    def has_view_permission(self, request, obj=None):
-        return True
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in self.foreign_key_fields:
-            kwargs["queryset"] = _get_queryset(db_field.related_model, request.user)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def save_model(self, request, obj, form, change):
-        for field in self.foreign_key_fields:
-            owner = getattr(obj, field).owner
-            perm_level = getattr(obj, field).permissions_level
-            if owner != request.user and perm_level == "Private":
-                raise PermissionDenied(f"Private {field}: Only owner can use.")
-        super().save_model(request, obj, form, change)
-
-
 @admin.register(StationType)
-class StationTypeAdmin(BaseAdmin):
+class StationTypeAdmin(PermissionsBaseAdmin):
     model = "stationtype"
     list_display = ["name", "id", "owner", "permissions_level"]
 
 
 @admin.register(Country)
-class CountryAdmin(BaseAdmin):
+class CountryAdmin(PermissionsBaseAdmin):
     model = "country"
     list_display = ["name", "id", "owner", "permissions_level"]
 
 
 @admin.register(Region)
-class RegionAdmin(BaseAdmin):
+class RegionAdmin(PermissionsBaseAdmin):
     model = "region"
     list_display = ["name", "id", "owner", "permissions_level", "country"]
     list_filter = ["country"]
@@ -73,19 +38,19 @@ class RegionAdmin(BaseAdmin):
 
 
 @admin.register(Ecosystem)
-class EcosystemAdmin(BaseAdmin):
+class EcosystemAdmin(PermissionsBaseAdmin):
     model = "ecosystem"
     list_display = ["name", "id", "owner", "permissions_level"]
 
 
 @admin.register(Institution)
-class InstitutionAdmin(BaseAdmin):
+class InstitutionAdmin(PermissionsBaseAdmin):
     model = "institution"
     list_display = ["name", "id", "owner", "permissions_level"]
 
 
 @admin.register(PlaceBasin)
-class PlaceBasinAdmin(BaseAdmin):
+class PlaceBasinAdmin(PermissionsBaseAdmin):
     model = "placebasin"
     list_display = [
         "id",
@@ -100,19 +65,19 @@ class PlaceBasinAdmin(BaseAdmin):
 
 
 @admin.register(Place)
-class PlaceAdmin(BaseAdmin):
+class PlaceAdmin(PermissionsBaseAdmin):
     model = "place"
     list_display = ["name", "id", "owner", "permissions_level", "image"]
 
 
 @admin.register(Basin)
-class BasinAdmin(BaseAdmin):
+class BasinAdmin(PermissionsBaseAdmin):
     model = "basin"
     list_display = ["name", "id", "owner", "permissions_level", "image", "file"]
 
 
 @admin.register(Station)
-class StationAdmin(BaseAdmin):
+class StationAdmin(PermissionsBaseAdmin):
     model = "station"
     list_display = [
         "station_id",
@@ -149,7 +114,3 @@ class StationAdmin(BaseAdmin):
         "institution",
         "place_basin",
     ]
-
-
-def _get_queryset(model, user):
-    return model.objects.filter(Q(owner=user) | Q(permissions_level="Public"))
