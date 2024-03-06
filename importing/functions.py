@@ -11,9 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-import os
-import shutil
-import time
 import zoneinfo
 from datetime import datetime
 from logging import getLogger
@@ -22,14 +19,11 @@ from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
-from django.apps import apps
-from django.db import transaction
 
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification, Format
-from importing.models import DataImportFull, DataImportTemp
+from importing.models import DataImportTemp
 from measurement.models import Measurement, StripLevelReading, WaterLevel
-from variable.models import Variable
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
