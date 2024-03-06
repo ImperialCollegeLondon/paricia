@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 # Create your models here.
 
@@ -9,3 +10,19 @@ class User(AbstractUser):
     """
 
     pass
+
+
+class PermissionsBase(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    PERMISSIONS_LEVELS = [
+        ("public", "Public"),
+        ("private", "Private"),
+    ]
+
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
+
+    class Meta:
+        abstract = True

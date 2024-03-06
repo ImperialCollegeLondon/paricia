@@ -145,24 +145,4 @@ class Migration(migrations.Migration):
                 max_length=8,
             ),
         ),
-        migrations.AlterField(
-            model_name="basin",
-            name="name",
-            field=models.CharField(max_length=32),
-        ),
-        migrations.AlterField(
-            model_name="place",
-            name="name",
-            field=models.CharField(max_length=32),
-        ),
-        migrations.AlterField(
-            model_name="region",
-            name="name",
-            field=models.CharField(max_length=32),
-        ),
-        migrations.AlterField(
-            model_name="stationtype",
-            name="name",
-            field=models.CharField(max_length=32),
-        ),
     ]

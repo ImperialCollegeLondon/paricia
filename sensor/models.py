@@ -17,26 +17,12 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
+from management.models import PermissionsBase
+
 User = get_user_model()
 
 
-class SensorBaseModel(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-
-    PERMISSIONS_LEVELS = [
-        ("public", "Public"),
-        ("private", "Private"),
-    ]
-
-    permissions_level = models.CharField(
-        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
-    )
-
-    class Meta:
-        abstract = True
-
-
-class SensorType(SensorBaseModel):
+class SensorType(PermissionsBase):
     """
     Type of sensor, eg. pluviometric, wind sensor, etc.
     """
@@ -51,7 +37,7 @@ class SensorType(SensorBaseModel):
         return reverse("sensor:type_detail", kwargs={"pk": self.pk})
 
 
-class SensorBrand(SensorBaseModel):
+class SensorBrand(PermissionsBase):
     """
     Brand of the sensor, eg. Davis, Texas Electronics, etc.
     """
@@ -69,7 +55,7 @@ class SensorBrand(SensorBaseModel):
         ordering = ("brand_id",)
 
 
-class Sensor(SensorBaseModel):
+class Sensor(PermissionsBase):
     """
     Specific sensor details
     """
