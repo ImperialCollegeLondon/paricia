@@ -436,7 +436,6 @@ def standardise_float(val_str):
     """
     Removes commas from strings representing numbers that use a full stop as a decimal
     separator.
-    TODO: Fix bare except statement.
     Args: val_str: string or Number-like
     Returns: val_num: float or None
     """
@@ -445,7 +444,7 @@ def standardise_float(val_str):
     try:
         val_str = val_str.replace(",", "")
         val_num = float(val_str)
-    except:
+    except ValueError:
         val_num = None
     return val_num
 
@@ -455,7 +454,6 @@ def standardise_float_comma(val_str):
     For strings representing numbers that use a comma as a decimal separator:
     (i) Removes full stops
     (ii) Replaces commas for full stops
-    TODO: Fix bare except statement.
     Args: val_str: string or Number-like
     Returns: val_num: float or None
     """
@@ -465,7 +463,7 @@ def standardise_float_comma(val_str):
         val_str = val_str.replace(".", "")
         val_str = val_str.replace(",", ".")
         val_num = float(val_str)
-    except:
+    except ValueError:
         val_num = None
     return val_num
 
@@ -493,8 +491,7 @@ def insert_level_rule(data_import, level_rule):
         return False
     try:
         uncertainty = float(level_rule["value"]) - float(water_level.value)
-    # TODO: Fix bare except
-    except:
+    except ValueError:
         return False
     StripLevelReading(
         station_id=data_import.station_id_id,
