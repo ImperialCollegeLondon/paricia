@@ -155,3 +155,40 @@ class TestDateFunctions(TestCase):
         self.assertEqual(validation[0][1]["variable_code"], "waterlevel")
         self.assertFalse(validation[0][1]["exists"])
         self.assertEqual(validation[1], True)
+
+
+class TestReadFileCSV(TestCase):
+    def test_read_file_csv(self):
+        import io
+
+        from formatting.models import Delimiter, Format
+        from importing.functions import read_file_csv
+
+        # Create a sample CSV file
+        csv_data = "1,2,3\n4,5,6\n7,8,9\n"
+        csv_file = io.StringIO(csv_data)
+
+        # File format skipping one row (so first row is number 2)
+        # and using a coma as delimiter
+        file_format = Format(
+            first_row=2, delimiter=Delimiter(name="coma", character=",")
+        )
+        result = read_file_csv(csv_file, file_format)
+        expected_result = [[4, 5, 6], [7, 8, 9]]
+        self.assertEqual(result.values.tolist(), expected_result)
+
+        # File format using the first row and a coma as delimiter
+        csv_file.seek(0)
+        file_format = Format(delimiter=Delimiter(name="coma", character=","))
+        result = read_file_csv(csv_file, file_format)
+        expected_result = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        self.assertEqual(result.values.tolist(), expected_result)
+
+        # File format skipping the last row and using a coma as delimiter
+        csv_file.seek(0)
+        file_format = Format(
+            footer_rows=1, delimiter=Delimiter(name="coma", character=",")
+        )
+        result = read_file_csv(csv_file, file_format)
+        expected_result = [[1, 2, 3], [4, 5, 6]]
+        self.assertEqual(result.values.tolist(), expected_result)

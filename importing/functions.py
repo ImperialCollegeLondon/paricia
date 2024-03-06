@@ -141,7 +141,7 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
         lines = len(source_file.readlines())
         source_file.seek(0)
         skiprows = [i for i in range(0, firstline - 1)] + [
-            i - 1 for i in range(lines, lines - firstline, -1)
+            i - 1 for i in range(lines, lines - skipfooter, -1)
         ]
         skipfooter = 0
 
