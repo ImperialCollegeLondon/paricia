@@ -26,7 +26,7 @@ User = get_user_model()
 @receiver(post_save, sender=Basin)
 @receiver(post_save, sender=Station)
 def set_permissions(sender, instance, **kwargs):
-    """Set object-level permissions"."""
+    """Set object-level permissions."""
     # Get permissions for model
     delete, change, view = _get_perm_codenames(sender)
 
@@ -37,6 +37,17 @@ def set_permissions(sender, instance, **kwargs):
     if instance.owner:
         for perm in [change, delete]:
             assign_perm(perm, instance.owner, instance)
+
+    # Assign view_measurements permission for Station objects
+    if sender == Station:
+        permissions_users = {
+            "public": User.objects.all(),
+            "internal": User.objects.filter(is_active=True),
+            "private": [instance.owner] if instance.owner else [],
+        }
+        users = permissions_users[instance.permissions_level]
+        for user in users:
+            assign_perm("view_measurements", user, instance)
 
 
 def _get_perm_codenames(model):

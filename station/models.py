@@ -297,6 +297,7 @@ class Station(models.Model):
 
     class Meta:
         ordering = ("station_id",)
+        permissions = (("view_measurements", "View measurements"),)
 
 
 # TODO Discuss if it's really necessary to implement multiple deltaTs for different dates
