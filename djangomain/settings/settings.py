@@ -59,9 +59,6 @@ INSTALLED_APPS = [
     "formatting.apps.FormattingConfig",
     "measurement",
     "validated.apps.ValidatedConfig",
-    "hourly.apps.HourlyConfig",
-    "daily.apps.DailyConfig",
-    "monthly.apps.MonthlyConfig",
     "importing.apps.ImportingConfig",
     "bootstrap4",
     "django_extensions",
@@ -83,9 +80,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    ##
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ##
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
