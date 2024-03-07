@@ -21,3 +21,4 @@ crispy-bootstrap4
 django-plotly-dash
 dash-ag-grid
 django-guardian
+whitenoise
