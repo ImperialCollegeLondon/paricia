@@ -18,8 +18,8 @@ from . import views
 
 app_name = "measurement"
 urlpatterns = [
-    path("api/measurement/", views.MeasurementList.as_view()),
-    path("api/report/", views.ReportList.as_view()),
+    path("measurement/", views.MeasurementList.as_view()),
+    path("report/", views.ReportList.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
