@@ -4,8 +4,9 @@ import plotly.express as px
 from dash import Input, Output, dcc, html
 from django_plotly_dash import DjangoDash
 
+from measurement.models import Measurement, Report
+from measurement.reporting import get_report_data_from_db
 from station.models import Station
-from validated.functions import dict_data_report
 from variable.models import Variable
 
 # Create a Dash app
@@ -16,8 +17,8 @@ app = DjangoDash(
 
 
 # Initial values
-init_station: Station = Station.objects.order_by("station_code")[7]
-init_variable: Variable = Variable.objects.order_by("variable_code")[0]
+init_station: str = Station.objects.order_by("station_code")[7].station_code
+init_variable: str = Variable.objects.order_by("variable_code")[0].variable_code
 init_start_time: str = "2023-03-01"
 init_end_time: str = "2023-03-31"
 init_temporality: str = "measurement"
@@ -25,30 +26,29 @@ init_temporality: str = "measurement"
 
 def plot_graph(
     temporality: str,
-    station: Station,
-    variable: Variable,
+    station: str,
+    variable: str,
     start_time: str,
     end_time: str,
 ):
     # Load data
     try:
-        data: dict = dict_data_report(
-            temporality=temporality,
+        data: pd.DataFrame = get_report_data_from_db(
             station=station,
             variable=variable,
             start_time=start_time,
             end_time=end_time,
+            report_type=temporality,
         )
 
-        # Convert data to DataFrame
-        df = pd.DataFrame.from_dict(data["series"])
+        variable_obj = Variable.objects.get(variable_code=variable)
 
         # Create plot
         plot = px.line(
-            df,
+            data,
             x="time",
             y=["average", "minimum", "maximum"],
-            title=f"{station.station_code} - {variable.name}",
+            title=f"{station} - {variable_obj.name}",
         )
 
     except Exception as e:
@@ -107,7 +107,7 @@ app.layout = html.Div(
                                 item.station_code
                                 for item in Station.objects.order_by("station_code")
                             ],
-                            value=init_station.station_code,
+                            value=init_station,
                         ),
                         html.H3("Variable"),
                         dcc.Dropdown(
@@ -116,7 +116,7 @@ app.layout = html.Div(
                                 {"label": item.name, "value": item.variable_code}
                                 for item in Variable.objects.order_by("variable_code")
                             ],
-                            value=init_variable.variable_code,
+                            value=init_variable,
                         ),
                         html.H3("Start date - End date"),
                         dcc.DatePickerRange(
@@ -159,9 +159,6 @@ def update_graph(
     start_time: str,
     end_time: str,
 ) -> px.line:
-    station = Station.objects.get(station_code=station)
-    variable = Variable.objects.get(variable_code=variable)
-
     plot = plot_graph(
         temporality,
         station,
@@ -187,8 +184,8 @@ def update_graph(
 def clear_form(n_clicks: int):
     return (
         init_temporality,
-        init_station.station_code,
-        init_variable.variable_code,
+        init_station,
+        init_variable,
         init_start_time,
         init_end_time,
     )

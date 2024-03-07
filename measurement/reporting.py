@@ -200,15 +200,36 @@ def get_report_data_from_db(
     """
     start_time_, end_time_ = reformat_dates(station, start_time, end_time)
 
-    return pd.DataFrame.from_records(
-        Report.objects.filter(
-            station__station_code=station,
-            variable__variable_code=variable,
-            time__gte=start_time_,
-            time__lte=end_time_,
-            report_type=report_type,
-        ).values()
-    ).rename(columns={"station_id": "station", "variable_id": "variable"})
+    if report_type == "measurement":
+        return pd.DataFrame.from_records(
+            Measurement.objects.filter(
+                station__station_code=station,
+                variable__variable_code=variable,
+                time__gte=start_time_,
+                time__lte=end_time_,
+            ).values()
+        )
+    elif report_type == "validated":
+        return pd.DataFrame.from_records(
+            Measurement.objects.filter(
+                station__station_code=station,
+                variable__variable_code=variable,
+                time__gte=start_time_,
+                time__lte=end_time_,
+                is_validated=True,
+                is_active=True,
+            ).values()
+        )
+    else:
+        return pd.DataFrame.from_records(
+            Report.objects.filter(
+                station__station_code=station,
+                variable__variable_code=variable,
+                time__gte=start_time_,
+                time__lte=end_time_,
+                report_type=report_type,
+            ).values()
+        ).rename(columns={"station_id": "station", "variable_id": "variable"})
 
 
 def launch_reports_calculation(
