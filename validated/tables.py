@@ -4,7 +4,7 @@ Functions defining columns and style conditions for tables in the validation app
 """
 
 
-def create_columns_daily(value_columns: list) -> list:
+def create_columns_daily() -> list:
     """Creates columns for Daily Report table
 
     Args:
@@ -13,71 +13,47 @@ def create_columns_daily(value_columns: list) -> list:
     Returns:
         list: List of columns
     """
-    styles = create_style_conditions_daily()
+    styles = create_style_conditions()
 
     columns = [
         {
-            "field": "id",
-            "headerName": "Id",
-            "filter": "agNumberColumnFilter",
-            "maxWidth": 150,
-        },
-        {
-            "valueGetter": {"function": "d3.timeParse('%Y-%m-%d')(params.data.date)"},
+            "valueGetter": {
+                "function": "d3.timeParse('%Y-%m-%d')(params.data.date.split('T')[0])"
+            },
             "headerName": "Date",
             "filter": "agDateColumnFilter",
-            "valueFormatter": {"function": "params.data.date"},
+            "valueFormatter": {"function": "params.data.date.split('T')[0]"},
+            "sort": "asc",
             **styles["date"],
         },
+        *[
+            {
+                "field": c,
+                "headerName": c.capitalize(),
+                "filter": "agNumberColumnFilter",
+                "valueFormatter": {"function": "d3.format(',.2f')(params.value)"},
+                **styles[c],
+            }
+            for c in ["value", "minimum", "maximum"]
+        ],
         {
-            "field": "percentage",
-            "headerName": "Percnt.",
+            "field": "daily_count_fraction",
+            "headerName": "Daily count fraction",
             "filter": "agNumberColumnFilter",
-            **styles["percentage"],
-        },
-    ]
-
-    additional_columns = [
-        {
-            "field": "sum",
-            "headerName": "Sum",
-            "filter": "agNumberColumnFilter",
-            **styles["sum"],
-        },
-        {
-            "field": "average",
-            "headerName": "Average",
-            "filter": "agNumberColumnFilter",
-            **styles["average"],
+            "valueFormatter": {"function": "d3.format(',.2f')(params.value)"},
+            **styles["daily_count_fraction"],
         },
         {
-            "field": "maximum",
-            "headerName": "Max. of Maxs.",
+            "field": "total_suspicious_entries",
+            "headerName": "Suspicious entries",
             "filter": "agNumberColumnFilter",
-            **styles["maximum"],
-        },
-        {
-            "field": "minimum",
-            "headerName": "Min. of Mins.",
-            "filter": "agNumberColumnFilter",
-            **styles["minimum"],
-        },
-    ]
-
-    columns += [d for d in additional_columns if d["field"] in value_columns]
-
-    columns += [
-        {
-            "field": "value_difference_error_count",
-            "headerName": "Diff. Err",
-            "filter": "agNumberColumnFilter",
-            **styles["value_difference_error_count"],
+            **styles["total_suspicious_entries"],
         },
     ]
     return columns
 
 
-def create_columns_detail(value_columns: list) -> list:
+def create_columns_detail() -> list:
     """Creates columns for Detail table
 
     Args:
@@ -86,40 +62,33 @@ def create_columns_detail(value_columns: list) -> list:
     Returns:
         list: List of columns
     """
-    styles = create_style_conditions_detail(value_columns)
+    styles = create_style_conditions()
 
     columns = [
         {
             "field": "id",
-            "headerName": "Id",
+            "headerName": "Measurement ID",
             "filter": "agNumberColumnFilter",
-            "maxWidth": 150,
         },
         {
             "field": "time",
             "valueFormatter": {"function": "params.value.split('T')[1].split('+')[0]"},
             "headerName": "Time",
             "editable": True,
+            "sort": "asc",
             **styles["time"],
         },
-    ]
-    columns += [
-        {
-            "field": c,
-            "headerName": c.capitalize(),
-            "filter": "agNumberColumnFilter",
-            "editable": True,
-            **styles[c],
-        }
-        for c in value_columns
-    ]
-    columns += [
-        {
-            "field": "stddev_error",
-            "headerName": "Outliers",
-            "valueFormatter": {"function": "params.value ? 'X' : '-'"},
-        },
-        {"field": "value_difference", "headerName": "Value diff."},
+        *[
+            {
+                "field": c,
+                "headerName": c.capitalize(),
+                "filter": "agNumberColumnFilter",
+                "editable": True,
+                "valueFormatter": {"function": "d3.format(',.2f')(params.value)"},
+                **styles[c],
+            }
+            for c in ["value", "minimum", "maximum"]
+        ],
     ]
     return columns
 
@@ -150,7 +119,7 @@ def create_style_condition(
     ]
 
 
-def create_style_conditions_daily() -> dict:
+def create_style_conditions() -> dict:
     """Creates style conditions for Daily Report table
 
     Returns:
@@ -158,19 +127,8 @@ def create_style_conditions_daily() -> dict:
     """
     style_error = {"backgroundColor": "#E45756"}
     style_normal = {"backgroundColor": "transparent"}
-    style_validated = {"backgroundColor": "#00CC96"}
 
     styles = {}
-
-    styles["id"] = {
-        "cellStyle": {
-            "styleConditions": create_style_condition(
-                condition="params.data['all_validated']",
-                style_true=style_validated,
-                style_false=style_normal,
-            )
-        },
-    }
 
     styles["date"] = {
         "cellStyle": {
@@ -182,76 +140,55 @@ def create_style_conditions_daily() -> dict:
         },
     }
 
-    styles["percentage"] = {
-        "cellStyle": {
-            "styleConditions": create_style_condition(
-                condition="params.data['percentage_error']",
-                style_true=style_error,
-                style_false=style_normal,
-            )
-        },
-    }
-
-    styles["value_difference_error_count"] = {
-        "cellStyle": {
-            "styleConditions": create_style_condition(
-                condition="params.data['value_difference_error_count'] > 0",
-                style_true=style_error,
-                style_false=style_normal,
-            )
-        },
-    }
-
-    for field in ["sum", "average", "maximum", "minimum"]:
-        styles[field] = {
-            "cellStyle": {
-                "styleConditions": create_style_condition(
-                    condition=f"params.data['suspicious_{field}s_count'] > 0",
-                    style_true=style_error,
-                    style_false=style_normal,
-                )
-            },
-        }
-
-    return styles
-
-
-def create_style_conditions_detail(value_columns: list) -> dict:
-    """Creates style conditions for Detail table
-
-    Args:
-        value_columns (list): List of value columns
-
-    Returns:
-        dict: Style conditions
-    """
-    styles = {}
-
-    style_error = {"backgroundColor": "#E45756"}
-    style_warning = {"backgroundColor": "#FFA15A"}
-    style_normal = {"backgroundColor": "transparent"}
-
     styles["time"] = {
         "cellStyle": {
-            "styleConditions": [
-                {
-                    "condition": f"params.data['time_lapse_status'] == {val}",
-                    "style": s,
-                }
-                for val, s in zip([0, 1, 2], [style_error, style_normal, style_warning])
-            ]
+            "styleConditions": create_style_condition(
+                condition="params.data['suspicious_time_lapse']",
+                style_true=style_error,
+                style_false=style_normal,
+            )
         },
     }
 
-    for field in value_columns + ["stdev", "value_difference"]:
+    styles["value"] = {
+        "cellStyle": {
+            "styleConditions": create_style_condition(
+                condition="params.data['suspicious_value_limits'] > 0 || params.data['suspicious_value_difference'] > 0",
+                style_true=style_error,
+                style_false=style_normal,
+            )
+        },
+    }
+
+    for field in ["maximum", "minimum"]:
         styles[field] = {
             "cellStyle": {
                 "styleConditions": create_style_condition(
-                    condition=f"params.data['{field}_error']",
+                    condition=f"params.data['suspicious_{field}_limits'] > 0",
                     style_true=style_error,
                     style_false=style_normal,
                 )
             },
         }
+
+    styles["daily_count_fraction"] = {
+        "cellStyle": {
+            "styleConditions": create_style_condition(
+                condition="params.data['daily_count_fraction'] != 1",
+                style_true=style_error,
+                style_false=style_normal,
+            )
+        },
+    }
+
+    styles["total_suspicious_entries"] = {
+        "cellStyle": {
+            "styleConditions": create_style_condition(
+                condition="params.data['total_suspicious_entries'] > 0",
+                style_true=style_error,
+                style_false=style_normal,
+            )
+        },
+    }
 
     return styles

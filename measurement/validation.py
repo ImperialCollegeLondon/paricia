@@ -43,7 +43,7 @@ def get_data_to_validate(
             time__lte=end_time_,
             **extra,
         ).values()
-    )
+    ).sort_values("time")
 
 
 def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
@@ -204,7 +204,8 @@ def generate_daily_summary(
 
     # Put together the final report
     report = pd.concat([report, suspicious_report, count_report], axis=1)
-    report.index = pd.to_datetime(report.index)
+    report = report.sort_index().reset_index().rename(columns={"index": "date"})
+    report.date = pd.to_datetime(report.date)
     return report
 
 
@@ -268,6 +269,19 @@ def save_validated_entries(data: pd.DataFrame) -> None:
         Measurement.objects.filter(id=row["id"]).update(**update)
 
 
+def reset_validated_entries(ids: list) -> None:
+    """Resets validation and activation status for the selected data.
+
+    TODO: should this also reset any modified value, minimum or maximum entries?
+
+    Args:
+        ids (list): List of measurement ids to reset.
+    """
+    update = {"is_validated": False, "is_active": True}
+    for _id in ids:
+        Measurement.objects.filter(id=_id).update(**update)
+
+
 def save_validated_days(data: pd.DataFrame) -> None:
     """Saves the validated days to the database.
 
@@ -283,3 +297,26 @@ def save_validated_days(data: pd.DataFrame) -> None:
             variable__variable_code=row["variable"],
             time__date=row["date"],
         ).update(is_validated=True, is_active=not row["deactivate?"])
+
+
+def reset_validated_days(
+    station: str, variable: str, start_date: datetime.date, end_date: datetime.date
+) -> None:
+    """Resets validation and active status for the selected data.
+
+    TODO: should this also reset any modified value, minimum or maximum entries?
+
+    Args:
+        station (str): Station code
+        variable (str): Variable code
+        start_date (str): Start date
+        end_date (str): End date
+    """
+    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+    start_date_ = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz).date()
+    end_date_ = datetime.strptime(end_date, "%Y-%m-%d").replace(tzinfo=tz).date()
+    Measurement.objects.filter(
+        station__station_code=station,
+        variable__variable_code=variable,
+        time__date__range=(start_date_, end_date_),
+    ).update(is_validated=False, is_active=True)
