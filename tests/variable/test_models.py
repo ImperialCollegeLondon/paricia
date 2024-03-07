@@ -20,16 +20,3 @@ class TestInitialData(TestCase):
         variable = Variable.objects.get(name="Temperatura ambiente")
         self.assertEqual(variable.variable_code, "airtemperature")
         self.assertEqual(variable.unit.name, "Grados Cent\u00edgrados")
-
-    def test_measurement_consistency(self):
-        from django.apps import apps
-
-        from variable.models import Variable
-
-        # Check that each variable relates to a class in measurement.models
-        models = apps.get_app_config("measurement").get_models()
-        model_names = [m._meta.model_name for m in models]
-
-        for variable in Variable.objects.get_queryset():
-            if variable.is_active:
-                self.assertIn(variable.variable_code, model_names)

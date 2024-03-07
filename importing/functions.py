@@ -23,7 +23,7 @@ import pandas as pd
 from djangomain.settings import BASE_DIR
 from formatting.models import Association, Classification, Format
 from importing.models import DataImportTemp
-from measurement.models import Measurement, StripLevelReading, WaterLevel
+from measurement.models import Measurement
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
@@ -466,53 +466,3 @@ def standardise_float_comma(val_str):
     except ValueError:
         val_num = None
     return val_num
-
-
-def insert_level_rule(data_import, level_rule):
-    """
-    Calculates uncertainty based on difference between a level_rule object's value
-    and the water level measurement, saving a new "StripLevelReading" object.
-    TODO: What exactly does this do? What is the nivelagua (level_rule?) and why is it
-    used in this way?
-    Args:
-        data_import: DataImportFull or DataImportTemp object.
-        level_rule: TODO: ??
-    Returns:
-        None
-    """
-
-    water_level_measurements = WaterLevel.objects.filter(
-        station_id=data_import.station_id, date=data_import.end_date
-    )
-    water_level = None
-    for i in water_level_measurements:
-        water_level = i
-    if water_level is None:
-        return False
-    try:
-        uncertainty = float(level_rule["value"]) - float(water_level.value)
-    except ValueError:
-        return False
-    StripLevelReading(
-        station_id=data_import.station_id_id,
-        data_import_date=data_import.date,
-        data_start_date=data_import.start_date,
-        date=data_import.end_date,
-        calibrated=level_rule["calibrated"],
-        value=float(level_rule["value"]),
-        uncertainty=uncertainty,
-        comments=level_rule["comments"],
-    ).save()
-
-
-def query_formats(station):
-    """
-    Return dict of file formats associated with a given station in the form
-    {format_id: format_name, ...}.
-    """
-
-    association = list(Association.objects.filter(station=station))
-    results = {}
-    for item in association:
-        results[item.format.format_id] = item.format.name
-    return results

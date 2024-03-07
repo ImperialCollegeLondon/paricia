@@ -18,16 +18,13 @@ import mimetypes
 import os
 import shutil
 import urllib
-from logging import getLogger
 
-import pandas as pd
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
 
 from djangomain.settings import BASE_DIR
 from importing.functions import (
-    query_formats,
     read_data_to_import,
     save_temp_data_to_permanent,
     validate_dates,
@@ -215,12 +212,3 @@ def DataImportDownload(request, *args, **kwargs):
             )
         response["Content-Disposition"] = "attachment; " + filename_header
         return response
-
-
-def list_formats(request):
-    """
-    list of formats per station.
-    """
-    station_id = request.GET.get("station", None)
-    data = query_formats(station_id)
-    return JsonResponse(data)
