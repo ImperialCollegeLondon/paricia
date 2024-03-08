@@ -10,13 +10,13 @@ admin.site.site_header = "Paricia Administration - Sensors"
 @admin.register(SensorType)
 class SensorTypeAdmin(PermissionsBaseAdmin):
     model = "sensortype"
-    list_display = ["name", "type_id", "owner", "permissions_level"]
+    list_display = ["type_id", "name", "owner", "permissions_level"]
 
 
 @admin.register(SensorBrand)
 class SensorBrandAdmin(PermissionsBaseAdmin):
     model = "sensorbrand"
-    list_display = ["name", "brand_id", "owner", "permissions_level"]
+    list_display = ["brand_id", "name", "owner", "permissions_level"]
 
 
 @admin.register(Sensor)
