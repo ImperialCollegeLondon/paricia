@@ -47,7 +47,7 @@ def plot_graph(
         plot = px.line(
             data,
             x="time",
-            y=["average", "minimum", "maximum"],
+            y=["value", "minimum", "maximum"],
             title=f"{station} - {variable_obj.name}",
         )
 
