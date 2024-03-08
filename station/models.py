@@ -17,8 +17,9 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+from guardian.shortcuts import assign_perm
 
-from management.models import PermissionsBase
+from management.models import PermissionsBase, _get_perm_codenames
 
 TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
 
@@ -294,6 +295,30 @@ class Station(models.Model):
 
     def get_absolute_url(self):
         return reverse("station:station_detail", kwargs={"pk": self.pk})
+
+    def set_permissions(self):
+        """Set object-level permissions."""
+
+        # Get permissions for model
+        delete, change, view = _get_perm_codenames(self.__class__)
+
+        # Assign view permissions for all users
+        assign_perm(view, User.objects.all(), self)
+
+        # Assign change and delete permissions for owner
+        if self.owner:
+            for perm in [change, delete]:
+                assign_perm(perm, self.owner, self)
+
+        # Assign view_measurements permission
+        permissions_users = {
+            "public": User.objects.all(),
+            "internal": User.objects.filter(is_active=True),
+            "private": [self.owner] if self.owner else [],
+        }
+        users = permissions_users[self.permissions_level]
+        for user in users:
+            assign_perm("view_measurements", user, self)
 
     class Meta:
         ordering = ("station_id",)

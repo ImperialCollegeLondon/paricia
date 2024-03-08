@@ -27,16 +27,7 @@ User = get_user_model()
 @receiver(post_save, sender=Station)
 def set_permissions(sender, instance, **kwargs):
     """Set object-level permissions."""
-    # Get permissions for model
-    delete, change, view = _get_perm_codenames(sender)
-
-    # Assign view permissions for all users
-    assign_perm(view, User.objects.all(), instance)
-
-    # Assign change and delete permissions for owner
-    if instance.owner:
-        for perm in [change, delete]:
-            assign_perm(perm, instance.owner, instance)
+    instance.set_permissions()
 
     # Assign view_measurements permission for Station objects
     if sender == Station:

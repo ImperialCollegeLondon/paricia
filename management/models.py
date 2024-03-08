@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from guardian.shortcuts import assign_perm
 
 
 class User(AbstractUser):
@@ -22,5 +23,30 @@ class PermissionsBase(models.Model):
         max_length=8, choices=PERMISSIONS_LEVELS, default="private"
     )
 
+    def set_permissions(self):
+        """Set object-level permissions."""
+
+        # Get permissions for model
+        delete, change, view = _get_perm_codenames(self.__class__)
+
+        # Assign view permissions for all users
+        assign_perm(view, User.objects.all(), self)
+
+        # Assign change and delete permissions for owner
+        if self.owner:
+            for perm in [change, delete]:
+                assign_perm(perm, self.owner, self)
+
     class Meta:
         abstract = True
+
+
+def _get_perm_codenames(model):
+    """Helper function to get delete, change and view permission codenames for a
+    given model.
+    """
+    return (
+        f"delete_{model._meta.model_name}",
+        f"change_{model._meta.model_name}",
+        f"view_{model._meta.model_name}",
+    )
