@@ -3,14 +3,17 @@ from django.test import TestCase
 
 from sensor.models import Sensor
 from station.models import Station, StationType
+from variable.models import Variable
 
 User = get_user_model()
 
 
-class BasePermissionsTest(TestCase):
+class BasePermissionsTest(object):
+    """Base class for testing object permissions."""
+
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData()
+        """Create users for testing permissions."""
         cls.user_owner = User.objects.create_user(
             username="user_owner", password="password"
         )
@@ -20,10 +23,23 @@ class BasePermissionsTest(TestCase):
         cls.user_inactive = User.objects.create_user(
             username="user_inactive", password="password", is_active=False
         )
-        cls.app = ""
 
-    def _assert_perm(self, user, perm, obj, assert_true):
-        """Helper function to assert single permission."""
+        # The following must be set in the child classes
+        cls.app = None
+        cls.model = None
+        cls.obj = None
+
+    def _assert_perm(self, user, perm: str, obj, assert_true: bool):
+        """
+        Assert a single permission for a user against an object.
+
+        Args:
+            user: User to test permission for
+            perm (str): Permission to test for (e.g. "change_station")
+            obj: Object to test permission for
+            assert_true (bool): Whether the permission should be True or False
+        """
+
         if assert_true:
             self.assertTrue(user.has_perm(f"{self.app}.{perm}", obj))
         else:
@@ -31,67 +47,86 @@ class BasePermissionsTest(TestCase):
 
     def assert_perms(
         self,
-        perm,
+        perm: str,
         obj,
-        assert_owner=None,
-        assert_other=None,
-        assert_inactive=None,
+        assert_owner: bool = None,
+        assert_other: bool = None,
+        assert_inactive: bool = None,
     ):
-        """Helper function to assert multiple permissions."""
+        """Assert permissions for multiple users against an object.
+
+        Args:
+            perm (str): Permission to test for (e.g. "change_station")
+            obj: Object to test permission for
+            assert_owner (bool, optional): Whether the owner should have the permission.
+            assert_other (bool, optional): Whether another user should have the
+                permission.
+            assert_inactive (bool, optional): Whether an inactive user should have the
+                permission.
+        """
         if assert_owner is not None:
             self._assert_perm(self.user_owner, perm, obj, assert_owner)
         if assert_other is not None:
             self._assert_perm(self.user_other, perm, obj, assert_other)
         if assert_inactive is not None:
-            pass
+            # TODO: sort out permissions for inactive users so this test can pass
             # self._assert_perm(self.user_inactive, perm, obj, assert_inactive)
+            pass
+
+    def test_change_permissions(self):
+        """Test that only the owner can change the object."""
+        self.assert_perms(f"change_{self.model}", self.obj, True, False, False)
+
+    def test_delete_permissions(self):
+        """Test that only the owner can delete the object."""
+        self.assert_perms(f"delete_{self.model}", self.obj, True, False, False)
+
+    def test_view_permissions(self):
+        """Test that all users can view the object."""
+        self.assert_perms(f"view_{self.model}", self.obj, True, True, True)
 
 
-class StationTypePermissionsTest(BasePermissionsTest):
+class StationTypePermissionsTest(BasePermissionsTest, TestCase):
+    """Test permissions for StationType objects."""
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.app = "station"
-        cls.station_type = StationType.objects.create(owner=cls.user_owner)
-
-    def test_change_permissions(self):
-        """Test that only the owner can change the station type."""
-        self.assert_perms("change_stationtype", self.station_type, True, False, False)
-
-    def test_delete_permissions(self):
-        """Test that only the owner can delete the station type."""
-        self.assert_perms("delete_stationtype", self.station_type, True, False, False)
-
-    def test_view_permissions(self):
-        """Test that all users can view the station type."""
-        self.assert_perms("view_stationtype", self.station_type, True, True, True)
+        cls.model = "stationtype"
+        cls.obj = StationType.objects.create(owner=cls.user_owner)
 
 
-class SensorPermissionsTest(BasePermissionsTest):
+class SensorPermissionsTest(BasePermissionsTest, TestCase):
+    """Test permissions for Sensor objects."""
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.app = "sensor"
-        cls.sensor = Sensor.objects.create(owner=cls.user_owner)
-
-    def test_change_permissions(self):
-        """Test that only the owner can change the sensor."""
-        self.assert_perms("change_sensor", self.sensor, True, False, False)
-
-    def test_delete_permissions(self):
-        """Test that only the owner can delete the sensor."""
-        self.assert_perms("delete_sensor", self.sensor, True, False, False)
-
-    def test_view_permissions(self):
-        """Test that all users can view the sensor."""
-        self.assert_perms("view_sensor", self.sensor, True, True, True)
+        cls.model = "sensor"
+        cls.obj = Sensor.objects.create(owner=cls.user_owner)
 
 
-class StationPermissionsTest(BasePermissionsTest):
+class VariablePermissionsTest(BasePermissionsTest, TestCase):
+    """Test permissions for Variable objects."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.app = "variable"
+        cls.model = "variable"
+        cls.obj = Variable.objects.create(owner=cls.user_owner, maximum=100, minimum=0)
+
+
+class StationPermissionsTest(BasePermissionsTest, TestCase):
+    """Test permissions for Station objects."""
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.app = "station"
+        cls.model = "station"
         cls.station_private = Station.objects.create(
             owner=cls.user_owner, permissions_level="private"
         )
@@ -101,18 +136,7 @@ class StationPermissionsTest(BasePermissionsTest):
         cls.station_internal = Station.objects.create(
             owner=cls.user_owner, permissions_level="internal"
         )
-
-    def test_change_permissions(self):
-        """Test that only the owner can change the stations."""
-        self.assert_perms("change_station", self.station_public, True, False, False)
-
-    def test_delete_permissions(self):
-        """Test that only the owner can delete the stations."""
-        self.assert_perms("delete_station", self.station_public, True, False, False)
-
-    def test_view_permissions(self):
-        """Test that all users can view the stations."""
-        self.assert_perms("view_station", self.station_public, True, True, True)
+        cls.obj = cls.station_private
 
     def test_measurement_permissions_private(self):
         """Test that only the owner can view measurements for private stations."""
