@@ -306,7 +306,7 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
         model_instances = [Measurement(**record) for record in records]
 
         # Call the clean method. List comprehension is faster
-        [instance.full_clean() for instance in model_instances]  # type: ignore
+        [instance.clean() for instance in model_instances]  # type: ignore
 
         # WARNING: This is a bulk insert, so it will not call the save()
         # method nor send the pre_save or post_save signals for each instance.
