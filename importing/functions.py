@@ -281,12 +281,17 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
     file_path = str(BASE_DIR) + "/data/media/" + str(data_import_temp.file)
 
     all_data = construct_matrix(file_path, file_format, station)
-    must_cols = ["station_id", "variable_id", "time", "value"]
+
+    must_cols = ["station_id", "variable_id", "date", "value"]
     for table in all_data:
         cols = [
             c for c in table.columns if c in Measurement._meta.fields or c in must_cols
         ]
-        table = table[cols].dropna(axis=0, subset=must_cols)
+        table = (
+            table[cols]
+            .dropna(axis=0, subset=must_cols)
+            .rename(columns={"date": "time"})
+        )
         records = table.to_dict("records")
         variable_id = table["variable_id"].iloc[0]
 
@@ -299,6 +304,9 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
 
         # Bulk add new data
         model_instances = [Measurement(**record) for record in records]
+
+        # Call the clean method. List comprehension is faster
+        [instance.clean() for instance in model_instances]  # type: ignore
 
         # WARNING: This is a bulk insert, so it will not call the save()
         # method nor send the pre_save or post_save signals for each instance.
