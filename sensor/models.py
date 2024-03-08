@@ -13,13 +13,10 @@
 
 from __future__ import unicode_literals
 
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
 from management.models import PermissionsBase
-
-User = get_user_model()
 
 
 class SensorType(PermissionsBase):
