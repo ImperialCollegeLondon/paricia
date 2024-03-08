@@ -200,13 +200,11 @@ class PlaceBasin(PermissionsBase):
         ordering = ("id",)
 
 
-class Station(models.Model):
+class Station(PermissionsBase):
     """
     Main representation of a station with lots of metadata, according to
     the other models in this app, along with some geographical data.
     """
-
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     PERMISSIONS_LEVELS = [
         ("public", "Public"),
@@ -298,17 +296,7 @@ class Station(models.Model):
 
     def set_permissions(self):
         """Set object-level permissions."""
-
-        # Get permissions for model
-        delete, change, view = _get_perm_codenames(self.__class__)
-
-        # Assign view permissions for all users
-        assign_perm(view, User.objects.all(), self)
-
-        # Assign change and delete permissions for owner
-        if self.owner:
-            for perm in [change, delete]:
-                assign_perm(perm, self.owner, self)
+        super().set_permissions()
 
         # Assign view_measurements permission
         permissions_users = {
