@@ -314,7 +314,7 @@ class Station(PermissionsBase):
 
 
 # TODO Discuss if it's really necessary to implement multiple deltaTs for different dates
-class DeltaT(models.Model):
+class DeltaT(PermissionsBase):
     """
     Delta T: Interval of data adquisition (In minutes)
     """

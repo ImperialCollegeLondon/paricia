@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from station.models import (
     Basin,
     Country,
+    DeltaT,
     Ecosystem,
     Institution,
     Place,
@@ -24,6 +25,7 @@ User = get_user_model()
 @receiver(post_save, sender=Place)
 @receiver(post_save, sender=Basin)
 @receiver(post_save, sender=Station)
+@receiver(post_save, sender=DeltaT)
 def set_permissions(sender, instance, **kwargs):
     """Set object-level permissions."""
     instance.set_permissions()
