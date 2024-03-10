@@ -12,6 +12,8 @@ class User(AbstractUser):
 
 
 class PermissionsBase(models.Model):
+    """Base model for models that require permissions."""
+
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     PERMISSIONS_LEVELS = [
@@ -26,7 +28,6 @@ class PermissionsBase(models.Model):
     def set_permissions(self):
         """Set object-level permissions."""
 
-        # Get permissions for model
         delete, change, view = _get_perm_codenames(self.__class__)
 
         # Assign view permissions for all users

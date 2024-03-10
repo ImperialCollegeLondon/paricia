@@ -9,12 +9,16 @@ admin.site.site_header = "Paricia Administration - Variables"
 
 @admin.register(Unit)
 class SensorTypeAdmin(PermissionsBaseAdmin):
+    """Admin class for the Unit model."""
+
     model = "unit"
     list_display = ["unit_id", "name", "owner", "permissions_level"]
 
 
 @admin.register(Variable)
 class VariableAdmin(PermissionsBaseAdmin):
+    """Admin class for the Variable model."""
+
     model = "variable"
     list_display = [
         "variable_id",
@@ -37,6 +41,8 @@ class VariableAdmin(PermissionsBaseAdmin):
 
 @admin.register(SensorInstallation)
 class SensorInstallationAdmin(PermissionsBaseAdmin):
+    """Admin class for the SensorInstallation model."""
+
     model = "sensor_installation"
     list_display = [
         "sensorinstallation_id",

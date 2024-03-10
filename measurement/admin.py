@@ -14,29 +14,35 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
     list_filter = ["station", "variable"]
 
     def has_add_permission(self, request):
+        """Allow all authenticated users to add objects."""
         return request.user.is_authenticated
 
     def has_change_permission(self, request, obj=None):
+        """Check if the user has the correct permission to change the object."""
         if obj is not None:
             return "change_station" in get_perms(request.user, obj.station)
         return True
 
     def has_delete_permission(self, request, obj=None):
+        """Check if the user has the correct permission to delete the object."""
         if obj is not None:
             return "delete_station" in get_perms(request.user, obj.station)
         return True
 
     def has_view_permission(self, request, obj=None):
+        """Check if the user has the correct permission to view the object."""
         if obj is not None:
             return "view_measurements" in get_perms(request.user, obj.station)
         return True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Limit the list of stations available based on permssions."""
         if db_field.name == "station":
             kwargs["queryset"] = Station.objects.filter(owner=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
+        """Check if the user has the correct permissions to save the object."""
         if obj.station.owner != request.user:
             raise PermissionDenied("You are not the owner of this station.")
         super().save_model(request, obj, form, change)
@@ -44,6 +50,8 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(MeasurementBaseAdmin):
+    """Admin class for the Report model."""
+
     model = "report"
     list_display = ["id", "report_type"] + MeasurementBaseAdmin.list_display[1:]
     list_filter = ["report_type"] + MeasurementBaseAdmin.list_filter
@@ -51,6 +59,8 @@ class ReportAdmin(MeasurementBaseAdmin):
 
 @admin.register(Measurement)
 class MeasurementAdmin(MeasurementBaseAdmin):
+    """Admin class for the Measurement model."""
+
     model = "measurement"
     list_display = [
         "id",

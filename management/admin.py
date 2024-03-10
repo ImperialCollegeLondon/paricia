@@ -10,30 +10,38 @@ from .models import User
 
 
 class PermissionsBaseAdmin(GuardedModelAdmin):
+    """Base admin class for models that require permissions."""
+
     foreign_key_fields: list[str] = []
 
     def has_add_permission(self, request):
+        """Allow all authenticated users to add objects."""
         return request.user.is_authenticated
 
     def has_change_permission(self, request, obj=None):
+        """Check if the user has the correct permission to change the object."""
         if obj is not None:
             return f"change_{self.model}" in get_perms(request.user, obj)
         return True
 
     def has_delete_permission(self, request, obj=None):
+        """Check if the user has the correct permission to delete the object."""
         if obj is not None:
             return f"delete_{self.model}" in get_perms(request.user, obj)
         return True
 
     def has_view_permission(self, request, obj=None):
+        """Allow all users to view the object."""
         return True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Limit the queryset for foreign key fields."""
         if db_field.name in self.foreign_key_fields:
             kwargs["queryset"] = _get_queryset(db_field.related_model, request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
+        """Check if the user has the correct permissions to save the object."""
         for field in self.foreign_key_fields:
             owner = getattr(obj, field).owner
             perm_level = getattr(obj, field).permissions_level
@@ -43,6 +51,11 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
 
 
 def _get_queryset(model, user):
+    """Return a queryset based on the permissions of the user.
+
+    Returns all public objects plus any objects owned by the user.
+
+    """
     return model.objects.filter(Q(owner=user) | Q(permissions_level="Public"))
 
 
