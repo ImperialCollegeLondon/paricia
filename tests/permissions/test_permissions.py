@@ -8,7 +8,7 @@ from variable.models import Variable
 User = get_user_model()
 
 
-class BasePermissionsTest(object):
+class BasePermissionsTest:
     """Base class for testing object permissions."""
 
     @classmethod
