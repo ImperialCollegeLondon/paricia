@@ -156,6 +156,35 @@ class Format(models.Model):
     def get_absolute_url(self):
         return reverse("format:format_detail", kwargs={"pk": self.pk})
 
+    @property
+    def datetime_format(self) -> str:
+        return str(self.date.code) + " " + str(self.time.code)
+
+    def datetime_columns(self, delimiter: str) -> list[int]:
+        """Column indices that correspond to the date and time columns in the dataset.
+
+        Args:
+            delimiter (str): The delimiter used to split the date and time codes.
+
+        Returns:
+            list[int]: A list of column indices.
+        """
+        date_items = self.date.code.split(delimiter)
+        date_cols = list(
+            range(
+                self.date_column - 1,
+                self.date_column - 1 + len(date_items),
+            )
+        )
+        time_items = self.time.code.split(delimiter)
+        time_cols = list(
+            range(
+                self.time_column - 1,
+                self.time_column - 1 + len(time_items),
+            )
+        )
+        return date_cols + time_cols
+
     class Meta:
         ordering = ("-format_id",)
 

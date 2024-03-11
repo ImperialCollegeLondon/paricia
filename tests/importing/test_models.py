@@ -38,10 +38,10 @@ class TestSaveImportModels(TestCase):
     def test_save_import_temp(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
-        from importing.functions import preformat_matrix
+        from importing.functions import read_data_to_import
         from importing.models import DataImportTemp
 
-        matrix = preformat_matrix(
+        matrix = read_data_to_import(
             self.data_file, self.file_format, self.station.timezone
         )
         start_date = matrix.loc[0, "date"]

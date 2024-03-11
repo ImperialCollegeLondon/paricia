@@ -11,24 +11,19 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-import os
-import shutil
-import time
 import zoneinfo
 from datetime import datetime
 from logging import getLogger
 from numbers import Number
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
-from django.apps import apps
-from django.db import transaction
 
 from djangomain.settings import BASE_DIR
-from formatting.models import Association, Classification
-from importing.models import DataImportFull, DataImportTemp
-from measurement.models import StripLevelReading, WaterLevel
-from variable.models import Variable
+from formatting.models import Association, Classification, Format
+from importing.models import DataImportTemp
+from measurement.models import Measurement
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
@@ -60,10 +55,11 @@ def validate_dates(data_import):
         var_code = str(classification.variable.variable_code)
         last_upload_date = get_last_uploaded_date(station.station_id, var_code)
 
-        # Check if data exists between dates
-        model = apps.get_model("measurement", var_code)
-        query = model.timescale.filter(
-            time__range=[start_date, end_date], station_id=station.station_id
+        # Check if data exists between dates)
+        query = Measurement.timescale.filter(
+            time__range=[start_date, end_date],
+            station_id=station.station_id,
+            variable_id=classification.variable.variable_id,
         )
         exists = True if query else False
         overwrite = overwrite or exists
@@ -78,144 +74,165 @@ def validate_dates(data_import):
     return result, overwrite
 
 
-def get_last_uploaded_date(station_id, var_code):
-    """
-    Retrieves the last date that data was uploaded for a given station ID and variable
-    code. Variable code will be the name of some measurement table.
-    """
-    getLogger().info("current_time: " + str(time.ctime()))
-    model = apps.get_model("measurement", var_code)
-    # The first entry will be the most recent
-    query = model.timescale.filter(station_id=station_id).order_by("-time")
-    if query:
-        datetime = query[0].time
-    else:
-        datetime = "Data does not exist"
-    return datetime
+def get_last_uploaded_date(station_id: int, var_code: str) -> Optional[datetime]:
+    """Get the last date of uploaded data for a given station ID and variable code.
 
-
-def preformat_matrix(source_file, file_format, timezone: str):
-    """
-    First step for importing data. Works out what sort of file is being read and adds
-    standardised columns for date and datetime (str). This is used in construct_matrix.
     Args:
-        source_file: path to raw data file.
-        file_format: formatting.models.Format object.
-        timezone: Timezone name, eg. 'America/Chicago'.
+        station_id: The station ID.
+        var_code: The variable code.
+
     Returns:
-        Pandas.DataFrame with raw data read and extra column(s) for date and datetime
-        (Str), which should be parsed correctly here.
+        The last date that data was uploaded for the given station ID and variable code
+        or None if no data was found.
+    """
+    query = (
+        Measurement.timescale.filter(
+            station__station_id=station_id, variable__variable_code=var_code
+        )
+        .order_by("time")
+        .last()
+    )
+    if query:
+        return query.time
+
+    return None
+
+
+def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
+    """Reads an Excel file into a pandas DataFrame.
+
+    Args:
+        file_path: The path to the file to be read.
+        file_format: The file format.
+
+    Returns:
+        A pandas DataFrame containing the data from the file.
     """
     firstline = file_format.first_row if file_format.first_row else 0
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
-    tz = zoneinfo.ZoneInfo(timezone)
-
-    if file_format.extension.value in ["xlsx", "xlx"]:
-        # If in Excel format
-        file = pd.read_excel(
-            source_file,
-            header=None,
-            skiprows=firstline - 1,
-            skipfooter=skipfooter,
-            engine=None,
-            error_bad_lines=False,
-            index_col=None,
-        )
-    else:
-        # Is not Excel format e.g. CSV
-        engine = "c"
-        if not isinstance(source_file, str):
-            # The file was uploaded as binary
-            lines = len(source_file.readlines())
-            source_file.seek(0)
-            skiprows = [i - 1 for i in range(1, firstline)] + [
-                i - 1 for i in range(lines, lines - skipfooter, -1)
-            ]
-            skipfooter = 0
-        else:
-            # The file can be read as a string
-            skiprows = firstline - 1
-            if skipfooter > 0:
-                engine = "python"
-
-        # Deal with the delimiter
-        delimiter = file_format.delimiter.character
-        if "\\x" in delimiter:
-            delim_hexcode = delimiter.replace("\\x", "")
-            delim_intcode = eval("0x" + delim_hexcode)
-            delimiter = chr(delim_intcode)
-
-        if delimiter == " ":
-            file = pd.read_csv(
-                source_file,
-                delim_whitespace=True,
-                header=None,
-                index_col=False,
-                skiprows=skiprows,
-                skipfooter=skipfooter,
-                engine=engine,
-                encoding="ISO-8859-1",
-            )
-        else:
-            file = pd.read_csv(
-                source_file,
-                sep=delimiter,
-                header=None,
-                index_col=False,
-                skiprows=skiprows,
-                skipfooter=skipfooter,
-                engine=engine,
-                encoding="ISO-8859-1",
-            )
-
-    datetime_format = file_format.date.code + " " + file_format.time.code
-    if file_format.date_column == file_format.time_column:
-        file["date"] = pd.Series(
-            [
-                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
-                for row in file[file_format.date_column - 1].values
-            ],
-            index=file.index,
-        )
-    else:
-        date_items = file_format.date.code.split(delimiter)
-        date_cols = list(
-            range(
-                file_format.date_column - 1,
-                file_format.date_column - 1 + len(date_items),
-            )
-        )
-        time_items = file_format.time.code.split(delimiter)
-        time_cols = list(
-            range(
-                file_format.for_col_hora - 1,
-                file_format.for_col_hora - 1 + len(time_items),
-            )
-        )
-        cols = date_cols + time_cols
-        file["datetime_str"] = pd.Series(
-            [" ".join(row.astype(str)) for row in file[cols].values],
-            index=file.index,
-        )
-        file["date"] = pd.Series(
-            [
-                standardise_datetime(row, datetime_format).replace(tzinfo=tz)
-                for row in file["datetime_str"].values
-            ],
-            index=file.index,
-        )
-
-    file = file.sort_values("date")
-    return file.reset_index(drop=True)
+    return pd.read_excel(
+        file_path,
+        header=None,
+        skiprows=firstline - 1,
+        skipfooter=skipfooter,
+        engine=None,
+        error_bad_lines=False,
+        index_col=None,
+    )
 
 
-def standardise_datetime(date_time, datetime_format) -> datetime:
+def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
+    """Reads a CSV file into a pandas DataFrame.
+
+    Args:
+        source_file: Stream of data to be parsed.
+        file_format: The file format.
+
+    Returns:
+        A pandas DataFrame containing the data from the file.
     """
-    Returns a datetime object in the case that date_time is not already in that form.
+    firstline = file_format.first_row if file_format.first_row else 0
+    skipfooter = file_format.footer_rows if file_format.footer_rows else 0
+    delimiter = file_format.delimiter.character
+
+    skiprows: int | list[int] = firstline - 1
+    if not isinstance(source_file, str):
+        # The file was uploaded as binary
+        lines = len(source_file.readlines())
+        source_file.seek(0)
+        skiprows = [i for i in range(0, firstline - 1)] + [
+            i - 1 for i in range(lines, lines - skipfooter, -1)
+        ]
+        skipfooter = 0
+
+    # Deal with the delimiter
+    if "\\x" in delimiter:
+        delim_hexcode = delimiter.replace("\\x", "")
+        delim_intcode = eval("0x" + delim_hexcode)
+        delimiter = chr(delim_intcode)
+    elif delimiter == " ":
+        delimiter = "\s+"  # This is a regex for whitespace
+
+    return pd.read_csv(
+        source_file,
+        sep=delimiter,
+        header=None,
+        index_col=False,
+        skiprows=skiprows,
+        skipfooter=skipfooter,
+        encoding="ISO-8859-1",
+    )
+
+
+def process_datetime_columns(
+    data: pd.DataFrame, file_format: Format, timezone: str
+) -> pd.DataFrame:
+    """Process the datetime columns in a DataFrame.
+
+    Args:
+        data: The DataFrame to process.
+        file_format: The file format.
+        timezone: The timezone to use.
+
+    Returns:
+        The DataFrame with the datetime columns processed.
+    """
+    tz = zoneinfo.ZoneInfo(timezone)
+    dt_format = file_format.datetime_format
+    if file_format.date_column == file_format.time_column:
+        data["date"] = pd.Series(
+            [
+                standardise_datetime(row, dt_format).replace(tzinfo=tz)
+                for row in data.iloc[:, file_format.date_column - 1].values
+            ],
+            index=data.index,
+        )
+    else:
+        cols = file_format.datetime_columns(file_format.delimiter.character)
+        data["datetime_str"] = data.iloc[:, cols].agg(
+            lambda row: " ".join([str(r) for r in row]), axis=1
+        )
+        data["date"] = data["datetime_str"].apply(
+            lambda row: standardise_datetime(row, dt_format).replace(tzinfo=tz)
+        )
+        data.drop(columns=["datetime_str"], inplace=True)
+
+    return data.sort_values("date").reset_index(drop=True)
+
+
+def read_data_to_import(source_file: Any, file_format: Format, timezone: str):
+    """Reads the data from file into a pandas DataFrame.
+
+    Works out what sort of file is being read and adds standardised columns for
+    datetime.
+
+    Args:
+        source_file: Stream of data to be parsed.
+        file_format: Format of the data to be parsed.
+        timezone: Timezone name, eg. 'America/Chicago'.
+
+    Returns:
+        Pandas.DataFrame with raw data read and extra column(s) for datetime
+        correctly parsed.
+    """
+    if file_format.extension.value in ["xlsx", "xlx"]:
+        data = read_file_excel(source_file, file_format)
+    else:
+        data = read_file_csv(source_file, file_format)
+
+    return process_datetime_columns(data, file_format, timezone)
+
+
+def standardise_datetime(date_time: Any, datetime_format: str) -> Optional[datetime]:
+    """Returns a datetime object in the case that date_time is not already in that form.
+
     Args:
         date_time: The date_time to be transformed.
         datetime_format: The format that date_time is in (to be passed to
             datetime.strptime()).
+
+    Returns:
+        A datetime object or None if date_time is not in a recognised format.
     """
 
     if isinstance(date_time, datetime):
@@ -227,106 +244,76 @@ def standardise_datetime(date_time, datetime_format) -> datetime:
         return date_time
     elif isinstance(date_time, str):
         pass
-
     elif isinstance(date_time, list):
         date_time = " ".join(date_time)
-
     elif isinstance(date_time, pd.Series):
         date_time = " ".join([str(val) for val in list(date_time[:])])
-
     else:
         date_time = ""
 
     # Now try converting the resulting string into a datetime obj
     try:
         _date_time = datetime.strptime(date_time, datetime_format)
-    except:
-        # TODO: Fix bare except statement
+    except Exception as e:
+        getLogger().error(f"Error parsing date: {date_time} - {e}")
         _date_time = None
     return _date_time
 
 
-def save_temp_data_to_permanent(data_import_temp):
-    """
-    Function to pass the temporary import to the final table. Uses the data_import_temp
-    object only to get all required information from its fields.
+def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
+    """Function to pass the temporary import to the final table.
+
+    Uses the data_import_temp object only to get all required information from its
+    fields.
+
     This function carries out the following steps:
-    1.  Bulk delete of existing data between two times on a given measurement table for
+
+    - Bulk delete of existing data between two times on a given measurement table for
     the station in question.
-    2.  Bulk create to add the new data from the uploaded file.
-    Steps 1. and 2. are carried out for each columns (variable) in the uploaded file.
-    Args: data_import_id (int): DataImportTemp ID
-    Returns: None
+    - Bulk create to add the new data from the uploaded file.
+
+    Args:
+        data_import_temp: DataImportTemp object.
     """
     file_format = data_import_temp.format
     station = data_import_temp.station
+
     file_path = str(BASE_DIR) + "/data/media/" + str(data_import_temp.file)
 
     all_data = construct_matrix(file_path, file_format, station)
-    for var_code, table in all_data.items():
-        table = table.where((pd.notnull(table)), None)
+
+    must_cols = ["station_id", "variable_id", "date", "value"]
+    for table in all_data:
+        cols = [
+            c for c in table.columns if c in Measurement._meta.fields or c in must_cols
+        ]
+        table = (
+            table[cols]
+            .dropna(axis=0, subset=must_cols)
+            .rename(columns={"date": "time"})
+        )
         records = table.to_dict("records")
-        Model = apps.get_model("measurement", var_code)
+        variable_id = table["variable_id"].iloc[0]
 
         # Delete existing data between the date ranges
-        Model.timescale.filter(
+        Measurement.timescale.filter(
             time__range=[data_import_temp.start_date, data_import_temp.end_date],
             station_id=station.station_id,
+            variable_id=variable_id,
         ).delete()
 
-        # The following is a hack to account for the different possible name of the
-        # fields that the models might have. Will be made "nicer" at some point.
-        # This should always work as a measurement model should always have one and only
-        # one of "value", "average", "sum" fields.
-        value_field = (
-            set([field.name for field in Model._meta.fields])
-            .intersection(["value", "average", "sum"])
-            .pop()
-        )
-
         # Bulk add new data
-        # TODO improve this logic to cope with variables that might have max/min
-        # AND depth.
-        if "maximum" in table.columns:
-            model_instances = [
-                Model(
-                    {
-                        "time": record["date"],
-                        value_field: record["value"],
-                        "station_id": record["station_id"],
-                        "maximum": record["maximum"],
-                        "minimum": record["minimum"],
-                    },
-                )
-                for record in records
-            ]
-        elif "depth" in [f.name for f in Model._meta.fields]:
-            model_instances = [
-                Model(
-                    {
-                        "time": record["date"],
-                        value_field: record["value"],
-                        "depth": record["depth"],
-                        "station_id": record["station_id"],
-                    },
-                )
-                for record in records
-            ]
-        else:
-            model_instances = [
-                Model(
-                    {
-                        "time": record["date"],
-                        value_field: record["value"],
-                        "station_id": record["station_id"],
-                    },
-                )
-                for record in records
-            ]
-        Model.objects.bulk_create(model_instances)
+        model_instances = [Measurement(**record) for record in records]
+
+        # Call the clean method. List comprehension is faster
+        [instance.clean() for instance in model_instances]  # type: ignore
+
+        # WARNING: This is a bulk insert, so it will not call the save()
+        # method nor send the pre_save or post_save signals for each instance.
+        Measurement.objects.bulk_create(model_instances)
 
 
-def construct_matrix(matrix_source, file_format, station):
+def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
     """
     Construct the "matrix" or results table. Does various cleaning / simple
     transformations depending on the date format, type of data (accumulated,
@@ -340,13 +327,13 @@ def construct_matrix(matrix_source, file_format, station):
     """
 
     # Get the "preformatted matrix" sorted by date col
-    matrix = preformat_matrix(matrix_source, file_format, station.timezone)
+    matrix = read_data_to_import(matrix_source, file_format, station.timezone)
     # Find start and end dates from top and bottom row
-    start_date = matrix.loc[0, "date"]
-    end_date = matrix.loc[matrix.shape[0] - 1, "date"]
+    start_date = matrix["date"].iloc[0]
+    end_date = matrix["date"].iloc[-1]
 
     classifications = list(Classification.objects.filter(format=file_format))
-    variables_data = {}
+    to_ingest = []
     for classification in classifications:
         columns = []
         columns.append(("date", "date"))
@@ -363,25 +350,24 @@ def construct_matrix(matrix_source, file_format, station):
         # Validation of maximum
         if classification.maximum:
             columns.append((classification.maximum - 1, "maximum"))
-        if classification.maximum_validator_column:
-            matrix.loc[
-                matrix[classification.maximum_validator_column - 1]
-                != classification.maximum_validator_text,
-                classification.maximum - 1,
-            ] = np.nan
+            if classification.maximum_validator_column:
+                matrix.loc[
+                    matrix[classification.maximum_validator_column - 1]
+                    != classification.maximum_validator_text,
+                    classification.maximum - 1,
+                ] = np.nan
 
         # Validation of minimum
         if classification.minimum:
             columns.append((classification.minimum - 1, "minimum"))
-        if classification.minimum_validator_column:
-            matrix.loc[
-                matrix[classification.minimum_validator_column - 1]
-                != classification.minimum_validator_text,
-                classification.minimum - 1,
-            ] = np.nan
+            if classification.minimum_validator_column:
+                matrix.loc[
+                    matrix[classification.minimum_validator_column - 1]
+                    != classification.minimum_validator_text,
+                    classification.minimum - 1,
+                ] = np.nan
 
-        data = matrix.loc[:, [v[0] for v in columns]]
-        data.rename(columns=dict(columns), inplace=True)
+        data = matrix.loc[:, [v[0] for v in columns]].rename(columns=dict(columns))
 
         # More data cleaning, column by column, deal with decimal comma vs point.
         for col in data:
@@ -446,17 +432,18 @@ def construct_matrix(matrix_source, file_format, station):
             if classification.resolution:
                 data["value"] = data["value"] * float(classification.resolution)
         data["station_id"] = station.station_id
-        # Add the data to the main dict
-        variables_data[classification.variable.variable_code] = data
+        data["variable_id"] = classification.variable.variable_id
 
-    return variables_data
+        # Add the data to the main list
+        to_ingest.append(data)
+
+    return to_ingest
 
 
 def standardise_float(val_str):
     """
     Removes commas from strings representing numbers that use a full stop as a decimal
     separator.
-    TODO: Fix bare except statement.
     Args: val_str: string or Number-like
     Returns: val_num: float or None
     """
@@ -465,7 +452,7 @@ def standardise_float(val_str):
     try:
         val_str = val_str.replace(",", "")
         val_num = float(val_str)
-    except:
+    except ValueError:
         val_num = None
     return val_num
 
@@ -475,7 +462,6 @@ def standardise_float_comma(val_str):
     For strings representing numbers that use a comma as a decimal separator:
     (i) Removes full stops
     (ii) Replaces commas for full stops
-    TODO: Fix bare except statement.
     Args: val_str: string or Number-like
     Returns: val_num: float or None
     """
@@ -485,57 +471,6 @@ def standardise_float_comma(val_str):
         val_str = val_str.replace(".", "")
         val_str = val_str.replace(",", ".")
         val_num = float(val_str)
-    except:
+    except ValueError:
         val_num = None
     return val_num
-
-
-def insert_level_rule(data_import, level_rule):
-    """
-    Calculates uncertainty based on difference between a level_rule object's value
-    and the water level measurement, saving a new "StripLevelReading" object.
-    TODO: What exactly does this do? What is the nivelagua (level_rule?) and why is it
-    used in this way?
-    Args:
-        data_import: DataImportFull or DataImportTemp object.
-        level_rule: TODO: ??
-    Returns:
-        None
-    """
-
-    water_level_measurements = WaterLevel.objects.filter(
-        station_id=data_import.station_id, date=data_import.end_date
-    )
-    water_level = None
-    for i in water_level_measurements:
-        water_level = i
-    if water_level is None:
-        return False
-    try:
-        uncertainty = float(level_rule["value"]) - float(water_level.value)
-    # TODO: Fix bare except
-    except:
-        return False
-    StripLevelReading(
-        station_id=data_import.station_id_id,
-        data_import_date=data_import.date,
-        data_start_date=data_import.start_date,
-        date=data_import.end_date,
-        calibrated=level_rule["calibrated"],
-        value=float(level_rule["value"]),
-        uncertainty=uncertainty,
-        comments=level_rule["comments"],
-    ).save()
-
-
-def query_formats(station):
-    """
-    Return dict of file formats associated with a given station in the form
-    {format_id: format_name, ...}.
-    """
-
-    association = list(Association.objects.filter(station=station))
-    results = {}
-    for item in association:
-        results[item.format.format_id] = item.format.name
-    return results
