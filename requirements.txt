@@ -61,6 +61,8 @@ django-extensions==3.2.3
     # via -r requirements.in
 django-filter==23.5
     # via -r requirements.in
+django-guardian==2.4.0
+    # via -r requirements.in
 django-plotly-dash==2.3.0
     # via -r requirements.in
 django-timescaledb==0.2.13
