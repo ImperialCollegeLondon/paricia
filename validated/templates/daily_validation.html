@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load bootstrap4 %}
+{% load django_bootstrap5 %}
 {% load static %}
 {% load plotly_dash %}
 
@@ -15,8 +15,10 @@
 <link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
 <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
 
-<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.css">
+<script
+    src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+<link rel="stylesheet" type="text/css"
+    href="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.css">
 
 <link rel="stylesheet" href="{% static 'validated/style.css' %}">
 <script src="{% static 'scripts/global.js' %}"></script>
@@ -27,7 +29,7 @@
 {% block content %}
 
 <div class="{% plotly_class name='DailyValidation' %} card" style="height: 100%; width: 100%; padding-top: 5%">
-{% plotly_app name="DailyValidation" ratio=1 %}
+    {% plotly_app name="DailyValidation" ratio=1 %}
 </div>
 
 
