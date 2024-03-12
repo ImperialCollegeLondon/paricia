@@ -41,7 +41,7 @@ from management.views import RegisterUserAPIView
 from .views import HomePageView, schema_view
 
 urlpatterns = [
-    path("", HomePageView.as_view(), name="home"),
+    path("", HomePageView.as_view()),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),

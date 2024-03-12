@@ -109,20 +109,26 @@
           <li><a class="dropdown-item" href="api/measurement/report">Reports</a></li>
         </ul>
       </li>
+    </ul>
 
-      <li class="nav-item dropdown pull-right">
+    <!-- A separate menu for the user to log in or log out -->
+    <ul class="nav navbar-nav pull-right">
+
+      <!-- If the user is staff, we show the link to the admin -->
+      {% if user.is_staff %}
+      <li class="nav-item">
+        <a class="nav-link" href="/admin">Admin site</a>
+      </li>
+      {% endif %}
+
+      <!-- If the user is authenticated, we greet them and include a logout button -->
+      <!-- within a dropdown so it is not clicked by mistake -->
+      {% if user.is_authenticated %}
+      <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarAdminMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Admin<span class="caret"></span></a>
+          aria-haspopup="true" aria-expanded="false">Welcome, {{user.username}}<span class="caret"></span></a>
+
         <ul class="dropdown-menu" aria-labelledby="navbarAdminMenuLink">
-
-          {% if user.is_superuser %}
-          <li class="nav-item">
-            <a class="nav-link" href="/admin">Admin site</a>
-          </li>
-          {% endif %}
-
-          {% if user.is_authenticated %}
           <li class="nav-item">
             <form method="post" action="{% url 'logout' %}">
               {% csrf_token %}
@@ -130,14 +136,15 @@
                 style="border:none;border-color:transparent;background-color:transparent;" />
             </form>
           </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="/api-auth/login">Login</a>
-          </li>
-          {% endif %}
-
         </ul>
       </li>
+
+      <!-- Otherwise we just show the login button -->
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href="/api-auth/login">Login</a>
+      </li>
+      {% endif %}
 
     </ul>
   </div>
