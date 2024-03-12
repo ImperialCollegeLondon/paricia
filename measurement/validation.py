@@ -287,9 +287,20 @@ def reset_validated_entries(ids: list) -> None:
     Args:
         ids (list): List of measurement ids to reset.
     """
+    times = []
     update = {"is_validated": False, "is_active": True}
     for _id in ids:
-        Measurement.objects.filter(id=_id).update(**update)
+        current = Measurement.objects.filter(id=_id)
+        current.update(**update)
+        times.append(current.time)
+
+    station = current.station.station_code
+    variable = current.variable.variable_code
+    start_time, end_time = reporting.reformat_dates(
+        station, min(times).strftime("%Y-%m-%d"), max(times).strftime("%Y-%m-%d")
+    )
+
+    reporting.remove_report_data_in_range(station, variable, start_time, end_time)
 
 
 def save_validated_days(data: pd.DataFrame) -> None:
@@ -322,6 +333,8 @@ def reset_validated_days(
 ) -> None:
     """Resets validation and active status for the selected data.
 
+    It also deletes the associated report data.
+
     TODO: should this also reset any modified value, minimum or maximum entries?
 
     Args:
@@ -331,10 +344,16 @@ def reset_validated_days(
         end_date (str): End date
     """
     tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
-    start_date_ = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz).date()
-    end_date_ = datetime.strptime(end_date, "%Y-%m-%d").replace(tzinfo=tz).date()
+
+    # To update we use the exact date range.
+    start_date_ = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz)
+    end_date_ = datetime.strptime(end_date, "%Y-%m-%d").replace(tzinfo=tz)
     Measurement.objects.filter(
         station__station_code=station,
         variable__variable_code=variable,
-        time__date__range=(start_date_, end_date_),
+        time__date__range=(start_date_.date(), end_date_.date()),
     ).update(is_validated=False, is_active=True)
+
+    # To remove reports we use an extendaed date range to include the whole month.
+    start_date_, end_date_ = reporting.reformat_dates(station, start_date, end_date)
+    reporting.remove_report_data_in_range(station, variable, start_date_, end_date_)
