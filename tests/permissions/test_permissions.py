@@ -94,7 +94,9 @@ class StationTypePermissionsTest(BasePermissionsTest, TestCase):
         super().setUpTestData()
         cls.app = "station"
         cls.model = "stationtype"
-        cls.obj = StationType.objects.create(owner=cls.user_owner)
+        cls.obj = StationType.objects.create(
+            owner=cls.user_owner, permissions_level="public"
+        )
 
 
 class SensorPermissionsTest(BasePermissionsTest, TestCase):
@@ -105,7 +107,9 @@ class SensorPermissionsTest(BasePermissionsTest, TestCase):
         super().setUpTestData()
         cls.app = "sensor"
         cls.model = "sensor"
-        cls.obj = Sensor.objects.create(owner=cls.user_owner)
+        cls.obj = Sensor.objects.create(
+            owner=cls.user_owner, permissions_level="public"
+        )
 
 
 class VariablePermissionsTest(BasePermissionsTest, TestCase):
@@ -116,7 +120,9 @@ class VariablePermissionsTest(BasePermissionsTest, TestCase):
         super().setUpTestData()
         cls.app = "variable"
         cls.model = "variable"
-        cls.obj = Variable.objects.create(owner=cls.user_owner, maximum=100, minimum=0)
+        cls.obj = Variable.objects.create(
+            owner=cls.user_owner, maximum=100, minimum=0, permissions_level="public"
+        )
 
 
 class StationPermissionsTest(BasePermissionsTest, TestCase):
@@ -136,7 +142,7 @@ class StationPermissionsTest(BasePermissionsTest, TestCase):
         cls.station_internal = Station.objects.create(
             owner=cls.user_owner, permissions_level="internal"
         )
-        cls.obj = cls.station_private
+        cls.obj = cls.station_public
 
     def test_measurement_permissions_private(self):
         """Test that only the owner can view measurements for private stations."""

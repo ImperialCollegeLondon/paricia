@@ -31,7 +31,10 @@ class PermissionsBase(models.Model):
         delete, change, view = _get_perm_codenames(self.__class__)
 
         # Assign view permissions for all users
-        assign_perm(view, User.objects.all(), self)
+        if self.permissions_level == "public":
+            assign_perm(view, User.objects.all(), self)
+        elif self.permissions_level == "private" and self.owner:
+            assign_perm(view, self.owner, self)
 
         # Assign change and delete permissions for owner
         if self.owner:
