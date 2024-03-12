@@ -256,7 +256,7 @@ def save_validated_entries(data: pd.DataFrame) -> None:
     Args:
         data: The dataframe with the validated data.
     """
-    times = []
+    times: list[datetime] = []
     for _, row in data[data["validate?"]].iterrows():
         current = Measurement.objects.get(id=row["id"])
         times.append(current.time)
@@ -271,10 +271,11 @@ def save_validated_entries(data: pd.DataFrame) -> None:
 
         Measurement.objects.filter(id=row["id"]).update(**update)
 
+    tz = zoneinfo.ZoneInfo(current.station.timezone)
     station = current.station.station_code
     variable = current.variable.variable_code
-    start_time = min(times).strftime("%Y-%m-%d")
-    end_time = max(times).strftime("%Y-%m-%d")
+    start_time = min(times).astimezone(tz).strftime("%Y-%m-%d")
+    end_time = max(times).astimezone(tz).strftime("%Y-%m-%d")
 
     reporting.launch_reports_calculation(station, variable, start_time, end_time)
 

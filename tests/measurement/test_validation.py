@@ -353,10 +353,9 @@ class TestValidationFunctions(TestCase):
         data["variable"] = self.variable.variable_code
 
         # Create some times
-        times = [
-            datetime(2023, 1, i, tzinfo=zoneinfo.ZoneInfo(self.station.timezone))
-            for i in range(1, 4)
-        ]
+        tz = zoneinfo.ZoneInfo(self.station.timezone)
+        times = [datetime(2023, 1, i).replace(tzinfo=tz) for i in range(1, 4)]
+
         # Create sample Measurement objects
         measurement_1 = Measurement(
             id=1,
