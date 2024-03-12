@@ -238,7 +238,9 @@ def get_report_data_from_db(
             ).values()
         )
 
-    return data.rename(columns={"station_id": "station", "variable_id": "variable"})
+    return data.rename(
+        columns={"station_id": "station", "variable_id": "variable"}
+    ).sort_values("time")
 
 
 def launch_reports_calculation(
