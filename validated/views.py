@@ -21,7 +21,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import View
-from django.views.generic import FormView, ListView
+from django.views.generic import ListView
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 from rest_framework import generics
 
 import validated.functions as functions
@@ -34,7 +36,6 @@ from .filters import (  # DischargeCurveFilter,; LevelFunctionFilter,; PolarWind
     ValidatedFilter,
     ValidatedFilterDepth,
 )
-from .forms import DailyValidationForm, DataReportForm
 
 # class PolarWindList(generics.ListAPIView):
 #     """
@@ -286,7 +287,7 @@ class PhycocyaninDepthList(ValidatedDepthListBase):
 ########################################################################################
 
 
-class DailyValidation(View):
+class DailyValidation(LoginRequiredMixin, View):
     """
     View for displaying the Daily Validation dash app.
     """
@@ -294,7 +295,10 @@ class DailyValidation(View):
     def get(self, request, *args, **kwargs):
         from .dash_apps.finished_apps import daily_validation
 
-        return render(request, "daily_validation.html")
+        stations = get_objects_for_user(request.user, "change_station", klass=Station)
+        station_codes = list(stations.values_list("station_code", flat=True))
+        context = {"django_context": {"stations_list": {"children": station_codes}}}
+        return render(request, "daily_validation.html", context)
 
 
 class DetailList(ListView):
@@ -380,20 +384,6 @@ class DataReport(View):
         from .dash_apps.finished_apps import data_report
 
         return render(request, "data_report.html")
-
-
-class DailyValidationDev(View):
-    def get(self, request, *args, **kwargs):
-        from .dash_apps.finished_apps import daily_validation
-
-        return render(request, "daily_validation_dev.html")
-
-
-class DataReportDev(View):
-    def get(self, request, *args, **kwargs):
-        from .dash_apps.finished_apps import data_report
-
-        return render(request, "data_report_dev.html")
 
 
 def view_launch_report_calculations(request):

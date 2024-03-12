@@ -342,7 +342,6 @@ class TestValidationFunctions(TestCase):
         data = pd.DataFrame(
             {
                 "id": [1, 2, 3],
-                "time": ["2023-01-01", "2023-01-02", "2023-01-03"],
                 "value": [10.0, 20.0, 30.0],
                 "maximum": [15.0, 25.0, 35.0],
                 "minimum": [5.0, 15.0, 25.0],
@@ -392,8 +391,20 @@ class TestValidationFunctions(TestCase):
         measurement_2.save()
         measurement_3.save()
 
+        launch_report_mock = self.create_patch(
+            "measurement.reporting.launch_reports_calculation"
+        )
+
         # Call the function under test
         save_validated_entries(data)
+
+        # Assert the expected call to the launch_report_calculation function
+        launch_report_mock.assert_called_once_with(
+            self.station.station_code,
+            self.variable.variable_code,
+            measurement_1.time.strftime("%Y-%m-%d"),
+            measurement_3.time.strftime("%Y-%m-%d"),
+        )
 
         # Retrieve the updated Measurement objects
         updated_measurement_1 = Measurement.objects.get(id=1)
@@ -446,8 +457,20 @@ class TestValidationFunctions(TestCase):
             mock_query_set = MockQuerySet()
             mock_filter.return_value = mock_query_set
 
+            launch_report_mock = self.create_patch(
+                "measurement.reporting.launch_reports_calculation"
+            )
+
             # Call the function under test
             save_validated_days(data)
+
+            # Assert the expected call to the launch_report_calculation function
+            launch_report_mock.assert_called_once_with(
+                "station1",
+                "variable1",
+                "2023-01-01",
+                "2023-01-01",
+            )
 
             # Assert that the filter method was called with the correct arguments
             mock_filter.assert_called_once_with(

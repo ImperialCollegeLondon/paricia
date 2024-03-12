@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import pandas as pd
 
+from measurement import reporting
 from measurement.models import Measurement
 from station.models import DeltaT, Station
 from variable.models import Variable
@@ -255,8 +256,10 @@ def save_validated_entries(data: pd.DataFrame) -> None:
     Args:
         data: The dataframe with the validated data.
     """
+    times = []
     for _, row in data[data["validate?"]].iterrows():
         current = Measurement.objects.get(id=row["id"])
+        times.append(current.time)
 
         update = {"is_validated": True, "is_active": not row["deactivate?"]}
         if current.value != row["value"]:
@@ -268,6 +271,13 @@ def save_validated_entries(data: pd.DataFrame) -> None:
 
         Measurement.objects.filter(id=row["id"]).update(**update)
 
+    station = current.station.station_code
+    variable = current.variable.variable_code
+    start_time = min(times).strftime("%Y-%m-%d")
+    end_time = max(times).strftime("%Y-%m-%d")
+
+    reporting.launch_reports_calculation(station, variable, start_time, end_time)
+
 
 def reset_validated_entries(ids: list) -> None:
     """Resets validation and activation status for the selected data.
@@ -277,13 +287,25 @@ def reset_validated_entries(ids: list) -> None:
     Args:
         ids (list): List of measurement ids to reset.
     """
-    update = {"is_validated": False, "is_active": True}
+    times = []
     for _id in ids:
-        Measurement.objects.filter(id=_id).update(**update)
+        current = Measurement.objects.get(id=_id)
+        current.is_validated = False
+        current.is_active = True
+        current.save()
+        times.append(current.time)
+
+    station = current.station.station_code
+    variable = current.variable.variable_code
+    start_time, end_time = reporting.reformat_dates(
+        station, min(times).strftime("%Y-%m-%d"), max(times).strftime("%Y-%m-%d")
+    )
+
+    reporting.remove_report_data_in_range(station, variable, start_time, end_time)
 
 
 def save_validated_days(data: pd.DataFrame) -> None:
-    """Saves the validated days to the database.
+    """Saves the validated days to the database and launches the report calculation.
 
     Only the data that is flagged as "validate?" will be saved. The only updated field
     is is_active. To update the value, maximum or minimum, use save_validated_entries.
@@ -291,18 +313,28 @@ def save_validated_days(data: pd.DataFrame) -> None:
     Args:
         data: The dataframe with the validated data.
     """
-    for _, row in data[data["validate?"]].iterrows():
+    validate = data[data["validate?"]]
+    for _, row in validate.iterrows():
         Measurement.objects.filter(
             station__station_code=row["station"],
             variable__variable_code=row["variable"],
             time__date=row["date"],
         ).update(is_validated=True, is_active=not row["deactivate?"])
 
+    station = validate["station"].iloc[0]
+    variable = validate["variable"].iloc[0]
+    start_time = validate["date"].min()
+    end_time = validate["date"].max()
+
+    reporting.launch_reports_calculation(station, variable, start_time, end_time)
+
 
 def reset_validated_days(
     station: str, variable: str, start_date: datetime.date, end_date: datetime.date
 ) -> None:
     """Resets validation and active status for the selected data.
+
+    It also deletes the associated report data.
 
     TODO: should this also reset any modified value, minimum or maximum entries?
 
@@ -313,10 +345,16 @@ def reset_validated_days(
         end_date (str): End date
     """
     tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
-    start_date_ = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz).date()
-    end_date_ = datetime.strptime(end_date, "%Y-%m-%d").replace(tzinfo=tz).date()
+
+    # To update we use the exact date range.
+    start_date_ = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz)
+    end_date_ = datetime.strptime(end_date, "%Y-%m-%d").replace(tzinfo=tz)
     Measurement.objects.filter(
         station__station_code=station,
         variable__variable_code=variable,
-        time__date__range=(start_date_, end_date_),
+        time__date__range=(start_date_.date(), end_date_.date()),
     ).update(is_validated=False, is_active=True)
+
+    # To remove reports we use an extendaed date range to include the whole month.
+    start_date_, end_date_ = reporting.reformat_dates(station, start_date, end_date)
+    reporting.remove_report_data_in_range(station, variable, start_date_, end_date_)
