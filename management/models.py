@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from guardian.shortcuts import assign_perm
 
@@ -30,16 +30,15 @@ class PermissionsBase(models.Model):
 
         delete, change, view = _get_perm_codenames(self.__class__)
 
-        # Assign view permissions for all users
-        if self.permissions_level in ["public", "internal"]:
-            assign_perm(view, User.objects.all(), self)
-        elif self.permissions_level == "private" and self.owner:
-            assign_perm(view, self.owner, self)
+        # Maintainers and owner get all perms
+        for perm in [delete, change, view]:
+            assign_perm(perm, Group.objects.get(name="Maintainer"), self)
+            assign_perm(perm, self.owner, self)
 
-        # Assign change and delete permissions for owner
-        if self.owner:
-            for perm in [change, delete]:
-                assign_perm(perm, self.owner, self)
+        # View permissions based on permissions level
+        if self.permissions_level in ["public", "internal"]:
+            for group in ["Read only", "Contributor"]:
+                assign_perm(view, Group.objects.get(name=group), self)
 
     class Meta:
         abstract = True

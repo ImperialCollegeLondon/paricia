@@ -20,9 +20,7 @@ class BasePermissionsTest:
         cls.user_other = User.objects.create_user(
             username="user_other", password="password"
         )
-        cls.user_inactive = User.objects.create_user(
-            username="user_inactive", password="password", is_active=False
-        )
+        cls.user_inactive = User.objects.get_or_create(username="AnonymousUser")[0]
 
         # The following must be set in the child classes
         cls.app = None
@@ -69,9 +67,7 @@ class BasePermissionsTest:
         if assert_other is not None:
             self._assert_perm(self.user_other, perm, obj, assert_other)
         if assert_inactive is not None:
-            # TODO: sort out permissions for inactive users so this test can pass
-            # self._assert_perm(self.user_inactive, perm, obj, assert_inactive)
-            pass
+            self._assert_perm(self.user_inactive, perm, obj, assert_inactive)
 
     def test_change_permissions(self):
         """Test that only the owner can change the object."""

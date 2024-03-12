@@ -299,14 +299,10 @@ class Station(PermissionsBase):
         super().set_permissions()
 
         # Assign view_measurements permission
-        permissions_users = {
-            "public": User.objects.all(),
-            "internal": User.objects.filter(is_active=True),
-            "private": [self.owner] if self.owner else [],
-        }
-        users = permissions_users[self.permissions_level]
-        for user in users:
-            assign_perm("view_measurements", user, self)
+        assign_perm("view_measurements", self.owner, self)
+        if self.permissions_level in ["public", "internal"]:
+            for group in ["Read only", "Contributor"]:
+                assign_perm("view_measurements", group, self)
 
     class Meta:
         ordering = ("station_id",)
