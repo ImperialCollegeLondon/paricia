@@ -34,7 +34,7 @@ dash-html-components==2.0.0
     # via dash
 dash-table==5.0.0
     # via dash
-django==5.0.2
+django==5.0.3
     # via
     #   -r requirements.in
     #   channels
@@ -44,6 +44,7 @@ django==5.0.2
     #   django-excel-response
     #   django-extensions
     #   django-filter
+    #   django-guardian
     #   django-plotly-dash
     #   djangorestframework
     #   djangorestframework-simplejwt
@@ -103,7 +104,7 @@ numpy==1.26.4
     #   pandas
 openpyxl==2.4.11
     # via django-excel-response
-packaging==23.2
+packaging==24.0
     # via
     #   drf-yasg
     #   plotly
@@ -117,7 +118,7 @@ psycopg2==2.9.9
     # via -r requirements.in
 pyjwt==2.8.0
     # via djangorestframework-simplejwt
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via pandas
 pytz==2024.1
     # via

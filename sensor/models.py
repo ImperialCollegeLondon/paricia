@@ -16,8 +16,10 @@ from __future__ import unicode_literals
 from django.db import models
 from django.urls import reverse
 
+from management.models import PermissionsBase
 
-class SensorType(models.Model):
+
+class SensorType(PermissionsBase):
     """
     Type of sensor, eg. pluviometric, wind sensor, etc.
     """
@@ -32,7 +34,7 @@ class SensorType(models.Model):
         return reverse("sensor:type_detail", kwargs={"pk": self.pk})
 
 
-class SensorBrand(models.Model):
+class SensorBrand(PermissionsBase):
     """
     Brand of the sensor, eg. Davis, Texas Electronics, etc.
     """
@@ -50,7 +52,7 @@ class SensorBrand(models.Model):
         ordering = ("brand_id",)
 
 
-class Sensor(models.Model):
+class Sensor(PermissionsBase):
     """
     Specific sensor details
     """

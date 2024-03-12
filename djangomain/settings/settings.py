@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
+    "guardian",
 ]
 
 MIDDLEWARE = [
@@ -186,6 +187,7 @@ EMAIL_PORT = 25
 #
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # this is default
+    "guardian.backends.ObjectPermissionBackend",
 )
 #
 #########################################################################

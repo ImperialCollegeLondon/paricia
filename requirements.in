@@ -20,4 +20,5 @@ uritemplate
 crispy-bootstrap5
 django-plotly-dash
 dash-ag-grid
+django-guardian
 whitenoise
