@@ -176,6 +176,7 @@ INTERNAL_IPS = ("127.0.0.1",)
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 ########################################################################
 # Requerido para enviar mensajes de correo a través de servidor SMTP

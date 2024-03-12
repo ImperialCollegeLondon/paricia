@@ -41,7 +41,7 @@ from management.views import RegisterUserAPIView
 from .views import HomePageView, schema_view
 
 urlpatterns = [
-    path("", HomePageView.as_view()),
+    path("", HomePageView.as_view(), name="home"),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
@@ -68,9 +68,6 @@ urlpatterns = [
     ),
     re_path(r"^redoc/$", schema_view.with_ui("redoc"), name="schema-redoc"),
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
-]
-
-urlpatterns += [
     path("api-auth/", include("rest_framework.urls")),
 ]
 
