@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import pandas as pd
 
+from measurement import reporting
 from measurement.models import Measurement
 from station.models import DeltaT, Station
 from variable.models import Variable
@@ -255,8 +256,10 @@ def save_validated_entries(data: pd.DataFrame) -> None:
     Args:
         data: The dataframe with the validated data.
     """
+    times = []
     for _, row in data[data["validate?"]].iterrows():
         current = Measurement.objects.get(id=row["id"])
+        times.append(current.time)
 
         update = {"is_validated": True, "is_active": not row["deactivate?"]}
         if current.value != row["value"]:
@@ -267,6 +270,13 @@ def save_validated_entries(data: pd.DataFrame) -> None:
             update["minimum"] = row["minimum"]
 
         Measurement.objects.filter(id=row["id"]).update(**update)
+
+    station = current.station.station_code
+    variable = current.variable.variable_code
+    start_time = min(times).strftime("%Y-%m-%d")
+    end_time = max(times).strftime("%Y-%m-%d")
+
+    reporting.launch_reports_calculation(station, variable, start_time, end_time)
 
 
 def reset_validated_entries(ids: list) -> None:
@@ -283,7 +293,7 @@ def reset_validated_entries(ids: list) -> None:
 
 
 def save_validated_days(data: pd.DataFrame) -> None:
-    """Saves the validated days to the database.
+    """Saves the validated days to the database and launches the report calculation.
 
     Only the data that is flagged as "validate?" will be saved. The only updated field
     is is_active. To update the value, maximum or minimum, use save_validated_entries.
@@ -291,12 +301,20 @@ def save_validated_days(data: pd.DataFrame) -> None:
     Args:
         data: The dataframe with the validated data.
     """
-    for _, row in data[data["validate?"]].iterrows():
+    validate = data[data["validate?"]]
+    for _, row in validate.iterrows():
         Measurement.objects.filter(
             station__station_code=row["station"],
             variable__variable_code=row["variable"],
             time__date=row["date"],
         ).update(is_validated=True, is_active=not row["deactivate?"])
+
+    station = validate["station"].iloc[0]
+    variable = validate["variable"].iloc[0]
+    start_time = validate["date"].min()
+    end_time = validate["date"].max()
+
+    reporting.launch_reports_calculation(station, variable, start_time, end_time)
 
 
 def reset_validated_days(
