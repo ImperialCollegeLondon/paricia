@@ -16,11 +16,12 @@ from __future__ import unicode_literals
 from django.db import models
 from django.urls import reverse
 
+from management.models import PermissionsBase
 from sensor.models import Sensor
 from station.models import Station
 
 
-class Unit(models.Model):
+class Unit(PermissionsBase):
     """
     Unit of measurement with a name and an initialised form e.g. metres per second, m/s.
     """
@@ -39,7 +40,7 @@ class Unit(models.Model):
         ordering = ["unit_id"]
 
 
-class Variable(models.Model):
+class Variable(PermissionsBase):
     """
     A variable e.g. precipitation, wind speed, wind direction, soil moisture,
     with an associated unit.
@@ -103,7 +104,7 @@ class Variable(models.Model):
         ordering = ["variable_id"]
 
 
-class SensorInstallation(models.Model):
+class SensorInstallation(PermissionsBase):
     """
     Represents an installation of a Sensor at a Station, which measures a Variable.
     Metadata for installation and finishing date, as well as state (active or not).

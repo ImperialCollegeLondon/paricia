@@ -13,9 +13,13 @@
 
 import zoneinfo
 
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+from guardian.shortcuts import assign_perm
+
+from management.models import PermissionsBase, _get_perm_codenames
 
 TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
 
@@ -23,8 +27,10 @@ TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())]
 BASIN_IMAGE_PATH = "station/basin_image/"
 BASIN_FILE_PATH = "station/basin_file/"
 
+User = get_user_model()
 
-class Country(models.Model):
+
+class Country(PermissionsBase):
     """
     The country that a station or region is in.
     """
@@ -40,9 +46,10 @@ class Country(models.Model):
 
     class Meta:
         ordering = ("id",)
+        verbose_name_plural = "countries"
 
 
-class Region(models.Model):
+class Region(PermissionsBase):
     """
     A region within a country.
     """
@@ -63,7 +70,7 @@ class Region(models.Model):
         ordering = ("id",)
 
 
-class Ecosystem(models.Model):
+class Ecosystem(PermissionsBase):
     """
     The ecosystem associated with a station e.g. rain forest.
     """
@@ -81,7 +88,7 @@ class Ecosystem(models.Model):
         ordering = ("id",)
 
 
-class Institution(models.Model):
+class Institution(PermissionsBase):
     """
     Institutional partner e.g. Imperial College London.
     """
@@ -99,7 +106,7 @@ class Institution(models.Model):
         ordering = ("id",)
 
 
-class StationType(models.Model):
+class StationType(PermissionsBase):
     """
     Station type e.g. pluvometric, hydrological.
     """
@@ -117,7 +124,7 @@ class StationType(models.Model):
         ordering = ("id",)
 
 
-class Place(models.Model):
+class Place(PermissionsBase):
     """
     Specific place that a station is situated e.g. Huaraz.
     """
@@ -138,7 +145,7 @@ class Place(models.Model):
         ordering = ("id",)
 
 
-class Basin(models.Model):
+class Basin(PermissionsBase):
     """
     Basin e.g. El Carmen.
     TODO: Is there a more specific definition we can use? e.g. a river basin?
@@ -163,7 +170,7 @@ class Basin(models.Model):
         ordering = ("id",)
 
 
-class PlaceBasin(models.Model):
+class PlaceBasin(PermissionsBase):
     """
     Associates a Basin with a Place and an image.
     """
@@ -193,11 +200,21 @@ class PlaceBasin(models.Model):
         ordering = ("id",)
 
 
-class Station(models.Model):
+class Station(PermissionsBase):
     """
     Main representation of a station with lots of metadata, according to
     the other models in this app, along with some geographical data.
     """
+
+    PERMISSIONS_LEVELS = [
+        ("public", "Public"),
+        ("internal", "Internal"),
+        ("private", "Private"),
+    ]
+
+    permissions_level = models.CharField(
+        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    )
 
     station_id = models.AutoField("Id", primary_key=True)
     station_code = models.CharField("Code", max_length=32)
@@ -277,12 +294,27 @@ class Station(models.Model):
     def get_absolute_url(self):
         return reverse("station:station_detail", kwargs={"pk": self.pk})
 
+    def set_permissions(self):
+        """Set object-level permissions."""
+        super().set_permissions()
+
+        # Assign view_measurements permission
+        permissions_users = {
+            "public": User.objects.all(),
+            "internal": User.objects.filter(is_active=True),
+            "private": [self.owner] if self.owner else [],
+        }
+        users = permissions_users[self.permissions_level]
+        for user in users:
+            assign_perm("view_measurements", user, self)
+
     class Meta:
         ordering = ("station_id",)
+        permissions = (("view_measurements", "View measurements"),)
 
 
 # TODO Discuss if it's really necessary to implement multiple deltaTs for different dates
-class DeltaT(models.Model):
+class DeltaT(PermissionsBase):
     """
     Delta T: Interval of data adquisition (In minutes)
     """

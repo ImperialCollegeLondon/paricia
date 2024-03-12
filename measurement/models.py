@@ -36,7 +36,7 @@ class MeasurementBase(TimescaleModel):
     """
 
     station = models.ForeignKey(
-        Station, on_delete=models.PROTECT, null=False, verbose_name="Station"
+        Station, on_delete=models.CASCADE, null=False, verbose_name="Station"
     )
     variable = models.ForeignKey(
         Variable, on_delete=models.PROTECT, null=False, verbose_name="Variable"
@@ -50,7 +50,6 @@ class MeasurementBase(TimescaleModel):
     )
 
     class Meta:
-        default_permissions = ()
         abstract = True
         indexes = [
             models.Index(fields=["station", "time", "variable"]),
@@ -73,7 +72,6 @@ class Report(MeasurementBase):
     completeness = models.DecimalField(max_digits=4, decimal_places=1, null=False)
 
     class Meta:
-        default_permissions = ()
         indexes = [
             models.Index(fields=["report_type", "station", "time", "variable"]),
         ]
