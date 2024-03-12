@@ -1,6 +1,6 @@
 asgiref
 Django
-django-bootstrap4
+django-bootstrap5
 django-crispy-forms
 django-excel-response
 django-extensions
@@ -17,7 +17,7 @@ psycopg2
 pytz
 PyYAML
 uritemplate
-crispy-bootstrap4
+crispy-bootstrap5
 django-plotly-dash
 dash-ag-grid
 whitenoise

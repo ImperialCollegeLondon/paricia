@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     "measurement",
     "validated.apps.ValidatedConfig",
     "importing.apps.ImportingConfig",
-    "bootstrap4",
+    "django_bootstrap5",
     "django_extensions",
     "django_filters",
     "django.contrib.humanize",
@@ -75,7 +75,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "management",
     "crispy_forms",
-    "crispy_bootstrap4",
+    "crispy_bootstrap5",
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
 ]
 
@@ -162,9 +162,6 @@ USE_TZ = True
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_DIRS = [  # Directorios adicionales static
-    os.path.join(BASE_DIR, "static"),
-]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "data/media")
 
@@ -240,7 +237,7 @@ SIMPLE_JWT = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
