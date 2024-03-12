@@ -290,7 +290,11 @@ def reset_validated_entries(ids: list) -> None:
     times = []
     update = {"is_validated": False, "is_active": True}
     for _id in ids:
-        current = Measurement.objects.filter(id=_id)
+        current = Measurement.objects.get(id=_id)
+        current.is_validated = False
+        current.is_active = True
+        current.save()
+        times.append(current.time)
         current.update(**update)
         times.append(current.time)
 
