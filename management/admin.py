@@ -31,7 +31,9 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
         return True
 
     def has_view_permission(self, request, obj=None):
-        """Allow all users to view the object."""
+        """Check if the user has the correct permission to view the object."""
+        if obj is not None:
+            return f"view_{self.model}" in get_perms(request.user, obj)
         return True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
