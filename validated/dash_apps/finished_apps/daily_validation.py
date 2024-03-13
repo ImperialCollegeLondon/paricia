@@ -55,7 +55,7 @@ filters = html.Div(
                     id="station_drop",
                     options=[
                         {"label": item.station_code, "value": item.station_code}
-                        for item in Station.objects.order_by("station_code")
+                        for item in Station.objects.filter(station_code=STATION)
                     ],
                     value=STATION,
                 ),
@@ -69,7 +69,7 @@ filters = html.Div(
                     id="variable_drop",
                     options=[
                         {"label": item.name, "value": item.variable_code}
-                        for item in Variable.objects.order_by("variable_code")
+                        for item in Variable.objects.filter(variable_code=VARIABLE)
                     ],
                     value=VARIABLE,
                 ),
