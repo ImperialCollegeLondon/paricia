@@ -563,3 +563,16 @@ def populate_stations_dropdown(station_codes):
     return [
         {"label": station_code, "value": station_code} for station_code in station_codes
     ]
+
+#Station_drop displays variables only associated with the selected station
+@app.callback(Output("variable_drop", "options"), Input("station_drop", "value"))
+
+def populate_variables_dropdown(station_code):
+    if station_code:
+        return [
+            {"label": item.name, "value": item.variable_code}
+            for item in Variable.objects.filter(station__station_code=station_code)
+        ]
+    else:
+        return []
+        
