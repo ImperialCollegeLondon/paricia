@@ -236,7 +236,7 @@ def download_csv_report(
         except:
             pass
         return dict(
-            content=vfile,
+            content=file,
             filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
         )
 
