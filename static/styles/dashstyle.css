@@ -1,0 +1,17 @@
+body {
+    font-family: Open Sans, Raleway, Dosis, Ubuntu, sans-serif;
+}
+
+.DateInput_input,
+.DateInput_input_1 {
+    font-size: inherit;
+    Height: 30px;
+}
+
+.Select-input {
+    height: 30px;
+}
+
+.Select-control {
+    height: 30px;
+}
