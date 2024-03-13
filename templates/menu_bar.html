@@ -109,22 +109,43 @@
           <li><a class="dropdown-item" href="api/measurement/report">Reports</a></li>
         </ul>
       </li>
-
     </ul>
 
-
-
-
-
-
+    <!-- A separate menu for the user to log in or log out -->
     <ul class="nav navbar-nav pull-right">
-      {% block userlinks %}
-      {% if user.is_authenticated %}
-      {% optional_logout request user %}
-      {% else %}
-      {% optional_login request %}
+
+      <!-- If the user is staff, we show the link to the admin -->
+      {% if user.is_staff %}
+      <li class="nav-item">
+        <a class="nav-link" href="/admin">Admin site</a>
+      </li>
       {% endif %}
-      {% endblock %}
+
+      <!-- If the user is authenticated, we greet them and include a logout button -->
+      <!-- within a dropdown so it is not clicked by mistake -->
+      {% if user.is_authenticated %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarAdminMenuLink" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">Welcome, {{user.username}}<span class="caret"></span></a>
+
+        <ul class="dropdown-menu" aria-labelledby="navbarAdminMenuLink">
+          <li class="nav-item">
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <input class="nav-link" type="submit" value="Logout"
+                style="border:none;border-color:transparent;background-color:transparent;" />
+            </form>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Otherwise we just show the login button -->
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href="/api-auth/login">Login</a>
+      </li>
+      {% endif %}
+
     </ul>
   </div>
 </div>
