@@ -233,11 +233,10 @@ def download_csv_report(
                 end_time=end_time,
                 report_type=temporality,
             ).to_csv(index=False)
-        except Exception as e:
-            string = f"{temporality, station, variable, start_time, end_time} - {e}"
-            return dict(content=string, filename="error.csv")
+        except:
+            pass
         return dict(
-            content=file,
+            content=vfile,
             filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
         )
 
