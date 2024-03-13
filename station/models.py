@@ -309,7 +309,8 @@ class Station(PermissionsBase):
         elif self.permissions_level == "internal":
             assign_perm("view_measurements", standard_group, self)
         elif self.permissions_level == "private":
-            assign_perm("view_measurements", self.owner, self)
+            if self.owner:
+                assign_perm("view_measurements", self.owner, self)
 
     class Meta:
         ordering = ("station_id",)

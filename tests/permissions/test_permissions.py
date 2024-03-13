@@ -21,7 +21,7 @@ class BasePermissionsTest:
         cls.user_other = User.objects.create_user(
             username="user_other", password="password"
         )
-        cls.anonymous_user = get_anonymous_user()
+        cls.user_anon = get_anonymous_user()
 
         # The following must be set in the child classes
         cls.app = None
@@ -68,7 +68,7 @@ class BasePermissionsTest:
         if assert_other is not None:
             self._assert_perm(self.user_other, perm, obj, assert_other)
         if assert_anon is not None:
-            self._assert_perm(self.anonymous_user, perm, obj, assert_anon)
+            self._assert_perm(self.user_anon, perm, obj, assert_anon)
 
     def test_change_permissions(self):
         """Test that only the owner can change the object."""
