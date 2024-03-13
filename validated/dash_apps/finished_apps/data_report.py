@@ -78,7 +78,11 @@ app.layout = html.Div(
     children=[
         dcc.Download(id="download_csv"),
         html.Div(
-            id="alert_div",
+            id="data_alert_div",
+            style={"padding": "10px"},
+        ),
+        html.Div(
+            id="csv_alert_div",
             style={"padding": "10px"},
         ),
         html.Div(
@@ -206,7 +210,10 @@ def clear_form(n_clicks: int):
 
 
 @app.callback(
-    Output("download_csv", "data"),
+    [
+        Output("download_csv", "data"),
+        Output("csv_alert_div", "children"),
+    ],
     Input("csv_button", "n_clicks"),
     [
         State("temporality_drop", "value"),
@@ -224,7 +231,7 @@ def download_csv_report(
     start_time: str,
     end_time: str,
 ):
-    if n_clicks > 0:
+    if n_clicks and n_clicks > 0:
         try:
             file = get_report_data_from_db(
                 station=station,
@@ -234,21 +241,25 @@ def download_csv_report(
                 report_type=temporality,
             ).to_csv(index=False)
         except:
-            pass
-        return dict(
-            content=file,
-            filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
+            alert = dbc.Alert("Could not export data to CSV", color="warning")
+            return None, [alert]
+        return (
+            dict(
+                content=file,
+                filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
+            ),
+            [],
         )
 
 
 @app.callback(
     [
-        Output("alert_div", "children"),
+        Output("data_alert_div", "children"),
         Output("csv_div", "children"),
     ],
     Input("data_report_graph", "figure"),
 )
-def invalid_data_alert(figure):
+def update_alert(figure):
     if figure["layout"]["title"]["text"] == "Data not found":
         alert = dbc.Alert(
             "No data was found with the selected criteria", color="warning"
