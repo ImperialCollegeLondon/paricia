@@ -68,9 +68,6 @@ urlpatterns = [
     ),
     re_path(r"^redoc/$", schema_view.with_ui("redoc"), name="schema-redoc"),
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
-]
-
-urlpatterns += [
     path("api-auth/", include("rest_framework.urls")),
 ]
 
