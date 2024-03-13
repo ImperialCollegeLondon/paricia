@@ -1,12 +1,13 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
-from dash import Input, Output, dcc, html
+from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
 
 from measurement.models import Measurement, Report
 from measurement.reporting import get_report_data_from_db
 from station.models import Station
+from validated.functions import csv_data_report
 from variable.models import Variable
 
 # Create a Dash app
@@ -75,7 +76,11 @@ plot = plot_graph(
 # Create layout
 app.layout = html.Div(
     children=[
-        html.Div(id="alert_div"),
+        dcc.Download(id="download_csv"),
+        html.Div(
+            id="alert_div",
+            style={"padding": "10px"},
+        ),
         html.Div(
             style={"display": "flex", "justify-content": "space-around"},
             children=[
@@ -83,7 +88,12 @@ app.layout = html.Div(
                     style={"width": "35%"},
                     children=[
                         html.H2("Data Report"),
-                        html.Button("Clear form", id="clear_button"),
+                        html.Div(
+                            style={"padding": "10px"},
+                            children=[
+                                html.Button("Clear form", id="clear_button"),
+                            ],
+                        ),
                         html.H3("Temporality"),
                         dcc.Dropdown(
                             id="temporality_drop",
@@ -124,6 +134,10 @@ app.layout = html.Div(
                             display_format="YYYY-MM-DD",
                             start_date=init_start_time,
                             end_date=init_end_time,
+                        ),
+                        html.Div(
+                            id="csv_div",
+                            style={"padding": "10px"},
                         ),
                     ],
                 ),
@@ -192,13 +206,55 @@ def clear_form(n_clicks: int):
 
 
 @app.callback(
-    Output("alert_div", "children"),
+    Output("download_csv", "data"),
+    Input("csv_button", "n_clicks"),
+    [
+        State("temporality_drop", "value"),
+        State("station_drop", "value"),
+        State("variable_drop", "value"),
+        State("date_range_picker", "start_date"),
+        State("date_range_picker", "end_date"),
+    ],
+)
+def download_csv_report(
+    n_clicks: int,
+    temporality: str,
+    station: str,
+    variable: str,
+    start_time: str,
+    end_time: str,
+):
+    if n_clicks > 0:
+        try:
+            file = get_report_data_from_db(
+                station=station,
+                variable=variable,
+                start_time=start_time,
+                end_time=end_time,
+                report_type=temporality,
+            ).to_csv(index=False)
+        except Exception as e:
+            string = f"{temporality, station, variable, start_time, end_time} - {e}"
+            return dict(content=string, filename="error.csv")
+        return dict(
+            content=file,
+            filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
+        )
+
+
+@app.callback(
+    [
+        Output("alert_div", "children"),
+        Output("csv_div", "children"),
+    ],
     Input("data_report_graph", "figure"),
 )
 def invalid_data_alert(figure):
     if figure["layout"]["title"]["text"] == "Data not found":
-        return [
-            dbc.Alert("No data was found with the selected criteria", color="warning")
-        ]
+        alert = dbc.Alert(
+            "No data was found with the selected criteria", color="warning"
+        )
+        return [alert], []
     else:
-        return []
+        button = html.Button("Download CSV", id="csv_button")
+        return [], [button]
