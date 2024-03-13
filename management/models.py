@@ -4,14 +4,18 @@ from guardian.shortcuts import assign_perm, get_anonymous_user
 
 
 class User(AbstractUser):
-    """
-    Implement a custom user model to add flexibility in the future.
+    """Custom user model.
+
+    All users are given staff status and added to the standard group.
+
     """
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        standard_group = Group.objects.get(name="Standard")
         if self.username != "AnonymousUser":
+            self.is_staff = True
+        super().save(*args, **kwargs)
+        if self.username != "AnonymousUser":
+            standard_group = Group.objects.get(name="Standard")
             standard_group.user_set.add(self)
 
 
