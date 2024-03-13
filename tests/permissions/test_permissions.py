@@ -152,3 +152,14 @@ class StationPermissionsTest(BasePermissionsTest, TestCase):
     def test_measurement_permissions_internal(self):
         """Test that only active users can view measurements for internal stations."""
         self.assert_perms("view_measurements", self.station_internal, True, True, False)
+
+
+class StationPermissionsTestNewUser(StationPermissionsTest):
+    """Test Station permissions for a new user."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user_other = User.objects.create_user(
+            username="user_other_new", password="password"
+        )
