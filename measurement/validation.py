@@ -50,7 +50,8 @@ def get_data_to_validate(
 def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
     """Flags if period of the time entries is correct.
 
-    It is assume that the first entry is correct.
+    It is assume that the first entry is correct. A tolerance of 2% of the period
+    is used when deciding on the suspicious status.
 
     Args:
         data: The dataframe with allowed_difference = Variable. the data.
@@ -60,7 +61,11 @@ def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
         A series with the status of the time lapse.
     """
     flags = pd.DataFrame(index=data.index, columns=["suspicious_time_lapse"])
-    flags["suspicious_time_lapse"] = data.time.diff() != pd.Timedelta(f"{period}min")
+    low = pd.Timedelta(f"{period}min") * (1 - 0.02)
+    high = pd.Timedelta(f"{period}min") * (1 + 0.02)
+    flags["suspicious_time_lapse"] = ~data.time.diff().between(
+        low, high, inclusive="both"
+    )
     flags["suspicious_time_lapse"].iloc[0] = False
     return flags
 
