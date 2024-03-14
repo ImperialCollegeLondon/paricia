@@ -1,9 +1,0 @@
-{% extends "template_confirm_delete.html" %}
-
-{% block titulo %}Formato de importación / Extensión de archivo{% endblock %}
-
-{% block table_rows %}
-<tr><th>Nombre</th><td>{{extension.ext_valor}}</td></tr>
-{% endblock %}
-
-{% block cancelar_url %}{% url 'formato:extension_index' %}{% endblock %}
