@@ -578,4 +578,11 @@ def populate_stations_dropdown(variable_drop):
     
 @app.callback(Output("station_drop", "value"), Input("station_drop", "options"))
 def popualate_variable_dropdown(station_drop):
-    return station_drop[0]["value"]
+    stations = Measurement.objects.filter(station__station_code=station_drop).values_list("variable", flat=True).distinct()
+    if station_drop:
+        return [
+            {"label": item.name, "value": item.variable_code}
+            for item in Variable.objects.filter(variable_code__in=stations)
+        ]
+    else:    
+        return []
