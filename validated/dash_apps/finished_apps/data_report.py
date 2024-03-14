@@ -233,15 +233,19 @@ def download_csv_report(
 ):
     if n_clicks and n_clicks > 0:
         try:
-            file = get_report_data_from_db(
-                station=station,
-                variable=variable,
-                start_time=start_time,
-                end_time=end_time,
-                report_type=temporality,
-            ).to_csv(index=False)
-        except:
-            alert = dbc.Alert("Could not export data to CSV", color="warning")
+            file = (
+                get_report_data_from_db(
+                    station=station,
+                    variable=variable,
+                    start_time=start_time,
+                    end_time=end_time,
+                    report_type=temporality,
+                )
+                .drop(columns=["station", "variable"])
+                .to_csv(index=False)
+            )
+        except Exception as e:
+            alert = dbc.Alert(f"Could not export data to CSV: {e}", color="warning")
             return None, [alert]
         return (
             dict(
