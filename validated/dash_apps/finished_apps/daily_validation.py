@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
-from measurement.models import Measurement
+from measurement.models import  Measurement
 from measurement.validation import (
     generate_validation_report,
     reset_validated_days,
@@ -54,8 +54,7 @@ filters = html.Div(
                 dcc.Dropdown(
                     id="station_drop",
                     options=[
-                        {"label": item.station_code, "value": item.station_code}
-                        for item in Station.objects.order_by("station_code")
+                       
                     ],
                     value=STATION,
                 ),
@@ -565,24 +564,10 @@ def populate_stations_dropdown(station_codes):
     ]
 
 @app.callback(
-    Output("station_drop", "options"), Input("variable_drop", "value"))
-def populate_stations_dropdown(variable_drop):
-    variables = Measurement.objects.filter(variable__variable_code=variable_drop).values_list("station", flat=True).distinct()
-    if variable_drop:
-        return [
-            {"label": item.station_code, "value": item.station_code}
-            for item in Station.objects.filter(station_code__in=variables)
-        ]
-    else:
-        return []
+    Output("station_drop", "options"), 
+    Input("variable_drop", "value"))
+def populate_stations_dropdown(chosen_variable):
+    variables = Measurement.objects.filter(station__station_code=station).values_list("variable", flat=True).distinct()
     
-@app.callback(Output("station_drop", "value"), Input("station_drop", "options"))
-def popualate_variable_dropdown(station_drop):
-    stations = Measurement.objects.filter(station__station_code=station_drop).values_list("variable", flat=True).distinct()
-    if station_drop:
-        return [
-            {"label": item.name, "value": item.variable_code}
-            for item in Variable.objects.filter(variable_code__in=stations)
-        ]
-    else:    
-        return []
+    return [ {"label": item.station_code, "value": item.station_code}
+                        for item in Station.objects.order_by("station_code")]
