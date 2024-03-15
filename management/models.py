@@ -11,10 +11,10 @@ class User(AbstractUser):
     """
 
     def save(self, *args, **kwargs):
-        if self.username != "AnonymousUser":
+        if self.username != get_anonymous_user().username:
             self.is_staff = True
         super().save(*args, **kwargs)
-        if self.username != "AnonymousUser":
+        if self.username != get_anonymous_user().username:
             standard_group = Group.objects.get(name="Standard")
             standard_group.user_set.add(self)
 
