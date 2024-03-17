@@ -163,3 +163,27 @@ class StationPermissionsTestNewUser(StationPermissionsTest):
         cls.user_other = User.objects.create_user(
             username="user_other_new", password="password"
         )
+
+
+class StationPermissionsTestChangePermissions(StationPermissionsTest):
+    """Test changing permissions level for Station objects."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # Change the permissions level for the stations
+        cls.station_private.permissions_level = "public"
+        cls.station_public.permissions_level = "internal"
+        cls.station_internal.permissions_level = "private"
+        cls.station_private.save()
+        cls.station_public.save()
+        cls.station_internal.save()
+
+        # Swap the stations for the tests
+        cls.station_private, cls.station_public, cls.station_internal = (
+            cls.station_internal,
+            cls.station_private,
+            cls.station_public,
+        )
+        cls.obj = cls.station_public

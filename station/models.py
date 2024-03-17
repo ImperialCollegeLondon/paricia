@@ -18,7 +18,7 @@ from django.contrib.auth.models import Group
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-from guardian.shortcuts import assign_perm, get_anonymous_user
+from guardian.shortcuts import assign_perm, get_anonymous_user, remove_perm
 
 from management.models import PermissionsBase
 
@@ -306,10 +306,15 @@ class Station(PermissionsBase):
         if self.permissions_level == "public":
             assign_perm("view_measurements", standard_group, self)
             assign_perm("view_measurements", anonymous_user, self)
+            remove_perm("view_measurements", self.owner, self)
         elif self.permissions_level == "internal":
             assign_perm("view_measurements", standard_group, self)
+            remove_perm("view_measurements", anonymous_user, self)
+            remove_perm("view_measurements", self.owner, self)
         elif self.permissions_level == "private":
             if self.owner:
+                remove_perm("view_measurements", standard_group, self)
+                remove_perm("view_measurements", anonymous_user, self)
                 assign_perm("view_measurements", self.owner, self)
 
     class Meta:
