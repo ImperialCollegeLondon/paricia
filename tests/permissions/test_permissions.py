@@ -22,6 +22,9 @@ class BasePermissionsTest:
             username="user_other", password="password"
         )
         cls.user_anon = get_anonymous_user()
+        cls.user_super = User.objects.create_superuser(
+            username="user_super", password="password"
+        )
 
         # The following must be set in the child classes
         cls.app = None
@@ -55,6 +58,7 @@ class BasePermissionsTest:
         assert_owner: bool = None,
         assert_other: bool = None,
         assert_anon: bool = None,
+        assert_super: bool = None,
     ):
         """Assert permissions for multiple users against an object.
 
@@ -66,6 +70,8 @@ class BasePermissionsTest:
                 permission.
             assert_anon (bool, optional): Whether the anonymous user should have the
                 permission.
+            assert_super (bool, optional): Whether the superuser should have the
+                permission.
         """
         if assert_owner is not None:
             self._assert_perm(self.user_owner, perm, obj, assert_owner)
@@ -73,37 +79,51 @@ class BasePermissionsTest:
             self._assert_perm(self.user_other, perm, obj, assert_other)
         if assert_anon is not None:
             self._assert_perm(self.user_anon, perm, obj, assert_anon)
+        if assert_super is not None:
+            self._assert_perm(self.user_super, perm, obj, assert_super)
 
     def test_change_permissions(self):
-        """Test that only the owner can change the objects."""
-        self.assert_perms(f"change_{self.model}", self.obj_private, True, False, False)
-        self.assert_perms(f"change_{self.model}", self.obj_public, True, False, False)
+        """Test that only the owner and superuser can change the objects."""
+        self.assert_perms(
+            f"change_{self.model}", self.obj_private, True, False, False, True
+        )
+        self.assert_perms(
+            f"change_{self.model}", self.obj_public, True, False, False, True
+        )
         if self.obj_internal:
             self.assert_perms(
-                f"change_{self.model}", self.obj_internal, True, False, False
+                f"change_{self.model}", self.obj_internal, True, False, False, True
             )
 
     def test_delete_permissions(self):
-        """Test that only the owner can delete the objects."""
-        self.assert_perms(f"delete_{self.model}", self.obj_private, True, False, False)
-        self.assert_perms(f"delete_{self.model}", self.obj_public, True, False, False)
+        """Test that only the owner and superuser can delete the objects."""
+        self.assert_perms(
+            f"delete_{self.model}", self.obj_private, True, False, False, True
+        )
+        self.assert_perms(
+            f"delete_{self.model}", self.obj_public, True, False, False, True
+        )
         if self.obj_internal:
             self.assert_perms(
-                f"delete_{self.model}", self.obj_internal, True, False, False
+                f"delete_{self.model}", self.obj_internal, True, False, False, True
             )
 
     def test_view_permissions_private(self):
-        """Test that only the owner can view private objects."""
-        self.assert_perms(f"view_{self.model}", self.obj_private, True, False, False)
+        """Test that only the owner and superuser can view private objects."""
+        self.assert_perms(
+            f"view_{self.model}", self.obj_private, True, False, False, True
+        )
 
     def test_view_permissions_public(self):
         """Test that all users can view public objects."""
-        self.assert_perms(f"view_{self.model}", self.obj_public, True, True, True)
+        self.assert_perms(f"view_{self.model}", self.obj_public, True, True, True, True)
 
     def test_view_permissions_internal(self):
         """Test that all users can view internal objects."""
         if self.obj_internal:
-            self.assert_perms(f"view_{self.model}", self.obj_internal, True, True, True)
+            self.assert_perms(
+                f"view_{self.model}", self.obj_internal, True, True, True, True
+            )
 
 
 class StationTypePermissionsTest(BasePermissionsTest, TestCase):
@@ -173,16 +193,21 @@ class StationPermissionsTest(BasePermissionsTest, TestCase):
         )
 
     def test_measurement_permissions_private(self):
-        """Test that only the owner can view measurements for private stations."""
-        self.assert_perms("view_measurements", self.obj_private, True, False, False)
+        """Test that only the owner and superuser can view measurements for private
+        stations."""
+        self.assert_perms(
+            "view_measurements", self.obj_private, True, False, False, True
+        )
 
     def test_measurement_permissions_public(self):
         """Test that all users can view measurements for public stations."""
-        self.assert_perms("view_measurements", self.obj_public, True, True, True)
+        self.assert_perms("view_measurements", self.obj_public, True, True, True, True)
 
     def test_measurement_permissions_internal(self):
         """Test that only active users can view measurements for internal stations."""
-        self.assert_perms("view_measurements", self.obj_internal, True, True, False)
+        self.assert_perms(
+            "view_measurements", self.obj_internal, True, True, False, True
+        )
 
 
 class StationPermissionsTestNewUser(StationPermissionsTest):
