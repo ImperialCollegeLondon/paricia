@@ -45,17 +45,19 @@ class PermissionsBase(models.Model):
         if self.permissions_level in ["public", "internal"]:
             assign_perm(view, standard_group, self)
             assign_perm(view, anonymous_user, self)
-            remove_perm(view, self.owner, self)
+            if self.owner:
+                remove_perm(view, self.owner, self)
         elif self.permissions_level == "private" and self.owner:
             remove_perm(view, standard_group, self)
             remove_perm(view, anonymous_user, self)
-            assign_perm(view, self.owner, self)
+            if self.owner:
+                assign_perm(view, self.owner, self)
 
         # Assign change and delete permissions for owner
-        if self.owner:
-            for perm in [change, delete]:
-                remove_perm(perm, standard_group, self)
-                remove_perm(perm, anonymous_user, self)
+        for perm in [change, delete]:
+            remove_perm(perm, standard_group, self)
+            remove_perm(perm, anonymous_user, self)
+            if self.owner:
                 assign_perm(perm, self.owner, self)
 
     class Meta:

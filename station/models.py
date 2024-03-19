@@ -306,15 +306,17 @@ class Station(PermissionsBase):
         if self.permissions_level == "public":
             assign_perm("view_measurements", standard_group, self)
             assign_perm("view_measurements", anonymous_user, self)
-            remove_perm("view_measurements", self.owner, self)
+            if self.owner:
+                remove_perm("view_measurements", self.owner, self)
         elif self.permissions_level == "internal":
             assign_perm("view_measurements", standard_group, self)
             remove_perm("view_measurements", anonymous_user, self)
-            remove_perm("view_measurements", self.owner, self)
-        elif self.permissions_level == "private":
             if self.owner:
-                remove_perm("view_measurements", standard_group, self)
-                remove_perm("view_measurements", anonymous_user, self)
+                remove_perm("view_measurements", self.owner, self)
+        elif self.permissions_level == "private":
+            remove_perm("view_measurements", standard_group, self)
+            remove_perm("view_measurements", anonymous_user, self)
+            if self.owner:
                 assign_perm("view_measurements", self.owner, self)
 
     class Meta:
