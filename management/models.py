@@ -1,8 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from guardian.shortcuts import assign_perm, get_anonymous_user, remove_perm
-
-from djangomain.settings import ANONYMOUS_USER_NAME
 
 
 class User(AbstractUser):
@@ -13,10 +12,10 @@ class User(AbstractUser):
     """
 
     def save(self, *args, **kwargs):
-        if self.username != ANONYMOUS_USER_NAME:
+        if self.username != settings.ANONYMOUS_USER_NAME:
             self.is_staff = True
         super().save(*args, **kwargs)
-        if self.username != ANONYMOUS_USER_NAME:
+        if self.username != settings.ANONYMOUS_USER_NAME:
             standard_group = Group.objects.get(name="Standard")
             standard_group.user_set.add(self)
 
@@ -46,17 +45,19 @@ class PermissionsBase(models.Model):
         if self.permissions_level in ["public", "internal"]:
             assign_perm(view, standard_group, self)
             assign_perm(view, anonymous_user, self)
-            remove_perm(view, self.owner, self)
+            if self.owner:
+                remove_perm(view, self.owner, self)
         elif self.permissions_level == "private" and self.owner:
             remove_perm(view, standard_group, self)
             remove_perm(view, anonymous_user, self)
-            assign_perm(view, self.owner, self)
+            if self.owner:
+                assign_perm(view, self.owner, self)
 
         # Assign change and delete permissions for owner
-        if self.owner:
-            for perm in [change, delete]:
-                remove_perm(perm, standard_group, self)
-                remove_perm(perm, anonymous_user, self)
+        for perm in [change, delete]:
+            remove_perm(perm, standard_group, self)
+            remove_perm(perm, anonymous_user, self)
+            if self.owner:
                 assign_perm(perm, self.owner, self)
 
     class Meta:
