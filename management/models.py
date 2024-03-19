@@ -1,8 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from guardian.shortcuts import assign_perm, get_anonymous_user
-
-from djangomain.settings import ANONYMOUS_USER_NAME
 
 
 class User(AbstractUser):
@@ -13,10 +12,10 @@ class User(AbstractUser):
     """
 
     def save(self, *args, **kwargs):
-        if self.username != ANONYMOUS_USER_NAME:
+        if self.username != settings.ANONYMOUS_USER_NAME:
             self.is_staff = True
         super().save(*args, **kwargs)
-        if self.username != ANONYMOUS_USER_NAME:
+        if self.username != settings.ANONYMOUS_USER_NAME:
             standard_group = Group.objects.get(name="Standard")
             standard_group.user_set.add(self)
 
