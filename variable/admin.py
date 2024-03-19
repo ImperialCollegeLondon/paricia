@@ -11,7 +11,6 @@ admin.site.site_header = "Paricia Administration - Variables"
 class SensorTypeAdmin(PermissionsBaseAdmin):
     """Admin class for the Unit model."""
 
-    model = "unit"
     list_display = ["unit_id", "name", "owner", "permissions_level"]
 
 
@@ -19,7 +18,6 @@ class SensorTypeAdmin(PermissionsBaseAdmin):
 class VariableAdmin(PermissionsBaseAdmin):
     """Admin class for the Variable model."""
 
-    model = "variable"
     list_display = [
         "variable_id",
         "variable_code",
@@ -43,7 +41,6 @@ class VariableAdmin(PermissionsBaseAdmin):
 class SensorInstallationAdmin(PermissionsBaseAdmin):
     """Admin class for the SensorInstallation model."""
 
-    model = "sensor_installation"
     list_display = [
         "sensorinstallation_id",
         "variable",

@@ -11,7 +11,6 @@ admin.site.site_header = "Paricia Administration - Sensors"
 class SensorTypeAdmin(PermissionsBaseAdmin):
     """Admin class for the SensorType model."""
 
-    model = "sensortype"
     list_display = ["type_id", "name", "owner", "permissions_level"]
 
 
@@ -19,7 +18,6 @@ class SensorTypeAdmin(PermissionsBaseAdmin):
 class SensorBrandAdmin(PermissionsBaseAdmin):
     """Admin class for the SensorBrand model."""
 
-    model = "sensorbrand"
     list_display = ["brand_id", "name", "owner", "permissions_level"]
 
 
@@ -27,7 +25,6 @@ class SensorBrandAdmin(PermissionsBaseAdmin):
 class SensorAdmin(PermissionsBaseAdmin):
     """Admin class for the Sensor model."""
 
-    model = "sensor"
     list_display = [
         "sensor_id",
         "code",
