@@ -21,19 +21,19 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
     def has_change_permission(self, request, obj=None):
         """Check if the user has the correct permission to change the object."""
         if obj is not None:
-            return f"change_{self.model}" in get_perms(request.user, obj)
+            return f"change_{self.opts.model_name}" in get_perms(request.user, obj)
         return True
 
     def has_delete_permission(self, request, obj=None):
         """Check if the user has the correct permission to delete the object."""
         if obj is not None:
-            return f"delete_{self.model}" in get_perms(request.user, obj)
+            return f"delete_{self.opts.model_name}" in get_perms(request.user, obj)
         return True
 
     def has_view_permission(self, request, obj=None):
         """Check if the user has the correct permission to view the object."""
         if obj is not None:
-            return f"view_{self.model}" in get_perms(request.user, obj)
+            return f"view_{self.opts.model_name}" in get_perms(request.user, obj)
         return True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

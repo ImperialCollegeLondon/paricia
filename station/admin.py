@@ -22,7 +22,6 @@ admin.site.site_header = "Paricia Administration - Stations"
 class StationTypeAdmin(PermissionsBaseAdmin):
     """Admin class for the StationType model."""
 
-    model = "stationtype"
     list_display = ["id", "name", "owner", "permissions_level"]
 
 
@@ -30,7 +29,6 @@ class StationTypeAdmin(PermissionsBaseAdmin):
 class CountryAdmin(PermissionsBaseAdmin):
     """Admin class for the Country model."""
 
-    model = "country"
     list_display = ["id", "name", "owner", "permissions_level"]
 
 
@@ -38,7 +36,6 @@ class CountryAdmin(PermissionsBaseAdmin):
 class RegionAdmin(PermissionsBaseAdmin):
     """Admin class for the Region model."""
 
-    model = "region"
     list_display = ["id", "name", "country", "owner", "permissions_level"]
     list_filter = ["country"]
     foreign_key_fields = ["country"]
@@ -48,7 +45,6 @@ class RegionAdmin(PermissionsBaseAdmin):
 class EcosystemAdmin(PermissionsBaseAdmin):
     """Admin class for the Ecosystem model."""
 
-    model = "ecosystem"
     list_display = ["id", "name", "owner", "permissions_level"]
 
 
@@ -56,7 +52,6 @@ class EcosystemAdmin(PermissionsBaseAdmin):
 class InstitutionAdmin(PermissionsBaseAdmin):
     """Admin class for the Institution model."""
 
-    model = "institution"
     list_display = ["id", "name", "owner", "permissions_level"]
 
 
@@ -64,7 +59,6 @@ class InstitutionAdmin(PermissionsBaseAdmin):
 class PlaceBasinAdmin(PermissionsBaseAdmin):
     """Admin class for the PlaceBasin model."""
 
-    model = "placebasin"
     list_display = [
         "id",
         "place",
@@ -81,7 +75,6 @@ class PlaceBasinAdmin(PermissionsBaseAdmin):
 class PlaceAdmin(PermissionsBaseAdmin):
     """Admin class for the Place model."""
 
-    model = "place"
     list_display = ["id", "name", "image", "owner", "permissions_level"]
 
 
@@ -89,7 +82,6 @@ class PlaceAdmin(PermissionsBaseAdmin):
 class BasinAdmin(PermissionsBaseAdmin):
     """Admin class for the Basin model."""
 
-    model = "basin"
     list_display = ["id", "name", "image", "file", "owner", "permissions_level"]
 
 
@@ -97,7 +89,6 @@ class BasinAdmin(PermissionsBaseAdmin):
 class StationAdmin(PermissionsBaseAdmin):
     """Admin class for the Station model."""
 
-    model = "station"
     list_display = [
         "station_id",
         "station_code",
@@ -139,7 +130,6 @@ class StationAdmin(PermissionsBaseAdmin):
 class DeltaTAdmin(PermissionsBaseAdmin):
     """Admin class for the DeltaT model."""
 
-    model = "deltat"
     list_display = ["id", "delta_t", "station", "owner", "permissions_level"]
     list_filter = ["station"]
     foreign_key_fields = ["station"]
