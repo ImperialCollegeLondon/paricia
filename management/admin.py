@@ -15,8 +15,8 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
     foreign_key_fields: list[str] = []
 
     def has_add_permission(self, request):
-        """Allow all authenticated users to add objects."""
-        return request.user.is_authenticated
+        """Allow users in the standard group to add objects"""
+        return request.user.groups.filter(name="Standard").exists()
 
     def has_change_permission(self, request, obj=None):
         """Check if the user has the correct permission to change the object."""
@@ -31,7 +31,9 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
         return True
 
     def has_view_permission(self, request, obj=None):
-        """Allow all users to view the object."""
+        """Check if the user has the correct permission to view the object."""
+        if obj is not None:
+            return f"view_{self.model}" in get_perms(request.user, obj)
         return True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

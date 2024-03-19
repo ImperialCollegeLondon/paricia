@@ -14,12 +14,13 @@
 import zoneinfo
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
-from management.models import PermissionsBase, _get_perm_codenames
+from management.models import PermissionsBase
 
 TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
 
@@ -298,15 +299,18 @@ class Station(PermissionsBase):
         """Set object-level permissions."""
         super().set_permissions()
 
-        # Assign view_measurements permission
-        permissions_users = {
-            "public": User.objects.all(),
-            "internal": User.objects.filter(is_active=True),
-            "private": [self.owner] if self.owner else [],
-        }
-        users = permissions_users[self.permissions_level]
-        for user in users:
-            assign_perm("view_measurements", user, self)
+        standard_group = Group.objects.get(name="Standard")
+        anonymous_user = get_anonymous_user()
+
+        # Assign view_measurements permission based on permissions level
+        if self.permissions_level == "public":
+            assign_perm("view_measurements", standard_group, self)
+            assign_perm("view_measurements", anonymous_user, self)
+        elif self.permissions_level == "internal":
+            assign_perm("view_measurements", standard_group, self)
+        elif self.permissions_level == "private":
+            if self.owner:
+                assign_perm("view_measurements", self.owner, self)
 
     class Meta:
         ordering = ("station_id",)

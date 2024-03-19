@@ -1,14 +1,23 @@
-from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
 
 class User(AbstractUser):
-    """
-    Implement a custom user model to add flexibility in the future.
+    """Custom user model.
+
+    All users are given staff status and added to the standard group.
+
     """
 
-    pass
+    def save(self, *args, **kwargs):
+        if self.username != settings.ANONYMOUS_USER_NAME:
+            self.is_staff = True
+        super().save(*args, **kwargs)
+        if self.username != settings.ANONYMOUS_USER_NAME:
+            standard_group = Group.objects.get(name="Standard")
+            standard_group.user_set.add(self)
 
 
 class PermissionsBase(models.Model):
@@ -29,10 +38,13 @@ class PermissionsBase(models.Model):
         """Set object-level permissions."""
 
         delete, change, view = _get_perm_codenames(self.__class__)
+        standard_group = Group.objects.get(name="Standard")
+        anonymous_user = get_anonymous_user()
 
-        # Assign view permissions for all users
+        # View permissions based on permissions level
         if self.permissions_level in ["public", "internal"]:
-            assign_perm(view, User.objects.all(), self)
+            assign_perm(view, standard_group, self)
+            assign_perm(view, anonymous_user, self)
         elif self.permissions_level == "private" and self.owner:
             assign_perm(view, self.owner, self)
 

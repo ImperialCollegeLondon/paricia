@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from guardian.shortcuts import get_anonymous_user
 
 from sensor.models import Sensor
 from station.models import Station, StationType
@@ -20,9 +21,7 @@ class BasePermissionsTest:
         cls.user_other = User.objects.create_user(
             username="user_other", password="password"
         )
-        cls.user_inactive = User.objects.create_user(
-            username="user_inactive", password="password", is_active=False
-        )
+        cls.user_anon = get_anonymous_user()
 
         # The following must be set in the child classes
         cls.app = None
@@ -51,7 +50,7 @@ class BasePermissionsTest:
         obj,
         assert_owner: bool = None,
         assert_other: bool = None,
-        assert_inactive: bool = None,
+        assert_anon: bool = None,
     ):
         """Assert permissions for multiple users against an object.
 
@@ -61,17 +60,15 @@ class BasePermissionsTest:
             assert_owner (bool, optional): Whether the owner should have the permission.
             assert_other (bool, optional): Whether another user should have the
                 permission.
-            assert_inactive (bool, optional): Whether an inactive user should have the
+            assert_anon (bool, optional): Whether the anonymous user should have the
                 permission.
         """
         if assert_owner is not None:
             self._assert_perm(self.user_owner, perm, obj, assert_owner)
         if assert_other is not None:
             self._assert_perm(self.user_other, perm, obj, assert_other)
-        if assert_inactive is not None:
-            # TODO: sort out permissions for inactive users so this test can pass
-            # self._assert_perm(self.user_inactive, perm, obj, assert_inactive)
-            pass
+        if assert_anon is not None:
+            self._assert_perm(self.user_anon, perm, obj, assert_anon)
 
     def test_change_permissions(self):
         """Test that only the owner can change the object."""
@@ -155,3 +152,14 @@ class StationPermissionsTest(BasePermissionsTest, TestCase):
     def test_measurement_permissions_internal(self):
         """Test that only active users can view measurements for internal stations."""
         self.assert_perms("view_measurements", self.station_internal, True, True, False)
+
+
+class StationPermissionsTestNewUser(StationPermissionsTest):
+    """Test Station permissions for a new user."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user_other = User.objects.create_user(
+            username="user_other_new", password="password"
+        )
