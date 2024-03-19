@@ -76,6 +76,7 @@ plot = plot_graph(
 # Create layout
 app.layout = html.Div(
     children=[
+        html.Div(id="stations_list", hidden=True),
         dcc.Download(id="download_csv"),
         html.Div(
             id="data_alert_div",
@@ -116,7 +117,6 @@ app.layout = html.Div(
                         html.H3("Station"),
                         dcc.Dropdown(
                             id="station_drop",
-                            # options=Station.objects.order_by("station_code"),
                             options=[
                                 item.station_code
                                 for item in Station.objects.order_by("station_code")
@@ -272,3 +272,13 @@ def update_alert(figure):
     else:
         button = html.Button("Download CSV", id="csv_button")
         return [], [button]
+
+
+@app.callback(
+    Output("station_drop", "options"),
+    Input("stations_list", "children"),
+)
+def populate_stations_dropdown(station_codes):
+    return [
+        {"label": station_code, "value": station_code} for station_code in station_codes
+    ]
