@@ -41,7 +41,8 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
         if db_field.name in self.foreign_key_fields:
             kwargs["queryset"] = _get_queryset(db_field.related_model, request.user)
         if db_field.name == "owner":
-            kwargs["queryset"] = User.objects.filter(id=request.user.id)
+            kwargs["initial"] = request.user.id
+            kwargs["disabled"] = True
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
@@ -52,12 +53,6 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
             if owner != request.user and perm_level == "Private":
                 raise PermissionDenied(f"Private {field}: Only owner can use.")
         super().save_model(request, obj, form, change)
-
-    def get_changeform_initial_data(self, request):
-        """Set the initial data for the form."""
-        initial = super().get_changeform_initial_data(request)
-        initial["owner"] = request.user.id
-        return initial
 
 
 def _get_queryset(model, user):
