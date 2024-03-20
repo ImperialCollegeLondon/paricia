@@ -569,14 +569,7 @@ def populate_stations_dropdown(station_codes):
     Input("station_drop", "value"))
 def variable_dropdown(chosen_station):
     # Filter measurements based on the chosen station
-    variable = Measurement.objects.filter(station__station_code=chosen_station).values_list("variable", flat=True).distinct()
-    objects=[]
-    # Get distinct variables
-    variables = variable.values_list("variable", flat=True).distinct()
-    
-    # for code in variables:
-    #     objects.append(Variable.objects.get(variable_code=code))
+    variable_tuples = Measurement.objects.filter(station__station_code=chosen_station).values_list("variable__name", "variable__variable_code").distinct()
 
-    return [{"label": variable, "value": variable} for variable in variables]
-    # return [{"label": variable.variable_name, "value": variable.variable_code} for variable in objects]
-    
+    # Create a list of dictionaries for the dropdown
+    return [{"label": variable[0], "value": variable[1]} for variable in variable_tuples]
