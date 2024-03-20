@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load bootstrap4 %}
+{% load django_bootstrap5 %}
 {% load static %}
 {% load plotly_dash %}
 
@@ -24,7 +24,7 @@
 {% block content %}
 
 <div class="{% plotly_class name='DataReport' %} card" style="height: 100%; width: 100%; padding-top: 5%">
-{% plotly_app name="DataReport" ratio=1 %}
+    {% plotly_app name="DataReport" initial_arguments=django_context ratio=1 %}
 </div>
 
 {% endblock %}

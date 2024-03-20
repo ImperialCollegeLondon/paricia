@@ -1,9 +1,0 @@
-{% extends "template_confirm_delete.html" %}
-
-{% block titulo %}Ecosistema{% endblock %}
-
-{% block table_rows %}
-<tr><th>Nombre</th><td>{{ecosistema.nombre}}</td></tr>
-{% endblock %}
-
-{% block cancelar_url %}{% url 'estacion:ecosistema_index' %}{% endblock %}

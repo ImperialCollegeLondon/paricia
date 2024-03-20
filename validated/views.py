@@ -383,7 +383,12 @@ class DataReport(View):
     def get(self, request, *args, **kwargs):
         from .dash_apps.finished_apps import data_report
 
-        return render(request, "data_report.html")
+        stations = get_objects_for_user(
+            request.user, "view_measurements", klass=Station
+        )
+        station_codes = list(stations.values_list("station_code", flat=True))
+        context = {"django_context": {"stations_list": {"children": station_codes}}}
+        return render(request, "data_report.html", context)
 
 
 def view_launch_report_calculations(request):

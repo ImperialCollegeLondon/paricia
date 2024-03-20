@@ -9,15 +9,15 @@ asgiref==3.7.2
     #   -r requirements.in
     #   channels
     #   django
-beautifulsoup4==4.12.3
-    # via django-bootstrap4
 blinker==1.7.0
     # via flask
 channels==4.0.0
     # via django-plotly-dash
 click==8.1.7
     # via flask
-crispy-bootstrap4==2024.1
+colorama==0.4.6
+    # via click
+crispy-bootstrap5==2024.2
     # via -r requirements.in
 dash==2.9.3
     # via
@@ -34,12 +34,12 @@ dash-html-components==2.0.0
     # via dash
 dash-table==5.0.0
     # via dash
-django==5.0.2
+django==5.0.3
     # via
     #   -r requirements.in
     #   channels
-    #   crispy-bootstrap4
-    #   django-bootstrap4
+    #   crispy-bootstrap5
+    #   django-bootstrap5
     #   django-crispy-forms
     #   django-excel-response
     #   django-extensions
@@ -49,12 +49,12 @@ django==5.0.2
     #   djangorestframework
     #   djangorestframework-simplejwt
     #   drf-yasg
-django-bootstrap4==24.1
+django-bootstrap5==23.4
     # via -r requirements.in
 django-crispy-forms==2.1
     # via
     #   -r requirements.in
-    #   crispy-bootstrap4
+    #   crispy-bootstrap5
 django-excel-response==2.0.5
     # via -r requirements.in
 django-extensions==3.2.3
@@ -106,7 +106,7 @@ numpy==1.26.4
     #   pandas
 openpyxl==2.4.11
     # via django-excel-response
-packaging==23.2
+packaging==24.0
     # via
     #   drf-yasg
     #   plotly
@@ -120,7 +120,7 @@ psycopg2==2.9.9
     # via -r requirements.in
 pyjwt==2.8.0
     # via djangorestframework-simplejwt
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via pandas
 pytz==2024.1
     # via
@@ -134,14 +134,14 @@ pyyaml==6.0.1
     #   drf-yasg
 six==1.16.0
     # via python-dateutil
-soupsieve==2.5
-    # via beautifulsoup4
 sqlparse==0.4.4
     # via django
 tenacity==8.2.3
     # via plotly
 tzdata==2024.1
-    # via pandas
+    # via
+    #   django
+    #   pandas
 uritemplate==4.1.1
     # via
     #   -r requirements.in
