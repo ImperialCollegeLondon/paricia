@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save
+from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
 
 from station.models import (
@@ -26,6 +26,23 @@ User = get_user_model()
 @receiver(post_save, sender=Basin)
 @receiver(post_save, sender=Station)
 @receiver(post_save, sender=DeltaT)
-def set_permissions(sender, instance, **kwargs):
+def set_object_permissions(sender, instance, **kwargs):
     """Set object-level permissions."""
-    instance.set_permissions()
+    instance.set_object_permissions()
+
+
+@receiver(post_migrate)
+def set_model_permissions(sender, **kwargs):
+    """Set model-level permissions."""
+    for model in [
+        Country,
+        Region,
+        Ecosystem,
+        Institution,
+        StationType,
+        Place,
+        Basin,
+        Station,
+        DeltaT,
+    ]:
+        model.set_model_permissions()
