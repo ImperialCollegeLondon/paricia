@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.core.exceptions import PermissionDenied
 from django.utils.translation import gettext_lazy as _
 from guardian.admin import GuardedModelAdmin
-from guardian.shortcuts import get_objects_for_user, get_perms
+from guardian.shortcuts import get_objects_for_user
 
 from .models import User
 
@@ -12,6 +11,7 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
     """Base admin class for models that require permissions."""
 
     foreign_key_fields: list[str] = []
+    limit_permissions_level = True
 
     def has_add_permission(self, request):
         """Check if the user has the correct permission to add objects."""
@@ -58,6 +58,17 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
             kwargs["initial"] = request.user.id
             kwargs["disabled"] = True
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        """Limit the queryset for choice fields."""
+        if (
+            db_field.name == "permissions_level"
+            and self.limit_permissions_level
+            and not request.user.is_superuser
+        ):
+            kwargs["initial"] = "private"
+            kwargs["disabled"] = True
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
 
 
 def _get_queryset(db_field, user):
