@@ -22,19 +22,25 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
     def has_change_permission(self, request, obj=None):
         """Check if the user has the correct permission to change the object."""
         if obj is not None:
-            return f"change_{self.opts.model_name}" in get_perms(request.user, obj)
+            return request.user.has_perm(
+                f"{self.opts.app_label}.change_{self.opts.model_name}", obj
+            )
         return True
 
     def has_delete_permission(self, request, obj=None):
         """Check if the user has the correct permission to delete the object."""
         if obj is not None:
-            return f"delete_{self.opts.model_name}" in get_perms(request.user, obj)
+            return request.user.has_perm(
+                f"{self.opts.app_label}.delete_{self.opts.model_name}", obj
+            )
         return True
 
     def has_view_permission(self, request, obj=None):
         """Check if the user has the correct permission to view the object."""
         if obj is not None:
-            return f"view_{self.opts.model_name}" in get_perms(request.user, obj)
+            return request.user.has_perm(
+                f"{self.opts.app_label}.view_{self.opts.model_name}", obj
+            )
         return True
 
     def get_queryset(self, request):
@@ -52,19 +58,6 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
             kwargs["initial"] = request.user.id
             kwargs["disabled"] = True
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def save_model(self, request, obj, form, change):
-        """Check if the user has the correct permissions to save the object."""
-        for field in self.foreign_key_fields:
-            related_obj = getattr(obj, field)
-            if related_obj is None:
-                continue
-            if (
-                related_obj.permissions_level == "Private"
-                and f"change_{field}" not in get_perms(request.user, obj)
-            ):
-                raise PermissionDenied(f"Private {field}: Only owner can use.")
-        super().save_model(request, obj, form, change)
 
 
 def _get_queryset(db_field, user):
