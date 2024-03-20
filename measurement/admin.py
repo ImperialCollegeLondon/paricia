@@ -13,8 +13,10 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
     list_filter = ["station", "variable"]
 
     def has_add_permission(self, request):
-        """Allow all authenticated users to add objects."""
-        return request.user.is_authenticated
+        """Check if the user has the correct permission to add objects."""
+        return request.user.has_perm(
+            f"{self.opts.app_label}.add_{self.opts.model_name}"
+        )
 
     def has_change_permission(self, request, obj=None):
         """Check if the user has the correct permission to change the object."""

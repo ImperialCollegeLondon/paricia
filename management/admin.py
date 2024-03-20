@@ -14,8 +14,10 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
     foreign_key_fields: list[str] = []
 
     def has_add_permission(self, request):
-        """Allow users in the standard group to add objects"""
-        return request.user.groups.filter(name="Standard").exists()
+        """Check if the user has the correct permission to add objects."""
+        return request.user.has_perm(
+            f"{self.opts.app_label}.add_{self.opts.model_name}"
+        )
 
     def has_change_permission(self, request, obj=None):
         """Check if the user has the correct permission to change the object."""
