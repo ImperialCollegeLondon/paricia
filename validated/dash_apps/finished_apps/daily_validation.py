@@ -71,7 +71,7 @@ filters = html.Div(
                         {"label": item.name, "value": item.variable_code}
                         for item in Variable.objects.order_by("variable_code")
                     ],
-                    value=VARIABLE,
+                    value= VARIABLE,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -573,3 +573,13 @@ def variable_dropdown(chosen_station):
 
     # Create a list of dictionaries for the dropdown
     return [{"label": variable[0], "value": variable[1]} for variable in variable_tuples]
+
+@app.callback(
+    Output("station_drop", "options"), 
+    [Input("variable_drop", "value")])
+def station_dropdown(chosen_variable):
+    # Filter stations based on the chosen variable
+    station_tuples = Measurement.objects.filter(measurement__variable_code=chosen_variable).values_list("station__name", "station__station_code").distinct()
+
+    # Create a list of dictionaries for the dropdown
+    return [{"label": station[0], "value": station[1]} for station in station_tuples]
