@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
-from measurement.models import  Measurement
+from measurement.models import  Measurement, Variable, Station
 from measurement.validation import (
     generate_validation_report,
     reset_validated_days,
@@ -54,7 +54,8 @@ filters = html.Div(
                 dcc.Dropdown(
                     id="station_drop",
                     options=[
-                       
+                       {"label": item.station_code, "value": item.station_code}
+                        for item in Station.objects.order_by("station_code")
                     ],
                     value=STATION,
                 ),
@@ -564,10 +565,18 @@ def populate_stations_dropdown(station_codes):
     ]
 
 @app.callback(
-    Output("station_drop", "options"), 
-    Input("variable_drop", "value"))
-def populate_stations_dropdown(chosen_variable):
-    variables = Measurement.objects.filter(station__station_code=station).values_list("variable", flat=True).distinct()
+    Output("variable_drop", "options"), 
+    Input("station_drop", "value"))
+def variable_dropdown(chosen_station):
+    # Filter measurements based on the chosen station
+    variable = Measurement.objects.filter(station__station_code=chosen_station).values_list("variable", flat=True).distinct()
+    objects=[]
+    # Get distinct variables
+    variables = variable.values_list("variable", flat=True).distinct()
     
-    return [ {"label": item.station_code, "value": item.station_code}
-                        for item in Station.objects.order_by("station_code")]
+    # for code in variables:
+    #     objects.append(Variable.objects.get(variable_code=code))
+
+    return [{"label": variable, "value": variable} for variable in variables]
+    # return [{"label": variable.variable_name, "value": variable.variable_code} for variable in objects]
+    
