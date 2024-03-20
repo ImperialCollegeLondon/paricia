@@ -4,7 +4,6 @@ from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_objects_for_user, get_perms
 
 from measurement.models import Measurement, Report
-from station.models import Station
 
 admin.site.site_header = "Paricia Administration - Measurements"
 
@@ -34,6 +33,12 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
         if obj is not None:
             return "view_measurements" in get_perms(request.user, obj.station)
         return True
+
+    def get_queryset(self, request):
+        """Return a queryset of the objects that the user has view permissions for."""
+        qs = super().get_queryset(request)
+        stations = get_objects_for_user(request.user, "station.view_measurements")
+        return qs.filter(station__in=stations)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Limit the list of stations available based on permssions."""

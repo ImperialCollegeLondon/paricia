@@ -35,6 +35,13 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
             return f"view_{self.opts.model_name}" in get_perms(request.user, obj)
         return True
 
+    def get_queryset(self, request):
+        """Return a queryset of the objects that the user has view permissions for."""
+        qs = super().get_queryset(request)
+        return get_objects_for_user(
+            request.user, f"{self.opts.app_label}.view_{self.opts.model_name}", qs
+        )
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Limit the queryset for foreign key fields."""
         if db_field.name in self.foreign_key_fields:
