@@ -19,6 +19,7 @@ from django.db import models
 from django.urls import reverse
 from timescale.db.models.models import TimescaleModel
 
+from management.models import apply_add_permissions_to_standard_group
 from station.models import Station
 from variable.models import Variable
 
@@ -48,6 +49,11 @@ class MeasurementBase(TimescaleModel):
     minimum = models.DecimalField(
         "minimum", max_digits=14, decimal_places=6, null=True, blank=True
     )
+
+    @classmethod
+    def set_model_permissions(cls):
+        """Set model-level add permissions."""
+        apply_add_permissions_to_standard_group(cls)
 
     class Meta:
         abstract = True
