@@ -18,7 +18,7 @@ from station.models import Station
 from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
-
+import plotly.express as px
 app = DjangoDash(
     "DailyValidation", external_stylesheets=["/static/styles/dashstyle.css"]
 )
@@ -112,7 +112,7 @@ filters = html.Div(
 # Tables
 table_daily = AgGrid(
     id="table_daily",
-    rowData=DATA_SUMMARY.to_dict("records"),
+    rowData=[],
     columnDefs=create_columns_daily(),
     columnSize="sizeToFit",
     defaultColDef={
@@ -218,11 +218,7 @@ status_message = html.Div(
 
 
 # Plot
-plot = create_validation_plot(
-    data=DATA_GRANULAR,
-    variable_name=Variable.objects.get(variable_code=VARIABLE).name,
-    field=PLOT_FIELD,
-)
+plot = px.scatter()
 
 # Plot radio
 plot_radio = dcc.RadioItems(
@@ -572,13 +568,3 @@ def variable_dropdown(chosen_station):
 
     # Create a list of dictionaries for the dropdown
     return [{"label": variable["variable__name"], "value": variable["variable__variable_code"]} for variable in variable_dicts]
-
-# @app.callback(
-#     Output("station_drop", "options"), 
-#     Input("variable_drop", "value"))
-# def station_dropdown(chosen_variable):
-#     # Filter stations based on the chosen variable
-#     station_tuples = Measurement.objects.annotate(variable_count=Count('variable__variable_code')).filter(variable_count__gt=0, measurement__variable_code=chosen_variable).values_list("station__name", "station__station_code").distinct()
-
-#     # Create a list of dictionaries for the dropdown
-#     return [{"label": station[0], "value": station[1]} for station in station_tuples]
