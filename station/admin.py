@@ -89,6 +89,7 @@ class BasinAdmin(PermissionsBaseAdmin):
 class StationAdmin(PermissionsBaseAdmin):
     """Admin class for the Station model."""
 
+    limit_permissions_level = False
     list_display = [
         "station_id",
         "station_code",

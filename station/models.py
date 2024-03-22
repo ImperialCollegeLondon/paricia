@@ -295,9 +295,9 @@ class Station(PermissionsBase):
     def get_absolute_url(self):
         return reverse("station:station_detail", kwargs={"pk": self.pk})
 
-    def set_permissions(self):
+    def set_object_permissions(self):
         """Set object-level permissions."""
-        super().set_permissions()
+        super().set_object_permissions()
 
         standard_group = Group.objects.get(name="Standard")
         anonymous_user = get_anonymous_user()

@@ -39,7 +39,8 @@ class BasePermissionsTest:
         Args:
             user: User to test permission for
             perm (str): Permission to test for (e.g. "change_station")
-            obj: Object to test permission for
+            obj: Object to test permission for. If None, the permission is tested at the
+                model level.
             assert_true (bool): Whether the permission should be True or False
         """
 
@@ -60,7 +61,8 @@ class BasePermissionsTest:
 
         Args:
             perm (str): Permission to test for (e.g. "change_station")
-            obj: Object to test permission for
+            obj: Object to test permission for. If None, the permission is tested at the
+                model level.
             assert_owner (bool, optional): Whether the owner should have the permission.
             assert_other (bool, optional): Whether another user should have the
                 permission.
@@ -104,6 +106,10 @@ class BasePermissionsTest:
         """Test that all users can view internal objects."""
         if self.obj_internal:
             self.assert_perms(f"view_{self.model}", self.obj_internal, True, True, True)
+
+    def test_add_permissions(self):
+        """Test that all users except anonymous have model-level add permissions."""
+        self.assert_perms(f"add_{self.model}", None, True, True, False)
 
 
 class StationTypePermissionsTest(BasePermissionsTest, TestCase):
