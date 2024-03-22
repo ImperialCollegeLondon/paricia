@@ -20,6 +20,7 @@ import shutil
 import urllib
 
 from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
 
@@ -56,6 +57,13 @@ class DataImportTempCreate(generics.CreateAPIView):
     serializer_class = DataImportTempSerializer
 
     def perform_create(self, serializer):
+        # Check permissions
+        station = serializer.validated_data["import_temp"].station
+        if not self.request.user.has_perm("station.change_station", station):
+            raise PermissionDenied(
+                "Only the station owner can add measurements for this station."
+            )
+
         file = copy.deepcopy(self.request.FILES["file"])
         timezone = serializer.validated_data["station"].timezone
         if not timezone:
@@ -113,6 +121,13 @@ class DataImportFullCreate(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.validated_data["user"] = self.request.user
+
+        # Check permissions
+        station = serializer.validated_data["import_temp"].station
+        if not self.request.user.has_perm("station.change_station", station):
+            raise PermissionDenied(
+                "Only the station owner can add measurements for this station."
+            )
 
         # Save the actual measurement data
         save_temp_data_to_permanent(serializer.validated_data["import_temp"])
