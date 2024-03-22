@@ -1,12 +1,15 @@
 from datetime import date
 from decimal import Decimal
+
 import dash
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
-from measurement.models import  Measurement, Variable, Station
+
+from measurement.models import Measurement, Station, Variable
 from measurement.validation import (
     generate_validation_report,
     reset_validated_days,
@@ -18,7 +21,7 @@ from station.models import Station
 from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
-import plotly.express as px
+
 app = DjangoDash(
     "DailyValidation", external_stylesheets=["/static/styles/dashstyle.css"]
 )
@@ -53,7 +56,7 @@ filters = html.Div(
                 dcc.Dropdown(
                     id="station_drop",
                     options=[
-                       {"label": item.station_code, "value": item.station_code}
+                        {"label": item.station_code, "value": item.station_code}
                         for item in Station.objects.order_by("station_code")
                     ],
                     value=STATION,
@@ -70,7 +73,7 @@ filters = html.Div(
                         {"label": item.name, "value": item.variable_code}
                         for item in Variable.objects.order_by("variable_code")
                     ],
-                    value= VARIABLE,
+                    value=VARIABLE,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -559,12 +562,21 @@ def populate_stations_dropdown(station_codes):
         {"label": station_code, "value": station_code} for station_code in station_codes
     ]
 
-@app.callback(
-    Output("variable_drop", "options"), 
-    Input("station_drop", "value"))
+
+@app.callback(Output("variable_drop", "options"), Input("station_drop", "value"))
 def variable_dropdown(chosen_station):
     # Filter measurements based on the chosen station
-    variable_dicts = Measurement.objects.filter(station__station_code=chosen_station).values("variable__name", "variable__variable_code").distinct()
+    variable_dicts = (
+        Measurement.objects.filter(station__station_code=chosen_station)
+        .values("variable__name", "variable__variable_code")
+        .distinct()
+    )
 
     # Create a list of dictionaries for the dropdown
-    return [{"label": variable["variable__name"], "value": variable["variable__variable_code"]} for variable in variable_dicts]
+    return [
+        {
+            "label": variable["variable__name"],
+            "value": variable["variable__variable_code"],
+        }
+        for variable in variable_dicts
+    ]
