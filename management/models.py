@@ -24,7 +24,7 @@ class User(AbstractUser):
 class PermissionsBase(models.Model):
     """Base model for models that require permissions."""
 
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     PERMISSIONS_LEVELS = [
         ("public", "Public"),
