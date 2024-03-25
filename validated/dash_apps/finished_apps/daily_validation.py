@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import dash
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
@@ -114,7 +115,7 @@ filters = html.Div(
 # Tables
 table_daily = AgGrid(
     id="table_daily",
-    rowData=DATA_SUMMARY.to_dict("records"),
+    rowData=[],
     columnDefs=create_columns_daily(),
     columnSize="sizeToFit",
     defaultColDef={
@@ -220,11 +221,7 @@ status_message = html.Div(
 
 
 # Plot
-plot = create_validation_plot(
-    data=DATA_GRANULAR,
-    variable_name=Variable.objects.get(variable_code=VARIABLE).name,
-    field=PLOT_FIELD,
-)
+plot = px.scatter()
 
 # Plot radio
 plot_radio = dcc.RadioItems(
