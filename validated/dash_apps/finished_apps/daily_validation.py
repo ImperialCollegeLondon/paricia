@@ -649,8 +649,9 @@ def set_date_range_min_max(
     Output("detail-date-picker", "min_date_allowed"),
     Output("detail-date-picker", "max_date_allowed"),
     Input("table_daily", "rowData"),
+    prevent_initial_call=True,
 )
-def detail_date_range(daily_row_data) -> tuple[str, str]:
+def set_detail_date_range(daily_row_data) -> tuple[str, str]:
     """Set the min and max date for the detail date picker based on the daily data.
 
     Args:
