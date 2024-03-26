@@ -60,10 +60,10 @@ class Sensor(PermissionsBase):
     sensor_id = models.AutoField("Id", primary_key=True)
     code = models.CharField("Code", max_length=32, null=True, unique=True)
     sensor_type = models.ForeignKey(
-        SensorType, on_delete=models.CASCADE, verbose_name="Sensor type", null=True
+        SensorType, on_delete=models.SET_NULL, verbose_name="Sensor type", null=True
     )
     sensor_brand = models.ForeignKey(
-        SensorBrand, on_delete=models.CASCADE, verbose_name="Sensor brand", null=True
+        SensorBrand, on_delete=models.SET_NULL, verbose_name="Sensor brand", null=True
     )
     model = models.CharField("Model", max_length=150, null=True, blank=True)
     serial = models.CharField("Serial number", max_length=20, null=True, blank=True)
