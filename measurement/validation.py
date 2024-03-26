@@ -41,7 +41,7 @@ def get_data_to_validate(
     elif not include_validated:
         extra = {"is_validated": False}
 
-    return pd.DataFrame.from_records(
+    df = pd.DataFrame.from_records(
         Measurement.objects.filter(
             station__station_code=station,
             variable__variable_code=variable,
@@ -49,7 +49,12 @@ def get_data_to_validate(
             time__lte=end_time_,
             **extra,
         ).values()
-    ).sort_values("time")
+    )
+
+    if df.empty:
+        return pd.DataFrame()
+
+    return df.sort_values("time")
 
 
 def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
@@ -252,12 +257,16 @@ def generate_validation_report(
     data = get_data_to_validate(
         station, variable, start_time, end_time, include_validated, only_validated
     )
-    suspicious = flag_suspicious_data(data, maximum, minimum, period, var.diff_error)
-    summary = generate_daily_summary(
-        data, suspicious, period, var.null_limit, var.is_cumulative
-    )
-    granular = pd.concat([data, suspicious], axis=1)
-    return summary, granular
+    if not data.empty:
+        suspicious = flag_suspicious_data(
+            data, maximum, minimum, period, var.diff_error
+        )
+        summary = generate_daily_summary(
+            data, suspicious, period, var.null_limit, var.is_cumulative
+        )
+        granular = pd.concat([data, suspicious], axis=1)
+        return summary, granular
+    return pd.DataFrame(), pd.DataFrame()
 
 
 def save_validated_entries(data: pd.DataFrame) -> None:

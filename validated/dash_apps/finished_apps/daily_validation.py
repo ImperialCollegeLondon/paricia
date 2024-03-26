@@ -91,6 +91,20 @@ filters = html.Div(
             ],
             style={"margin-right": "10px", "width": "200px"},
         ),
+        html.Div(
+            [
+                html.Label("Validation status:", style={"display": "block"}),
+                dcc.Dropdown(
+                    id="validation_status_drop",
+                    options=[
+                        {"label": "Validated", "value": "validated"},
+                        {"label": "Not validated", "value": "not_validated"},
+                    ],
+                    value="not_validated",
+                ),
+            ],
+            style={"width": "200px"},
+        ),
     ],
     style={
         "display": "flex",
@@ -180,7 +194,6 @@ menu = html.Div(
         html.Div(
             children=[
                 html.Button("Validate", id="save-button"),
-                html.Button("Reset Validation", id="reset-button"),
             ],
             style={"display": "inline-block", "width": "50%"},
         ),
@@ -280,11 +293,11 @@ app.layout = html.Div(
         Output("tab-detail", "disabled"),
         Output("tab-detail", "label"),
         Output("tabs", "value"),
+        Output("save-button", "children"),
     ],
     [
         Input("submit-button", "n_clicks"),
         Input("save-button", "n_clicks"),
-        Input("reset-button", "n_clicks"),
         Input("detail-date-picker", "date"),
         Input("plot_radio", "value"),
     ],
@@ -300,13 +313,13 @@ app.layout = html.Div(
         State("table_daily", "rowData"),
         State("table_detail", "selectedRows"),
         State("table_detail", "rowData"),
+        State("validation_status_drop", "value"),
     ],
     prevent_initial_call=True,
 )
 def callbacks(
     in_submit_clicks: int,
     in_save_clicks: int,
-    in_reset_clicks: int,
     in_detail_date: str,
     in_plot_radio_value: str,
     in_tabs_value: str,
@@ -320,6 +333,7 @@ def callbacks(
     in_daily_row_data: list[dict],
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
+    in_validation_status: str,
 ) -> tuple[
     dash.no_update,
     dash.no_update,
@@ -332,13 +346,13 @@ def callbacks(
     bool,
     str,
     str,
+    str,
 ]:
     """Callbacks for daily validation app
 
     Args:
         in_submit_clicks (int): Number of times submit-button was clicked
         in_save_clicks (int): Number of times save-button was clicked
-        in_reset_clicks (int): Number of times reset-button was clicked
         in_detail_date (str): Date for detail view
         in_plot_radio_value (str): Value of plot radio button
         in_tabs_value (str): Value of tabs
@@ -354,7 +368,18 @@ def callbacks(
         in_detail_row_data (list[dict]): Full row data for table_detail
 
     Returns:
-        tuple[dash.no_update, dash.no_update, str, go.Figure, list[dict], list[dict], list[dict], list[dict], bool, str, str]: Outputs
+        out_loading_top (dash.no_update): Loading spinner for top
+        out_loading (dash.no_update): Loading spinner for bottom
+        out_status (str): Status message
+        out_plot (go.Figure): Plot
+        out_daily_row_data (list[dict]): Data for daily table
+        out_detail_row_data (list[dict]): Data for detail table
+        out_daily_selected_rows (list[dict]): Selected rows in daily table
+        out_detail_selected_rows (list[dict]): Selected rows in detail table
+        out_tab_detail_disabled (bool): Disabled status for detail tab
+        out_tab_detail_label (str): Label for detail tab
+        out_tabs_value (str): Value for tabs
+        out_save_label (str): Label for save button
     """
     global DATA_SUMMARY, DATA_GRANULAR, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_FIELD
 
@@ -372,6 +397,7 @@ def callbacks(
     out_tab_detail_disabled = dash.no_update
     out_tab_detail_label = dash.no_update
     out_tabs_value = dash.no_update
+    out_save_label = dash.no_update
 
     data_refresh_required = False
     daily_table_refresh_required = False
@@ -389,6 +415,11 @@ def callbacks(
         MINIMUM = Decimal(in_minimum) if in_minimum is not None else None
         MAXIMUM = Decimal(in_maximum) if in_maximum is not None else None
         out_status = ""
+        out_save_label = (
+            "Validate"
+            if in_validation_status == "not_validated"
+            else "Reset Validation"
+        )
         data_refresh_required = True
         daily_table_refresh_required = True
         detail_table_refresh_required = True
@@ -397,7 +428,11 @@ def callbacks(
         plot_refresh_required = True
 
     # Button: Save (daily)
-    if input_id == "save-button" and in_tabs_value == "tab-daily":
+    if (
+        input_id == "save-button"
+        and in_tabs_value == "tab-daily"
+        and in_validation_status == "not_validated"
+    ):
         selected_dates = {row["date"] for row in in_daily_selected_rows}
         data_to_validate = [
             {
@@ -416,7 +451,11 @@ def callbacks(
         plot_refresh_required = True
 
     # Button: Save (detail)
-    elif input_id == "save-button" and in_tabs_value == "tab-detail":
+    elif (
+        input_id == "save-button"
+        and in_tabs_value == "tab-detail"
+        and in_validation_status == "not_validated"
+    ):
         selected_ids = {row["id"] for row in in_detail_selected_rows}
         data_to_validate = [
             {
@@ -437,7 +476,11 @@ def callbacks(
         plot_refresh_required = True
 
     # Button: Reset (daily)
-    elif input_id == "reset-button" and in_tabs_value == "tab-daily":
+    elif (
+        input_id == "save-button"
+        and in_tabs_value == "tab-daily"
+        and in_validation_status == "validated"
+    ):
         reset_validated_days(
             variable=VARIABLE,
             station=STATION,
@@ -451,7 +494,11 @@ def callbacks(
         plot_refresh_required = True
 
     # Button: Reset (detail)
-    elif input_id == "reset-button" and in_tabs_value == "tab-detail":
+    elif (
+        input_id == "save-button"
+        and in_tabs_value == "tab-detail"
+        and in_validation_status == "validated"
+    ):
         reset_validated_entries(ids=[row["id"] for row in in_detail_row_data])
         out_status = "Validation reset"
         data_refresh_required = True
@@ -497,16 +544,22 @@ def callbacks(
             end_time=END_DATE,
             minimum=MINIMUM,
             maximum=MAXIMUM,
-            include_validated=True,
+            include_validated=in_validation_status == "validated",
+            only_validated=in_validation_status == "validated",
         )
+        if DATA_SUMMARY.empty:
+            out_status = "No data available"
 
     # Refresh plot
     if plot_refresh_required:
-        out_plot = create_validation_plot(
-            data=DATA_GRANULAR,
-            variable_name=Variable.objects.get(variable_code=VARIABLE).name,
-            field=PLOT_FIELD,
-        )
+        if not DATA_GRANULAR.empty:
+            out_plot = create_validation_plot(
+                data=DATA_GRANULAR,
+                variable_name=Variable.objects.get(variable_code=VARIABLE).name,
+                field=PLOT_FIELD,
+            )
+        else:
+            out_plot = px.scatter()
 
     # Refresh daily table
     if daily_table_refresh_required:
@@ -517,7 +570,7 @@ def callbacks(
             out_daily_selected_rows = out_daily_row_data
 
     # Refresh detail table
-    if detail_table_refresh_required:
+    if detail_table_refresh_required and not DATA_GRANULAR.empty:
         out_detail_row_data = DATA_GRANULAR[
             DATA_GRANULAR.time.dt.date == SELECTED_DAY
         ].to_dict("records")
@@ -538,6 +591,7 @@ def callbacks(
         out_tab_detail_disabled,
         out_tab_detail_label,
         out_tabs_value,
+        out_save_label,
     )
 
 
