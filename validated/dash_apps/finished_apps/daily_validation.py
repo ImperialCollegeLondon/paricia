@@ -568,8 +568,7 @@ def populate_stations_dropdown(station_codes, selected_variable):
     )
     return [
         {"label": station_code, "value": station_code}
-        for station_code in station_codes
-        if station_code in stations_for_variable
+        for station_code in stations_for_variable
     ]
 
 
