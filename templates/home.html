@@ -4,6 +4,7 @@
 {% load rest_framework %}
 {% load static %}
 {% load django_bootstrap5 %}
+{% load plotly_dash %}
 
 {% block content %}
 
@@ -39,5 +40,8 @@
                         </tr>
                 </tbody>
         </table>
+</div>
+<div class="{% plotly_class name='StationsMap' %} card" style="height: 100%; width: 100%">
+{% plotly_app name="StationsMap" initial_arguments=django_context ratio=1 %}
 </div>
 {% endblock %}
