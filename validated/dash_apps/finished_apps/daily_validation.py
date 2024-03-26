@@ -26,17 +26,8 @@ app = DjangoDash(
     "DailyValidation", external_stylesheets=["/static/styles/dashstyle.css"]
 )
 
-# Initial filters
-STATION: str = None
-VARIABLE: str = None
-START_DATE: str = None
-END_DATE: str = None
-MINIMUM: Decimal = None
-MAXIMUM: Decimal = None
+# Globals
 SELECTED_DAY: date = None
-PLOT_FIELD = "value"
-
-# Initial data (empty)
 DATA_SUMMARY: pd.DataFrame = None
 DATA_GRANULAR: pd.DataFrame = None
 
@@ -49,7 +40,7 @@ filters = html.Div(
                 dcc.Dropdown(
                     id="station_drop",
                     options=[],
-                    value=STATION,
+                    value=None,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -60,7 +51,7 @@ filters = html.Div(
                 dcc.Dropdown(
                     id="variable_drop",
                     options=[],
-                    value=VARIABLE,
+                    value=None,
                 ),
             ],
             style={"margin-right": "10px", "width": "250px"},
@@ -71,8 +62,8 @@ filters = html.Div(
                 dcc.DatePickerRange(
                     id="date_range_picker",
                     display_format="YYYY-MM-DD",
-                    start_date=START_DATE,
-                    end_date=END_DATE,
+                    start_date=None,
+                    end_date=None,
                 ),
             ],
             style={"margin-right": "10px", "width": "350px"},
@@ -80,14 +71,14 @@ filters = html.Div(
         html.Div(
             [
                 html.Label("Minimum:", style={"display": "block"}),
-                dcc.Input(id="minimum_input", type="number", value=MINIMUM),
+                dcc.Input(id="minimum_input", type="number", value=None),
             ],
             style={"margin-right": "10px", "width": "200px"},
         ),
         html.Div(
             [
                 html.Label("Maximum:", style={"display": "block"}),
-                dcc.Input(id="maximum_input", type="number", value=MAXIMUM),
+                dcc.Input(id="maximum_input", type="number", value=None),
             ],
             style={"margin-right": "10px", "width": "200px"},
         ),
@@ -227,7 +218,7 @@ plot_radio = dcc.RadioItems(
     options=[
         {"value": c, "label": c.capitalize()} for c in ["value", "maximum", "minimum"]
     ],
-    value=PLOT_FIELD,
+    value="value",
     inline=True,
     style={"font-size": "14px"},
 )
@@ -381,7 +372,7 @@ def callbacks(
         out_tabs_value (str): Value for tabs
         out_save_label (str): Label for save button
     """
-    global DATA_SUMMARY, DATA_GRANULAR, STATION, VARIABLE, START_DATE, END_DATE, MINIMUM, MAXIMUM, SELECTED_DAY, PLOT_FIELD
+    global SELECTED_DAY, DATA_SUMMARY, DATA_GRANULAR
 
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -408,12 +399,6 @@ def callbacks(
 
     # Button: Submit
     if input_id == "submit-button":
-        STATION = in_station
-        VARIABLE = in_variable
-        START_DATE = in_start_date
-        END_DATE = in_end_date
-        MINIMUM = Decimal(in_minimum) if in_minimum is not None else None
-        MAXIMUM = Decimal(in_maximum) if in_maximum is not None else None
         out_status = ""
         out_save_label = (
             "Validate"
@@ -439,8 +424,8 @@ def callbacks(
                 "date": row["date"].split("T")[0],
                 "validate?": True,
                 "deactivate?": row["date"] not in selected_dates,
-                "station": STATION,
-                "variable": VARIABLE,
+                "station": in_station,
+                "variable": in_variable,
             }
             for row in in_daily_row_data
         ]
@@ -482,10 +467,10 @@ def callbacks(
         and in_validation_status == "validated"
     ):
         reset_validated_days(
-            variable=VARIABLE,
-            station=STATION,
-            start_date=START_DATE,
-            end_date=END_DATE,
+            variable=in_variable,
+            station=in_station,
+            start_date=in_start_date,
+            end_date=in_end_date,
         )
         out_status = "Validation reset"
         data_refresh_required = True
@@ -532,18 +517,17 @@ def callbacks(
 
     # Plot radio
     elif input_id == "plot_radio":
-        PLOT_FIELD = in_plot_radio_value
         plot_refresh_required = True
 
     # Reload data
     if data_refresh_required:
         DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
-            station=STATION,
-            variable=VARIABLE,
-            start_time=START_DATE,
-            end_time=END_DATE,
-            minimum=MINIMUM,
-            maximum=MAXIMUM,
+            station=in_station,
+            variable=in_variable,
+            start_time=in_start_date,
+            end_time=in_end_date,
+            minimum=Decimal(in_minimum) if in_minimum is not None else None,
+            maximum=Decimal(in_maximum) if in_maximum is not None else None,
             include_validated=in_validation_status == "validated",
             only_validated=in_validation_status == "validated",
         )
@@ -555,8 +539,8 @@ def callbacks(
         if not DATA_GRANULAR.empty:
             out_plot = create_validation_plot(
                 data=DATA_GRANULAR,
-                variable_name=Variable.objects.get(variable_code=VARIABLE).name,
-                field=PLOT_FIELD,
+                variable_name=Variable.objects.get(variable_code=in_variable).name,
+                field=in_plot_radio_value,
             )
         else:
             out_plot = px.scatter()
