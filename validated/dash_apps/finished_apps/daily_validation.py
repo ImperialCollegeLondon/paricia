@@ -556,10 +556,20 @@ def callbacks(
     )
 
 
-@app.callback(Output("station_drop", "options"), Input("stations_list", "children"))
-def populate_stations_dropdown(station_codes):
+@app.callback(
+    Output("station_drop", "options"),
+    [Input("stations_list", "children"), Input("variable_drop", "value")],
+)
+def populate_stations_dropdown(station_codes, selected_variable):
+    stations_for_variable = (
+        Measurement.objects.filter(variable__variable_code=selected_variable)
+        .values_list("station__station_code", flat=True)
+        .distinct()
+    )
     return [
-        {"label": station_code, "value": station_code} for station_code in station_codes
+        {"label": station_code, "value": station_code}
+        for station_code in stations_for_variable
+        if station_code in station_codes
     ]
 
 
