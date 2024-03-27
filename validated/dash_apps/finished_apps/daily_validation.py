@@ -543,9 +543,9 @@ def callbacks(
 
 @app.callback(
     [Output("station_drop", "options"), Output("station_drop", "value")],
-    Input("stations_list", "children"),
+    [Input("stations_list", "children"), Input("variable_drop", "value")],
 )
-def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
+def populate_stations_dropdown(station_codes: list[str], selected_variable: str) -> tuple[list[dict], str]:
     """Populate the station dropdown with the available station codes.
 
     Args:
@@ -554,8 +554,13 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
     Returns:
         tuple[list[dict], str]: Options for the station dropdown, default value
     """
+    stations_for_variable = (
+        Measurement.objects.filter(variable__variable_code=selected_variable)
+        .values_list("station__station_code", flat=True)
+        .distinct()
+    )
     station_options = [
-        {"label": station_code, "value": station_code} for station_code in station_codes
+        {"label": station_code, "value": station_code} for station_code in stations_for_variable if station_code in station_codes
     ]
     station_value = station_options[0]["value"] if station_options else None
     return station_options, station_value
