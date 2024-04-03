@@ -37,7 +37,7 @@ class MeasurementBase(TimescaleModel):
     """
 
     station = models.ForeignKey(
-        Station, on_delete=models.CASCADE, null=False, verbose_name="Station"
+        Station, on_delete=models.PROTECT, null=False, verbose_name="Station"
     )
     variable = models.ForeignKey(
         Variable, on_delete=models.PROTECT, null=False, verbose_name="Variable"
