@@ -57,3 +57,49 @@ def create_validation_plot(
     )
 
     return fig
+
+
+def create_report_plot(
+    data: pd.DataFrame, variable_name: str, station_code: str
+) -> px.scatter:
+    """Creates plot for Report app
+
+    Args:
+        data (pd.DataFrame): Data
+        variable_name (str): Variable name
+        station_code (str): Station code
+
+    Returns:
+        px.Scatter: Plot
+    """
+    fig = px.scatter(
+        data,
+        x="time",
+        y=["value", "minimum", "maximum"],
+        title=f"{station_code} - {variable_name}",
+        labels={
+            "time": "Date",
+        },
+    )
+
+    fig.for_each_trace(lambda trace: trace.update(name=trace.name.title()))
+    fig.update_traces(marker=dict(size=3))
+    fig.update_layout(
+        legend=dict(
+            title=dict(text="", font=dict(size=12)),
+            x=1,
+            y=1,
+            xanchor="auto",
+            yanchor="auto",
+        ),
+        autosize=True,
+        margin=dict(
+            l=50,
+            r=0,
+            b=0,
+            t=20,
+        ),
+        yaxis_title=f"{variable_name}",
+    )
+
+    return fig

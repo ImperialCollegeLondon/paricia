@@ -1,5 +1,4 @@
 import dash_bootstrap_components as dbc
-import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
@@ -10,6 +9,7 @@ from validated.filters import (
     populate_variable_dropdown_util,
     set_date_range_util,
 )
+from validated.plots import create_report_plot
 from variable.models import Variable
 
 # Create a Dash app
@@ -17,45 +17,6 @@ app = DjangoDash(
     "DataReport",
     external_stylesheets=[dbc.themes.BOOTSTRAP],
 )
-
-
-def plot_graph(
-    temporality: str,
-    station: str,
-    variable: str,
-    start_time: str,
-    end_time: str,
-):
-    # Load data
-    try:
-        data: pd.DataFrame = get_report_data_from_db(
-            station=station,
-            variable=variable,
-            start_time=start_time,
-            end_time=end_time,
-            report_type=temporality,
-        )
-
-        variable_obj = Variable.objects.get(variable_code=variable)
-
-        # Create plot
-        plot = px.line(
-            data,
-            x="time",
-            y=["value", "minimum", "maximum"],
-            title=f"{station} - {variable_obj.name}",
-        )
-
-    except Exception as e:
-        print("Error:", e)
-        plot = px.line(title="Data not found")
-
-    plot.update_layout(
-        yaxis_title="",
-        xaxis_title="",
-    )
-
-    return plot
 
 
 plot = px.scatter()
@@ -153,13 +114,23 @@ def update_graph(
     start_time: str,
     end_time: str,
 ) -> px.line:
-    plot = plot_graph(
-        temporality,
-        station,
-        variable,
-        start_time,
-        end_time,
-    )
+    try:
+        data = get_report_data_from_db(
+            station=station,
+            variable=variable,
+            start_time=start_time,
+            end_time=end_time,
+            report_type=temporality,
+        )
+        plot = create_report_plot(
+            data=data,
+            variable_name=Variable.objects.get(variable_code=variable).name,
+            station_code=station,
+        )
+
+    except Exception as e:
+        print("Error:", e)
+        plot = px.line(title="Data not found")
 
     return plot
 
