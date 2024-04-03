@@ -18,6 +18,7 @@ from measurement.validation import (
     save_validated_days,
     save_validated_entries,
 )
+from station.models import Station
 from validated.plots import create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
@@ -584,7 +585,10 @@ def callbacks(
     Input("stations_list", "children"),
 )
 def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
-    """Populate the station dropdown with the available station codes.
+    """Populate the station dropdown with the available station codes, based on
+    permissions and data availability.
+
+    This will run once when the app is initialized.
 
     Args:
         station_codes (list[str]): List of station codes based on permissions
@@ -592,8 +596,14 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
     Returns:
         tuple[list[dict], str]: Options for the station dropdown, default value
     """
+    stations_with_measurements = Measurement.objects.values_list(
+        "station__station_code", flat=True
+    ).distinct()
+
     station_options = [
-        {"label": station_code, "value": station_code} for station_code in station_codes
+        {"label": station_code, "value": station_code}
+        for station_code in station_codes
+        if station_code in stations_with_measurements
     ]
     station_value = station_options[0]["value"] if station_options else None
     return station_options, station_value
@@ -603,8 +613,10 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
     [Output("variable_drop", "options"), Output("variable_drop", "value")],
     Input("station_drop", "value"),
 )
-def variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
+def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
     """Update the variable dropdown based on the chosen station.
+
+    This will run whenever a new station is chosen.
 
     Args:
         chosen_station (str): Code for the chosen station
@@ -650,6 +662,8 @@ def set_date_range_min_max(
     """Set the default date range and min/max based on the chosen station and
     variable.
 
+    This will run whenever a new station and/or variable is chosen.
+
     Args:
         chosen_station (str): Code for the chosen station
         chosen_variable (str): Code for the chosen variable
@@ -691,6 +705,8 @@ def set_date_range_min_max(
 )
 def set_detail_date_range(daily_row_data) -> tuple[str, str]:
     """Set the min and max date for the detail date picker based on the daily data.
+
+    This will run whenever the data is updated.
 
     Args:
         daily_row_data (list[dict]): Data for the daily table
