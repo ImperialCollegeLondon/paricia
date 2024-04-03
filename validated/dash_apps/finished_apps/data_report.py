@@ -2,12 +2,11 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
+from django.db.models import Max, Min
 from django_plotly_dash import DjangoDash
 
-from measurement.models import Measurement, Report
+from measurement.models import Measurement
 from measurement.reporting import get_report_data_from_db
-from station.models import Station
-from validated.functions import csv_data_report
 from variable.models import Variable
 
 # Create a Dash app
@@ -15,14 +14,6 @@ app = DjangoDash(
     "DataReport",
     external_stylesheets=[dbc.themes.BOOTSTRAP],
 )
-
-
-# Initial values
-init_station: str = Station.objects.order_by("station_code")[7].station_code
-init_variable: str = Variable.objects.order_by("variable_code")[0].variable_code
-init_start_time: str = "2023-03-01"
-init_end_time: str = "2023-03-31"
-init_temporality: str = "measurement"
 
 
 def plot_graph(
@@ -64,13 +55,7 @@ def plot_graph(
     return plot
 
 
-plot = plot_graph(
-    init_temporality,
-    init_station,
-    init_variable,
-    init_start_time,
-    init_end_time,
-)
+plot = px.scatter()
 
 
 # Create layout
@@ -93,12 +78,6 @@ app.layout = html.Div(
                     style={"width": "35%"},
                     children=[
                         html.H2("Data Report"),
-                        html.Div(
-                            style={"padding": "10px"},
-                            children=[
-                                html.Button("Clear form", id="clear_button"),
-                            ],
-                        ),
                         html.H3("Temporality"),
                         dcc.Dropdown(
                             id="temporality_drop",
@@ -112,32 +91,26 @@ app.layout = html.Div(
                                 {"label": "Daily", "value": "daily"},
                                 {"label": "Monthly", "value": "monthly"},
                             ],
-                            value=init_temporality,
+                            value="measurement",
                         ),
                         html.H3("Station"),
                         dcc.Dropdown(
                             id="station_drop",
-                            options=[
-                                item.station_code
-                                for item in Station.objects.order_by("station_code")
-                            ],
-                            value=init_station,
+                            options=[],
+                            value=None,
                         ),
                         html.H3("Variable"),
                         dcc.Dropdown(
                             id="variable_drop",
-                            options=[
-                                {"label": item.name, "value": item.variable_code}
-                                for item in Variable.objects.order_by("variable_code")
-                            ],
-                            value=init_variable,
+                            options=[],
+                            value=None,
                         ),
                         html.H3("Start date - End date"),
                         dcc.DatePickerRange(
                             id="date_range_picker",
                             display_format="YYYY-MM-DD",
-                            start_date=init_start_time,
-                            end_date=init_end_time,
+                            start_date=None,
+                            end_date=None,
                         ),
                         html.Div(
                             id="csv_div",
@@ -186,27 +159,6 @@ def update_graph(
     )
 
     return plot
-
-
-@app.callback(
-    [
-        Output("temporality_drop", "value"),
-        Output("station_drop", "value"),
-        Output("variable_drop", "value"),
-        Output("date_range_picker", "start_date"),
-        Output("date_range_picker", "end_date"),
-    ],
-    Input("clear_button", "n_clicks"),
-    prevent_initial_call=True,
-)
-def clear_form(n_clicks: int):
-    return (
-        init_temporality,
-        init_station,
-        init_variable,
-        init_start_time,
-        init_end_time,
-    )
 
 
 @app.callback(
@@ -275,10 +227,111 @@ def update_alert(figure):
 
 
 @app.callback(
-    Output("station_drop", "options"),
+    [Output("station_drop", "options"), Output("station_drop", "value")],
     Input("stations_list", "children"),
 )
-def populate_stations_dropdown(station_codes):
-    return [
-        {"label": station_code, "value": station_code} for station_code in station_codes
+def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
+    """Populate the station dropdown with the available station codes, based on
+    permissions and data availability.
+
+    This will run once when the app is initialized.
+
+    Args:
+        station_codes (list[str]): List of station codes based on permissions
+
+    Returns:
+        tuple[list[dict], str]: Options for the station dropdown, default value
+    """
+    stations_with_measurements = Measurement.objects.values_list(
+        "station__station_code", flat=True
+    ).distinct()
+
+    station_options = [
+        {"label": station_code, "value": station_code}
+        for station_code in station_codes
+        if station_code in stations_with_measurements
     ]
+    station_value = station_options[0]["value"] if station_options else None
+    return station_options, station_value
+
+
+@app.callback(
+    [Output("variable_drop", "options"), Output("variable_drop", "value")],
+    Input("station_drop", "value"),
+)
+def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
+    """Update the variable dropdown based on the chosen station.
+
+    This will run whenever a new station is chosen.
+
+    Args:
+        chosen_station (str): Code for the chosen station
+
+    Returns:
+        tuple[list[dict], str]: Options for the variable dropdown, default value
+    """
+
+    # Filter measurements based on the chosen station
+    variable_dicts = (
+        Measurement.objects.filter(station__station_code=chosen_station)
+        .values("variable__name", "variable__variable_code")
+        .distinct()
+    )
+
+    # Create a list of dictionaries for the dropdown
+    variable_options = [
+        {
+            "label": variable["variable__name"],
+            "value": variable["variable__variable_code"],
+        }
+        for variable in variable_dicts
+    ]
+    variable_value = variable_options[0]["value"] if variable_options else None
+    return variable_options, variable_value
+
+
+@app.callback(
+    [
+        Output("date_range_picker", "start_date"),
+        Output("date_range_picker", "end_date"),
+    ],
+    [
+        Input("station_drop", "value"),
+        Input("variable_drop", "value"),
+    ],
+)
+def set_date_range(
+    chosen_station, chosen_variable
+) -> tuple[str, str,]:
+    """Set the default date range based on the chosen station and
+    variable.
+
+    This will run whenever a new station and/or variable is chosen.
+
+    Args:
+        chosen_station (str): Code for the chosen station
+        chosen_variable (str): Code for the chosen variable
+
+    Returns:
+        tuple[str, str]: Start date, end date
+    """
+    filter_vals = Measurement.objects.filter(
+        station__station_code=chosen_station,
+        variable__variable_code=chosen_variable,
+    ).aggregate(
+        first_date=Min("time"),
+        last_date=Max("time"),
+    )
+
+    first_date = (
+        filter_vals["first_date"].strftime("%Y-%m-%d")
+        if filter_vals["first_date"]
+        else None
+    )
+    last_date = (
+        filter_vals["last_date"].strftime("%Y-%m-%d")
+        if filter_vals["last_date"]
+        else None
+    )
+
+    return first_date, last_date
