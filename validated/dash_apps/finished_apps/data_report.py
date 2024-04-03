@@ -19,9 +19,6 @@ app = DjangoDash(
 )
 
 
-plot = px.scatter()
-
-
 # Create layout
 app.layout = html.Div(
     children=[
@@ -87,7 +84,7 @@ app.layout = html.Div(
                     children=[
                         dcc.Graph(
                             id="data_report_graph",
-                            figure=plot,
+                            figure=px.scatter(),
                         ),
                     ],
                 ),
@@ -148,6 +145,7 @@ def update_graph(
         State("date_range_picker", "start_date"),
         State("date_range_picker", "end_date"),
     ],
+    prevent_initial_call=True,
 )
 def download_csv_report(
     n_clicks: int,
