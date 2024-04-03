@@ -2,11 +2,14 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
-from django.db.models import Max, Min
 from django_plotly_dash import DjangoDash
 
-from measurement.models import Measurement
 from measurement.reporting import get_report_data_from_db
+from validated.filters import (
+    populate_stations_dropdown_util,
+    populate_variable_dropdown_util,
+    set_date_range_util,
+)
 from variable.models import Variable
 
 # Create a Dash app
@@ -231,28 +234,8 @@ def update_alert(figure):
     Input("stations_list", "children"),
 )
 def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
-    """Populate the station dropdown with the available station codes, based on
-    permissions and data availability.
-
-    This will run once when the app is initialized.
-
-    Args:
-        station_codes (list[str]): List of station codes based on permissions
-
-    Returns:
-        tuple[list[dict], str]: Options for the station dropdown, default value
-    """
-    stations_with_measurements = Measurement.objects.values_list(
-        "station__station_code", flat=True
-    ).distinct()
-
-    station_options = [
-        {"label": station_code, "value": station_code}
-        for station_code in station_codes
-        if station_code in stations_with_measurements
-    ]
-    station_value = station_options[0]["value"] if station_options else None
-    return station_options, station_value
+    """Populate the station dropdown based on the list of station codes."""
+    return populate_stations_dropdown_util(station_codes)
 
 
 @app.callback(
@@ -260,34 +243,8 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
     Input("station_drop", "value"),
 )
 def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
-    """Update the variable dropdown based on the chosen station.
-
-    This will run whenever a new station is chosen.
-
-    Args:
-        chosen_station (str): Code for the chosen station
-
-    Returns:
-        tuple[list[dict], str]: Options for the variable dropdown, default value
-    """
-
-    # Filter measurements based on the chosen station
-    variable_dicts = (
-        Measurement.objects.filter(station__station_code=chosen_station)
-        .values("variable__name", "variable__variable_code")
-        .distinct()
-    )
-
-    # Create a list of dictionaries for the dropdown
-    variable_options = [
-        {
-            "label": variable["variable__name"],
-            "value": variable["variable__variable_code"],
-        }
-        for variable in variable_dicts
-    ]
-    variable_value = variable_options[0]["value"] if variable_options else None
-    return variable_options, variable_value
+    """Populate the variable dropdown based on the chosen station."""
+    return populate_variable_dropdown_util(chosen_station)
 
 
 @app.callback(
@@ -303,35 +260,5 @@ def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
 def set_date_range(
     chosen_station, chosen_variable
 ) -> tuple[str, str,]:
-    """Set the default date range based on the chosen station and
-    variable.
-
-    This will run whenever a new station and/or variable is chosen.
-
-    Args:
-        chosen_station (str): Code for the chosen station
-        chosen_variable (str): Code for the chosen variable
-
-    Returns:
-        tuple[str, str]: Start date, end date
-    """
-    filter_vals = Measurement.objects.filter(
-        station__station_code=chosen_station,
-        variable__variable_code=chosen_variable,
-    ).aggregate(
-        first_date=Min("time"),
-        last_date=Max("time"),
-    )
-
-    first_date = (
-        filter_vals["first_date"].strftime("%Y-%m-%d")
-        if filter_vals["first_date"]
-        else None
-    )
-    last_date = (
-        filter_vals["last_date"].strftime("%Y-%m-%d")
-        if filter_vals["last_date"]
-        else None
-    )
-
-    return first_date, last_date
+    """Set the default date range based on the chosen station and variable."""
+    return set_date_range_util(chosen_station, chosen_variable)
