@@ -17,6 +17,9 @@ def create_empty_plot() -> px.scatter:
             b=0,
             t=50,
         ),
+        title_font=dict(
+            size=14,
+        ),
     )
     return fig
 
@@ -119,6 +122,9 @@ def create_report_plot(
             t=50,
         ),
         yaxis_title=f"{variable_name}",
+        title_font=dict(
+            size=14,
+        ),
     )
 
     return fig
