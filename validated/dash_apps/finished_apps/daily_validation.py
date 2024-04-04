@@ -714,6 +714,10 @@ def set_detail_date_range(daily_row_data) -> tuple[str, str]:
     Returns:
         tuple[str, str]: Min date, max date
     """
-    min_date = min(daily_row_data, key=lambda x: x["date"])["date"]
-    max_date = max(daily_row_data, key=lambda x: x["date"])["date"]
+    if daily_row_data:
+        min_date = min(daily_row_data, key=lambda x: x["date"])["date"]
+        max_date = max(daily_row_data, key=lambda x: x["date"])["date"]
+    else:
+        min_date = None
+        max_date = None
     return min_date, max_date
