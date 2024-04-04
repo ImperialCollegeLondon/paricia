@@ -532,8 +532,6 @@ def callbacks(
             include_validated=in_validation_status == "validated",
             only_validated=in_validation_status == "validated",
         )
-        if DATA_SUMMARY.empty:
-            out_status = "No data available"
 
     # Refresh plot
     if plot_refresh_required:
@@ -555,14 +553,19 @@ def callbacks(
             out_daily_selected_rows = out_daily_row_data
 
     # Refresh detail table
-    if detail_table_refresh_required and not DATA_GRANULAR.empty:
-        out_detail_row_data = DATA_GRANULAR[
-            DATA_GRANULAR.time.dt.date == SELECTED_DAY
-        ].to_dict("records")
+    if detail_table_refresh_required:
+        if DATA_GRANULAR.empty:
+            out_detail_row_data = []
+        else:
+            out_detail_row_data = DATA_GRANULAR[
+                DATA_GRANULAR.time.dt.date == SELECTED_DAY
+            ].to_dict("records")
 
         # Reset detail table selection
         if detail_table_reset_selection:
-            out_detail_selected_rows = out_detail_row_data
+            out_detail_selected_rows = [
+                row for row in out_detail_row_data if row["is_active"]
+            ]
 
     return (
         out_loading_top,
