@@ -2,6 +2,28 @@ import pandas as pd
 import plotly.express as px
 
 
+def create_empty_plot() -> px.scatter:
+    """Creates empty plot
+
+    Returns:
+        px.Scatter: Plot
+    """
+    fig = px.scatter(title="No data to plot")
+    fig.update_layout(
+        autosize=True,
+        margin=dict(
+            l=50,
+            r=20,
+            b=0,
+            t=50,
+        ),
+        title_font=dict(
+            size=14,
+        ),
+    )
+    return fig
+
+
 def create_validation_plot(
     data: pd.DataFrame, variable_name: str, field: str
 ) -> px.scatter:
@@ -50,9 +72,9 @@ def create_validation_plot(
         autosize=True,
         margin=dict(
             l=50,
-            r=0,
+            r=20,
             b=0,
-            t=20,
+            t=50,
         ),
     )
 
@@ -95,11 +117,14 @@ def create_report_plot(
         autosize=True,
         margin=dict(
             l=50,
-            r=0,
+            r=20,
             b=0,
-            t=20,
+            t=50,
         ),
         yaxis_title=f"{variable_name}",
+        title_font=dict(
+            size=14,
+        ),
     )
 
     return fig

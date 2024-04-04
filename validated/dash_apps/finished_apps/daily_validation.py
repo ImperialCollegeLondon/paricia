@@ -2,8 +2,8 @@ from datetime import date
 from decimal import Decimal
 
 import dash
+import dash_bootstrap_components as dbc
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
@@ -22,47 +22,54 @@ from validated.filters import (
     set_date_range_util,
     set_min_max_util,
 )
-from validated.plots import create_validation_plot
+from validated.plots import create_empty_plot, create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
 from variable.models import Variable
 
 app = DjangoDash(
-    "DailyValidation", external_stylesheets=["/static/styles/dashstyle.css"]
+    "DailyValidation",
+    external_stylesheets=[dbc.themes.BOOTSTRAP, "/static/styles/dashstyle.css"],
 )
 
 # Globals
 SELECTED_DAY: date = None
-DATA_SUMMARY: pd.DataFrame = None
-DATA_GRANULAR: pd.DataFrame = None
+DATA_SUMMARY: pd.DataFrame = pd.DataFrame()
+DATA_GRANULAR: pd.DataFrame = pd.DataFrame()
 
 # Filters
-filters = html.Div(
+filters_row1 = html.Div(
     children=[
         html.Div(
             [
-                html.Label("Station:", style={"display": "block"}),
+                html.Label(
+                    "Station:", style={"display": "block", "font-weight": "bold"}
+                ),
                 dcc.Dropdown(
                     id="station_drop",
                     options=[],
                     value=None,
                 ),
             ],
-            style={"margin-right": "10px", "width": "250px"},
+            style={"margin-right": "20px", "width": "286px", "display": "inline-block"},
         ),
         html.Div(
             [
-                html.Label("Variable:", style={"display": "block"}),
+                html.Label(
+                    "Variable:", style={"display": "block", "font-weight": "bold"}
+                ),
                 dcc.Dropdown(
                     id="variable_drop",
                     options=[],
                     value=None,
                 ),
             ],
-            style={"margin-right": "10px", "width": "250px"},
+            style={"margin-right": "20px", "width": "286px", "display": "inline-block"},
         ),
         html.Div(
             [
-                html.Label("Date Range:", style={"display": "block"}),
+                html.Label(
+                    "Date Range:", style={"display": "block", "font-weight": "bold"}
+                ),
                 dcc.DatePickerRange(
                     id="date_range_picker",
                     display_format="YYYY-MM-DD",
@@ -70,25 +77,42 @@ filters = html.Div(
                     end_date=None,
                 ),
             ],
-            style={"margin-right": "10px", "width": "350px"},
+            style={"width": "286px", "display": "inline-block"},
         ),
+    ],
+    style={
+        "display": "flex",
+        "justify-content": "flex-start",
+        "margin-bottom": "10px",
+    },
+)
+
+filters_row2 = html.Div(
+    children=[
         html.Div(
             [
-                html.Label("Minimum:", style={"display": "block"}),
+                html.Label(
+                    "Minimum:", style={"display": "block", "font-weight": "bold"}
+                ),
                 dcc.Input(id="minimum_input", type="number", value=None),
             ],
-            style={"margin-right": "10px", "width": "200px"},
+            style={"margin-right": "20px", "width": "286px"},
         ),
         html.Div(
             [
-                html.Label("Maximum:", style={"display": "block"}),
+                html.Label(
+                    "Maximum:", style={"display": "block", "font-weight": "bold"}
+                ),
                 dcc.Input(id="maximum_input", type="number", value=None),
             ],
-            style={"margin-right": "10px", "width": "200px"},
+            style={"margin-right": "20px", "width": "286px"},
         ),
         html.Div(
             [
-                html.Label("Validation status:", style={"display": "block"}),
+                html.Label(
+                    "Validation status:",
+                    style={"display": "block", "font-weight": "bold"},
+                ),
                 dcc.Dropdown(
                     id="validation_status_drop",
                     options=[
@@ -98,14 +122,17 @@ filters = html.Div(
                     value="not_validated",
                 ),
             ],
-            style={"width": "200px"},
+            style={"width": "286px"},
         ),
     ],
     style={
         "display": "flex",
         "justify-content": "flex-start",
-        "font-size": "14px",
     },
+)
+
+filters = html.Div(
+    children=[filters_row1, filters_row2],
 )
 
 # Tables
@@ -166,7 +193,6 @@ detail_date_picker = html.Div(
             style={
                 "display": "inline-block",
                 "padding-right": "5px",
-                "font-size": "14px",
             },
         ),
         dcc.DatePickerSingle(
@@ -205,7 +231,6 @@ status_message = html.Div(
     id="status-message",
     children=[""],
     style={
-        "font-size": "14px",
         "min-height": "20px",
         "padding-top": "5px",
         "padding-bottom": "10px",
@@ -214,17 +239,25 @@ status_message = html.Div(
 
 
 # Plot
-plot = px.scatter()
-
-# Plot radio
-plot_radio = dcc.RadioItems(
-    id="plot_radio",
-    options=[
-        {"value": c, "label": c.capitalize()} for c in ["value", "maximum", "minimum"]
+plot = html.Div(
+    children=[
+        dcc.Graph(id="plot", figure=create_empty_plot(), style={"width": "100%"}),
+        dcc.RadioItems(
+            id="plot_radio",
+            options=[
+                {"value": c, "label": c.capitalize()}
+                for c in ["value", "maximum", "minimum"]
+            ],
+            value="value",
+            style={"width": "100px"},
+            labelStyle={"display": "block"},
+        ),
     ],
-    value="value",
-    inline=True,
-    style={"font-size": "14px"},
+    style={
+        "display": "flex",
+        "justify-content": "space-between",
+        "height": "400px",
+    },
 )
 
 # Layout
@@ -232,7 +265,11 @@ app.layout = html.Div(
     children=[
         html.Div(id="stations_list", hidden=True),
         filters,
-        html.Button("Submit", id="submit-button", style={"margin-top": "10px"}),
+        html.Button(
+            "Submit",
+            id="submit-button",
+            style={"margin-top": "10px"},
+        ),
         dcc.Loading(
             type="dot",
             children=html.Div(id="loading_top"),
@@ -241,12 +278,14 @@ app.layout = html.Div(
         dcc.Tabs(
             id="tabs",
             value="tab-daily",
-            style={"width": "100%"},
+            style={"width": "100%", "height": "40px"},
             children=[
                 dcc.Tab(
                     label="Daily Report",
                     id="tab-daily",
                     value="tab-daily",
+                    style={"line-height": "40px", "padding": "0"},
+                    selected_style={"line-height": "40px", "padding": "0"},
                     children=[
                         table_daily,
                     ],
@@ -255,6 +294,9 @@ app.layout = html.Div(
                     label="Detail of Selected Day",
                     id="tab-detail",
                     value="tab-detail",
+                    style={"line-height": "40px", "padding": "0"},
+                    selected_style={"line-height": "40px", "padding": "0"},
+                    disabled_style={"line-height": "40px", "padding": "0"},
                     disabled=True,
                     children=[
                         table_detail,
@@ -269,8 +311,7 @@ app.layout = html.Div(
             children=html.Div(id="loading"),
         ),
         html.Hr(),
-        plot_radio,
-        dcc.Graph(id="plot", figure=plot, style={"width": "100%"}),
+        plot,
     ]
 )
 
@@ -547,7 +588,7 @@ def callbacks(
                 field=in_plot_radio_value,
             )
         else:
-            out_plot = px.scatter()
+            out_plot = create_empty_plot()
 
     # Refresh daily table
     if daily_table_refresh_required:
