@@ -121,10 +121,10 @@ class StationTypePermissionsTest(BasePermissionsTest, TestCase):
         cls.app = "station"
         cls.model = "stationtype"
         cls.obj_private = StationType.objects.create(
-            owner=cls.user_owner, permissions_level="private"
+            owner=cls.user_owner, visibility="private"
         )
         cls.obj_public = StationType.objects.create(
-            owner=cls.user_owner, permissions_level="public"
+            owner=cls.user_owner, visibility="public"
         )
 
 
@@ -137,10 +137,10 @@ class SensorPermissionsTest(BasePermissionsTest, TestCase):
         cls.app = "sensor"
         cls.model = "sensor"
         cls.obj_private = Sensor.objects.create(
-            owner=cls.user_owner, permissions_level="private"
+            owner=cls.user_owner, visibility="private"
         )
         cls.obj_public = Sensor.objects.create(
-            owner=cls.user_owner, permissions_level="public"
+            owner=cls.user_owner, visibility="public"
         )
 
 
@@ -153,10 +153,10 @@ class VariablePermissionsTest(BasePermissionsTest, TestCase):
         cls.app = "variable"
         cls.model = "variable"
         cls.obj_private = Variable.objects.create(
-            owner=cls.user_owner, maximum=100, minimum=0, permissions_level="private"
+            owner=cls.user_owner, maximum=100, minimum=0, visibility="private"
         )
         cls.obj_public = Variable.objects.create(
-            owner=cls.user_owner, maximum=100, minimum=0, permissions_level="public"
+            owner=cls.user_owner, maximum=100, minimum=0, visibility="public"
         )
 
 
@@ -169,13 +169,13 @@ class StationPermissionsTest(BasePermissionsTest, TestCase):
         cls.app = "station"
         cls.model = "station"
         cls.obj_private = Station.objects.create(
-            owner=cls.user_owner, permissions_level="private"
+            owner=cls.user_owner, visibility="private"
         )
         cls.obj_public = Station.objects.create(
-            owner=cls.user_owner, permissions_level="public"
+            owner=cls.user_owner, visibility="public"
         )
         cls.obj_internal = Station.objects.create(
-            owner=cls.user_owner, permissions_level="internal"
+            owner=cls.user_owner, visibility="internal"
         )
 
     def test_measurement_permissions_private(self):
@@ -210,9 +210,9 @@ class StationPermissionsTestChangePermissions(StationPermissionsTest):
         super().setUpTestData()
 
         # Change the permissions level for the stations
-        cls.obj_private.permissions_level = "public"
-        cls.obj_public.permissions_level = "internal"
-        cls.obj_internal.permissions_level = "private"
+        cls.obj_private.visibility = "public"
+        cls.obj_public.visibility = "internal"
+        cls.obj_internal.visibility = "private"
         cls.obj_private.save()
         cls.obj_public.save()
         cls.obj_internal.save()

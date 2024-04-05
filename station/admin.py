@@ -22,21 +22,21 @@ admin.site.site_header = "Paricia Administration - Stations"
 class StationTypeAdmin(PermissionsBaseAdmin):
     """Admin class for the StationType model."""
 
-    list_display = ["id", "name", "owner", "permissions_level"]
+    list_display = ["id", "name", "owner", "visibility"]
 
 
 @admin.register(Country)
 class CountryAdmin(PermissionsBaseAdmin):
     """Admin class for the Country model."""
 
-    list_display = ["id", "name", "owner", "permissions_level"]
+    list_display = ["id", "name", "owner", "visibility"]
 
 
 @admin.register(Region)
 class RegionAdmin(PermissionsBaseAdmin):
     """Admin class for the Region model."""
 
-    list_display = ["id", "name", "country", "owner", "permissions_level"]
+    list_display = ["id", "name", "country", "owner", "visibility"]
     list_filter = ["country"]
     foreign_key_fields = ["country"]
 
@@ -45,14 +45,14 @@ class RegionAdmin(PermissionsBaseAdmin):
 class EcosystemAdmin(PermissionsBaseAdmin):
     """Admin class for the Ecosystem model."""
 
-    list_display = ["id", "name", "owner", "permissions_level"]
+    list_display = ["id", "name", "owner", "visibility"]
 
 
 @admin.register(Institution)
 class InstitutionAdmin(PermissionsBaseAdmin):
     """Admin class for the Institution model."""
 
-    list_display = ["id", "name", "owner", "permissions_level"]
+    list_display = ["id", "name", "owner", "visibility"]
 
 
 @admin.register(PlaceBasin)
@@ -65,7 +65,7 @@ class PlaceBasinAdmin(PermissionsBaseAdmin):
         "basin",
         "image",
         "owner",
-        "permissions_level",
+        "visibility",
     ]
     list_filter = ["place", "basin"]
     foreign_key_fields = ["place", "basin"]
@@ -75,21 +75,21 @@ class PlaceBasinAdmin(PermissionsBaseAdmin):
 class PlaceAdmin(PermissionsBaseAdmin):
     """Admin class for the Place model."""
 
-    list_display = ["id", "name", "image", "owner", "permissions_level"]
+    list_display = ["id", "name", "image", "owner", "visibility"]
 
 
 @admin.register(Basin)
 class BasinAdmin(PermissionsBaseAdmin):
     """Admin class for the Basin model."""
 
-    list_display = ["id", "name", "image", "file", "owner", "permissions_level"]
+    list_display = ["id", "name", "image", "file", "owner", "visibility"]
 
 
 @admin.register(Station)
 class StationAdmin(PermissionsBaseAdmin):
     """Admin class for the Station model."""
 
-    limit_permissions_level = False
+    limit_visibility_level = False
     list_display = [
         "station_id",
         "station_code",
@@ -108,7 +108,7 @@ class StationAdmin(PermissionsBaseAdmin):
         "influence_km",
         "timezone",
         "owner",
-        "permissions_level",
+        "visibility",
     ]
     list_filter = [
         "station_type",
@@ -131,6 +131,6 @@ class StationAdmin(PermissionsBaseAdmin):
 class DeltaTAdmin(PermissionsBaseAdmin):
     """Admin class for the DeltaT model."""
 
-    list_display = ["id", "delta_t", "station", "owner", "permissions_level"]
+    list_display = ["id", "delta_t", "station", "owner", "visibility"]
     list_filter = ["station"]
     foreign_key_fields = ["station"]

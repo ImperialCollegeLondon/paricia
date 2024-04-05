@@ -207,14 +207,14 @@ class Station(PermissionsBase):
     the other models in this app, along with some geographical data.
     """
 
-    PERMISSIONS_LEVELS = [
+    VISIBILITY_LEVELS = [
         ("public", "Public"),
         ("internal", "Internal"),
         ("private", "Private"),
     ]
 
-    permissions_level = models.CharField(
-        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    visibility = models.CharField(
+        max_length=8, choices=VISIBILITY_LEVELS, default="private"
     )
 
     station_id = models.AutoField("Id", primary_key=True)
@@ -303,17 +303,17 @@ class Station(PermissionsBase):
         anonymous_user = get_anonymous_user()
 
         # Assign view_measurements permission based on permissions level
-        if self.permissions_level == "public":
+        if self.visibility == "public":
             assign_perm("view_measurements", standard_group, self)
             assign_perm("view_measurements", anonymous_user, self)
             if self.owner:
                 remove_perm("view_measurements", self.owner, self)
-        elif self.permissions_level == "internal":
+        elif self.visibility == "internal":
             assign_perm("view_measurements", standard_group, self)
             remove_perm("view_measurements", anonymous_user, self)
             if self.owner:
                 remove_perm("view_measurements", self.owner, self)
-        elif self.permissions_level == "private":
+        elif self.visibility == "private":
             remove_perm("view_measurements", standard_group, self)
             remove_perm("view_measurements", anonymous_user, self)
             if self.owner:
