@@ -4,11 +4,7 @@ from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
 
 from measurement.reporting import get_report_data_from_db
-from validated.filters import (
-    populate_stations_dropdown_util,
-    populate_variable_dropdown_util,
-    set_date_range_util,
-)
+from validated.filters import get_date_range, get_station_options, get_variable_options
 from validated.plots import create_empty_plot, create_report_plot
 from variable.models import Variable
 
@@ -208,7 +204,7 @@ def update_alert(figure):
 )
 def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
     """Populate the station dropdown based on the list of station codes."""
-    return populate_stations_dropdown_util(station_codes)
+    return get_station_options(station_codes)
 
 
 @app.callback(
@@ -217,7 +213,7 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
 )
 def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
     """Populate the variable dropdown based on the chosen station."""
-    return populate_variable_dropdown_util(chosen_station)
+    return get_variable_options(chosen_station)
 
 
 @app.callback(
@@ -234,4 +230,4 @@ def set_date_range(
     chosen_station, chosen_variable
 ) -> tuple[str, str,]:
     """Set the default date range based on the chosen station and variable."""
-    return set_date_range_util(chosen_station, chosen_variable)
+    return get_date_range(chosen_station, chosen_variable)

@@ -17,10 +17,10 @@ from measurement.validation import (
     save_validated_entries,
 )
 from validated.filters import (
-    populate_stations_dropdown_util,
-    populate_variable_dropdown_util,
-    set_date_range_util,
-    set_min_max_util,
+    get_date_range,
+    get_min_max,
+    get_station_options,
+    get_variable_options,
 )
 from validated.plots import create_empty_plot, create_validation_plot
 from validated.tables import create_columns_daily, create_columns_detail
@@ -630,7 +630,7 @@ def callbacks(
 )
 def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
     """Populate the station dropdown based on the list of station codes."""
-    return populate_stations_dropdown_util(station_codes)
+    return get_station_options(station_codes)
 
 
 @app.callback(
@@ -639,7 +639,7 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
 )
 def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
     """Populate the variable dropdown based on the chosen station."""
-    return populate_variable_dropdown_util(chosen_station)
+    return get_variable_options(chosen_station)
 
 
 @app.callback(
@@ -659,8 +659,8 @@ def set_date_range_min_max(
 ) -> tuple[str, str, Decimal, Decimal,]:
     """Set the default date range and min/max based on the chosen station and
     variable."""
-    start_date, end_date = set_date_range_util(chosen_station, chosen_variable)
-    min_val, max_val = set_min_max_util(chosen_station, chosen_variable)
+    start_date, end_date = get_date_range(chosen_station, chosen_variable)
+    min_val, max_val = get_min_max(chosen_station, chosen_variable)
     return start_date, end_date, min_val, max_val
 
 
