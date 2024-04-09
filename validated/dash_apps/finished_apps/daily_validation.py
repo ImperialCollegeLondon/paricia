@@ -529,8 +529,7 @@ def callbacks(
             end_time=in_end_date,
             minimum=Decimal(in_minimum) if in_minimum is not None else None,
             maximum=Decimal(in_maximum) if in_maximum is not None else None,
-            include_validated=in_validation_status == "validated",
-            only_validated=in_validation_status == "validated",
+            is_validated=in_validation_status == "validated",
         )
 
     # Refresh plot

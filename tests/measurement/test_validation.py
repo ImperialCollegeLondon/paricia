@@ -65,21 +65,22 @@ class TestValidationFunctions(TestCase):
             variable=self.variable.variable_code,
             start_time=self.start.strftime("%Y-%m-%d"),
             end_time=self.end.strftime("%Y-%m-%d"),
+            is_validated=False,
         )
         self.assertEqual(len(data), len(self.date_range) - 1)
 
         # The validated object should not be in the data
         self.assertNotIn(obj.id, data.id.values)
 
-        # This should return the full date range, including the validated object
+        # This should return a single data point
         data = get_data_to_validate(
             station=self.station.station_code,
             variable=self.variable.variable_code,
             start_time=self.start.strftime("%Y-%m-%d"),
             end_time=self.end.strftime("%Y-%m-%d"),
-            include_validated=True,
+            is_validated=True,
         )
-        self.assertEqual(len(data), len(self.date_range))
+        self.assertEqual(len(data), 1)
 
         # The validated object should be in the data
         self.assertIn(obj.id, data.id.values)
@@ -268,7 +269,6 @@ class TestValidationFunctions(TestCase):
         end_time = "2023-01-02"
         maximum = Decimal(4)
         minimum = Decimal(3)
-        include_validated = False
 
         # Generate data for testing
         data = pd.DataFrame(
@@ -321,7 +321,7 @@ class TestValidationFunctions(TestCase):
             end_time,
             maximum,
             minimum,
-            include_validated,
+            is_validated=False,
         )
 
         # Assert the expected output
