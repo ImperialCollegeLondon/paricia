@@ -573,11 +573,8 @@ def callbacks(
             end_time=in_end_date,
             minimum=Decimal(in_minimum) if in_minimum is not None else None,
             maximum=Decimal(in_maximum) if in_maximum is not None else None,
-            include_validated=in_validation_status == "validated",
-            only_validated=in_validation_status == "validated",
+            is_validated=in_validation_status == "validated",
         )
-        if DATA_SUMMARY.empty:
-            out_status = "No data available"
 
     # Refresh plot
     if plot_refresh_required:
@@ -599,14 +596,19 @@ def callbacks(
             out_daily_selected_rows = out_daily_row_data
 
     # Refresh detail table
-    if detail_table_refresh_required and not DATA_GRANULAR.empty:
-        out_detail_row_data = DATA_GRANULAR[
-            DATA_GRANULAR.time.dt.date == SELECTED_DAY
-        ].to_dict("records")
+    if detail_table_refresh_required:
+        if DATA_GRANULAR.empty:
+            out_detail_row_data = []
+        else:
+            out_detail_row_data = DATA_GRANULAR[
+                DATA_GRANULAR.time.dt.date == SELECTED_DAY
+            ].to_dict("records")
 
         # Reset detail table selection
         if detail_table_reset_selection:
-            out_detail_selected_rows = out_detail_row_data
+            out_detail_selected_rows = [
+                row for row in out_detail_row_data if row["is_active"]
+            ]
 
     return (
         out_loading_top,
@@ -681,6 +683,10 @@ def set_detail_date_range(daily_row_data) -> tuple[str, str]:
     Returns:
         tuple[str, str]: Min date, max date
     """
-    min_date = min(daily_row_data, key=lambda x: x["date"])["date"]
-    max_date = max(daily_row_data, key=lambda x: x["date"])["date"]
+    if daily_row_data:
+        min_date = min(daily_row_data, key=lambda x: x["date"])["date"]
+        max_date = max(daily_row_data, key=lambda x: x["date"])["date"]
+    else:
+        min_date = None
+        max_date = None
     return min_date, max_date
