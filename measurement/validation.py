@@ -15,7 +15,7 @@ def get_data_to_validate(
     variable: str,
     start_time: str,
     end_time: str,
-    include_validated: bool = False,
+    is_validated: bool = False,
 ) -> pd.DataFrame:
     """Retrieves data to be validated.
 
@@ -24,7 +24,7 @@ def get_data_to_validate(
         variable: Variable of interest.
         start_time: Start time.
         end_time: End time.
-        include_validated: If validated data should be included.
+        is_validated: Whether to retrieve validated or non-validated data.
 
     Returns:
         A dictionary with the report for the chosen days.
@@ -32,19 +32,21 @@ def get_data_to_validate(
     tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
     start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(tzinfo=tz)
     end_time_ = datetime.strptime(end_time, "%Y-%m-%d").replace(tzinfo=tz)
-    extra = {}
-    if not include_validated:
-        extra = {"is_validated": False}
 
-    return pd.DataFrame.from_records(
+    df = pd.DataFrame.from_records(
         Measurement.objects.filter(
             station__station_code=station,
             variable__variable_code=variable,
             time__gte=start_time_,
             time__lte=end_time_,
-            **extra,
+            is_validated=is_validated,
         ).values()
-    ).sort_values("time")
+    )
+
+    if df.empty:
+        return df
+
+    return df.sort_values("time")
 
 
 def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
@@ -222,7 +224,7 @@ def generate_validation_report(
     end_time: str,
     maximum: Decimal,
     minimum: Decimal,
-    include_validated: bool = False,
+    is_validated: bool = False,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Generates a report of the data.
 
@@ -233,7 +235,7 @@ def generate_validation_report(
         end_time: End time.
         maximum: The maximum allowed value.
         minimum: The minimum allowed value.
-        include_validated: If validated data should be included.
+        is_validated: Whether to retrieve validated or non-validated data.
 
     Returns:
         A tuple with the summary report and the granular report.
@@ -241,9 +243,10 @@ def generate_validation_report(
     period = DeltaT.objects.get(station__station_code=station).delta_t
     var = Variable.objects.get(variable_code=variable)
 
-    data = get_data_to_validate(
-        station, variable, start_time, end_time, include_validated
-    )
+    data = get_data_to_validate(station, variable, start_time, end_time, is_validated)
+    if data.empty:
+        return pd.DataFrame(), pd.DataFrame()
+
     suspicious = flag_suspicious_data(data, maximum, minimum, period, var.diff_error)
     summary = generate_daily_summary(
         data, suspicious, period, var.null_limit, var.is_cumulative

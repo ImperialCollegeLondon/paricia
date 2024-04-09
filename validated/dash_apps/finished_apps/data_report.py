@@ -1,77 +1,66 @@
 import dash_bootstrap_components as dbc
-import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
 
-from measurement.models import Measurement, Report
 from measurement.reporting import get_report_data_from_db
-from station.models import Station
-from validated.functions import csv_data_report
+from validated.filters import get_date_range, get_station_options, get_variable_options
+from validated.plots import create_empty_plot, create_report_plot
 from variable.models import Variable
 
 # Create a Dash app
 app = DjangoDash(
     "DataReport",
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_stylesheets=[dbc.themes.BOOTSTRAP, "/static/styles/dashstyle.css"],
 )
 
-
-# Initial values
-init_station: str = Station.objects.order_by("station_code")[7].station_code
-init_variable: str = Variable.objects.order_by("variable_code")[0].variable_code
-init_start_time: str = "2023-03-01"
-init_end_time: str = "2023-03-31"
-init_temporality: str = "measurement"
-
-
-def plot_graph(
-    temporality: str,
-    station: str,
-    variable: str,
-    start_time: str,
-    end_time: str,
-):
-    # Load data
-    try:
-        data: pd.DataFrame = get_report_data_from_db(
-            station=station,
-            variable=variable,
-            start_time=start_time,
-            end_time=end_time,
-            report_type=temporality,
-        )
-
-        variable_obj = Variable.objects.get(variable_code=variable)
-
-        # Create plot
-        plot = px.line(
-            data,
-            x="time",
-            y=["value", "minimum", "maximum"],
-            title=f"{station} - {variable_obj.name}",
-        )
-
-    except Exception as e:
-        print("Error:", e)
-        plot = px.line(title="Data not found")
-
-    plot.update_layout(
-        yaxis_title="",
-        xaxis_title="",
-    )
-
-    return plot
-
-
-plot = plot_graph(
-    init_temporality,
-    init_station,
-    init_variable,
-    init_start_time,
-    init_end_time,
+filters = html.Div(
+    style={"width": "286px"},
+    children=[
+        html.Label("Temporality:", style={"font-weight": "bold"}),
+        dcc.Dropdown(
+            id="temporality_drop",
+            options=[
+                {"label": "Raw measurement", "value": "measurement"},
+                {
+                    "label": "Validated measurement",
+                    "value": "validated",
+                },
+                {"label": "Hourly", "value": "hourly"},
+                {"label": "Daily", "value": "daily"},
+                {"label": "Monthly", "value": "monthly"},
+            ],
+            value="measurement",
+        ),
+        html.Br(),
+        html.Label("Station:", style={"font-weight": "bold"}),
+        dcc.Dropdown(
+            id="station_drop",
+            options=[],
+            value=None,
+        ),
+        html.Br(),
+        html.Label("Variable:", style={"font-weight": "bold"}),
+        dcc.Dropdown(
+            id="variable_drop",
+            options=[],
+            value=None,
+        ),
+        html.Br(),
+        html.Label("Date Range:", style={"font-weight": "bold"}),
+        dcc.DatePickerRange(
+            id="date_range_picker",
+            display_format="YYYY-MM-DD",
+            start_date=None,
+            end_date=None,
+        ),
+        html.Br(),
+        html.Div(
+            id="csv_div",
+            style={"margin-top": "30px"},
+        ),
+    ],
 )
-
 
 # Create layout
 app.layout = html.Div(
@@ -89,68 +78,13 @@ app.layout = html.Div(
         html.Div(
             style={"display": "flex", "justify-content": "space-around"},
             children=[
-                html.Div(
-                    style={"width": "35%"},
-                    children=[
-                        html.H2("Data Report"),
-                        html.Div(
-                            style={"padding": "10px"},
-                            children=[
-                                html.Button("Clear form", id="clear_button"),
-                            ],
-                        ),
-                        html.H3("Temporality"),
-                        dcc.Dropdown(
-                            id="temporality_drop",
-                            options=[
-                                {"label": "Raw measurement", "value": "measurement"},
-                                {
-                                    "label": "Validated measurement",
-                                    "value": "validated",
-                                },
-                                {"label": "Hourly", "value": "hourly"},
-                                {"label": "Daily", "value": "daily"},
-                                {"label": "Monthly", "value": "monthly"},
-                            ],
-                            value=init_temporality,
-                        ),
-                        html.H3("Station"),
-                        dcc.Dropdown(
-                            id="station_drop",
-                            options=[
-                                item.station_code
-                                for item in Station.objects.order_by("station_code")
-                            ],
-                            value=init_station,
-                        ),
-                        html.H3("Variable"),
-                        dcc.Dropdown(
-                            id="variable_drop",
-                            options=[
-                                {"label": item.name, "value": item.variable_code}
-                                for item in Variable.objects.order_by("variable_code")
-                            ],
-                            value=init_variable,
-                        ),
-                        html.H3("Start date - End date"),
-                        dcc.DatePickerRange(
-                            id="date_range_picker",
-                            display_format="YYYY-MM-DD",
-                            start_date=init_start_time,
-                            end_date=init_end_time,
-                        ),
-                        html.Div(
-                            id="csv_div",
-                            style={"padding": "10px"},
-                        ),
-                    ],
-                ),
+                filters,
                 html.Div(
                     style={"width": "65%"},
                     children=[
                         dcc.Graph(
                             id="data_report_graph",
-                            figure=plot,
+                            figure=create_empty_plot(),
                         ),
                     ],
                 ),
@@ -177,36 +111,25 @@ def update_graph(
     start_time: str,
     end_time: str,
 ) -> px.line:
-    plot = plot_graph(
-        temporality,
-        station,
-        variable,
-        start_time,
-        end_time,
-    )
+    try:
+        data = get_report_data_from_db(
+            station=station,
+            variable=variable,
+            start_time=start_time,
+            end_time=end_time,
+            report_type=temporality,
+        )
+        plot = create_report_plot(
+            data=data,
+            variable_name=Variable.objects.get(variable_code=variable).name,
+            station_code=station,
+        )
+
+    except Exception as e:
+        print("Error:", e)
+        plot = create_empty_plot()
 
     return plot
-
-
-@app.callback(
-    [
-        Output("temporality_drop", "value"),
-        Output("station_drop", "value"),
-        Output("variable_drop", "value"),
-        Output("date_range_picker", "start_date"),
-        Output("date_range_picker", "end_date"),
-    ],
-    Input("clear_button", "n_clicks"),
-    prevent_initial_call=True,
-)
-def clear_form(n_clicks: int):
-    return (
-        init_temporality,
-        init_station,
-        init_variable,
-        init_start_time,
-        init_end_time,
-    )
 
 
 @app.callback(
@@ -222,6 +145,7 @@ def clear_form(n_clicks: int):
         State("date_range_picker", "start_date"),
         State("date_range_picker", "end_date"),
     ],
+    prevent_initial_call=True,
 )
 def download_csv_report(
     n_clicks: int,
@@ -275,10 +199,35 @@ def update_alert(figure):
 
 
 @app.callback(
-    Output("station_drop", "options"),
+    [Output("station_drop", "options"), Output("station_drop", "value")],
     Input("stations_list", "children"),
 )
-def populate_stations_dropdown(station_codes):
-    return [
-        {"label": station_code, "value": station_code} for station_code in station_codes
-    ]
+def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
+    """Populate the station dropdown based on the list of station codes."""
+    return get_station_options(station_codes)
+
+
+@app.callback(
+    [Output("variable_drop", "options"), Output("variable_drop", "value")],
+    Input("station_drop", "value"),
+)
+def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
+    """Populate the variable dropdown based on the chosen station."""
+    return get_variable_options(chosen_station)
+
+
+@app.callback(
+    [
+        Output("date_range_picker", "start_date"),
+        Output("date_range_picker", "end_date"),
+    ],
+    [
+        Input("station_drop", "value"),
+        Input("variable_drop", "value"),
+    ],
+)
+def set_date_range(
+    chosen_station, chosen_variable
+) -> tuple[str, str,]:
+    """Set the default date range based on the chosen station and variable."""
+    return get_date_range(chosen_station, chosen_variable)
