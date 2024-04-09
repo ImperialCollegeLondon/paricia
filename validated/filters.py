@@ -85,9 +85,9 @@ class ValidatedFilterDepth(ValidatedFilter):
     max_depth = filters.NumberFilter(field_name="depth", lookup_expr="lte")
 
 
-def populate_stations_dropdown_util(station_codes: List[str]) -> Tuple[List[Dict], str]:
-    """Populate the station dropdown with the available station codes, based on
-    permissions and data availability.
+def get_station_options(station_codes: List[str]) -> Tuple[List[Dict], str]:
+    """Get valid station options and default value based on permissions and data
+    availability.
 
     Args:
         station_codes (list[str]): List of station codes based on permissions
@@ -109,17 +109,17 @@ def populate_stations_dropdown_util(station_codes: List[str]) -> Tuple[List[Dict
     return station_options, station_value
 
 
-def populate_variable_dropdown_util(chosen_station: str) -> Tuple[List[Dict], str]:
-    """Update the variable dropdown based on the chosen station.
+def get_variable_options(station: str) -> Tuple[List[Dict], str]:
+    """Get valid variable options and default value based on the chosen station.
 
     Args:
-        chosen_station (str): Code for the chosen station
+        station (str): Code for the chosen station
 
     Returns:
         tuple[list[dict], str]: Options for the variable dropdown, default value
     """
     variable_dicts = (
-        Measurement.objects.filter(station__station_code=chosen_station)
+        Measurement.objects.filter(station__station_code=station)
         .values("variable__name", "variable__variable_code")
         .distinct()
     )
@@ -135,19 +135,19 @@ def populate_variable_dropdown_util(chosen_station: str) -> Tuple[List[Dict], st
     return variable_options, variable_value
 
 
-def set_date_range_util(chosen_station: str, chosen_variable: str) -> Tuple[str, str]:
-    """Set the default date range based on the chosen station and variable.
+def get_date_range(station: str, variable: str) -> Tuple[str, str]:
+    """Get the date range covered by a chosen station and variable.
 
     Args:
-        chosen_station (str): Code for the chosen station
-        chosen_variable (str): Code for the chosen variable
+        station (str): Code for the chosen station
+        variable (str): Code for the chosen variable
 
     Returns:
         tuple[str, str]: Start date, end date
     """
     filter_vals = Measurement.objects.filter(
-        station__station_code=chosen_station,
-        variable__variable_code=chosen_variable,
+        station__station_code=station,
+        variable__variable_code=variable,
     ).aggregate(
         first_date=Min("time"),
         last_date=Max("time"),
@@ -167,21 +167,21 @@ def set_date_range_util(chosen_station: str, chosen_variable: str) -> Tuple[str,
     return first_date, last_date
 
 
-def set_min_max_util(
-    chosen_station, chosen_variable
+def get_min_max(
+    station, variable
 ) -> tuple[Decimal, Decimal,]:
-    """Set the min and max based on the chosen station and variable.
+    """Get the min and max of the data for a chosen station and variable.
 
     Args:
-        chosen_station (str): Code for the chosen station
-        chosen_variable (str): Code for the chosen variable
+        station (str): Code for the chosen station
+        variable (str): Code for the chosen variable
 
     Returns:
         tuple[Decimal, Decimal]: Min value, max value
     """
     filter_vals = Measurement.objects.filter(
-        station__station_code=chosen_station,
-        variable__variable_code=chosen_variable,
+        station__station_code=station,
+        variable__variable_code=variable,
     ).aggregate(
         min_value=Min("minimum"),
         max_value=Max("maximum"),
