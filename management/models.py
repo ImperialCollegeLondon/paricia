@@ -26,13 +26,13 @@ class PermissionsBase(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
-    PERMISSIONS_LEVELS = [
+    VISIBILITY_LEVELS = [
         ("public", "Public"),
         ("private", "Private"),
     ]
 
-    permissions_level = models.CharField(
-        max_length=8, choices=PERMISSIONS_LEVELS, default="private"
+    visibility = models.CharField(
+        max_length=8, choices=VISIBILITY_LEVELS, default="private"
     )
 
     def set_object_permissions(self):
@@ -43,12 +43,12 @@ class PermissionsBase(models.Model):
         anonymous_user = get_anonymous_user()
 
         # View permissions based on permissions level
-        if self.permissions_level in ["public", "internal"]:
+        if self.visibility in ["public", "internal"]:
             assign_perm(view, standard_group, self)
             assign_perm(view, anonymous_user, self)
             if self.owner:
                 remove_perm(view, self.owner, self)
-        elif self.permissions_level == "private" and self.owner:
+        elif self.visibility == "private" and self.owner:
             remove_perm(view, standard_group, self)
             remove_perm(view, anonymous_user, self)
             if self.owner:

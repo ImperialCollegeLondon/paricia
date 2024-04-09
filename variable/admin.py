@@ -11,7 +11,7 @@ admin.site.site_header = "Paricia Administration - Variables"
 class SensorTypeAdmin(PermissionsBaseAdmin):
     """Admin class for the Unit model."""
 
-    list_display = ["unit_id", "name", "owner", "permissions_level"]
+    list_display = ["unit_id", "name", "owner", "visibility"]
 
 
 @admin.register(Variable)
@@ -33,7 +33,7 @@ class VariableAdmin(PermissionsBaseAdmin):
         "null_limit",
         "nature",
         "owner",
-        "permissions_level",
+        "visibility",
     ]
 
 
@@ -50,7 +50,7 @@ class SensorInstallationAdmin(PermissionsBaseAdmin):
         "end_date",
         "state",
         "owner",
-        "permissions_level",
+        "visibility",
     ]
     list_filter = ["variable", "station", "sensor"]
     foreign_key_fields = ["variable", "station", "sensor"]
