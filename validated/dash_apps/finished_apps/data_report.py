@@ -1,61 +1,66 @@
 import dash_bootstrap_components as dbc
-import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
 
 from measurement.reporting import get_report_data_from_db
 from validated.filters import get_date_range, get_station_options, get_variable_options
+from validated.plots import create_empty_plot, create_report_plot
 from variable.models import Variable
 
 # Create a Dash app
 app = DjangoDash(
     "DataReport",
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_stylesheets=[dbc.themes.BOOTSTRAP, "/static/styles/dashstyle.css"],
 )
 
-
-def plot_graph(
-    temporality: str,
-    station: str,
-    variable: str,
-    start_time: str,
-    end_time: str,
-):
-    # Load data
-    try:
-        data: pd.DataFrame = get_report_data_from_db(
-            station=station,
-            variable=variable,
-            start_time=start_time,
-            end_time=end_time,
-            report_type=temporality,
-        )
-
-        variable_obj = Variable.objects.get(variable_code=variable)
-
-        # Create plot
-        plot = px.line(
-            data,
-            x="time",
-            y=["value", "minimum", "maximum"],
-            title=f"{station} - {variable_obj.name}",
-        )
-
-    except Exception as e:
-        print("Error:", e)
-        plot = px.line(title="Data not found")
-
-    plot.update_layout(
-        yaxis_title="",
-        xaxis_title="",
-    )
-
-    return plot
-
-
-plot = px.scatter()
-
+filters = html.Div(
+    style={"width": "286px"},
+    children=[
+        html.Label("Temporality:", style={"font-weight": "bold"}),
+        dcc.Dropdown(
+            id="temporality_drop",
+            options=[
+                {"label": "Raw measurement", "value": "measurement"},
+                {
+                    "label": "Validated measurement",
+                    "value": "validated",
+                },
+                {"label": "Hourly", "value": "hourly"},
+                {"label": "Daily", "value": "daily"},
+                {"label": "Monthly", "value": "monthly"},
+            ],
+            value="measurement",
+        ),
+        html.Br(),
+        html.Label("Station:", style={"font-weight": "bold"}),
+        dcc.Dropdown(
+            id="station_drop",
+            options=[],
+            value=None,
+        ),
+        html.Br(),
+        html.Label("Variable:", style={"font-weight": "bold"}),
+        dcc.Dropdown(
+            id="variable_drop",
+            options=[],
+            value=None,
+        ),
+        html.Br(),
+        html.Label("Date Range:", style={"font-weight": "bold"}),
+        dcc.DatePickerRange(
+            id="date_range_picker",
+            display_format="YYYY-MM-DD",
+            start_date=None,
+            end_date=None,
+        ),
+        html.Br(),
+        html.Div(
+            id="csv_div",
+            style={"margin-top": "30px"},
+        ),
+    ],
+)
 
 # Create layout
 app.layout = html.Div(
@@ -73,56 +78,13 @@ app.layout = html.Div(
         html.Div(
             style={"display": "flex", "justify-content": "space-around"},
             children=[
-                html.Div(
-                    style={"width": "35%"},
-                    children=[
-                        html.H2("Data Report"),
-                        html.H3("Temporality"),
-                        dcc.Dropdown(
-                            id="temporality_drop",
-                            options=[
-                                {"label": "Raw measurement", "value": "measurement"},
-                                {
-                                    "label": "Validated measurement",
-                                    "value": "validated",
-                                },
-                                {"label": "Hourly", "value": "hourly"},
-                                {"label": "Daily", "value": "daily"},
-                                {"label": "Monthly", "value": "monthly"},
-                            ],
-                            value="measurement",
-                        ),
-                        html.H3("Station"),
-                        dcc.Dropdown(
-                            id="station_drop",
-                            options=[],
-                            value=None,
-                        ),
-                        html.H3("Variable"),
-                        dcc.Dropdown(
-                            id="variable_drop",
-                            options=[],
-                            value=None,
-                        ),
-                        html.H3("Start date - End date"),
-                        dcc.DatePickerRange(
-                            id="date_range_picker",
-                            display_format="YYYY-MM-DD",
-                            start_date=None,
-                            end_date=None,
-                        ),
-                        html.Div(
-                            id="csv_div",
-                            style={"padding": "10px"},
-                        ),
-                    ],
-                ),
+                filters,
                 html.Div(
                     style={"width": "65%"},
                     children=[
                         dcc.Graph(
                             id="data_report_graph",
-                            figure=plot,
+                            figure=create_empty_plot(),
                         ),
                     ],
                 ),
@@ -149,13 +111,23 @@ def update_graph(
     start_time: str,
     end_time: str,
 ) -> px.line:
-    plot = plot_graph(
-        temporality,
-        station,
-        variable,
-        start_time,
-        end_time,
-    )
+    try:
+        data = get_report_data_from_db(
+            station=station,
+            variable=variable,
+            start_time=start_time,
+            end_time=end_time,
+            report_type=temporality,
+        )
+        plot = create_report_plot(
+            data=data,
+            variable_name=Variable.objects.get(variable_code=variable).name,
+            station_code=station,
+        )
+
+    except Exception as e:
+        print("Error:", e)
+        plot = create_empty_plot()
 
     return plot
 
@@ -173,6 +145,7 @@ def update_graph(
         State("date_range_picker", "start_date"),
         State("date_range_picker", "end_date"),
     ],
+    prevent_initial_call=True,
 )
 def download_csv_report(
     n_clicks: int,
