@@ -7,9 +7,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
+from django.db.models import Max, Min
 from django_plotly_dash import DjangoDash
 
-from measurement.models import Measurement, Station, Variable
+from measurement.models import Measurement
 from measurement.validation import (
     generate_validation_report,
     reset_validated_days,
@@ -27,25 +28,18 @@ app = DjangoDash(
 )
 
 # Initial filters
-STATION: str = "CAR_02_HC_01"
-VARIABLE: str = "airtemperature"
-START_DATE: str = "2023-03-01"
-END_DATE: str = "2023-03-31"
-MINIMUM: Decimal = Decimal(-5)
-MAXIMUM: Decimal = Decimal(28)
-SELECTED_DAY: date = date(2023, 3, 14)
+STATION: str = None
+VARIABLE: str = None
+START_DATE: str = None
+END_DATE: str = None
+MINIMUM: Decimal = None
+MAXIMUM: Decimal = None
+SELECTED_DAY: date = None
 PLOT_FIELD = "value"
 
-# Load initial data
-DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
-    station=STATION,
-    variable=VARIABLE,
-    start_time=START_DATE,
-    end_time=END_DATE,
-    minimum=MINIMUM,
-    maximum=MAXIMUM,
-    include_validated=True,
-)
+# Initial data (empty)
+DATA_SUMMARY: pd.DataFrame = None
+DATA_GRANULAR: pd.DataFrame = None
 
 # Filters
 filters = html.Div(
@@ -55,10 +49,7 @@ filters = html.Div(
                 html.Label("Station:", style={"display": "block"}),
                 dcc.Dropdown(
                     id="station_drop",
-                    options=[
-                        {"label": item.station_code, "value": item.station_code}
-                        for item in Station.objects.order_by("station_code")
-                    ],
+                    options=[],
                     value=STATION,
                 ),
             ],
@@ -69,10 +60,7 @@ filters = html.Div(
                 html.Label("Variable:", style={"display": "block"}),
                 dcc.Dropdown(
                     id="variable_drop",
-                    options=[
-                        {"label": item.name, "value": item.variable_code}
-                        for item in Variable.objects.order_by("variable_code")
-                    ],
+                    options=[],
                     value=VARIABLE,
                 ),
             ],
@@ -139,9 +127,7 @@ table_daily = AgGrid(
 
 table_detail = AgGrid(
     id="table_detail",
-    rowData=DATA_GRANULAR[DATA_GRANULAR.time.dt.date == SELECTED_DAY].to_dict(
-        "records"
-    ),
+    rowData=[],
     columnDefs=create_columns_detail(),
     columnSize="sizeToFit",
     defaultColDef={
@@ -178,8 +164,8 @@ detail_date_picker = html.Div(
         dcc.DatePickerSingle(
             id="detail-date-picker",
             display_format="YYYY-MM-DD",
-            min_date_allowed=DATA_SUMMARY["date"].iloc[0].date(),
-            max_date_allowed=DATA_SUMMARY["date"].iloc[-1].date(),
+            min_date_allowed=None,
+            max_date_allowed=None,
         ),
     ],
     style={
@@ -557,24 +543,50 @@ def callbacks(
 
 
 @app.callback(
-    Output("station_drop", "options"),
-    [Input("stations_list", "children"), Input("variable_drop", "value")],
+    [Output("station_drop", "options"), Output("station_drop", "value")],
+    Input("stations_list", "children"),
 )
-def populate_stations_dropdown(station_codes, selected_variable):
-    stations_for_variable = (
-        Measurement.objects.filter(variable__variable_code=selected_variable)
-        .values_list("station__station_code", flat=True)
-        .distinct()
-    )
-    return [
+def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
+    """Populate the station dropdown with the available station codes, based on
+    permissions and data availability.
+
+    This will run once when the app is initialized.
+
+    Args:
+        station_codes (list[str]): List of station codes based on permissions
+
+    Returns:
+        tuple[list[dict], str]: Options for the station dropdown, default value
+    """
+    stations_with_measurements = Measurement.objects.values_list(
+        "station__station_code", flat=True
+    ).distinct()
+
+    station_options = [
         {"label": station_code, "value": station_code}
-        for station_code in stations_for_variable
-        if station_code in station_codes
+        for station_code in station_codes
+        if station_code in stations_with_measurements
     ]
+    station_value = station_options[0]["value"] if station_options else None
+    return station_options, station_value
 
 
-@app.callback(Output("variable_drop", "options"), Input("station_drop", "value"))
-def variable_dropdown(chosen_station):
+@app.callback(
+    [Output("variable_drop", "options"), Output("variable_drop", "value")],
+    Input("station_drop", "value"),
+)
+def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
+    """Update the variable dropdown based on the chosen station.
+
+    This will run whenever a new station is chosen.
+
+    Args:
+        chosen_station (str): Code for the chosen station
+
+    Returns:
+        tuple[list[dict], str]: Options for the variable dropdown, default value
+    """
+
     # Filter measurements based on the chosen station
     variable_dicts = (
         Measurement.objects.filter(station__station_code=chosen_station)
@@ -583,10 +595,91 @@ def variable_dropdown(chosen_station):
     )
 
     # Create a list of dictionaries for the dropdown
-    return [
+    variable_options = [
         {
             "label": variable["variable__name"],
             "value": variable["variable__variable_code"],
         }
         for variable in variable_dicts
     ]
+    variable_value = variable_options[0]["value"] if variable_options else None
+    return variable_options, variable_value
+
+
+@app.callback(
+    [
+        Output("date_range_picker", "start_date"),
+        Output("date_range_picker", "end_date"),
+        Output("minimum_input", "value"),
+        Output("maximum_input", "value"),
+    ],
+    [
+        Input("station_drop", "value"),
+        Input("variable_drop", "value"),
+    ],
+)
+def set_date_range_min_max(
+    chosen_station, chosen_variable
+) -> tuple[str, str, Decimal, Decimal,]:
+    """Set the default date range and min/max based on the chosen station and
+    variable.
+
+    This will run whenever a new station and/or variable is chosen.
+
+    Args:
+        chosen_station (str): Code for the chosen station
+        chosen_variable (str): Code for the chosen variable
+
+    Returns:
+        tuple[str, str, Decimal, Decimal]: Start date, end date, min value, max value
+    """
+    filter_vals = Measurement.objects.filter(
+        station__station_code=chosen_station,
+        variable__variable_code=chosen_variable,
+    ).aggregate(
+        first_date=Min("time"),
+        last_date=Max("time"),
+        min_value=Min("minimum"),
+        max_value=Max("maximum"),
+    )
+
+    first_date = (
+        filter_vals["first_date"].strftime("%Y-%m-%d")
+        if filter_vals["first_date"]
+        else None
+    )
+    last_date = (
+        filter_vals["last_date"].strftime("%Y-%m-%d")
+        if filter_vals["last_date"]
+        else None
+    )
+    min_value = filter_vals["min_value"] if filter_vals["min_value"] else None
+    max_value = filter_vals["max_value"] if filter_vals["max_value"] else None
+
+    return first_date, last_date, min_value, max_value
+
+
+@app.callback(
+    Output("detail-date-picker", "min_date_allowed"),
+    Output("detail-date-picker", "max_date_allowed"),
+    Input("table_daily", "rowData"),
+    prevent_initial_call=True,
+)
+def set_detail_date_range(daily_row_data) -> tuple[str, str]:
+    """Set the min and max date for the detail date picker based on the daily data.
+
+    This will run whenever the data is updated.
+
+    Args:
+        daily_row_data (list[dict]): Data for the daily table
+
+    Returns:
+        tuple[str, str]: Min date, max date
+    """
+    if daily_row_data:
+        min_date = min(daily_row_data, key=lambda x: x["date"])["date"]
+        max_date = max(daily_row_data, key=lambda x: x["date"])["date"]
+    else:
+        min_date = None
+        max_date = None
+    return min_date, max_date
