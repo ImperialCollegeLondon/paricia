@@ -49,7 +49,7 @@ def update_map(stations) -> px.line:
 
     stations_filtered = [{key: obj[key] for key in keys} for obj in station_objs]
 
-    df = pd.DataFrame(stations_filtered)
+    df = pd.DataFrame(stations_filtered, columns=keys)
     plot = px.scatter_mapbox(
         df,
         lat="station_latitude",

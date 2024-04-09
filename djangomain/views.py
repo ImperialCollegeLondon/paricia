@@ -16,9 +16,7 @@ class HomePageView(TemplateView):
     def get(self, request, *args, **kwargs):
         from .dash_apps.finished_apps import stations_map
 
-        stations = get_objects_for_user(
-            request.user, "view_measurements", klass=Station
-        )
+        stations = get_objects_for_user(request.user, "view_station", klass=Station)
         station_codes = list(stations.values_list("station_code", flat=True))
         context = {"django_context": {"stations_list": {"children": station_codes}}}
         return render(request, "home.html", context)
