@@ -15,70 +15,16 @@
 
     <ul class="nav navbar-nav pull-left">
 
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDataMenuLink" data-toggle="dropdown" aria-haspopup="true"
-          aria-expanded="false">
-          Data<span class="caret"></span></a>
-        <ul class="dropdown-menu" aria-labelledby="navbarStationMenuLink">
-          <li><a class="dropdown-item" href="/validated/daily_validation">Validation</a></li>
-          <li><a class="dropdown-item" href="/validated/data_report">Reports</a></li>
-        </ul>
+      <!-- Everyone can see the reports page (what data they see, depends on permissions) -->
+      <li class="nav-item">
+        <a class="dropdown-item" href="/validated/data_report">Reports</a>
       </li>
 
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarStationMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Station<span class="caret"></span></a>
-        <ul class="dropdown-menu" aria-labelledby="navbarStationMenuLink">
-          <li><a class="dropdown-item" href="/station/country">Country</a></li>
-          <li><a class="dropdown-item" href="/station/region">Region</a></li>
-          <li><a class="dropdown-item" href="/station/ecosystem">Ecosystem</a></li>
-          <li><a class="dropdown-item" href="/station/institution">Institution</a></li>
-          <li><a class="dropdown-item" href="/station/stationtype">Station Type</a></li>
-          <li><a class="dropdown-item" href="/station/place">Place</a></li>
-          <li><a class="dropdown-item" href="/station/basin">Basin</a></li>
-          <li><a class="dropdown-item" href="/station/placebasin">Place Basin</a></li>
-          <li><a class="dropdown-item" href="/station/station">Station</a></li>
-          <li><a class="dropdown-item" href="/station/delta_t">Delta T (Station)</a></li>
-        </ul>
-      </li>
-
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarVariableMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Variable<span class="caret"></span></a>
-        <ul class="dropdown-menu" aria-labelledby="navbarVariableMenuLink">
-          <li><a class="dropdown-item" href="/variable/unit">Unit</a></li>
-          <li><a class="dropdown-item" href="/variable/variable">Variable</a></li>
-          <li><a class="dropdown-item" href="/variable/sensorinstallation">Sensor Installation</a></li>
-          <!--                <li><a class="dropdown-item" href="/variable/variable/limits">Variable Limits</a></li>-->
-        </ul>
-      </li>
-
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarSensorMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Sensor<span class="caret"></span></a>
-        <ul class="dropdown-menu" aria-labelledby="navbarSensorMenuLink">
-          <li><a class="dropdown-item" href="/sensor/sensortype">Sensor Type</a></li>
-          <li><a class="dropdown-item" href="/sensor/sensorbrand">Sensor Brand</a></li>
-          <li><a class="dropdown-item" href="/sensor/sensor">Sensor</a></li>
-        </ul>
-      </li>
-
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarFormattingMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Formatting<span class="caret"></span></a>
-        <ul class="dropdown-menu" aria-labelledby="navbarFormattingMenuLink">
-          <li><a class="dropdown-item" href="/formatting/extension">Extension</a></li>
-          <li><a class="dropdown-item" href="/formatting/delimiter">Delimiter</a></li>
-          <li><a class="dropdown-item" href="/formatting/date">Date</a></li>
-          <li><a class="dropdown-item" href="/formatting/time">Time</a></li>
-          <li><a class="dropdown-item" href="/formatting/format">Format</a></li>
-          <li><a class="dropdown-item" href="/formatting/classification">Classification</a></li>
-          <li><a class="dropdown-item" href="/formatting/association">Association</a></li>
-        </ul>
+      <!-- If the user is authenticated, they can access the validation page -->
+      <!-- As well as importing data functionality and the (remaining API) -->
+      {% if user.is_authenticated %}
+      <li class="nav-item">
+        <a class="dropdown-item" href="/validated/daily_validation">Validation</a>
       </li>
 
       <li class="nav-item dropdown">
@@ -92,15 +38,6 @@
       </li>
 
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarManagementMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Management<span class="caret"></span></a>
-        <ul class="dropdown-menu" aria-labelledby="navbarManagementMenuLink">
-          <li><a class="dropdown-item" href="/management/register">Register</a></li>
-        </ul>
-      </li>
-
-      <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarMeasurementMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           API<span class="caret"></span></a>
@@ -109,6 +46,8 @@
           <li><a class="dropdown-item" href="api/measurement/report">Reports</a></li>
         </ul>
       </li>
+      {% endif %}
+
     </ul>
 
     <!-- A separate menu for the user to log in or log out -->
@@ -139,10 +78,17 @@
         </ul>
       </li>
 
-      <!-- Otherwise we just show the login button -->
+
       {% else %}
-      <li class="nav-item">
-        <a class="nav-link" href="/api-auth/login">Login</a>
+      <!-- Otherwise we just show options to register and login -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarManagementMenuLink" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Login/Register<span class="caret"></span></a>
+        <ul class="dropdown-menu" aria-labelledby="navbarManagementMenuLink">
+          <li><a class="dropdown-item" href="/management/register">Register</a></li>
+          <li><a class="nav-link" href="/api-auth/login">Login</a></li>
+        </ul>
       </li>
       {% endif %}
 
