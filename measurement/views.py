@@ -33,9 +33,9 @@ class MeasurementList(generics.ListAPIView):
         """Custom queryset to filter the results."""
         params = self.request.query_params
         options = {}
-        if params.get("station"):
+        if params.get("station_id"):
             options["station__station_id"] = params.get("station_id")
-        if params.get("variable"):
+        if params.get("variable_id"):
             options["variable__variable_id"] = params.get("variable_id")
         if params.get("start_time"):
             options["time__gte"] = params.get("start_time")
@@ -68,9 +68,9 @@ class ReportList(generics.ListAPIView):
         """Custom queryset to filter the results."""
         params = self.request.query_params
         options = {}
-        if params.get("station"):
+        if params.get("station_id"):
             options["station__station_id"] = params.get("station_id")
-        if params.get("variable"):
+        if params.get("variable_id"):
             options["variable__variable_id"] = params.get("variable_id")
         if params.get("report_type"):
             options["report_type"] = params.get("report_type")
