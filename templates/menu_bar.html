@@ -17,14 +17,14 @@
 
       <!-- Everyone can see the reports page (what data they see, depends on permissions) -->
       <li class="nav-item">
-        <a class="dropdown-item" href="/validated/data_report">Reports</a>
+        <a class="dropdown-item" href="/measurement/data_report">Reports</a>
       </li>
 
       <!-- If the user is authenticated, they can access the validation page -->
       <!-- As well as importing data functionality and the (remaining API) -->
       {% if user.is_authenticated %}
       <li class="nav-item">
-        <a class="dropdown-item" href="/validated/daily_validation">Validation</a>
+        <a class="dropdown-item" href="/measurement/daily_validation">Validation</a>
       </li>
 
       <li class="nav-item dropdown">
@@ -32,8 +32,8 @@
           aria-haspopup="true" aria-expanded="false">
           Importing<span class="caret"></span></a>
         <ul class="dropdown-menu" aria-labelledby="navbarImportingMenuLink">
-          <li><a class="dropdown-item" href="/api/importing/data_import_temp">Data import (Temporal)</a></li>
-          <li><a class="dropdown-item" href="/api/importing/data_import_full">Data import (Full)</a></li>
+          <li><a class="dropdown-item" href="/importing/data_import_temp">Data import (Temporal)</a></li>
+          <li><a class="dropdown-item" href="/importing/data_import_full">Data import (Full)</a></li>
         </ul>
       </li>
 
@@ -42,8 +42,8 @@
           aria-haspopup="true" aria-expanded="false">
           API<span class="caret"></span></a>
         <ul class="dropdown-menu" aria-labelledby="navbarMeasurementMenuLink">
-          <li><a class="dropdown-item" href="/api/measurement/measurement">Measurements</a></li>
-          <li><a class="dropdown-item" href="/api/measurement/report">Reports</a></li>
+          <li><a class="dropdown-item" href="/measurement/measurement">Measurements</a></li>
+          <li><a class="dropdown-item" href="/measurement/report">Reports</a></li>
         </ul>
       </li>
       {% endif %}

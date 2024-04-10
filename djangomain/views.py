@@ -14,7 +14,7 @@ class HomePageView(TemplateView):
     """
 
     def get(self, request, *args, **kwargs):
-        from .dash_apps.finished_apps import stations_map
+        from .dash_apps import stations_map  # noqa: F401
 
         stations = get_objects_for_user(request.user, "view_station", klass=Station)
         station_codes = list(stations.values_list("station_code", flat=True))

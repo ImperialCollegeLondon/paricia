@@ -9,22 +9,23 @@ from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
 
-from measurement.validation import (
+from variable.models import Variable
+
+from ..filters import (
+    get_date_range,
+    get_min_max,
+    get_station_options,
+    get_variable_options,
+)
+from ..validation import (
     generate_validation_report,
     reset_validated_days,
     reset_validated_entries,
     save_validated_days,
     save_validated_entries,
 )
-from validated.filters import (
-    get_date_range,
-    get_min_max,
-    get_station_options,
-    get_variable_options,
-)
-from validated.plots import create_empty_plot, create_validation_plot
-from validated.tables import create_columns_daily, create_columns_detail
-from variable.models import Variable
+from .plots import create_empty_plot, create_validation_plot
+from .tables import create_columns_daily, create_columns_detail
 
 app = DjangoDash(
     "DailyValidation",
