@@ -11,10 +11,15 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
+from django.shortcuts import render
+from django.views import View
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 from rest_framework import generics
 
 import measurement.models as meas
 import measurement.serializers as serializers
+from station.models import Station
 
 
 class MeasurementList(generics.ListAPIView):
@@ -83,3 +88,33 @@ class ReportList(generics.ListAPIView):
             return self.model.objects.none()
 
         return self.model.objects.filter(**options)
+
+
+class DailyValidation(LoginRequiredMixin, View):
+    """
+    View for displaying the Daily Validation dash app.
+    """
+
+    def get(self, request, *args, **kwargs):
+        from .dash_apps import daily_validation  # noqa
+
+        stations = get_objects_for_user(request.user, "change_station", klass=Station)
+        station_codes = list(stations.values_list("station_code", flat=True))
+        context = {"django_context": {"stations_list": {"children": station_codes}}}
+        return render(request, "daily_validation.html", context)
+
+
+class DataReport(View):
+    """
+    View for displaying the Data Report dash app.
+    """
+
+    def get(self, request, *args, **kwargs):
+        from .dash_apps import data_report  # noqa
+
+        stations = get_objects_for_user(
+            request.user, "view_measurements", klass=Station
+        )
+        station_codes = list(stations.values_list("station_code", flat=True))
+        context = {"django_context": {"stations_list": {"children": station_codes}}}
+        return render(request, "data_report.html", context)

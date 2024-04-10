@@ -1,6 +1,6 @@
 """
-Functions defining columns and style conditions for tables in the validation app
-  
+Functions defining columns and style conditions for tables in the measurement app
+
 """
 
 
