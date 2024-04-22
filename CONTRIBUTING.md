@@ -20,4 +20,4 @@ You can submit an issue by completing the appropriate fields on the [issue](http
 - `Add a description`: Add more details about the issue in this field.
 - Set appropriate `Labels` for the issue.
 - If you would be working on the issue, then click on `assign yourself` in the `Assignees` section, else assign it to the appropriate person. If you are a new contributor to the repository or are not sure whom to assign, then skip this step.
-- Finally click on `Sunmit new issue`.
+- Finally click on `Submit new issue`.
