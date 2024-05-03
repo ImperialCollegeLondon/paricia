@@ -31,7 +31,7 @@ The following is a set of guidelines for contributing to Paricia, a Python-based
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by the [Paricia Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [the repository Administrator](mailto:).
+This project and everyone participating in it is governed by the [Paricia Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [the repository Administrator](https://www.imperial.ac.uk/people/w.buytaert).
 
 ## How Can I Contribute?
 
