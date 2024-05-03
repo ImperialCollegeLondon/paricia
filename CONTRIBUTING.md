@@ -65,7 +65,6 @@ Include details about your configuration and environment:
 - **Which version of Paricia are you using?**
 - **What's the name and version of the OS you're using**?
 - **Are you running Paricia in a virtual machine?** If so, which VM software are you using and which operating systems and versions are used for the host and the guest?
-- **If the problem is related with the Poisson-drift-diffusion solver**, which compiler did you use? What were the installation steps you followed?
 
 ### Suggesting Enhancements
 
