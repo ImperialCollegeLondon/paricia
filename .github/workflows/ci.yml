@@ -71,3 +71,21 @@ jobs:
         context: .
         push: true
         tags: ${{ steps.meta.outputs.tags }}
+
+  docs:
+    needs: test
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+          cache: "pip"
+          cache-dependency-path: "requirements*.txt"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-doc.txt
+      - name: Deploy Docs
+        run: mkdocs gh-deploy --force

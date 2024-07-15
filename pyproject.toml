@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = [
+    "htmlcov",
+] # Exclude the coverage report file from setuptools package finder
+
+[project]
+name = "Paricia"
+version = "0.1.0"
+authors = [
+    { name = "Imperial College London RSE Team", email = "ict-rse-team@imperial.ac.uk" },
+]
+requires-python = ">=3.11"
