@@ -1,37 +1,37 @@
 [
-{
-  "model": "station.stationtype",
-  "pk": 1,
-  "fields": {
-    "name": "Pluviom\u00e9trica"
-  }
-},
-{
-  "model": "station.stationtype",
-  "pk": 2,
-  "fields": {
-    "name": "Climatol\u00f3gica"
-  }
-},
-{
-  "model": "station.stationtype",
-  "pk": 3,
-  "fields": {
-    "name": "Hidrom\u00e9trica"
-  }
-},
-{
-  "model": "station.stationtype",
-  "pk": 4,
-  "fields": {
-    "name": "Aforo"
-  }
-},
-{
-  "model": "station.stationtype",
-  "pk": 5,
-  "fields": {
-    "name": "Calidad de agua"
-  }
-}
+    {
+        "model": "station.stationtype",
+        "pk": 1,
+        "fields": {
+            "name": "Pluviom\u00e9trica"
+        }
+    },
+    {
+        "model": "station.stationtype",
+        "pk": 2,
+        "fields": {
+            "name": "Climatol\u00f3gica"
+        }
+    },
+    {
+        "model": "station.stationtype",
+        "pk": 3,
+        "fields": {
+            "name": "Hidrom\u00e9trica"
+        }
+    },
+    {
+        "model": "station.stationtype",
+        "pk": 4,
+        "fields": {
+            "name": "Aforo"
+        }
+    },
+    {
+        "model": "station.stationtype",
+        "pk": 5,
+        "fields": {
+            "name": "Calidad de agua"
+        }
+    }
 ]

@@ -1,146 +1,146 @@
 [
-{
-  "model": "station.place",
-  "pk": 2,
-  "fields": {
-    "name": "Huamantanga",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 3,
-  "fields": {
-    "name": "Lloa",
-    "image": "station/sitio_image/lloa.jpg"
-  }
-},
-{
-  "model": "station.place",
-  "pk": 5,
-  "fields": {
-    "name": "Alto Pita",
-    "image": "station/sitio_image/ATP_01_PT_02.JPG"
-  }
-},
-{
-  "model": "station.place",
-  "pk": 6,
-  "fields": {
-    "name": "Atacazo",
-    "image": "station/sitio_image/Cuenca_Carachas.JPG"
-  }
-},
-{
-  "model": "station.place",
-  "pk": 7,
-  "fields": {
-    "name": "Piura",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 8,
-  "fields": {
-    "name": "Chachapoyas",
-    "image": "station/sitio_image/Ecosistema-Chachapoyas-Cerco_Urco.JPG"
-  }
-},
-{
-  "model": "station.place",
-  "pk": 9,
-  "fields": {
-    "name": "Jatunhuaycu",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 10,
-  "fields": {
-    "name": "Huaraz",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 11,
-  "fields": {
-    "name": "Tarapoto",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 12,
-  "fields": {
-    "name": "Huancayo",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 13,
-  "fields": {
-    "name": "Ayacucho",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 14,
-  "fields": {
-    "name": "Rontoccocha",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 15,
-  "fields": {
-    "name": "Ica",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 16,
-  "fields": {
-    "name": "Tambobamba",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 17,
-  "fields": {
-    "name": "Tiquipaya",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 18,
-  "fields": {
-    "name": "Vilcanota",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 19,
-  "fields": {
-    "name": "Boyac\u00e1",
-    "image": ""
-  }
-},
-{
-  "model": "station.place",
-  "pk": 21,
-  "fields": {
-    "name": "Paute",
-    "image": ""
-  }
-}
+    {
+        "model": "station.place",
+        "pk": 2,
+        "fields": {
+            "name": "Huamantanga",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 3,
+        "fields": {
+            "name": "Lloa",
+            "image": "station/sitio_image/lloa.jpg"
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 5,
+        "fields": {
+            "name": "Alto Pita",
+            "image": "station/sitio_image/ATP_01_PT_02.JPG"
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 6,
+        "fields": {
+            "name": "Atacazo",
+            "image": "station/sitio_image/Cuenca_Carachas.JPG"
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 7,
+        "fields": {
+            "name": "Piura",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 8,
+        "fields": {
+            "name": "Chachapoyas",
+            "image": "station/sitio_image/Ecosistema-Chachapoyas-Cerco_Urco.JPG"
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 9,
+        "fields": {
+            "name": "Jatunhuaycu",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 10,
+        "fields": {
+            "name": "Huaraz",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 11,
+        "fields": {
+            "name": "Tarapoto",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 12,
+        "fields": {
+            "name": "Huancayo",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 13,
+        "fields": {
+            "name": "Ayacucho",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 14,
+        "fields": {
+            "name": "Rontoccocha",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 15,
+        "fields": {
+            "name": "Ica",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 16,
+        "fields": {
+            "name": "Tambobamba",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 17,
+        "fields": {
+            "name": "Tiquipaya",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 18,
+        "fields": {
+            "name": "Vilcanota",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 19,
+        "fields": {
+            "name": "Boyac\u00e1",
+            "image": ""
+        }
+    },
+    {
+        "model": "station.place",
+        "pk": 21,
+        "fields": {
+            "name": "Paute",
+            "image": ""
+        }
+    }
 ]

@@ -1,178 +1,178 @@
 [
-{
-  "model": "variable.unit",
-  "pk": 1,
-  "fields": {
-    "name": "Kil\u00f3metros por Hora",
-    "initials": "km/h"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 2,
-  "fields": {
-    "name": "Grados",
-    "initials": "\u00b0"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 3,
-  "fields": {
-    "name": "Porcentaje",
-    "initials": "%"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 4,
-  "fields": {
-    "name": "Cent\u00edmetros",
-    "initials": "cm"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 5,
-  "fields": {
-    "name": "Hecto Pascales",
-    "initials": "hPa"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 6,
-  "fields": {
-    "name": "Mil\u00edmetros",
-    "initials": "mm"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 7,
-  "fields": {
-    "name": "KiloWatts por m2",
-    "initials": "kW/m2"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 8,
-  "fields": {
-    "name": "Grados Cent\u00edgrados",
-    "initials": "\u00b0C"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 9,
-  "fields": {
-    "name": "Metros por Segundo",
-    "initials": "m/s"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 10,
-  "fields": {
-    "name": "Metros",
-    "initials": "m"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 11,
-  "fields": {
-    "name": "Mega Jouls por m2",
-    "initials": "MJ/m2"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 12,
-  "fields": {
-    "name": "Voltios",
-    "initials": "V"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 13,
-  "fields": {
-    "name": "Watts por m2",
-    "initials": "W/m2"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 14,
-  "fields": {
-    "name": "Metros C\u00fabicos por Segundo",
-    "initials": "m3/s"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 15,
-  "fields": {
-    "name": "Mil\u00edmetros por Hora",
-    "initials": "mm/h"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 16,
-  "fields": {
-    "name": "Potencial Hidr\u00f3geno",
-    "initials": "pH"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 17,
-  "fields": {
-    "name": "mili Voltio",
-    "initials": "mV"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 18,
-  "fields": {
-    "name": "Nephelometric Turbidity Unit",
-    "initials": "NTU"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 19,
-  "fields": {
-    "name": "microgramo por Litro",
-    "initials": "ug/L"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 20,
-  "fields": {
-    "name": "miligramo por Litro",
-    "initials": "mg/L"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 21,
-  "fields": {
-    "name": "parts-per-billion 10^-9",
-    "initials": "ppb"
-  }
-},
-{
-  "model": "variable.unit",
-  "pk": 22,
-  "fields": {
-    "name": "Litros por segundo",
-    "initials": "L/s"
-  }
-}
+    {
+        "model": "variable.unit",
+        "pk": 1,
+        "fields": {
+            "name": "Kil\u00f3metros por Hora",
+            "initials": "km/h"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 2,
+        "fields": {
+            "name": "Grados",
+            "initials": "\u00b0"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 3,
+        "fields": {
+            "name": "Porcentaje",
+            "initials": "%"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 4,
+        "fields": {
+            "name": "Cent\u00edmetros",
+            "initials": "cm"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 5,
+        "fields": {
+            "name": "Hecto Pascales",
+            "initials": "hPa"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 6,
+        "fields": {
+            "name": "Mil\u00edmetros",
+            "initials": "mm"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 7,
+        "fields": {
+            "name": "KiloWatts por m2",
+            "initials": "kW/m2"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 8,
+        "fields": {
+            "name": "Grados Cent\u00edgrados",
+            "initials": "\u00b0C"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 9,
+        "fields": {
+            "name": "Metros por Segundo",
+            "initials": "m/s"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 10,
+        "fields": {
+            "name": "Metros",
+            "initials": "m"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 11,
+        "fields": {
+            "name": "Mega Jouls por m2",
+            "initials": "MJ/m2"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 12,
+        "fields": {
+            "name": "Voltios",
+            "initials": "V"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 13,
+        "fields": {
+            "name": "Watts por m2",
+            "initials": "W/m2"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 14,
+        "fields": {
+            "name": "Metros C\u00fabicos por Segundo",
+            "initials": "m3/s"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 15,
+        "fields": {
+            "name": "Mil\u00edmetros por Hora",
+            "initials": "mm/h"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 16,
+        "fields": {
+            "name": "Potencial Hidr\u00f3geno",
+            "initials": "pH"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 17,
+        "fields": {
+            "name": "mili Voltio",
+            "initials": "mV"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 18,
+        "fields": {
+            "name": "Nephelometric Turbidity Unit",
+            "initials": "NTU"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 19,
+        "fields": {
+            "name": "microgramo por Litro",
+            "initials": "ug/L"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 20,
+        "fields": {
+            "name": "miligramo por Litro",
+            "initials": "mg/L"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 21,
+        "fields": {
+            "name": "parts-per-billion 10^-9",
+            "initials": "ppb"
+        }
+    },
+    {
+        "model": "variable.unit",
+        "pk": 22,
+        "fields": {
+            "name": "Litros por segundo",
+            "initials": "L/s"
+        }
+    }
 ]

@@ -1,72 +1,72 @@
 [
-{
-  "model": "station.ecosystem",
-  "pk": 1,
-  "fields": {
-    "name": "Bosque h\u00famedo"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 2,
-  "fields": {
-    "name": "Puna"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 3,
-  "fields": {
-    "name": "P\u00e1ramo"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 4,
-  "fields": {
-    "name": "Puna seca"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 5,
-  "fields": {
-    "name": "Puna h\u00fameda"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 6,
-  "fields": {
-    "name": "Bosque montano alto"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 7,
-  "fields": {
-    "name": "Bosque de neblina"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 8,
-  "fields": {
-    "name": "Pajonal"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 9,
-  "fields": {
-    "name": "Bosque tropical"
-  }
-},
-{
-  "model": "station.ecosystem",
-  "pk": 10,
-  "fields": {
-    "name": "Jalca"
-  }
-}
+    {
+        "model": "station.ecosystem",
+        "pk": 1,
+        "fields": {
+            "name": "Bosque h\u00famedo"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 2,
+        "fields": {
+            "name": "Puna"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 3,
+        "fields": {
+            "name": "P\u00e1ramo"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 4,
+        "fields": {
+            "name": "Puna seca"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 5,
+        "fields": {
+            "name": "Puna h\u00fameda"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 6,
+        "fields": {
+            "name": "Bosque montano alto"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 7,
+        "fields": {
+            "name": "Bosque de neblina"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 8,
+        "fields": {
+            "name": "Pajonal"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 9,
+        "fields": {
+            "name": "Bosque tropical"
+        }
+    },
+    {
+        "model": "station.ecosystem",
+        "pk": 10,
+        "fields": {
+            "name": "Jalca"
+        }
+    }
 ]

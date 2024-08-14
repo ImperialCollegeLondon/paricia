@@ -2,7 +2,7 @@ site_name: Paricia
 repo_url: https://github.com/ImperialCollegeLondon/paricia
 
 theme:
-  name: "material"
+  name: material
 
 
 markdown_extensions:
@@ -10,7 +10,7 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - toc:
-      permalink: "¤"
+      permalink: ¤
 
 plugins:
   - search

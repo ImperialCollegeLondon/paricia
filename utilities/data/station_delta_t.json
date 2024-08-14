@@ -1,1 +1,10 @@
-[{"model": "station.deltat", "pk": 1, "fields": {"station": 1, "delta_t": 5}}]
+[
+    {
+        "model": "station.deltat",
+        "pk": 1,
+        "fields": {
+            "station": 1,
+            "delta_t": 5
+        }
+    }
+]

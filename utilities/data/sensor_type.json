@@ -1,72 +1,72 @@
 [
-{
-  "model": "sensor.sensortype",
-  "pk": 1,
-  "fields": {
-    "name": "Pluvi\u00f3metro"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 2,
-  "fields": {
-    "name": "Sonda Piezom\u00e9trico"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 3,
-  "fields": {
-    "name": "Sonda Ultras\u00f3nico"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 4,
-  "fields": {
-    "name": "Sensor de viento"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 5,
-  "fields": {
-    "name": "Humedad y Temperatura"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 6,
-  "fields": {
-    "name": "Presi\u00f3n Barom\u00e9trica"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 7,
-  "fields": {
-    "name": "Radiaci\u00f3n Solar"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 8,
-  "fields": {
-    "name": "Direcci\u00f3n del viento"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 9,
-  "fields": {
-    "name": "Velocidad del viento"
-  }
-},
-{
-  "model": "sensor.sensortype",
-  "pk": 10,
-  "fields": {
-    "name": "Sensor de presi\u00f3n"
-  }
-}
+    {
+        "model": "sensor.sensortype",
+        "pk": 1,
+        "fields": {
+            "name": "Pluvi\u00f3metro"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 2,
+        "fields": {
+            "name": "Sonda Piezom\u00e9trico"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 3,
+        "fields": {
+            "name": "Sonda Ultras\u00f3nico"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 4,
+        "fields": {
+            "name": "Sensor de viento"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 5,
+        "fields": {
+            "name": "Humedad y Temperatura"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 6,
+        "fields": {
+            "name": "Presi\u00f3n Barom\u00e9trica"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 7,
+        "fields": {
+            "name": "Radiaci\u00f3n Solar"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 8,
+        "fields": {
+            "name": "Direcci\u00f3n del viento"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 9,
+        "fields": {
+            "name": "Velocidad del viento"
+        }
+    },
+    {
+        "model": "sensor.sensortype",
+        "pk": 10,
+        "fields": {
+            "name": "Sensor de presi\u00f3n"
+        }
+    }
 ]
