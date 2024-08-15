@@ -43,9 +43,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black",
-    "isort",
-    "flake8",
+    "ruff",
+    "mypy",
     "pip-tools",
     "pre-commit",
     "model_bakery",
@@ -60,4 +59,34 @@ doc = [
     "mkdocs-gen-files",
     "mkdocs-literate-nav",
     "mkdocs-section-index",
+]
+
+[tool.mypy] # TODO: increase the strictness here
+# disallow_any_explicit = true
+# disallow_any_generics = true
+warn_unreachable = true
+warn_unused_ignores = true
+# disallow_untyped_defs = true
+
+[tool.ruff]
+exclude = ["*/migrations"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "D",   # pydocstyle
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "RUF", # ruff
+]
+ignore = ["RUF012"] # Typing on mutable class attributes
+pydocstyle.convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "D100", # Missing docstring in public module
+    "D103", # Missing docstring in public function
+    "D104", # Missing docstring in public package
 ]

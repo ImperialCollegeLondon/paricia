@@ -9,8 +9,6 @@ asgiref==3.8.1
     #   Paricia (pyproject.toml)
     #   channels
     #   django
-black==24.8.0
-    # via Paricia (pyproject.toml)
 blinker==1.8.2
     # via flask
 build==1.2.1
@@ -21,7 +19,6 @@ channels==4.1.0
     # via django-plotly-dash
 click==8.1.7
     # via
-    #   black
     #   flask
     #   pip-tools
 colorama==0.4.6
@@ -97,8 +94,6 @@ et-xmlfile==1.1.0
     # via openpyxl
 filelock==3.15.4
     # via virtualenv
-flake8==7.1.1
-    # via Paricia (pyproject.toml)
 flask==3.0.3
     # via
     #   dash
@@ -109,8 +104,6 @@ idna==3.7
     # via Paricia (pyproject.toml)
 inflection==0.5.1
     # via drf-yasg
-isort==5.13.2
-    # via Paricia (pyproject.toml)
 itsdangerous==2.2.0
     # via flask
 jdcal==1.4.1
@@ -123,12 +116,12 @@ markupsafe==2.1.5
     # via
     #   jinja2
     #   werkzeug
-mccabe==0.7.0
-    # via flake8
 model-bakery==1.19.1
     # via Paricia (pyproject.toml)
+mypy==1.11.1
+    # via Paricia (pyproject.toml)
 mypy-extensions==1.0.0
-    # via black
+    # via mypy
 nodeenv==1.9.1
     # via pre-commit
 numpy==2.0.1
@@ -139,20 +132,15 @@ openpyxl==2.4.11
     # via django-excel-response
 packaging==24.1
     # via
-    #   black
     #   build
     #   drf-yasg
     #   plotly
 pandas==2.2.2
     # via Paricia (pyproject.toml)
-pathspec==0.12.1
-    # via black
 pip-tools==7.4.1
     # via Paricia (pyproject.toml)
 platformdirs==4.2.2
-    # via
-    #   black
-    #   virtualenv
+    # via virtualenv
 plotly==5.23.0
     # via
     #   dash
@@ -161,10 +149,6 @@ pre-commit==3.8.0
     # via Paricia (pyproject.toml)
 psycopg2==2.9.9
     # via Paricia (pyproject.toml)
-pycodestyle==2.12.1
-    # via flake8
-pyflakes==3.2.0
-    # via flake8
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
 pyproject-hooks==1.1.0
@@ -183,6 +167,8 @@ pyyaml==6.0.2
     #   Paricia (pyproject.toml)
     #   drf-yasg
     #   pre-commit
+ruff==0.6.0
+    # via Paricia (pyproject.toml)
 six==1.16.0
     # via python-dateutil
 sqlparse==0.5.1
@@ -191,6 +177,8 @@ tenacity==9.0.0
     # via plotly
 tqdm==4.66.5
     # via Paricia (pyproject.toml)
+typing-extensions==4.12.2
+    # via mypy
 tzdata==2024.1
     # via
     #   django
