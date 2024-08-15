@@ -1,10 +1,8 @@
 <!doctype html>
 {% load django_bootstrap5 %}
 {% load static %}
-{% if 'use_i18n'|bootstrap_setting %}
-    {% load i18n %}
-    {% get_current_language as LANGUAGE_CODE %}
-{% endif %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE|default:'en_us' }}" xmlns="http://www.w3.org/1999/html">
 
 <head>
@@ -22,6 +20,7 @@
     {% block javascript %}
     {% endblock %}
 
+    {% bootstrap_javascript %}
     {% bootstrap_messages %}
 
 </head>

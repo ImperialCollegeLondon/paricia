@@ -24,8 +24,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import re
 from datetime import timedelta
 from pathlib import Path
+
+from django_bootstrap5.core import BOOTSTRAP5_DEFAULTS
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 FILE_UPLOAD_MAX_MEMORY_SIZE = 27000000
@@ -248,3 +251,18 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+javascript_url = BOOTSTRAP5_DEFAULTS["javascript_url"]["url"]
+
+if not (match := re.search("@\\d+\\.\\d+\\.\\d+/", javascript_url)):
+    raise ValueError("Unable to determine Bootstrap 5 javascript version.")
+
+javascript_version = javascript_url[slice(*match.span())]
+
+BOOTSTRAP5 = dict(
+    css_url=dict(
+        url=f"https://cdn.jsdelivr.net/npm/bootswatch{javascript_version}dist/flatly/bootstrap.min.css",
+        integrity="sha384-Gn6TIhloBHiLpI1VM8qQG+H8QQhHXqsiUlMLS4uhr9gqQzFsOhMTo0lSTMbOrLoI",
+        crossorigin="anonymous",
+    )
+)
