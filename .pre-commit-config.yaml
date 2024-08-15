@@ -27,7 +27,7 @@ repos:
     rev: "v1.11.1"
     hooks:
       - id: mypy
-        additional_dependencies: [types-requests, types-toml]
+        additional_dependencies: [types-requests, types-toml, types-pytz]
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.41.0
     hooks:
