@@ -9,6 +9,9 @@ on:
 
 jobs:
 
+  check-links:
+    uses: ./.github/workflows/check-links.yml
+
   test:
 
     runs-on: ubuntu-latest

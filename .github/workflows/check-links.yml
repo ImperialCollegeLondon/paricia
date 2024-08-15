@@ -1,0 +1,17 @@
+name: Check links in Markdown files
+on:
+  workflow_call:
+  schedule:
+    - cron: "0 0 * * 1" # midnight every Monday
+
+jobs:
+  check-links:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+        name: Check links in markdown files
+        with:
+          use-quiet-mode: "yes"
+          use-verbose-mode: "yes"
