@@ -4,18 +4,24 @@ from .models import SensorInstallation, Unit, Variable
 
 
 class UnitSerializer(serializers.ModelSerializer):
+    """Serializer for the Unit model."""
+
     class Meta:
         model = Unit
-        exclude = []
+        exclude: list[str] = []
 
 
 class VariableSerializer(serializers.ModelSerializer):
+    """Serializer for the Variable model."""
+
     class Meta:
         model = Variable
-        exclude = []
+        exclude: list[str] = []
 
 
 class SensorInstallationSerializer(serializers.ModelSerializer):
+    """Serializer for the SensorInstallation model."""
+
     class Meta:
         model = SensorInstallation
-        exclude = []
+        exclude: list[str] = []

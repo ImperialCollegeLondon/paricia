@@ -37,7 +37,6 @@ class PermissionsBase(models.Model):
 
     def set_object_permissions(self):
         """Set object-level delete, change and view permissions."""
-
         delete, change, view, add = _get_perm_codenames(self.__class__)
         standard_group = Group.objects.get(name="Standard")
         anonymous_user = get_anonymous_user()

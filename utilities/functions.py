@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 from logging import getLogger
-from typing import Dict, List
 
 from django.contrib.auth.models import Permission, User
 from django.db.models import QuerySet
@@ -101,7 +100,7 @@ def modelo_a_tabla_html(modelo: QuerySet, col_extra: bool) -> str:
     return html
 
 
-def dictfetchall(cursor) -> List[Dict]:
+def dictfetchall(cursor) -> list[dict]:
     """Return all rows from a cursor as a list of dict.
 
     TODO: This is used to process low level SQL requests, so chances are it will not be
@@ -119,8 +118,7 @@ def dictfetchall(cursor) -> List[Dict]:
 
 
 class objdict(dict):
-    """
-    Dictionary whose content can be manipulated as attributes.
+    """Dictionary whose content can be manipulated as attributes.
 
     NOTE: Might be a better option to do this. Needs deeper analysis.
     NOTE: To be moved to a separates 'utilities' module.

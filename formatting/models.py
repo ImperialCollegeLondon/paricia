@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.db import models
 from django.urls import reverse
@@ -21,9 +20,7 @@ from variable.models import Variable
 
 
 class Extension(models.Model):
-    """
-    File extension.
-    """
+    """File extension."""
 
     extension_id = models.AutoField("Id", primary_key=True)
     value = models.CharField("Value", max_length=5)
@@ -36,9 +33,7 @@ class Extension(models.Model):
 
 
 class Delimiter(models.Model):
-    """
-    Data delimiter
-    """
+    """Data delimiter"""
 
     delimiter_id = models.AutoField("Id", primary_key=True)
     name = models.CharField("Name", max_length=100)
@@ -52,9 +47,7 @@ class Delimiter(models.Model):
 
 
 class Date(models.Model):
-    """
-    Date format
-    """
+    """Date format"""
 
     date_id = models.AutoField("Id", primary_key=True)
     date_format = models.CharField("Format", max_length=20)
@@ -71,9 +64,7 @@ class Date(models.Model):
 
 
 class Time(models.Model):
-    """
-    Time format
-    """
+    """Time format"""
 
     time_id = models.AutoField("Id", primary_key=True)
     time_format = models.CharField("Format", max_length=20)
@@ -90,9 +81,7 @@ class Time(models.Model):
 
 
 class Format(models.Model):
-    """
-    Details of the data file format, combining different aspects.
-    """
+    """Details of the data file format, combining different aspects."""
 
     format_id = models.AutoField("format_id", primary_key=True)
     extension = models.ForeignKey(
@@ -190,9 +179,7 @@ class Format(models.Model):
 
 
 class Classification(models.Model):
-    """
-    Classification details, combining a Format, Variable with some other properties.
-    """
+    """Classification details, combining several properties."""
 
     cls_id = models.AutoField("Id", primary_key=True)
     format = models.ForeignKey(Format, on_delete=models.CASCADE, verbose_name="Format")
@@ -240,9 +227,7 @@ class Classification(models.Model):
 
 
 class Association(models.Model):
-    """
-    Associates a data format with a station.
-    """
+    """Associates a data format with a station."""
 
     association_id = models.AutoField("Id", primary_key=True)
     format = models.ForeignKey(

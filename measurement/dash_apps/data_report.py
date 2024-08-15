@@ -203,7 +203,9 @@ def update_alert(figure):
     [Output("station_drop", "options"), Output("station_drop", "value")],
     Input("stations_list", "children"),
 )
-def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
+def populate_stations_dropdown(
+    station_codes: list[str],
+) -> tuple[list[dict[str, str]], str | None]:
     """Populate the station dropdown based on the list of station codes."""
     return get_station_options(station_codes)
 
@@ -212,7 +214,9 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
     [Output("variable_drop", "options"), Output("variable_drop", "value")],
     Input("station_drop", "value"),
 )
-def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
+def populate_variable_dropdown(
+    chosen_station: str,
+) -> tuple[list[dict[str, str]], str | None]:
     """Populate the variable dropdown based on the chosen station."""
     return get_variable_options(chosen_station)
 
@@ -229,6 +233,9 @@ def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
 )
 def set_date_range(
     chosen_station, chosen_variable
-) -> tuple[str, str,]:
+) -> tuple[
+    str,
+    str,
+]:
     """Set the default date range based on the chosen station and variable."""
     return get_date_range(chosen_station, chosen_variable)

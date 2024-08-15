@@ -15,11 +15,9 @@ from excel_response import ExcelResponse
 
 
 def excel_station(stations):
-    """
-    Returns an Excel Spreadsheet given a queryset of Stations. Used to export
+    """Returns an Excel Spreadsheet given a queryset of Stations. Used to export
     information on stations in views.
     """
-
     header = [
         [
             "Code",
@@ -49,11 +47,11 @@ def excel_station(stations):
         line.append(obj.institution.name if obj.institution is not None else None)
         try:
             line.append(obj.place_basin.place.name)
-        except:
+        except Exception:
             line.append(None)
         try:
             line.append(obj.place_basin.basin.name)
-        except:
+        except Exception:
             line.append(None)
         line.append(obj.station_latitude)
         line.append(obj.station_longitude)

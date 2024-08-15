@@ -8,7 +8,6 @@ on:
   workflow_call:
 
 jobs:
-
   check-links:
     uses: ./.github/workflows/check-links.yml
 

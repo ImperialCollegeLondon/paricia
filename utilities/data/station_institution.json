@@ -1,163 +1,163 @@
 [
-{
-  "model": "station.institution",
-  "pk": 1,
-  "fields": {
-    "name": "FONAG"
+  {
+    "model": "station.institution",
+    "pk": 1,
+    "fields": {
+      "name": "FONAG"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 2,
+    "fields": {
+      "name": "CONDESAN"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 3,
+    "fields": {
+      "name": "APECO"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 4,
+    "fields": {
+      "name": "Carpe Science"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 5,
+    "fields": {
+      "name": "CEDES Apur\u00edmac"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 6,
+    "fields": {
+      "name": "ETAPA"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 7,
+    "fields": {
+      "name": "Escuela Polit\u00e9cnica Nacional"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 8,
+    "fields": {
+      "name": "Helvetas"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 9,
+    "fields": {
+      "name": "Imperial College London"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 10,
+    "fields": {
+      "name": "Instituto de Monta\u00f1a"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 11,
+    "fields": {
+      "name": "INAIGEM"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 12,
+    "fields": {
+      "name": "JUASVI"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 13,
+    "fields": {
+      "name": "NCI"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 14,
+    "fields": {
+      "name": "SUNASS"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 15,
+    "fields": {
+      "name": "SENAMHI"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 16,
+    "fields": {
+      "name": "UTEC"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 17,
+    "fields": {
+      "name": "Universidad de los Andes"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 18,
+    "fields": {
+      "name": "Universidad de San Sim\u00f3n"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 19,
+    "fields": {
+      "name": "UNALM"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 20,
+    "fields": {
+      "name": "UNAL"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 21,
+    "fields": {
+      "name": "UNL"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 22,
+    "fields": {
+      "name": "UNASAM"
+    }
+  },
+  {
+    "model": "station.institution",
+    "pk": 23,
+    "fields": {
+      "name": "UPTC"
+    }
   }
-},
-{
-  "model": "station.institution",
-  "pk": 2,
-  "fields": {
-    "name": "CONDESAN"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 3,
-  "fields": {
-    "name": "APECO"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 4,
-  "fields": {
-    "name": "Carpe Science"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 5,
-  "fields": {
-    "name": "CEDES Apur\u00edmac"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 6,
-  "fields": {
-    "name": "ETAPA"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 7,
-  "fields": {
-    "name": "Escuela Polit\u00e9cnica Nacional"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 8,
-  "fields": {
-    "name": "Helvetas"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 9,
-  "fields": {
-    "name": "Imperial College London"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 10,
-  "fields": {
-    "name": "Instituto de Monta\u00f1a"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 11,
-  "fields": {
-    "name": "INAIGEM"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 12,
-  "fields": {
-    "name": "JUASVI"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 13,
-  "fields": {
-    "name": "NCI"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 14,
-  "fields": {
-    "name": "SUNASS"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 15,
-  "fields": {
-    "name": "SENAMHI"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 16,
-  "fields": {
-    "name": "UTEC"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 17,
-  "fields": {
-    "name": "Universidad de los Andes"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 18,
-  "fields": {
-    "name": "Universidad de San Sim\u00f3n"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 19,
-  "fields": {
-    "name": "UNALM"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 20,
-  "fields": {
-    "name": "UNAL"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 21,
-  "fields": {
-    "name": "UNL"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 22,
-  "fields": {
-    "name": "UNASAM"
-  }
-},
-{
-  "model": "station.institution",
-  "pk": 23,
-  "fields": {
-    "name": "UPTC"
-  }
-}
 ]

@@ -32,9 +32,7 @@ User = get_user_model()
 
 
 class Country(PermissionsBase):
-    """
-    The country that a station or region is in.
-    """
+    """The country that a station or region is in."""
 
     id = models.AutoField("Id", primary_key=True)
     name = models.CharField(max_length=32)
@@ -51,9 +49,7 @@ class Country(PermissionsBase):
 
 
 class Region(PermissionsBase):
-    """
-    A region within a country.
-    """
+    """A region within a country."""
 
     id = models.AutoField("Id", primary_key=True)
     name = models.CharField(max_length=32, verbose_name="Name")
@@ -72,9 +68,7 @@ class Region(PermissionsBase):
 
 
 class Ecosystem(PermissionsBase):
-    """
-    The ecosystem associated with a station e.g. rain forest.
-    """
+    """The ecosystem associated with a station e.g. rain forest."""
 
     id = models.AutoField("Id", primary_key=True)
     name = models.CharField(max_length=32)
@@ -90,9 +84,7 @@ class Ecosystem(PermissionsBase):
 
 
 class Institution(PermissionsBase):
-    """
-    Institutional partner e.g. Imperial College London.
-    """
+    """Institutional partner e.g. Imperial College London."""
 
     id = models.AutoField("Id", primary_key=True)
     name = models.CharField(max_length=32)
@@ -108,9 +100,7 @@ class Institution(PermissionsBase):
 
 
 class StationType(PermissionsBase):
-    """
-    Station type e.g. pluvometric, hydrological.
-    """
+    """Station type e.g. pluvometric, hydrological."""
 
     id = models.AutoField("Id", primary_key=True)
     name = models.CharField(max_length=40)
@@ -126,9 +116,7 @@ class StationType(PermissionsBase):
 
 
 class Place(PermissionsBase):
-    """
-    Specific place that a station is situated e.g. Huaraz.
-    """
+    """Specific place that a station is situated e.g. Huaraz."""
 
     id = models.AutoField("Id", primary_key=True)
     name = models.CharField(max_length=40)
@@ -147,8 +135,7 @@ class Place(PermissionsBase):
 
 
 class Basin(PermissionsBase):
-    """
-    Basin e.g. El Carmen.
+    """Basin e.g. El Carmen.
     TODO: Is there a more specific definition we can use? e.g. a river basin?
     """
 
@@ -172,9 +159,7 @@ class Basin(PermissionsBase):
 
 
 class PlaceBasin(PermissionsBase):
-    """
-    Associates a Basin with a Place and an image.
-    """
+    """Associates a Basin with a Place and an image."""
 
     id = models.AutoField("Id", primary_key=True)
     place = models.ForeignKey(
@@ -202,8 +187,7 @@ class PlaceBasin(PermissionsBase):
 
 
 class Station(PermissionsBase):
-    """
-    Main representation of a station with lots of metadata, according to
+    """Main representation of a station with lots of metadata, according to
     the other models in this app, along with some geographical data.
     """
 
@@ -324,11 +308,9 @@ class Station(PermissionsBase):
         permissions = (("view_measurements", "View measurements"),)
 
 
-# TODO Discuss if it's really necessary to implement multiple deltaTs for different dates
+# TODO Discuss if it's necessary to implement multiple deltaTs for different dates
 class DeltaT(PermissionsBase):
-    """
-    Delta T: Interval of data adquisition (In minutes)
-    """
+    """Delta T: Interval of data adquisition (In minutes)"""
 
     id = models.AutoField("Id", primary_key=True)
     station = models.ForeignKey(

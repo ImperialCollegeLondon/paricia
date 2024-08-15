@@ -1,98 +1,98 @@
 [
-{
-  "model": "formatting.date",
-  "pk": 1,
-  "fields": {
-    "date_format": "DD/MM/YY",
-    "code": "%d/%m/%y"
+  {
+    "model": "formatting.date",
+    "pk": 1,
+    "fields": {
+      "date_format": "DD/MM/YY",
+      "code": "%d/%m/%y"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 2,
+    "fields": {
+      "date_format": "MM/DD/YY",
+      "code": "%m/%d/%y"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 3,
+    "fields": {
+      "date_format": "YYYY-MM-DD",
+      "code": "%Y-%m-%d"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 4,
+    "fields": {
+      "date_format": "DD/MM/YYYY",
+      "code": "%d/%m/%Y"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 5,
+    "fields": {
+      "date_format": "MM/DD/YYYY",
+      "code": "%m/%d/%Y"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 6,
+    "fields": {
+      "date_format": "DD-BB-YY",
+      "code": "%d-%b-%y"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 7,
+    "fields": {
+      "date_format": "YYYY-DD-MM",
+      "code": "%Y-%d-%m"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 8,
+    "fields": {
+      "date_format": "DD-MM-YYYY",
+      "code": "%d-%m-%Y"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 9,
+    "fields": {
+      "date_format": "YY-DD-MM",
+      "code": "%y-%m-%d"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 10,
+    "fields": {
+      "date_format": "YY-MM-DD",
+      "code": "%y-%m-%d"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 11,
+    "fields": {
+      "date_format": "YYYY DOY",
+      "code": "%Y %j"
+    }
+  },
+  {
+    "model": "formatting.date",
+    "pk": 12,
+    "fields": {
+      "date_format": "DD.MM.YYYY",
+      "code": "%d.%m.%Y"
+    }
   }
-},
-{
-  "model": "formatting.date",
-  "pk": 2,
-  "fields": {
-    "date_format": "MM/DD/YY",
-    "code": "%m/%d/%y"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 3,
-  "fields": {
-    "date_format": "YYYY-MM-DD",
-    "code": "%Y-%m-%d"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 4,
-  "fields": {
-    "date_format": "DD/MM/YYYY",
-    "code": "%d/%m/%Y"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 5,
-  "fields": {
-    "date_format": "MM/DD/YYYY",
-    "code": "%m/%d/%Y"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 6,
-  "fields": {
-    "date_format": "DD-BB-YY",
-    "code": "%d-%b-%y"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 7,
-  "fields": {
-    "date_format": "YYYY-DD-MM",
-    "code": "%Y-%d-%m"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 8,
-  "fields": {
-    "date_format": "DD-MM-YYYY",
-    "code": "%d-%m-%Y"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 9,
-  "fields": {
-    "date_format": "YY-DD-MM",
-    "code": "%y-%m-%d"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 10,
-  "fields": {
-    "date_format": "YY-MM-DD",
-    "code": "%y-%m-%d"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 11,
-  "fields": {
-    "date_format": "YYYY DOY",
-    "code": "%Y %j"
-  }
-},
-{
-  "model": "formatting.date",
-  "pk": 12,
-  "fields": {
-    "date_format": "DD.MM.YYYY",
-    "code": "%d.%m.%Y"
-  }
-}
 ]

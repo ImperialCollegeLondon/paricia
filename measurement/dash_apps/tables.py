@@ -1,7 +1,4 @@
-"""
-Functions defining columns and style conditions for tables in the measurement app
-
-"""
+"""Functions defining columns and style conditions for tables in the measurement app"""
 
 
 def create_columns_daily() -> list:
@@ -106,7 +103,6 @@ def create_style_condition(
     Returns:
         list[dict]: Style condition
     """
-
     return [
         {
             "condition": condition,
@@ -153,7 +149,7 @@ def create_style_conditions() -> dict:
     styles["value"] = {
         "cellStyle": {
             "styleConditions": create_style_condition(
-                condition="params.data['suspicious_value_limits'] > 0 || params.data['suspicious_value_difference'] > 0",
+                condition="params.data['suspicious_value_limits'] > 0 || params.data['suspicious_value_difference'] > 0",  # noqa: E501
                 style_true=style_error,
                 style_false=style_normal,
             )

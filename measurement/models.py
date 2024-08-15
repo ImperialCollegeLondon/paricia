@@ -10,20 +10,17 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-from __future__ import unicode_literals
 
-from typing import List, Type
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.urls import reverse
-from timescale.db.models.models import TimescaleModel
+from timescale.db.models.models import TimescaleDateTimeField, TimescaleModel
 
 from management.models import apply_add_permissions_to_standard_group
 from station.models import Station
 from variable.models import Variable
 
-MEASUREMENTS: List[str] = []
+MEASUREMENTS: list[str] = []
 """Available measurement variables."""
 
 
@@ -35,6 +32,8 @@ class MeasurementBase(TimescaleModel):
     are very likely to be present in most cases, but might not be there in some
     occasions, therefore the possibility of nulling them.
     """
+
+    time: TimescaleDateTimeField
 
     station = models.ForeignKey(
         Station, on_delete=models.PROTECT, null=False, verbose_name="Station"

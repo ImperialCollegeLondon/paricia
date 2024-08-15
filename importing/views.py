@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 import copy
 import mimetypes
@@ -21,7 +20,7 @@ import urllib
 
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from rest_framework import generics
 
 from djangomain.settings import BASE_DIR
@@ -36,8 +35,7 @@ from .serializers import DataImportFullSerializer, DataImportTempSerializer
 
 
 class DataImportTempList(generics.ListAPIView):
-    """
-    List all DataImportTemp objects. These are created when uploading a
+    """List all DataImportTemp objects. These are created when uploading a
     new data file. The measurement data is not saved until a DataImportFull object
     is created using an existing DataImportTemp object as a ForeignKey.
     """
@@ -47,8 +45,7 @@ class DataImportTempList(generics.ListAPIView):
 
 
 class DataImportTempCreate(generics.CreateAPIView):
-    """
-    Create a new DataImportTemp object. These are created when uploading a
+    """Create a new DataImportTemp object. These are created when uploading a
     new data file. The measurement data is not saved until a DataImportFull object
     is created using an existing DataImportTemp object as a ForeignKey.
     """
@@ -82,10 +79,11 @@ class DataImportTempCreate(generics.CreateAPIView):
 
 
 class DataImportTempDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a DataImportTemp object. These are created when uploading
-    a new data file. The measurement data is not saved until a DataImportFull object
-    is created using an existing DataImportTemp object as a ForeignKey.
+    """Retrieve, update or delete a DataImportTemp object.
+
+    These are created when uploading a new data file. The measurement data is not saved
+    until a DataImportFull object is created using an existing DataImportTemp object as
+    a ForeignKey.
     """
 
     queryset = DataImportTemp.objects.all()
@@ -100,8 +98,7 @@ class DataImportTempDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class DataImportFullList(generics.ListAPIView):
-    """
-    List all DataImportFull objects. These are created to save measurement data.
+    """List all DataImportFull objects. These are created to save measurement data.
     A DataImportTemp object is required as a ForeignKey.
     """
 
@@ -110,8 +107,7 @@ class DataImportFullList(generics.ListAPIView):
 
 
 class DataImportFullCreate(generics.CreateAPIView):
-    """
-    Create a new DataImportFull object. When these are created, the measurement data
+    """Create a new DataImportFull object. When these are created, the measurement data
     from a DataImportTemp object is imported into the database (into the measurement
     app).
     """
@@ -165,8 +161,7 @@ class DataImportFullCreate(generics.CreateAPIView):
 
 
 class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a DataImportFull object. These are created to save
+    """Retrieve, update or delete a DataImportFull object. These are created to save
     measurement data. A DataImportTemp object is required as a ForeignKey.
     """
 
@@ -186,9 +181,7 @@ class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
 
 @permission_required("importing.download_original_file")
 def DataImportDownload(request, *args, **kwargs):
-    """
-    Download the original file from a data upload.
-    """
+    """Download the original file from a data upload."""
     if request.user.is_authenticated:
         imp_id = kwargs.get("pk")
         data_import = DataImportFull.objects.get(data_import_id=imp_id)
@@ -209,8 +202,8 @@ def DataImportDownload(request, *args, **kwargs):
         if "WebKit" in request.META["HTTP_USER_AGENT"]:
             # Safari 3.0 and Chrome 2.0 accepts UTF-8 encoded string directly.
             # filename_header = 'filename=%s' % output_filename.encode('utf-8')
-            filename_header = "filename=%s" % urllib.parse.quote(
-                output_filename.encode("utf-8")
+            filename_header = "filename={}".format(
+                urllib.parse.quote(output_filename.encode("utf-8"))
             )
         elif "MSIE" in request.META["HTTP_USER_AGENT"]:
             # IE does not support internationalized filename at all.
@@ -222,8 +215,8 @@ def DataImportDownload(request, *args, **kwargs):
             # headers).
             # filename_header = 'filename*=UTF-8\'\'%s' %
             # urllib.quote(output_filename.encode('utf-8'))
-            filename_header = "filename*=UTF-8''%s" % urllib.parse.quote(
-                output_filename.encode("utf-8")
+            filename_header = "filename*=UTF-8''{}".format(
+                urllib.parse.quote(output_filename.encode("utf-8"))
             )
         response["Content-Disposition"] = "attachment; " + filename_header
         return response

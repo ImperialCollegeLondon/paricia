@@ -23,8 +23,7 @@ from station.models import Station
 
 
 class MeasurementList(generics.ListAPIView):
-    """
-    List measurements of all types.
+    """List measurements of all types.
 
     This view is used to retrieve the measurement records filtering by station,
     variable, start_time, end_time, is_validated and is_active. If no parameters
@@ -58,8 +57,7 @@ class MeasurementList(generics.ListAPIView):
 
 
 class ReportList(generics.ListAPIView):
-    """
-    List all measurements of Report.
+    """List all measurements of Report.
 
     This view is used to retrieve the results filtering by station, variable,
     report_type, start_time, and end_time. If no parameters are provided, an empty
@@ -91,9 +89,7 @@ class ReportList(generics.ListAPIView):
 
 
 class DailyValidation(LoginRequiredMixin, View):
-    """
-    View for displaying the Daily Validation dash app.
-    """
+    """View for displaying the Daily Validation dash app."""
 
     def get(self, request, *args, **kwargs):
         from .dash_apps import daily_validation  # noqa
@@ -105,9 +101,7 @@ class DailyValidation(LoginRequiredMixin, View):
 
 
 class DataReport(View):
-    """
-    View for displaying the Data Report dash app.
-    """
+    """View for displaying the Data Report dash app."""
 
     def get(self, request, *args, **kwargs):
         from .dash_apps import data_report  # noqa

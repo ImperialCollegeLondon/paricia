@@ -1,3 +1,4 @@
+# type: ignore
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from guardian.shortcuts import get_anonymous_user
@@ -33,8 +34,7 @@ class BasePermissionsTest:
         cls.obj_internal = None
 
     def _assert_perm(self, user, perm: str, obj, assert_true: bool):
-        """
-        Assert a single permission for a user against an object.
+        """Assert a single permission for a user against an object.
 
         Args:
             user: User to test permission for
@@ -43,7 +43,6 @@ class BasePermissionsTest:
                 model level.
             assert_true (bool): Whether the permission should be True or False
         """
-
         if assert_true:
             self.assertTrue(user.has_perm(f"{self.app}.{perm}", obj))
         else:
@@ -53,9 +52,9 @@ class BasePermissionsTest:
         self,
         perm: str,
         obj,
-        assert_owner: bool = None,
-        assert_other: bool = None,
-        assert_anon: bool = None,
+        assert_owner: bool | None = None,
+        assert_other: bool | None = None,
+        assert_anon: bool | None = None,
     ):
         """Assert permissions for multiple users against an object.
 

@@ -1,12 +1,13 @@
 from decimal import Decimal
-from typing import Dict, List, Tuple
 
 from django.db.models import Max, Min
 
 from .models import Measurement
 
 
-def get_station_options(station_codes: List[str]) -> Tuple[List[Dict], str]:
+def get_station_options(
+    station_codes: list[str],
+) -> tuple[list[dict[str, str]], str | None]:
     """Get valid station options and default value based on permissions and data
     availability.
 
@@ -16,7 +17,6 @@ def get_station_options(station_codes: List[str]) -> Tuple[List[Dict], str]:
     Returns:
         tuple[list[dict], str]: Options for the station dropdown, default value
     """
-
     stations_with_measurements = Measurement.objects.values_list(
         "station__station_code", flat=True
     ).distinct()
@@ -30,7 +30,7 @@ def get_station_options(station_codes: List[str]) -> Tuple[List[Dict], str]:
     return station_options, station_value
 
 
-def get_variable_options(station: str) -> Tuple[List[Dict], str]:
+def get_variable_options(station: str) -> tuple[list[dict], str]:
     """Get valid variable options and default value based on the chosen station.
 
     Args:
@@ -56,7 +56,7 @@ def get_variable_options(station: str) -> Tuple[List[Dict], str]:
     return variable_options, variable_value
 
 
-def get_date_range(station: str, variable: str) -> Tuple[str, str]:
+def get_date_range(station: str, variable: str) -> tuple[str, str]:
     """Get the date range covered by a chosen station and variable.
 
     Args:
@@ -90,7 +90,10 @@ def get_date_range(station: str, variable: str) -> Tuple[str, str]:
 
 def get_min_max(
     station, variable
-) -> tuple[Decimal, Decimal,]:
+) -> tuple[
+    Decimal,
+    Decimal,
+]:
     """Get the min and max of the data for a chosen station and variable.
 
     Args:

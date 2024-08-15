@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.db import models
 from django.urls import reverse
@@ -20,9 +19,7 @@ from management.models import PermissionsBase
 
 
 class SensorType(PermissionsBase):
-    """
-    Type of sensor, eg. pluviometric, wind sensor, etc.
-    """
+    """Type of sensor, eg. pluviometric, wind sensor, etc."""
 
     type_id = models.AutoField("Id", primary_key=True)
     name = models.CharField("Sensor type", max_length=25)
@@ -35,9 +32,7 @@ class SensorType(PermissionsBase):
 
 
 class SensorBrand(PermissionsBase):
-    """
-    Brand of the sensor, eg. Davis, Texas Electronics, etc.
-    """
+    """Brand of the sensor, eg. Davis, Texas Electronics, etc."""
 
     brand_id = models.AutoField("Id", primary_key=True)
     name = models.CharField("Brand name", max_length=25)
@@ -53,9 +48,7 @@ class SensorBrand(PermissionsBase):
 
 
 class Sensor(PermissionsBase):
-    """
-    Specific sensor details
-    """
+    """Specific sensor details"""
 
     sensor_id = models.AutoField("Id", primary_key=True)
     code = models.CharField("Code", max_length=32, null=True, unique=True)

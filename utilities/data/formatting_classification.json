@@ -1,65 +1,65 @@
 [
-{
-  "model": "formatting.classification",
-  "pk": 175,
-  "fields": {
-    "format": 45,
-    "variable": 11,
-    "value": 2,
-    "maximum": null,
-    "minimum": null,
-    "value_validator_column": null,
-    "value_validator_text": null,
-    "maximum_validator_column": null,
-    "maximum_validator_text": null,
-    "minimum_validator_column": null,
-    "minimum_validator_text": null,
-    "accumulate": false,
-    "incremental": false,
-    "resolution": null,
-    "decimal_comma": false
+  {
+    "model": "formatting.classification",
+    "pk": 175,
+    "fields": {
+      "format": 45,
+      "variable": 11,
+      "value": 2,
+      "maximum": null,
+      "minimum": null,
+      "value_validator_column": null,
+      "value_validator_text": null,
+      "maximum_validator_column": null,
+      "maximum_validator_text": null,
+      "minimum_validator_column": null,
+      "minimum_validator_text": null,
+      "accumulate": false,
+      "incremental": false,
+      "resolution": null,
+      "decimal_comma": false
+    }
+  },
+  {
+    "model": "formatting.classification",
+    "pk": 176,
+    "fields": {
+      "format": 45,
+      "variable": 10,
+      "value": 3,
+      "maximum": null,
+      "minimum": null,
+      "value_validator_column": null,
+      "value_validator_text": null,
+      "maximum_validator_column": null,
+      "maximum_validator_text": null,
+      "minimum_validator_column": null,
+      "minimum_validator_text": null,
+      "accumulate": false,
+      "incremental": false,
+      "resolution": null,
+      "decimal_comma": false
+    }
+  },
+  {
+    "model": "formatting.classification",
+    "pk": 177,
+    "fields": {
+      "format": 46,
+      "variable": 1,
+      "value": 2,
+      "maximum": null,
+      "minimum": null,
+      "value_validator_column": null,
+      "value_validator_text": null,
+      "maximum_validator_column": null,
+      "maximum_validator_text": null,
+      "minimum_validator_column": null,
+      "minimum_validator_text": null,
+      "accumulate": true,
+      "incremental": false,
+      "resolution": "1.00",
+      "decimal_comma": false
+    }
   }
-},
-{
-  "model": "formatting.classification",
-  "pk": 176,
-  "fields": {
-    "format": 45,
-    "variable": 10,
-    "value": 3,
-    "maximum": null,
-    "minimum": null,
-    "value_validator_column": null,
-    "value_validator_text": null,
-    "maximum_validator_column": null,
-    "maximum_validator_text": null,
-    "minimum_validator_column": null,
-    "minimum_validator_text": null,
-    "accumulate": false,
-    "incremental": false,
-    "resolution": null,
-    "decimal_comma": false
-  }
-},
-{
-  "model": "formatting.classification",
-  "pk": 177,
-  "fields": {
-    "format": 46,
-    "variable": 1,
-    "value": 2,
-    "maximum": null,
-    "minimum": null,
-    "value_validator_column": null,
-    "value_validator_text": null,
-    "maximum_validator_column": null,
-    "maximum_validator_text": null,
-    "minimum_validator_column": null,
-    "minimum_validator_text": null,
-    "accumulate": true,
-    "incremental": false,
-    "resolution": "1.00",
-    "decimal_comma": false
-  }
-}
 ]
