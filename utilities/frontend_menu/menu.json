@@ -1,9 +1,9 @@
 {
-    "Estaci\u00f3n": {
+    "Estación": {
         "permission": "",
         "items": [
             {
-                "name": "Estaci\u00f3n",
+                "name": "Estación",
                 "url_name": "estacion:estacion_index",
                 "permission": "estacion.view_estacion"
             },
@@ -11,12 +11,12 @@
                 "name": ""
             },
             {
-                "name": "Pa\u00eds",
+                "name": "País",
                 "url_name": "estacion:pais_index",
                 "permission": "estacion.view_pais"
             },
             {
-                "name": "Regi\u00f3n/Provincia/Departamento",
+                "name": "Región/Provincia/Departamento",
                 "url_name": "estacion:region_index",
                 "permission": "estacion.view_region"
             },
@@ -41,18 +41,18 @@
                 "permission": "estacion.view_cuenca"
             },
             {
-                "name": "Asociaci\u00f3n Sitio-Cuenca",
+                "name": "Asociación Sitio-Cuenca",
                 "url_name": "estacion:sitiocuenca_index",
                 "permission": "estacion.view_sitiocuenca"
             },
             {
-                "name": "Tipo de estaci\u00f3n",
+                "name": "Tipo de estación",
                 "url_name": "estacion:tipo_index",
                 "permission": "estacion.view_tipo"
             }
         ]
     },
-    "Informaci\u00f3n de la red": {
+    "Información de la red": {
         "permission": "",
         "items": [
             {
@@ -113,7 +113,7 @@
                 "name": ""
             },
             {
-                "name": "Variables por Estaci\u00f3n",
+                "name": "Variables por Estación",
                 "url_name": "cruce:cruce_index",
                 "permission": "cruce.view_cruce"
             }
@@ -123,12 +123,12 @@
         "permission": "",
         "items": [
             {
-                "name": "Instalaci\u00f3n de Sensor",
+                "name": "Instalación de Sensor",
                 "url_name": "variable:control_index",
                 "permission": "variable.view_control"
             },
             {
-                "name": "Instalaci\u00f3n de Datalogger",
+                "name": "Instalación de Datalogger",
                 "url_name": "instalacion:instalacion_index",
                 "permission": "instalacion.view_instalacion"
             },
@@ -144,7 +144,7 @@
             }
         ]
     },
-    "Importaci\u00f3n de datos": {
+    "Importación de datos": {
         "permission": "",
         "items": [
             {
@@ -153,7 +153,7 @@
                 "permission": "importacion.add_importacion"
             },
             {
-                "name": "Vacios de Informaci\u00f3n",
+                "name": "Vacios de Información",
                 "url_name": "vacios:vacios",
                 "permission": "vacios.view_vacios"
             },
@@ -166,12 +166,12 @@
                 "name": ""
             },
             {
-                "name": "Formato de Importaci\u00f3n",
+                "name": "Formato de Importación",
                 "url_name": "formato:formato_index",
                 "permission": "formato.view_formato"
             },
             {
-                "name": "Formato por Estaci\u00f3n",
+                "name": "Formato por Estación",
                 "url_name": "formato:asociacion_index",
                 "permission": "formato.view_asociacion"
             },
@@ -179,7 +179,7 @@
                 "name": ""
             },
             {
-                "name": "Extensi\u00f3n de archivo",
+                "name": "Extensión de archivo",
                 "url_name": "formato:extension_index",
                 "permission": "formato.view_extension"
             },
@@ -200,7 +200,7 @@
             }
         ]
     },
-    "Validaci\u00f3n": {
+    "Validación": {
         "permission": "",
         "items": [
             {
@@ -245,17 +245,17 @@
         "permission": "",
         "items": [
             {
-                "name": "Precipitaci\u00f3n",
+                "name": "Precipitación",
                 "url_name": "indices:precipitacion",
                 "permission": "indices.view_indices"
             },
             {
-                "name": "Intensidad - Duraci\u00f3n",
+                "name": "Intensidad - Duración",
                 "url_name": "indices:intensidad",
                 "permission": "indices.view_indices"
             },
             {
-                "name": "Intensidad - Duraci\u00f3n Multiestaci\u00f3n",
+                "name": "Intensidad - Duración Multiestación",
                 "url_name": "indices:intensidadmulti",
                 "permission": "indices.view_indices"
             },
@@ -268,12 +268,12 @@
                 "permission": "indices.view_indices"
             },
             {
-                "name": "Duraci\u00f3n Caudal",
+                "name": "Duración Caudal",
                 "url_name": "indices:duracaudal",
                 "permission": "indices.view_indices"
             },
             {
-                "name": "Duraci\u00f3n Caudal Multiestaci\u00f3n",
+                "name": "Duración Caudal Multiestación",
                 "url_name": "indices:duracaudalmulti",
                 "permission": "indices.view_indices"
             },
@@ -281,7 +281,7 @@
                 "name": ""
             },
             {
-                "name": "Coeficiente de Escorrent\u00eda",
+                "name": "Coeficiente de Escorrentía",
                 "url_name": "indices:escorrentia",
                 "permission": "indices.view_indices"
             }
@@ -327,28 +327,28 @@
                 "name": ""
             },
             {
-                "name": "<small>LIMNO. - </small>Gr\u00e1fico: Serie temporal",
+                "name": "<small>LIMNO. - </small>Gráfico: Serie temporal",
                 "url_name": "calidad:grafico1",
                 "permission": "calidad.view_graficos"
             },
             {
-                "name": "<small>LIMNO. - </small>Gr\u00e1fico: Serie temporal CRUDOS",
+                "name": "<small>LIMNO. - </small>Gráfico: Serie temporal CRUDOS",
                 "url_name": "calidad:crudos_grafico1",
                 "permission": "calidad.view_graficoscrudos"
             },
             {
-                "name": "<small>LIMNO. - </small>Gr\u00e1fico: Promedio horario",
+                "name": "<small>LIMNO. - </small>Gráfico: Promedio horario",
                 "url_name": "calidad:grafico2",
                 "permission": "calidad.view_graficos"
             },
             {
-                "name": "<small>LIMNO. - </small>Consulta Per\u00edodos",
+                "name": "<small>LIMNO. - </small>Consulta Períodos",
                 "url_name": "reportes:calidad_consultas_periodo",
                 "permission": "reportes.view_calidadconsultasperiodo"
             }
         ]
     },
-    "Telemetr\u00eda": {
+    "Telemetría": {
         "permission": "",
         "items": [
             {
@@ -362,17 +362,17 @@
                 "permission": "telemetria.view_calidad_consulta"
             },
             {
-                "name": "Mapa transmisi\u00f3n",
+                "name": "Mapa transmisión",
                 "url_name": "telemetria:mapa_alarma_transmision",
                 "permission": "telemetria.view_mapatransmision"
             },
             {
-                "name": "Precipitaci\u00f3n",
+                "name": "Precipitación",
                 "url_name": "telemetria:precipitacion",
                 "permission": "telemetria.view_precipitacion"
             },
             {
-                "name": "Precipitaci\u00f3n Multiestaci\u00f3n",
+                "name": "Precipitación Multiestación",
                 "url_name": "telemetria:multiestacion_precipitacion",
                 "permission": "telemetria.view_precipitacionmultiestacion"
             },
@@ -380,12 +380,12 @@
                 "name": ""
             },
             {
-                "name": "<small>HIDRO </small>Configurar visualizaci\u00f3n",
+                "name": "<small>HIDRO </small>Configurar visualización",
                 "url_name": "telemetria:configvisualizar_list",
                 "permission": "telemetria.add_configvisualizar"
             },
             {
-                "name": "<small>LIMNO. </small>Configurar visualizaci\u00f3n",
+                "name": "<small>LIMNO. </small>Configurar visualización",
                 "url_name": "telemetria:configcalidad_list",
                 "permission": "telemetria.add_configcalidad"
             },
@@ -400,7 +400,7 @@
         "permission": "",
         "items": [
             {
-                "name": "Gr\u00e1fico comparaci\u00f3n Limno. - Hidro",
+                "name": "Gráfico comparación Limno. - Hidro",
                 "url_name": "calidad:comparar_hidro",
                 "permission": "calidad.view_comparar_hidro"
             },
@@ -408,7 +408,7 @@
                 "name": ""
             },
             {
-                "name": "Asociaci\u00f3n estaciones Hidro",
+                "name": "Asociación estaciones Hidro",
                 "url_name": "calidad:asociacionhidro_index",
                 "permission": "calidad.view_asociacionhidro"
             },
