@@ -1,5 +1,3 @@
-✨ ➡️ [**LINK TO DEVELOPMENT PROJECT BOARD**](https://github.com/ImperialCollegeLondon/paricia/projects/1) ⬅️ ✨
-
 # Paricia
 
 Hydroclimatic data management system.
@@ -27,15 +25,6 @@ If installing this system from scratch:
 - **Formatting:** Definitions of the different file formats that can be imported, including specifics around delimiters, headers etc.
 - **Measurement:** The actual time-series data is stored here when raw data files are imported. A separate model (table) exists for each variable type.
 - **Management:** User management.
-
-The first four models are shown below (formatting, measurement and management are ommitted to keep the diagram simple).
-
-![Flowchart showing the database schema](static/images/database_viz.png)
-
-To regenerate the image above:
-
-- Install graphviz and pygraphviz. Simplest is often `conda install pygraphviz` to get the necessary C extensions at the same time.
-- `python manage.py graph_models importing station sensor variable -R -g -o viz.pdf`. Replace the positional arguments for the apps to be included.
 
 ### Non-obvious links and associations
 
