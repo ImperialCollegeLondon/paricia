@@ -13,9 +13,8 @@ jobs:
     uses: ./.github/workflows/check-links.yml
 
   test:
-
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     services:
       postgres:
         image: timescale/timescaledb-ha:pg14-latest
