@@ -18,4 +18,4 @@ class StationConfig(AppConfig):
     name = "station"
 
     def ready(self):
-        pass
+        import station.signals.handlers  # noqa

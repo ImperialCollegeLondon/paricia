@@ -17,4 +17,4 @@ class VariableConfig(AppConfig):
     name = "variable"
 
     def ready(self):
-        pass
+        import variable.signals.handlers  # noqa

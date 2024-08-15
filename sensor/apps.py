@@ -19,4 +19,4 @@ class SensorConfig(AppConfig):
     name = "sensor"
 
     def ready(self):
-        pass
+        import sensor.signals.handlers  # noqa

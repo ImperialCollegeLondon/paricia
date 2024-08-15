@@ -19,4 +19,4 @@ class MeasurementConfig(AppConfig):
     name = "measurement"
 
     def ready(self):
-        pass
+        import measurement.signals.handlers  # noqa
