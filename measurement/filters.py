@@ -88,9 +88,10 @@ def get_date_range(station: str, variable: str) -> Tuple[str, str]:
     return first_date, last_date
 
 
-def get_min_max(
-    station, variable
-) -> tuple[Decimal, Decimal,]:
+def get_min_max(station, variable) -> tuple[
+    Decimal,
+    Decimal,
+]:
     """Get the min and max of the data for a chosen station and variable.
 
     Args:

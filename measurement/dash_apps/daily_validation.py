@@ -657,9 +657,12 @@ def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
         Input("variable_drop", "value"),
     ],
 )
-def set_date_range_min_max(
-    chosen_station, chosen_variable
-) -> tuple[str, str, Decimal, Decimal,]:
+def set_date_range_min_max(chosen_station, chosen_variable) -> tuple[
+    str,
+    str,
+    Decimal,
+    Decimal,
+]:
     """Set the default date range and min/max based on the chosen station and
     variable."""
     start_date, end_date = get_date_range(chosen_station, chosen_variable)

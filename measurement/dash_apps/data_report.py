@@ -227,8 +227,9 @@ def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
         Input("variable_drop", "value"),
     ],
 )
-def set_date_range(
-    chosen_station, chosen_variable
-) -> tuple[str, str,]:
+def set_date_range(chosen_station, chosen_variable) -> tuple[
+    str,
+    str,
+]:
     """Set the default date range based on the chosen station and variable."""
     return get_date_range(chosen_station, chosen_variable)
