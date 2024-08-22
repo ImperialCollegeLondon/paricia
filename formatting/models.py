@@ -15,11 +15,12 @@
 from django.db import models
 from django.urls import reverse
 
+from management.models import PermissionsBase
 from station.models import Station
 from variable.models import Variable
 
 
-class Extension(models.Model):
+class Extension(PermissionsBase):
     """File extension."""
 
     extension_id = models.AutoField("Id", primary_key=True)
@@ -32,7 +33,7 @@ class Extension(models.Model):
         return reverse("format:extension_index")
 
 
-class Delimiter(models.Model):
+class Delimiter(PermissionsBase):
     """Data delimiter"""
 
     delimiter_id = models.AutoField("Id", primary_key=True)
@@ -46,7 +47,7 @@ class Delimiter(models.Model):
         return reverse("format:delimiter_index")
 
 
-class Date(models.Model):
+class Date(PermissionsBase):
     """Date format"""
 
     date_id = models.AutoField("Id", primary_key=True)
@@ -63,7 +64,7 @@ class Date(models.Model):
         ordering = ("date_id",)
 
 
-class Time(models.Model):
+class Time(PermissionsBase):
     """Time format"""
 
     time_id = models.AutoField("Id", primary_key=True)
@@ -80,7 +81,7 @@ class Time(models.Model):
         ordering = ("time_id",)
 
 
-class Format(models.Model):
+class Format(PermissionsBase):
     """Details of the data file format, combining different aspects."""
 
     format_id = models.AutoField("format_id", primary_key=True)
@@ -178,7 +179,7 @@ class Format(models.Model):
         ordering = ("-format_id",)
 
 
-class Classification(models.Model):
+class Classification(PermissionsBase):
     """Classification details, combining several properties."""
 
     cls_id = models.AutoField("Id", primary_key=True)
@@ -226,7 +227,7 @@ class Classification(models.Model):
         ordering = ("variable",)
 
 
-class Association(models.Model):
+class Association(PermissionsBase):
     """Associates a data format with a station."""
 
     association_id = models.AutoField("Id", primary_key=True)
