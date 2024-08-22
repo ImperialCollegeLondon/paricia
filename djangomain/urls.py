@@ -52,7 +52,7 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("measurement/", include("measurement.urls", namespace="measurement")),
-    path("importing/", include("importing.urls", namespace="importing")),
+    # path("importing/", include("importing.urls", namespace="importing")),
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
     # path("station/", include("station.urls", namespace="station")),
     # path("sensor/", include("sensor.urls", namespace="sensor")),
