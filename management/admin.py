@@ -81,7 +81,7 @@ def _get_queryset(db_field, user):
     app_name = db_field.related_model._meta.app_label
     model_name = db_field.related_model._meta.model_name
     user_objects = get_objects_for_user(user, f"{app_name}.change_{model_name}")
-    public_objects = db_field.related_model.objects.filter(visibility="Public")
+    public_objects = db_field.related_model.objects.filter(visibility="public")
     return user_objects | public_objects
 
 
