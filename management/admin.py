@@ -12,6 +12,7 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
 
     foreign_key_fields: list[str] = []
     limit_visibility_level = True  # limits standard users to creating private objects
+    include_object_permissions_urls = False
 
     def has_add_permission(self, request):
         """Check if the user has the correct permission to add objects."""
