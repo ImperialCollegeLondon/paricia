@@ -4,7 +4,7 @@ from .models import DataImportFull, DataImportTemp
 
 
 class DataImportTempSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source="user.username")
+    owner = serializers.ReadOnlyField(source="owner.username")
     start_date = serializers.ReadOnlyField()
     end_date = serializers.ReadOnlyField()
 
@@ -19,7 +19,7 @@ class DataImportTempSerializer(serializers.ModelSerializer):
             "date",
             "observations",
             "file",
-            "user",
+            "owner",
         ]
 
 

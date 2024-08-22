@@ -17,3 +17,6 @@ from django.apps import AppConfig
 
 class ImportingConfig(AppConfig):
     name = "importing"
+
+    def ready(self):
+        import importing.signals.handlers  # noqa
