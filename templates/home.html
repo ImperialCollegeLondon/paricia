@@ -1,13 +1,10 @@
 {% extends "base.html" %}
-
 {% load i18n %}
 {% load rest_framework %}
 {% load static %}
-{% load django_bootstrap5 %}
 {% load plotly_dash %}
 
 {% block content %}
-
 <h1>Paricia</h1>
 <div class="container py-2">
         Welcome to the Paricia system.
@@ -15,32 +12,4 @@
 <div class="{% plotly_class name='StationsMap' %} card" style="height: 100%; width: 100%">
         {% plotly_app name="StationsMap" initial_arguments=django_context ratio=1 %}
 </div>
-<!-- <div class="container py-2">
-        <table class="table">
-                <thead class="thead-light">
-                        <tr>
-                                <th scope="col" style="width: 30%">Link</th>
-                                <th scope="col" style="width: 70%">Description</th>
-                        </tr>
-                </thead>
-                <tbody>
-                        <tr>
-                                <td><a href="/swagger">swagger-ui API</a></td>
-                                <td>Swagger-ui view of API specification</td>
-                        </tr>
-                        <tr>
-                                <td><a href="/redoc">ReDoc API</a></td>
-                                <td>ReDoc view of API specification</td>
-                        </tr>
-                        <tr>
-                                <td><a href="/swagger.yaml">YAML API</a></td>
-                                <td>Download the API specification in YAML format</td>
-                        </tr>
-                        <tr>
-                                <td><a href="/swagger.json">JSON API</a></td>
-                                <td>Download the API specification in JSON format</td>
-                        </tr>
-                </tbody>
-        </table>
-</div> -->
 {% endblock %}

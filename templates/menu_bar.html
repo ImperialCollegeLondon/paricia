@@ -1,3 +1,4 @@
+{% load django_bootstrap5 %}
 {% load static %}
 {% load i18n %}
 {% load rest_framework %}
@@ -28,7 +29,7 @@
       </li>
 
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarImportingMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarImportingMenuLink" data-bs-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           Importing<span class="caret"></span></a>
         <ul class="dropdown-menu" aria-labelledby="navbarImportingMenuLink">
@@ -38,7 +39,7 @@
       </li>
 
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarMeasurementMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarMeasurementMenuLink" data-bs-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           API<span class="caret"></span></a>
         <ul class="dropdown-menu" aria-labelledby="navbarMeasurementMenuLink">
@@ -64,7 +65,7 @@
       <!-- within a dropdown so it is not clicked by mistake -->
       {% if user.is_authenticated %}
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarAdminMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarAdminMenuLink" data-bs-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">Welcome, {{user.username}}<span class="caret"></span></a>
 
         <ul class="dropdown-menu" aria-labelledby="navbarAdminMenuLink">
@@ -82,7 +83,7 @@
       {% else %}
       <!-- Otherwise we just show options to register and login -->
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarManagementMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="navbarManagementMenuLink" data-bs-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           Login/Register<span class="caret"></span></a>
         <ul class="dropdown-menu" aria-labelledby="navbarManagementMenuLink">

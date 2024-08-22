@@ -3,9 +3,8 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-exclude = [
-    "htmlcov",
-] # Exclude the coverage report file from setuptools package finder
+# Exclude the coverage report file from setuptools package finder
+exclude = ["htmlcov"]
 
 [project]
 name = "Paricia"
@@ -14,3 +13,51 @@ authors = [
     { name = "Imperial College London RSE Team", email = "ict-rse-team@imperial.ac.uk" },
 ]
 requires-python = ">=3.11"
+
+dependencies = [
+    "asgiref",
+    "Django",
+    "django-bootstrap5",
+    "django-crispy-forms",
+    "django-excel-response",
+    "django-extensions",
+    "django-filter",
+    "django-timescaledb",
+    "djangorestframework",
+    "djangorestframework-simplejwt",
+    "drf-yasg",
+    "idna",
+    "jdcal",
+    "numpy",
+    "pandas",
+    "psycopg2",
+    "pytz",
+    "PyYAML",
+    "uritemplate",
+    "crispy-bootstrap5",
+    "django-plotly-dash",
+    "dash-ag-grid",
+    "django-guardian",
+    "whitenoise",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "flake8",
+    "pip-tools",
+    "pre-commit",
+    "model_bakery",
+    "tqdm",
+]
+
+doc = [
+    "mkdocs",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "mkdocs-material",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+]
