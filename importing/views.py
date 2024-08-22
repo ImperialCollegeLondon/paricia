@@ -11,24 +11,15 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-
 import copy
-import mimetypes
 import os
 import shutil
-import urllib
 
-from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
 from rest_framework import generics
 
 from djangomain.settings import BASE_DIR
-from importing.functions import (
-    read_data_to_import,
-    save_temp_data_to_permanent,
-    validate_dates,
-)
+from importing.functions import read_data_to_import, save_temp_data_to_permanent
 from importing.models import DataImportFull, DataImportTemp
 
 from .serializers import DataImportFullSerializer, DataImportTempSerializer
@@ -40,8 +31,10 @@ class DataImportTempList(generics.ListAPIView):
     is created using an existing DataImportTemp object as a ForeignKey.
     """
 
-    queryset = DataImportTemp.objects.all()
     serializer_class = DataImportTempSerializer
+
+    def get_queryset(self):
+        return DataImportTemp.objects.filter(owner=self.request.user)
 
 
 class DataImportTempCreate(generics.CreateAPIView):
@@ -50,12 +43,11 @@ class DataImportTempCreate(generics.CreateAPIView):
     is created using an existing DataImportTemp object as a ForeignKey.
     """
 
-    queryset = DataImportTemp.objects.all()
     serializer_class = DataImportTempSerializer
 
     def perform_create(self, serializer):
         # Check permissions
-        station = serializer.validated_data["import_temp"].station
+        station = serializer.validated_data["station"]
         if not self.request.user.has_perm("station.change_station", station):
             raise PermissionDenied(
                 "Only the station owner can add measurements for this station."
@@ -74,7 +66,7 @@ class DataImportTempCreate(generics.CreateAPIView):
         serializer.validated_data["start_date"] = data["date"].iloc[0]
         serializer.validated_data["end_date"] = data["date"].iloc[-1]
         # Set user from the request
-        serializer.validated_data["user"] = self.request.user
+        serializer.validated_data["owner"] = self.request.owner
         serializer.save()
 
 
@@ -86,15 +78,10 @@ class DataImportTempDetail(generics.RetrieveUpdateDestroyAPIView):
     a ForeignKey.
     """
 
-    queryset = DataImportTemp.objects.all()
     serializer_class = DataImportTempSerializer
 
-    # TODO: will this still work with the DRF?
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        information, self.existing_data = validate_dates(self.object)
-        context["information"] = information
-        return context
+    def get_queryset(self):
+        return DataImportTemp.objects.filter(owner=self.request.user)
 
 
 class DataImportFullList(generics.ListAPIView):
@@ -102,8 +89,10 @@ class DataImportFullList(generics.ListAPIView):
     A DataImportTemp object is required as a ForeignKey.
     """
 
-    queryset = DataImportFull.objects.all()
     serializer_class = DataImportFullSerializer
+
+    def get_queryset(self):
+        return DataImportFull.objects.filter(owner=self.request.user)
 
 
 class DataImportFullCreate(generics.CreateAPIView):
@@ -165,58 +154,7 @@ class DataImportFullDetail(generics.RetrieveUpdateDestroyAPIView):
     measurement data. A DataImportTemp object is required as a ForeignKey.
     """
 
-    queryset = DataImportFull.objects.all()
     serializer_class = DataImportFullSerializer
 
-    # TODO: will this still work with the DRF?
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        information, self.existing_data = validate_dates(self.object)
-        context["information"] = information
-        return context
-
-
-########################################################################
-
-
-@permission_required("importing.download_original_file")
-def DataImportDownload(request, *args, **kwargs):
-    """Download the original file from a data upload."""
-    if request.user.is_authenticated:
-        imp_id = kwargs.get("pk")
-        data_import = DataImportFull.objects.get(data_import_id=imp_id)
-        file_path = str(data_import.filepath)
-        output_filename = os.path.basename(file_path)
-        fp = open(file_path, "rb")
-        response = HttpResponse(fp.read())
-        fp.close()
-        type, encoding = mimetypes.guess_type(output_filename)
-        if type is None:
-            type = "application/octet-stream"
-        response["Content-Type"] = type
-        response["Content-Length"] = str(os.stat(file_path).st_size)
-        if encoding is not None:
-            response["Content-Encoding"] = encoding
-
-        # To inspect details for the below code, see http://greenbytes.de/tech/tc2231/
-        if "WebKit" in request.META["HTTP_USER_AGENT"]:
-            # Safari 3.0 and Chrome 2.0 accepts UTF-8 encoded string directly.
-            # filename_header = 'filename=%s' % output_filename.encode('utf-8')
-            filename_header = "filename={}".format(
-                urllib.parse.quote(output_filename.encode("utf-8"))
-            )
-        elif "MSIE" in request.META["HTTP_USER_AGENT"]:
-            # IE does not support internationalized filename at all.
-            # It can only recognize internationalized URL, so we do the trick via
-            # routing rules.
-            filename_header = ""
-        else:
-            # For others like Firefox, we follow RFC2231 (encoding extension in HTTP
-            # headers).
-            # filename_header = 'filename*=UTF-8\'\'%s' %
-            # urllib.quote(output_filename.encode('utf-8'))
-            filename_header = "filename*=UTF-8''{}".format(
-                urllib.parse.quote(output_filename.encode("utf-8"))
-            )
-        response["Content-Disposition"] = "attachment; " + filename_header
-        return response
+    def get_queryset(self):
+        return DataImportFull.objects.filter(owner=self.request.user)
