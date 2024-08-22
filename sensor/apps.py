@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.apps import AppConfig
 
@@ -20,4 +19,4 @@ class SensorConfig(AppConfig):
     name = "sensor"
 
     def ready(self):
-        import sensor.signals.handlers
+        import sensor.signals.handlers  # noqa

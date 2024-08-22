@@ -42,8 +42,7 @@ years = (end - start).days // 365
 
 
 def random_date(start_: datetime, end_: datetime) -> datetime:
-    """
-    This function will return a random datetime between two datetime
+    """This function will return a random datetime between two datetime
     objects.
     """
     delta = end_ - start_

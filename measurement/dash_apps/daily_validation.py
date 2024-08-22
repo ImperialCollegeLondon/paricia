@@ -33,7 +33,7 @@ app = DjangoDash(
 )
 
 # Globals
-SELECTED_DAY: date = None
+SELECTED_DAY: date | None = None
 DATA_SUMMARY: pd.DataFrame = pd.DataFrame()
 DATA_GRANULAR: pd.DataFrame = pd.DataFrame()
 
@@ -549,15 +549,15 @@ def callbacks(
             None,
         )
         if new_selected_day is not None:
-            SELECTED_DAY = new_selected_day
             detail_table_refresh_required = True
             detail_table_reset_selection = True
             out_tab_detail_disabled = False
             out_tab_detail_label = (
-                f"Detail of Selected Day ({SELECTED_DAY.strftime('%Y-%m-%d')})"
+                f"Detail of Selected Day ({new_selected_day.strftime('%Y-%m-%d')})"
             )
             out_tabs_value = "tab-detail"
             out_status = ""
+            SELECTED_DAY = new_selected_day
         else:
             out_status = "No data for selected day"
 
@@ -631,7 +631,9 @@ def callbacks(
     [Output("station_drop", "options"), Output("station_drop", "value")],
     Input("stations_list", "children"),
 )
-def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], str]:
+def populate_stations_dropdown(
+    station_codes: list[str],
+) -> tuple[list[dict[str, str]], str | None]:
     """Populate the station dropdown based on the list of station codes."""
     return get_station_options(station_codes)
 
@@ -640,7 +642,9 @@ def populate_stations_dropdown(station_codes: list[str]) -> tuple[list[dict], st
     [Output("variable_drop", "options"), Output("variable_drop", "value")],
     Input("station_drop", "value"),
 )
-def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
+def populate_variable_dropdown(
+    chosen_station: str,
+) -> tuple[list[dict[str, str]], str | None]:
     """Populate the variable dropdown based on the chosen station."""
     return get_variable_options(chosen_station)
 
@@ -659,9 +663,15 @@ def populate_variable_dropdown(chosen_station: str) -> tuple[list[dict], str]:
 )
 def set_date_range_min_max(
     chosen_station, chosen_variable
-) -> tuple[str, str, Decimal, Decimal,]:
+) -> tuple[
+    str,
+    str,
+    Decimal,
+    Decimal,
+]:
     """Set the default date range and min/max based on the chosen station and
-    variable."""
+    variable.
+    """
     start_date, end_date = get_date_range(chosen_station, chosen_variable)
     min_val, max_val = get_min_max(chosen_station, chosen_variable)
     return start_date, end_date, min_val, max_val

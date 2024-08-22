@@ -15,13 +15,13 @@ import zoneinfo
 from datetime import datetime
 from logging import getLogger
 from numbers import Number
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 from djangomain.settings import BASE_DIR
-from formatting.models import Association, Classification, Format
+from formatting.models import Classification, Format
 from importing.models import DataImportTemp
 from measurement.models import Measurement
 
@@ -30,10 +30,11 @@ one_second = np.timedelta64(1, "s")
 
 
 def validate_dates(data_import):
-    """
-    Verify if there already exists data for the dates of the data being imported.
+    """Verify if there already exists data for the dates of the data being imported.
+
     Args:
         data_import: DataImportFull or DataImportTemp object.
+
     Returns:
         tuple of:
             result: (list of dicts): one per classification for this file format of
@@ -74,7 +75,7 @@ def validate_dates(data_import):
     return result, overwrite
 
 
-def get_last_uploaded_date(station_id: int, var_code: str) -> Optional[datetime]:
+def get_last_uploaded_date(station_id: int, var_code: str) -> datetime | None:
     """Get the last date of uploaded data for a given station ID and variable code.
 
     Args:
@@ -223,7 +224,7 @@ def read_data_to_import(source_file: Any, file_format: Format, timezone: str):
     return process_datetime_columns(data, file_format, timezone)
 
 
-def standardise_datetime(date_time: Any, datetime_format: str) -> Optional[datetime]:
+def standardise_datetime(date_time: Any, datetime_format: str) -> datetime:
     """Returns a datetime object in the case that date_time is not already in that form.
 
     Args:
@@ -234,7 +235,6 @@ def standardise_datetime(date_time: Any, datetime_format: str) -> Optional[datet
     Returns:
         A datetime object or None if date_time is not in a recognised format.
     """
-
     if isinstance(date_time, datetime):
         return date_time
     elif isinstance(date_time, np.datetime64):
@@ -256,7 +256,7 @@ def standardise_datetime(date_time: Any, datetime_format: str) -> Optional[datet
         _date_time = datetime.strptime(date_time, datetime_format)
     except Exception as e:
         getLogger().error(f"Error parsing date: {date_time} - {e}")
-        _date_time = None
+        raise e
     return _date_time
 
 
@@ -314,10 +314,10 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
 
 
 def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
-    """
-    Construct the "matrix" or results table. Does various cleaning / simple
+    """Construct the "matrix" or results table. Does various cleaning / simple
     transformations depending on the date format, type of data (accumulated,
     incremental...) and deals with NANs.
+
     Args:
         matrix_source: raw data file path
         file_format: a formatting.Format object.
@@ -325,7 +325,6 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
         file).
     TODO: Probably refactor into smaller chunks.
     """
-
     # Get the "preformatted matrix" sorted by date col
     matrix = read_data_to_import(matrix_source, file_format, station.timezone)
     # Find start and end dates from top and bottom row
@@ -441,9 +440,8 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
 
 
 def standardise_float(val_str):
-    """
-    Removes commas from strings representing numbers that use a full stop as a decimal
-    separator.
+    """Removes commas from strings for numbers that use a period as a decimal separator.
+
     Args: val_str: string or Number-like
     Returns: val_num: float or None
     """
@@ -458,8 +456,7 @@ def standardise_float(val_str):
 
 
 def standardise_float_comma(val_str):
-    """
-    For strings representing numbers that use a comma as a decimal separator:
+    """For strings representing numbers that use a comma as a decimal separator:
     (i) Removes full stops
     (ii) Replaces commas for full stops
     Args: val_str: string or Number-like

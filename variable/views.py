@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.http import JsonResponse
 from rest_framework import generics
@@ -21,54 +20,42 @@ import variable.serializers as serializers
 
 
 class UnitList(generics.ListCreateAPIView):
-    """
-    List all units, or create a new unit.
-    """
+    """List all units, or create a new unit."""
 
     queryset = var.Unit.objects.all()
     serializer_class = serializers.UnitSerializer
 
 
 class UnitDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a unit.
-    """
+    """Retrieve, update or delete a unit."""
 
     queryset = var.Unit.objects.all()
     serializer_class = serializers.UnitSerializer
 
 
 class VariableList(generics.ListCreateAPIView):
-    """
-    List all variables, or create a new variable.
-    """
+    """List all variables, or create a new variable."""
 
     queryset = var.Variable.objects.all()
     serializer_class = serializers.VariableSerializer
 
 
 class VariableDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a variable.
-    """
+    """Retrieve, update or delete a variable."""
 
     queryset = var.Variable.objects.all()
     serializer_class = serializers.VariableSerializer
 
 
 class SensorInstallationList(generics.ListCreateAPIView):
-    """
-    List all sensor installations, or create a new sensor installation.
-    """
+    """List all sensor installations, or create a new sensor installation."""
 
     queryset = var.SensorInstallation.objects.all()
     serializer_class = serializers.SensorInstallationSerializer
 
 
 class SensorInstallationDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a sensor installation.
-    """
+    """Retrieve, update or delete a sensor installation."""
 
     queryset = var.SensorInstallation.objects.all()
     serializer_class = serializers.SensorInstallationSerializer

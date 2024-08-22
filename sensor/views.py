@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse
@@ -23,54 +22,42 @@ import sensor.serializers as serializers
 
 
 class SensorTypeList(generics.ListCreateAPIView):
-    """
-    List all sensor types, or create a new sensor type.
-    """
+    """List all sensor types, or create a new sensor type."""
 
     queryset = sens.SensorType.objects.all()
     serializer_class = serializers.SensorTypeSerializer
 
 
 class SensorTypeDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a sensor type.
-    """
+    """Retrieve, update or delete a sensor type."""
 
     queryset = sens.SensorType.objects.all()
     serializer_class = serializers.SensorTypeSerializer
 
 
 class SensorBrandList(generics.ListCreateAPIView):
-    """
-    List all sensor brands, or create a new sensor brand.
-    """
+    """List all sensor brands, or create a new sensor brand."""
 
     queryset = sens.SensorBrand.objects.all()
     serializer_class = serializers.SensorBrandSerializer
 
 
 class SensorBrandDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a sensor brand.
-    """
+    """Retrieve, update or delete a sensor brand."""
 
     queryset = sens.SensorBrand.objects.all()
     serializer_class = serializers.SensorBrandSerializer
 
 
 class SensorList(generics.ListCreateAPIView):
-    """
-    List all sensors, or create a new sensor.
-    """
+    """List all sensors, or create a new sensor."""
 
     queryset = sens.Sensor.objects.all()
     serializer_class = serializers.SensorSerializer
 
 
 class SensorDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a sensor.
-    """
+    """Retrieve, update or delete a sensor."""
 
     queryset = sens.Sensor.objects.all()
     serializer_class = serializers.SensorSerializer

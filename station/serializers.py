@@ -23,52 +23,52 @@ class CountrySerializer(serializers.ModelSerializer):
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Region
-        exclude = []
+        exclude: list[str] = []
 
 
 class EcosystemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ecosystem
-        exclude = []
+        exclude: list[str] = []
 
 
 class InstitutionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institution
-        exclude = []
+        exclude: list[str] = []
 
 
 class StationTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = StationType
-        exclude = []
+        exclude: list[str] = []
 
 
 class PlaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Place
-        exclude = []
+        exclude: list[str] = []
 
 
 class BasinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Basin
-        exclude = []
+        exclude: list[str] = []
 
 
 class PlaceBasinSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceBasin
-        exclude = []
+        exclude: list[str] = []
 
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        exclude = []
+        exclude: list[str] = []
 
 
 class DeltaTSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeltaT
-        exclude = []
+        exclude: list[str] = []

@@ -339,7 +339,7 @@ def save_validated_days(data: pd.DataFrame) -> None:
 
 
 def reset_validated_days(
-    station: str, variable: str, start_date: datetime.date, end_date: datetime.date
+    station: str, variable: str, start_date: str, end_date: str
 ) -> None:
     """Resets validation and active status for the selected data.
 

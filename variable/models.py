@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.db import models
 from django.urls import reverse
@@ -22,8 +21,9 @@ from station.models import Station
 
 
 class Unit(PermissionsBase):
-    """
-    Unit of measurement with a name and an initialised form e.g. metres per second, m/s.
+    """Unit of measurement with a name and an initialised form.
+
+    For example, e.g. metres per second, m/s.
     """
 
     unit_id = models.AutoField("Id", primary_key=True)
@@ -41,8 +41,7 @@ class Unit(PermissionsBase):
 
 
 class Variable(PermissionsBase):
-    """
-    A variable e.g. precipitation, wind speed, wind direction, soil moisture,
+    """A variable e.g. precipitation, wind speed, wind direction, soil moisture,
     with an associated unit.
     The variable_code must match the name of one of the classes in measurement.models.
     There are max and min allowed values as well as:
@@ -105,8 +104,7 @@ class Variable(PermissionsBase):
 
 
 class SensorInstallation(PermissionsBase):
-    """
-    Represents an installation of a Sensor at a Station, which measures a Variable.
+    """Represents an installation of a Sensor at a Station, which measures a Variable.
     Metadata for installation and finishing date, as well as state (active or not).
     """
 

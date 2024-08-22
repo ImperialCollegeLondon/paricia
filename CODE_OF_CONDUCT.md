@@ -59,7 +59,7 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leader responsible for enforcement, [Prof Wouter 
+reported to the community leader responsible for enforcement, [Prof Wouter
 Buytaert](https://www.imperial.ac.uk/people/w.buytaert).
 All complaints will be reviewed and investigated promptly and fairly.
 

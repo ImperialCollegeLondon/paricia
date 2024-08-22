@@ -14,7 +14,7 @@
 import json
 from functools import lru_cache
 from pathlib import Path
-from typing import List, NamedTuple, Optional
+from typing import NamedTuple
 
 
 class Entry(NamedTuple):
@@ -26,12 +26,13 @@ class Entry(NamedTuple):
 class Tab(NamedTuple):
     name: str = ""
     permission: str = ""
-    items: List[Entry] = []
+    items: list[Entry] = []
 
 
 menu_tab_html = """
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarInfoRed" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarInfoRed" role="button"
+    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     {tab}
     </a>
     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -45,7 +46,7 @@ menu_item_divider_html = """<div class="dropdown-divider"></div>"""
 
 
 @lru_cache
-def menu_struct(filename: Optional[Path] = None) -> List[Tab]:
+def menu_struct(filename: Path | None = None) -> list[Tab]:
     """Returns the menu structure.
 
     As the function is cached, it will be called only once when the webapp is launched.
@@ -62,9 +63,9 @@ def menu_struct(filename: Optional[Path] = None) -> List[Tab]:
     with filename.open("r") as f:
         struct = json.load(f)
 
-    formatted: List[Tab] = []
+    formatted: list[Tab] = []
     for tab, details in struct.items():
-        entries: List[Entry] = []
+        entries: list[Entry] = []
         for entry in details.get("items", []):
             entries.append(Entry(**entry))
         formatted.append(Tab(tab, details.get("permission", ""), entries))

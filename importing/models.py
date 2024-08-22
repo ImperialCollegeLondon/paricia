@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -25,8 +24,7 @@ User = get_user_model()
 
 
 class DataImportTemp(models.Model):
-    """
-    Used for importing data temporarily before full import to the database.
+    """Used for importing data temporarily before full import to the database.
     start_date and end_date refer to the first and last dates of the data and are
     populated automatically from the data file. They are used to flag whether any
     existing data from this station would be overwritten upon import.
@@ -61,8 +59,7 @@ class DataImportTemp(models.Model):
 
 
 class DataImportFull(models.Model):
-    """
-    Used for importing data permanently (fully) to the database. Simply relates
+    """Used for importing data permanently (fully) to the database. Simply relates
     a DataImportTemp object to the new, permanent file location.
     """
 

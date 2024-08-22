@@ -30,7 +30,6 @@ class StationDeletionTest(TestCase):
 
     def test_delete_country(self):
         """Test for appropriate behavior when deleting the country."""
-
         # Country deletion should be allowed
         self.country.delete()
 
@@ -40,7 +39,6 @@ class StationDeletionTest(TestCase):
 
     def test_delete_owner(self):
         """Test for appropriate behavior when deleting the owner."""
-
         # Owner deletion should be allowed
         self.user_owner.delete()
 
@@ -73,7 +71,6 @@ class MeasurementDeletionTest(TestCase):
 
     def test_delete_station(self):
         """Test for appropriate behavior when deleting the station."""
-
         # Station deletion should be prevented while measurement exists
         with self.assertRaises(ProtectedError):
             self.station.delete()
@@ -84,7 +81,6 @@ class MeasurementDeletionTest(TestCase):
 
     def test_delete_variable(self):
         """Test for appropriate behavior when deleting the variable."""
-
         # Variable deletion should be prevented while measurement exists
         with self.assertRaises(ProtectedError):
             self.variable.delete()
@@ -95,7 +91,6 @@ class MeasurementDeletionTest(TestCase):
 
     def test_delete_owner(self):
         """Test for appropriate behavior when deleting the owner."""
-
         # Owner deletion should be prevented while measurement exists
         with self.assertRaises(ProtectedError):
             self.user_owner.delete()

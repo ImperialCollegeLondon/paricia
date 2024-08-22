@@ -29,4 +29,4 @@ apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 # Set the password for root to "Docker!".
-echo "root:Docker!" | chpasswd 
+echo "root:Docker!" | chpasswd

@@ -46,7 +46,7 @@ class TestValidationFunctions(TestCase):
             for t in self.date_range
         ]
 
-        [r.clean() for r in records]  # type: ignore
+        [r.clean() for r in records]
         Measurement.objects.bulk_create(records)
 
     def test_get_data_to_validate(self):

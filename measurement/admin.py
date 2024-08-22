@@ -58,7 +58,7 @@ class ReportAdmin(MeasurementBaseAdmin):
     """Admin class for the Report model."""
 
     list_display = ["id", "report_type"] + MeasurementBaseAdmin.list_display[1:]
-    list_filter = ["report_type"] + MeasurementBaseAdmin.list_filter
+    list_filter = ["report_type", *MeasurementBaseAdmin.list_filter]
 
 
 @admin.register(Measurement)
@@ -71,5 +71,5 @@ class MeasurementAdmin(MeasurementBaseAdmin):
         "is_active",
         "overwritten",
     ] + MeasurementBaseAdmin.list_display[1:]
-    list_filter = ["is_validated", "is_active"] + MeasurementBaseAdmin.list_filter
+    list_filter = ["is_validated", "is_active", *MeasurementBaseAdmin.list_filter]
     readonly_fields = [r for r in dir(Measurement) if r.startswith("raw_")]

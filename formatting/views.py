@@ -11,7 +11,6 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from rest_framework import generics
 
@@ -20,126 +19,98 @@ import formatting.serializers as serializers
 
 
 class ExtensionList(generics.ListCreateAPIView):
-    """
-    List all extensions, or create a new extension.
-    """
+    """List all extensions, or create a new extension."""
 
     queryset = fmt.Extension.objects.all()
     serializer_class = serializers.ExtensionSerializer
 
 
 class ExtensionDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a extension.
-    """
+    """Retrieve, update or delete a extension."""
 
     queryset = fmt.Extension.objects.all()
     serializer_class = serializers.ExtensionSerializer
 
 
 class DelimiterList(generics.ListCreateAPIView):
-    """
-    List all delimiters, or create a new delimiter.
-    """
+    """List all delimiters, or create a new delimiter."""
 
     queryset = fmt.Delimiter.objects.all()
     serializer_class = serializers.DelimiterSerializer
 
 
 class DelimiterDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a delimiter.
-    """
+    """Retrieve, update or delete a delimiter."""
 
     queryset = fmt.Delimiter.objects.all()
     serializer_class = serializers.DelimiterSerializer
 
 
 class DateList(generics.ListCreateAPIView):
-    """
-    List all dates, or create a new date.
-    """
+    """List all dates, or create a new date."""
 
     queryset = fmt.Date.objects.all()
     serializer_class = serializers.DateSerializer
 
 
 class DateDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a date.
-    """
+    """Retrieve, update or delete a date."""
 
     queryset = fmt.Date.objects.all()
     serializer_class = serializers.DateSerializer
 
 
 class TimeList(generics.ListCreateAPIView):
-    """
-    List all times, or create a new time.
-    """
+    """List all times, or create a new time."""
 
     queryset = fmt.Time.objects.all()
     serializer_class = serializers.TimeSerializer
 
 
 class TimeDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a time.
-    """
+    """Retrieve, update or delete a time."""
 
     queryset = fmt.Time.objects.all()
     serializer_class = serializers.TimeSerializer
 
 
 class FormatList(generics.ListCreateAPIView):
-    """
-    List all formats, or create a new format.
-    """
+    """List all formats, or create a new format."""
 
     queryset = fmt.Format.objects.all()
     serializer_class = serializers.FormatSerializer
 
 
 class FormatDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a format.
-    """
+    """Retrieve, update or delete a format."""
 
     queryset = fmt.Format.objects.all()
     serializer_class = serializers.FormatSerializer
 
 
 class ClassificationList(generics.ListCreateAPIView):
-    """
-    List all classifications, or create a new classification.
-    """
+    """List all classifications, or create a new classification."""
 
     queryset = fmt.Classification.objects.all()
     serializer_class = serializers.ClassificationSerializer
 
 
 class ClassificationDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a classification.
-    """
+    """Retrieve, update or delete a classification."""
 
     queryset = fmt.Classification.objects.all()
     serializer_class = serializers.ClassificationSerializer
 
 
 class AssociationList(generics.ListCreateAPIView):
-    """
-    List all associations, or create a new association.
-    """
+    """List all associations, or create a new association."""
 
     queryset = fmt.Association.objects.all()
     serializer_class = serializers.AssociationSerializer
 
 
 class AssociationDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete an association.
-    """
+    """Retrieve, update or delete an association."""
 
     queryset = fmt.Association.objects.all()
     serializer_class = serializers.AssociationSerializer

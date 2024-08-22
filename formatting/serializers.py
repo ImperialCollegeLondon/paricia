@@ -14,40 +14,40 @@ from .models import (
 class ExtensionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Extension
-        exclude = []
+        exclude: list[str] = []
 
 
 class DelimiterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Delimiter
-        exclude = []
+        exclude: list[str] = []
 
 
 class DateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Date
-        exclude = []
+        exclude: list[str] = []
 
 
 class TimeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Time
-        exclude = []
+        exclude: list[str] = []
 
 
 class FormatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Format
-        exclude = []
+        exclude: list[str] = []
 
 
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classification
-        exclude = []
+        exclude: list[str] = []
 
 
 class AssociationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Association
-        exclude = []
+        exclude: list[str] = []

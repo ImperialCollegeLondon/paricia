@@ -9,9 +9,7 @@ from station.models import Station
 
 
 class HomePageView(TemplateView):
-    """
-    View for displaying the home page and map dash app.
-    """
+    """View for displaying the home page and map dash app."""
 
     def get(self, request, *args, **kwargs):
         from .dash_apps import stations_map  # noqa: F401
