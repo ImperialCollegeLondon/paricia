@@ -17,3 +17,6 @@ from django.apps import AppConfig
 
 class FormattingConfig(AppConfig):
     name = "formatting"
+
+    def ready(self):
+        import formatting.signals.handlers  # noqa
