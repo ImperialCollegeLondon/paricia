@@ -145,7 +145,7 @@ uritemplate==4.1.1
     # via
     #   Paricia (pyproject.toml)
     #   drf-yasg
-werkzeug==3.0.3
+werkzeug==3.0.4
     # via
     #   django-plotly-dash
     #   flask

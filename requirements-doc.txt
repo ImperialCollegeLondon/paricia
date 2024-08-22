@@ -242,7 +242,7 @@ urllib3==2.2.2
     # via requests
 watchdog==4.0.2
     # via mkdocs
-werkzeug==3.0.3
+werkzeug==3.0.4
     # via
     #   django-plotly-dash
     #   flask
