@@ -4,13 +4,12 @@ from django.dispatch import receiver
 
 from management.models import PermissionsBase
 
-from ..models import DataImportFull, DataImportTemp
+from ..models import DataImport
 
 User = get_user_model()
 
 
-@receiver(post_save, sender=DataImportFull)
-@receiver(post_save, sender=DataImportTemp)
+@receiver(post_save, sender=DataImport)
 def set_object_permissions(sender, instance: PermissionsBase, **kwargs):
     """Set object-level permissions"."""
     instance.set_object_permissions()
@@ -19,5 +18,4 @@ def set_object_permissions(sender, instance: PermissionsBase, **kwargs):
 @receiver(post_migrate)
 def set_model_permissions(sender, **kwargs):
     """Set model-level permissions."""
-    for model in [DataImportFull, DataImportTemp]:
-        model.set_model_permissions()
+    DataImport.set_model_permissions()
