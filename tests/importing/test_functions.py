@@ -95,7 +95,7 @@ class TestDateFunctions(TestCase):
 
         from formatting.models import Format
         from importing.functions import read_data_to_import
-        from importing.models import DataImportTemp
+        from importing.models import DataImport
         from measurement.models import Measurement
         from station.models import TIMEZONES, Station
         from variable.models import Variable
@@ -119,12 +119,13 @@ class TestDateFunctions(TestCase):
             content=b"some data file", name="test_upload.csv"
         )
 
-        self.data_import_temp = DataImportTemp.objects.create(
+        self.data_import = DataImport.objects.create(
             station=self.station,
             format=self.file_format,
             start_date=start_date,
             end_date=end_date,
-            file=sample_file,
+            rawfile=sample_file,
+            records=matrix.shape[0],
         )
 
         # Two lines of dummy data from the actual file
@@ -149,7 +150,7 @@ class TestDateFunctions(TestCase):
     def test_validate_dates(self):
         from importing.functions import validate_dates
 
-        validation = validate_dates(self.data_import_temp)
+        validation = validate_dates(self.data_import)
         self.assertEqual(validation[0][0]["variable_code"], "flow")
         self.assertTrue(validation[0][0]["exists"])
         self.assertEqual(validation[0][1]["variable_code"], "waterlevel")
@@ -198,9 +199,8 @@ class TestProcessDatetimeColumns(TestCase):
     def test_process_datetime_columns_same_column(self):
         import pandas as pd
 
-        from formatting.models import Date, Delimiter, Time
+        from formatting.models import Date, Delimiter, Format, Time
         from importing.functions import process_datetime_columns
-        from importing.models import Format
 
         # Prepare test data
         data = pd.DataFrame(
@@ -238,9 +238,8 @@ class TestProcessDatetimeColumns(TestCase):
     def test_process_datetime_columns_different_columns(self):
         import pandas as pd
 
-        from formatting.models import Date, Delimiter, Time
+        from formatting.models import Date, Delimiter, Format, Time
         from importing.functions import process_datetime_columns
-        from importing.models import Format
 
         # Prepare test data
         data = pd.DataFrame(
