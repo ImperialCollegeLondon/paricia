@@ -63,3 +63,4 @@ class DataImport(PermissionsBase):
 
         if self.reprocess:
             self.status = "N"
+            self.reprocess = False
