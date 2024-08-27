@@ -29,7 +29,6 @@ services:
       - .:/usr/src/app
     ports:
       - 8000:8000
-      - 2222:2222
     depends_on:
       db:
         condition: service_healthy
