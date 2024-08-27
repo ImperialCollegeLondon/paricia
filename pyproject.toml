@@ -39,6 +39,7 @@ dependencies = [
     "dash-ag-grid",
     "django-guardian",
     "whitenoise",
+    "huey",
 ]
 
 [project.optional-dependencies]

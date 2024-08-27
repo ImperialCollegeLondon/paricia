@@ -84,6 +84,8 @@ flask==3.0.3
     # via
     #   dash
     #   django-plotly-dash
+huey==2.5.1
+    # via Paricia (pyproject.toml)
 idna==3.7
     # via Paricia (pyproject.toml)
 inflection==0.5.1
