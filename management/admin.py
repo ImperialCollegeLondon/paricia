@@ -84,13 +84,18 @@ def _get_queryset(db_field, user):
     """Return a queryset based on the permissions of the user.
 
     Returns queryset of public objects and objects that the user has change permisions
-    for.
+    for. For the case of `Station` objects, having the `change` pemrission is
+    necessary to include the object in the queryset - being `Public` is not enough.
 
     """
     app_name = db_field.related_model._meta.app_label
     model_name = db_field.related_model._meta.model_name
     user_objects = get_objects_for_user(user, f"{app_name}.change_{model_name}")
-    public_objects = db_field.related_model.objects.filter(visibility="public")
+    public_objects = (
+        db_field.related_model.objects.none()
+        if model_name == "station"
+        else db_field.related_model.objects.filter(visibility="public")
+    )
     return user_objects | public_objects
 
 
