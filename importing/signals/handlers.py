@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from management.models import PermissionsBase
 
 from ..models import DataImport
+from ..tasks import ingest_data
 
 User = get_user_model()
 
@@ -13,6 +14,7 @@ User = get_user_model()
 def set_object_permissions(sender, instance: PermissionsBase, **kwargs):
     """Set object-level permissions"."""
     instance.set_object_permissions()
+    ingest_data(instance.pk)
 
 
 @receiver(post_migrate)

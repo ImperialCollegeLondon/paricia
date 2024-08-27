@@ -15,11 +15,12 @@ class DataImportAdmin(PermissionsBaseAdmin):
         "data_import_id",
         "station",
         "format",
+        "status",
         "date",
         "start_date",
         "end_date",
         "records",
     ]
-    readonly_fields = ["date", "start_date", "end_date", "records"]
+    readonly_fields = ["date", "start_date", "end_date", "records", "status", "log"]
     foreign_key_fields = ["station", "format"]
     search_fields = ["station__name", "format__name"]
