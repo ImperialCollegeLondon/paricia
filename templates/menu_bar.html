@@ -22,20 +22,9 @@
       </li>
 
       <!-- If the user is authenticated, they can access the validation page -->
-      <!-- As well as importing data functionality and the (remaining API) -->
       {% if user.is_authenticated %}
       <li class="nav-item">
         <a class="dropdown-item" href="/measurement/daily_validation">Validation</a>
-      </li>
-
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarMeasurementMenuLink" data-bs-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          API<span class="caret"></span></a>
-        <ul class="dropdown-menu" aria-labelledby="navbarMeasurementMenuLink">
-          <li><a class="dropdown-item" href="/measurement/measurement">Measurements</a></li>
-          <li><a class="dropdown-item" href="/measurement/report">Reports</a></li>
-        </ul>
       </li>
       {% endif %}
 
@@ -43,6 +32,10 @@
 
     <!-- A separate menu for the user to log in or log out -->
     <ul class="nav navbar-nav pull-right">
+
+      <li class="nav-item">
+        <a class="nav-link" href="https://imperialcollegelondon.github.io/paricia/">Documentation</a>
+      </li>
 
       <!-- If the user is staff, we show the link to the admin -->
       {% if user.is_staff %}
