@@ -10,6 +10,12 @@ markdown_extensions:
       check_paths: true
   - toc:
       permalink: "¤"
+  - markdown_include.include:
+      base_path: .
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 plugins:
   - search
@@ -32,5 +38,7 @@ plugins:
 
 nav:
   - Paricia documentation: index.md
+  - Contributing: contributing.md
+  - Project structure: code_structure.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/

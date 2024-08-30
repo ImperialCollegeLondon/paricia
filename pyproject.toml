@@ -60,6 +60,7 @@ doc = [
     "mkdocs-gen-files",
     "mkdocs-literate-nav",
     "mkdocs-section-index",
+    "markdown-include",
 ]
 
 [tool.mypy] # TODO: increase the strictness here

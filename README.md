@@ -1,84 +1,23 @@
+<!-- markdownlint-disable MD041 -->
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fimperialcollegelondon.github.io%2Fparicia%2F&label=Docs)
+](https://imperialcollegelondon.github.io/paricia/)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fdata.riverflow.io%2F&label=Paricia%20Live)](https://data.riverflow.io/)
+[![GitHub](https://img.shields.io/github/license/ImperialCollegeLondon/paricia)](https://raw.githubusercontent.com/ImperialCollegeLondon/paricia/develop/LICENSE)
+[![CI Paricia](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/paricia/develop.svg)](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/paricia/develop)
+[![GitHub Release](https://img.shields.io/github/v/release/imperialcollegelondon/paricia)](https://github.com/ImperialCollegeLondon/paricia/releases)
+
 # Paricia
 
-Hydroclimatic data management system.
+Paricia is a **hydroclimatic data management system**. Originally focused on managing data from stations in the Andes region, it has recently generalised to be able to ingest data from **anywhere in the world**.
 
-This README is a work in progress.
+A live version of the tool can be found in:
 
-## Getting started
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fdata.riverflow.io%2F&label=Access%20Paricia)](https://data.riverflow.io/)
 
-If installing this system from scratch:
-
-- Run `docker-compose up --build` (requires [Docker](https://www.docker.com/) to be running)
-- If you want to load initial data (variables, units, stations...):
-  - In a separate terminal run `docker exec -it <name_of_docker_container> bash` e.g. `docker exec -it paricia-web-1 bash` to start a bash session in the container. You can find the name of the container in the Docker Desktop GUI, or by running `docker container ls`.
-  - Run `python manage.py shell < utilities/load_initial_data.py`.
-  - Create **admin** user running `python manage.py createsuperuser`.
-
-## Database Schema
-
-### The database is split into several applications
-
-- **Station:** Everything to do with physical stations including their location, region, ecosystem etc.
-- **Sensor:** Information on physical sensors including brand and type.
-- **Variable:** Information about measured variables including units, max/min allowed values etc.
-- **Importing:** Entries are created in this app when datasets are imported, storing information on the the raw data file itself, the user, time of import etc.
-- **Formatting:** Definitions of the different file formats that can be imported, including specifics around delimiters, headers etc.
-- **Measurement:** The actual time-series data is stored here when raw data files are imported. A separate model (table) exists for each variable type.
-- **Management:** User management.
-
-### Non-obvious links and associations
-
-- A `DataImportTemp` object is created when a data file is initially uploaded and functions are run to check its validity and the time range, variable type and station involved, and therefore whether any data would be overwritten. A `DataImportFull` object is created to confirm the import, creating entries in the Measurement app. Each `DataImportFull` is related to one `DataImportTemp` object.
-- Each `Sensor` is linked to a `Station` and the `Variable` it measures via the `SensorInstallation` object.
-
-## Project structure
-
-- The top-level directory contains various config files and directories for git, github, docker and pip.
-- Each django app is in a subdirectory and `djangomain` contains the main django settings, views and urls.
-- The `static` directory contains the static files for the project.
-- The `templates` directory contains the templates for the project.
-- The `utilities` directory contains helper functions for the project.
-- The `tests` directory contains all unit tests for the project.
-
-### Unused code
-
-This project is based on a previous codebase that includes many more features in many more apps.
-It is hoped that over time these features will be refactored and included again in the system.
-Rather than removing the associated code, it has been moved to `unused_apps`.
-Similarly, there are `templates/unused_templates` and `utilities/unused_scripts`.
-
-## Development
-
-Paricia is developed at [Imperial College London](https://www.imperial.ac.uk/) by the Research Software Engineering team within the Research Computing Group.
-The project is coordinated by [Prof. Wouter Buytaert](https://www.imperial.ac.uk/people/w.buytaert).
+Paricia is developed at [Imperial College London](https://www.imperial.ac.uk/) by the Research Software Engineering team within the Research Computing Group. The project is coordinated by [Prof. Wouter Buytaert](https://www.imperial.ac.uk/people/w.buytaert), who leads a group in the Civil Engineering Department and that focus on the impact of environmental change on the water cycle and its consequences for managing water resources. This work involves gathering and processing time-series data like water level, flow and temperature from various monitoring stations based in mountainous areas such as the Andes and Himalayas.
 
 The code was originally based on the iMHEA platform - Plataforma para la **I**niciativa Regional de **M**onitoreo **H**idrológico de **E**cosistemas **A**ndinos. We are grateful to the following instututions for the development of iMHEA and for sharing their code to use as a starting point for Paricia:
 
-- Fondo para la Proteccion del Agua (FONAG), Ecuador.
-- Empresa Pública Metropolitana de Agua Potable Y Saneamiento de Quito (EPMAPS)m Ecuador.
-
-### Tests
-
-The tests are run with `python manage.py test` from inside the docker container.
-
-For that to work, development-related dependencies needs to be installed. To do that, get into the container (see instructions at the top) and run:
-
-```bash
-python -m pip install -r requirements-dev.txt
-```
-
-### Synthetic data
-
-Synthetic data can be added to the database for benchmarking purposes using one of the scenarios in `utilities/benchmarking` or creating one of your own. To do so:
-
-- Populate the database with some initial data for the `Station`, `Variable` and all the required models (see the *Getting Started* section).
-- Install the development dependencies (read the *Tests* section)
-- Run your desired synthetic data scenario.
-
-If you run one of the built in ones, you should see a progressbar for the process and, if you log in into the Django Admin of Paricia (`http://localhost:8000/admin`), then you will see the records for the `Measurements` model increasing.
-
-### Continuous integration
-
-Pre-commit hooks are set up to run code quality checks (isort and black) before committing. To run these locally, you will need to `pip install pre-commit` then `pre-commit install`. Now, quality assurance tools will be run automatically with every commit.
-
-Github workflows are set up to run the pre-commit actions and the tests automatically on every push action.
+- [Fondo para la Proteccion del Agua (FONAG)](https://www.fonag.org.ec/web/), Ecuador.
+- [Empresa Pública Metropolitana de Agua Potable Y Saneamiento de Quito (EPMAPS)](https://www.aguaquito.gob.ec/home/), Ecuador.
