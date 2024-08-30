@@ -164,7 +164,7 @@ mkdocstrings==0.25.2
     # via
     #   Paricia (pyproject.toml)
     #   mkdocstrings-python
-mkdocstrings-python==1.10.7
+mkdocstrings-python==1.10.8
     # via Paricia (pyproject.toml)
 numpy==2.0.1
     # via
