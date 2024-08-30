@@ -84,7 +84,7 @@ def _get_queryset(db_field, user):
     """Return a queryset based on the permissions of the user.
 
     Returns queryset of public objects and objects that the user has change permisions
-    for. For the case of `Station` objects, having the `change` pemrission is
+    for. For the case of `Station` objects, having the `change` permission is
     necessary to include the object in the queryset - being `Public` is not enough.
 
     """
