@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_objects_for_user
@@ -12,12 +14,7 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
 
     foreign_key_fields: list[str] = []
     limit_visibility_level = True  # limits standard users to creating private objects
-
-    def has_add_permission(self, request):
-        """Check if the user has the correct permission to add objects."""
-        return request.user.has_perm(
-            f"{self.opts.app_label}.add_{self.opts.model_name}"
-        )
+    include_object_permissions_urls = True
 
     def has_change_permission(self, request, obj=None):
         """Check if the user has the correct permission to change the object."""
@@ -29,11 +26,9 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         """Check if the user has the correct permission to delete the object."""
-        if obj is not None:
-            return request.user.has_perm(
-                f"{self.opts.app_label}.delete_{self.opts.model_name}", obj
-            )
-        return True
+        return request.user.has_perm(
+            f"{self.opts.app_label}.delete_{self.opts.model_name}", obj
+        )
 
     def has_view_permission(self, request, obj=None):
         """Check if the user has the correct permission to view the object."""
@@ -41,7 +36,21 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
             return request.user.has_perm(
                 f"{self.opts.app_label}.view_{self.opts.model_name}", obj
             )
-        return True
+
+    def obj_perms_manage_view(self, request, object_pk):
+        """Prevents permission scalation at object level.
+
+        Only allows users with change permissions for this object to change the object
+        permissions.
+        """
+        obj = self.get_object(request, object_pk)
+        if not request.user.has_perm(
+            f"{self.opts.app_label}.change_{self.opts.model_name}", obj
+        ):
+            post_url = reverse("admin:index", current_app=self.admin_site.name)
+            return redirect(post_url)
+
+        return super().obj_perms_manage_view(request, object_pk)
 
     def get_queryset(self, request):
         """Return a queryset of the objects that the user has view permissions for."""
@@ -75,13 +84,18 @@ def _get_queryset(db_field, user):
     """Return a queryset based on the permissions of the user.
 
     Returns queryset of public objects and objects that the user has change permisions
-    for.
+    for. For the case of `Station` objects, having the `change` permission is
+    necessary to include the object in the queryset - being `Public` is not enough.
 
     """
     app_name = db_field.related_model._meta.app_label
     model_name = db_field.related_model._meta.model_name
     user_objects = get_objects_for_user(user, f"{app_name}.change_{model_name}")
-    public_objects = db_field.related_model.objects.filter(visibility="Public")
+    public_objects = (
+        db_field.related_model.objects.none()
+        if model_name == "station"
+        else db_field.related_model.objects.filter(visibility="public")
+    )
     return user_objects | public_objects
 
 

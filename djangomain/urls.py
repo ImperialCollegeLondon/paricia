@@ -52,30 +52,8 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("measurement/", include("measurement.urls", namespace="measurement")),
-    path("importing/", include("importing.urls", namespace="importing")),
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
-    # path("station/", include("station.urls", namespace="station")),
-    # path("sensor/", include("sensor.urls", namespace="sensor")),
-    # path("variable/", include("variable.urls", namespace="variable")),
-    # path("formatting/", include("formatting.urls", namespace="formatting")),
-    # re_path(
-    #     r"^swagger(?P<format>\.json|\.yaml)$",
-    #     schema_view.without_ui(cache_timeout=0),
-    #     name="schema-json",
-    # ),
-    # re_path(
-    #     r"^swagger/$",
-    #     schema_view.with_ui("swagger"),
-    #     name="schema-swagger-ui",
-    # ),
-    # re_path(r"^redoc/$", schema_view.with_ui("redoc"), name="schema-redoc"),
 ]
 
 if settings.DEBUG:
-    #
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    #
-    # import debug_toolbar
-    # urlpatterns = [
-    #     path('__debug__/', include(debug_toolbar.urls)),
-    # ] + urlpatterns

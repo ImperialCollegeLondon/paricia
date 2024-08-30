@@ -35,11 +35,11 @@ class TestSaveImportModels(TestCase):
         self.station = Station.objects.get(station_id=8)
         self.station.timezone = TIMEZONES[0][0]
 
-    def test_save_import_temp(self):
+    def test_save_import(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
         from importing.functions import read_data_to_import
-        from importing.models import DataImportTemp
+        from importing.models import DataImport
 
         matrix = read_data_to_import(
             self.data_file, self.file_format, self.station.timezone
@@ -52,14 +52,15 @@ class TestSaveImportModels(TestCase):
             content=b"some data file", name="test_upload.csv"
         )
 
-        DataImportTemp.objects.create(
+        DataImport.objects.create(
             station=self.station,
             format=self.file_format,
             start_date=start_date,
             end_date=end_date,
-            file=sample_file,
+            rawfile=sample_file,
+            records=matrix.shape[0],
         )
 
-        retrieved_dit = DataImportTemp.objects.get_queryset()[0]
+        retrieved_dit = DataImport.objects.get_queryset()[0]
         self.assertEqual(retrieved_dit.station, self.station)
         self.assertEqual(retrieved_dit.format, self.file_format)
