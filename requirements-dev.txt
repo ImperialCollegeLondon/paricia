@@ -116,7 +116,7 @@ markupsafe==2.1.5
     # via
     #   jinja2
     #   werkzeug
-model-bakery==1.19.1
+model-bakery==1.19.5
     # via Paricia (pyproject.toml)
 mypy==1.11.1
     # via Paricia (pyproject.toml)
@@ -189,7 +189,7 @@ uritemplate==4.1.1
     #   drf-yasg
 virtualenv==20.26.3
     # via pre-commit
-werkzeug==3.0.3
+werkzeug==3.0.4
     # via
     #   django-plotly-dash
     #   flask

@@ -10,20 +10,21 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-
 import zoneinfo
 from datetime import datetime
 from logging import getLogger
 from numbers import Number
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
+from django.core.exceptions import ValidationError
+from django.db.models import FileField
 
-from djangomain.settings import BASE_DIR
 from formatting.models import Classification, Format
-from importing.models import DataImportTemp
 from measurement.models import Measurement
+from station.models import Station
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
@@ -137,7 +138,7 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     delimiter = file_format.delimiter.character
 
     skiprows: int | list[int] = firstline - 1
-    if not isinstance(source_file, str):
+    if not isinstance(source_file, str | Path):
         # The file was uploaded as binary
         lines = len(source_file.readlines())
         source_file.seek(0)
@@ -260,7 +261,9 @@ def standardise_datetime(date_time: Any, datetime_format: str) -> datetime:
     return _date_time
 
 
-def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
+def save_temp_data_to_permanent(
+    station: Station, file_format: Format, file: FileField
+) -> tuple[datetime, datetime, int]:
     """Function to pass the temporary import to the final table.
 
     Uses the data_import_temp object only to get all required information from its
@@ -275,14 +278,17 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
     Args:
         data_import_temp: DataImportTemp object.
     """
-    file_format = data_import_temp.format
-    station = data_import_temp.station
 
-    file_path = str(BASE_DIR) + "/data/media/" + str(data_import_temp.file)
-
-    all_data = construct_matrix(file_path, file_format, station)
+    all_data = construct_matrix(file, file_format, station)
+    if not all_data:
+        msg = "No data to import. Is the chosen format correct?"
+        getLogger().error(msg)
+        raise ValidationError(msg)
 
     must_cols = ["station_id", "variable_id", "date", "value"]
+    start_date = all_data[0]["date"].iloc[0]
+    end_date = all_data[0]["date"].iloc[-1]
+    num_records = len(all_data[0])
     for table in all_data:
         cols = [
             c for c in table.columns if c in Measurement._meta.fields or c in must_cols
@@ -297,7 +303,7 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
 
         # Delete existing data between the date ranges
         Measurement.timescale.filter(
-            time__range=[data_import_temp.start_date, data_import_temp.end_date],
+            time__range=[start_date, end_date],
             station_id=station.station_id,
             variable_id=variable_id,
         ).delete()
@@ -305,12 +311,14 @@ def save_temp_data_to_permanent(data_import_temp: DataImportTemp):
         # Bulk add new data
         model_instances = [Measurement(**record) for record in records]
 
-        # Call the clean method. List comprehension is faster
-        [instance.clean() for instance in model_instances]  # type: ignore
+        # Call the clean method
+        map(lambda x: x.clean(), model_instances)
 
         # WARNING: This is a bulk insert, so it will not call the save()
         # method nor send the pre_save or post_save signals for each instance.
         Measurement.objects.bulk_create(model_instances)
+
+    return start_date, end_date, num_records
 
 
 def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
