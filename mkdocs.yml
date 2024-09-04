@@ -39,6 +39,7 @@ plugins:
 nav:
   - Paricia documentation: index.md
   - Contributing: contributing.md
+  - Permissions: permissions.md
   - Project structure: code_structure.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/
