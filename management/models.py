@@ -24,7 +24,13 @@ class User(AbstractUser):
 class PermissionsBase(models.Model):
     """Base model for models that require permissions."""
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Owner of the object.",
+    )
 
     VISIBILITY_LEVELS = [
         ("public", "Public"),
@@ -37,6 +43,9 @@ class PermissionsBase(models.Model):
         default="private",
         null=False,
         blank=False,
+        help_text="Visibility level of the object. WARNING: Changing this setting will "
+        "affect the permissions of the object. If 'Public', all users will be able to "
+        "view and associate the object with their own.",
     )
 
     def set_object_permissions(self):
