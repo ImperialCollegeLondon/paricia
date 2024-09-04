@@ -30,21 +30,23 @@ class StationDeletionTest(TestCase):
 
     def test_delete_country(self):
         """Test for appropriate behavior when deleting the country."""
-        # Country deletion should be allowed
-        self.country.delete()
+        # Country deletion should be forbidden while station exists
+        with self.assertRaises(ProtectedError):
+            self.country.delete()
 
-        # Should set country to None for the station
-        self.station.refresh_from_db()
-        self.assertIsNone(self.station.country)
+        # Should be allowed after deleting the station
+        self.station.delete()
+        self.country.delete()
 
     def test_delete_owner(self):
         """Test for appropriate behavior when deleting the owner."""
-        # Owner deletion should be allowed
-        self.user_owner.delete()
+        # Owner deletion should be forbidden while station exists
+        with self.assertRaises(ProtectedError):
+            self.user_owner.delete()
 
-        # Station and coutry should be deleted as well
-        self.assertFalse(Station.objects.filter(pk=self.station.pk).exists())
-        self.assertFalse(Country.objects.filter(pk=self.country.pk).exists())
+        # Should be allowed after deleting the station
+        self.station.delete()
+        self.user_owner.delete()
 
 
 class MeasurementDeletionTest(TestCase):
