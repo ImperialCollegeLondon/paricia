@@ -13,6 +13,7 @@ markdown_extensions:
   - markdown_include.include:
       base_path: .
   - attr_list
+  - md_in_html
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -25,6 +26,7 @@ plugins:
   - literate-nav:
       nav_file: SUMMARY.md
   - section-index
+  - glightbox
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -35,11 +37,14 @@ plugins:
             show_category_heading: true
             merge_init_into_class: true
           paths: [measurement]
+  - caption:
+      figure:
+        ignore_classes: ["no-caption"]
 
 nav:
   - Paricia documentation: index.md
   - Contributing: contributing.md
   - Permissions: permissions.md
-  - Project structure: code_structure.md
+  - Applications: applications/
   # defer to gen-files + literate-nav
   - Code Reference: reference/
