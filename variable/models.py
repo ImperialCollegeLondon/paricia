@@ -69,7 +69,7 @@ class Variable(PermissionsBase):
     variable_code = models.CharField("Code", max_length=100)
     name = models.CharField("Name", max_length=50)
     unit = models.ForeignKey(
-        Unit, models.SET_NULL, blank=True, null=True, verbose_name="Unit"
+        Unit, models.PROTECT, blank=True, null=True, verbose_name="Unit"
     )
     maximum = models.DecimalField("Maximum", max_digits=7, decimal_places=2)
     minimum = models.DecimalField("Minimum", max_digits=7, decimal_places=2)
@@ -110,13 +110,13 @@ class SensorInstallation(PermissionsBase):
 
     sensorinstallation_id = models.AutoField("Id", primary_key=True)
     variable = models.ForeignKey(
-        Variable, models.SET_NULL, blank=True, null=True, verbose_name="Variable"
+        Variable, models.PROTECT, blank=True, null=True, verbose_name="Variable"
     )
     station = models.ForeignKey(
-        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
+        Station, models.PROTECT, blank=True, null=True, verbose_name="Station"
     )
     sensor = models.ForeignKey(
-        Sensor, models.SET_NULL, blank=True, null=True, verbose_name="Sensor"
+        Sensor, models.PROTECT, blank=True, null=True, verbose_name="Sensor"
     )
     start_date = models.DateField("Start date")
     end_date = models.DateField("End date", blank=True, null=True)
