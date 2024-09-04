@@ -157,6 +157,17 @@ If you want to install Paricia from scratch, follow the steps below:
   - In a separate terminal run `docker exec -it <name_of_docker_container> bash` e.g. `docker exec -it paricia-web-1 bash` to start a bash session in the container. You can find the name of the container in the Docker Desktop GUI, or by running `docker container ls`.
   - Run `python manage.py shell < utilities/load_initial_data.py`.
 
+## Project structure
+
+In addition to the applications containing the actual functionality, and described in the [applications section](./docs/applications/index.md), the project file structure has other directories that are of interest only for developers.
+
+- The top-level directory contains various config files and directories for git, github, docker and pip.
+- Each django app is in a subdirectory and `djangomain` contains the main django settings, views and urls.
+- The `static` directory contains the static files for the project.
+- The `templates` directory contains the templates for the project.
+- The `utilities` directory contains helper functions for the project.
+- The `tests` directory contains all unit tests for the project.
+
 ### Tests
 
 The tests are run with `python manage.py test` from inside the docker container.
