@@ -13,7 +13,7 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
     """Base admin class for models that require permissions."""
 
     foreign_key_fields: list[str] = []
-    limit_visibility_level = True  # limits standard users to creating private objects
+    limit_visibility_level = False  # limits standard users to creating private objects
     include_object_permissions_urls = True
 
     def has_change_permission(self, request, obj=None):
@@ -70,13 +70,10 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
 
     def formfield_for_choice_field(self, db_field, request, **kwargs):
         """Limit the queryset for choice fields."""
-        if (
-            db_field.name == "visibility"
-            and self.limit_visibility_level
-            and not request.user.is_superuser
-        ):
+        if db_field.name == "visibility":
             kwargs["initial"] = "private"
-            kwargs["disabled"] = True
+            if self.limit_visibility_level and not request.user.is_superuser:
+                kwargs["disabled"] = True
         return super().formfield_for_choice_field(db_field, request, **kwargs)
 
 
