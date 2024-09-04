@@ -87,14 +87,14 @@ class Format(PermissionsBase):
     format_id = models.AutoField("format_id", primary_key=True)
     extension = models.ForeignKey(
         Extension,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         verbose_name="File extension",
     )
     delimiter = models.ForeignKey(
         Delimiter,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         verbose_name="Delimiter",
@@ -115,7 +115,7 @@ class Format(PermissionsBase):
     )
     date = models.ForeignKey(
         Date,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         verbose_name="Date format",
@@ -124,7 +124,7 @@ class Format(PermissionsBase):
     date_column = models.SmallIntegerField("Date column")
     time = models.ForeignKey(
         Time,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         verbose_name="Time format",
@@ -183,9 +183,9 @@ class Classification(PermissionsBase):
     """Classification details, combining several properties."""
 
     cls_id = models.AutoField("Id", primary_key=True)
-    format = models.ForeignKey(Format, on_delete=models.CASCADE, verbose_name="Format")
+    format = models.ForeignKey(Format, on_delete=models.PROTECT, verbose_name="Format")
     variable = models.ForeignKey(
-        Variable, on_delete=models.CASCADE, verbose_name="Variable"
+        Variable, on_delete=models.PROTECT, verbose_name="Variable"
     )
     value = models.SmallIntegerField("Value column")
     maximum = models.SmallIntegerField("Maximum value column", blank=True, null=True)
@@ -232,10 +232,10 @@ class Association(PermissionsBase):
 
     association_id = models.AutoField("Id", primary_key=True)
     format = models.ForeignKey(
-        Format, models.SET_NULL, blank=True, null=True, verbose_name="Format"
+        Format, models.PROTECT, blank=True, null=True, verbose_name="Format"
     )
     station = models.ForeignKey(
-        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
+        Station, models.PROTECT, blank=True, null=True, verbose_name="Station"
     )
 
     def get_absolute_url(self):

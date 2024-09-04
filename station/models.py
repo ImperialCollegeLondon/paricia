@@ -54,7 +54,7 @@ class Region(PermissionsBase):
     id = models.AutoField("Id", primary_key=True)
     name = models.CharField(max_length=32, verbose_name="Name")
     country = models.ForeignKey(
-        Country, on_delete=models.SET_NULL, null=True, verbose_name="Country"
+        Country, on_delete=models.PROTECT, null=True, verbose_name="Country"
     )
 
     def __str__(self):
@@ -163,10 +163,10 @@ class PlaceBasin(PermissionsBase):
 
     id = models.AutoField("Id", primary_key=True)
     place = models.ForeignKey(
-        Place, on_delete=models.SET_NULL, null=True, verbose_name="Place"
+        Place, on_delete=models.PROTECT, null=True, verbose_name="Place"
     )
     basin = models.ForeignKey(
-        Basin, on_delete=models.SET_NULL, null=True, verbose_name="Basin"
+        Basin, on_delete=models.PROTECT, null=True, verbose_name="Basin"
     )
     image = models.FileField(
         "Photography/Map",
@@ -208,42 +208,42 @@ class Station(PermissionsBase):
     )
     station_type = models.ForeignKey(
         StationType,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name="StationType",
     )
     country = models.ForeignKey(
         Country,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name="Country",
     )
     region = models.ForeignKey(
         Region,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name="Region/Province/Department",
     )
     ecosystem = models.ForeignKey(
         Ecosystem,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name="Ecosystem",
     )
     institution = models.ForeignKey(
         Institution,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name="Institution",
     )
     place_basin = models.ForeignKey(
         PlaceBasin,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         verbose_name="Place-Basin",
         null=True,
         blank=True,
