@@ -200,6 +200,8 @@ psycopg2==2.9.9
     # via Paricia (pyproject.toml)
 pygments==2.18.0
     # via mkdocs-material
+pygraphviz==1.13
+    # via Paricia (pyproject.toml)
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
 pymdown-extensions==10.9

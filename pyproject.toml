@@ -61,6 +61,7 @@ doc = [
     "mkdocs-literate-nav",
     "mkdocs-section-index",
     "markdown-include",
+    "pygraphviz",
 ]
 
 [tool.mypy] # TODO: increase the strictness here
