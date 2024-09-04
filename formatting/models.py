@@ -21,7 +21,16 @@ from variable.models import Variable
 
 
 class Extension(PermissionsBase):
-    """File extension."""
+    """File extension.
+
+    It is mostly used to chose the tool to employed to ingest the data. While it can
+    take any value, there is currently explicit support only for `xlsx` and `xlx`.
+    Anything else will be interpreted as a text file and loaded using `pandas.read_csv`.
+
+    Attributes:
+        extension_id (AutoField): Primary key.
+        value (CharField): The extension value. eg. `xlsx`, `xlx`, `txt`.
+    """
 
     extension_id = models.AutoField("Id", primary_key=True)
     value = models.CharField("Value", max_length=5)

@@ -1,10 +1,11 @@
 <!-- markdownlint-disable MD041 -->
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fimperialcollegelondon.github.io%2Fparicia%2F&label=Docs){: .no-caption}](https://imperialcollegelondon.github.io/paricia/)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fdata.riverflow.io%2F&label=Paricia%20Live){: .no-caption}](https://data.riverflow.io/)
-[![GitHub](https://img.shields.io/github/license/ImperialCollegeLondon/paricia){: .no-caption}](https://raw.githubusercontent.com/ImperialCollegeLondon/paricia/develop/LICENSE)
-[![CI Paricia](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml/badge.svg){: .no-caption}](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/paricia/develop.svg){: .no-caption}](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/paricia/develop)
-[![GitHub Release](https://img.shields.io/github/v/release/imperialcollegelondon/paricia){: .no-caption}](https://github.com/ImperialCollegeLondon/paricia/releases)
+<!-- markdownlint-disable MD045 -->
+[![](https://img.shields.io/website?url=https%3A%2F%2Fimperialcollegelondon.github.io%2Fparicia%2F&label=Docs)](https://imperialcollegelondon.github.io/paricia/)
+[![](https://img.shields.io/website?url=https%3A%2F%2Fdata.riverflow.io%2F&label=Paricia%20Live)](https://data.riverflow.io/)
+[![](https://img.shields.io/github/license/ImperialCollegeLondon/paricia)](https://raw.githubusercontent.com/ImperialCollegeLondon/paricia/develop/LICENSE)
+[![](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml)
+[![](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/paricia/develop.svg)](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/paricia/develop)
+[![](https://img.shields.io/github/v/release/imperialcollegelondon/paricia)](https://github.com/ImperialCollegeLondon/paricia/releases)
 
 # Paricia
 
@@ -12,7 +13,7 @@ Paricia is a **hydroclimatic data management system**. Originally focused on man
 
 A live version of the tool can be found in:
 
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fdata.riverflow.io%2F&label=Access%20Paricia){: .no-caption style="display:block;margin:auto;width:30%"}](https://data.riverflow.io/)
+[![](https://img.shields.io/website?url=https%3A%2F%2Fdata.riverflow.io%2F&label=Access%20Paricia)](https://data.riverflow.io/)
 
 Paricia is developed at [Imperial College London](https://www.imperial.ac.uk/) by the Research Software Engineering team within the Research Computing Group. The project is coordinated by [Prof. Wouter Buytaert](https://www.imperial.ac.uk/people/w.buytaert), who leads a group in the Civil Engineering Department and that focus on the impact of environmental change on the water cycle and its consequences for managing water resources. This work involves gathering and processing time-series data like water level, flow and temperature from various monitoring stations based in mountainous areas such as the Andes and Himalayas.
 

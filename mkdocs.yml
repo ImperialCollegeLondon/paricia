@@ -45,6 +45,8 @@ nav:
   - Paricia documentation: index.md
   - Contributing: contributing.md
   - Permissions: permissions.md
-  - Applications: applications/
+  - Applications:
+      - Summary: applications/index.md
+      - Formatting: applications/formatting.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/
