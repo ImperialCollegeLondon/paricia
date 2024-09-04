@@ -4,6 +4,57 @@ The formatting application describes how a data file should be ingested: what co
 
 ![UML diagram of the Formatting app models. Mandatory fields are in bold.](images/formatting.png)
 
-## Extension
+## Basic components
 
-This model contains the file extension of this type of data. It is mostly used to chose the tool to employed to ingest the data. While it can take any value, there is currently explicit support only for `xlsx` and `xlx`. Anything else will be interpreted as a text file and loaded using [`pandas.read_csv`](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html).
+::: formatting.models.Extension
+    options:
+      heading_level: 3
+      show_bases: False
+      members: None
+      show_root_full_path: False
+
+::: formatting.models.Delimiter
+    options:
+      heading_level: 3
+      show_bases: False
+      members: None
+      show_root_full_path: False
+
+::: formatting.models.Date
+    options:
+      heading_level: 3
+      show_bases: False
+      members: None
+      show_root_full_path: False
+
+::: formatting.models.Time
+    options:
+      heading_level: 3
+      show_bases: False
+      members: None
+      show_root_full_path: False
+
+## Core component
+
+::: formatting.models.Format
+    options:
+      heading_level: 3
+      show_bases: False
+      members: None
+      show_root_full_path: False
+
+## Linking components
+
+::: formatting.models.Association
+    options:
+      heading_level: 3
+      show_bases: False
+      members: None
+      show_root_full_path: False
+
+::: formatting.models.Classification
+    options:
+      heading_level: 3
+      show_bases: False
+      members: None
+      show_root_full_path: False

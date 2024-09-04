@@ -21,9 +21,9 @@ from variable.models import Variable
 
 
 class Extension(PermissionsBase):
-    """File extension.
+    """Extension of the data file.
 
-    It is mostly used to chose the tool to employed to ingest the data. While it can
+    It is mostly used to chose the tool to be employed to ingest the data. While it can
     take any value, there is currently explicit support only for `xlsx` and `xlx`.
     Anything else will be interpreted as a text file and loaded using `pandas.read_csv`.
 
@@ -32,8 +32,12 @@ class Extension(PermissionsBase):
         value (CharField): The extension value. eg. `xlsx`, `xlx`, `txt`.
     """
 
-    extension_id = models.AutoField("Id", primary_key=True)
-    value = models.CharField("Value", max_length=5)
+    extension_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    value = models.CharField(
+        "Value",
+        max_length=5,
+        help_text="The extension value. eg. `xlsx`, `xlx`, `txt`.",
+    )
 
     def __str__(self):
         return str(self.value)
@@ -43,11 +47,29 @@ class Extension(PermissionsBase):
 
 
 class Delimiter(PermissionsBase):
-    """Data delimiter"""
+    """Delimiter between columns in the data file.
 
-    delimiter_id = models.AutoField("Id", primary_key=True)
-    name = models.CharField("Name", max_length=100)
-    character = models.CharField("Character", max_length=10, blank=True)
+    One or more characters that separate columns in a text file. The most common values
+    are `,`, `;`, and `\\t` (tab).
+
+    Attributes:
+        delimiter_id (AutoField): Primary key.
+        name (CharField): The name of the delimiter. eg. `comma`, `semicolon`, `tab`.
+        character (CharField): The character used as a delimiter. eg. `,`, `;`, `\\t`.
+    """
+
+    delimiter_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(
+        "Name",
+        max_length=100,
+        help_text="The name of the delimiter. eg. `comma`, `semicolon`, `tab`.",
+    )
+    character = models.CharField(
+        "Character",
+        max_length=10,
+        blank=True,
+        help_text="The character used as a delimiter. eg. `,`, `;`, `\\t`.",
+    )
 
     def __str__(self):
         return str(self.name)
@@ -57,11 +79,32 @@ class Delimiter(PermissionsBase):
 
 
 class Date(PermissionsBase):
-    """Date format"""
+    """Date format.
 
-    date_id = models.AutoField("Id", primary_key=True)
-    date_format = models.CharField("Format", max_length=20)
-    code = models.CharField("Code", max_length=20)
+    Format string for the date column. It is used to parse the date column in the data
+    file. The format string must be compatible with the `datetime` module in Python. See
+    the [datetime documentation](https://docs.python.org/3.11/library/datetime.html#format-codes)
+    for more information on valid format codes.
+
+    Attributes:
+        date_id (AutoField): Primary key.
+        date_format (CharField): The format string for the date column in human readable
+            form, eg. `DD-MM-YYYY`.
+        code (CharField): The code used to parse the date column, eg. `%d-%m-%Y`.
+    """
+
+    date_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    date_format = models.CharField(
+        "Format",
+        max_length=20,
+        help_text="The format string for the date column in human readable form, eg."
+        "`DD-MM-YYYY`.",
+    )
+    code = models.CharField(
+        "Code",
+        max_length=20,
+        help_text="The code used to parse the date column, eg. `%d-%m-%Y`.",
+    )
 
     def __str__(self):
         return str(self.date_format)
@@ -74,10 +117,27 @@ class Date(PermissionsBase):
 
 
 class Time(PermissionsBase):
-    """Time format"""
+    """Time format.
 
-    time_id = models.AutoField("Id", primary_key=True)
-    time_format = models.CharField("Format", max_length=20)
+    Format string for the time column. It is used to parse the time column in the data
+    file. The format string must be compatible with the `datetime` module in Python. See
+    the [datetime documentation](https://docs.python.org/3.11/library/datetime.html#format-codes)
+    for more information on valid format codes.
+
+    Attributes:
+        date_id (AutoField): Primary key.
+        date_format (CharField): The format string for the date column in human readable
+            form, eg. `HH:MM:SS 24H`.
+        code (CharField): The code used to parse the date column, eg. `%H:%M:%S`.
+    """
+
+    time_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    time_format = models.CharField(
+        "Format",
+        max_length=20,
+        help_text="The format string for the date column in human readable form, eg. "
+        "`HH:MM:SS 24H`",
+    )
     code = models.CharField("Code", max_length=20)
 
     def __str__(self):
@@ -91,15 +151,45 @@ class Time(PermissionsBase):
 
 
 class Format(PermissionsBase):
-    """Details of the data file format, combining different aspects."""
+    """Details of the data file format, describing how to read the file.
 
-    format_id = models.AutoField("format_id", primary_key=True)
+    It combines several properties, such as the file extension, the delimiter, the date
+    and time formats, and the column indices for the date and time columns, instructing
+    how to read the data file and parse the dates. It is mostly used to ingest data from
+    text files, like CSV.
+
+    Attributes:
+        format_id (AutoField): Primary key.
+        name (CharField): Short name of the format entry.
+        description (TextField): Description of the format.
+        extension (ForeignKey): The extension of the data file.
+        delimiter (ForeignKey): The delimiter between columns in the data file. Only
+            required for text files.
+        first_row (SmallIntegerField): First row of the data, excluding any heading.
+        footer_rows (SmallIntegerField): Number of footer rows, to be ignored at the
+            end.
+        date (ForeignKey): Format for the date column. Only required for text files.
+        date_column (SmallIntegerField): Index of the date column, starting in 1.
+        time (ForeignKey): Format for the time column. Only required for text files.
+        time_column (SmallIntegerField): Index of the time column, starting in 1.
+    """
+
+    format_id = models.AutoField(
+        "format_id", primary_key=True, help_text="Primary key."
+    )
+    name = models.CharField(
+        "Format name", max_length=35, help_text="Short name of the format entry."
+    )
+    description = models.TextField(
+        "Description", blank=True, null=True, help_text="Description of the format."
+    )
     extension = models.ForeignKey(
         Extension,
         on_delete=models.PROTECT,
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         verbose_name="File extension",
+        help_text="The extension of the data file.",
     )
     delimiter = models.ForeignKey(
         Delimiter,
@@ -107,20 +197,18 @@ class Format(PermissionsBase):
         blank=True,
         null=True,
         verbose_name="Delimiter",
+        help_text="The delimiter between columns in the data file. Only required for "
+        "text files.",
     )
-    name = models.CharField("Format name", max_length=35)
-    description = models.TextField("Description", null=True)
-    location = models.CharField("Location", max_length=300, blank=True, null=True)
-    file = models.CharField(
-        "Archivo",
-        max_length=100,
-        blank=True,
-        null=True,
-        help_text="Only applies to automatic transmission",
+    first_row = models.SmallIntegerField(
+        "First row", help_text="First row of the data, excluding any heading."
     )
-    first_row = models.SmallIntegerField("First row")
     footer_rows = models.SmallIntegerField(
-        "Number of footer rows", blank=True, null=True
+        "Number of footer rows",
+        blank=True,
+        null=False,
+        default=0,
+        help_text="Number of footer rows, to be ignored at the end.",
     )
     date = models.ForeignKey(
         Date,
@@ -128,26 +216,22 @@ class Format(PermissionsBase):
         blank=True,
         null=True,
         verbose_name="Date format",
+        help_text="Format for the date column. Only required for text files.",
     )
-    utc_date = models.BooleanField("Is time UTC? (substract 5 hours)", default=False)
-    date_column = models.SmallIntegerField("Date column")
+    date_column = models.SmallIntegerField(
+        "Date column", help_text="Index of the date column, starting in 1."
+    )
     time = models.ForeignKey(
         Time,
         on_delete=models.PROTECT,
         blank=True,
         null=True,
         verbose_name="Time format",
+        help_text="Format for the time column. Only required for text files.",
     )
-    time_column = models.SmallIntegerField("Time column")
-    format_type = models.CharField(
-        "Format type",
-        max_length=25,
-        choices=(
-            ("automatic", "automatic"),
-            ("conventional", "conventional"),
-        ),
+    time_column = models.SmallIntegerField(
+        "Time column", help_text="Index of the time column, starting in 1."
     )
-    status = models.BooleanField("Status", default=True)
 
     def __str__(self):
         return str(self.name)
