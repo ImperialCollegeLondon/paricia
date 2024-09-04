@@ -32,7 +32,11 @@ class PermissionsBase(models.Model):
     ]
 
     visibility = models.CharField(
-        max_length=8, choices=VISIBILITY_LEVELS, default="private"
+        max_length=8,
+        choices=VISIBILITY_LEVELS,
+        default="private",
+        null=False,
+        blank=False,
     )
 
     def set_object_permissions(self):
