@@ -5,8 +5,6 @@ Thanks for taking the time to contribute to Paricia!
 
 The following is a set of guidelines for contributing to Paricia, a Python-based hydroclimatic data management system project. The goal of these guidelines is to make the development of the project efficient and sustainable and to ensure that every commit makes it better, more readable, more robust and better documented. Please, feel free suggest changes and improvements.
 
-(this guide is based on the [Atom editor guide](https://github.com/atom/atom/blob/master/CONTRIBUTING.md))
-
 ## Table Of Contents
 
 [Code of Conduct](#code-of-conduct)
@@ -159,7 +157,7 @@ If you want to install Paricia from scratch, follow the steps below:
 
 ## Project structure
 
-In addition to the applications containing the actual functionality, and described in the [applications section](./docs/applications/index.md), the project file structure has other directories that are of interest only for developers.
+In addition to the applications containing the actual functionality, and described in the documentation, the project file structure has other directories that are of interest only for developers.
 
 - The top-level directory contains various config files and directories for git, github, docker and pip.
 - Each django app is in a subdirectory and `djangomain` contains the main django settings, views and urls.
