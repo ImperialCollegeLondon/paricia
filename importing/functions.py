@@ -396,7 +396,7 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
         data = data.dropna(axis=0, how="all", subset=data_columns)
 
         # Deal with cumulative and incremental data
-        if classification.accumulate:
+        if acc := classification.accumulate:
             # assumes that if incremental it only works with VALUE
             # (MAXIMUM and MINIMUM are excluded)
             if classification.incremental:
@@ -405,27 +405,30 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
                 data = data.dropna()
             data["date"] = data["date"].apply(
                 lambda x: x.replace(
-                    minute=int(x.minute / 5) * 5, second=0, microsecond=0, nanosecond=0
+                    minute=int(x.minute / acc) * acc,
+                    second=0,
+                    microsecond=0,
+                    nanosecond=0,
                 )
             )
-            data["date"] = data["date"] + pd.Timedelta(minutes=5)
+            data["date"] = data["date"] + pd.Timedelta(minutes=acc)
             count = data.groupby("date")["value"].sum().to_frame()
             data = count["value"] * float(classification.resolution)
 
             start_date = start_date.replace(
-                minute=int(start_date.minute / 5) * 5,
+                minute=int(start_date.minute / acc) * acc,
                 second=0,
                 microsecond=0,
                 nanosecond=0,
-            ) + pd.Timedelta(minutes=5)
+            ) + pd.Timedelta(minutes=acc)
             end_date = end_date.replace(
-                minute=int(end_date.minute / 5) * 5,
+                minute=int(end_date.minute / acc) * acc,
                 second=0,
                 microsecond=0,
                 nanosecond=0,
-            ) + pd.Timedelta(minutes=5)
+            ) + pd.Timedelta(minutes=acc)
             table = pd.date_range(
-                start_date, end_date, freq="5min", name="date"
+                start_date, end_date, freq=f"{acc}min", name="date"
             ).to_frame()
             data = pd.concat([table, data], axis=1)
             data = data.fillna(0)

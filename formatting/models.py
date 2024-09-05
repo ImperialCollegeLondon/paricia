@@ -11,7 +11,9 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
+from collections import defaultdict
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
@@ -283,41 +285,131 @@ class Format(PermissionsBase):
 
 
 class Classification(PermissionsBase):
-    """Classification details, combining several properties."""
+    """Contains instructions on how to classify the data into a specific variable.
 
-    cls_id = models.AutoField("Id", primary_key=True)
-    format = models.ForeignKey(Format, on_delete=models.PROTECT, verbose_name="Format")
-    variable = models.ForeignKey(
-        Variable, on_delete=models.PROTECT, verbose_name="Variable"
+    In pariticular, it links a format to a variable, and provides the column indices for
+    the value, maximum, and minimum columns, as well as the validator columns. It also
+    contains information on whether the data is accumulated, incremental, and the
+    resolution of the data.
+
+    Attributes:
+        cls_id (AutoField): Primary key.
+        format (ForeignKey): The format of the data file.
+        variable (ForeignKey): The variable to which the data belongs.
+        value (SmallIntegerField): Index of the value column, starting in 1.
+        maximum (SmallIntegerField): Index of the maximum value column, starting in 1.
+        minimum (SmallIntegerField): Index of the minimum value column, starting in 1.
+        value_validator_column (SmallIntegerField): Index of the value validator column,
+            starting in 1.
+        value_validator_text (CharField): Value validator text.
+        maximum_validator_column (SmallIntegerField): Index of the maximum value
+            validator column, starting in 1.
+        maximum_validator_text (CharField): Maximum value validator text.
+        minimum_validator_column (SmallIntegerField): Index of the minimum value
+            validator column, starting in 1.
+        minimum_validator_text (CharField): Minimum value validator text.
+        accumulate (SmallIntegerField): If set to a number of minutes, the data will be
+            accumulated over that period.
+        resolution (DecimalField): Resolution of the data. . Only used if it is to be
+            accumulated.
+        incremental (BooleanField): Whether the data is an incremental counter. If it
+            is, any value below the previous one will be removed.
+        decimal_comma (BooleanField): Whether the data uses a comma as a decimal
+            separator.
+    """
+
+    cls_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    format = models.ForeignKey(
+        Format,
+        on_delete=models.PROTECT,
+        verbose_name="Format",
+        help_text="The format of the data file.",
     )
-    value = models.SmallIntegerField("Value column")
-    maximum = models.SmallIntegerField("Maximum value column", blank=True, null=True)
-    minimum = models.SmallIntegerField("Minimum value column", blank=True, null=True)
+    variable = models.ForeignKey(
+        Variable,
+        on_delete=models.PROTECT,
+        verbose_name="Variable",
+        help_text="The variable to which the data belongs.",
+    )
+    value = models.SmallIntegerField(
+        "Value column", help_text="Index of the value column, starting in 1."
+    )
+    maximum = models.SmallIntegerField(
+        "Maximum value column",
+        blank=True,
+        null=True,
+        help_text="Index of the maximum value column, starting in 1.",
+    )
+    minimum = models.SmallIntegerField(
+        "Minimum value column",
+        blank=True,
+        null=True,
+        help_text="Index of the minimum value column, starting in 1.",
+    )
     value_validator_column = models.SmallIntegerField(
-        "Value validator column", blank=True, null=True
+        "Value validator column",
+        blank=True,
+        null=True,
+        help_text="Index of the value validator column, starting in 1.",
     )
     value_validator_text = models.CharField(
-        "Value validator text", max_length=10, blank=True, null=True
+        "Value validator text",
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Value validator text.",
     )
     maximum_validator_column = models.SmallIntegerField(
-        "Maximum value validator column", blank=True, null=True
+        "Maximum value validator column",
+        blank=True,
+        null=True,
+        help_text="Index of the maximum value validator column, starting in 1.",
     )
     maximum_validator_text = models.CharField(
-        "Maximum value  validator text", max_length=10, blank=True, null=True
+        "Maximum value validator text",
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Maximum value validator text.",
     )
     minimum_validator_column = models.SmallIntegerField(
-        "Minimum value validator column", blank=True, null=True
+        "Minimum value validator column",
+        blank=True,
+        null=True,
+        help_text="Index of the minimum value validator column, starting in 1.",
     )
     minimum_validator_text = models.CharField(
-        "Minimum value validator text", max_length=10, blank=True, null=True
+        "Minimum value validator text",
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text="Minimum value validator text.",
     )
-    accumulate = models.BooleanField("Accumulate every 5 min?", default=False)
-    incremental = models.BooleanField("Is it an incremental counter?", default=False)
+    accumulate = models.SmallIntegerField(
+        "Accumulate minutes",
+        null=True,
+        blank=True,
+        help_text="If set to a number of minutes, the data will be accumulated over"
+        " that period.",
+    )
     resolution = models.DecimalField(
-        "Resolution", max_digits=6, decimal_places=2, blank=True, null=True
+        "Resolution",
+        max_digits=6,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="Resolution of the data. Only used if it is to be accumulated.",
+    )
+    incremental = models.BooleanField(
+        "Is it an incremental counter?",
+        default=False,
+        help_text="Whether the data is an incremental counter. If it is, any value"
+        " below the previous one will be removed.",
     )
     decimal_comma = models.BooleanField(
-        "Uses comma as decimal separator?", default=False
+        "Uses comma as decimal separator?",
+        default=False,
+        help_text="Whether the data uses a comma as a decimal separator.",
     )
 
     def __str__(self) -> str:
@@ -327,6 +419,49 @@ class Classification(PermissionsBase):
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
         return reverse("format:classification_detail", kwargs={"pk": self.pk})
+
+    def clean(self) -> None:
+        """Validate the model instance.
+
+        It checks that the column indices are different, and that the accumulation
+        period is greater than zero if it is set. It also checks that the resolution is
+        set if the data is accumulated.
+
+        TODO: Add tests for this method.
+        """
+        if self.accumulate:
+            if self.accumulate < 1:
+                raise ValidationError(
+                    {"accumulate": "The accumulation period must be greater than zero."}
+                )
+            if self.resolution is None:
+                raise ValidationError(
+                    {
+                        "resolution": "The resolution must be set if the data is "
+                        "accumulated."
+                    }
+                )
+            if self.resolution <= 0:
+                raise ValidationError(
+                    {"resolution": "The resolution must be greater than zero."}
+                )
+
+        col_names = [
+            "value",
+            "maximum",
+            "minimum",
+            "value_validator_column",
+            "maximum_validator_column",
+            "minimum_validator_column",
+        ]
+        unique = defaultdict(list)
+        for name in col_names:
+            if getattr(self, name) is not None:
+                unique[getattr(self, name)].append(name)
+        for _, names in unique.items():
+            if len(names) != 1:
+                msg = "The columns must be different."
+                raise ValidationError({field: msg for field in names})
 
     class Meta:
         ordering = ("variable",)

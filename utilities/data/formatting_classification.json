@@ -56,7 +56,7 @@
       "maximum_validator_text": null,
       "minimum_validator_column": null,
       "minimum_validator_text": null,
-      "accumulate": true,
+      "accumulate": 5,
       "incremental": false,
       "resolution": "1.00",
       "decimal_comma": false
