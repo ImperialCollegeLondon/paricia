@@ -38,10 +38,12 @@ class Extension(PermissionsBase):
         help_text="The extension value. eg. `xlsx`, `xlx`, `txt`.",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the string representation of the object."""
         return str(self.value)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Get the absolute URL of the object."""
         return reverse("format:extension_index")
 
 
@@ -70,10 +72,12 @@ class Delimiter(PermissionsBase):
         help_text="The character used as a delimiter. eg. `,`, `;`, `\\t`.",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the string representation of the object."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Get the absolute URL of the object."""
         return reverse("format:delimiter_index")
 
 
@@ -105,10 +109,12 @@ class Date(PermissionsBase):
         help_text="The code used to parse the date column, eg. `%d-%m-%Y`.",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the string representation of the object."""
         return str(self.date_format)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Get the absolute URL of the object."""
         return reverse("format:date_detail", kwargs={"pk": self.pk})
 
     class Meta:
@@ -139,10 +145,12 @@ class Time(PermissionsBase):
     )
     code = models.CharField("Code", max_length=20)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the string representation of the object."""
         return str(self.time_format)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Get the absolute URL of the object."""
         return reverse("format:time_detail", kwargs={"pk": self.pk})
 
     class Meta:
@@ -232,14 +240,17 @@ class Format(PermissionsBase):
         "Time column", help_text="Index of the time column, starting in 1."
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the string representation of the object."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Get the absolute URL of the object."""
         return reverse("format:format_detail", kwargs={"pk": self.pk})
 
     @property
     def datetime_format(self) -> str:
+        """Obtain the datetime format string."""
         return str(self.date.code) + " " + str(self.time.code)
 
     def datetime_columns(self, delimiter: str) -> list[int]:
@@ -309,10 +320,12 @@ class Classification(PermissionsBase):
         "Uses comma as decimal separator?", default=False
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the string representation of the object."""
         return str(self.cls_id)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Get the absolute URL of the object."""
         return reverse("format:classification_detail", kwargs={"pk": self.pk})
 
     class Meta:
