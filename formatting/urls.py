@@ -30,8 +30,6 @@ urlpatterns = [
     path("format/<int:pk>/", views.FormatDetail.as_view()),
     path("classification/", views.ClassificationList.as_view()),
     path("classification/<int:pk>/", views.ClassificationDetail.as_view()),
-    path("association/", views.AssociationList.as_view()),
-    path("association/<int:pk>/", views.AssociationDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

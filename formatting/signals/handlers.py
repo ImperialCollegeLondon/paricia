@@ -5,7 +5,6 @@ from django.dispatch import receiver
 from management.models import PermissionsBase
 
 from ..models import (
-    Association,
     Classification,
     Date,
     Delimiter,
@@ -17,7 +16,6 @@ from ..models import (
 User = get_user_model()
 
 
-@receiver(post_save, sender=Association)
 @receiver(post_save, sender=Classification)
 @receiver(post_save, sender=Date)
 @receiver(post_save, sender=Delimiter)
@@ -33,7 +31,6 @@ def set_object_permissions(sender, instance: PermissionsBase, **kwargs):
 def set_model_permissions(sender, **kwargs):
     """Set model-level permissions."""
     for model in [
-        Association,
         Classification,
         Date,
         Delimiter,

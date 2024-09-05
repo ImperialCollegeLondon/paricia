@@ -16,7 +16,6 @@ from django.db import models
 from django.urls import reverse
 
 from management.models import PermissionsBase
-from station.models import Station
 from variable.models import Variable
 
 
@@ -318,25 +317,3 @@ class Classification(PermissionsBase):
 
     class Meta:
         ordering = ("variable",)
-
-
-class Association(PermissionsBase):
-    """Associates a data format with a station."""
-
-    association_id = models.AutoField("Id", primary_key=True)
-    format = models.ForeignKey(
-        Format, models.PROTECT, blank=True, null=True, verbose_name="Format"
-    )
-    station = models.ForeignKey(
-        Station, models.PROTECT, blank=True, null=True, verbose_name="Station"
-    )
-
-    def get_absolute_url(self):
-        return reverse("format:association_detail", kwargs={"pk": self.pk})
-
-    class Meta:
-        ordering = ("association_id",)
-        unique_together = (
-            "station",
-            "format",
-        )

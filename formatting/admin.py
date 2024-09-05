@@ -3,7 +3,6 @@ from django.contrib import admin
 from management.admin import PermissionsBaseAdmin
 
 from .models import (
-    Association,
     Classification,
     Date,
     Delimiter,
@@ -74,10 +73,3 @@ class ClassificationAdmin(PermissionsBaseAdmin):
         "incremental",
         "resolution",
     ]
-
-
-@admin.register(Association)
-class AssociationAdmin(PermissionsBaseAdmin):
-    """Admin class for the Association model."""
-
-    list_display = ["association_id", "format", "station"]

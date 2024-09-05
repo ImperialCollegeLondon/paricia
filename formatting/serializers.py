@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from .models import (
-    Association,
     Classification,
     Date,
     Delimiter,
@@ -44,10 +43,4 @@ class FormatSerializer(serializers.ModelSerializer):
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classification
-        exclude: list[str] = []
-
-
-class AssociationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Association
         exclude: list[str] = []

@@ -43,15 +43,6 @@ The formatting application describes how a data file should be ingested: what co
       members: None
       show_root_full_path: False
 
-## Linking components
-
-::: formatting.models.Association
-    options:
-      heading_level: 3
-      show_bases: False
-      members: None
-      show_root_full_path: False
-
 ::: formatting.models.Classification
     options:
       heading_level: 3

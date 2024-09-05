@@ -100,17 +100,3 @@ class ClassificationDetail(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = fmt.Classification.objects.all()
     serializer_class = serializers.ClassificationSerializer
-
-
-class AssociationList(generics.ListCreateAPIView):
-    """List all associations, or create a new association."""
-
-    queryset = fmt.Association.objects.all()
-    serializer_class = serializers.AssociationSerializer
-
-
-class AssociationDetail(generics.RetrieveUpdateDestroyAPIView):
-    """Retrieve, update or delete an association."""
-
-    queryset = fmt.Association.objects.all()
-    serializer_class = serializers.AssociationSerializer
