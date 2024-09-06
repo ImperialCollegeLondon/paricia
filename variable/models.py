@@ -71,14 +71,11 @@ class Variable(PermissionsBase):
         unit (ForeignKey): Unit of the variable.
         maximum (DecimalField): Maximum value allowed for the variable.
         minimum (DecimalField): Minimum value allowed for the variable.
-        diff_warning (DecimalField): If two sequential values in the time-series data of
-            this variable differ by more than this value, the validation process can
-            mark this with a warning flag.
         diff_error (DecimalField): If two sequential values in the time-series data of
             this variable differ by more than this value, the validation process can
             mark this with an error flag.
-        outlier_limit (DecimalField): How many times the standard deviation (sigma) is
-            considered an outlier for this variable.
+        outlier_limit (DecimalField): The statistical deviation for defining outliers,
+             in times the standard deviation (sigma).
         null_limit (DecimalField): The max % of null values (missing, caused by e.g.
             equipment malfunction) allowed for hourly, daily, monthly data. Cumulative
             values are not deemed trustworthy if the number of missing values in a given
@@ -123,17 +120,6 @@ class Variable(PermissionsBase):
         decimal_places=2,
         help_text="Minimum value allowed for the variable.",
     )
-    diff_warning = models.DecimalField(
-        "Difference warning",
-        max_digits=7,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="If two sequential values in the time-series data of this variable "
-        "differ by more than this value, the validation process can mark this with a "
-        "warning flag.",
-        validators=[MinValueValidator(0)],
-    )
     diff_error = models.DecimalField(
         "Difference error",
         max_digits=7,
@@ -151,8 +137,8 @@ class Variable(PermissionsBase):
         decimal_places=2,
         null=True,
         blank=True,
-        help_text="How many times the standard deviation (sigma) is considered an "
-        "outlier for this variable.",
+        help_text="The statistical deviation for defining outliers, in times the"
+        "standard deviation (sigma)",
         validators=[MinValueValidator(0)],
     )
     null_limit = models.DecimalField(
@@ -193,14 +179,6 @@ class Variable(PermissionsBase):
                     "value."
                 }
             )
-        if self.diff_warning is not None and self.diff_error is not None:
-            if self.diff_warning > self.diff_error:
-                raise ValidationError(
-                    {
-                        "diff_warning": "The warning difference must be less than the "
-                        "error difference."
-                    }
-                )
         if not self.variable_code.isidentifier():
             raise ValidationError(
                 {

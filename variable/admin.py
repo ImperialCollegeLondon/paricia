@@ -25,7 +25,6 @@ class VariableAdmin(PermissionsBaseAdmin):
         "unit",
         "maximum",
         "minimum",
-        "diff_warning",
         "diff_error",
         "outlier_limit",
         "null_limit",
