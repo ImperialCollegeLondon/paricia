@@ -48,7 +48,7 @@ class TestInitialData(TestCase):
 
         self.assertEqual(len(Format.objects.get_queryset()), 3)
         form = Format.objects.get(format_id=45)
-        self.assertEqual(form.first_row, 2)
+        self.assertEqual(form.first_row, 1)
         self.assertEqual(form.extension.value, "csv")
         self.assertEqual(form.delimiter.name, "Coma")
         self.assertEqual(form.date.date_format, "DD/MM/YYYY")

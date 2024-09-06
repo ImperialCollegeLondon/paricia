@@ -269,9 +269,9 @@ class Format(PermissionsBase):
             list[int]: A list of column indices.
         """
         date_items = self.date.code.split(delimiter)
-        date_cols = list(range(self.date_column, len(date_items)))
+        date_cols = list(range(self.date_column, self.date_column + len(date_items)))
         time_items = self.time.code.split(delimiter)
-        time_cols = list(range(self.time_column, len(time_items)))
+        time_cols = list(range(self.time_column, self.time_column + len(time_items)))
         return date_cols + time_cols
 
     class Meta:
