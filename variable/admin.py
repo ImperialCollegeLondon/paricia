@@ -28,8 +28,6 @@ class VariableAdmin(PermissionsBaseAdmin):
         "diff_warning",
         "diff_error",
         "outlier_limit",
-        "is_active",
-        "automatic_report",
         "null_limit",
         "nature",
         "owner",
