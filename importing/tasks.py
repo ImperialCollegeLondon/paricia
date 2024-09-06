@@ -29,6 +29,7 @@ def ingest_data(data_import_pk: int) -> None:
             )
         )
         data_import.status = "C"
+        data_import.log = "Data ingestion completed successfully"
         getLogger("huey").info("Data ingestion for %s completed", data_import)
     except Exception as e:
         data_import.status = "F"

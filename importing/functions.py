@@ -137,12 +137,12 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
     delimiter = file_format.delimiter.character
 
-    skiprows: int | list[int] = firstline - 1
+    skiprows: int | list[int] = firstline
     if not isinstance(source_file, str | Path):
         # The file was uploaded as binary
         lines = len(source_file.readlines())
         source_file.seek(0)
-        skiprows = [i for i in range(0, firstline - 1)] + [
+        skiprows = [i for i in range(0, firstline)] + [
             i - 1 for i in range(lines, lines - skipfooter, -1)
         ]
         skipfooter = 0
