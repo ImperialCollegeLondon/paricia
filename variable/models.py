@@ -57,6 +57,7 @@ class Variable(PermissionsBase):
     value for the data, to flag outliers and to help with the validation process.
 
     The nature of the variable can be one of the following:
+
     - sum: Cumulative value over a period of time.
     - average: Average value over a period of time.
     - value: One-off value.
