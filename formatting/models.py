@@ -24,7 +24,7 @@ from variable.models import Variable
 class Extension(PermissionsBase):
     """Extension of the data file.
 
-    It is mostly used to chose the tool to be employed to ingest the data. While it can
+    It is mostly used to choose the tool to be employed to ingest the data. While it can
     take any value, there is currently explicit support only for `xlsx` and `xlx`.
     Anything else will be interpreted as a text file and loaded using `pandas.read_csv`.
 
@@ -178,7 +178,7 @@ class Format(PermissionsBase):
         footer_rows (SmallIntegerField): Number of footer rows, to be ignored at the
             end.
         date (ForeignKey): Format for the date column. Only required for text files.
-        date_column (SmallIntegerField): Index of the date column, starting in 1.
+        date_column (SmallIntegerField): Index of the date column, starting at 1.
         time (ForeignKey): Format for the time column. Only required for text files.
         time_column (SmallIntegerField): Index of the time column, starting in 1.
     """
