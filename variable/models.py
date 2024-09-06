@@ -13,6 +13,7 @@
 
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 
@@ -131,6 +132,7 @@ class Variable(PermissionsBase):
         help_text="If two sequential values in the time-series data of this variable "
         "differ by more than this value, the validation process can mark this with a "
         "warning flag.",
+        validators=[MinValueValidator(0)],
     )
     diff_error = models.DecimalField(
         "Difference error",
@@ -141,6 +143,7 @@ class Variable(PermissionsBase):
         help_text="If two sequential values in the time-series data of this variable "
         "differ by more than this value, the validation process can mark this with an "
         "error flag.",
+        validators=[MinValueValidator(0)],
     )
     outlier_limit = models.DecimalField(
         "Sigmas (outliers)",
@@ -150,16 +153,18 @@ class Variable(PermissionsBase):
         blank=True,
         help_text="How many times the standard deviation (sigma) is considered an "
         "outlier for this variable.",
+        validators=[MinValueValidator(0)],
     )
     null_limit = models.DecimalField(
         "Null limit (%)",
         max_digits=4,
         decimal_places=1,
-        null=True,
+        default=0,
         help_text="The max \\% of null values (missing, caused by e.g. equipment "
         "malfunction) allowed for hourly, daily, monthly data. Cumulative values are "
         "not deemed trustworthy if the number of missing values in a given "
         "period is greater than the null_limit.",
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     nature = models.CharField(
         "Nature of the measurement",
@@ -203,17 +208,6 @@ class Variable(PermissionsBase):
                     "identifier. Only letters, numbers and underscores are allowed, and"
                     " it cannot start with a number."
                 }
-            )
-        if self.null_limit and (self.null_limit < 0 or self.null_limit > 100):
-            raise ValidationError(
-                {
-                    "null_limit": "The null limit must be a percentage between 0 and "
-                    "100."
-                }
-            )
-        if self.outlier_limit and self.outlier_limit < 0:
-            raise ValidationError(
-                {"outlier_limit": "The outlier limit must be a positive number."}
             )
         return super().clean()
 
