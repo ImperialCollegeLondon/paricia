@@ -186,24 +186,53 @@ class Variable(PermissionsBase):
 
 class SensorInstallation(PermissionsBase):
     """Represents an installation of a Sensor at a Station, which measures a Variable.
-    Metadata for installation and finishing date, as well as state (active or not).
+
+    It includes metadata for installation and finishing date, as well as state (active
+    or not).
+
+    Attributes:
+        sensorinstallation_id (AutoField): Primary key.
+        variable (ForeignKey): Variable measured by the sensor.
+        station (ForeignKey): Station where the sensor is installed.
+        sensor (ForeignKey): Sensor used for the measurement.
+        start_date (DateField): Start date of the installation.
+        end_date (DateField): End date of the installation.
+        state (BooleanField): Is the sensor active?
     """
 
-    sensorinstallation_id = models.AutoField("Id", primary_key=True)
+    sensorinstallation_id = models.AutoField(
+        "Id", primary_key=True, help_text="Primary key."
+    )
     variable = models.ForeignKey(
-        Variable, models.PROTECT, blank=True, null=True, verbose_name="Variable"
+        Variable,
+        models.PROTECT,
+        verbose_name="Variable",
+        help_text="Variable measured by the sensor.",
     )
     station = models.ForeignKey(
-        Station, models.PROTECT, blank=True, null=True, verbose_name="Station"
+        Station,
+        models.PROTECT,
+        verbose_name="Station",
+        help_text="Station where the sensor is installed.",
     )
     sensor = models.ForeignKey(
-        Sensor, models.PROTECT, blank=True, null=True, verbose_name="Sensor"
+        Sensor,
+        models.PROTECT,
+        verbose_name="Sensor",
+        help_text="Sensor used for the measurement.",
     )
-    start_date = models.DateField("Start date")
-    end_date = models.DateField("End date", blank=True, null=True)
-    state = models.BooleanField("Active", default=True)
+    start_date = models.DateField(
+        "Start date", help_text="Start date of the installation"
+    )
+    end_date = models.DateField(
+        "End date", blank=True, null=True, help_text="End date of the installation"
+    )
+    state = models.BooleanField(
+        "Is active?", default=True, help_text="Is the sensor active?"
+    )
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Get the absolute URL of the object."""
         return reverse("variable:sensorinstallation_detail", kwargs={"pk": self.pk})
 
     class Meta:
