@@ -36,6 +36,7 @@ plugins:
             show_root_heading: true
             show_category_heading: true
             merge_init_into_class: true
+            members: true
           paths: [measurement]
   - caption:
       figure:
@@ -46,7 +47,8 @@ nav:
   - Contributing: contributing.md
   - Permissions: permissions.md
   - Applications:
-      - Summary: applications/index.md
+      - Index: applications/index.md
       - Formatting: applications/formatting.md
+      - Variables: applications/variable.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/

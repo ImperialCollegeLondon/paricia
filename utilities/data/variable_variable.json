@@ -8,12 +8,9 @@
       "unit": 6,
       "maximum": "13.00",
       "minimum": "0.00",
-      "diff_warning": "3.50",
       "diff_error": "4.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "sum",
-      "automatic_report": true,
       "null_limit": "20.0"
     }
   },
@@ -26,12 +23,9 @@
       "unit": 8,
       "maximum": "28.00",
       "minimum": "-5.00",
-      "diff_warning": "2.00",
       "diff_error": "3.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -44,12 +38,9 @@
       "unit": 3,
       "maximum": "100.00",
       "minimum": "0.00",
-      "diff_warning": "10.00",
       "diff_error": "20.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -62,12 +53,9 @@
       "unit": 9,
       "maximum": "15.00",
       "minimum": "0.00",
-      "diff_warning": "5.00",
       "diff_error": "10.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -80,12 +68,9 @@
       "unit": 2,
       "maximum": "360.00",
       "minimum": "0.00",
-      "diff_warning": "361.00",
       "diff_error": "370.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -98,12 +83,9 @@
       "unit": 3,
       "maximum": "100.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": false,
       "null_limit": "30.0"
     }
   },
@@ -116,12 +98,9 @@
       "unit": 13,
       "maximum": "1353.00",
       "minimum": "0.00",
-      "diff_warning": "700.00",
       "diff_error": "800.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -134,12 +113,9 @@
       "unit": 5,
       "maximum": "740.00",
       "minimum": "630.00",
-      "diff_warning": "0.12",
       "diff_error": "0.22",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -152,12 +128,9 @@
       "unit": 8,
       "maximum": "17.00",
       "minimum": "0.00",
-      "diff_warning": "2.00",
       "diff_error": "3.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -170,12 +143,9 @@
       "unit": 22,
       "maximum": "8.00",
       "minimum": "0.00",
-      "diff_warning": "2.00",
       "diff_error": "3.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -188,12 +158,9 @@
       "unit": 4,
       "maximum": "250.00",
       "minimum": "0.00",
-      "diff_warning": "15.00",
       "diff_error": "20.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -206,12 +173,9 @@
       "unit": 12,
       "maximum": "15.00",
       "minimum": "12.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": false,
       "null_limit": "30.0"
     }
   },
@@ -224,12 +188,9 @@
       "unit": 14,
       "maximum": "8.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": false,
       "null_limit": "30.0"
     }
   },
@@ -242,13 +203,10 @@
       "unit": 4,
       "maximum": "300.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": false,
-      "null_limit": null
+      "null_limit": 0
     }
   },
   {
@@ -260,13 +218,10 @@
       "unit": 2,
       "maximum": "360.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": false,
       "nature": "sum",
-      "automatic_report": false,
-      "null_limit": null
+      "null_limit": 0
     }
   },
   {
@@ -278,13 +233,10 @@
       "unit": 10,
       "maximum": "17.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": false,
       "nature": "average",
-      "automatic_report": false,
-      "null_limit": null
+      "null_limit": 0
     }
   },
   {
@@ -296,13 +248,10 @@
       "unit": 1,
       "maximum": "1.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": false,
       "nature": "average",
-      "automatic_report": false,
-      "null_limit": null
+      "null_limit": 0
     }
   },
   {
@@ -314,13 +263,10 @@
       "unit": 1,
       "maximum": "1.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": false,
       "nature": "average",
-      "automatic_report": false,
-      "null_limit": null
+      "null_limit": 0
     }
   },
   {
@@ -332,13 +278,10 @@
       "unit": 1,
       "maximum": "1.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": false,
       "nature": "average",
-      "automatic_report": false,
-      "null_limit": null
+      "null_limit": 0
     }
   },
   {
@@ -350,12 +293,9 @@
       "unit": 8,
       "maximum": "20.00",
       "minimum": "-3.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": false,
       "nature": "average",
-      "automatic_report": false,
       "null_limit": "30.0"
     }
   },
@@ -368,12 +308,9 @@
       "unit": 13,
       "maximum": "1.00",
       "minimum": "0.00",
-      "diff_warning": "100.00",
       "diff_error": "100.00",
       "outlier_limit": "3.00",
-      "is_active": true,
       "nature": "average",
-      "automatic_report": false,
       "null_limit": "30.0"
     }
   },
@@ -386,13 +323,10 @@
       "unit": 13,
       "maximum": "6000.00",
       "minimum": "0.00",
-      "diff_warning": "35000.00",
       "diff_error": "40000.00",
       "outlier_limit": "3.00",
-      "is_active": false,
       "nature": "sum",
-      "automatic_report": false,
-      "null_limit": null
+      "null_limit": 0
     }
   },
   {
@@ -404,12 +338,9 @@
       "unit": 8,
       "maximum": "99.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -422,12 +353,9 @@
       "unit": 16,
       "maximum": "14.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -440,12 +368,9 @@
       "unit": 17,
       "maximum": "2000.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -458,12 +383,9 @@
       "unit": 18,
       "maximum": "10000.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -476,12 +398,9 @@
       "unit": 19,
       "maximum": "100.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -494,12 +413,9 @@
       "unit": 20,
       "maximum": "14.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -512,12 +428,9 @@
       "unit": 3,
       "maximum": "100.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   },
@@ -530,12 +443,9 @@
       "unit": 21,
       "maximum": "99999.00",
       "minimum": "0.00",
-      "diff_warning": null,
       "diff_error": null,
       "outlier_limit": null,
-      "is_active": true,
       "nature": "average",
-      "automatic_report": true,
       "null_limit": "30.0"
     }
   }

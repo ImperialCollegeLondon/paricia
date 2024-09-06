@@ -10,9 +10,6 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-
-import zoneinfo
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -22,7 +19,7 @@ from guardian.shortcuts import assign_perm, get_anonymous_user, remove_perm
 
 from management.models import PermissionsBase
 
-TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
+from .timezones import TIMEZONES
 
 # Global variables used in Basin model
 BASIN_IMAGE_PATH = "station/basin_image/"
