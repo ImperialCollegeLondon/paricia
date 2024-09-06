@@ -36,6 +36,7 @@ plugins:
             show_root_heading: true
             show_category_heading: true
             merge_init_into_class: true
+            members: true
           paths: [measurement]
   - caption:
       figure:
