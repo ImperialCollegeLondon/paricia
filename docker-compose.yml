@@ -16,13 +16,19 @@ services:
       - 5432:5432
   web:
     build: .
+    command:
+      - sh
+      - -c
+      - |
+        python manage.py migrate
+        python manage.py run_huey &
+        python manage.py runserver 0:8000
     environment:
       - LOGGING_FILE=/usr/src/app/log/paricia
     volumes:
       - .:/usr/src/app
     ports:
       - 8000:8000
-      - 2222:2222
     depends_on:
       db:
         condition: service_healthy

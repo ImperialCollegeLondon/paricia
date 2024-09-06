@@ -20,21 +20,34 @@ from formatting.models import Format
 from management.models import PermissionsBase
 from station.models import Station
 
-from .functions import save_temp_data_to_permanent
-
 User = get_user_model()
 
 
 class DataImport(PermissionsBase):
+    STATUS = (("N", "Not queued"), ("Q", "Queued"), ("C", "Completed"), ("F", "Failed"))
+
     data_import_id = models.AutoField("Id", primary_key=True)
     station = models.ForeignKey(Station, models.PROTECT, verbose_name="Station")
     format = models.ForeignKey(Format, models.PROTECT, verbose_name="Format")
     rawfile = models.FileField("Data file", blank=False, null=False)
     date = models.DateTimeField("Submission date", auto_now_add=True)
-    start_date = models.DateTimeField("Start date", blank=True, null=False)
-    end_date = models.DateTimeField("End date", blank=True, null=False)
-    records = models.IntegerField("Records", blank=True, null=False)
+    start_date = models.DateTimeField("Start date", blank=True, null=True)
+    end_date = models.DateTimeField("End date", blank=True, null=True)
+    records = models.IntegerField("Records", blank=True, null=True)
     observations = models.TextField("Observations/Notes", blank=True, null=True)
+    status = models.TextField(
+        "Status", choices=STATUS, help_text="Status of the import", default="N"
+    )
+    log = models.TextField(
+        "Data ingestion log",
+        help_text="Log of the data ingestion, indicating any errors",
+        default="",
+    )
+    reprocess = models.BooleanField(
+        "Reprocess data",
+        help_text="If checked, the data will be reprocessed",
+        default=False,
+    )
 
     def get_absolute_url(self):
         return reverse("importing:data_import_detail", kwargs={"pk": self.pk})
@@ -48,6 +61,6 @@ class DataImport(PermissionsBase):
         if not tz:
             raise ValidationError("Station must have a timezone set.")
 
-        self.start_date, self.end_date, self.records = save_temp_data_to_permanent(
-            self.station, self.format, self.rawfile
-        )
+        if self.reprocess:
+            self.status = "N"
+            self.reprocess = False

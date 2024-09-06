@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "huey.contrib.djhuey",
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_yasg",
@@ -124,11 +125,26 @@ DATABASES = {
         "PASSWORD": "postgres",
         "HOST": "db",
         "PORT": "5432",
-    }
+    },
+    "huey": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "huey_db",
+        "FILE": os.path.join(BASE_DIR, "data", "huey.db"),
+    },
 }
 
 if os.environ.get("GITHUB_WORKFLOW"):
     DATABASES["default"]["HOST"] = "127.0.0.1"
+
+HUEY = {
+    "huey_class": "huey.SqliteHuey",
+    "name": DATABASES["huey"]["NAME"],
+    "immediate": False,
+    "consumer": {"workers": 2},
+    "connection": {
+        "filename": DATABASES["huey"]["FILE"],
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

@@ -6,6 +6,7 @@ __pycache__
 db.sqlite3
 media
 */db/*
+*.db*
 
 # Migrations
 # We don't want to ignore migrations because we have data migrations to set up groups
