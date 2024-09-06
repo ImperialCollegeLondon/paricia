@@ -7,12 +7,12 @@
       "delimiter": 6,
       "name": "iMHEA nivel y flujo periódico",
       "description": "iMHEA nivel y flujo periódico",
-      "first_row": 2,
+      "first_row": 1,
       "footer_rows": 0,
       "date": 4,
-      "date_column": 1,
+      "date_column": 0,
       "time": 2,
-      "time_column": 1
+      "time_column": 0
     }
   },
   {
@@ -23,12 +23,12 @@
       "delimiter": 6,
       "name": "iMHEA precipitación eventos",
       "description": "iMHEA precipitación eventos",
-      "first_row": 2,
+      "first_row": 1,
       "footer_rows": 0,
       "date": 4,
-      "date_column": 1,
+      "date_column": 0,
       "time": 2,
-      "time_column": 1
+      "time_column": 0
     }
   },
   {
@@ -39,12 +39,12 @@
       "delimiter": 6,
       "name": "iMHEA flujo periódico",
       "description": "iMHEA flujo periódico",
-      "first_row": 2,
+      "first_row": 1,
       "footer_rows": 0,
       "date": 4,
-      "date_column": 1,
+      "date_column": 0,
       "time": 2,
-      "time_column": 1
+      "time_column": 0
     }
   }
 ]
