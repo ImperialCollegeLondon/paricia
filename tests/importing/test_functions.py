@@ -169,10 +169,10 @@ class TestReadFileCSV(TestCase):
         csv_data = "1,2,3\n4,5,6\n7,8,9\n"
         csv_file = io.StringIO(csv_data)
 
-        # File format skipping one row (so first row is number 2)
+        # File format skipping one row
         # and using a coma as delimiter
         file_format = Format(
-            first_row=2, delimiter=Delimiter(name="coma", character=",")
+            first_row=1, delimiter=Delimiter(name="coma", character=",")
         )
         result = read_file_csv(csv_file, file_format)
         expected_result = [[4, 5, 6], [7, 8, 9]]
@@ -180,7 +180,9 @@ class TestReadFileCSV(TestCase):
 
         # File format using the first row and a coma as delimiter
         csv_file.seek(0)
-        file_format = Format(delimiter=Delimiter(name="coma", character=","))
+        file_format = Format(
+            first_row=0, delimiter=Delimiter(name="coma", character=",")
+        )
         result = read_file_csv(csv_file, file_format)
         expected_result = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
         self.assertEqual(result.values.tolist(), expected_result)
@@ -188,7 +190,7 @@ class TestReadFileCSV(TestCase):
         # File format skipping the last row and using a coma as delimiter
         csv_file.seek(0)
         file_format = Format(
-            footer_rows=1, delimiter=Delimiter(name="coma", character=",")
+            first_row=0, footer_rows=1, delimiter=Delimiter(name="coma", character=",")
         )
         result = read_file_csv(csv_file, file_format)
         expected_result = [[1, 2, 3], [4, 5, 6]]
@@ -210,8 +212,9 @@ class TestProcessDatetimeColumns(TestCase):
             }
         )
         file_format = Format(
-            date_column=1,
-            time_column=1,
+            first_row=0,
+            date_column=0,
+            time_column=0,
             date=Date(date_format="", code="%Y-%m-%d"),
             time=Time(time_format="", code="%H:%M:%S"),
             delimiter=Delimiter(name="coma", character=","),
@@ -250,8 +253,9 @@ class TestProcessDatetimeColumns(TestCase):
             }
         )
         file_format = Format(
-            date_column=1,
-            time_column=2,
+            first_row=0,
+            date_column=0,
+            time_column=1,
             date=Date(date_format="", code="%Y-%m-%d"),
             time=Time(time_format="", code="%H:%M:%S"),
             delimiter=Delimiter(name="coma", character=","),

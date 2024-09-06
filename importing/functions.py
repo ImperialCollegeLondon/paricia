@@ -137,12 +137,12 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
     delimiter = file_format.delimiter.character
 
-    skiprows: int | list[int] = firstline - 1
+    skiprows: int | list[int] = firstline
     if not isinstance(source_file, str | Path):
         # The file was uploaded as binary
         lines = len(source_file.readlines())
         source_file.seek(0)
-        skiprows = [i for i in range(0, firstline - 1)] + [
+        skiprows = [i for i in range(0, firstline)] + [
             i - 1 for i in range(lines, lines - skipfooter, -1)
         ]
         skipfooter = 0
@@ -185,7 +185,7 @@ def process_datetime_columns(
         data["date"] = pd.Series(
             [
                 standardise_datetime(row, dt_format).replace(tzinfo=tz)
-                for row in data.iloc[:, file_format.date_column - 1].values
+                for row in data.iloc[:, file_format.date_column].values
             ],
             index=data.index,
         )
@@ -346,32 +346,32 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
         columns.append(("date", "date"))
 
         # Validation of values
-        columns.append((classification.value - 1, "value"))
+        columns.append((classification.value, "value"))
         if classification.value_validator_column:
             matrix.loc[
-                matrix[classification.value_validator_column - 1]
+                matrix[classification.value_validator_column]
                 != classification.value_validator_text,
-                classification.value - 1,
+                classification.value,
             ] = np.nan
 
         # Validation of maximum
         if classification.maximum:
-            columns.append((classification.maximum - 1, "maximum"))
+            columns.append((classification.maximum, "maximum"))
             if classification.maximum_validator_column:
                 matrix.loc[
-                    matrix[classification.maximum_validator_column - 1]
+                    matrix[classification.maximum_validator_column]
                     != classification.maximum_validator_text,
-                    classification.maximum - 1,
+                    classification.maximum,
                 ] = np.nan
 
         # Validation of minimum
         if classification.minimum:
-            columns.append((classification.minimum - 1, "minimum"))
+            columns.append((classification.minimum, "minimum"))
             if classification.minimum_validator_column:
                 matrix.loc[
-                    matrix[classification.minimum_validator_column - 1]
+                    matrix[classification.minimum_validator_column]
                     != classification.minimum_validator_text,
-                    classification.minimum - 1,
+                    classification.minimum,
                 ] = np.nan
 
         data = matrix.loc[:, [v[0] for v in columns]].rename(columns=dict(columns))
@@ -396,7 +396,7 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
         data = data.dropna(axis=0, how="all", subset=data_columns)
 
         # Deal with cumulative and incremental data
-        if classification.accumulate:
+        if acc := classification.accumulate:
             # assumes that if incremental it only works with VALUE
             # (MAXIMUM and MINIMUM are excluded)
             if classification.incremental:
@@ -405,27 +405,30 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
                 data = data.dropna()
             data["date"] = data["date"].apply(
                 lambda x: x.replace(
-                    minute=int(x.minute / 5) * 5, second=0, microsecond=0, nanosecond=0
+                    minute=int(x.minute / acc) * acc,
+                    second=0,
+                    microsecond=0,
+                    nanosecond=0,
                 )
             )
-            data["date"] = data["date"] + pd.Timedelta(minutes=5)
+            data["date"] = data["date"] + pd.Timedelta(minutes=acc)
             count = data.groupby("date")["value"].sum().to_frame()
             data = count["value"] * float(classification.resolution)
 
             start_date = start_date.replace(
-                minute=int(start_date.minute / 5) * 5,
+                minute=int(start_date.minute / acc) * acc,
                 second=0,
                 microsecond=0,
                 nanosecond=0,
-            ) + pd.Timedelta(minutes=5)
+            ) + pd.Timedelta(minutes=acc)
             end_date = end_date.replace(
-                minute=int(end_date.minute / 5) * 5,
+                minute=int(end_date.minute / acc) * acc,
                 second=0,
                 microsecond=0,
                 nanosecond=0,
-            ) + pd.Timedelta(minutes=5)
+            ) + pd.Timedelta(minutes=acc)
             table = pd.date_range(
-                start_date, end_date, freq="5min", name="date"
+                start_date, end_date, freq=f"{acc}min", name="date"
             ).to_frame()
             data = pd.concat([table, data], axis=1)
             data = data.fillna(0)

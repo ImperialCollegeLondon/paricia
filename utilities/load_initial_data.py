@@ -30,7 +30,6 @@ data_files = [
     "station_placebasin",
     "station_institution",
     "station_station",
-    "formatting_association",
     "measurement_airtemperature",
     "station_delta_t",
 ]

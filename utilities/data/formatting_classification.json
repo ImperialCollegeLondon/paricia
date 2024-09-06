@@ -5,7 +5,7 @@
     "fields": {
       "format": 45,
       "variable": 11,
-      "value": 2,
+      "value": 1,
       "maximum": null,
       "minimum": null,
       "value_validator_column": null,
@@ -26,7 +26,7 @@
     "fields": {
       "format": 45,
       "variable": 10,
-      "value": 3,
+      "value": 2,
       "maximum": null,
       "minimum": null,
       "value_validator_column": null,
@@ -47,7 +47,7 @@
     "fields": {
       "format": 46,
       "variable": 1,
-      "value": 2,
+      "value": 1,
       "maximum": null,
       "minimum": null,
       "value_validator_column": null,
@@ -56,7 +56,7 @@
       "maximum_validator_text": null,
       "minimum_validator_column": null,
       "minimum_validator_text": null,
-      "accumulate": true,
+      "accumulate": 5,
       "incremental": false,
       "resolution": "1.00",
       "decimal_comma": false

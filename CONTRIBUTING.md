@@ -5,8 +5,6 @@ Thanks for taking the time to contribute to Paricia!
 
 The following is a set of guidelines for contributing to Paricia, a Python-based hydroclimatic data management system project. The goal of these guidelines is to make the development of the project efficient and sustainable and to ensure that every commit makes it better, more readable, more robust and better documented. Please, feel free suggest changes and improvements.
 
-(this guide is based on the [Atom editor guide](https://github.com/atom/atom/blob/master/CONTRIBUTING.md))
-
 ## Table Of Contents
 
 [Code of Conduct](#code-of-conduct)
@@ -156,6 +154,17 @@ If you want to install Paricia from scratch, follow the steps below:
 - If you want to load initial data (variables, units, stations...):
   - In a separate terminal run `docker exec -it <name_of_docker_container> bash` e.g. `docker exec -it paricia-web-1 bash` to start a bash session in the container. You can find the name of the container in the Docker Desktop GUI, or by running `docker container ls`.
   - Run `python manage.py shell < utilities/load_initial_data.py`.
+
+## Project structure
+
+In addition to the applications containing the actual functionality, and described in the documentation, the project file structure has other directories that are of interest only for developers.
+
+- The top-level directory contains various config files and directories for git, github, docker and pip.
+- Each django app is in a subdirectory and `djangomain` contains the main django settings, views and urls.
+- The `static` directory contains the static files for the project.
+- The `templates` directory contains the templates for the project.
+- The `utilities` directory contains helper functions for the project.
+- The `tests` directory contains all unit tests for the project.
 
 ### Tests
 

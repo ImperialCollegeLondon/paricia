@@ -63,7 +63,7 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
         """Limit the queryset for foreign key fields."""
         if db_field.name in self.foreign_key_fields:
             kwargs["queryset"] = _get_queryset(db_field, request.user)
-        if db_field.name == "owner":
+        if db_field.name == "owner" and not request.user.is_superuser:
             kwargs["initial"] = request.user.id
             kwargs["disabled"] = True
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
