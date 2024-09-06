@@ -14,6 +14,7 @@
 from collections import defaultdict
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.urls import reverse
 
@@ -174,13 +175,16 @@ class Format(PermissionsBase):
         extension (ForeignKey): The extension of the data file.
         delimiter (ForeignKey): The delimiter between columns in the data file. Only
             required for text files.
-        first_row (SmallIntegerField): First row of the data, excluding any heading.
-        footer_rows (SmallIntegerField): Number of footer rows, to be ignored at the
-            end.
+        first_row (PositiveSmallIntegerField): Index of the first row with data,
+            starting in 0.
+        footer_rows (PositiveSmallIntegerField): Number of footer rows to be ignored at
+            the end.
         date (ForeignKey): Format for the date column. Only required for text files.
-        date_column (SmallIntegerField): Index of the date column, starting at 1.
+        date_column (PositiveSmallIntegerField): Index of the date column, starting in
+            0.
         time (ForeignKey): Format for the time column. Only required for text files.
-        time_column (SmallIntegerField): Index of the time column, starting in 1.
+        time_column (PositiveSmallIntegerField): Index of the time column, starting in
+            0.
     """
 
     format_id = models.AutoField(
@@ -209,15 +213,15 @@ class Format(PermissionsBase):
         help_text="The delimiter between columns in the data file. Only required for "
         "text files.",
     )
-    first_row = models.SmallIntegerField(
-        "First row", help_text="First row of the data, excluding any heading."
+    first_row = models.PositiveSmallIntegerField(
+        "First row",
+        default=1,
+        help_text="Index of the first row with data, starting in 0.",
     )
-    footer_rows = models.SmallIntegerField(
+    footer_rows = models.PositiveSmallIntegerField(
         "Number of footer rows",
-        blank=True,
-        null=False,
         default=0,
-        help_text="Number of footer rows, to be ignored at the end.",
+        help_text="Number of footer rows to be ignored at the end.",
     )
     date = models.ForeignKey(
         Date,
@@ -227,8 +231,8 @@ class Format(PermissionsBase):
         verbose_name="Date format",
         help_text="Format for the date column. Only required for text files.",
     )
-    date_column = models.SmallIntegerField(
-        "Date column", help_text="Index of the date column, starting in 1."
+    date_column = models.PositiveSmallIntegerField(
+        "Date column", default=0, help_text="Index of the date column, starting in 0."
     )
     time = models.ForeignKey(
         Time,
@@ -238,8 +242,8 @@ class Format(PermissionsBase):
         verbose_name="Time format",
         help_text="Format for the time column. Only required for text files.",
     )
-    time_column = models.SmallIntegerField(
-        "Time column", help_text="Index of the time column, starting in 1."
+    time_column = models.PositiveSmallIntegerField(
+        "Time column", default=0, help_text="Index of the time column, starting in 0."
     )
 
     def __str__(self) -> str:
@@ -265,19 +269,9 @@ class Format(PermissionsBase):
             list[int]: A list of column indices.
         """
         date_items = self.date.code.split(delimiter)
-        date_cols = list(
-            range(
-                self.date_column - 1,
-                self.date_column - 1 + len(date_items),
-            )
-        )
+        date_cols = list(range(self.date_column, len(date_items)))
         time_items = self.time.code.split(delimiter)
-        time_cols = list(
-            range(
-                self.time_column - 1,
-                self.time_column - 1 + len(time_items),
-            )
-        )
+        time_cols = list(range(self.time_column, len(time_items)))
         return date_cols + time_cols
 
     class Meta:
@@ -287,7 +281,7 @@ class Format(PermissionsBase):
 class Classification(PermissionsBase):
     """Contains instructions on how to classify the data into a specific variable.
 
-    In pariticular, it links a format to a variable, and provides the column indices for
+    In particular, it links a format to a variable, and provides the column indices for
     the value, maximum, and minimum columns, as well as the validator columns. It also
     contains information on whether the data is accumulated, incremental, and the
     resolution of the data.
@@ -296,20 +290,22 @@ class Classification(PermissionsBase):
         cls_id (AutoField): Primary key.
         format (ForeignKey): The format of the data file.
         variable (ForeignKey): The variable to which the data belongs.
-        value (SmallIntegerField): Index of the value column, starting in 1.
-        maximum (SmallIntegerField): Index of the maximum value column, starting in 1.
-        minimum (SmallIntegerField): Index of the minimum value column, starting in 1.
-        value_validator_column (SmallIntegerField): Index of the value validator column,
-            starting in 1.
+        value (PositiveSmallIntegerField): Index of the value column, starting in 0.
+        maximum (PositiveSmallIntegerField): Index of the maximum value column, starting
+            in 0.
+        minimum (PositiveSmallIntegerField): Index of the minimum value column, starting
+            in 0.
+        value_validator_column (PositiveSmallIntegerField): Index of the value validator
+            column, starting in 0.
         value_validator_text (CharField): Value validator text.
-        maximum_validator_column (SmallIntegerField): Index of the maximum value
-            validator column, starting in 1.
+        maximum_validator_column (PositiveSmallIntegerField): Index of the maximum value
+            validator column, starting in 0.
         maximum_validator_text (CharField): Maximum value validator text.
-        minimum_validator_column (SmallIntegerField): Index of the minimum value
-            validator column, starting in 1.
+        minimum_validator_column (PositiveSmallIntegerField): Index of the minimum value
+            validator column, starting in 0.
         minimum_validator_text (CharField): Minimum value validator text.
-        accumulate (SmallIntegerField): If set to a number of minutes, the data will be
-            accumulated over that period.
+        accumulate (PositiveSmallIntegerField): If set to a number of minutes, the data
+            will be accumulated over that period.
         resolution (DecimalField): Resolution of the data. Only used if it is to be
             accumulated.
         incremental (BooleanField): Whether the data is an incremental counter. If it
@@ -331,26 +327,26 @@ class Classification(PermissionsBase):
         verbose_name="Variable",
         help_text="The variable to which the data belongs.",
     )
-    value = models.SmallIntegerField(
-        "Value column", help_text="Index of the value column, starting in 1."
+    value = models.PositiveSmallIntegerField(
+        "Value column", help_text="Index of the value column, starting in 0."
     )
-    maximum = models.SmallIntegerField(
+    maximum = models.PositiveSmallIntegerField(
         "Maximum value column",
         blank=True,
         null=True,
-        help_text="Index of the maximum value column, starting in 1.",
+        help_text="Index of the maximum value column, starting in 0.",
     )
-    minimum = models.SmallIntegerField(
+    minimum = models.PositiveSmallIntegerField(
         "Minimum value column",
         blank=True,
         null=True,
-        help_text="Index of the minimum value column, starting in 1.",
+        help_text="Index of the minimum value column, starting in 0.",
     )
-    value_validator_column = models.SmallIntegerField(
+    value_validator_column = models.PositiveSmallIntegerField(
         "Value validator column",
         blank=True,
         null=True,
-        help_text="Index of the value validator column, starting in 1.",
+        help_text="Index of the value validator column, starting in 0.",
     )
     value_validator_text = models.CharField(
         "Value validator text",
@@ -359,11 +355,11 @@ class Classification(PermissionsBase):
         null=True,
         help_text="Value validator text.",
     )
-    maximum_validator_column = models.SmallIntegerField(
+    maximum_validator_column = models.PositiveSmallIntegerField(
         "Maximum value validator column",
         blank=True,
         null=True,
-        help_text="Index of the maximum value validator column, starting in 1.",
+        help_text="Index of the maximum value validator column, starting in 0.",
     )
     maximum_validator_text = models.CharField(
         "Maximum value validator text",
@@ -372,11 +368,11 @@ class Classification(PermissionsBase):
         null=True,
         help_text="Maximum value validator text.",
     )
-    minimum_validator_column = models.SmallIntegerField(
+    minimum_validator_column = models.PositiveSmallIntegerField(
         "Minimum value validator column",
         blank=True,
         null=True,
-        help_text="Index of the minimum value validator column, starting in 1.",
+        help_text="Index of the minimum value validator column, starting in 0.",
     )
     minimum_validator_text = models.CharField(
         "Minimum value validator text",
@@ -385,12 +381,13 @@ class Classification(PermissionsBase):
         null=True,
         help_text="Minimum value validator text.",
     )
-    accumulate = models.SmallIntegerField(
+    accumulate = models.PositiveSmallIntegerField(
         "Accumulate minutes",
         null=True,
         blank=True,
-        help_text="If set to a number of minutes, the data will be accumulated over"
+        help_text="When set to a number of minutes, the data will be accumulated over"
         " that period.",
+        validators=[MinValueValidator(1)],
     )
     resolution = models.DecimalField(
         "Resolution",
@@ -399,6 +396,9 @@ class Classification(PermissionsBase):
         blank=True,
         null=True,
         help_text="Resolution of the data. Only used if it is to be accumulated.",
+        validators=[
+            MinValueValidator(0.01)  # Smallest positive number with 2 decimals
+        ],
     )
     incremental = models.BooleanField(
         "Is it an incremental counter?",
@@ -426,25 +426,14 @@ class Classification(PermissionsBase):
         It checks that the column indices are different, and that the accumulation
         period is greater than zero if it is set. It also checks that the resolution is
         set if the data is accumulated.
-
-        TODO: Add tests for this method.
         """
-        if self.accumulate:
-            if self.accumulate < 1:
-                raise ValidationError(
-                    {"accumulate": "The accumulation period must be greater than zero."}
-                )
-            if self.resolution is None:
-                raise ValidationError(
-                    {
-                        "resolution": "The resolution must be set if the data is "
-                        "accumulated."
-                    }
-                )
-            if self.resolution <= 0:
-                raise ValidationError(
-                    {"resolution": "The resolution must be greater than zero."}
-                )
+        if self.accumulate and self.resolution is None:
+            raise ValidationError(
+                {
+                    "resolution": "The resolution must be set if the data is "
+                    "accumulated."
+                }
+            )
 
         col_names = [
             "value",

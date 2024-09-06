@@ -185,7 +185,7 @@ def process_datetime_columns(
         data["date"] = pd.Series(
             [
                 standardise_datetime(row, dt_format).replace(tzinfo=tz)
-                for row in data.iloc[:, file_format.date_column - 1].values
+                for row in data.iloc[:, file_format.date_column].values
             ],
             index=data.index,
         )
@@ -346,32 +346,32 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
         columns.append(("date", "date"))
 
         # Validation of values
-        columns.append((classification.value - 1, "value"))
+        columns.append((classification.value, "value"))
         if classification.value_validator_column:
             matrix.loc[
-                matrix[classification.value_validator_column - 1]
+                matrix[classification.value_validator_column]
                 != classification.value_validator_text,
-                classification.value - 1,
+                classification.value,
             ] = np.nan
 
         # Validation of maximum
         if classification.maximum:
-            columns.append((classification.maximum - 1, "maximum"))
+            columns.append((classification.maximum, "maximum"))
             if classification.maximum_validator_column:
                 matrix.loc[
-                    matrix[classification.maximum_validator_column - 1]
+                    matrix[classification.maximum_validator_column]
                     != classification.maximum_validator_text,
-                    classification.maximum - 1,
+                    classification.maximum,
                 ] = np.nan
 
         # Validation of minimum
         if classification.minimum:
-            columns.append((classification.minimum - 1, "minimum"))
+            columns.append((classification.minimum, "minimum"))
             if classification.minimum_validator_column:
                 matrix.loc[
-                    matrix[classification.minimum_validator_column - 1]
+                    matrix[classification.minimum_validator_column]
                     != classification.minimum_validator_text,
-                    classification.minimum - 1,
+                    classification.minimum,
                 ] = np.nan
 
         data = matrix.loc[:, [v[0] for v in columns]].rename(columns=dict(columns))
