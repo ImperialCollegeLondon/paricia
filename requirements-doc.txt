@@ -101,6 +101,8 @@ ghp-import==2.1.0
     # via mkdocs
 griffe==0.48.0
     # via mkdocstrings-python
+huey==2.5.1
+    # via Paricia (pyproject.toml)
 idna==3.7
     # via
     #   Paricia (pyproject.toml)
@@ -121,11 +123,14 @@ jinja2==3.1.4
     #   mkdocstrings
 markdown==3.7
     # via
+    #   markdown-include
     #   mkdocs
     #   mkdocs-autorefs
     #   mkdocs-material
     #   mkdocstrings
     #   pymdown-extensions
+markdown-include==0.8.1
+    # via Paricia (pyproject.toml)
 markupsafe==2.1.5
     # via
     #   jinja2

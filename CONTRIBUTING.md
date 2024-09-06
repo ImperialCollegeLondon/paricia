@@ -27,6 +27,7 @@ The following is a set of guidelines for contributing to Paricia, a Python-based
 
 - [Installing Paricia](#installing-paricia)
 - [Tests](#tests)
+- [Synthetic data](#synthetic-data)
 - [Continuous integration](#continuous-integration)
 
 ## Code of Conduct
@@ -150,10 +151,11 @@ While the prerequisites above must be satisfied prior to having your pull reques
 If you want to install Paricia from scratch, follow the steps below:
 
 - Run `docker-compose up --build` (requires [Docker](https://www.docker.com/) to be running)
+- After downloading and building the images, Paricia should now be available via a web browser in `http://localhost:8000/`.
+- Create **admin** user running `python manage.py createsuperuser`.
 - If you want to load initial data (variables, units, stations...):
   - In a separate terminal run `docker exec -it <name_of_docker_container> bash` e.g. `docker exec -it paricia-web-1 bash` to start a bash session in the container. You can find the name of the container in the Docker Desktop GUI, or by running `docker container ls`.
   - Run `python manage.py shell < utilities/load_initial_data.py`.
-  - Create **admin** user running `python manage.py createsuperuser`.
 
 ### Tests
 
@@ -164,6 +166,16 @@ For that to work, development-related dependencies needs to be installed. To do 
 ```bash
 python -m pip install -r requirements-dev.txt
 ```
+
+### Synthetic data
+
+Synthetic data can be added to the database for benchmarking purposes using one of the scenarios in `utilities/benchmarking` or creating one of your own. To do so:
+
+- Populate the database with some initial data for the `Station`, `Variable` and all the required models (see the *Getting Started* section).
+- Install the development dependencies (read the *Tests* section)
+- Run your desired synthetic data scenario.
+
+If you run one of the built in ones, you should see a progressbar for the process and, if you log in into the Django Admin of Paricia (`http://localhost:8000/admin`), then you will see the records for the `Measurements` model increasing.
 
 ### Continuous integration
 
