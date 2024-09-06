@@ -12,6 +12,7 @@
 ########################################################################################
 
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
@@ -92,7 +93,9 @@ class Variable(PermissionsBase):
 
     variable_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
     variable_code = models.CharField(
-        "Code", max_length=100, help_text="Code of the variable, eg. airtemperature."
+        "Code",
+        max_length=100,
+        help_text="Code of the variable, eg. airtemperature.",
     )
     name = models.CharField(
         "Name",
@@ -175,6 +178,44 @@ class Variable(PermissionsBase):
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
         return reverse("variable:variable_detail", kwargs={"pk": self.pk})
+
+    def clean(self) -> None:
+        """Validate the model fields."""
+        if self.maximum < self.minimum:
+            raise ValidationError(
+                {
+                    "maximum": "The maximum value must be greater than the minimum "
+                    "value."
+                }
+            )
+        if self.diff_warning is not None and self.diff_error is not None:
+            if self.diff_warning > self.diff_error:
+                raise ValidationError(
+                    {
+                        "diff_warning": "The warning difference must be less than the "
+                        "error difference."
+                    }
+                )
+        if not self.variable_code.isidentifier():
+            raise ValidationError(
+                {
+                    "variable_code": "The variable code must be a valid Python "
+                    "identifier. Only letters, numbers and underscores are allowed, and"
+                    " it cannot start with a number."
+                }
+            )
+        if self.null_limit and (self.null_limit < 0 or self.null_limit > 100):
+            raise ValidationError(
+                {
+                    "null_limit": "The null limit must be a percentage between 0 and "
+                    "100."
+                }
+            )
+        if self.outlier_limit and self.outlier_limit < 0:
+            raise ValidationError(
+                {"outlier_limit": "The outlier limit must be a positive number."}
+            )
+        return super().clean()
 
     @property
     def is_cumulative(self) -> bool:
