@@ -13,7 +13,7 @@ babel==2.16.0
     # via mkdocs-material
 blinker==1.8.2
     # via flask
-certifi==2024.7.4
+certifi==2024.8.30
     # via requests
 channels==4.1.0
     # via django-plotly-dash
