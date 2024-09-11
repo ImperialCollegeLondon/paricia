@@ -1,5 +1,7 @@
 # Variable
 
+## Introduction
+
 The variable application deals with the variables that can be ingested by Paricia, from what they are and what units they use to resources to help in the validation process. Specially important in this validation process will be:
 
 - the maximum and minimum values that the variable can realistically take (these are mandatory fields)
