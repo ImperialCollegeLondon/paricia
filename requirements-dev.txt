@@ -151,6 +151,8 @@ pre-commit==3.8.0
     # via Paricia (pyproject.toml)
 psycopg2==2.9.9
     # via Paricia (pyproject.toml)
+pycountry==24.6.1
+    # via Paricia (pyproject.toml)
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
 pyproject-hooks==1.1.0
