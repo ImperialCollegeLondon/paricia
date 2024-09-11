@@ -295,18 +295,15 @@ class TestReporting(TestCase):
             reformat_dates,
         )
 
+        self.station.clean()
+        self.station.save()
+
         # Define test parameters
         station = self.station.station_code
         variable = self.variable.variable_code
         start_time = "2023-01-01"
         end_time = "2023-01-03"
 
-        # Create mock objects
-        baker.make(
-            "station.DeltaT",
-            station=self.station,
-            delta_t=5,
-        )
         self.variable.nature = "value"
         self.variable.save()
 

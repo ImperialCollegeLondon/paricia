@@ -304,9 +304,9 @@ class DeltaT(PermissionsBase):
         return reverse("station:delta_t_detail", kwargs={"pk": self.pk})
 
     @classmethod
-    def get_default(cls):
+    def get_default(cls) -> "DeltaT":
         """Return the default delta_t id value."""
-        return cls.objects.get_or_create(delta_t=5)[0].pk
+        return cls.objects.get_or_create(delta_t=5)[0]
 
     class Meta:
         ordering = ("id",)
@@ -422,7 +422,8 @@ class Station(PermissionsBase):
     delta_t = models.ForeignKey(
         "DeltaT",
         on_delete=models.PROTECT,
-        default=DeltaT.get_default,
+        null=True,
+        blank=False,
         help_text="Interval of data adquisition (in minutes)",
     )
     station_latitude = models.DecimalField(
@@ -476,6 +477,12 @@ class Station(PermissionsBase):
     def get_absolute_url(self) -> str:
         """Return the absolute url of the station."""
         return reverse("station:station_detail", kwargs={"pk": self.pk})
+
+    def clean(self) -> None:
+        """Set the default delta_t value if not provided."""
+        super().clean()
+        if not self.delta_t:
+            self.delta_t = DeltaT.get_default()
 
     def set_object_permissions(self) -> None:
         """Set object-level permissions.

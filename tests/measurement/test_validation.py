@@ -16,9 +16,9 @@ class TestValidationFunctions(TestCase):
         from station.models import DeltaT, Station
         from variable.models import Variable
 
-        self.station = baker.make(Station)
+        self.delta_t = baker.make(DeltaT)
+        self.station = baker.make(Station, delta_t=self.delta_t)
         self.variable = baker.make(Variable)
-        self.delta_t = baker.make(DeltaT, station=self.station)
 
         if self.station.timezone is None:
             self.station.timezone = "UTC"

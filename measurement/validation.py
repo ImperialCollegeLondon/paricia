@@ -240,7 +240,7 @@ def generate_validation_report(
     Returns:
         A tuple with the summary report and the granular report.
     """
-    period = Station.objects.get(station_code=station).delta_t
+    period = Station.objects.get(station_code=station).delta_t.delta_t
     var = Variable.objects.get(variable_code=variable)
 
     data = get_data_to_validate(station, variable, start_time, end_time, is_validated)
