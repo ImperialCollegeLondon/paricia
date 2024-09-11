@@ -195,23 +195,40 @@ class Place(PermissionsBase):
 
 
 class Basin(PermissionsBase):
-    """Basin e.g. El Carmen.
-    TODO: Is there a more specific definition we can use? e.g. a river basin?
+    """River basin where the station is located e.g. El Carmen.
+
+    Attributes:
+        id (int): Primary key.
+        name (str): Name of the basin, e.g. El Carmen.
+        image (FileField): Photography/Map of the basin.
+        file (FileField): PDF file with details of the basin.
     """
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=40)
-    image = models.FileField(
-        "Photography/Map", upload_to=BASIN_IMAGE_PATH, null=True, blank=True
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(
+        max_length=40, help_text="Name of the basin, eg. El Carmen."
+    )
+    image = models.ImageField(
+        "Photography/Map",
+        upload_to=BASIN_IMAGE_PATH,
+        null=True,
+        blank=True,
+        help_text="Photography/Map of the basin.",
     )
     file = models.FileField(
-        "File(PDF)", upload_to=BASIN_FILE_PATH, null=True, blank=True
+        "File(PDF)",
+        upload_to=BASIN_FILE_PATH,
+        null=True,
+        blank=True,
+        help_text="PDF file with details of the basin.",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the basin name."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the basin."""
         return reverse("station:basin_detail", kwargs={"pk": self.pk})
 
     class Meta:
