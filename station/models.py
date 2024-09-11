@@ -27,6 +27,7 @@ BASIN_IMAGE_PATH = "station/basin_image/"
 BASIN_FILE_PATH = "station/basin_file/"
 PLACE_IMAGE_PATH = "station/place_image/"
 PLACE_BASIN_IMAGE_PATH = "station/place_basin_image/"
+STATION_IMAGE_PATH = "station/station_image/"
 
 User = get_user_model()
 
@@ -283,8 +284,28 @@ class PlaceBasin(PermissionsBase):
 
 
 class Station(PermissionsBase):
-    """Main representation of a station with lots of metadata, according to
-    the other models in this app, along with some geographical data.
+    """Main representation of a station, including several metadata.
+
+    Attributes:
+        visibility (str): Visibility level of the object, including an "internal"
+            option.
+        station_id (int): Primary key.
+        station_code (str): Unique code for the station.
+        station_name (str): Brief description of the station.
+        station_type (StationType): Type of the station.
+        country (Country): Country where the station is located.
+        region (Region): Region within the Country where the station is located.
+        ecosystem (Ecosystem): Ecosystem associated with the station.
+        institution (Institution): Institutional partner responsible for the station.
+        place_basin (PlaceBasin): Place-Basin association.
+        station_state (bool): Is the station operational?
+        timezone (str): Timezone of the station.
+        station_latitude (Decimal): Latitude of the station, in degrees [-90 to 90].
+        station_longitude (Decimal): Longitude of the station, in degrees [-180 to 180].
+        station_altitude (int): Altitude of the station.
+        influence_km (Decimal): Area of influence in km2.
+        station_file (ImageField): Photography of the station.
+        station_external (bool): Is the station external?
     """
 
     VISIBILITY_LEVELS = [
@@ -294,27 +315,38 @@ class Station(PermissionsBase):
     ]
 
     visibility = models.CharField(
-        max_length=8, choices=VISIBILITY_LEVELS, default="private"
+        max_length=8,
+        choices=VISIBILITY_LEVELS,
+        default="private",
+        help_text="Visibility level of the station, including an 'internal' option. "
+        "WARNING: Changing this setting will affect the permissions of the object. If "
+        "'Public', all users will be able to view and associate the object with their "
+        "own. If 'Internal', only users with the 'Standard' group will be able to view"
+        "the measurements associated with the station.",
     )
 
-    station_id = models.AutoField("Id", primary_key=True)
-    station_code = models.CharField("Code", max_length=32)
+    station_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    station_code = models.CharField(
+        "Code", max_length=32, unique=True, help_text="Unique code for the station."
+    )
     station_name = models.CharField(
-        "Description", max_length=100, null=True, blank=True
+        "Description",
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Brief description of the station.",
     )
     station_type = models.ForeignKey(
         StationType,
         on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        verbose_name="StationType",
+        verbose_name="Station type",
+        help_text="Type of the station, indicating what it measures.",
     )
     country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT,
-        null=True,
-        blank=True,
         verbose_name="Country",
+        help_text="Country where the station is located.",
     )
     region = models.ForeignKey(
         Region,
@@ -322,6 +354,7 @@ class Station(PermissionsBase):
         null=True,
         blank=True,
         verbose_name="Region/Province/Department",
+        help_text="Region within the Country where the station is located.",
     )
     ecosystem = models.ForeignKey(
         Ecosystem,
@@ -329,13 +362,13 @@ class Station(PermissionsBase):
         null=True,
         blank=True,
         verbose_name="Ecosystem",
+        help_text="Ecosystem associated with the station.",
     )
     institution = models.ForeignKey(
         Institution,
         on_delete=models.PROTECT,
-        null=True,
-        blank=True,
         verbose_name="Institution",
+        help_text="Institutional partner responsible for the station.",
     )
     place_basin = models.ForeignKey(
         PlaceBasin,
@@ -343,13 +376,34 @@ class Station(PermissionsBase):
         verbose_name="Place-Basin",
         null=True,
         blank=True,
+        help_text="Place-Basin association.",
     )
-    station_state = models.BooleanField("Operational", default=True)
+    station_state = models.BooleanField(
+        "Operational", default=True, help_text="Is the station operational?"
+    )
+    timezone = models.CharField(
+        "Timezone",
+        max_length=100,
+        choices=TIMEZONES,
+        help_text="Timezone of the station.",
+    )
     station_latitude = models.DecimalField(
-        "Latitude", max_digits=17, decimal_places=14, null=True, blank=True
+        "Latitude",
+        max_digits=17,
+        decimal_places=14,
+        null=True,
+        blank=True,
+        help_text="Latitude of the station, in degrees [-90 to 90].",
+        validators=[MaxValueValidator(90), MinValueValidator(-90)],
     )
     station_longitude = models.DecimalField(
-        "Longitude", max_digits=17, decimal_places=14, null=True, blank=True
+        "Longitude",
+        max_digits=17,
+        decimal_places=14,
+        null=True,
+        blank=True,
+        help_text="Longitude of the station, in degrees [-180 to 180].",
+        validators=[MaxValueValidator(180), MinValueValidator(-180)],
     )
     station_altitude = models.IntegerField(
         "Altitude",
@@ -357,26 +411,42 @@ class Station(PermissionsBase):
         blank=True,
         validators=[MaxValueValidator(6000), MinValueValidator(0)],
     )
-    station_file = models.FileField(
-        "Photography/File",
-        upload_to="station/station_file/",
+    influence_km = models.DecimalField(
+        "Area of input (km2)",
+        max_digits=12,
+        decimal_places=4,
         null=True,
         blank=True,
+        help_text="Area of influence in km2.",
+        validators=[MinValueValidator(0)],
     )
-    station_external = models.BooleanField("External", default=False)
-    influence_km = models.DecimalField(
-        "Área of input (km)", max_digits=12, decimal_places=4, null=True, blank=True
+    station_file = models.ImageField(
+        "Photography",
+        upload_to=STATION_IMAGE_PATH,
+        null=True,
+        blank=True,
+        help_text="Photography of the station.",
     )
-    timezone = models.CharField("Timezone", max_length=100, choices=TIMEZONES)
+    station_external = models.BooleanField(
+        "External", default=False, help_text="Is the station external?"
+    )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the station code."""
         return str(self.station_code)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the station."""
         return reverse("station:station_detail", kwargs={"pk": self.pk})
 
-    def set_object_permissions(self):
-        """Set object-level permissions."""
+    def set_object_permissions(self) -> None:
+        """Set object-level permissions.
+
+        This method is called by the save method of the model to set the object-level
+        permissions based on the visibility level of the object. In addition to the
+        standard permissions for the station, the view_measurements permission is set
+        which controls who can view the measurements associated to the station.
+        """
         super().set_object_permissions()
 
         standard_group = Group.objects.get(name="Standard")
