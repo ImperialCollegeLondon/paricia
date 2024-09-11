@@ -89,15 +89,24 @@ class Region(PermissionsBase):
 
 
 class Ecosystem(PermissionsBase):
-    """The ecosystem associated with a station e.g. rain forest."""
+    """The ecosystem associated with a station.
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32)
+    Attributes:
+        id (int): Primary key.
+        name (str): Name of the ecosystem, e.g. rain forest.
+    """
 
-    def __str__(self):
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(
+        max_length=32, help_text="Name of the ecosystem, eg. rain forest."
+    )
+
+    def __str__(self) -> str:
+        """Return the ecosystem name."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the ecosystem."""
         return reverse("station:ecosystem_detail", kwargs={"pk": self.pk})
 
     class Meta:
