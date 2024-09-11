@@ -171,7 +171,7 @@ class Place(PermissionsBase):
     Attributes:
         id (int): Primary key.
         name (str): Name of the place, e.g. Huaraz.
-        image (FileField): Photography/Map of the location.
+        image (ImageField): Photography/Map of the location.
     """
 
     id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
@@ -197,12 +197,12 @@ class Place(PermissionsBase):
 
 
 class Basin(PermissionsBase):
-    """River basin where the station is located e.g. El Carmen.
+    """River(s) basin where the station is located e.g. El Carmen.
 
     Attributes:
         id (int): Primary key.
         name (str): Name of the basin, e.g. El Carmen.
-        image (FileField): Photography/Map of the basin.
+        image (ImageField): Photography/Map of the basin.
         file (FileField): PDF file with details of the basin.
     """
 
@@ -329,6 +329,7 @@ class Station(PermissionsBase):
         place_basin (PlaceBasin): Place-Basin association.
         station_state (bool): Is the station operational?
         timezone (str): Timezone of the station.
+        delta_t (DeltaT): Interval of data adquisition (in minutes).
         station_latitude (Decimal): Latitude of the station, in degrees [-90 to 90].
         station_longitude (Decimal): Longitude of the station, in degrees [-180 to 180].
         station_altitude (int): Altitude of the station.

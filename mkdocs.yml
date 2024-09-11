@@ -47,9 +47,10 @@ nav:
   - Contributing: contributing.md
   - Permissions: permissions.md
   - Applications:
-      - Index: applications/index.md
-      - Formatting: applications/formatting.md
-      - Variables: applications/variable.md
-      - Sensors: applications/sensor.md
+      - Index: Applications/index.md
+      - Formatting: Applications/formatting.md
+      - Variables: Applications/variable.md
+      - Sensors: Applications/sensor.md
+      - Stations: Applications/station.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/
