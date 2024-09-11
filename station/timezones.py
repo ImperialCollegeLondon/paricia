@@ -5,9 +5,6 @@ The result of the command:
     >>> import zoneinfo
     >>> tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
 """
-# import zoneinfo
-# Command to get all timezones
-# TIMEZONES = tuple([(val, val) for val in sorted(zoneinfo.available_timezones())])
 
 TIMEZONES = (
     ("Africa/Abidjan", "Africa/Abidjan"),
