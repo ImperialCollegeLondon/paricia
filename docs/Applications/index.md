@@ -9,5 +9,5 @@ These pages describe in more detail all these models, what they are for and how 
 - [**Sensor:**](sensor.md) Information on physical sensors including brand and type.
 - [**Station:**](station.md) Everything to do with physical stations including their location, region, ecosystem etc.
 - **Importing:** Entries are created in this app when datasets are imported, storing information on the the raw data file itself, the user, time of import etc.
-- **Measurement:** The actual time-series data is stored here when raw data files are imported.
+- [**Measurement:**](measurements.md) The actual time-series data is stored here when raw data files are imported.
 - **Management:** User management. Only Admin users have access to this application.

@@ -46,11 +46,13 @@ nav:
   - Paricia documentation: index.md
   - Contributing: contributing.md
   - Permissions: permissions.md
+  - Validation: validation.md
   - Applications:
       - Index: Applications/index.md
       - Formatting: Applications/formatting.md
       - Variables: Applications/variable.md
       - Sensors: Applications/sensor.md
       - Stations: Applications/station.md
+      - Measurements: Applications/measurement.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/

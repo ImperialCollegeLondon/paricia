@@ -157,6 +157,18 @@ class Measurement(MeasurementBase):
 
     Flags to monitor its validation status, if the data is active (and therefore can be
     used for reporting) and if it has actually been used for that is also included.
+
+    Attributes:
+        depth (int): Depth of the measurement.
+        direction (Decimal): Direction of the measurement, useful for vector quantities.
+        raw_value (Decimal): Original value of the measurement.
+        raw_maximum (Decimal): Original maximum value of the measurement.
+        raw_minimum (Decimal): Original minimum value of the measurement.
+        raw_direction (Decimal): Original direction of the measurement.
+        raw_depth (int): Original depth of the measurement.
+        is_validated (bool): Flag to indicate if the measurement has been validated.
+        is_active (bool): Flag to indicate if the measurement is active. An inactive
+            measurement is not used for reporting
     """
 
     depth = models.PositiveSmallIntegerField(
