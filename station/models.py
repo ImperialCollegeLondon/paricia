@@ -137,15 +137,25 @@ class Institution(PermissionsBase):
 
 
 class StationType(PermissionsBase):
-    """Station type e.g. pluvometric, hydrological."""
+    """Type of the station, indicating what it measures.
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=40)
+    Attributes:
+        id (int): Primary key.
+        name (str): Name of the station type, e.g. pluvometric, hydrological.
+    """
 
-    def __str__(self):
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(
+        max_length=40,
+        help_text="Name of the station type, eg. pluvometric, hydrological.",
+    )
+
+    def __str__(self) -> str:
+        """Return the station type name."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the station type."""
         return reverse("station:station_type_detail", kwargs={"pk": self.pk})
 
     class Meta:
