@@ -8,6 +8,9 @@ from guardian.shortcuts import get_objects_for_user
 
 from .models import User
 
+# Set global preferences for the Django admin site
+admin.site.site_header = "Paricia Administration"
+
 
 class PermissionsBaseAdmin(GuardedModelAdmin):
     """Base admin class for models that require permissions."""

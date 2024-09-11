@@ -4,8 +4,6 @@ from management.admin import PermissionsBaseAdmin
 
 from .models import DataImport
 
-admin.site.site_header = "Paricia Administration - Importing"
-
 
 @admin.register(DataImport)
 class DataImportAdmin(PermissionsBaseAdmin):

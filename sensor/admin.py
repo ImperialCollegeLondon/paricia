@@ -4,8 +4,6 @@ from management.admin import PermissionsBaseAdmin
 
 from .models import Sensor, SensorBrand, SensorType
 
-admin.site.site_header = "Paricia Administration - Sensors"
-
 
 @admin.register(SensorType)
 class SensorTypeAdmin(PermissionsBaseAdmin):
