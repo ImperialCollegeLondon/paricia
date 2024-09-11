@@ -1,6 +1,8 @@
 # Sensor
 
-The sensor application is a small, straigt forward application that contains metadata related to sensors, like brand or sensor type.
+## Introduction
+
+The sensor application is a small, straight forward application that contains metadata related to sensors, like brand or sensor type.
 
 ![UML diagram of the Sensor app models.](images/sensor.png)
 
