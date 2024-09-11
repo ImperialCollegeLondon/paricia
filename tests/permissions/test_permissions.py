@@ -180,13 +180,13 @@ class StationPermissionsTest(BasePermissionsTest, TestCase):
         cls.app = "station"
         cls.model = "station"
         cls.obj_private = Station.objects.create(
-            owner=cls.user_owner, visibility="private"
+            station_code="test1", owner=cls.user_owner, visibility="private"
         )
         cls.obj_public = Station.objects.create(
-            owner=cls.user_owner, visibility="public"
+            station_code="test2", owner=cls.user_owner, visibility="public"
         )
         cls.obj_internal = Station.objects.create(
-            owner=cls.user_owner, visibility="internal"
+            station_code="test3", owner=cls.user_owner, visibility="internal"
         )
 
     def test_measurement_permissions_private(self):
