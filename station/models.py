@@ -25,6 +25,7 @@ from .timezones import TIMEZONES
 # Global variables used in Basin model
 BASIN_IMAGE_PATH = "station/basin_image/"
 BASIN_FILE_PATH = "station/basin_file/"
+PLACE_IMAGE_PATH = "station/place_image/"
 
 User = get_user_model()
 
@@ -163,18 +164,30 @@ class StationType(PermissionsBase):
 
 
 class Place(PermissionsBase):
-    """Specific place that a station is situated e.g. Huaraz."""
+    """Specific place that a station is situated.
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=40)
-    image = models.FileField(
-        "Photography/Map", upload_to="station/place_image/", null=True, blank=True
+    Attributes:
+        id (int): Primary key.
+        name (str): Name of the place, e.g. Huaraz.
+        image (FileField): Photography/Map of the location.
+    """
+
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(max_length=40, help_text="Name of the place, eg. Huaraz.")
+    image = models.ImageField(
+        "Photography/Map",
+        upload_to=PLACE_IMAGE_PATH,
+        null=True,
+        blank=True,
+        help_text="Photography/Map of the location.",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the place name."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the place."""
         return reverse("station:place_detail", kwargs={"pk": self.pk})
 
     class Meta:
