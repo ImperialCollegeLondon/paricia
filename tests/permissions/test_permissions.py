@@ -132,14 +132,26 @@ class SensorPermissionsTest(BasePermissionsTest, TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        from sensor.models import SensorBrand, SensorType
+
         super().setUpTestData()
         cls.app = "sensor"
         cls.model = "sensor"
+        brand = SensorBrand.objects.create(name="Test Brand")
+        kind = SensorType.objects.create(name="Test Type")
         cls.obj_private = Sensor.objects.create(
-            owner=cls.user_owner, visibility="private"
+            owner=cls.user_owner,
+            visibility="private",
+            code="test",
+            sensor_brand=brand,
+            sensor_type=kind,
         )
         cls.obj_public = Sensor.objects.create(
-            owner=cls.user_owner, visibility="public"
+            owner=cls.user_owner,
+            visibility="public",
+            code="test2",
+            sensor_brand=brand,
+            sensor_type=kind,
         )
 
 
