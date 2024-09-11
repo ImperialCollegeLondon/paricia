@@ -114,15 +114,22 @@ class Ecosystem(PermissionsBase):
 
 
 class Institution(PermissionsBase):
-    """Institutional partner e.g. Imperial College London."""
+    """Institutional partner responsible for a station.
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32)
+    Attributes:
+        id (int): Primary key.
+        name (str): Name of the institution.
+    """
 
-    def __str__(self):
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(max_length=32, help_text="Name of the institution.")
+
+    def __str__(self) -> str:
+        """Return the institution name."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the institution."""
         return reverse("station:institution_detail", kwargs={"pk": self.pk})
 
     class Meta:
