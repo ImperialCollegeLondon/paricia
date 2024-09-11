@@ -50,5 +50,6 @@ nav:
       - Index: applications/index.md
       - Formatting: applications/formatting.md
       - Variables: applications/variable.md
+      - Sensors: applications/sensor.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/

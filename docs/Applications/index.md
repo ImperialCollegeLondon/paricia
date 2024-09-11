@@ -6,8 +6,8 @@ These pages describe in more detail all these models, what they are for and how 
 
 - [**Formatting**](formatting.md): Definitions of the different file formats that can be imported, including specifics around delimiters, headers etc.
 - [**Variable:**](variable.md) Information about measured variables including units, max/min allowed values etc.
+- [**Sensor:**](sensor.md) Information on physical sensors including brand and type.
 - **Station:** Everything to do with physical stations including their location, region, ecosystem etc.
-- **Sensor:** Information on physical sensors including brand and type.
 - **Importing:** Entries are created in this app when datasets are imported, storing information on the the raw data file itself, the user, time of import etc.
 - **Measurement:** The actual time-series data is stored here when raw data files are imported.
 - **Management:** User management. Only Admin users have access to this application.
