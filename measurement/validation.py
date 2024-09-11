@@ -6,7 +6,7 @@ import pandas as pd
 
 from measurement import reporting
 from measurement.models import Measurement
-from station.models import DeltaT, Station
+from station.models import Station
 from variable.models import Variable
 
 
@@ -240,7 +240,7 @@ def generate_validation_report(
     Returns:
         A tuple with the summary report and the granular report.
     """
-    period = DeltaT.objects.get(station__station_code=station).delta_t
+    period = Station.objects.get(station_code=station).delta_t
     var = Variable.objects.get(variable_code=variable)
 
     data = get_data_to_validate(station, variable, start_time, end_time, is_validated)

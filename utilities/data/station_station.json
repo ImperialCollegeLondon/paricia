@@ -18,7 +18,8 @@
       "station_file": "",
       "station_external": false,
       "influence_km": null,
-      "timezone": "America/Lima"
+      "timezone": "America/Lima",
+      "delta_t": 1
     }
   },
   {
@@ -40,7 +41,8 @@
       "station_file": "",
       "station_external": false,
       "influence_km": null,
-      "timezone": "America/Lima"
+      "timezone": "America/Lima",
+      "delta_t": 1
     }
   },
   {

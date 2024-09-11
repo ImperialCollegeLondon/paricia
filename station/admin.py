@@ -107,6 +107,7 @@ class StationAdmin(PermissionsBaseAdmin):
         "station_external",
         "influence_km",
         "timezone",
+        "delta_t",
         "owner",
         "visibility",
     ]
@@ -124,6 +125,7 @@ class StationAdmin(PermissionsBaseAdmin):
         "ecosystem",
         "institution",
         "place_basin",
+        "delta_t",
     ]
 
 
@@ -131,6 +133,4 @@ class StationAdmin(PermissionsBaseAdmin):
 class DeltaTAdmin(PermissionsBaseAdmin):
     """Admin class for the DeltaT model."""
 
-    list_display = ["id", "delta_t", "station", "owner", "visibility"]
-    list_filter = ["station"]
-    foreign_key_fields = ["station"]
+    list_display = ["id", "delta_t", "owner", "visibility"]
