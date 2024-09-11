@@ -283,6 +283,35 @@ class PlaceBasin(PermissionsBase):
         ordering = ("id",)
 
 
+# TODO Discuss if it's necessary to implement multiple deltaTs for different dates
+class DeltaT(PermissionsBase):
+    """Delta T: Interval of data adquisition (In minutes)"""
+
+    delta_t = models.PositiveSmallIntegerField(
+        "Time interval (minutes)",
+        default=5,
+        validators=[MinValueValidator(1)],
+        unique=True,
+        help_text="Interval of data adquisition (in minutes)",
+    )
+
+    def __str__(self) -> str:
+        """Return the delta_t value, as a string."""
+        return f"{self.delta_t} min"
+
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the delta_t."""
+        return reverse("station:delta_t_detail", kwargs={"pk": self.pk})
+
+    @classmethod
+    def get_default(cls):
+        """Return the default delta_t id value."""
+        return cls.objects.get_or_create(delta_t=5)[0].pk
+
+    class Meta:
+        ordering = ("id",)
+
+
 class Station(PermissionsBase):
     """Main representation of a station, including several metadata.
 
@@ -339,6 +368,7 @@ class Station(PermissionsBase):
     station_type = models.ForeignKey(
         StationType,
         on_delete=models.PROTECT,
+        null=True,
         verbose_name="Station type",
         help_text="Type of the station, indicating what it measures.",
     )
@@ -346,6 +376,7 @@ class Station(PermissionsBase):
         Country,
         on_delete=models.PROTECT,
         verbose_name="Country",
+        null=True,
         help_text="Country where the station is located.",
     )
     region = models.ForeignKey(
@@ -367,6 +398,7 @@ class Station(PermissionsBase):
     institution = models.ForeignKey(
         Institution,
         on_delete=models.PROTECT,
+        null=True,
         verbose_name="Institution",
         help_text="Institutional partner responsible for the station.",
     )
@@ -386,6 +418,12 @@ class Station(PermissionsBase):
         max_length=100,
         choices=TIMEZONES,
         help_text="Timezone of the station.",
+    )
+    delta_t = models.ForeignKey(
+        "DeltaT",
+        on_delete=models.PROTECT,
+        default=DeltaT.get_default,
+        help_text="Interval of data adquisition (in minutes)",
     )
     station_latitude = models.DecimalField(
         "Latitude",
@@ -472,25 +510,3 @@ class Station(PermissionsBase):
     class Meta:
         ordering = ("station_id",)
         permissions = (("view_measurements", "View measurements"),)
-
-
-# TODO Discuss if it's necessary to implement multiple deltaTs for different dates
-class DeltaT(PermissionsBase):
-    """Delta T: Interval of data adquisition (In minutes)"""
-
-    id = models.AutoField("Id", primary_key=True)
-    station = models.ForeignKey(
-        Station,
-        on_delete=models.CASCADE,
-        verbose_name="Station",
-    )
-    delta_t = models.PositiveSmallIntegerField()
-
-    def __str__(self):
-        return str(self.station.station_code + " - " + str(self.delta_t))
-
-    def get_absolute_url(self):
-        return reverse("station:delta_t_detail", kwargs={"pk": self.pk})
-
-    class Meta:
-        ordering = ("id",)
