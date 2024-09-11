@@ -19,6 +19,7 @@ from guardian.shortcuts import assign_perm, get_anonymous_user, remove_perm
 
 from management.models import PermissionsBase
 
+from .countries import COUNTRIES
 from .timezones import TIMEZONES
 
 # Global variables used in Basin model
@@ -29,15 +30,23 @@ User = get_user_model()
 
 
 class Country(PermissionsBase):
-    """The country that a station or region is in."""
+    """The country where a station or region is in.
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32)
+    Attributes:
+        id (int): Primary key.
+        name (str): Country name."""
 
-    def __str__(self):
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(
+        max_length=100, choices=COUNTRIES, help_text="Country name."
+    )
+
+    def __str__(self) -> str:
+        """Return the country name."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the country."""
         return reverse("station:country_detail", kwargs={"pk": self.pk})
 
     class Meta:
