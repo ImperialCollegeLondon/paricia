@@ -26,6 +26,7 @@ from .timezones import TIMEZONES
 BASIN_IMAGE_PATH = "station/basin_image/"
 BASIN_FILE_PATH = "station/basin_file/"
 PLACE_IMAGE_PATH = "station/place_image/"
+PLACE_BASIN_IMAGE_PATH = "station/place_basin_image/"
 
 User = get_user_model()
 
@@ -236,26 +237,44 @@ class Basin(PermissionsBase):
 
 
 class PlaceBasin(PermissionsBase):
-    """Associates a Basin with a Place and an image."""
+    """Associates a Basin with a Place and an image.
 
-    id = models.AutoField("Id", primary_key=True)
+    Attributes:
+        id (int): Primary key.
+        place (Place): Place of the association.
+        basin (Basin): Basin of the association.
+        image (ImageField): Photography/Map of the place within the basin.
+    """
+
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
     place = models.ForeignKey(
-        Place, on_delete=models.PROTECT, null=True, verbose_name="Place"
+        Place,
+        on_delete=models.PROTECT,
+        null=True,
+        verbose_name="Place",
+        help_text="Place of the association.",
     )
     basin = models.ForeignKey(
-        Basin, on_delete=models.PROTECT, null=True, verbose_name="Basin"
+        Basin,
+        on_delete=models.PROTECT,
+        null=True,
+        verbose_name="Basin",
+        help_text="Basin of the association.",
     )
-    image = models.FileField(
+    image = models.ImageField(
         "Photography/Map",
-        upload_to="station/place_basin_image/",
+        upload_to=PLACE_BASIN_IMAGE_PATH,
         null=True,
         blank=True,
+        help_text="Photography/Map of the place within the basin.",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the place-basin association."""
         return str(self.place) + " - " + str(self.basin)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the place-basin association."""
         return reverse("station:place_basin_detail", kwargs={"pk": self.pk})
 
     class Meta:
