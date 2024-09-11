@@ -55,18 +55,33 @@ class Country(PermissionsBase):
 
 
 class Region(PermissionsBase):
-    """A region within a country."""
+    """A region within a country.
 
-    id = models.AutoField("Id", primary_key=True)
-    name = models.CharField(max_length=32, verbose_name="Name")
+    Attributes:
+        id (int): Primary key.
+        name (str): Name of the region.
+        country (Country): Country where the region is located.
+    """
+
+    id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    name = models.CharField(
+        max_length=32, verbose_name="Name", help_text="Name of the region."
+    )
     country = models.ForeignKey(
-        Country, on_delete=models.PROTECT, null=True, verbose_name="Country"
+        Country,
+        on_delete=models.PROTECT,
+        null=True,
+        verbose_name="Country",
+        help_text="Country where the region is located. In case of a region that is not"
+        "spans multiple countries, select one of them or leave this field empty.",
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the region name."""
         return str(self.name)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Return the absolute url of the region."""
         return reverse("station:region_detail", kwargs={"pk": self.pk})
 
     class Meta:
