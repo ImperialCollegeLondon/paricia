@@ -40,6 +40,7 @@ dependencies = [
     "django-guardian",
     "whitenoise",
     "huey",
+    "pycountry",
 ]
 
 [project.optional-dependencies]
