@@ -41,6 +41,7 @@ dependencies = [
     "whitenoise",
     "huey",
     "pycountry",
+    "Pillow",
 ]
 
 [project.optional-dependencies]

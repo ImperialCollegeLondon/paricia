@@ -114,6 +114,8 @@ packaging==24.1
     #   plotly
 pandas==2.2.2
     # via Paricia (pyproject.toml)
+pillow==10.4.0
+    # via Paricia (pyproject.toml)
 plotly==5.23.0
     # via
     #   dash
