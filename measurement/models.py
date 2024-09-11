@@ -13,6 +13,7 @@
 
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from timescale.db.models.models import TimescaleDateTimeField, TimescaleModel
 
@@ -31,26 +32,62 @@ class MeasurementBase(TimescaleModel):
     although this is enforced only for station, variable and value. Maximum and minimum
     are very likely to be present in most cases, but might not be there in some
     occasions, therefore the possibility of nulling them.
+
+    Attributes:
+        time (TimescaleDateTimeField): Time of the measurement.
+        station (Station): Station this measurement belongs to.
+        variable (Variable): Variable being measured.
+        value (Decimal): Value of the measurement.
+        maximum (Decimal): Maximum value of the measurement. Mostly useful for reports
+            or when the measurement represents an average over time.
+        minimum (Decimal): Minimum value of the measurement. Mostly useful for reports
+            or when the measurement represents an average over time.
     """
 
     time: TimescaleDateTimeField
 
     station = models.ForeignKey(
-        Station, on_delete=models.PROTECT, null=False, verbose_name="Station"
+        Station,
+        on_delete=models.PROTECT,
+        null=False,
+        verbose_name="Station",
+        help_text="Station this measurement belongs to.",
     )
     variable = models.ForeignKey(
-        Variable, on_delete=models.PROTECT, null=False, verbose_name="Variable"
+        Variable,
+        on_delete=models.PROTECT,
+        null=False,
+        verbose_name="Variable",
+        help_text="Variable being measured.",
     )
-    value = models.DecimalField("value", max_digits=14, decimal_places=6, null=False)
+    value = models.DecimalField(
+        "value",
+        max_digits=14,
+        decimal_places=6,
+        null=False,
+        help_text="Value of the measurement.",
+    )
     maximum = models.DecimalField(
-        "maximum", max_digits=14, decimal_places=6, null=True, blank=True
+        "maximum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Maximum value of the measurement. Mostly useful for reports or when "
+        "the measurement represents an average over time.",
     )
     minimum = models.DecimalField(
-        "minimum", max_digits=14, decimal_places=6, null=True, blank=True
+        "minimum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Minimum value of the measurement. Mostly useful for reports or when "
+        "the measurement represents an average over time.",
     )
 
     @classmethod
-    def set_model_permissions(cls):
+    def set_model_permissions(cls) -> None:
         """Set model-level add permissions."""
         apply_add_permissions_to_standard_group(cls)
 
@@ -71,10 +108,27 @@ class Report(MeasurementBase):
     """Holds the different reporting data.
 
     It also keeps track of which data has already been used when creating the reports.
+
+    Attributes:
+        report_type (str): Type of report. It can be hourly, daily or monthly.
+        completeness (Decimal): Completeness of the report. Eg. a daily report with 24
+            hourly measurements would have a completeness of 100%.
     """
 
-    report_type = models.CharField(max_length=7, choices=ReportType.choices, null=False)
-    completeness = models.DecimalField(max_digits=4, decimal_places=1, null=False)
+    report_type = models.CharField(
+        max_length=7,
+        choices=ReportType.choices,
+        null=False,
+        help_text="Type of report. It can be hourly, daily or monthly.",
+    )
+    completeness = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        null=False,
+        help_text="Completeness of the report. Eg. a daily report made out of 24 hourly"
+        " measurements would have a completeness of 100%.",
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
 
     class Meta:
         indexes = [
@@ -98,16 +152,24 @@ class Measurement(MeasurementBase):
 
     This class holds the value of a given variable and station at a specific time, as
     well as auxiliary information such as maximum and minimum values, depth and
-    direction, for vector quantities. All of these hava a `raw` version where a backup
+    direction, for vector quantities. All of these have a `raw` version where a backup
     of the original data is kept, should this change at any point.
 
     Flags to monitor its validation status, if the data is active (and therefore can be
     used for reporting) and if it has actually been used for that is also included.
     """
 
-    depth = models.PositiveSmallIntegerField("depth", null=True, blank=True)
+    depth = models.PositiveSmallIntegerField(
+        "depth", null=True, blank=True, help_text="Depth of the measurement."
+    )
     direction = models.DecimalField(
-        "direction", max_digits=14, decimal_places=6, null=True, blank=True
+        "direction",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Direction of the measurement, useful for vector quantities. It "
+        "should be a number in the [0, 360) interval, where 0 represents north.",
     )
     raw_value = models.DecimalField(
         "raw value",
@@ -116,6 +178,7 @@ class Measurement(MeasurementBase):
         null=True,
         blank=True,
         editable=False,
+        help_text="Original value of the measurement.",
     )
     raw_maximum = models.DecimalField(
         "raw maximum",
@@ -124,6 +187,7 @@ class Measurement(MeasurementBase):
         null=True,
         blank=True,
         editable=False,
+        help_text="Original maximum value of the measurement.",
     )
     raw_minimum = models.DecimalField(
         "raw minimum",
@@ -132,6 +196,7 @@ class Measurement(MeasurementBase):
         null=True,
         blank=True,
         editable=False,
+        help_text="Original minimum value of the measurement.",
     )
     raw_direction = models.DecimalField(
         "raw direction",
@@ -140,22 +205,44 @@ class Measurement(MeasurementBase):
         null=True,
         blank=True,
         editable=False,
+        help_text="Original direction of the measurement.",
     )
     raw_depth = models.PositiveSmallIntegerField(
-        "raw depth", null=True, blank=True, editable=False
+        "raw depth",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Original depth of the measurement.",
     )
-    is_validated = models.BooleanField("Validated?", default=False)
-    is_active = models.BooleanField("Active?", default=True)
+    is_validated = models.BooleanField(
+        "Validated?",
+        default=False,
+        help_text="Flag to indicate if the measurement has been validated.",
+    )
+    is_active = models.BooleanField(
+        "Active?",
+        default=True,
+        help_text="Flag to indicate if the measurement is active. An inactive "
+        "measurement is not used for reporting.",
+    )
+
+    @property
+    def raws(self) -> tuple[str, ...]:
+        """Return the raw fields of the measurement.
+
+        Returns:
+            tuple[str]: Tuple with the names of the raw fields of the measurement.
+        """
+        return tuple([r for r in dir(self) if r.startswith("raw_")])
 
     def clean(self) -> None:
         """Check consistency of validation, reporting and backs-up values."""
         # Check consistency of validation
         if not self.is_validated and not self.is_active:
-            raise ValidationError("Only validated entries can be delcared as inactive.")
+            raise ValidationError("Only validated entries can be declared as inactive.")
 
         # Backup values to raws, if needed
-        raws = (r for r in dir(self) if r.startswith("raw_"))
-        for r in raws:
+        for r in self.raws:
             value = getattr(self, r.removeprefix("raw_"))
             if value and not getattr(self, r):
                 setattr(self, r, value)
@@ -168,8 +255,7 @@ class Measurement(MeasurementBase):
             bool: True if any raw field is different to the corresponding standard
                 field.
         """
-        raws = (r for r in dir(self) if r.startswith("raw_"))
-        for r in raws:
+        for r in self.raws:
             value = getattr(self, r.removeprefix("raw_"))
             if value and value != getattr(self, r):
                 return True
