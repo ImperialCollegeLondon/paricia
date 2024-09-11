@@ -18,8 +18,6 @@ from . import views
 
 app_name = "measurement"
 urlpatterns = [
-    path("measurement/", views.MeasurementList.as_view()),
-    path("report/", views.ReportList.as_view()),
     path("data_report/", views.DataReport.as_view(), name="data_report"),
     path("daily_validation/", views.DailyValidation.as_view(), name="daily_validation"),
 ]
