@@ -24,17 +24,63 @@ User = get_user_model()
 
 
 class DataImport(PermissionsBase):
+    """Model to store the data imports.
+
+    This model stores the data imports, which are files with data that are uploaded to
+    the system. The data is then processed asynchronously and stored in the database.
+
+    Attributes:
+        station (ForeignKey): Station to which the data belongs.
+        format (ForeignKey): Format of the data.
+        rawfile (FileField): File with the data to be imported.
+        date (DateTimeField): Date of submission of the data.
+        start_date (DateTimeField): Start date of the data.
+        end_date (DateTimeField): End date of the data.
+        records (IntegerField): Number of records in the data.
+        observations (TextField): Notes or observations about the data.
+        status (TextField): Status of the import.
+        log (TextField): Log of the data ingestion, indicating any errors.
+        reprocess (BooleanField): If checked, the data will be reprocessed.
+    """
+
     STATUS = (("N", "Not queued"), ("Q", "Queued"), ("C", "Completed"), ("F", "Failed"))
 
-    data_import_id = models.AutoField("Id", primary_key=True)
-    station = models.ForeignKey(Station, models.PROTECT, verbose_name="Station")
-    format = models.ForeignKey(Format, models.PROTECT, verbose_name="Format")
-    rawfile = models.FileField("Data file", blank=False, null=False)
-    date = models.DateTimeField("Submission date", auto_now_add=True)
-    start_date = models.DateTimeField("Start date", blank=True, null=True)
-    end_date = models.DateTimeField("End date", blank=True, null=True)
-    records = models.IntegerField("Records", blank=True, null=True)
-    observations = models.TextField("Observations/Notes", blank=True, null=True)
+    data_import_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
+    station = models.ForeignKey(
+        Station,
+        models.PROTECT,
+        verbose_name="Station",
+        help_text="Station to which the data belongs.",
+    )
+    format = models.ForeignKey(
+        Format, models.PROTECT, verbose_name="Format", help_text="Format of the data."
+    )
+    rawfile = models.FileField(
+        "Data file",
+        blank=False,
+        null=False,
+        help_text="File with the data to be imported.",
+    )
+    date = models.DateTimeField(
+        "Submission date",
+        auto_now_add=True,
+        help_text="Date of submission of the data.",
+    )
+    start_date = models.DateTimeField(
+        "Start date", blank=True, null=True, help_text="Start date of the data."
+    )
+    end_date = models.DateTimeField(
+        "End date", blank=True, null=True, help_text="End date of the data."
+    )
+    records = models.IntegerField(
+        "Records", blank=True, null=True, help_text="Number of records in the data."
+    )
+    observations = models.TextField(
+        "Observations/Notes",
+        blank=True,
+        null=True,
+        help_text="Notes or observations about the data.",
+    )
     status = models.TextField(
         "Status", choices=STATUS, help_text="Status of the import", default="N"
     )

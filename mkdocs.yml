@@ -46,6 +46,7 @@ nav:
   - Introduction: index.md
   - Contributing: contributing.md
   - Permissions: permissions.md
+  - Importing Data: importing_data.md
   - Validation: validation.md
   - Applications:
       - Index: Applications/index.md
@@ -54,5 +55,6 @@ nav:
       - Sensors: Applications/sensor.md
       - Stations: Applications/station.md
       - Measurements: Applications/measurement.md
+      - Importing: Applications/importing.md
   # defer to gen-files + literate-nav
   - Code Reference: reference/
