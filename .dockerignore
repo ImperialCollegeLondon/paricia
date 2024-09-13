@@ -17,3 +17,4 @@
 !requirements-dev.txt
 !README.md
 !data
+data/*

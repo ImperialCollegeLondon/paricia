@@ -128,7 +128,7 @@ DATABASES = {
     },
     "huey": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "huey_db",
+        "NAME": "huey",
         "FILE": os.path.join(BASE_DIR, "data", "huey.db"),
     },
 }
