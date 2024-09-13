@@ -11,8 +11,6 @@ from .models import (
     Time,
 )
 
-admin.site.site_header = "Paricia Administration - Formatting"
-
 
 @admin.register(Extension)
 class ExtensionAdmin(PermissionsBaseAdmin):

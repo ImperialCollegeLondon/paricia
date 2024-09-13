@@ -5,8 +5,6 @@ from guardian.shortcuts import get_objects_for_user
 from management.admin import _get_queryset
 from measurement.models import Measurement, Report
 
-admin.site.site_header = "Paricia Administration - Measurements"
-
 
 class MeasurementBaseAdmin(GuardedModelAdmin):
     list_display = ["id", "station", "variable", "maximum", "minimum"]

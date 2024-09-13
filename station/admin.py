@@ -15,8 +15,6 @@ from .models import (
     StationType,
 )
 
-admin.site.site_header = "Paricia Administration - Stations"
-
 
 @admin.register(StationType)
 class StationTypeAdmin(PermissionsBaseAdmin):

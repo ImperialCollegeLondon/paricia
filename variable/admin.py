@@ -4,8 +4,6 @@ from management.admin import PermissionsBaseAdmin
 
 from .models import SensorInstallation, Unit, Variable
 
-admin.site.site_header = "Paricia Administration - Variables"
-
 
 @admin.register(Unit)
 class SensorTypeAdmin(PermissionsBaseAdmin):
