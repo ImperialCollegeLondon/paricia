@@ -28,7 +28,7 @@
 
 {% block content %}
 
-<div class="{% plotly_class name='DailyValidation' %} card" style="height: 100%; width: 100%; padding-top: 90px">
+<div class="{% plotly_class name='DailyValidation' %} card" style="width: 100%">
 {% plotly_app name="DailyValidation" initial_arguments=django_context ratio=1 %}
 </div>
 
