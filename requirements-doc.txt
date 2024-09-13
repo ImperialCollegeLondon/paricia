@@ -32,7 +32,7 @@ colorama==0.4.6
     #   mkdocs-material
 crispy-bootstrap5==2024.2
     # via Paricia (pyproject.toml)
-dash==2.9.3
+dash==2.18.1
     # via
     #   dash-ag-grid
     #   dash-bootstrap-components
