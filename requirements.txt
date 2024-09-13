@@ -102,7 +102,7 @@ markupsafe==2.1.5
     # via
     #   jinja2
     #   werkzeug
-numpy==2.0.1
+numpy==2.1.1
     # via
     #   Paricia (pyproject.toml)
     #   pandas
