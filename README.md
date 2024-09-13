@@ -2,14 +2,14 @@
 <!-- markdownlint-disable MD045 -->
 [![](https://img.shields.io/website?url=https%3A%2F%2Fimperialcollegelondon.github.io%2Fparicia%2F&label=Docs)](https://imperialcollegelondon.github.io/paricia/)
 [![](https://img.shields.io/website?url=https%3A%2F%2Fdata.riverflow.io%2F&label=Paricia%20Live)](https://data.riverflow.io/)
-[![](https://img.shields.io/github/license/ImperialCollegeLondon/paricia)](https://raw.githubusercontent.com/ImperialCollegeLondon/paricia/develop/LICENSE)
+[![](https://img.shields.io/github/license/ImperialCollegeLondon/paricia)](https://raw.githubusercontent.com/ImperialCollegeLondon/paricia/main/LICENSE)
 [![](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/paricia/actions/workflows/ci.yml)
-[![](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/paricia/develop.svg)](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/paricia/develop)
+[![](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/paricia/main.svg)](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/paricia/main)
 [![](https://img.shields.io/github/v/release/imperialcollegelondon/paricia)](https://github.com/ImperialCollegeLondon/paricia/releases)
 
 # Paricia
 
-Paricia is a **hydroclimatic data management system**. Originally focused on managing data from stations in the Andes region, it has recently generalised to be able to ingest data from **anywhere in the world**.
+Paricia is a **hydroclimatic data management system**. Originally focused on managing data from stations in the Andes region, it has recently generalized to be able to ingest data from **anywhere in the world**.
 
 A live version of the tool can be found in:
 
