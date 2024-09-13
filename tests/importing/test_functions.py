@@ -24,6 +24,7 @@ class TestMatrixFunctions(TestCase):
         "station_basin",
         "station_placebasin",
         "station_station",
+        "station_delta_t",
     ]
 
     def setUp(self):
@@ -88,6 +89,7 @@ class TestDateFunctions(TestCase):
         "station_basin",
         "station_placebasin",
         "station_station",
+        "station_delta_t",
     ]
 
     def setUp(self):
