@@ -23,8 +23,8 @@
 
 {% block content %}
 
-<div class="{% plotly_class name='DataReport' %} card" style="height: 100%; width: 100%; padding-top: 50px">
-    {% plotly_app name="DataReport" initial_arguments=django_context ratio=1 %}
+<div class="{% plotly_class name='DataReport' %} card" style="width: 100%">
+    {% plotly_app name="DataReport" initial_arguments=django_context ratio=0.5 %}
 </div>
 
 {% endblock %}
