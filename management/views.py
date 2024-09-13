@@ -1,16 +1,10 @@
-from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
-from .models import User
-from .serializers import RegisterSerializer, UserSerializer
-
-
-class UserDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+from .forms import CustomUserCreationForm
 
 
-class RegisterUserAPIView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
+class SignUpView(CreateView):
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy("login")
+    template_name = "registration/signup.html"
