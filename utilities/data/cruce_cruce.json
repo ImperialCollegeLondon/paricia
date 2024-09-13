@@ -1,1090 +1,1090 @@
 [
-{
-  "model": "cruce.cruce",
-  "pk": 1,
-  "fields": {
-    "est_id": 2,
-    "var_id": 1
+  {
+    "model": "cruce.cruce",
+    "pk": 1,
+    "fields": {
+      "est_id": 2,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 2,
+    "fields": {
+      "est_id": 4,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 3,
+    "fields": {
+      "est_id": 6,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 4,
+    "fields": {
+      "est_id": 9,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 5,
+    "fields": {
+      "est_id": 10,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 6,
+    "fields": {
+      "est_id": 12,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 7,
+    "fields": {
+      "est_id": 13,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 8,
+    "fields": {
+      "est_id": 16,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 9,
+    "fields": {
+      "est_id": 17,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 10,
+    "fields": {
+      "est_id": 18,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 11,
+    "fields": {
+      "est_id": 21,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 12,
+    "fields": {
+      "est_id": 22,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 13,
+    "fields": {
+      "est_id": 23,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 14,
+    "fields": {
+      "est_id": 25,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 15,
+    "fields": {
+      "est_id": 26,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 16,
+    "fields": {
+      "est_id": 28,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 17,
+    "fields": {
+      "est_id": 29,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 18,
+    "fields": {
+      "est_id": 31,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 19,
+    "fields": {
+      "est_id": 32,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 20,
+    "fields": {
+      "est_id": 34,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 21,
+    "fields": {
+      "est_id": 35,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 22,
+    "fields": {
+      "est_id": 37,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 23,
+    "fields": {
+      "est_id": 38,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 24,
+    "fields": {
+      "est_id": 40,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 25,
+    "fields": {
+      "est_id": 41,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 26,
+    "fields": {
+      "est_id": 43,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 27,
+    "fields": {
+      "est_id": 44,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 28,
+    "fields": {
+      "est_id": 45,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 29,
+    "fields": {
+      "est_id": 47,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 30,
+    "fields": {
+      "est_id": 48,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 31,
+    "fields": {
+      "est_id": 50,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 32,
+    "fields": {
+      "est_id": 51,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 33,
+    "fields": {
+      "est_id": 53,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 34,
+    "fields": {
+      "est_id": 54,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 35,
+    "fields": {
+      "est_id": 55,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 36,
+    "fields": {
+      "est_id": 56,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 37,
+    "fields": {
+      "est_id": 57,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 38,
+    "fields": {
+      "est_id": 58,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 39,
+    "fields": {
+      "est_id": 60,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 40,
+    "fields": {
+      "est_id": 61,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 41,
+    "fields": {
+      "est_id": 62,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 42,
+    "fields": {
+      "est_id": 64,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 43,
+    "fields": {
+      "est_id": 65,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 44,
+    "fields": {
+      "est_id": 66,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 45,
+    "fields": {
+      "est_id": 67,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 46,
+    "fields": {
+      "est_id": 69,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 47,
+    "fields": {
+      "est_id": 70,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 48,
+    "fields": {
+      "est_id": 71,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 49,
+    "fields": {
+      "est_id": 72,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 50,
+    "fields": {
+      "est_id": 74,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 51,
+    "fields": {
+      "est_id": 75,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 52,
+    "fields": {
+      "est_id": 76,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 53,
+    "fields": {
+      "est_id": 77,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 54,
+    "fields": {
+      "est_id": 78,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 55,
+    "fields": {
+      "est_id": 79,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 56,
+    "fields": {
+      "est_id": 80,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 57,
+    "fields": {
+      "est_id": 82,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 58,
+    "fields": {
+      "est_id": 83,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 59,
+    "fields": {
+      "est_id": 85,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 60,
+    "fields": {
+      "est_id": 86,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 61,
+    "fields": {
+      "est_id": 87,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 62,
+    "fields": {
+      "est_id": 89,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 63,
+    "fields": {
+      "est_id": 90,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 64,
+    "fields": {
+      "est_id": 91,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 65,
+    "fields": {
+      "est_id": 93,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 66,
+    "fields": {
+      "est_id": 94,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 67,
+    "fields": {
+      "est_id": 96,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 68,
+    "fields": {
+      "est_id": 97,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 69,
+    "fields": {
+      "est_id": 100,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 70,
+    "fields": {
+      "est_id": 101,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 71,
+    "fields": {
+      "est_id": 103,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 72,
+    "fields": {
+      "est_id": 104,
+      "var_id": 1
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 73,
+    "fields": {
+      "est_id": 1,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 74,
+    "fields": {
+      "est_id": 3,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 75,
+    "fields": {
+      "est_id": 5,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 76,
+    "fields": {
+      "est_id": 7,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 77,
+    "fields": {
+      "est_id": 8,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 78,
+    "fields": {
+      "est_id": 11,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 79,
+    "fields": {
+      "est_id": 14,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 80,
+    "fields": {
+      "est_id": 15,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 81,
+    "fields": {
+      "est_id": 19,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 82,
+    "fields": {
+      "est_id": 20,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 83,
+    "fields": {
+      "est_id": 24,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 84,
+    "fields": {
+      "est_id": 27,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 85,
+    "fields": {
+      "est_id": 30,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 86,
+    "fields": {
+      "est_id": 33,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 87,
+    "fields": {
+      "est_id": 36,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 88,
+    "fields": {
+      "est_id": 39,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 89,
+    "fields": {
+      "est_id": 42,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 90,
+    "fields": {
+      "est_id": 46,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 91,
+    "fields": {
+      "est_id": 49,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 92,
+    "fields": {
+      "est_id": 52,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 93,
+    "fields": {
+      "est_id": 59,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 94,
+    "fields": {
+      "est_id": 63,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 95,
+    "fields": {
+      "est_id": 68,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 96,
+    "fields": {
+      "est_id": 73,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 97,
+    "fields": {
+      "est_id": 81,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 98,
+    "fields": {
+      "est_id": 84,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 99,
+    "fields": {
+      "est_id": 88,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 100,
+    "fields": {
+      "est_id": 92,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 101,
+    "fields": {
+      "est_id": 95,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 102,
+    "fields": {
+      "est_id": 98,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 103,
+    "fields": {
+      "est_id": 99,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 104,
+    "fields": {
+      "est_id": 102,
+      "var_id": 10
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 105,
+    "fields": {
+      "est_id": 1,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 106,
+    "fields": {
+      "est_id": 3,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 107,
+    "fields": {
+      "est_id": 5,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 108,
+    "fields": {
+      "est_id": 7,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 109,
+    "fields": {
+      "est_id": 8,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 110,
+    "fields": {
+      "est_id": 11,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 111,
+    "fields": {
+      "est_id": 14,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 112,
+    "fields": {
+      "est_id": 15,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 113,
+    "fields": {
+      "est_id": 19,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 114,
+    "fields": {
+      "est_id": 20,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 115,
+    "fields": {
+      "est_id": 24,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 116,
+    "fields": {
+      "est_id": 27,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 117,
+    "fields": {
+      "est_id": 30,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 118,
+    "fields": {
+      "est_id": 33,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 119,
+    "fields": {
+      "est_id": 36,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 120,
+    "fields": {
+      "est_id": 39,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 121,
+    "fields": {
+      "est_id": 42,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 122,
+    "fields": {
+      "est_id": 46,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 123,
+    "fields": {
+      "est_id": 49,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 124,
+    "fields": {
+      "est_id": 52,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 125,
+    "fields": {
+      "est_id": 59,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 126,
+    "fields": {
+      "est_id": 63,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 127,
+    "fields": {
+      "est_id": 68,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 128,
+    "fields": {
+      "est_id": 73,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 129,
+    "fields": {
+      "est_id": 81,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 130,
+    "fields": {
+      "est_id": 84,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 131,
+    "fields": {
+      "est_id": 88,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 132,
+    "fields": {
+      "est_id": 92,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 133,
+    "fields": {
+      "est_id": 95,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 134,
+    "fields": {
+      "est_id": 98,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 135,
+    "fields": {
+      "est_id": 99,
+      "var_id": 11
+    }
+  },
+  {
+    "model": "cruce.cruce",
+    "pk": 136,
+    "fields": {
+      "est_id": 102,
+      "var_id": 11
+    }
   }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 2,
-  "fields": {
-    "est_id": 4,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 3,
-  "fields": {
-    "est_id": 6,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 4,
-  "fields": {
-    "est_id": 9,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 5,
-  "fields": {
-    "est_id": 10,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 6,
-  "fields": {
-    "est_id": 12,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 7,
-  "fields": {
-    "est_id": 13,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 8,
-  "fields": {
-    "est_id": 16,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 9,
-  "fields": {
-    "est_id": 17,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 10,
-  "fields": {
-    "est_id": 18,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 11,
-  "fields": {
-    "est_id": 21,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 12,
-  "fields": {
-    "est_id": 22,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 13,
-  "fields": {
-    "est_id": 23,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 14,
-  "fields": {
-    "est_id": 25,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 15,
-  "fields": {
-    "est_id": 26,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 16,
-  "fields": {
-    "est_id": 28,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 17,
-  "fields": {
-    "est_id": 29,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 18,
-  "fields": {
-    "est_id": 31,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 19,
-  "fields": {
-    "est_id": 32,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 20,
-  "fields": {
-    "est_id": 34,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 21,
-  "fields": {
-    "est_id": 35,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 22,
-  "fields": {
-    "est_id": 37,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 23,
-  "fields": {
-    "est_id": 38,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 24,
-  "fields": {
-    "est_id": 40,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 25,
-  "fields": {
-    "est_id": 41,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 26,
-  "fields": {
-    "est_id": 43,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 27,
-  "fields": {
-    "est_id": 44,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 28,
-  "fields": {
-    "est_id": 45,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 29,
-  "fields": {
-    "est_id": 47,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 30,
-  "fields": {
-    "est_id": 48,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 31,
-  "fields": {
-    "est_id": 50,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 32,
-  "fields": {
-    "est_id": 51,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 33,
-  "fields": {
-    "est_id": 53,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 34,
-  "fields": {
-    "est_id": 54,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 35,
-  "fields": {
-    "est_id": 55,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 36,
-  "fields": {
-    "est_id": 56,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 37,
-  "fields": {
-    "est_id": 57,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 38,
-  "fields": {
-    "est_id": 58,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 39,
-  "fields": {
-    "est_id": 60,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 40,
-  "fields": {
-    "est_id": 61,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 41,
-  "fields": {
-    "est_id": 62,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 42,
-  "fields": {
-    "est_id": 64,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 43,
-  "fields": {
-    "est_id": 65,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 44,
-  "fields": {
-    "est_id": 66,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 45,
-  "fields": {
-    "est_id": 67,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 46,
-  "fields": {
-    "est_id": 69,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 47,
-  "fields": {
-    "est_id": 70,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 48,
-  "fields": {
-    "est_id": 71,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 49,
-  "fields": {
-    "est_id": 72,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 50,
-  "fields": {
-    "est_id": 74,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 51,
-  "fields": {
-    "est_id": 75,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 52,
-  "fields": {
-    "est_id": 76,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 53,
-  "fields": {
-    "est_id": 77,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 54,
-  "fields": {
-    "est_id": 78,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 55,
-  "fields": {
-    "est_id": 79,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 56,
-  "fields": {
-    "est_id": 80,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 57,
-  "fields": {
-    "est_id": 82,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 58,
-  "fields": {
-    "est_id": 83,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 59,
-  "fields": {
-    "est_id": 85,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 60,
-  "fields": {
-    "est_id": 86,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 61,
-  "fields": {
-    "est_id": 87,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 62,
-  "fields": {
-    "est_id": 89,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 63,
-  "fields": {
-    "est_id": 90,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 64,
-  "fields": {
-    "est_id": 91,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 65,
-  "fields": {
-    "est_id": 93,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 66,
-  "fields": {
-    "est_id": 94,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 67,
-  "fields": {
-    "est_id": 96,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 68,
-  "fields": {
-    "est_id": 97,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 69,
-  "fields": {
-    "est_id": 100,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 70,
-  "fields": {
-    "est_id": 101,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 71,
-  "fields": {
-    "est_id": 103,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 72,
-  "fields": {
-    "est_id": 104,
-    "var_id": 1
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 73,
-  "fields": {
-    "est_id": 1,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 74,
-  "fields": {
-    "est_id": 3,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 75,
-  "fields": {
-    "est_id": 5,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 76,
-  "fields": {
-    "est_id": 7,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 77,
-  "fields": {
-    "est_id": 8,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 78,
-  "fields": {
-    "est_id": 11,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 79,
-  "fields": {
-    "est_id": 14,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 80,
-  "fields": {
-    "est_id": 15,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 81,
-  "fields": {
-    "est_id": 19,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 82,
-  "fields": {
-    "est_id": 20,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 83,
-  "fields": {
-    "est_id": 24,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 84,
-  "fields": {
-    "est_id": 27,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 85,
-  "fields": {
-    "est_id": 30,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 86,
-  "fields": {
-    "est_id": 33,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 87,
-  "fields": {
-    "est_id": 36,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 88,
-  "fields": {
-    "est_id": 39,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 89,
-  "fields": {
-    "est_id": 42,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 90,
-  "fields": {
-    "est_id": 46,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 91,
-  "fields": {
-    "est_id": 49,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 92,
-  "fields": {
-    "est_id": 52,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 93,
-  "fields": {
-    "est_id": 59,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 94,
-  "fields": {
-    "est_id": 63,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 95,
-  "fields": {
-    "est_id": 68,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 96,
-  "fields": {
-    "est_id": 73,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 97,
-  "fields": {
-    "est_id": 81,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 98,
-  "fields": {
-    "est_id": 84,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 99,
-  "fields": {
-    "est_id": 88,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 100,
-  "fields": {
-    "est_id": 92,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 101,
-  "fields": {
-    "est_id": 95,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 102,
-  "fields": {
-    "est_id": 98,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 103,
-  "fields": {
-    "est_id": 99,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 104,
-  "fields": {
-    "est_id": 102,
-    "var_id": 10
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 105,
-  "fields": {
-    "est_id": 1,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 106,
-  "fields": {
-    "est_id": 3,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 107,
-  "fields": {
-    "est_id": 5,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 108,
-  "fields": {
-    "est_id": 7,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 109,
-  "fields": {
-    "est_id": 8,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 110,
-  "fields": {
-    "est_id": 11,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 111,
-  "fields": {
-    "est_id": 14,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 112,
-  "fields": {
-    "est_id": 15,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 113,
-  "fields": {
-    "est_id": 19,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 114,
-  "fields": {
-    "est_id": 20,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 115,
-  "fields": {
-    "est_id": 24,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 116,
-  "fields": {
-    "est_id": 27,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 117,
-  "fields": {
-    "est_id": 30,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 118,
-  "fields": {
-    "est_id": 33,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 119,
-  "fields": {
-    "est_id": 36,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 120,
-  "fields": {
-    "est_id": 39,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 121,
-  "fields": {
-    "est_id": 42,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 122,
-  "fields": {
-    "est_id": 46,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 123,
-  "fields": {
-    "est_id": 49,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 124,
-  "fields": {
-    "est_id": 52,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 125,
-  "fields": {
-    "est_id": 59,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 126,
-  "fields": {
-    "est_id": 63,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 127,
-  "fields": {
-    "est_id": 68,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 128,
-  "fields": {
-    "est_id": 73,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 129,
-  "fields": {
-    "est_id": 81,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 130,
-  "fields": {
-    "est_id": 84,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 131,
-  "fields": {
-    "est_id": 88,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 132,
-  "fields": {
-    "est_id": 92,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 133,
-  "fields": {
-    "est_id": 95,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 134,
-  "fields": {
-    "est_id": 98,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 135,
-  "fields": {
-    "est_id": 99,
-    "var_id": 11
-  }
-},
-{
-  "model": "cruce.cruce",
-  "pk": 136,
-  "fields": {
-    "est_id": 102,
-    "var_id": 11
-  }
-}
 ]

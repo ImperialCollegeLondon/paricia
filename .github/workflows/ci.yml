@@ -1,21 +1,19 @@
 name: CI Paricia
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
-
-  qa:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pre-commit/action@v2.0.2
+  check-links:
+    uses: ./.github/workflows/check-links.yml
 
   test:
-
-    needs: qa
-
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 10
     services:
       postgres:
         image: timescale/timescaledb-ha:pg14-latest
@@ -29,16 +27,36 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip wheel
-        pip install -r requirements.txt
-    - name: Run migrations
-      run: python manage.py migrate
-    - name: Run tests
-      run: python manage.py test -v 2
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r requirements-dev.txt
+      - name: Run migrations
+        run: python manage.py migrate
+      - name: Run tests
+        run: python manage.py test -v 2
+
+  test-docs:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-doc.txt
+          pip install .
+      - name: Test the docs built correctly
+        run: mkdocs build

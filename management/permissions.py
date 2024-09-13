@@ -1,13 +1,10 @@
-"""
-Customised permissions.
-"""
+"""Customised permissions."""
 
 from rest_framework.permissions import DjangoModelPermissions
 
 
 class CustomDjangoModelPermissions(DjangoModelPermissions):
-    """
-    Modify DjangoModelPermissions to allow only users with view permissions to do
+    """Modify DjangoModelPermissions to allow only users with view permissions to do
     GET, OPTIONS and HEAD requests.
     """
 

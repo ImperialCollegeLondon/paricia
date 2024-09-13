@@ -10,342 +10,266 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-from __future__ import unicode_literals
 
-from typing import List, Type
 
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
-from timescale.db.models.models import TimescaleModel
+from timescale.db.models.models import TimescaleDateTimeField, TimescaleModel
 
+from management.models import apply_add_permissions_to_standard_group
 from station.models import Station
+from variable.models import Variable
 
-MEASUREMENTS: List[str] = []
+MEASUREMENTS: list[str] = []
 """Available measurement variables."""
 
 
-class PermissionsMeasurement(models.Model):
-    """
-    Model used to define the permission "validar".
-    """
+class MeasurementBase(TimescaleModel):
+    """Base class for all the measurement related entries.
 
-    class Meta:
-        managed = False
-        default_permissions = ()
-        permissions = (("validar", "usar interfaz de validación"),)
+    It contains the barebone attributes that any measurement entry will likely need,
+    although this is enforced only for station, variable and value. Maximum and minimum
+    are very likely to be present in most cases, but might not be there in some
+    occasions, therefore the possibility of nulling them.
 
-
-class PolarWind(TimescaleModel):
-    """
-    Polar Wind measurement with a velocity and direction at a specific time.
-    """
-
-    speed = models.DecimalField("Speed", max_digits=14, decimal_places=6, null=True)
-    direction = models.DecimalField(
-        "Direction", max_digits=14, decimal_places=6, null=True
-    )
-
-    class Meta:
-        """
-        Para que no se cree en la migracion.
-
-        NOTE: Why don't we want this in the migration?
-        """
-
-        default_permissions = ()
-        managed = False
-
-
-class DischargeCurve(TimescaleModel):
-    """
-    Discharge curve.
-
-    Relates a station and a time and a bool as to whether a flow recalculation is
-    required.
+    Attributes:
+        time (TimescaleDateTimeField): Time of the measurement.
+        station (Station): Station this measurement belongs to.
+        variable (Variable): Variable being measured.
+        value (Decimal): Value of the measurement.
+        maximum (Decimal): Maximum value of the measurement. Mostly useful for reports
+            or when the measurement represents an average over time.
+        minimum (Decimal): Minimum value of the measurement. Mostly useful for reports
+            or when the measurement represents an average over time.
     """
 
-    id = models.AutoField("Id", primary_key=True)
+    time: TimescaleDateTimeField
+
     station = models.ForeignKey(
-        Station, on_delete=models.SET_NULL, null=True, verbose_name="Station"
+        Station,
+        on_delete=models.PROTECT,
+        null=False,
+        verbose_name="Station",
+        help_text="Station this measurement belongs to.",
     )
-    require_recalculate_flow = models.BooleanField(
-        verbose_name="Requires re-calculate flow?", default=False
+    variable = models.ForeignKey(
+        Variable,
+        on_delete=models.PROTECT,
+        null=False,
+        verbose_name="Variable",
+        help_text="Variable being measured.",
+    )
+    value = models.DecimalField(
+        "value",
+        max_digits=14,
+        decimal_places=6,
+        null=False,
+        help_text="Value of the measurement.",
+    )
+    maximum = models.DecimalField(
+        "maximum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Maximum value of the measurement. Mostly useful for reports or when "
+        "the measurement represents an average over time.",
+    )
+    minimum = models.DecimalField(
+        "minimum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Minimum value of the measurement. Mostly useful for reports or when "
+        "the measurement represents an average over time.",
     )
 
-    def __str__(self):
-        return self.id
-
-    def get_absolute_url(self):
-        return reverse("measurement:dischargecurve_detail", kwargs={"pk": self.pk})
-
-    class Meta:
-        ordering = ("station", "time")
-        unique_together = ("station", "time")
-
-
-class LevelFunction(TimescaleModel):
-    """
-    Function Level. Relates a discharge curve to a level (in cm) to a function.
-
-    NOTE: No idea what this is -> Ask Pablo
-    """
-
-    discharge_curve = models.ForeignKey(DischargeCurve, on_delete=models.CASCADE)
-    level = models.DecimalField(
-        "Level (cm)", max_digits=5, decimal_places=1, db_index=True
-    )
-    function = models.CharField("Function", max_length=80)
-
-    def __str__(self):
-        return str(self.pk)
-
-    def get_absolute_url(self):
-        return reverse("measurement:levelfunction_detail", kwargs={"pk": self.pk})
-
-    class Meta:
-        default_permissions = ()
-        ordering = (
-            "discharge_curve",
-            "level",
-        )
-
-
-##############################################################
-
-
-class BaseMeasurement(TimescaleModel):
     @classmethod
-    def __init_subclass__(cls, *args, **kwargs) -> None:
-        if not cls.__name__.startswith("_Meas") and cls.__name__ not in MEASUREMENTS:
-            MEASUREMENTS.append(cls.__name__)
-
-    station_id = models.PositiveIntegerField("station_id")
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "time"]),
-            models.Index(fields=["time", "station_id"]),
-        ]
-        abstract = True
-
-
-def create_meas_model(
-    digits=14, decimals=6, fields=("Value", "Maximum", "Minimum")
-) -> Type[TimescaleModel]:
-    num = len(MEASUREMENTS) + 1
-    _fields = {
-        key.lower(): models.DecimalField(
-            key,
-            max_digits=digits,
-            decimal_places=decimals,
-            null=True,
-        )
-        for key in fields
-    }
+    def set_model_permissions(cls) -> None:
+        """Set model-level add permissions."""
+        apply_add_permissions_to_standard_group(cls)
 
     class Meta:
         abstract = True
-
-    attrs = {"__module__": __name__, "Meta": Meta}
-    attrs.update(_fields)
-
-    return type(
-        f"_Meas{num}",
-        (BaseMeasurement,),
-        attrs,
-    )
-
-
-class Precipitation(create_meas_model(digits=6, decimals=2, fields=("Value",))):
-    """Precipitation."""
-
-
-class AirTemperature(create_meas_model(digits=5, decimals=2)):
-    """Air temperature."""
-
-
-class Humidity(create_meas_model()):
-    """Humidity."""
-
-
-class WindVelocity(create_meas_model()):
-    """Wind velocity."""
-
-
-class WindDirection(create_meas_model()):
-    """Wind direction."""
-
-
-class SoilMoisture(create_meas_model()):
-    """Soil moisture."""
-
-
-class SolarRadiation(create_meas_model()):
-    """Solar radiation."""
-
-
-class AtmosphericPressure(create_meas_model()):
-    """Atmospheric pressure."""
-
-
-class WaterTemperature(create_meas_model()):
-    """Water temperature."""
-
-
-class Flow(create_meas_model()):
-    """Flow."""
-
-
-class WaterLevel(create_meas_model()):
-    """Water level."""
-
-
-class BatteryVoltage(create_meas_model()):
-    """Battery voltage."""
-
-
-class FlowManual(create_meas_model(fields=("Value",))):
-    """Flow (manual)."""
-
-
-class StripLevelReading(create_meas_model(fields=("Value", "Uncertainty"))):
-    """Strip level reading."""
-
-    data_import_date = models.DateTimeField("Data import date")
-    data_start_date = models.DateTimeField("Data start date")
-    calibrated = models.BooleanField("Calibrated")
-    comments = models.CharField("Comments", null=True, max_length=250)
-
-    class Meta:
-        default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "data_import_date"]),
-            models.Index(fields=["station_id", "data_start_date", "time"]),
-            models.Index(fields=["data_import_date"]),
+            models.Index(fields=["station", "time", "variable"]),
         ]
 
 
-class SoilTemperature(create_meas_model()):
-    """Soil temperature."""
+class ReportType(models.TextChoices):
+    HOURLY = "hourly"
+    DAILY = "daily"
+    MONTLY = "monthly"
 
 
-class IndirectRadiation(create_meas_model()):
-    """Indirect radiation."""
+class Report(MeasurementBase):
+    """Holds the different reporting data.
 
+    It also keeps track of which data has already been used when creating the reports.
 
-# Variables created for buoy with different depths
-class WaterTemperatureDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Water temperature (degrees celcius) at a depth in cm."""
-
-    depth = models.PositiveSmallIntegerField("Depth")
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
-        ]
-
-
-class WaterAcidityDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Water acidity (pH) at a depth in cm."""
-
-    depth = models.PositiveSmallIntegerField("Depth")
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
-        ]
-
-
-class RedoxPotentialDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Redox potential (mV) at a depth in cm."""
-
-    depth = models.PositiveSmallIntegerField("Depth")
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
-        ]
-
-
-class WaterTurbidityDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Water turbidity (NTU) at a depth in cm."""
-
-    depth = models.PositiveSmallIntegerField("Depth")
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
-        ]
-
-
-class ChlorineConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Chlorine concentration (ug/l) at a depth in cm."""
-
-    depth = models.PositiveSmallIntegerField("Depth")
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
-        ]
-
-
-class OxygenConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Oxygen concentration (mg/l) at a depth in cm."""
-
-    depth = models.PositiveSmallIntegerField("Depth")
-
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
-        ]
-
-
-class PercentageOxygenConcentrationDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Percentage oxygen concentration (mg/l) at a depth in cm.
-
-    HELPWANTED: Is this wrong? It's teh same as above, perhaps units should
-    be %? --> DIEGO: Looks identical to the previous one to me. It might be an error.
+    Attributes:
+        report_type (str): Type of report. It can be hourly, daily or monthly.
+        completeness (Decimal): Completeness of the report. Eg. a daily report with 24
+            hourly measurements would have a completeness of 100%.
     """
 
-    depth = models.PositiveSmallIntegerField("Depth")
+    report_type = models.CharField(
+        max_length=7,
+        choices=ReportType.choices,
+        null=False,
+        help_text="Type of report. It can be hourly, daily or monthly.",
+    )
+    completeness = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        null=False,
+        help_text="Completeness of the report. Eg. a daily report made out of 24 hourly"
+        " measurements would have a completeness of 100%.",
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
 
     class Meta:
-        default_permissions = ()
         indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
+            models.Index(fields=["report_type", "station", "time", "variable"]),
         ]
 
+    def clean(self) -> None:
+        """Validate that the report type and use of the data is consistent."""
+        if self.report_type == ReportType.HOURLY:
+            self.time = self.time.replace(minute=0, second=0, microsecond=0)
+        elif self.report_type == ReportType.DAILY:
+            self.time = self.time.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif self.report_type == ReportType.MONTLY:
+            self.time = self.time.replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0
+            )
 
-class PhycocyaninDepth(
-    create_meas_model(digits=6, decimals=2, fields=("Value",)),
-):
-    """Phycocyanin (?) at a depth in cm."""
 
-    depth = models.PositiveSmallIntegerField("Depth")
+class Measurement(MeasurementBase):
+    """Class to store the measurements and their validation status.
 
-    class Meta:
-        default_permissions = ()
-        indexes = [
-            models.Index(fields=["station_id", "depth", "time"]),
-        ]
+    This class holds the value of a given variable and station at a specific time, as
+    well as auxiliary information such as maximum and minimum values, depth and
+    direction, for vector quantities. All of these have a `raw` version where a backup
+    of the original data is kept, should this change at any point.
+
+    Flags to monitor its validation status, if the data is active (and therefore can be
+    used for reporting) and if it has actually been used for that is also included.
+
+    Attributes:
+        depth (int): Depth of the measurement.
+        direction (Decimal): Direction of the measurement, useful for vector quantities.
+        raw_value (Decimal): Original value of the measurement.
+        raw_maximum (Decimal): Original maximum value of the measurement.
+        raw_minimum (Decimal): Original minimum value of the measurement.
+        raw_direction (Decimal): Original direction of the measurement.
+        raw_depth (int): Original depth of the measurement.
+        is_validated (bool): Flag to indicate if the measurement has been validated.
+        is_active (bool): Flag to indicate if the measurement is active. An inactive
+            measurement is not used for reporting
+    """
+
+    depth = models.PositiveSmallIntegerField(
+        "depth", null=True, blank=True, help_text="Depth of the measurement."
+    )
+    direction = models.DecimalField(
+        "direction",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        help_text="Direction of the measurement, useful for vector quantities. It "
+        "should be a number in the [0, 360) interval, where 0 represents north.",
+    )
+    raw_value = models.DecimalField(
+        "raw value",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Original value of the measurement.",
+    )
+    raw_maximum = models.DecimalField(
+        "raw maximum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Original maximum value of the measurement.",
+    )
+    raw_minimum = models.DecimalField(
+        "raw minimum",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Original minimum value of the measurement.",
+    )
+    raw_direction = models.DecimalField(
+        "raw direction",
+        max_digits=14,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Original direction of the measurement.",
+    )
+    raw_depth = models.PositiveSmallIntegerField(
+        "raw depth",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Original depth of the measurement.",
+    )
+    is_validated = models.BooleanField(
+        "Validated?",
+        default=False,
+        help_text="Flag to indicate if the measurement has been validated.",
+    )
+    is_active = models.BooleanField(
+        "Active?",
+        default=True,
+        help_text="Flag to indicate if the measurement is active. An inactive "
+        "measurement is not used for reporting.",
+    )
+
+    @property
+    def raws(self) -> tuple[str, ...]:
+        """Return the raw fields of the measurement.
+
+        Returns:
+            tuple[str]: Tuple with the names of the raw fields of the measurement.
+        """
+        return tuple([r for r in dir(self) if r.startswith("raw_")])
+
+    def clean(self) -> None:
+        """Check consistency of validation, reporting and backs-up values."""
+        # Check consistency of validation
+        if not self.is_validated and not self.is_active:
+            raise ValidationError("Only validated entries can be declared as inactive.")
+
+        # Backup values to raws, if needed
+        for r in self.raws:
+            value = getattr(self, r.removeprefix("raw_"))
+            if value and not getattr(self, r):
+                setattr(self, r, value)
+
+    @property
+    def overwritten(self) -> bool:
+        """Indicates if any of the values associated to the entry have been overwritten.
+
+        Returns:
+            bool: True if any raw field is different to the corresponding standard
+                field.
+        """
+        for r in self.raws:
+            value = getattr(self, r.removeprefix("raw_"))
+            if value and value != getattr(self, r):
+                return True
+
+        return False

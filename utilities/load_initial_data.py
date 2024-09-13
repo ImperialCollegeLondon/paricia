@@ -1,12 +1,12 @@
-"""
-Script to load initial data into the system such as stations, sensors, format types 
+"""Script to load initial data into the system such as stations, sensors, format types
 etc. Currently data is stored in home/data but this will change in the future when
 home is refactored.
 """
 
-
 from django.conf import settings
 from django.core.management import execute_from_command_line
+
+from measurement.models import Measurement
 
 # The order matters so that foreignkey objects exist when an entry is created.
 # The files are named app_model
@@ -30,9 +30,15 @@ data_files = [
     "station_placebasin",
     "station_institution",
     "station_station",
-    "formatting_association",
+    "measurement_airtemperature",
+    "station_delta_t",
 ]
 
+# It's initially necessary to delete all measurements to avoid foreign key constraints
+# And because this is "initial data", after all.
+Measurement.objects.all().delete()
+
+# Load all data files
 for file in data_files:
     execute_from_command_line(
         [
@@ -41,3 +47,8 @@ for file in data_files:
             settings.BASE_DIR + "/utilities/data/" + file + ".json",
         ]
     )
+
+# Clean and save all measurements
+for meas in Measurement.objects.all():
+    meas.full_clean()
+    meas.save()

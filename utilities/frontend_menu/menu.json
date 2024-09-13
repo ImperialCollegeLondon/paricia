@@ -1,422 +1,422 @@
 {
-    "Estación": {
-        "permission": "",
-        "items": [
-            {
-                "name": "Estación",
-                "url_name": "estacion:estacion_index",
-                "permission": "estacion.view_estacion"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "País",
-                "url_name": "estacion:pais_index",
-                "permission": "estacion.view_pais"
-            },
-            {
-                "name": "Región/Provincia/Departamento",
-                "url_name": "estacion:region_index",
-                "permission": "estacion.view_region"
-            },
-            {
-                "name": "Ecosistema",
-                "url_name": "estacion:ecosistema_index",
-                "permission": "estacion.view_ecosistema"
-            },
-            {
-                "name": "Socio",
-                "url_name": "estacion:socio_index",
-                "permission": "estacion.view_socio"
-            },
-            {
-                "name": "Sitio",
-                "url_name": "estacion:sitio_index",
-                "permission": "estacion.view_sitio"
-            },
-            {
-                "name": "Cuenca",
-                "url_name": "estacion:cuenca_index",
-                "permission": "estacion.view_cuenca"
-            },
-            {
-                "name": "Asociación Sitio-Cuenca",
-                "url_name": "estacion:sitiocuenca_index",
-                "permission": "estacion.view_sitiocuenca"
-            },
-            {
-                "name": "Tipo de estación",
-                "url_name": "estacion:tipo_index",
-                "permission": "estacion.view_tipo"
-            }
-        ]
-    },
-    "Información de la red": {
-        "permission": "",
-        "items": [
-            {
-                "name": "Datalogger",
-                "url_name": "datalogger:datalogger_index",
-                "permission": "datalogger.view_datalogger"
-            },
-            {
-                "name": "Marca de datalogger",
-                "url_name": "datalogger:marca_index",
-                "permission": "datalogger.view_marca"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Sensor",
-                "url_name": "sensor:sensor_index",
-                "permission": "sensor.view_sensor"
-            },
-            {
-                "name": "Marca de sensor",
-                "url_name": "sensor:marca_index",
-                "permission": "sensor.view_marca"
-            },
-            {
-                "name": "Tipo de sensor",
-                "url_name": "sensor:tipo_index",
-                "permission": "sensor.view_tipo"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Frecuencia de Registro",
-                "url_name": "frecuencia:frecuencia_index",
-                "permission": "frecuencia.view_frecuencia"
-            },
-            {
-                "name": "Curva de descarga",
-                "url_name": "medicion:curvadescarga_index",
-                "permission": "medicion.view_curvadescarga"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Unidad de variable",
-                "url_name": "variable:unidad_index",
-                "permission": "variable.view_unidad"
-            },
-            {
-                "name": "Variable",
-                "url_name": "variable:variable_index",
-                "permission": "variable.view_variable"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Variables por Estación",
-                "url_name": "cruce:cruce_index",
-                "permission": "cruce.view_cruce"
-            }
-        ]
-    },
-    "Mantenimiento": {
-        "permission": "",
-        "items": [
-            {
-                "name": "Instalación de Sensor",
-                "url_name": "variable:control_index",
-                "permission": "variable.view_control"
-            },
-            {
-                "name": "Instalación de Datalogger",
-                "url_name": "instalacion:instalacion_index",
-                "permission": "instalacion.view_instalacion"
-            },
-            {
-                "name": "Historial",
-                "url_name": "bitacora:bitacora_index",
-                "permission": "bitacora.view_bitacora"
-            },
-            {
-                "name": "Carga inicial",
-                "url_name": "home:carga_inicial",
-                "permission": "home.carga_inicial"
-            }
-        ]
-    },
-    "Importación de datos": {
-        "permission": "",
-        "items": [
-            {
-                "name": "Importar Archivo",
-                "url_name": "importacion:importacion_temp_create",
-                "permission": "importacion.add_importacion"
-            },
-            {
-                "name": "Vacios de Información",
-                "url_name": "vacios:vacios",
-                "permission": "vacios.view_vacios"
-            },
-            {
-                "name": "Archivos Importados",
-                "url_name": "importacion:importacion_index",
-                "permission": "importacion.view_importacion"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Formato de Importación",
-                "url_name": "formato:formato_index",
-                "permission": "formato.view_formato"
-            },
-            {
-                "name": "Formato por Estación",
-                "url_name": "formato:asociacion_index",
-                "permission": "formato.view_asociacion"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Extensión de archivo",
-                "url_name": "formato:extension_index",
-                "permission": "formato.view_extension"
-            },
-            {
-                "name": "Delimitador de campos en archivo",
-                "url_name": "formato:delimitador_index",
-                "permission": "formato.view_delimitador"
-            },
-            {
-                "name": "Formato de Fecha",
-                "url_name": "formato:fecha_index",
-                "permission": "formato.view_fecha"
-            },
-            {
-                "name": "Formato de Hora",
-                "url_name": "formato:hora_index",
-                "permission": "formato.view_hora"
-            }
-        ]
-    },
-    "Validación": {
-        "permission": "",
-        "items": [
-            {
-                "name": "<small>HIDRO - </small>Validar Datos Crudos",
-                "url_name": "validacion:validar",
-                "permission": "validacion.hidro_validar"
-            },
-            {
-                "name": "<small>HIDRO - </small>Historial validaciones",
-                "url_name": "validacion:validacion_index",
-                "permission": "validacion.view_validacion"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "<small>HIDRO - </small>Borrar crudos y VALIDADOS",
-                "url_name": "validacion:borrar_crudos_y_validados",
-                "permission": "validacion.hidro_borrar_crudos_y_validados"
-            },
-            {
-                "name": "<small>HIDRO - </small>Borrar solo VALIDADOS",
-                "url_name": "validacion:borrar_validados",
-                "permission": "validacion.hidro_borrar_solo_validados"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "<small>LIMNO. - </small>Validar",
-                "url_name": "validacion:calidad_validar",
-                "permission": "validacion.calidad_validar"
-            },
-            {
-                "name": "<small>LIMNO. - </small>Borrar datos",
-                "url_name": "validacion:calidad_borrar_datos",
-                "permission": "validacion.calidad_validar"
-            }
-        ]
-    },
-    "Indices": {
-        "permission": "",
-        "items": [
-            {
-                "name": "Precipitación",
-                "url_name": "indices:precipitacion",
-                "permission": "indices.view_indices"
-            },
-            {
-                "name": "Intensidad - Duración",
-                "url_name": "indices:intensidad",
-                "permission": "indices.view_indices"
-            },
-            {
-                "name": "Intensidad - Duración Multiestación",
-                "url_name": "indices:intensidadmulti",
-                "permission": "indices.view_indices"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Caudales",
-                "url_name": "indices:caudal",
-                "permission": "indices.view_indices"
-            },
-            {
-                "name": "Duración Caudal",
-                "url_name": "indices:duracaudal",
-                "permission": "indices.view_indices"
-            },
-            {
-                "name": "Duración Caudal Multiestación",
-                "url_name": "indices:duracaudalmulti",
-                "permission": "indices.view_indices"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Coeficiente de Escorrentía",
-                "url_name": "indices:escorrentia",
-                "permission": "indices.view_indices"
-            }
-        ]
-    },
-    "Reportes": {
-        "permission": "",
-        "items": [
-            {
-                "name": "<small>HIDRO - </small>Consultas por Periodo",
-                "url_name": "reportes:consultas_periodo",
-                "permission": "reportes.view_consultasperiodo"
-            },
-            {
-                "name": "<small>HIDRO - </small>Diario",
-                "url_name": "reportes:diario",
-                "permission": "reportes.view_diario"
-            },
-            {
-                "name": "<small>HIDRO - </small>Mensual-Multianual",
-                "url_name": "reportes:mensual_multianual",
-                "permission": "reportes.view_mensualmultianual"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "<small>HIDRO - </small>Anuario",
-                "url_name": "reportes_v2:anuario",
-                "permission": "reportes.view_anuario"
-            },
-            {
-                "name": "<small>HIDRO - </small>Comparar 3 estaciones",
-                "url_name": "reportes:comparacion_reporte",
-                "permission": "reportes.view_comparacionvalores"
-            },
-            {
-                "name": "<small>HIDRO - </small>Comparar 2 variables",
-                "url_name": "reportes:comparacion_variables",
-                "permission": "reportes.view_comparacionvariables"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "<small>LIMNO. - </small>Gráfico: Serie temporal",
-                "url_name": "calidad:grafico1",
-                "permission": "calidad.view_graficos"
-            },
-            {
-                "name": "<small>LIMNO. - </small>Gráfico: Serie temporal CRUDOS",
-                "url_name": "calidad:crudos_grafico1",
-                "permission": "calidad.view_graficoscrudos"
-            },
-            {
-                "name": "<small>LIMNO. - </small>Gráfico: Promedio horario",
-                "url_name": "calidad:grafico2",
-                "permission": "calidad.view_graficos"
-            },
-            {
-                "name": "<small>LIMNO. - </small>Consulta Períodos",
-                "url_name": "reportes:calidad_consultas_periodo",
-                "permission": "reportes.view_calidadconsultasperiodo"
-            }
-        ]
-    },
-    "Telemetría": {
-        "permission": "",
-        "items": [
-            {
-                "name": "<small>HIDRO </small>Visualizar variables",
-                "url_name": "telemetria:visualizar",
-                "permission": "telemetria.view_consulta"
-            },
-            {
-                "name": "<small>LIMNO. </small>Visualizar variables",
-                "url_name": "telemetria:calidad_visualizar",
-                "permission": "telemetria.view_calidad_consulta"
-            },
-            {
-                "name": "Mapa transmisión",
-                "url_name": "telemetria:mapa_alarma_transmision",
-                "permission": "telemetria.view_mapatransmision"
-            },
-            {
-                "name": "Precipitación",
-                "url_name": "telemetria:precipitacion",
-                "permission": "telemetria.view_precipitacion"
-            },
-            {
-                "name": "Precipitación Multiestación",
-                "url_name": "telemetria:multiestacion_precipitacion",
-                "permission": "telemetria.view_precipitacionmultiestacion"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "<small>HIDRO </small>Configurar visualización",
-                "url_name": "telemetria:configvisualizar_list",
-                "permission": "telemetria.add_configvisualizar"
-            },
-            {
-                "name": "<small>LIMNO. </small>Configurar visualización",
-                "url_name": "telemetria:configcalidad_list",
-                "permission": "telemetria.add_configcalidad"
-            },
-            {
-                "name": "Configurar alarma",
-                "url_name": "telemetria:config_alarma_list",
-                "permission": "telemetria.add_alarmaemail"
-            }
-        ]
-    },
-    "Calidad de Agua": {
-        "permission": "",
-        "items": [
-            {
-                "name": "Gráfico comparación Limno. - Hidro",
-                "url_name": "calidad:comparar_hidro",
-                "permission": "calidad.view_comparar_hidro"
-            },
-            {
-                "name": ""
-            },
-            {
-                "name": "Asociación estaciones Hidro",
-                "url_name": "calidad:asociacionhidro_index",
-                "permission": "calidad.view_asociacionhidro"
-            },
-            {
-                "name": "permissions de usuario - variables",
-                "url_name": "calidad:usuariovariable_index",
-                "permission": "calidad.view_usuariovariable"
-            }
-        ]
-    }
+  "Estación": {
+    "permission": "",
+    "items": [
+      {
+        "name": "Estación",
+        "url_name": "estacion:estacion_index",
+        "permission": "estacion.view_estacion"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "País",
+        "url_name": "estacion:pais_index",
+        "permission": "estacion.view_pais"
+      },
+      {
+        "name": "Región/Provincia/Departamento",
+        "url_name": "estacion:region_index",
+        "permission": "estacion.view_region"
+      },
+      {
+        "name": "Ecosistema",
+        "url_name": "estacion:ecosistema_index",
+        "permission": "estacion.view_ecosistema"
+      },
+      {
+        "name": "Socio",
+        "url_name": "estacion:socio_index",
+        "permission": "estacion.view_socio"
+      },
+      {
+        "name": "Sitio",
+        "url_name": "estacion:sitio_index",
+        "permission": "estacion.view_sitio"
+      },
+      {
+        "name": "Cuenca",
+        "url_name": "estacion:cuenca_index",
+        "permission": "estacion.view_cuenca"
+      },
+      {
+        "name": "Asociación Sitio-Cuenca",
+        "url_name": "estacion:sitiocuenca_index",
+        "permission": "estacion.view_sitiocuenca"
+      },
+      {
+        "name": "Tipo de estación",
+        "url_name": "estacion:tipo_index",
+        "permission": "estacion.view_tipo"
+      }
+    ]
+  },
+  "Información de la red": {
+    "permission": "",
+    "items": [
+      {
+        "name": "Datalogger",
+        "url_name": "datalogger:datalogger_index",
+        "permission": "datalogger.view_datalogger"
+      },
+      {
+        "name": "Marca de datalogger",
+        "url_name": "datalogger:marca_index",
+        "permission": "datalogger.view_marca"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Sensor",
+        "url_name": "sensor:sensor_index",
+        "permission": "sensor.view_sensor"
+      },
+      {
+        "name": "Marca de sensor",
+        "url_name": "sensor:marca_index",
+        "permission": "sensor.view_marca"
+      },
+      {
+        "name": "Tipo de sensor",
+        "url_name": "sensor:tipo_index",
+        "permission": "sensor.view_tipo"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Frecuencia de Registro",
+        "url_name": "frecuencia:frecuencia_index",
+        "permission": "frecuencia.view_frecuencia"
+      },
+      {
+        "name": "Curva de descarga",
+        "url_name": "medicion:curvadescarga_index",
+        "permission": "medicion.view_curvadescarga"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Unidad de variable",
+        "url_name": "variable:unidad_index",
+        "permission": "variable.view_unidad"
+      },
+      {
+        "name": "Variable",
+        "url_name": "variable:variable_index",
+        "permission": "variable.view_variable"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Variables por Estación",
+        "url_name": "cruce:cruce_index",
+        "permission": "cruce.view_cruce"
+      }
+    ]
+  },
+  "Mantenimiento": {
+    "permission": "",
+    "items": [
+      {
+        "name": "Instalación de Sensor",
+        "url_name": "variable:control_index",
+        "permission": "variable.view_control"
+      },
+      {
+        "name": "Instalación de Datalogger",
+        "url_name": "instalacion:instalacion_index",
+        "permission": "instalacion.view_instalacion"
+      },
+      {
+        "name": "Historial",
+        "url_name": "bitacora:bitacora_index",
+        "permission": "bitacora.view_bitacora"
+      },
+      {
+        "name": "Carga inicial",
+        "url_name": "home:carga_inicial",
+        "permission": "home.carga_inicial"
+      }
+    ]
+  },
+  "Importación de datos": {
+    "permission": "",
+    "items": [
+      {
+        "name": "Importar Archivo",
+        "url_name": "importacion:importacion_temp_create",
+        "permission": "importacion.add_importacion"
+      },
+      {
+        "name": "Vacios de Información",
+        "url_name": "vacios:vacios",
+        "permission": "vacios.view_vacios"
+      },
+      {
+        "name": "Archivos Importados",
+        "url_name": "importacion:importacion_index",
+        "permission": "importacion.view_importacion"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Formato de Importación",
+        "url_name": "formato:formato_index",
+        "permission": "formato.view_formato"
+      },
+      {
+        "name": "Formato por Estación",
+        "url_name": "formato:asociacion_index",
+        "permission": "formato.view_asociacion"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Extensión de archivo",
+        "url_name": "formato:extension_index",
+        "permission": "formato.view_extension"
+      },
+      {
+        "name": "Delimitador de campos en archivo",
+        "url_name": "formato:delimitador_index",
+        "permission": "formato.view_delimitador"
+      },
+      {
+        "name": "Formato de Fecha",
+        "url_name": "formato:fecha_index",
+        "permission": "formato.view_fecha"
+      },
+      {
+        "name": "Formato de Hora",
+        "url_name": "formato:hora_index",
+        "permission": "formato.view_hora"
+      }
+    ]
+  },
+  "Validación": {
+    "permission": "",
+    "items": [
+      {
+        "name": "<small>HIDRO - </small>Validar Datos Crudos",
+        "url_name": "validacion:validar",
+        "permission": "validacion.hidro_validar"
+      },
+      {
+        "name": "<small>HIDRO - </small>Historial validaciones",
+        "url_name": "validacion:validacion_index",
+        "permission": "validacion.view_validacion"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "<small>HIDRO - </small>Borrar crudos y VALIDADOS",
+        "url_name": "validacion:borrar_crudos_y_validados",
+        "permission": "validacion.hidro_borrar_crudos_y_validados"
+      },
+      {
+        "name": "<small>HIDRO - </small>Borrar solo VALIDADOS",
+        "url_name": "validacion:borrar_validados",
+        "permission": "validacion.hidro_borrar_solo_validados"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "<small>LIMNO. - </small>Validar",
+        "url_name": "validacion:calidad_validar",
+        "permission": "validacion.calidad_validar"
+      },
+      {
+        "name": "<small>LIMNO. - </small>Borrar datos",
+        "url_name": "validacion:calidad_borrar_datos",
+        "permission": "validacion.calidad_validar"
+      }
+    ]
+  },
+  "Indices": {
+    "permission": "",
+    "items": [
+      {
+        "name": "Precipitación",
+        "url_name": "indices:precipitacion",
+        "permission": "indices.view_indices"
+      },
+      {
+        "name": "Intensidad - Duración",
+        "url_name": "indices:intensidad",
+        "permission": "indices.view_indices"
+      },
+      {
+        "name": "Intensidad - Duración Multiestación",
+        "url_name": "indices:intensidadmulti",
+        "permission": "indices.view_indices"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Caudales",
+        "url_name": "indices:caudal",
+        "permission": "indices.view_indices"
+      },
+      {
+        "name": "Duración Caudal",
+        "url_name": "indices:duracaudal",
+        "permission": "indices.view_indices"
+      },
+      {
+        "name": "Duración Caudal Multiestación",
+        "url_name": "indices:duracaudalmulti",
+        "permission": "indices.view_indices"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Coeficiente de Escorrentía",
+        "url_name": "indices:escorrentia",
+        "permission": "indices.view_indices"
+      }
+    ]
+  },
+  "Reportes": {
+    "permission": "",
+    "items": [
+      {
+        "name": "<small>HIDRO - </small>Consultas por Periodo",
+        "url_name": "reportes:consultas_periodo",
+        "permission": "reportes.view_consultasperiodo"
+      },
+      {
+        "name": "<small>HIDRO - </small>Diario",
+        "url_name": "reportes:diario",
+        "permission": "reportes.view_diario"
+      },
+      {
+        "name": "<small>HIDRO - </small>Mensual-Multianual",
+        "url_name": "reportes:mensual_multianual",
+        "permission": "reportes.view_mensualmultianual"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "<small>HIDRO - </small>Anuario",
+        "url_name": "reportes_v2:anuario",
+        "permission": "reportes.view_anuario"
+      },
+      {
+        "name": "<small>HIDRO - </small>Comparar 3 estaciones",
+        "url_name": "reportes:comparacion_reporte",
+        "permission": "reportes.view_comparacionvalores"
+      },
+      {
+        "name": "<small>HIDRO - </small>Comparar 2 variables",
+        "url_name": "reportes:comparacion_variables",
+        "permission": "reportes.view_comparacionvariables"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "<small>LIMNO. - </small>Gráfico: Serie temporal",
+        "url_name": "calidad:grafico1",
+        "permission": "calidad.view_graficos"
+      },
+      {
+        "name": "<small>LIMNO. - </small>Gráfico: Serie temporal CRUDOS",
+        "url_name": "calidad:crudos_grafico1",
+        "permission": "calidad.view_graficoscrudos"
+      },
+      {
+        "name": "<small>LIMNO. - </small>Gráfico: Promedio horario",
+        "url_name": "calidad:grafico2",
+        "permission": "calidad.view_graficos"
+      },
+      {
+        "name": "<small>LIMNO. - </small>Consulta Períodos",
+        "url_name": "reportes:calidad_consultas_periodo",
+        "permission": "reportes.view_calidadconsultasperiodo"
+      }
+    ]
+  },
+  "Telemetría": {
+    "permission": "",
+    "items": [
+      {
+        "name": "<small>HIDRO </small>Visualizar variables",
+        "url_name": "telemetria:visualizar",
+        "permission": "telemetria.view_consulta"
+      },
+      {
+        "name": "<small>LIMNO. </small>Visualizar variables",
+        "url_name": "telemetria:calidad_visualizar",
+        "permission": "telemetria.view_calidad_consulta"
+      },
+      {
+        "name": "Mapa transmisión",
+        "url_name": "telemetria:mapa_alarma_transmision",
+        "permission": "telemetria.view_mapatransmision"
+      },
+      {
+        "name": "Precipitación",
+        "url_name": "telemetria:precipitacion",
+        "permission": "telemetria.view_precipitacion"
+      },
+      {
+        "name": "Precipitación Multiestación",
+        "url_name": "telemetria:multiestacion_precipitacion",
+        "permission": "telemetria.view_precipitacionmultiestacion"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "<small>HIDRO </small>Configurar visualización",
+        "url_name": "telemetria:configvisualizar_list",
+        "permission": "telemetria.add_configvisualizar"
+      },
+      {
+        "name": "<small>LIMNO. </small>Configurar visualización",
+        "url_name": "telemetria:configcalidad_list",
+        "permission": "telemetria.add_configcalidad"
+      },
+      {
+        "name": "Configurar alarma",
+        "url_name": "telemetria:config_alarma_list",
+        "permission": "telemetria.add_alarmaemail"
+      }
+    ]
+  },
+  "Calidad de Agua": {
+    "permission": "",
+    "items": [
+      {
+        "name": "Gráfico comparación Limno. - Hidro",
+        "url_name": "calidad:comparar_hidro",
+        "permission": "calidad.view_comparar_hidro"
+      },
+      {
+        "name": ""
+      },
+      {
+        "name": "Asociación estaciones Hidro",
+        "url_name": "calidad:asociacionhidro_index",
+        "permission": "calidad.view_asociacionhidro"
+      },
+      {
+        "name": "permissions de usuario - variables",
+        "url_name": "calidad:usuariovariable_index",
+        "permission": "calidad.view_usuariovariable"
+      }
+    ]
+  }
 }

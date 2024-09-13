@@ -46,18 +46,18 @@ class TestInitialData(TestCase):
     def test_format(self):
         from formatting.models import Format
 
-        self.assertEqual(len(Format.objects.get_queryset()), 39)
-        form = Format.objects.get(format_id=21)
-        self.assertEqual(form.first_row, 3)
+        self.assertEqual(len(Format.objects.get_queryset()), 3)
+        form = Format.objects.get(format_id=45)
+        self.assertEqual(form.first_row, 1)
         self.assertEqual(form.extension.value, "csv")
         self.assertEqual(form.delimiter.name, "Coma")
-        self.assertEqual(form.date.date_format, "MM/DD/YY")
+        self.assertEqual(form.date.date_format, "DD/MM/YYYY")
 
     def test_classification(self):
         from formatting.models import Classification
 
-        self.assertEqual(len(Classification.objects.get_queryset()), 123)
-        classification = Classification.objects.get(cls_id=101)
-        self.assertEqual(classification.format.name, "Vaisala (relleno)")
-        self.assertEqual(classification.format.delimiter.name, "Punto y Com")
-        self.assertEqual(classification.variable.name, "Velocidad de viento")
+        self.assertEqual(len(Classification.objects.get_queryset()), 3)
+        classification = Classification.objects.get(cls_id=176)
+        self.assertEqual(classification.format.name, "iMHEA nivel y flujo periódico")
+        self.assertEqual(classification.format.delimiter.name, "Coma")
+        self.assertEqual(classification.variable.name, "Caudal")

@@ -11,10 +11,12 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
 
 from django.apps import AppConfig
 
 
 class FormattingConfig(AppConfig):
     name = "formatting"
+
+    def ready(self):
+        import formatting.signals.handlers  # noqa

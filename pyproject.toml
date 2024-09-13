@@ -1,0 +1,99 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+# Exclude the coverage report file from setuptools package finder
+exclude = ["htmlcov"]
+
+[project]
+name = "Paricia"
+version = "0.1.0"
+authors = [
+    { name = "Imperial College London RSE Team", email = "ict-rse-team@imperial.ac.uk" },
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "asgiref",
+    "Django",
+    "django-bootstrap5",
+    "django-crispy-forms",
+    "django-excel-response",
+    "django-extensions",
+    "django-filter",
+    "django-timescaledb",
+    "djangorestframework",
+    "djangorestframework-simplejwt",
+    "drf-yasg",
+    "idna",
+    "jdcal",
+    "numpy",
+    "pandas",
+    "psycopg2",
+    "pytz",
+    "PyYAML",
+    "uritemplate",
+    "crispy-bootstrap5",
+    "django-plotly-dash",
+    "dash-ag-grid",
+    "django-guardian",
+    "whitenoise",
+    "huey",
+    "pycountry",
+    "Pillow",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "mypy",
+    "pip-tools",
+    "pre-commit",
+    "model_bakery",
+    "tqdm",
+]
+
+doc = [
+    "mkdocs",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "mkdocs-material",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+    "markdown-include",
+    "mkdocs-glightbox",
+    "mkdocs-caption",
+]
+
+[tool.mypy] # TODO: increase the strictness here
+# disallow_any_explicit = true
+# disallow_any_generics = true
+warn_unreachable = true
+warn_unused_ignores = true
+# disallow_untyped_defs = true
+explicit_package_bases = true
+
+[tool.ruff]
+exclude = ["*/migrations"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    # "D",   # pydocstyle - TODO: enable this when working on the documentation
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "RUF", # ruff
+]
+ignore = ["RUF012"] # Typing on mutable class attributes
+pydocstyle.convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "D100", # Missing docstring in public module
+    "D103", # Missing docstring in public function
+    "D104", # Missing docstring in public package
+]

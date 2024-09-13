@@ -1,9 +1,0 @@
-{% extends "template_confirm_delete.html" %}
-
-{% block titulo %}País{% endblock %}
-
-{% block table_rows %}
-<tr><th>Nombre</th><td>{{pais.nombre}}</td></tr>
-{% endblock %}
-
-{% block cancelar_url %}{% url 'estacion:pais_index' %}{% endblock %}

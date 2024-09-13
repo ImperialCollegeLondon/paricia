@@ -1,0 +1,7 @@
+[
+  {
+    "model": "station.deltat",
+    "pk": 1,
+    "fields": { "delta_t": 5 }
+  }
+]

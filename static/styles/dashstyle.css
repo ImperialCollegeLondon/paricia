@@ -1,0 +1,39 @@
+body {
+    font-family: Open Sans, Raleway, Dosis, Ubuntu, sans-serif;
+    font-size: 14px;
+}
+
+.DateInput_input,
+.DateInput_input_1 {
+    font-size: inherit;
+    height: 30px;
+    background: transparent;
+}
+
+.DateRangePickerInput__withBorder {
+    border-radius: 0px;
+    border: 1px solid #a9a9a9;
+}
+
+.Select-input {
+    height: 30px;
+}
+
+.Select-control {
+    height: 30px;
+    border-radius: 0px;
+    border: 1px solid #a9a9a9;
+}
+
+input {
+    height: 30px;
+    border-radius: 0px;
+    border: 1px solid #a9a9a9;
+    width: inherit;
+    padding-left: 10px;
+}
+
+input[type="radio"] {
+    margin-top: -1px;
+    vertical-align: middle;
+  }

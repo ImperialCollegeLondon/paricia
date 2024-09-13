@@ -10,14 +10,13 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
-from typing import Dict
 
 from django.http import HttpRequest
 
 from ..functions import get_menu
 
 
-def menu(request: HttpRequest) -> Dict[str, str]:
+def menu(request: HttpRequest) -> dict[str, str]:
     """Context processor for creating the menus.
 
     Using this processor is indicated in the TEMPLATES section of settings.py.

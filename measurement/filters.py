@@ -1,79 +1,117 @@
-from django_filters import rest_framework as filters
+from decimal import Decimal
 
-from measurement.models import DischargeCurve
-from station.models import Station
+from django.db.models import Max, Min
+
+from .models import Measurement
 
 
-class PolarWindFilter(filters.FilterSet):
+def get_station_options(
+    station_codes: list[str],
+) -> tuple[list[dict[str, str]], str | None]:
+    """Get valid station options and default value based on permissions and data
+    availability.
+
+    Args:
+        station_codes (list[str]): List of station codes based on permissions
+
+    Returns:
+        tuple[list[dict], str]: Options for the station dropdown, default value
     """
-    Filter class for the Polar Wind measurements.
+    stations_with_measurements = Measurement.objects.values_list(
+        "station__station_code", flat=True
+    ).distinct()
+
+    station_options = [
+        {"label": station_code, "value": station_code}
+        for station_code in station_codes
+        if station_code in stations_with_measurements
+    ]
+    station_value = station_options[0]["value"] if station_options else None
+    return station_options, station_value
+
+
+def get_variable_options(station: str) -> tuple[list[dict], str]:
+    """Get valid variable options and default value based on the chosen station.
+
+    Args:
+        station (str): Code for the chosen station
+
+    Returns:
+        tuple[list[dict], str]: Options for the variable dropdown, default value
     """
-
-    time = filters.DateTimeFilter(field_name="time", lookup_expr="exact")
-    min_time = filters.DateTimeFilter(field_name="time", lookup_expr="gte")
-    max_time = filters.DateTimeFilter(field_name="time", lookup_expr="lte")
-    speed = filters.NumberFilter(field_name="speed", lookup_expr="exact")
-    min_speed = filters.NumberFilter(field_name="speed", lookup_expr="gte")
-    max_speed = filters.NumberFilter(field_name="speed", lookup_expr="lte")
-    direction = filters.NumberFilter(field_name="direction", lookup_expr="exact")
-    min_direction = filters.NumberFilter(field_name="direction", lookup_expr="gte")
-    max_direction = filters.NumberFilter(field_name="direction", lookup_expr="lte")
-
-
-class DischargeCurveFilter(filters.FilterSet):
-    """
-    Filter class for the Discharge Curve measurements.
-    """
-
-    time = filters.DateTimeFilter(field_name="time", lookup_expr="exact")
-    min_time = filters.DateTimeFilter(field_name="time", lookup_expr="gte")
-    max_time = filters.DateTimeFilter(field_name="time", lookup_expr="lte")
-    require_recalculate_flow = filters.BooleanFilter(
-        field_name="require_recalculate_flow"
+    variable_dicts = (
+        Measurement.objects.filter(station__station_code=station)
+        .values("variable__name", "variable__variable_code")
+        .distinct()
     )
-    station = filters.ModelChoiceFilter(
-        field_name="station", queryset=Station.objects.all()
+
+    variable_options = [
+        {
+            "label": variable["variable__name"],
+            "value": variable["variable__variable_code"],
+        }
+        for variable in variable_dicts
+    ]
+    variable_value = variable_options[0]["value"] if variable_options else None
+    return variable_options, variable_value
+
+
+def get_date_range(station: str, variable: str) -> tuple[str, str]:
+    """Get the date range covered by a chosen station and variable.
+
+    Args:
+        station (str): Code for the chosen station
+        variable (str): Code for the chosen variable
+
+    Returns:
+        tuple[str, str]: Start date, end date
+    """
+    filter_vals = Measurement.objects.filter(
+        station__station_code=station,
+        variable__variable_code=variable,
+    ).aggregate(
+        first_date=Min("time"),
+        last_date=Max("time"),
     )
 
-
-class LevelFunctionFilter(filters.FilterSet):
-    """
-    Filter class for the Level Function measurements.
-    """
-
-    time = filters.DateTimeFilter(field_name="time", lookup_expr="exact")
-    min_time = filters.DateTimeFilter(field_name="time", lookup_expr="gte")
-    max_time = filters.DateTimeFilter(field_name="time", lookup_expr="lte")
-    discharge_curve = filters.ModelChoiceFilter(
-        field_name="discharge_curve", queryset=DischargeCurve.objects.all()
+    first_date = (
+        filter_vals["first_date"].strftime("%Y-%m-%d")
+        if filter_vals["first_date"]
+        else None
     )
-    level = filters.NumberFilter(field_name="level", lookup_expr="exact")
-    min_level = filters.NumberFilter(field_name="level", lookup_expr="gte")
-    max_level = filters.NumberFilter(field_name="level", lookup_expr="lte")
-    function = filters.CharFilter(field_name="function", lookup_expr="icontains")
+    last_date = (
+        filter_vals["last_date"].strftime("%Y-%m-%d")
+        if filter_vals["last_date"]
+        else None
+    )
+
+    return first_date, last_date
 
 
-class MeasurementFilter(filters.FilterSet):
+def get_min_max(
+    station, variable
+) -> tuple[
+    Decimal,
+    Decimal,
+]:
+    """Get the min and max of the data for a chosen station and variable.
+
+    Args:
+        station (str): Code for the chosen station
+        variable (str): Code for the chosen variable
+
+    Returns:
+        tuple[Decimal, Decimal]: Min value, max value
     """
-    Filter class for measurements that are not Polar Wind, Discharge Curve, or Level Function
-    and that have no depth information.
-    """
+    filter_vals = Measurement.objects.filter(
+        station__station_code=station,
+        variable__variable_code=variable,
+    ).aggregate(
+        min_value=Min("minimum"),
+        max_value=Max("maximum"),
+    )
 
-    time = filters.DateTimeFilter(field_name="time", lookup_expr="exact")
-    min_time = filters.DateTimeFilter(field_name="time", lookup_expr="gte")
-    max_time = filters.DateTimeFilter(field_name="time", lookup_expr="lte")
-    value = filters.NumberFilter(field_name="value", lookup_expr="exact")
-    min_value = filters.NumberFilter(field_name="value", lookup_expr="gte")
-    max_value = filters.NumberFilter(field_name="value", lookup_expr="lte")
-    station_id = filters.NumberFilter(field_name="station_id", lookup_expr="exact")
+    min_value = filter_vals["min_value"] if filter_vals["min_value"] else None
+    max_value = filter_vals["max_value"] if filter_vals["max_value"] else None
 
-
-class MeasurementFilterDepth(MeasurementFilter):
-    """
-    Filter class for measurements that are not Polar Wind, Discharge Curve, or Level Function
-    and that have depth information.
-    """
-
-    depth = filters.NumberFilter(field_name="depth", lookup_expr="exact")
-    min_depth = filters.NumberFilter(field_name="depth", lookup_expr="gte")
-    max_depth = filters.NumberFilter(field_name="depth", lookup_expr="lte")
+    return min_value, max_value

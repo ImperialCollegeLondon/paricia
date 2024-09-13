@@ -11,77 +11,102 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
-from __future__ import unicode_literals
-
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
 
 from formatting.models import Format
+from management.models import PermissionsBase
 from station.models import Station
 
 User = get_user_model()
 
 
-class DataImportTemp(models.Model):
-    """
-    Used for importing data temporarily before full import to the database.
-    start_date and end_date refer to the first and last dates of the data and are
-    populated automatically from the data file. They are used to flag whether any
-    existing data from this station would be overwritten upon import.
-    TODO: Rename to DataImportInitial.
+class DataImport(PermissionsBase):
+    """Model to store the data imports.
+
+    This model stores the data imports, which are files with data that are uploaded to
+    the system. The data is then processed asynchronously and stored in the database.
+
+    Attributes:
+        station (ForeignKey): Station to which the data belongs.
+        format (ForeignKey): Format of the data.
+        rawfile (FileField): File with the data to be imported.
+        date (DateTimeField): Date of submission of the data.
+        start_date (DateTimeField): Start date of the data.
+        end_date (DateTimeField): End date of the data.
+        records (IntegerField): Number of records in the data.
+        observations (TextField): Notes or observations about the data.
+        status (TextField): Status of the import.
+        log (TextField): Log of the data ingestion, indicating any errors.
+        reprocess (BooleanField): If checked, the data will be reprocessed.
     """
 
-    data_import_id = models.AutoField("Id", primary_key=True)
+    STATUS = (("N", "Not queued"), ("Q", "Queued"), ("C", "Completed"), ("F", "Failed"))
+
+    data_import_id = models.AutoField("Id", primary_key=True, help_text="Primary key.")
     station = models.ForeignKey(
-        Station, models.SET_NULL, blank=True, null=True, verbose_name="Station"
+        Station,
+        models.PROTECT,
+        verbose_name="Station",
+        help_text="Station to which the data belongs.",
     )
     format = models.ForeignKey(
-        Format, models.SET_NULL, blank=True, null=True, verbose_name="Format"
+        Format, models.PROTECT, verbose_name="Format", help_text="Format of the data."
     )
-    date = models.DateTimeField("Date", auto_now_add=True)
-    start_date = models.DateTimeField("Start date", default=timezone.now)
-    end_date = models.DateTimeField("End date", default=timezone.now)
-    observations = models.TextField("Observations/Notes", blank=True, null=True)
-    user = models.ForeignKey(
-        User, models.SET_NULL, blank=True, null=True, verbose_name="User"
+    rawfile = models.FileField(
+        "Data file",
+        blank=False,
+        null=False,
+        help_text="File with the data to be imported.",
     )
-
-    file = models.FileField("File", upload_to="files/tmp/")
-
-    def get_absolute_url(self):
-        return reverse("importing:data_import_temp_detail", kwargs={"pk": self.pk})
-
-    def __str__(self):
-        return f"{self.station}/{self.user}/{self.date}"
-
-    class Meta:
-        default_permissions = ()
-
-
-class DataImportFull(models.Model):
-    """
-    Used for importing data permanently (fully) to the database. Simply relates
-    a DataImportTemp object to the new, permanent file location.
-    """
-
-    user = models.ForeignKey(
-        User, models.SET_NULL, blank=True, null=True, verbose_name="User"
+    date = models.DateTimeField(
+        "Submission date",
+        auto_now_add=True,
+        help_text="Date of submission of the data.",
     )
-    date = models.DateTimeField("Date", auto_now_add=True)
-    filepath = models.CharField("File", max_length=1024, blank=True, null=True)
-    import_temp = models.ForeignKey(
-        DataImportTemp, on_delete=models.CASCADE, null=True, blank=True
+    start_date = models.DateTimeField(
+        "Start date", blank=True, null=True, help_text="Start date of the data."
+    )
+    end_date = models.DateTimeField(
+        "End date", blank=True, null=True, help_text="End date of the data."
+    )
+    records = models.IntegerField(
+        "Records", blank=True, null=True, help_text="Number of records in the data."
+    )
+    observations = models.TextField(
+        "Observations/Notes",
+        blank=True,
+        null=True,
+        help_text="Notes or observations about the data.",
+    )
+    status = models.TextField(
+        "Status", choices=STATUS, help_text="Status of the import", default="N"
+    )
+    log = models.TextField(
+        "Data ingestion log",
+        help_text="Log of the data ingestion, indicating any errors",
+        default="",
+    )
+    reprocess = models.BooleanField(
+        "Reprocess data",
+        help_text="If checked, the data will be reprocessed",
+        default=False,
     )
 
     def get_absolute_url(self):
         return reverse("importing:data_import_detail", kwargs={"pk": self.pk})
 
-    class Meta:
-        permissions = [
-            (
-                "download_original_file",
-                "Download the original file that was uploaded to the system.",
-            ),
-        ]
+    def __str__(self):
+        return f"{self.station}/{self.owner}/{self.date}"
+
+    def clean(self) -> None:
+        """Validate information and uploads the measurement data."""
+        tz = self.station.timezone
+        if not tz:
+            raise ValidationError("Station must have a timezone set.")
+
+        if self.reprocess:
+            self.status = "N"
+            self.reprocess = False

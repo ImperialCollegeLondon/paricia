@@ -16,3 +16,6 @@ from django.apps import AppConfig
 
 class StationConfig(AppConfig):
     name = "station"
+
+    def ready(self):
+        import station.signals.handlers  # noqa
