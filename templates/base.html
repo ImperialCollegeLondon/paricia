@@ -8,18 +8,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Paricia</title>
 
-
-<!--    from rest_framework API-->
-    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/bootstrap.min.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/bootstrap-tweaks.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/prettify.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'rest_framework/css/default.css' %}"/>
-
-    {% block javascript %}
-    {% endblock %}
-
+    {% bootstrap_css %}
     {% bootstrap_javascript %}
     {% bootstrap_messages %}
 
@@ -34,17 +24,6 @@
         {% block content %}
         {% endblock %}
     </main>
-
-    <!--    from rest_framework API-->
-    <script src="{% static 'rest_framework/js/jquery-3.5.1.min.js' %}"></script>
-    <script src="{% static 'rest_framework/js/ajax-form.js' %}"></script>
-    <script src="{% static 'rest_framework/js/csrf.js' %}"></script>
-    <script src="{% static 'rest_framework/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'rest_framework/js/prettify-min.js' %}"></script>
-    <script src="{% static 'rest_framework/js/default.js' %}"></script>
-
-    {% block extralibraries %}
-    {% endblock %}
 
 </body>
 
