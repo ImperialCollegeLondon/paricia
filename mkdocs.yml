@@ -43,7 +43,7 @@ plugins:
         ignore_classes: ["no-caption"]
 
 nav:
-  - Paricia documentation: index.md
+  - Introduction: index.md
   - Contributing: contributing.md
   - Permissions: permissions.md
   - Validation: validation.md
