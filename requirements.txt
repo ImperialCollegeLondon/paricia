@@ -106,7 +106,7 @@ numpy==2.1.1
     # via
     #   Paricia (pyproject.toml)
     #   pandas
-openpyxl==2.4.11
+openpyxl==3.1.5
     # via django-excel-response
 packaging==24.1
     # via
