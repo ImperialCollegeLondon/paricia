@@ -143,7 +143,7 @@ pillow==10.4.0
     # via Paricia (pyproject.toml)
 pip-tools==7.4.1
     # via Paricia (pyproject.toml)
-platformdirs==4.2.2
+platformdirs==4.3.3
     # via virtualenv
 plotly==5.23.0
     # via
