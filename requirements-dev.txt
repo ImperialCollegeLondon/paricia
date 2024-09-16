@@ -11,7 +11,7 @@ asgiref==3.8.1
     #   django
 blinker==1.8.2
     # via flask
-build==1.2.1
+build==1.2.2
     # via pip-tools
 cfgv==3.4.0
     # via pre-commit
