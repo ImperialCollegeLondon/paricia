@@ -163,7 +163,7 @@ pyproject-hooks==1.1.0
     #   pip-tools
 python-dateutil==2.9.0.post0
     # via pandas
-pytz==2024.1
+pytz==2024.2
     # via
     #   Paricia (pyproject.toml)
     #   drf-yasg
