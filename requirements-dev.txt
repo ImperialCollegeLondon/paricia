@@ -173,7 +173,7 @@ pyyaml==6.0.2
     #   Paricia (pyproject.toml)
     #   drf-yasg
     #   pre-commit
-ruff==0.6.3
+ruff==0.6.5
     # via Paricia (pyproject.toml)
 six==1.16.0
     # via python-dateutil
