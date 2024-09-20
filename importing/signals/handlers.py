@@ -14,7 +14,6 @@ User = get_user_model()
 def set_object_permissions(sender, instance: PermissionsBase, **kwargs):
     """Set object-level permissions."""
     instance.set_object_permissions()
-    ingest_data(instance.pk)
 
 
 @receiver(post_save, sender=DataImport)
