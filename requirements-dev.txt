@@ -45,7 +45,7 @@ dash-table==5.0.0
     # via dash
 distlib==0.3.8
     # via virtualenv
-django==5.1
+django==5.1.1
     # via
     #   Paricia (pyproject.toml)
     #   channels
