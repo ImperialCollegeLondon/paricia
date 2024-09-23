@@ -100,7 +100,7 @@ flask==3.0.3
     #   django-plotly-dash
 huey==2.5.1
     # via Paricia (pyproject.toml)
-identify==2.6.0
+identify==2.6.1
     # via pre-commit
 idna==3.10
     # via Paricia (pyproject.toml)
