@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+    <h2>Object Detail</h2>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field in form %}
+                        <tr>
+                            <td>{{ field.label }}</td>
+                            <td>{{ field.value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="{% url back_url %}" class="btn btn-primary">Return to list</a>
+            <a href="{% url 'home' %}" class="btn btn-success">Edit</a>
+            <a href="{% url 'home' %}" class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+{% endblock %}
