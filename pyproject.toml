@@ -42,6 +42,7 @@ dependencies = [
     "huey",
     "pycountry",
     "Pillow",
+    "django-tables2",
 ]
 
 [project.optional-dependencies]
