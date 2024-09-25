@@ -29,9 +29,9 @@ data_files = [
     "station_basin",
     "station_placebasin",
     "station_institution",
+    "station_delta_t",
     "station_station",
     "measurement_airtemperature",
-    "station_delta_t",
 ]
 
 # It's initially necessary to delete all measurements to avoid foreign key constraints

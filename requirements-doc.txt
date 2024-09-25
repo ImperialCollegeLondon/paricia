@@ -47,7 +47,7 @@ dash-html-components==2.0.0
     # via dash
 dash-table==5.0.0
     # via dash
-django==5.1
+django==5.1.1
     # via
     #   Paricia (pyproject.toml)
     #   channels
@@ -239,7 +239,7 @@ pyyaml==6.0.2
     #   pyyaml-env-tag
 pyyaml-env-tag==0.1
     # via mkdocs
-regex==2024.7.24
+regex==2024.9.11
     # via mkdocs-material
 requests==2.32.3
     # via mkdocs-material
