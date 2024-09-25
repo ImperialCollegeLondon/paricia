@@ -7,7 +7,8 @@ from django.db.models import ForeignKey, Model
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
-from django_tables2 import SingleTableView
+from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
 
 from .forms import CustomUserCreationForm
@@ -123,7 +124,7 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
         return self.model._meta.verbose_name.title()
 
 
-class CustomTableView(LoginRequiredMixin, SingleTableView):
+class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     """This view is used to show a list of model objects.
 
     The view includes a table with the objects, and the context includes the title of
@@ -135,11 +136,16 @@ class CustomTableView(LoginRequiredMixin, SingleTableView):
     example, the permission required to view a `DataImport` object would be
     `importing.view_dataimport`.
 
+    If provided, the `filter_class` attribute is used to create a filter form on top
+    of the table.
+
     Users need to be logged in to access this view.
 
     Attributes:
         model (Model): Model to be used.
         table_class (tables.Table): Table class to be used.
+        filterset_class (filters.FilterSet): Filter class to be used. If not provided,
+            the model's default filter is used.
         template_name (str): Template to be used.
         paginate_by (int): Number of objects per page.
         show_refresh_btn (bool): If True, a refresh url is included in the context.

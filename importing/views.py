@@ -1,5 +1,6 @@
 from management.views import CustomDetailView, CustomTableView
 
+from .filters import DataImportFilter
 from .models import DataImport
 from .tables import DataImportTable
 
@@ -14,4 +15,5 @@ class DataImportDetailView(CustomDetailView):
 class DataImportListView(CustomTableView):
     model = DataImport
     table_class = DataImportTable
+    filterset_class = DataImportFilter
     show_refresh_btn = True
