@@ -52,7 +52,7 @@ urlpatterns = [
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("measurement/", include("measurement.urls", namespace="measurement")),
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
-    path("import/", include("importing.urls", namespace="importing")),
+    path("importing/", include("importing.urls", namespace="importing")),
 ]
 
 if settings.DEBUG:

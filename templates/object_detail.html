@@ -25,9 +25,15 @@
     </div>
     <div class="row">
         <div class="col">
-            <a href="{% url back_url %}" class="btn btn-primary">Return to list</a>
-            <a href="{% url 'home' %}" class="btn btn-success">Edit</a>
-            <a href="{% url 'home' %}" class="btn btn-danger">Delete</a>
+            {% if list_url %}
+                <a href="{% url list_url %}" class="btn btn-primary">Return to list</a>
+            {% endif %}
+            {% if edit_url %}
+                <a href="{% url edit_url %}" class="btn btn-success">Edit</a>
+            {% endif %}
+            {% if delete_url %}
+                <a href="{% url delet_url %}" class="btn btn-danger">Delete</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

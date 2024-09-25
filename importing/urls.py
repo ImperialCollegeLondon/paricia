@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import data_import_detail_view, data_import_list
+from .views import DataImportDetailView, data_import_list
 
-app_name = "import"
+app_name = "importing"
 urlpatterns = [
-    path("", data_import_list, name="data_import_list"),
-    path("<int:pk>/", data_import_detail_view, name="data_import_detail"),
+    path("", data_import_list, name="dataimport_list"),
+    path("<int:pk>/", DataImportDetailView.as_view(), name="dataimport_detail"),
 ]

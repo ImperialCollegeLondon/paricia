@@ -96,7 +96,7 @@ class DataImport(PermissionsBase):
     )
 
     def get_absolute_url(self):
-        return reverse("import:data_import_detail", kwargs={"pk": self.pk})
+        return reverse("importing:dataimport_detail", kwargs={"pk": self.pk})
 
     def __str__(self):
         return f"{self.station}/{self.owner}/{self.date}"
