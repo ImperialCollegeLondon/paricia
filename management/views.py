@@ -124,6 +124,28 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
 
 
 class CustomTableView(LoginRequiredMixin, SingleTableView):
+    """This view is used to show a list of model objects.
+
+    The view includes a table with the objects, and the context includes the title of
+    the view, the refresh URL, and the URL to create a new object, if required. They
+    follow the pattern `app_label:model_name_action`. For example, the list URL for the
+    `DataImport` model would be `importing:dataimport_list`.
+
+    The permissions required to view the objects are `app_label.view_model_name`. For
+    example, the permission required to view a `DataImport` object would be
+    `importing.view_dataimport`.
+
+    Users need to be logged in to access this view.
+
+    Attributes:
+        model (Model): Model to be used.
+        table_class (tables.Table): Table class to be used.
+        template_name (str): Template to be used.
+        paginate_by (int): Number of objects per page.
+        show_refresh_btn (bool): If True, a refresh url is included in the context.
+        show_new_btn (bool): If True, a create url is included in the context.
+    """
+
     template_name = "table.html"
     paginate_by = 10
     show_refresh_btn: bool = False
