@@ -7,6 +7,8 @@ from django.db.models import ForeignKey, Model
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
+from django_tables2 import SingleTableView
+from guardian.shortcuts import get_objects_for_user
 
 from .forms import CustomUserCreationForm
 
@@ -65,9 +67,9 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
     """
 
     template_name: str = "object_detail.html"
-    use_list_url: bool = False
-    use_delete_url: bool = False
-    use_edit_url: bool = False
+    show_list_btn: bool = False
+    show_delete_btn: bool = False
+    show_edit_btn: bool = False
 
     def get_object(self) -> Model:
         obj = get_object_or_404(self.model, pk=self.kwargs["pk"])
@@ -87,9 +89,9 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["form"] = self.get_form()
         context["title"] = self.model_description
-        context["delete_url"] = self.delete_url if self.use_delete_url else None
-        context["edit_url"] = self.edit_url if self.use_edit_url else None
-        context["list_url"] = self.list_url if self.use_list_url else None
+        context["delete_url"] = self.delete_url if self.show_delete_btn else None
+        context["edit_url"] = self.edit_url if self.show_edit_btn else None
+        context["list_url"] = self.list_url if self.show_list_btn else None
         return context
 
     @property
@@ -119,3 +121,44 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
     @property
     def model_description(self) -> str:
         return self.model._meta.verbose_name.title()
+
+
+class CustomTableView(LoginRequiredMixin, SingleTableView):
+    template_name = "table.html"
+    paginate_by = 10
+    show_refresh_btn: bool = False
+    show_new_btn: bool = False
+
+    def get_queryset(self):
+        return get_objects_for_user(self.request.user, self.permission_required)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.title
+        context["refresh"] = self.list_url if self.show_refresh_btn else None
+        context["new_url"] = self.create_url if self.show_new_btn else None
+        return context
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def permission_required(self) -> str:
+        return f"{self.app_label}.view_{self.model_name}"
+
+    @property
+    def title(self) -> str:
+        return self.model._meta.verbose_name_plural.title()
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
+
+    @property
+    def create_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_create"

@@ -4,11 +4,14 @@
 {% block content %}
     <h2>{% block title %}{{ title }}{% endblock %}</h2>
 
-    <a href="{% url 'home' %}" class="btn btn-primary">New</a>
-
+    <!-- Action buttons -->
+    {% if new_url %}
+        <a href="{% url new_url %}" class="btn btn-primary">New</a>
+    {% endif %}
     {% if refresh %}
         <a href="{% url refresh %}" class="btn btn-success">Refresh</a>
     {% endif %}
 
+    <!-- Table -->
     {% render_table table %}
 {% endblock %}
