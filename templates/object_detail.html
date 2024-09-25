@@ -2,7 +2,24 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
-    <h2>Object Detail</h2>
+    <h2>{% block title %}{{ title }}{% endblock %} object detail</h2>
+
+    <!-- Action buttons -->
+    <div class="row">
+        <div class="col">
+            {% if list_url %}
+                <a href="{% url list_url %}" class="btn btn-primary">Return to list</a>
+            {% endif %}
+            {% if edit_url %}
+                <a href="{% url edit_url %}" class="btn btn-success">Edit</a>
+            {% endif %}
+            {% if delete_url %}
+                <a href="{% url delet_url %}" class="btn btn-danger">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Object details -->
     <div class="row">
         <div class="col">
             <table class="table">
@@ -21,19 +38,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {% if list_url %}
-                <a href="{% url list_url %}" class="btn btn-primary">Return to list</a>
-            {% endif %}
-            {% if edit_url %}
-                <a href="{% url edit_url %}" class="btn btn-success">Edit</a>
-            {% endif %}
-            {% if delete_url %}
-                <a href="{% url delet_url %}" class="btn btn-danger">Delete</a>
-            {% endif %}
         </div>
     </div>
 {% endblock %}

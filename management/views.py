@@ -24,7 +24,7 @@ def model_to_dict(instance: Model) -> dict:
         dict: Dictionary with the model instance data.
     """
     data = {}
-    for field in instance._meta.get_fields():
+    for field in instance._meta.fields:
         data[field.name] = field.value_from_object(instance)
         if isinstance(field, ForeignKey):
             with suppress(field.related_model.DoesNotExist):
@@ -86,6 +86,7 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = self.get_form()
+        context["title"] = self.model_description
         context["delete_url"] = self.delete_url if self.use_delete_url else None
         context["edit_url"] = self.edit_url if self.use_edit_url else None
         context["list_url"] = self.list_url if self.use_list_url else None
@@ -114,3 +115,7 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
     @property
     def edit_url(self) -> str:
         return f"{self.app_label}:{self.model_name}_edit"
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
