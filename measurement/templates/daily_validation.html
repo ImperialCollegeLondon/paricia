@@ -1,36 +1,53 @@
+<!-- prettier-ignore -->
 {% extends "base.html" %}
-
 {% load django_bootstrap5 %}
 {% load static %}
 {% load plotly_dash %}
-
 {% block extralibraries %}
-<link rel="stylesheet" href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}">
-<link rel="stylesheet" href="{% static 'ext/jquery-ui-1.12.1/jquery-ui.css' %}">
 
-<script crossorigin="anonymous" src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
-<script crossorigin="anonymous" src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
-
-<script crossorigin="anonymous" src="{% static 'ext/plotly-latest.min.js' %}"></script>
-<link href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css" rel="stylesheet">
-<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+<link
+  rel="stylesheet"
+  href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}"
+/>
+<link
+  rel="stylesheet"
+  href="{% static 'ext/jquery-ui-1.12.1/jquery-ui.css' %}"
+/>
 
 <script
-    src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
-<link rel="stylesheet" type="text/css"
-    href="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.css">
+  crossorigin="anonymous"
+  src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"
+></script>
+<script
+  crossorigin="anonymous"
+  src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"
+></script>
 
-<link rel="stylesheet" href="{% static 'validated/style.css' %}">
+<script
+  crossorigin="anonymous"
+  src="{% static 'ext/plotly-latest.min.js' %}"
+></script>
+<link
+  href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css"
+  rel="stylesheet"
+/>
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+
+<script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.css"
+/>
+
+<link rel="stylesheet" href="{% static 'validated/style.css' %}" />
 <script src="{% static 'scripts/global.js' %}"></script>
 
+<!-- prettier-ignore -->
 {% endblock %}
-
-
 {% block content %}
-
 <div class="{% plotly_class name='DailyValidation' %} card" style="width: 100%">
-{% plotly_app name="DailyValidation" initial_arguments=django_context ratio=1 %}
+  <!-- prettier-ignore -->
+  {% plotly_app name="DailyValidation" initial_arguments=django_context ratio=1%}
 </div>
-
-
 {% endblock %}
