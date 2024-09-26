@@ -265,7 +265,7 @@ def launch_reports_calculation(
     operation = (
         "sum" if Variable.objects.get(variable_code=variable).is_cumulative else "mean"
     )
-    period = Station.objects.get(station_code=station)
+    period = Station.objects.get(station_code=station).delta_t.delta_t
     start_time_, end_time_ = reformat_dates(station, start_time, end_time)
     data = get_data_to_report(station, variable, start_time_, end_time_)
     report = calculate_reports(data, station, variable, operation, period)
