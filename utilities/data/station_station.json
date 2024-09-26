@@ -18,8 +18,7 @@
       "station_file": "",
       "station_external": false,
       "influence_km": null,
-      "timezone": "America/Lima",
-      "delta_t": 1
+      "timezone": "America/Lima"
     }
   },
   {
@@ -41,8 +40,7 @@
       "station_file": "",
       "station_external": false,
       "influence_km": null,
-      "timezone": "America/Lima",
-      "delta_t": 1
+      "timezone": "America/Lima"
     }
   },
   {
@@ -63,8 +61,7 @@
       "station_altitude": 3030,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -85,8 +82,7 @@
       "station_altitude": 3112,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -107,8 +103,7 @@
       "station_altitude": 2934,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -129,8 +124,7 @@
       "station_altitude": 3142,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -151,8 +145,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -173,8 +166,7 @@
       "station_altitude": 4001,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -195,8 +187,7 @@
       "station_altitude": 4185,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -217,8 +208,7 @@
       "station_altitude": 4397,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -239,8 +229,7 @@
       "station_altitude": 3913,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -261,8 +250,7 @@
       "station_altitude": 4110,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -283,8 +271,7 @@
       "station_altitude": 4347,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -305,8 +292,7 @@
       "station_altitude": 4306,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -327,8 +313,7 @@
       "station_altitude": 4306,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -349,8 +334,7 @@
       "station_altitude": 4417,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -371,8 +355,7 @@
       "station_altitude": 4451,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -393,8 +376,7 @@
       "station_altitude": 4484,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -415,8 +397,7 @@
       "station_altitude": 4356,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -437,8 +418,7 @@
       "station_altitude": 4356,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -459,8 +439,7 @@
       "station_altitude": 4424,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -481,8 +460,7 @@
       "station_altitude": 4425,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -503,8 +481,7 @@
       "station_altitude": 4480,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -525,8 +502,7 @@
       "station_altitude": 4075,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -547,8 +523,7 @@
       "station_altitude": 4104,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -569,8 +544,7 @@
       "station_altitude": 4148,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -591,8 +565,7 @@
       "station_altitude": 4085,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -613,8 +586,7 @@
       "station_altitude": 4110,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -635,8 +607,7 @@
       "station_altitude": 4271,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -657,8 +628,7 @@
       "station_altitude": 4144,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -679,8 +649,7 @@
       "station_altitude": 4203,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -701,8 +670,7 @@
       "station_altitude": 4231,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -723,8 +691,7 @@
       "station_altitude": 4103,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -745,8 +712,7 @@
       "station_altitude": 4023,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -767,8 +733,7 @@
       "station_altitude": 4289,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -789,8 +754,7 @@
       "station_altitude": 3824,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -811,8 +775,7 @@
       "station_altitude": 3897,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -833,8 +796,7 @@
       "station_altitude": 4076,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -855,8 +817,7 @@
       "station_altitude": 4088,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -877,8 +838,7 @@
       "station_altitude": 4144,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -899,8 +859,7 @@
       "station_altitude": 4219,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -921,8 +880,7 @@
       "station_altitude": 3675,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -943,8 +901,7 @@
       "station_altitude": 3694,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -965,8 +922,7 @@
       "station_altitude": 3875,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -987,8 +943,7 @@
       "station_altitude": 3824,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1009,8 +964,7 @@
       "station_altitude": 2976,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1031,8 +985,7 @@
       "station_altitude": 3621,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1053,8 +1006,7 @@
       "station_altitude": 3438,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1075,8 +1027,7 @@
       "station_altitude": 3255,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1097,8 +1048,7 @@
       "station_altitude": 3255,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1119,8 +1069,7 @@
       "station_altitude": 3375,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1141,8 +1090,7 @@
       "station_altitude": 3562,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1163,8 +1111,7 @@
       "station_altitude": 3562,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1185,8 +1132,7 @@
       "station_altitude": 3671,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1207,8 +1153,7 @@
       "station_altitude": 3653,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1229,8 +1174,7 @@
       "station_altitude": 3330,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1251,8 +1195,7 @@
       "station_altitude": 3374,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1273,8 +1216,7 @@
       "station_altitude": 3438,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1295,8 +1237,7 @@
       "station_altitude": 3192,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1317,8 +1258,7 @@
       "station_altitude": 3202,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1339,8 +1279,7 @@
       "station_altitude": 3227,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1361,8 +1300,7 @@
       "station_altitude": 3263,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1383,8 +1321,7 @@
       "station_altitude": 3244,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1405,8 +1342,7 @@
       "station_altitude": 3258,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1427,8 +1363,7 @@
       "station_altitude": 3273,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1449,8 +1384,7 @@
       "station_altitude": 3289,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1471,8 +1405,7 @@
       "station_altitude": 3289,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1493,8 +1426,7 @@
       "station_altitude": 3495,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1515,8 +1447,7 @@
       "station_altitude": 3500,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1537,8 +1468,7 @@
       "station_altitude": 3526,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1559,8 +1489,7 @@
       "station_altitude": 3473,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1581,8 +1510,7 @@
       "station_altitude": 3644,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1603,8 +1531,7 @@
       "station_altitude": 2727,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1625,8 +1552,7 @@
       "station_altitude": 2747,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1647,8 +1573,7 @@
       "station_altitude": 2925,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1669,8 +1594,7 @@
       "station_altitude": 3113,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1691,8 +1615,7 @@
       "station_altitude": 1972,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1713,8 +1636,7 @@
       "station_altitude": 2797,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1735,8 +1657,7 @@
       "station_altitude": 3078,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1757,8 +1678,7 @@
       "station_altitude": 2830,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1779,8 +1699,7 @@
       "station_altitude": 3120,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1801,8 +1720,7 @@
       "station_altitude": 3117,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1823,8 +1741,7 @@
       "station_altitude": 3121,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1845,8 +1762,7 @@
       "station_altitude": 3851,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1867,8 +1783,7 @@
       "station_altitude": 3872,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1889,8 +1804,7 @@
       "station_altitude": 3939,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1911,8 +1825,7 @@
       "station_altitude": 4015,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1933,8 +1846,7 @@
       "station_altitude": 3708,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1955,8 +1867,7 @@
       "station_altitude": 3713,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1977,8 +1888,7 @@
       "station_altitude": 3940,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -1999,8 +1909,7 @@
       "station_altitude": 4142,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2021,8 +1930,7 @@
       "station_altitude": 4140,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2043,8 +1951,7 @@
       "station_altitude": 4206,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2065,8 +1972,7 @@
       "station_altitude": 4306,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2087,8 +1993,7 @@
       "station_altitude": 4182,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2109,8 +2014,7 @@
       "station_altitude": 4316,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2131,8 +2035,7 @@
       "station_altitude": 4357,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2153,8 +2056,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2175,8 +2077,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2197,8 +2098,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2219,8 +2119,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2241,8 +2140,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2263,8 +2161,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   },
   {
@@ -2285,8 +2182,7 @@
       "station_altitude": null,
       "station_file": "",
       "station_external": false,
-      "influence_km": null,
-      "delta_t": 1
+      "influence_km": null
     }
   }
 ]

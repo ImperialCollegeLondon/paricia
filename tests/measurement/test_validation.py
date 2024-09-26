@@ -13,11 +13,10 @@ from model_bakery import baker
 class TestValidationFunctions(TestCase):
     def setUp(self):
         from measurement.models import Measurement
-        from station.models import DeltaT, Station
+        from station.models import Station
         from variable.models import Variable
 
-        self.delta_t = baker.make(DeltaT)
-        self.station = baker.make(Station, delta_t=self.delta_t)
+        self.station = baker.make(Station)
         self.variable = baker.make(Variable)
 
         if self.station.timezone is None:
