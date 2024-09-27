@@ -1,4 +1,4 @@
-from management.views import CustomDetailView, CustomTableView
+from management.views import CustomDetailView, CustomEditView, CustomTableView
 
 from .filters import DataImportFilter
 from .models import DataImport
@@ -9,11 +9,14 @@ class DataImportDetailView(CustomDetailView):
     """View to view a data import."""
 
     model = DataImport
-    show_list_btn = True
 
 
 class DataImportListView(CustomTableView):
     model = DataImport
     table_class = DataImportTable
     filterset_class = DataImportFilter
-    show_refresh_btn = True
+
+
+class DataImportEditView(CustomEditView):
+    model = DataImport
+    fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]

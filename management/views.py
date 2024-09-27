@@ -7,6 +7,7 @@ from django.db.models import ForeignKey, Model
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
+from django.views.generic.edit import UpdateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
@@ -68,9 +69,7 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
     """
 
     template_name: str = "object_detail.html"
-    show_list_btn: bool = False
     show_delete_btn: bool = False
-    show_edit_btn: bool = False
 
     def get_object(self) -> Model:
         obj = get_object_or_404(self.model, pk=self.kwargs["pk"])
@@ -91,8 +90,9 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
         context["form"] = self.get_form()
         context["title"] = self.model_description
         context["delete_url"] = self.delete_url if self.show_delete_btn else None
-        context["edit_url"] = self.edit_url if self.show_edit_btn else None
-        context["list_url"] = self.list_url if self.show_list_btn else None
+        context["edit_url"] = self.edit_url
+        context["list_url"] = self.list_url
+        context["pk"] = self.object.pk
         return context
 
     @property
@@ -154,8 +154,6 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
 
     template_name = "table.html"
     paginate_by = 10
-    show_refresh_btn: bool = False
-    show_new_btn: bool = False
 
     def get_queryset(self):
         return get_objects_for_user(self.request.user, self.permission_required)
@@ -163,8 +161,8 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = self.title
-        context["refresh"] = self.list_url if self.show_refresh_btn else None
-        context["new_url"] = self.create_url if self.show_new_btn else None
+        context["list_url"] = self.list_url
+        context["new_url"] = None
         return context
 
     @property
@@ -190,3 +188,61 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     @property
     def create_url(self) -> str:
         return f"{self.app_label}:{self.model_name}_create"
+
+
+class CustomEditView(LoginRequiredMixin, UpdateView):
+    """Generic edit view.
+
+    This view is used to edit a model object. The user must have the permission to edit
+    the object, otherwise a 403 error is returned.
+
+    The view includes a form with the object data, and the context includes the title of
+    the view and the URL to the list view. They follow the pattern
+    `app_label:model_name_action`. For example, the list URL for the `DataImport` model
+    would be `importing:dataimport_list`.
+
+    The permissions required to edit the object are `app_label.change_model_name`. For
+    example, the permission required to edit a `DataImport` object would be
+    `importing.change_dataimport`.
+
+    Users need to be logged in to access this view.
+
+    Attributes:
+        template_name (str): Template to be used.
+    """
+
+    template_name = "object_edit.html"
+
+    def get_object(self) -> Model:
+        obj = super().get_object()
+        if not self.request.user.has_perm(
+            f"{self.app_label}.change_{self.model_name}", obj
+        ):
+            raise PermissionDenied
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.model_description
+        context["list_url"] = self.list_url
+        return context
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def success_url(self) -> str:
+        return reverse_lazy(self.list_url)
