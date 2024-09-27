@@ -57,7 +57,7 @@ dev = [
 doc = [
     "mkdocs",
     "mkdocstrings",
-    "mkdocstrings-python",
+    "mkdocstrings-python>=1.11",
     "mkdocs-material",
     "mkdocs-gen-files",
     "mkdocs-literate-nav",
