@@ -5,26 +5,26 @@
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE|default:'en_us' }}"
       xmlns="http://www.w3.org/1999/html">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <title>
-            {% block title %}
-                Paricia
-            {% endblock title %}
-        </title>
-        <meta name="description" content="Hydroclimatic data management system">
-        <meta name="keywords" content="Climate, hydrology, data management">
-        {% bootstrap_css %}
-        {% bootstrap_javascript %}
-        {% bootstrap_messages %}
-    </head>
-    <body>
-        <div role="main" class="container py-3">
-            {% include "menu_bar.html" %}
-            {% block content %}
-            {% endblock content %}
-        </div>
-    </body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>
+      {% block title %}
+        Paricia
+      {% endblock title %}
+    </title>
+    <meta name="description" content="Hydroclimatic data management system">
+    <meta name="keywords" content="Climate, hydrology, data management">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+  </head>
+  <body>
+    <div role="main" class="container py-3">
+      {% include "menu_bar.html" %}
+      {% block content %}
+      {% endblock content %}
+    </div>
+  </body>
 </html>

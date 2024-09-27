@@ -3,26 +3,26 @@
 {% load static %}
 {% load plotly_dash %}
 {% block extralibraries %}
-    <link rel="stylesheet"
-          href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}" />
-    <link rel="stylesheet"
-          href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
-    <script crossorigin="anonymous"
-            src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
-    <script crossorigin="anonymous"
-            src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
-    <script crossorigin="anonymous" src="{% static 'ext/plotly-latest.min.js' %}"></script>
-    <!--<link rel="stylesheet" href="{% static 'styles/style.css' %}">-->
-    <link rel="stylesheet" href="{% static 'validated/style.css' %}" />
-    <script src="{% static 'scripts/global.js' %}"></script>
+  <link rel="stylesheet"
+        href="{% static 'ext/fontawesome-free-5.13.0-web/css/all.min.css' %}" />
+  <link rel="stylesheet"
+        href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+  <script crossorigin="anonymous"
+          src="{% static 'ext/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
+  <script crossorigin="anonymous"
+          src="{% static 'ext/popper-core_v1.16.1-lts/umd/popper.min.js' %}"></script>
+  <script crossorigin="anonymous" src="{% static 'ext/plotly-latest.min.js' %}"></script>
+  <!--<link rel="stylesheet" href="{% static 'styles/style.css' %}">-->
+  <link rel="stylesheet" href="{% static 'validated/style.css' %}" />
+  <script src="{% static 'scripts/global.js' %}"></script>
 {% endblock extralibraries %}
 {% block content %}
-    <style>
+  <style>
   .report-card {
     width: 100%;
   }
-    </style>
-    <div class="{% plotly_class name='DataReport' %} card report-card">
-        {% plotly_app name="DataReport" initial_arguments=django_context ratio=0.5 %}
-    </div>
+  </style>
+  <div class="{% plotly_class name='DataReport' %} card report-card">
+    {% plotly_app name="DataReport" initial_arguments=django_context ratio=0.5 %}
+  </div>
 {% endblock content %}
