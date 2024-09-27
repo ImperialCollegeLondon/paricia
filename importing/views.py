@@ -1,4 +1,9 @@
-from management.views import CustomDetailView, CustomEditView, CustomTableView
+from management.views import (
+    CustomCreateView,
+    CustomDetailView,
+    CustomEditView,
+    CustomTableView,
+)
 
 from .filters import DataImportFilter
 from .models import DataImport
@@ -18,6 +23,12 @@ class DataImportListView(CustomTableView):
 
 
 class DataImportEditView(CustomEditView):
+    model = DataImport
+    fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
+    foreign_key_fields = ["station", "format"]
+
+
+class DataImportCreateView(CustomCreateView):
     model = DataImport
     fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
     foreign_key_fields = ["station", "format"]

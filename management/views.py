@@ -163,7 +163,7 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
         context = super().get_context_data(**kwargs)
         context["title"] = self.title
         context["list_url"] = self.list_url
-        context["new_url"] = None
+        context["create_url"] = self.create_url
         return context
 
     @property
@@ -206,6 +206,9 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
     example, the permission required to edit a `DataImport` object would be
     `importing.change_dataimport`.
 
+    If successful or cancelled, the view redirects to the detail view of the created
+    object.
+
     Users need to be logged in to access this view.
 
     Attributes:
@@ -214,6 +217,23 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
 
     template_name = "object_edit.html"
     foreign_key_fields: list[str] = []
+
+    def get_form_class(self) -> forms.BaseModelForm:
+        class CustomCreateForm(forms.ModelForm):
+            foreign_key_fields = self.foreign_key_fields
+
+            class Meta:
+                model = self.model
+                fields = self.fields
+
+            def __init__(self, *args, **kwargs):
+                user = kwargs.pop("user")
+                super().__init__(*args, **kwargs)
+                for field in self._meta.model._meta.fields:
+                    if field.name in self.foreign_key_fields:
+                        self.fields[field.name].queryset = get_queryset(field, user)
+
+        return CustomCreateForm
 
     def get_object(self) -> Model:
         obj = super().get_object()
@@ -250,8 +270,87 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
     def detail_url(self) -> str:
         return f"{self.app_label}:{self.model_name}_detail"
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """Limit the queryset for foreign key fields."""
-        if db_field.name in self.foreign_key_fields:
-            kwargs["queryset"] = get_queryset(db_field, request.user)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    def get_form_kwargs(self):
+        """Add the user to the form kwargs, so we can filter the options."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+
+class CustomCreateView(LoginRequiredMixin, CreateView):
+    """Generic create view.
+
+    This view is used to create a new model object. The user must have the permission to
+    create the object, otherwise a 403 error is returned.
+
+    The view includes a form with the object data, and the context includes the title of
+    the view and the URL to the list view. They follow the pattern
+    `app_label:model_name_action`. For example, the list URL for the `DataImport` model
+    would be `importing:dataimport_list`.
+
+    If provided, the `foreign_key_fields` attribute is used to limit the queryset for
+    foreign key fields.
+
+    If successful, the view redirects to the detail view of the created object.
+
+    Users need to be logged in to access this view.
+
+    Attributes:
+        template_name (str): Template to be used.
+    """
+
+    template_name = "object_create.html"
+    foreign_key_fields: list[str] = []
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.model_description
+        context["list_url"] = self.list_url
+        return context
+
+    def get_form_class(self) -> forms.BaseModelForm:
+        class CustomCreateForm(forms.ModelForm):
+            foreign_key_fields = self.foreign_key_fields
+
+            class Meta:
+                model = self.model
+                fields = self.fields
+
+            def __init__(self, *args, **kwargs):
+                user = kwargs.pop("user")
+                super().__init__(*args, **kwargs)
+                for field in self._meta.model._meta.fields:
+                    if field.name in self.foreign_key_fields:
+                        self.fields[field.name].queryset = get_queryset(field, user)
+
+        return CustomCreateForm
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def success_url(self) -> str:
+        return reverse_lazy(self.detail_url, kwargs={"pk": self.object.pk})
+
+    @property
+    def detail_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_detail"
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
+
+    def get_form_kwargs(self):
+        """Add the user to the form kwargs, so we can filter the options."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
