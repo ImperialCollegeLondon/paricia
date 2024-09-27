@@ -2,7 +2,7 @@ from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_objects_for_user
 
-from management.admin import _get_queryset
+from management.admin import get_queryset
 from measurement.models import Measurement, Report
 
 
@@ -47,7 +47,7 @@ class MeasurementBaseAdmin(GuardedModelAdmin):
                 request.user, "station.change_station"
             )
         elif db_field.name == "variable":
-            kwargs["queryset"] = _get_queryset(db_field, request.user)
+            kwargs["queryset"] = get_queryset(db_field, request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 

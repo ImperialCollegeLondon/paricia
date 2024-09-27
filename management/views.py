@@ -13,6 +13,7 @@ from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
 
 from .forms import CustomUserCreationForm
+from .permissions import get_queryset
 
 
 def model_to_dict(instance: Model) -> dict:
@@ -212,6 +213,7 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
     """
 
     template_name = "object_edit.html"
+    foreign_key_fields: list[str] = []
 
     def get_object(self) -> Model:
         obj = super().get_object()
@@ -224,7 +226,8 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = self.model_description
-        context["list_url"] = self.list_url
+        context["detail_url"] = self.detail_url
+        context["pk"] = self.object.pk
         return context
 
     @property
@@ -236,13 +239,19 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
         return self.model._meta.model_name
 
     @property
-    def list_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_list"
-
-    @property
     def model_description(self) -> str:
         return self.model._meta.verbose_name.title()
 
     @property
     def success_url(self) -> str:
-        return reverse_lazy(self.list_url)
+        return reverse_lazy(self.detail_url, kwargs={"pk": self.object.pk})
+
+    @property
+    def detail_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_detail"
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Limit the queryset for foreign key fields."""
+        if db_field.name in self.foreign_key_fields:
+            kwargs["queryset"] = get_queryset(db_field, request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

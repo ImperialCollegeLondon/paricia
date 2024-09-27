@@ -20,3 +20,4 @@ class DataImportListView(CustomTableView):
 class DataImportEditView(CustomEditView):
     model = DataImport
     fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
+    foreign_key_fields = ["station", "format"]

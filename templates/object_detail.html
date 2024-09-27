@@ -10,8 +10,8 @@
   <!-- Action buttons -->
   <div class="row">
     <div class="col">
-      <a href="{% url list_url %}" class="btn btn-primary">Return to list</a>
-      <a href="{% url edit_url pk %}" class="btn btn-success">Edit</a>
+      <a href="{% url list_url %}" class="btn btn-success">Return to list</a>
+      <a href="{% url edit_url pk %}" class="btn btn-warning">Edit</a>
       {% if delete_url %}
         <a href="{% url delet_url %}" class="btn btn-danger">Delete</a>
       {% endif %}

@@ -7,6 +7,7 @@ from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_objects_for_user
 
 from .models import User
+from .permissions import get_queryset
 
 # Set global preferences for the Django admin site
 admin.site.site_header = "Paricia Administration"
@@ -65,7 +66,7 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Limit the queryset for foreign key fields."""
         if db_field.name in self.foreign_key_fields:
-            kwargs["queryset"] = _get_queryset(db_field, request.user)
+            kwargs["queryset"] = get_queryset(db_field, request.user)
         if db_field.name == "owner" and not request.user.is_superuser:
             kwargs["initial"] = request.user.id
             kwargs["disabled"] = True
@@ -78,25 +79,6 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
             if self.limit_visibility_level and not request.user.is_superuser:
                 kwargs["disabled"] = True
         return super().formfield_for_choice_field(db_field, request, **kwargs)
-
-
-def _get_queryset(db_field, user):
-    """Return a queryset based on the permissions of the user.
-
-    Returns queryset of public objects and objects that the user has change permisions
-    for. For the case of `Station` objects, having the `change` permission is
-    necessary to include the object in the queryset - being `Public` is not enough.
-
-    """
-    app_name = db_field.related_model._meta.app_label
-    model_name = db_field.related_model._meta.model_name
-    user_objects = get_objects_for_user(user, f"{app_name}.change_{model_name}")
-    public_objects = (
-        db_field.related_model.objects.none()
-        if model_name == "station"
-        else db_field.related_model.objects.filter(visibility="public")
-    )
-    return user_objects | public_objects
 
 
 class CustomUserAdmin(UserAdmin):
