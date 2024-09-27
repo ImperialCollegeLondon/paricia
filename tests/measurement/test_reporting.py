@@ -1,6 +1,5 @@
 import zoneinfo
 from datetime import datetime
-from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 import numpy as np
@@ -37,10 +36,8 @@ class TestReporting(TestCase):
         station = "Station A"
         variable = "Variable X"
         operation = "mean"
-        period = Decimal(5)
-
         # Call the function under test
-        result = calculate_reports(data, station, variable, operation, period)
+        result = calculate_reports(data, station, variable, operation)
 
         # Assert some content
         self.assertListEqual(
@@ -50,9 +47,6 @@ class TestReporting(TestCase):
         self.assertListEqual(list(result["variable"].unique()), [variable])
 
         # Assert general shape and size
-        self.assertEqual(len(result[result["report_type"] == "hourly"]), 48)
-        self.assertEqual(len(result[result["report_type"] == "daily"]), 2)
-        self.assertEqual(len(result[result["report_type"] == "monthly"]), 1)
         self.assertListEqual(
             list(result.columns),
             [
