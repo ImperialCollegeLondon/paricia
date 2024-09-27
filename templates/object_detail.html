@@ -1,42 +1,45 @@
-<!-- prettier-ignore -->
 {% extends "base.html" %}
 {% load render_table from django_tables2 %}
-
 {% block content %}
-<h2>{% block title %}{{ title }}{% endblock %} object detail</h2>
-
-<!-- Action buttons -->
-<div class="row">
-  <div class="col">
-    {% if list_url %}
-    <a href="{% url list_url %}" class="btn btn-primary">Return to list</a>
-    {% endif %} {% if edit_url %}
-    <a href="{% url edit_url %}" class="btn btn-success">Edit</a>
-    {% endif %} {% if delete_url %}
-    <a href="{% url delet_url %}" class="btn btn-danger">Delete</a>
-    {% endif %}
-  </div>
-</div>
-
-<!-- Object details -->
-<div class="row">
-  <div class="col">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Field</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for field in form %}
-        <tr>
-          <td>{{ field.label }}</td>
-          <td>{{ field.value }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-{% endblock %}
+    <h2>
+        {% block title %}
+            {{ title }}
+        {% endblock title %}
+        object detail
+    </h2>
+    <!-- Action buttons -->
+    <div class="row">
+        <div class="col">
+            {% if list_url %}
+                <a href="{% url list_url %}" class="btn btn-primary">Return to list</a>
+            {% endif %}
+            {% if edit_url %}
+                <a href="{% url edit_url %}" class="btn btn-success">Edit</a>
+            {% endif %}
+            {% if delete_url %}
+                <a href="{% url delet_url %}" class="btn btn-danger">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Object details -->
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field in form %}
+                        <tr>
+                            <td>{{ field.label }}</td>
+                            <td>{{ field.value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}

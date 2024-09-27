@@ -1,59 +1,43 @@
-<!-- prettier-ignore -->
 {% load django_bootstrap5 %}
 {% load static %}
 {% load i18n %}
-
 <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-  <div class="container-fluid">
-    <a class="navbar-brand" rel="nofollow" href="/">Paricia</a>
-
-    <ul class="nav navbar-nav pull-left">
-      <!-- Everyone can see the reports page (what data they see, depends on permissions) -->
-      <a class="nav-link" href="/measurement/data_report">Reports</a>
-
-      <!-- If the user is authenticated, they can access the validation page -->
-      {% if user.is_authenticated %}
-      <a class="nav-link" href="/measurement/daily_validation">Validation</a>
-      {% endif %}
-    </ul>
-
-    <!-- A separate menu for the user to log in or log out -->
-    <ul class="nav navbar-nav pull-right">
-      <a
-        class="nav-link"
-        href="https://imperialcollegelondon.github.io/paricia/"
-        >Documentation</a
-      >
-
-      <!-- If the user is staff, we show the link to the admin -->
-      {% if user.is_staff %}
-      <a class="nav-link" href="/admin">Admin site</a>
-      {% endif %}
-
-      <!-- If the user is authenticated, we greet them and include a logout button -->
-      <!-- within a dropdown so it is not clicked by mistake -->
-      {% if user.is_authenticated %}
-      <li class="nav-item">
-        <form method="post" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <input
-            class="nav-link"
-            type="submit"
-            value="Logout"
-            style="
-              border: none;
-              border-color: transparent;
-              background-color: transparent;
-            "
-          />
-        </form>
-      </li>
-
-      {% else %}
-      <!-- Otherwise we just show options to register and login -->
-      <li><a class="nav-link" href="/register">Register</a></li>
-      <li><a class="nav-link" href="/auth/login">Login</a></li>
-      {% endif %}
-    </ul>
-  </div>
+    <div class="container-fluid">
+        <a class="navbar-brand" rel="nofollow" href="{% url 'home' %}">Paricia</a>
+        <ul class="nav navbar-nav pull-left">
+            <!-- Everyone can see the reports page (what data they see, depends on permissions) -->
+            <a class="nav-link" href="{% url 'measurement:data_report' %}">Reports</a>
+            <!-- If the user is authenticated, they can access the validation page -->
+            {% if user.is_authenticated %}
+                <a class="nav-link" href="{% url 'measurement:daily_validation' %}">Validation</a>
+            {% endif %}
+        </ul>
+        <!-- A separate menu for the user to log in or log out -->
+        <ul class="nav navbar-nav pull-right">
+            <a class="nav-link"
+               href="https://imperialcollegelondon.github.io/paricia/">Documentation</a>
+            <!-- If the user is staff, we show the link to the admin -->
+            {% if user.is_staff %}
+                <a class="nav-link" href="{% url 'admin:index' %}">Admin site</a>
+            {% endif %}
+            <!-- If the user is authenticated, we greet them and include a logout button -->
+            <!-- within a dropdown so it is not clicked by mistake -->
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <input class="nav-link logout-button" type="submit" value="Logout" />
+                    </form>
+                </li>
+            {% else %}
+                <!-- Otherwise we just show options to register and login -->
+                <li>
+                    <a class="nav-link" href="{% url 'auth:register' %}">Register</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{% url 'auth:login' %}">Login</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
 </nav>
