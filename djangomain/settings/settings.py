@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
     "guardian",
+    "django_tables2",
 ]
 
 MIDDLEWARE = [
@@ -261,6 +262,11 @@ SIMPLE_JWT = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+LOGIN_URL = "auth:login"
+LOGIN_REDIRECT_URL = "home"
+
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
