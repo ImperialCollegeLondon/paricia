@@ -50,7 +50,7 @@ django==5.1.1
     #   djangorestframework
     #   djangorestframework-simplejwt
     #   drf-yasg
-django-bootstrap5==24.2
+django-bootstrap5==24.3
     # via Paricia (pyproject.toml)
 django-crispy-forms==2.3
     # via
@@ -119,7 +119,7 @@ pandas==2.2.2
     # via Paricia (pyproject.toml)
 pillow==10.4.0
     # via Paricia (pyproject.toml)
-plotly==5.23.0
+plotly==5.24.1
     # via
     #   dash
     #   django-plotly-dash

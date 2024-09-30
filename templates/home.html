@@ -1,18 +1,22 @@
-<!-- prettier-ignore -->
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
 {% load plotly_dash %}
-
 {% block content %}
-<div class="container py-2">
-  Welcome to the <b>Paricia</b> system. <br /><br />
-
-  <b>Paricia</b> is a <b>hydroclimatic data management system</b>. Originally
-  focused on managing data from stations in the Andes region, it has recently
-  generalized to be able to ingest data from <b>anywhere in the world</b>.
-</div>
-<div class="{% plotly_class name='StationsMap' %} card" style="width: 100%">
-  {% plotly_app name="StationsMap" initial_arguments=django_context ratio=1 %}
-</div>
-{% endblock %}
+  <div class="container py-2">
+    Welcome to the <b>Paricia</b> system.
+    <br />
+    <br />
+    <b>Paricia</b> is a <b>hydroclimatic data management system</b>. Originally
+    focused on managing data from stations in the Andes region, it has recently
+    generalized to be able to ingest data from <b>anywhere in the world</b>.
+  </div>
+  <style>
+    .stations-map-card {
+      width: 100%;
+    }
+  </style>
+  <div class="{% plotly_class name='StationsMap' %} card stations-map-card">
+    {% plotly_app name="StationsMap" initial_arguments=django_context ratio=1 %}
+  </div>
+{% endblock content %}
