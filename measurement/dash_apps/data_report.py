@@ -169,16 +169,18 @@ def download_csv_report(
                 .drop(columns=["station", "variable"])
                 .to_csv(index=False)
             )
+            return (
+                dict(
+                    content=file,
+                    filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
+                ),
+                [],
+            )
         except Exception as e:
             alert = dbc.Alert(f"Could not export data to CSV: {e}", color="warning")
             return None, [alert]
-        return (
-            dict(
-                content=file,
-                filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
-            ),
-            [],
-        )
+    else:
+        return None, []
 
 
 @app.callback(
