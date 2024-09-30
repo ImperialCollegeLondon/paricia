@@ -204,7 +204,7 @@ platformdirs==4.3.3
     # via
     #   mkdocs-get-deps
     #   mkdocstrings
-plotly==5.23.0
+plotly==5.24.1
     # via
     #   dash
     #   django-plotly-dash
