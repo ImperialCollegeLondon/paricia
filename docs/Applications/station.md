@@ -4,7 +4,7 @@
 
 The Station is the main component of Paricia. Stations own the measurement data, who can view the existing data and add new sets, and captures a lot of metadata on the geographical location of the station, including longitude, latitude and altitude, but also region, basin, ecosystem or area covered.
 
-It also owns two key parameters used during the data ingestion and the validation process: the **timezone** where the station is located, used to interpret the time of the datasets.
+It also owns another key parameter used during the data ingestion process: the **timezone** where the station is located, used to interpret the time of the datasets.
 
 !!! warning "Incorrect `timezone`"
 
