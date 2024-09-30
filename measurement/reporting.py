@@ -17,12 +17,11 @@ def calculate_reports(
         data: The dataframe with the data.
         station: The name of the station.
         variable: The name of the variable.
-        operation: Agreggation operation to perform on the data when calculating the
+        operation: Aggregation operation to perform on the data when calculating the
             report.
 
-
     Returns:
-        A dataframe with the hourly, daily and monthly reports.
+        A dataframe with the daily and monthly reports.
     """
     cols = ["time", "value"]
     if "maximum" in data.columns:
@@ -40,16 +39,14 @@ def calculate_reports(
     per_month = monthly.index.to_series().apply(
         lambda t: pd.Period(t, freq="S").days_in_month
     )
-    hourly["completeness"] = data[["time", "value"]].resample("H", on="time").count()
     daily["completeness"] = hourly["value"].resample("D").count() / per_day * 100
     monthly["completeness"] = daily["value"].resample("MS").count() / per_month * 100
 
     # Put everything together
-    hourly["report_type"] = "hourly"
     daily["report_type"] = "daily"
     monthly["report_type"] = "monthly"
 
-    report = pd.concat([hourly, daily, monthly])
+    report = pd.concat([daily, monthly])
     report["station"] = station
     report["variable"] = variable
 
