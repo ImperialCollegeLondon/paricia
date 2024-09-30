@@ -8,7 +8,7 @@ It also owns another key parameter used during the data ingestion process: the *
 
 !!! warning "Incorrect `timezone`"
 
-    If this parameter is not defined correctly, the time of the data associated to the station would be interpreted wrong or the validation process will flagged data as invalid, when it might be correct. **Check the parameter before uploading data, specially the first time.**
+    If this parameter is not defined correctly, the time of the data associated to the station would be interpreted wrong. **Check the parameter before uploading data, specially the first time.**
 
 As pointed out in the [permissions page](../permissions.md), Stations visibility can take a third option, `internal`, that only allows registered users to visualize the data of the station. Stations also require `change` permission in order to be able to upload data associated to that station and then validating it.
 
