@@ -66,7 +66,7 @@ django==5.1.1
     #   djangorestframework-simplejwt
     #   drf-yasg
     #   model-bakery
-django-bootstrap5==24.2
+django-bootstrap5==24.3
     # via Paricia (pyproject.toml)
 django-crispy-forms==2.3
     # via
