@@ -259,7 +259,7 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==2.2.2
     # via requests
-watchdog==5.0.2
+watchdog==5.0.3
     # via mkdocs
 werkzeug==3.0.4
     # via
