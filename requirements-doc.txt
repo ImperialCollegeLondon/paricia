@@ -216,7 +216,7 @@ pygments==2.18.0
     # via mkdocs-material
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
-pymdown-extensions==10.9
+pymdown-extensions==10.11.1
     # via
     #   mkdocs-material
     #   mkdocstrings
