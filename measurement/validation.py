@@ -119,6 +119,26 @@ def flag_suspicious_data(
     return pd.concat([value_difference, value_limits], axis=1)
 
 
+def flag_suspicious_daily_count(data: pd.Series, null_limit: Decimal) -> pd.DataFrame:
+    """Finds suspicious records count for daily data.
+    Args:
+        data: The count of records per day.
+        null_limit: The percentage of null data allowed.
+    Returns:
+        A dataframe with the suspicious data.
+    """
+    expected_data_count = data.mode().iloc[0]
+
+    suspicious = pd.DataFrame(index=data.index)
+    suspicious["daily_count_fraction"] = (data / expected_data_count).round(2)
+
+    suspicious["suspicious_daily_count"] = (
+        suspicious["daily_count_fraction"] < 1 - float(null_limit) / 100
+    ) | (suspicious["daily_count_fraction"] > 1)
+
+    return suspicious
+
+
 def generate_daily_summary(
     data: pd.DataFrame,
     suspicious: pd.DataFrame,

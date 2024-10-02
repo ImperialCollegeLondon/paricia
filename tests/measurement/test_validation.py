@@ -115,6 +115,30 @@ class TestValidationFunctions(TestCase):
         assert (flags.suspicious_maximum_limits.values == smax).all()
         assert (flags.suspicious_minimum_limits.values == smin).all()
 
+    def test_flag_suspicious_daily_count(self):
+        from measurement.validation import flag_suspicious_daily_count
+
+        # Create sample data
+        data = pd.Series([60, 30, 70, 55, 20])
+
+        # Set the null limit
+        null_limit = Decimal("10.0")
+
+        # Call the function under test
+        result = flag_suspicious_daily_count(data, null_limit)
+
+        # Define the expected output
+        expected_data_count = data.mode().iloc[0]
+        expected = pd.DataFrame(
+            {
+                "daily_count_fraction": (data / expected_data_count).round(2),
+                "suspicious_daily_count": [True, True, True, True, False],
+            }
+        )
+
+        # Assert the expected output
+        pd.testing.assert_frame_equal(result, expected)
+
     def test_generate_daily_summary(self):
         from measurement.validation import generate_daily_summary
 

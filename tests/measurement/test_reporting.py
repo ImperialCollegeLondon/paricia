@@ -40,7 +40,9 @@ class TestReporting(TestCase):
         result = calculate_reports(data, station, variable, operation)
 
         # Assert some content
-        self.assertListEqual(list(result["report_type"].unique()), ["daily", "monthly"])
+        self.assertListEqual(
+            list(result["report_type"].unique()), ["hourly", "daily", "monthly"]
+        )
         self.assertListEqual(list(result["station"].unique()), [station])
         self.assertListEqual(list(result["variable"].unique()), [variable])
 
@@ -51,7 +53,6 @@ class TestReporting(TestCase):
                 "value",
                 "maximum",
                 "minimum",
-                "completeness",
                 "report_type",
                 "station",
                 "variable",
@@ -141,7 +142,6 @@ class TestReporting(TestCase):
                 variable=self.variable,
                 time=start_time,
                 value=1.0,
-                completeness=1.0,
                 report_type="hourly",
             ),
             Report(
@@ -149,7 +149,6 @@ class TestReporting(TestCase):
                 variable=self.variable,
                 time=end_time,
                 value=5.0,
-                completeness=1.0,
                 report_type="hourly",
             ),
         ]
@@ -184,7 +183,6 @@ class TestReporting(TestCase):
                 "variable": [self.variable.variable_code],
                 "time": time,
                 "value": [1.0],
-                "completeness": [1.0],
                 "report_type": ["hourly"],
             }
         ).set_index("time")
@@ -198,14 +196,12 @@ class TestReporting(TestCase):
             variable=self.variable,
             time=time,
             value=1.0,
-            completeness=1.0,
             report_type="hourly",
         )
         self.assertEqual(report.station, self.station)
         self.assertEqual(report.variable, self.variable)
         self.assertEqual(report.time, time)
         self.assertEqual(report.value, 1.0)
-        self.assertEqual(report.completeness, 1.0)
         self.assertEqual(report.report_type, "hourly")
 
     def test_get_report_data(self):
@@ -234,7 +230,6 @@ class TestReporting(TestCase):
                 variable=self.variable,
                 time=time1,
                 value=1.0,
-                completeness=1.0,
                 report_type=report_type,
             ),
             Report(
@@ -242,7 +237,6 @@ class TestReporting(TestCase):
                 variable=self.variable,
                 time=time2,
                 value=2.0,
-                completeness=1.0,
                 report_type=report_type,
             ),
         ]

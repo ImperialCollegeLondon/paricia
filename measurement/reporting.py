@@ -21,7 +21,7 @@ def calculate_reports(
             report.
 
     Returns:
-        A dataframe with the daily and monthly reports.
+        A dataframe with the hourly, daily and monthly reports.
     """
     cols = ["time", "value"]
     if "maximum" in data.columns:
@@ -34,19 +34,12 @@ def calculate_reports(
     daily = hourly.resample("D").agg(operation)
     monthly = daily.resample("MS").agg(operation)
 
-    # Find the completeness of the data
-    per_day = 24
-    per_month = monthly.index.to_series().apply(
-        lambda t: pd.Period(t, freq="S").days_in_month
-    )
-    daily["completeness"] = hourly["value"].resample("D").count() / per_day * 100
-    monthly["completeness"] = daily["value"].resample("MS").count() / per_month * 100
-
     # Put everything together
+    hourly["report_type"] = "hourly"
     daily["report_type"] = "daily"
     monthly["report_type"] = "monthly"
 
-    report = pd.concat([daily, monthly])
+    report = pd.concat([hourly, daily, monthly])
     report["station"] = station
     report["variable"] = variable
 
@@ -161,7 +154,6 @@ def save_report_data(data: pd.DataFrame) -> None:
                 value=row["value"],
                 maximum=row.get("maximum", None),
                 minimum=row.get("minimum", None),
-                completeness=row["completeness"],
                 report_type=row["report_type"],
             )
             for time, row in data_.iterrows()
