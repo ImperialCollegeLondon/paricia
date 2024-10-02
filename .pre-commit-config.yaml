@@ -7,7 +7,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.29.2"
+    rev: "0.29.3"
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -17,8 +17,13 @@ repos:
         # Prettier supports many other file formats (e.g., JavaScript, HTML; see
         # https://prettier.io for list). Add other types here.
         types_or: [yaml, json]
+  - repo: https://github.com/djlint/djLint
+    rev: v1.35.2
+    hooks:
+      - id: djlint-reformat-django
+      - id: djlint-django
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.6.7"
+    rev: "v0.6.8"
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -29,7 +34,7 @@ repos:
       - id: mypy
         additional_dependencies: [types-requests, types-toml, types-pytz]
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.41.0
+    rev: v0.42.0
     hooks:
       - id: markdownlint-fix
         args: ["--disable", "MD013", "--disable", "MD033"]

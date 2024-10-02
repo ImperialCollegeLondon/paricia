@@ -46,10 +46,11 @@ django==5.1.1
     #   django-filter
     #   django-guardian
     #   django-plotly-dash
+    #   django-tables2
     #   djangorestframework
     #   djangorestframework-simplejwt
     #   drf-yasg
-django-bootstrap5==24.2
+django-bootstrap5==24.3
     # via Paricia (pyproject.toml)
 django-crispy-forms==2.3
     # via
@@ -64,6 +65,8 @@ django-filter==24.3
 django-guardian==2.4.0
     # via Paricia (pyproject.toml)
 django-plotly-dash==2.3.1
+    # via Paricia (pyproject.toml)
+django-tables2==2.7.0
     # via Paricia (pyproject.toml)
 django-timescaledb==0.2.13
     # via Paricia (pyproject.toml)
@@ -116,7 +119,7 @@ pandas==2.2.2
     # via Paricia (pyproject.toml)
 pillow==10.4.0
     # via Paricia (pyproject.toml)
-plotly==5.23.0
+plotly==5.24.1
     # via
     #   dash
     #   django-plotly-dash

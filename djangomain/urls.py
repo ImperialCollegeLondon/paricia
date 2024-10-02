@@ -43,7 +43,7 @@ from management.views import SignUpView
 from .views import HomePageView
 
 urlpatterns = [
-    path("", HomePageView.as_view()),
+    path("", HomePageView.as_view(), name="home"),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
     path("register/", SignUpView.as_view(), name="auth_register"),
@@ -52,6 +52,7 @@ urlpatterns = [
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("measurement/", include("measurement.urls", namespace="measurement")),
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
+    path("importing/", include("importing.urls", namespace="importing")),
 ]
 
 if settings.DEBUG:

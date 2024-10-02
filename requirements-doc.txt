@@ -59,10 +59,11 @@ django==5.1.1
     #   django-filter
     #   django-guardian
     #   django-plotly-dash
+    #   django-tables2
     #   djangorestframework
     #   djangorestframework-simplejwt
     #   drf-yasg
-django-bootstrap5==24.2
+django-bootstrap5==24.3
     # via Paricia (pyproject.toml)
 django-crispy-forms==2.3
     # via
@@ -77,6 +78,8 @@ django-filter==24.3
 django-guardian==2.4.0
     # via Paricia (pyproject.toml)
 django-plotly-dash==2.3.1
+    # via Paricia (pyproject.toml)
+django-tables2==2.7.0
     # via Paricia (pyproject.toml)
 django-timescaledb==0.2.13
     # via Paricia (pyproject.toml)
@@ -203,7 +206,7 @@ platformdirs==4.3.3
     # via
     #   mkdocs-get-deps
     #   mkdocstrings
-plotly==5.23.0
+plotly==5.24.1
     # via
     #   dash
     #   django-plotly-dash
@@ -215,7 +218,7 @@ pygments==2.18.0
     # via mkdocs-material
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
-pymdown-extensions==10.9
+pymdown-extensions==10.11.1
     # via
     #   mkdocs-material
     #   mkdocstrings
@@ -258,7 +261,7 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==2.2.2
     # via requests
-watchdog==5.0.2
+watchdog==5.0.3
     # via mkdocs
 werkzeug==3.0.4
     # via
