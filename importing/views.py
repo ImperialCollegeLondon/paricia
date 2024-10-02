@@ -17,18 +17,24 @@ class DataImportDetailView(CustomDetailView):
 
 
 class DataImportListView(CustomTableView):
+    """View to list all data imports."""
+
     model = DataImport
     table_class = DataImportTable
     filterset_class = DataImportFilter
 
 
 class DataImportEditView(CustomEditView):
+    """View to edit a data import."""
+
     model = DataImport
     fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
     foreign_key_fields = ["station", "format"]
 
 
 class DataImportCreateView(CustomCreateView):
+    """View to create a data import."""
+
     model = DataImport
     fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
     foreign_key_fields = ["station", "format"]
