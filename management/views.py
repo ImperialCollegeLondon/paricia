@@ -209,6 +209,12 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
                 fields = self.fields
 
             def __init__(self, *args, **kwargs):
+                """Filter the queryset for foreign key fields based on the user.
+
+                Otherwise, the user would see all objects, even those they don't have
+                access to. We need to pop the user from the kwargs, as it's not a valid
+                argument for the form.
+                """
                 user = kwargs.pop("user") if "user" in kwargs else None
                 super().__init__(*args, **kwargs)
                 if user:
@@ -300,6 +306,12 @@ class CustomCreateView(LoginRequiredMixin, CreateView):
                 fields = self.fields
 
             def __init__(self, *args, **kwargs):
+                """Filter the queryset for foreign key fields based on the user.
+
+                Otherwise, the user would see all objects, even those they don't have
+                access to. We need to pop the user from the kwargs, as it's not a valid
+                argument for the form.
+                """
                 user = kwargs.pop("user") if "user" in kwargs else None
                 super().__init__(*args, **kwargs)
                 if user:
