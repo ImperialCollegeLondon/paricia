@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DeleteView, DetailView
 from django.views.generic.edit import UpdateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
@@ -12,6 +12,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from .forms import CustomUserCreationForm
 from .permissions import get_queryset
+from .tools import get_deleted_objects
 
 
 class SignUpView(CreateView):
@@ -45,7 +46,6 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
     """
 
     template_name: str = "object_detail.html"
-    show_delete_btn: bool = False
     fields = "__all__"
 
     def get_object(self) -> Model:
@@ -72,7 +72,7 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["form"] = self.get_form()
         context["title"] = self.model_description
-        context["delete_url"] = self.delete_url if self.show_delete_btn else None
+        context["delete_url"] = self.delete_url
         context["edit_url"] = self.edit_url
         context["list_url"] = self.list_url
         context["pk"] = self.object.pk
@@ -338,3 +338,64 @@ class CustomCreateView(LoginRequiredMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
+
+
+class CustomDeleteView(LoginRequiredMixin, DeleteView):
+    """Generic delete view.
+
+    This view is used to delete a model object. The user must have the permission to
+    delete the object, otherwise a 403 error is returned. A confirmation page is shown
+    with the related objects that will be deleted.
+
+    The permissions required to delete the object are `app_label.delete_model_name`. For
+    example, the permission required to delete a `DataImport` object would be
+    `importing.delete_dataimport`.
+
+    If successful, the view redirects to the list view.
+
+    Users need to be logged in to access this view.
+
+    Attributes:
+        template_name (str): Template to be used.
+    """
+
+    template_name = "object_delete.html"
+
+    def get_object(self) -> Model:
+        obj = super().get_object()
+        if not self.request.user.has_perm(
+            f"{self.app_label}.delete_{self.model_name}", obj
+        ):
+            raise PermissionDenied
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deletable_objects, model_count, protected = get_deleted_objects([self.object])
+
+        context["deletable_objects"] = deletable_objects
+        context["model_count"] = dict(model_count).items()
+        context["protected"] = protected
+        context["title"] = self.model_description
+        context["list_url"] = self.list_url
+        return context
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
+
+    @property
+    def success_url(self) -> str:
+        return reverse_lazy(self.list_url)

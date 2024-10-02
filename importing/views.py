@@ -1,5 +1,6 @@
 from management.views import (
     CustomCreateView,
+    CustomDeleteView,
     CustomDetailView,
     CustomEditView,
     CustomTableView,
@@ -38,3 +39,9 @@ class DataImportCreateView(CustomCreateView):
     model = DataImport
     fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
     foreign_key_fields = ["station", "format"]
+
+
+class DataImportDeleteView(CustomDeleteView):
+    """View to delete a data import."""
+
+    model = DataImport

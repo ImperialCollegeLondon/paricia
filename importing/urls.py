@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     DataImportCreateView,
+    DataImportDeleteView,
     DataImportDetailView,
     DataImportEditView,
     DataImportListView,
@@ -13,4 +14,5 @@ urlpatterns = [
     path("<int:pk>/", DataImportDetailView.as_view(), name="dataimport_detail"),
     path("edit/<int:pk>", DataImportEditView.as_view(), name="dataimport_edit"),
     path("create/", DataImportCreateView.as_view(), name="dataimport_create"),
+    path("delete/<int:pk>", DataImportDeleteView.as_view(), name="dataimport_delete"),
 ]
