@@ -7,7 +7,7 @@
     {% endblock title %}
     object creation
   </h2>
-  <form method="post">
+  <form enctype="multipart/form-data" method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-success">Save</button>
     <a href="{% url list_url %}" class="btn btn-danger">Cancel</a>
