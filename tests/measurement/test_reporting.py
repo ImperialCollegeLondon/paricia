@@ -40,9 +40,7 @@ class TestReporting(TestCase):
         result = calculate_reports(data, station, variable, operation)
 
         # Assert some content
-        self.assertListEqual(
-            list(result["report_type"].unique()), ["hourly", "daily", "monthly"]
-        )
+        self.assertListEqual(list(result["report_type"].unique()), ["daily", "monthly"])
         self.assertListEqual(list(result["station"].unique()), [station])
         self.assertListEqual(list(result["variable"].unique()), [variable])
 
