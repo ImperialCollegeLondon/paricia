@@ -83,21 +83,6 @@ class TestValidationFunctions(TestCase):
         # The validated object should be in the data
         self.assertIn(obj.id, data.id.values)
 
-    # def test_flag_time_lapse_status(self):
-    #     from measurement.validation import flag_time_lapse_status
-
-    #     period = 5
-    #     times = pd.date_range(
-    #         "2023-01-01", "2023-01-2", freq=f"{period}min"
-    #     ).to_series()
-    #     times.iloc[3] = times.iloc[3] + pd.Timedelta("1min")
-    #     times.iloc[10] = times.iloc[10] + pd.Timedelta("1min")
-    #     data = pd.DataFrame({"time": times})
-    #     expected = times.diff() != pd.Timedelta(f"{period}min")
-    #     expected.iloc[0] = False
-    #     time_lapse = flag_time_lapse_status(data, period)
-    #     assert (time_lapse.suspicious_time_lapse.values == expected).all()
-
     def test_flag_value_status(self):
         from measurement.validation import flag_value_difference
 
