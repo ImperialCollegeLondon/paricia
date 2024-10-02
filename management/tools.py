@@ -7,7 +7,19 @@ from django.utils.text import capfirst
 def get_deleted_objects(
     objs: list[models.Model],
 ) -> tuple[list[str], dict[str, int], list[str]]:
-    """Return information about related objects to be deleted."""
+    """Return information about related objects to be deleted.
+
+    How to do this has been taken from https://stackoverflow.com/a/39533619/3778792
+
+    Args:
+        objs (list[models.Model]): List of objects to be deleted.
+
+    Returns:
+        tuple[list[str], dict[str, int], list[str]]: Tuple containing the following:
+            - List of strings representing the objects to be deleted.
+            - Dictionary containing the count of objects to be deleted for each model.
+            - List of strings representing the objects that are protected from deletion
+    """
     collector = NestedObjects(using="default")
     collector.collect(objs)
 
@@ -22,4 +34,8 @@ def get_deleted_objects(
         model._meta.verbose_name_plural: len(objs)
         for model, objs in collector.model_objs.items()
     }
+    if len(to_delete) == 0:
+        to_delete.append("None")
+    if len(protected) == 0:
+        protected.append("None")
     return to_delete, model_count, protected
