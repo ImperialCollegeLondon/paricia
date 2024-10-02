@@ -227,11 +227,12 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
                 fields = self.fields
 
             def __init__(self, *args, **kwargs):
-                user = kwargs.pop("user")
+                user = kwargs.pop("user") if "user" in kwargs else None
                 super().__init__(*args, **kwargs)
-                for field in self._meta.model._meta.fields:
-                    if field.name in self.foreign_key_fields:
-                        self.fields[field.name].queryset = get_queryset(field, user)
+                if user:
+                    for field in self._meta.model._meta.fields:
+                        if field.name in self.foreign_key_fields:
+                            self.fields[field.name].queryset = get_queryset(field, user)
 
         return CustomCreateForm
 

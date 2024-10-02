@@ -7,7 +7,7 @@
     {% endblock title %}
     object edit
   </h2>
-  <form method="post">
+  <form enctype="multipart/form-data" method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-success">Update</button>
     <button type="reset" class="btn btn-warning">Reset</button>
