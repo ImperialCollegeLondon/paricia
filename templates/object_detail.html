@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load render_table from django_tables2 %}
+{% load django_bootstrap5 %}
 {% block content %}
   <h2>
     {% block title %}
@@ -20,22 +20,8 @@
   <!-- Object details -->
   <div class="row">
     <div class="col">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Field</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for field in form %}
-            <tr>
-              <td>{{ field.label }}</td>
-              <td>{{ field.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <p>&nbsp;</p>
+      {% bootstrap_form form layout='horizontal' %}
     </div>
   </div>
 {% endblock content %}
