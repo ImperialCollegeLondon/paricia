@@ -47,7 +47,7 @@ class Extension(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
-        return reverse("format:extension_index")
+        return reverse("formatting:extension_detail", kwargs={"pk": self.pk})
 
 
 class Delimiter(PermissionsBase):
@@ -81,7 +81,7 @@ class Delimiter(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
-        return reverse("format:delimiter_index")
+        return reverse("formatting:delimiter_detail", kwargs={"pk": self.pk})
 
 
 class Date(PermissionsBase):
@@ -118,7 +118,7 @@ class Date(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
-        return reverse("format:date_detail", kwargs={"pk": self.pk})
+        return reverse("formatting:date_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("date_id",)
@@ -154,7 +154,7 @@ class Time(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
-        return reverse("format:time_detail", kwargs={"pk": self.pk})
+        return reverse("formatting:time_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("time_id",)
@@ -252,7 +252,7 @@ class Format(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
-        return reverse("format:format_detail", kwargs={"pk": self.pk})
+        return reverse("formatting:format_detail", kwargs={"pk": self.pk})
 
     @property
     def datetime_format(self) -> str:
@@ -418,7 +418,7 @@ class Classification(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Get the absolute URL of the object."""
-        return reverse("format:classification_detail", kwargs={"pk": self.pk})
+        return reverse("formatting:classification_detail", kwargs={"pk": self.pk})
 
     def clean(self) -> None:
         """Validate the model instance.
