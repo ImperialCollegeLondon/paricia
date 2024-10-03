@@ -32,7 +32,7 @@ class TimeTable(tables.Table):
 
     class Meta:
         model = Time
-        fields = ["time_id"]
+        fields = ["time_id", "visibility", "time_format", "code"]
 
 
 class FormatTable(tables.Table):
