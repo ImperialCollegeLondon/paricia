@@ -41,6 +41,27 @@
             </li>
           </ul>
         </li>
+        <!-- Variable app. TODO: probably this can be done programatically-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             id="variableMenu"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">Variable</a>
+          <ul class="dropdown-menu" aria-labelledby="variableMenu">
+            <li>
+              <a class="dropdown-item" href="{% url 'variable:unit_list' %}">Unit</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'variable:variable_list' %}">Variable</a>
+            </li>
+            <li>
+              <a class="dropdown-item"
+                 href="{% url 'variable:sensorinstallation_list' %}">Sensor installation</a>
+            </li>
+          </ul>
+        </li>
       {% endif %}
     </ul>
     <!-- A separate menu for the user to log in or log out -->
