@@ -146,7 +146,11 @@ class Time(PermissionsBase):
         help_text="The format string for the date column in human readable form, eg. "
         "`HH:MM:SS 24H`",
     )
-    code = models.CharField("Code", max_length=20)
+    code = models.CharField(
+        "Code",
+        max_length=20,
+        help_text="The code used to parse the date column, eg. `%H:%M:%S`",
+    )
 
     def __str__(self) -> str:
         """Return the string representation of the object."""
