@@ -49,29 +49,6 @@ def get_data_to_validate(
     return df.sort_values("time")
 
 
-def flag_time_lapse_status(data: pd.DataFrame, period: Decimal) -> pd.Series:
-    """Flags if period of the time entries is correct.
-
-    It is assume that the first entry is correct. A tolerance of 2% of the period
-    is used when deciding on the suspicious status.
-
-    Args:
-        data: The dataframe with allowed_difference = Variable. the data.
-        period: The expected period for the measurements, in minutes.
-
-    Returns:
-        A series with the status of the time lapse.
-    """
-    flags = pd.DataFrame(index=data.index, columns=["suspicious_time_lapse"])
-    low = pd.Timedelta(f"{period}min") * (1 - 0.02)
-    high = pd.Timedelta(f"{period}min") * (1 + 0.02)
-    flags["suspicious_time_lapse"] = ~data.time.diff().between(
-        low, high, inclusive="both"
-    )
-    flags["suspicious_time_lapse"].iloc[0] = False
-    return flags
-
-
 def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Series:
     """Flags if the differences in value of the measurements is correct.
 
@@ -124,7 +101,6 @@ def flag_suspicious_data(
     data: pd.DataFrame,
     maximum: Decimal,
     minimum: Decimal,
-    period: Decimal,
     allowed_difference: Decimal,
 ) -> pd.DataFrame:
     """Finds suspicious data in the database.
@@ -133,36 +109,31 @@ def flag_suspicious_data(
         data: The dataframe with the data to be evaluated.
         maximum: The maximum allowed value.
         minimum: The minimum allowed value.
-        period: The expected period for the measurements, in minutes.
         allowed_difference: The allowed difference between the measurements.
 
     Returns:
         A dataframe with the suspicious data.
     """
-    time_lapse = flag_time_lapse_status(data, period)
     value_difference = flag_value_difference(data, allowed_difference)
     value_limits = flag_value_limits(data, maximum, minimum)
-    return pd.concat([time_lapse, value_difference, value_limits], axis=1)
+    return pd.concat([value_difference, value_limits], axis=1)
 
 
-def flag_suspicious_daily_count(
-    data: pd.Series, period: Decimal, null_limit: Decimal
-) -> pd.DataFrame:
+def flag_suspicious_daily_count(data: pd.Series, null_limit: Decimal) -> pd.DataFrame:
     """Finds suspicious records count for daily data.
-
     Args:
         data: The count of records per day.
-        period: The expected period for the measurements, in minutes.
         null_limit: The percentage of null data allowed.
-
     Returns:
         A dataframe with the suspicious data.
     """
-    expected_data_count = 24 * 60 / float(period)
+    expected_data_count = data.mode().iloc[0]
+
     suspicious = pd.DataFrame(index=data.index)
     suspicious["daily_count_fraction"] = (data / expected_data_count).round(2)
-    suspicious["suspicious_daily_count"] = ~suspicious["daily_count_fraction"].between(
-        1 - float(null_limit) / 100, 1
+
+    suspicious["suspicious_daily_count"] = (
+        suspicious["daily_count_fraction"] < 1 - float(null_limit) / 100
     ) | (suspicious["daily_count_fraction"] > 1)
 
     return suspicious
@@ -171,7 +142,6 @@ def flag_suspicious_daily_count(
 def generate_daily_summary(
     data: pd.DataFrame,
     suspicious: pd.DataFrame,
-    period: Decimal,
     null_limit: Decimal,
     is_cumulative: bool,
 ) -> pd.DataFrame:
@@ -180,7 +150,6 @@ def generate_daily_summary(
     Args:
         data: The dataframe with the data to be evaluated.
         suspicious: The dataframe with the suspicious data.
-        period: The expected period for the measurements, in minutes.
         null_limit: The percentage of null data allowed.
         is_cumulative: If the data is cumulative and should be aggregated by sum.
 
@@ -201,9 +170,7 @@ def generate_daily_summary(
         report["minimum"] = datagroup["minimum"].min()
 
     # Count the number of entries per day and flag the suspicious ones
-    count_report = flag_suspicious_daily_count(
-        datagroup["value"].count(), period, null_limit
-    )
+    # count_report = flag_suspicious_daily_count(datagroup["value"].count(), null_limit)
 
     # Group the suspicious data by day and calculate the sum
     suspiciousgroup = suspicious.groupby(data.time.dt.date)
@@ -211,7 +178,7 @@ def generate_daily_summary(
     suspicious_report["total_suspicious_entries"] = suspicious_report.sum(axis=1)
 
     # Put together the final report
-    report = pd.concat([report, suspicious_report, count_report], axis=1)
+    report = pd.concat([report, suspicious_report], axis=1)
     report = report.sort_index().reset_index().rename(columns={"index": "date"})
     report.date = pd.to_datetime(report.date)
     return report
@@ -240,16 +207,15 @@ def generate_validation_report(
     Returns:
         A tuple with the summary report and the granular report.
     """
-    period = Station.objects.get(station_code=station).delta_t.delta_t
     var = Variable.objects.get(variable_code=variable)
 
     data = get_data_to_validate(station, variable, start_time, end_time, is_validated)
     if data.empty:
         return pd.DataFrame(), pd.DataFrame()
 
-    suspicious = flag_suspicious_data(data, maximum, minimum, period, var.diff_error)
+    suspicious = flag_suspicious_data(data, maximum, minimum, var.diff_error)
     summary = generate_daily_summary(
-        data, suspicious, period, var.null_limit, var.is_cumulative
+        data, suspicious, var.null_limit, var.is_cumulative
     )
     granular = pd.concat([data, suspicious], axis=1)
     return summary, granular
