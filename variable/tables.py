@@ -23,8 +23,8 @@ class VariableTable(tables.Table):
 class SensorInstallationTable(tables.Table):
     sensorinstallation_id = tables.Column(linkify=True)
     variable = tables.Column(linkify=True)
-    station = tables.Column(linkify=True)
-    sensor = tables.Column(linkify=True)
+    # station = tables.Column(linkify=True)
+    # sensor = tables.Column(linkify=True)
 
     class Meta:
         model = SensorInstallation

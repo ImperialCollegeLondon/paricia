@@ -54,6 +54,7 @@ urlpatterns = [
     path("django_plotly_dash/", include("django_plotly_dash.urls")),
     path("importing/", include("importing.urls", namespace="importing")),
     path("formatting/", include("formatting.urls", namespace="formatting")),
+    path("variable/", include("variable.urls", namespace="variable")),
 ]
 
 if settings.DEBUG:
