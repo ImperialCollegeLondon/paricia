@@ -36,6 +36,5 @@ def get_deleted_objects(
     }
     if len(to_delete) == 0:
         to_delete.append("None")
-    if len(protected) == 0:
-        protected.append("None")
+
     return to_delete, model_count, protected

@@ -199,6 +199,7 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
 
     template_name = "object_edit.html"
     foreign_key_fields: list[str] = []
+    exclude: list[str] = []
 
     def get_form_class(self) -> forms.BaseModelForm:
         class CustomCreateForm(forms.ModelForm):
@@ -207,6 +208,7 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
             class Meta:
                 model = self.model
                 fields = self.fields
+                exclude = self.exclude
 
             def __init__(self, *args, **kwargs):
                 """Filter the queryset for foreign key fields based on the user.
@@ -290,6 +292,7 @@ class CustomCreateView(LoginRequiredMixin, CreateView):
 
     template_name = "object_create.html"
     foreign_key_fields: list[str] = []
+    exclude: list[str] = []
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -304,6 +307,7 @@ class CustomCreateView(LoginRequiredMixin, CreateView):
             class Meta:
                 model = self.model
                 fields = self.fields
+                exclude = self.exclude
 
             def __init__(self, *args, **kwargs):
                 """Filter the queryset for foreign key fields based on the user.
@@ -389,7 +393,8 @@ class CustomDeleteView(LoginRequiredMixin, DeleteView):
         context["model_count"] = dict(model_count).items()
         context["protected"] = protected
         context["title"] = self.model_description
-        context["list_url"] = self.list_url
+        context["detail_url"] = self.detail_url
+        context["pk"] = self.object.pk
         return context
 
     @property
@@ -407,6 +412,10 @@ class CustomDeleteView(LoginRequiredMixin, DeleteView):
     @property
     def list_url(self) -> str:
         return f"{self.app_label}:{self.model_name}_list"
+
+    @property
+    def detail_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_detail"
 
     @property
     def success_url(self) -> str:
