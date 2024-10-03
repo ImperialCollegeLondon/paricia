@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView
 from django.views.generic.edit import UpdateView
+from django_filters import FilterSet
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
@@ -168,6 +169,24 @@ class CustomTableView(URLMixin, LoginRequiredMixin, SingleTableMixin, FilterView
         context["list_url"] = self.list_url
         context["create_url"] = self.create_url
         return context
+
+    def get_filterset_class(self):
+        """Return the filter class for the view.
+
+        If no filter class is provided in the view, the default filter for the model is
+        used. The default filter is created by the `FilterSet` class, and includes only
+        the 'visibility'.
+        """
+        if not self.filterset_class:
+
+            class VisbilityFilter(FilterSet):
+                class Meta:
+                    model = self.model
+                    fields = ["visibility"]
+
+            return VisbilityFilter
+
+        return super().get_filterset_class()
 
     @property
     def permission_required(self) -> str:

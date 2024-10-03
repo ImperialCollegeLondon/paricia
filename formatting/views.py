@@ -3,9 +3,19 @@ from management.views import (
     CustomDeleteView,
     CustomDetailView,
     CustomEditView,
+    CustomTableView,
 )
 
+from .filters import ClassificationFilter, FormatFilter
 from .models import Classification, Date, Delimiter, Extension, Format, Time
+from .tables import (
+    ClassificationTable,
+    DateTable,
+    DelimiterTable,
+    ExtensionTable,
+    FormatTable,
+    TimeTable,
+)
 
 
 # Detail views for formatting app.
@@ -182,3 +192,48 @@ class ClassificationDeleteView(CustomDeleteView):
     """View to delete a classification."""
 
     model = Classification
+
+
+# List views for formatting app.
+class ExtensionListView(CustomTableView):
+    """View to list all extensions."""
+
+    model = Extension
+    table_class = ExtensionTable
+
+
+class DelimiterListView(CustomTableView):
+    """View to list all delimiters."""
+
+    model = Delimiter
+    table_class = DelimiterTable
+
+
+class DateListView(CustomTableView):
+    """View to list all dates."""
+
+    model = Date
+    table_class = DateTable
+
+
+class TimeListView(CustomTableView):
+    """View to list all times."""
+
+    model = Time
+    table_class = TimeTable
+
+
+class FormatListView(CustomTableView):
+    """View to list all formats."""
+
+    model = Format
+    table_class = FormatTable
+    filterset_class = FormatFilter
+
+
+class ClassificationListView(CustomTableView):
+    """View to list all classifications."""
+
+    model = Classification
+    table_class = ClassificationTable
+    filterset_class = ClassificationFilter
