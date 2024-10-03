@@ -35,7 +35,7 @@ class SensorType(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Return the absolute url of the sensor type."""
-        return reverse("sensor:type_detail", kwargs={"pk": self.pk})
+        return reverse("sensor:sensortype_detail", kwargs={"pk": self.pk})
 
 
 class SensorBrand(PermissionsBase):
@@ -55,7 +55,7 @@ class SensorBrand(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Return the absolute url of the sensor brand."""
-        return reverse("sensor:brand_detail", kwargs={"pk": self.pk})
+        return reverse("sensor:sensorbrand_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("brand_id",)

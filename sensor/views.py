@@ -94,22 +94,22 @@ class SensorBrandDeleteView(CustomDeleteView):
 
 
 # Table views for sensor app.
-class SensorTableListView(CustomTableView):
+class SensorListView(CustomTableView):
     """View to list sensors."""
 
     model = Sensor
     table_class = SensorTable
-    filter_class = SensorFilter
+    filterset_class = SensorFilter
 
 
-class SensorTypeTableListView(CustomTableView):
+class SensorTypeListView(CustomTableView):
     """View to list sensor types."""
 
     model = SensorType
     table_class = SensorTypeTable
 
 
-class SensorBrandTableListView(CustomTableView):
+class SensorBrandListView(CustomTableView):
     """View to list sensor brands."""
 
     model = SensorBrand
