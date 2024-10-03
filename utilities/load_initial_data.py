@@ -29,7 +29,6 @@ data_files = [
     "station_basin",
     "station_placebasin",
     "station_institution",
-    "station_delta_t",
     "station_station",
     "measurement_airtemperature",
 ]

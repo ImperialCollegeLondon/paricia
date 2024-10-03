@@ -283,35 +283,6 @@ class PlaceBasin(PermissionsBase):
         ordering = ("id",)
 
 
-# TODO Discuss if it's necessary to implement multiple deltaTs for different dates
-class DeltaT(PermissionsBase):
-    """Delta T: Interval of data adquisition (In minutes)"""
-
-    delta_t = models.PositiveSmallIntegerField(
-        "Time interval (minutes)",
-        default=5,
-        validators=[MinValueValidator(1)],
-        unique=True,
-        help_text="Interval of data adquisition (in minutes)",
-    )
-
-    def __str__(self) -> str:
-        """Return the delta_t value, as a string."""
-        return f"{self.delta_t} min"
-
-    def get_absolute_url(self) -> str:
-        """Return the absolute url of the delta_t."""
-        return reverse("station:delta_t_detail", kwargs={"pk": self.pk})
-
-    @classmethod
-    def get_default(cls) -> "DeltaT":
-        """Return the default delta_t id value."""
-        return cls.objects.get_or_create(delta_t=5)[0]
-
-    class Meta:
-        ordering = ("id",)
-
-
 class Station(PermissionsBase):
     """Main representation of a station, including several metadata.
 
@@ -329,7 +300,6 @@ class Station(PermissionsBase):
         place_basin (PlaceBasin): Place-Basin association.
         station_state (bool): Is the station operational?
         timezone (str): Timezone of the station.
-        delta_t (DeltaT): Interval of data adquisition (in minutes).
         station_latitude (Decimal): Latitude of the station, in degrees [-90 to 90].
         station_longitude (Decimal): Longitude of the station, in degrees [-180 to 180].
         station_altitude (int): Altitude of the station.
@@ -420,13 +390,6 @@ class Station(PermissionsBase):
         choices=TIMEZONES,
         help_text="Timezone of the station.",
     )
-    delta_t = models.ForeignKey(
-        "DeltaT",
-        on_delete=models.PROTECT,
-        null=True,
-        blank=False,
-        help_text="Interval of data adquisition (in minutes)",
-    )
     station_latitude = models.DecimalField(
         "Latitude",
         max_digits=17,
@@ -478,12 +441,6 @@ class Station(PermissionsBase):
     def get_absolute_url(self) -> str:
         """Return the absolute url of the station."""
         return reverse("station:station_detail", kwargs={"pk": self.pk})
-
-    def clean(self) -> None:
-        """Set the default delta_t value if not provided."""
-        super().clean()
-        if not self.delta_t:
-            self.delta_t = DeltaT.get_default()
 
     def set_object_permissions(self) -> None:
         """Set object-level permissions.
