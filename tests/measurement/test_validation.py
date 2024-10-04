@@ -4,7 +4,6 @@ from datetime import datetime
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
-import numpy as np
 import pandas as pd
 from django.test import TestCase
 from model_bakery import baker
@@ -13,11 +12,10 @@ from model_bakery import baker
 class TestValidationFunctions(TestCase):
     def setUp(self):
         from measurement.models import Measurement
-        from station.models import DeltaT, Station
+        from station.models import Station
         from variable.models import Variable
 
-        self.delta_t = baker.make(DeltaT)
-        self.station = baker.make(Station, delta_t=self.delta_t)
+        self.station = baker.make(Station)
         self.variable = baker.make(Variable)
 
         if self.station.timezone is None:
@@ -85,21 +83,6 @@ class TestValidationFunctions(TestCase):
         # The validated object should be in the data
         self.assertIn(obj.id, data.id.values)
 
-    def test_flag_time_lapse_status(self):
-        from measurement.validation import flag_time_lapse_status
-
-        period = 5
-        times = pd.date_range(
-            "2023-01-01", "2023-01-2", freq=f"{period}min"
-        ).to_series()
-        times.iloc[3] = times.iloc[3] + pd.Timedelta("1min")
-        times.iloc[10] = times.iloc[10] + pd.Timedelta("1min")
-        data = pd.DataFrame({"time": times})
-        expected = times.diff() != pd.Timedelta(f"{period}min")
-        expected.iloc[0] = False
-        time_lapse = flag_time_lapse_status(data, period)
-        assert (time_lapse.suspicious_time_lapse.values == expected).all()
-
     def test_flag_value_status(self):
         from measurement.validation import flag_value_difference
 
@@ -132,70 +115,34 @@ class TestValidationFunctions(TestCase):
         assert (flags.suspicious_maximum_limits.values == smax).all()
         assert (flags.suspicious_minimum_limits.values == smin).all()
 
-    def test_find_suspicious_data(self):
-        from measurement.validation import flag_suspicious_data
-
-        # Create a sample dataframe
-        time = pd.date_range("2023-01-01", "2023-01-02", freq="5min")
-        data = pd.DataFrame(
-            {
-                "time": time,
-                "value": np.arange(len(time)),
-                "minimum": np.arange(len(time)),
-                "maximum": np.arange(len(time)),
-            }
-        )
-
-        maximum = Decimal(4)
-        minimum = Decimal(3)
-        period = Decimal(5)
-        allowed_difference = Decimal(1.5)
-
-        # Call the function under test
-        result = flag_suspicious_data(
-            data, maximum, minimum, period, allowed_difference
-        )
-
-        # Assert the expected output
-        expected_columns = [
-            "suspicious_time_lapse",
-            "suspicious_value_difference",
-            "suspicious_value_limits",
-            "suspicious_maximum_limits",
-            "suspicious_minimum_limits",
-        ]
-        self.assertListEqual(list(result.columns), expected_columns)
-        self.assertEqual(len(result), len(data))
-
     def test_flag_suspicious_daily_count(self):
         from measurement.validation import flag_suspicious_daily_count
 
         # Create sample data
         data = pd.Series([60, 30, 70, 55, 20])
 
-        # This period results in 60 measurements per day
-        period = Decimal(24)
-        null_limit = Decimal(10)
-        expected_data_count = 24 * 60 / float(period)
+        # Set the null limit
+        null_limit = Decimal("10.0")
 
         # Call the function under test
-        result = flag_suspicious_daily_count(data, period, null_limit)
+        result = flag_suspicious_daily_count(data, null_limit)
 
-        # Assert the expected output
+        # Define the expected output
+        expected_data_count = data.mode().iloc[0]
         expected = pd.DataFrame(
             {
-                "daily_count_fraction": (data.values / expected_data_count).round(2),
-                "suspicious_daily_count": [False, True, True, False, True],
+                "daily_count_fraction": (data / expected_data_count).round(2),
+                "suspicious_daily_count": [True, True, True, True, False],
             }
         )
 
+        # Assert the expected output
         pd.testing.assert_frame_equal(result, expected)
 
     def test_generate_daily_summary(self):
         from measurement.validation import generate_daily_summary
 
         time = pd.date_range("2023-01-01", "2023-01-02", periods=5)
-        period = (time[1] - time[0]) / pd.Timedelta("1min")
 
         # Create sample data
         data = pd.DataFrame(
@@ -217,9 +164,7 @@ class TestValidationFunctions(TestCase):
         # Call the function under test when value is cummulative
         is_cumulative = True
         null_limit = Decimal(10)
-        result = generate_daily_summary(
-            data, suspicious, period, null_limit, is_cumulative
-        )
+        result = generate_daily_summary(data, suspicious, null_limit, is_cumulative)
 
         # Assert the expected output
         expected = pd.DataFrame(
@@ -232,17 +177,13 @@ class TestValidationFunctions(TestCase):
                 "suspicious_maximum_limits": [1, 1],
                 "suspicious_minimum_limits": [2, 0],
                 "total_suspicious_entries": [5, 1],
-                "daily_count_fraction": [1.0, 0.25],
-                "suspicious_daily_count": [False, True],
             },
         )
         pd.testing.assert_frame_equal(result, expected)
 
         # Call the function under test when value is NOT cummulative
         is_cumulative = False
-        result = generate_daily_summary(
-            data, suspicious, period, null_limit, is_cumulative
-        )
+        result = generate_daily_summary(data, suspicious, null_limit, is_cumulative)
 
         # Assert the expected output
         expected = pd.DataFrame(
@@ -255,8 +196,6 @@ class TestValidationFunctions(TestCase):
                 "suspicious_maximum_limits": [1, 1],
                 "suspicious_minimum_limits": [2, 0],
                 "total_suspicious_entries": [5, 1],
-                "daily_count_fraction": [1.0, 0.25],
-                "suspicious_daily_count": [False, True],
             },
         )
         pd.testing.assert_frame_equal(result, expected)

@@ -1,6 +1,5 @@
 import zoneinfo
 from datetime import datetime
-from decimal import Decimal
 
 import pandas as pd
 
@@ -10,7 +9,7 @@ from variable.models import Variable
 
 
 def calculate_reports(
-    data: pd.DataFrame, station: str, variable: str, operation: str, period: Decimal
+    data: pd.DataFrame, station: str, variable: str, operation: str
 ) -> pd.DataFrame:
     """Calculates the report for the chosen days.
 
@@ -18,9 +17,8 @@ def calculate_reports(
         data: The dataframe with the data.
         station: The name of the station.
         variable: The name of the variable.
-        operation: Agreggation operation to perform on the data when calculating the
+        operation: Aggregation operation to perform on the data when calculating the
             report.
-        period: The period of the data in minutes.
 
     Returns:
         A dataframe with the hourly, daily and monthly reports.
@@ -35,18 +33,6 @@ def calculate_reports(
     hourly = data[cols].resample("H", on="time").agg(operation)
     daily = hourly.resample("D").agg(operation)
     monthly = daily.resample("MS").agg(operation)
-
-    # Find the completeness of the data
-    per_hour = 60 / period
-    per_day = 24
-    per_month = monthly.index.to_series().apply(
-        lambda t: pd.Period(t, freq="S").days_in_month
-    )
-    hourly["completeness"] = (
-        data[["time", "value"]].resample("H", on="time").count() / per_hour * 100
-    )
-    daily["completeness"] = hourly["value"].resample("D").count() / per_day * 100
-    monthly["completeness"] = daily["value"].resample("MS").count() / per_month * 100
 
     # Put everything together
     hourly["report_type"] = "hourly"
@@ -168,7 +154,6 @@ def save_report_data(data: pd.DataFrame) -> None:
                 value=row["value"],
                 maximum=row.get("maximum", None),
                 minimum=row.get("minimum", None),
-                completeness=row["completeness"],
                 report_type=row["report_type"],
             )
             for time, row in data_.iterrows()
@@ -265,9 +250,9 @@ def launch_reports_calculation(
     operation = (
         "sum" if Variable.objects.get(variable_code=variable).is_cumulative else "mean"
     )
-    period = Station.objects.get(station_code=station).delta_t.delta_t
+
     start_time_, end_time_ = reformat_dates(station, start_time, end_time)
     data = get_data_to_report(station, variable, start_time_, end_time_)
-    report = calculate_reports(data, station, variable, operation, period)
+    report = calculate_reports(data, station, variable, operation)
     remove_report_data_in_range(station, variable, start_time_, end_time_)
     save_report_data(report)
