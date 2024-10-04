@@ -124,6 +124,7 @@ class Report(MeasurementBase):
     completeness = models.DecimalField(
         max_digits=4,
         decimal_places=1,
+        default=100,
         null=False,
         help_text="Completeness of the report. Eg. a daily report made out of 24 hourly"
         " measurements would have a completeness of 100%.",

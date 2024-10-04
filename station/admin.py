@@ -5,7 +5,6 @@ from management.admin import PermissionsBaseAdmin
 from .models import (
     Basin,
     Country,
-    DeltaT,
     Ecosystem,
     Institution,
     Place,
@@ -105,7 +104,6 @@ class StationAdmin(PermissionsBaseAdmin):
         "station_external",
         "influence_km",
         "timezone",
-        "delta_t",
         "owner",
         "visibility",
     ]
@@ -123,12 +121,4 @@ class StationAdmin(PermissionsBaseAdmin):
         "ecosystem",
         "institution",
         "place_basin",
-        "delta_t",
     ]
-
-
-@admin.register(DeltaT)
-class DeltaTAdmin(PermissionsBaseAdmin):
-    """Admin class for the DeltaT model."""
-
-    list_display = ["id", "delta_t", "owner", "visibility"]

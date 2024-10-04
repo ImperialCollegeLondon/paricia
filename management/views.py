@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Model
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView
@@ -324,6 +325,45 @@ class CustomCreateView(URLMixin, LoginRequiredMixin, CreateView):
                             self.fields[field.name].queryset = get_queryset(field, user)
 
         return CustomCreateForm
+
+    def form_valid(self, form: forms.ModelForm) -> HttpResponse:
+        """Set the owner of the object to the current user.
+
+        This is done before saving the object to the database.
+
+        Args:
+            form (forms.ModelForm): Form with the object data.
+
+        Returns:
+            HttpResponse: Redirect to the detail view of the created object.
+        """
+        if hasattr(form.instance, "owner"):
+            form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def success_url(self) -> str:
+        return reverse_lazy(self.detail_url, kwargs={"pk": self.object.pk})
+
+    @property
+    def detail_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_detail"
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
 
     def get_form_kwargs(self):
         """Add the user to the form kwargs, so we can filter the options."""
