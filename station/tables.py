@@ -102,5 +102,5 @@ class StationTable(tables.Table):
             "ecosystem",
             "institution",
             "place_basin",
-            "status",
+            "station_state",
         ]

@@ -270,14 +270,14 @@ class StationDeleteView(CustomDeleteView):
 
 
 # Table views for station app.
-class CountryTableView(CustomTableView):
+class CountryListView(CustomTableView):
     """View to display a table of countries."""
 
     model = Country
     table_class = CountryTable
 
 
-class RegionTableView(CustomTableView):
+class RegionListView(CustomTableView):
     """View to display a table of regions."""
 
     model = Region
@@ -285,42 +285,42 @@ class RegionTableView(CustomTableView):
     filterset_class = RegionFilter
 
 
-class EcosystemTableView(CustomTableView):
+class EcosystemListView(CustomTableView):
     """View to display a table of ecosystems."""
 
     model = Ecosystem
     table_class = EcosystemTable
 
 
-class InstitutionTableView(CustomTableView):
+class InstitutionListView(CustomTableView):
     """View to display a table of institutions."""
 
     model = Institution
     table_class = InstitutionTable
 
 
-class PlaceTableView(CustomTableView):
+class PlaceListView(CustomTableView):
     """View to display a table of places."""
 
     model = Place
     table_class = PlaceTable
 
 
-class StationTypeTableView(CustomTableView):
+class StationTypeListView(CustomTableView):
     """View to display a table of station types."""
 
     model = StationType
     table_class = StationTypeTable
 
 
-class BasinTableView(CustomTableView):
+class BasinListView(CustomTableView):
     """View to display a table of basins."""
 
     model = Basin
     table_class = BasinTable
 
 
-class PlaceBasinTableView(CustomTableView):
+class PlaceBasinListView(CustomTableView):
     """View to display a table of place basins."""
 
     model = PlaceBasin
@@ -328,7 +328,7 @@ class PlaceBasinTableView(CustomTableView):
     filterset_class = PlaceBasinFilter
 
 
-class StationTableView(CustomTableView):
+class StationListView(CustomTableView):
     """View to display a table of stations."""
 
     model = Station

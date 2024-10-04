@@ -82,6 +82,44 @@
             </li>
           </ul>
         </li>
+        <!-- Station app. TODO: probably this can be done programatically-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             id="stationMenu"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">Station</a>
+          <ul class="dropdown-menu" aria-labelledby="stationMenu">
+            <li>
+              <a class="dropdown-item" href="{% url 'station:country_list' %}">Country</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:region_list' %}">Region</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:ecosystem_list' %}">Ecosystem</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:institution_list' %}">Institution</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:place_list' %}">Place</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:basin_list' %}">Basin</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:placebasin_list' %}">Place basin</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:stationtype_list' %}">Station type</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:station_list' %}">Station</a>
+            </li>
+          </ul>
+        </li>
       {% endif %}
     </ul>
     <!-- A separate menu for the user to log in or log out -->

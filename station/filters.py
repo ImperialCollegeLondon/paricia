@@ -32,7 +32,9 @@ class PlaceBasinFilter(FilterSet):
 
 
 class StationFilter(FilterSet):
-    station_type = filters.ModelChoiceFilter(Station, StationType, "station_type")
+    station_type = filters.ModelChoiceFilter(
+        queryset=FilterVisible(Station, StationType, "station_type")
+    )
     region = filters.ModelChoiceFilter(queryset=FilterVisible(Station, Region))
     country = filters.ModelChoiceFilter(queryset=FilterVisible(Station, Country))
     institution = filters.ModelChoiceFilter(
@@ -51,4 +53,5 @@ class StationFilter(FilterSet):
             "country",
             "institution",
             "place_basin",
+            "station_state",
         ]
