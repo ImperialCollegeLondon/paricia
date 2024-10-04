@@ -55,6 +55,7 @@ urlpatterns = [
     path("importing/", include("importing.urls", namespace="importing")),
     path("formatting/", include("formatting.urls", namespace="formatting")),
     path("variable/", include("variable.urls", namespace="variable")),
+    path("sensor/", include("sensor.urls", namespace="sensor")),
 ]
 
 if settings.DEBUG:
