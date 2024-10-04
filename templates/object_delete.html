@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block content %}
+  <h2>
+    {% block title %}
+      {{ title }}
+    {% endblock title %}
+    object delete
+  </h2>
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete "{{ object }}"?</p>
+    {% bootstrap_form form layout='horizontal' %}
+    <a href="{% url list_url %}" class="btn btn-success">Return to list</a>
+    <button type="submit" class="btn btn-danger">Confirm</button>
+  </form>
+  <p>&nbsp;</p>
+  <!-- Object details -->
+  Summary of objects to be deleted:
+  <div class="row">
+    <div class="col">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for model_name, object_count in model_count %}
+            <tr>
+              <td>{{ model_name|capfirst }}</td>
+              <td>{{ object_count }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  Individual objects that are protected from deletion:
+  <p>
+    <ul>
+      {{ protected|unordered_list }}
+    </ul>
+  </p>
+  Individual objects to be deleted:
+  <p>
+    <ul>
+      {{ deletable_objects|unordered_list }}
+    </ul>
+  </p>
+{% endblock content %}

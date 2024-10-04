@@ -1,40 +1,19 @@
-from contextlib import suppress
-
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import ForeignKey, Model
+from django.db.models import Model
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DeleteView, DetailView
+from django.views.generic.edit import UpdateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
 
 from .forms import CustomUserCreationForm
-
-
-def model_to_dict(instance: Model) -> dict:
-    """Convert a model instance to a dictionary.
-
-    For ForeignKey fields, the related model instance is converted to a string, so that
-    a meaningful representation is shown in the dictionary instead of the primary key.
-
-    Args:
-        instance (Model): Model instance to convert.
-
-    Returns:
-        dict: Dictionary with the model instance data.
-    """
-    data = {}
-    for field in instance._meta.fields:
-        data[field.name] = field.value_from_object(instance)
-        if isinstance(field, ForeignKey):
-            with suppress(field.related_model.DoesNotExist):
-                data[field.name] = str(
-                    field.related_model.objects.get(pk=data[field.name])
-                )
-    return data
+from .permissions import get_queryset
+from .tools import get_deleted_objects
 
 
 class SignUpView(CreateView):
@@ -68,9 +47,7 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
     """
 
     template_name: str = "object_detail.html"
-    show_list_btn: bool = False
-    show_delete_btn: bool = False
-    show_edit_btn: bool = False
+    fields = "__all__"
 
     def get_object(self) -> Model:
         obj = get_object_or_404(self.model, pk=self.kwargs["pk"])
@@ -82,17 +59,24 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
         class DetailForm(forms.ModelForm):
             class Meta:
                 model = self.model
-                fields = "__all__"
+                fields = self.fields
 
-        return DetailForm(data=model_to_dict(self.object))
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                for field in self.fields.keys():
+                    self.fields[field].widget.attrs["disabled"] = True
+                    self.fields[field].widget.attrs["readonly"] = True
+
+        return DetailForm(instance=self.object)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = self.get_form()
         context["title"] = self.model_description
-        context["delete_url"] = self.delete_url if self.show_delete_btn else None
-        context["edit_url"] = self.edit_url if self.show_edit_btn else None
-        context["list_url"] = self.list_url if self.show_list_btn else None
+        context["delete_url"] = self.delete_url
+        context["edit_url"] = self.edit_url
+        context["list_url"] = self.list_url
+        context["pk"] = self.object.pk
         return context
 
     @property
@@ -154,8 +138,6 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
 
     template_name = "table.html"
     paginate_by = 10
-    show_refresh_btn: bool = False
-    show_new_btn: bool = False
 
     def get_queryset(self):
         return get_objects_for_user(self.request.user, self.permission_required)
@@ -163,8 +145,8 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = self.title
-        context["refresh"] = self.list_url if self.show_refresh_btn else None
-        context["new_url"] = self.create_url if self.show_new_btn else None
+        context["list_url"] = self.list_url
+        context["create_url"] = self.create_url
         return context
 
     @property
@@ -190,3 +172,258 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     @property
     def create_url(self) -> str:
         return f"{self.app_label}:{self.model_name}_create"
+
+
+class CustomEditView(LoginRequiredMixin, UpdateView):
+    """Generic edit view.
+
+    This view is used to edit a model object. The user must have the permission to edit
+    the object, otherwise a 403 error is returned.
+
+    The view includes a form with the object data, and the context includes the title of
+    the view and the URL to the list view. They follow the pattern
+    `app_label:model_name_action`. For example, the list URL for the `DataImport` model
+    would be `importing:dataimport_list`.
+
+    The permissions required to edit the object are `app_label.change_model_name`. For
+    example, the permission required to edit a `DataImport` object would be
+    `importing.change_dataimport`.
+
+    If successful or cancelled, the view redirects to the detail view of the created
+    object.
+
+    Users need to be logged in to access this view.
+
+    Attributes:
+        template_name (str): Template to be used.
+    """
+
+    template_name = "object_edit.html"
+    foreign_key_fields: list[str] = []
+
+    def get_form_class(self) -> forms.BaseModelForm:
+        class CustomCreateForm(forms.ModelForm):
+            foreign_key_fields = self.foreign_key_fields
+
+            class Meta:
+                model = self.model
+                fields = self.fields
+
+            def __init__(self, *args, **kwargs):
+                """Filter the queryset for foreign key fields based on the user.
+
+                Otherwise, the user would see all objects, even those they don't have
+                access to. We need to pop the user from the kwargs, as it's not a valid
+                argument for the form.
+                """
+                user = kwargs.pop("user") if "user" in kwargs else None
+                super().__init__(*args, **kwargs)
+                if user:
+                    for field in self._meta.model._meta.fields:
+                        if field.name in self.foreign_key_fields:
+                            self.fields[field.name].queryset = get_queryset(field, user)
+
+        return CustomCreateForm
+
+    def get_object(self) -> Model:
+        obj = super().get_object()
+        if not self.request.user.has_perm(
+            f"{self.app_label}.change_{self.model_name}", obj
+        ):
+            raise PermissionDenied
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.model_description
+        context["detail_url"] = self.detail_url
+        context["pk"] = self.object.pk
+        return context
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def success_url(self) -> str:
+        return reverse_lazy(self.detail_url, kwargs={"pk": self.object.pk})
+
+    @property
+    def detail_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_detail"
+
+    def get_form_kwargs(self):
+        """Add the user to the form kwargs, so we can filter the options."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+
+class CustomCreateView(LoginRequiredMixin, CreateView):
+    """Generic create view.
+
+    This view is used to create a new model object. The user must have the permission to
+    create the object, otherwise a 403 error is returned.
+
+    The view includes a form with the object data, and the context includes the title of
+    the view and the URL to the list view. They follow the pattern
+    `app_label:model_name_action`. For example, the list URL for the `DataImport` model
+    would be `importing:dataimport_list`.
+
+    If provided, the `foreign_key_fields` attribute is used to limit the queryset for
+    foreign key fields.
+
+    If successful, the view redirects to the detail view of the created object.
+
+    Users need to be logged in to access this view.
+
+    Attributes:
+        template_name (str): Template to be used.
+    """
+
+    template_name = "object_create.html"
+    foreign_key_fields: list[str] = []
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.model_description
+        context["list_url"] = self.list_url
+        return context
+
+    def get_form_class(self) -> forms.BaseModelForm:
+        class CustomCreateForm(forms.ModelForm):
+            foreign_key_fields = self.foreign_key_fields
+
+            class Meta:
+                model = self.model
+                fields = self.fields
+
+            def __init__(self, *args, **kwargs):
+                """Filter the queryset for foreign key fields based on the user.
+
+                Otherwise, the user would see all objects, even those they don't have
+                access to. We need to pop the user from the kwargs, as it's not a valid
+                argument for the form.
+                """
+                user = kwargs.pop("user") if "user" in kwargs else None
+                super().__init__(*args, **kwargs)
+                if user:
+                    for field in self._meta.model._meta.fields:
+                        if field.name in self.foreign_key_fields:
+                            self.fields[field.name].queryset = get_queryset(field, user)
+
+        return CustomCreateForm
+
+    def form_valid(self, form: forms.ModelForm) -> HttpResponse:
+        """Set the owner of the object to the current user.
+
+        This is done before saving the object to the database.
+
+        Args:
+            form (forms.ModelForm): Form with the object data.
+
+        Returns:
+            HttpResponse: Redirect to the detail view of the created object.
+        """
+        if hasattr(form.instance, "owner"):
+            form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def success_url(self) -> str:
+        return reverse_lazy(self.detail_url, kwargs={"pk": self.object.pk})
+
+    @property
+    def detail_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_detail"
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
+
+    def get_form_kwargs(self):
+        """Add the user to the form kwargs, so we can filter the options."""
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+
+class CustomDeleteView(LoginRequiredMixin, DeleteView):
+    """Generic delete view.
+
+    This view is used to delete a model object. The user must have the permission to
+    delete the object, otherwise a 403 error is returned. A confirmation page is shown
+    with the related objects that will be deleted.
+
+    The permissions required to delete the object are `app_label.delete_model_name`. For
+    example, the permission required to delete a `DataImport` object would be
+    `importing.delete_dataimport`.
+
+    If successful, the view redirects to the list view.
+
+    Users need to be logged in to access this view.
+
+    Attributes:
+        template_name (str): Template to be used.
+    """
+
+    template_name = "object_delete.html"
+
+    def get_object(self) -> Model:
+        obj = super().get_object()
+        if not self.request.user.has_perm(
+            f"{self.app_label}.delete_{self.model_name}", obj
+        ):
+            raise PermissionDenied
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deletable_objects, model_count, protected = get_deleted_objects([self.object])
+
+        context["deletable_objects"] = deletable_objects
+        context["model_count"] = dict(model_count).items()
+        context["protected"] = protected
+        context["title"] = self.model_description
+        context["list_url"] = self.list_url
+        return context
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
+
+    @property
+    def success_url(self) -> str:
+        return reverse_lazy(self.list_url)

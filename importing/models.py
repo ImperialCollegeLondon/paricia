@@ -107,6 +107,10 @@ class DataImport(PermissionsBase):
         if not tz:
             raise ValidationError("Station must have a timezone set.")
 
+        # If the file has changed, we reprocess the data
+        if self.pk and self.rawfile != self.__class__.objects.get(pk=self.pk).rawfile:
+            self.reprocess = True
+
         if self.reprocess:
             self.status = "N"
             self.reprocess = False
