@@ -194,7 +194,7 @@ packaging==24.1
     #   drf-yasg
     #   mkdocs
     #   plotly
-paginate==0.5.6
+paginate==0.5.7
     # via mkdocs-material
 pandas==2.2.2
     # via Paricia (pyproject.toml)
