@@ -202,7 +202,7 @@ pathspec==0.12.1
     # via mkdocs
 pillow==10.4.0
     # via Paricia (pyproject.toml)
-platformdirs==4.3.3
+platformdirs==4.3.6
     # via
     #   mkdocs-get-deps
     #   mkdocstrings
