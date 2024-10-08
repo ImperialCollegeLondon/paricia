@@ -28,6 +28,7 @@ class TestMatrixFunctions(TestCase):
 
     def setUp(self):
         from formatting.models import Format
+        from importing.models import DataImport
         from station.models import TIMEZONES, Station
 
         self.file_format = Format.objects.get(format_id=45)
@@ -36,6 +37,9 @@ class TestMatrixFunctions(TestCase):
         )
         self.station = Station.objects.get(station_id=8)
         self.station.timezone = TIMEZONES[0][0]
+        self.data_import = DataImport.objects.create(
+            station=self.station, format=self.file_format, rawfile=self.data_file
+        )
 
     def test_preformat_matrix(self):
         from importing.functions import read_data_to_import
@@ -50,7 +54,7 @@ class TestMatrixFunctions(TestCase):
         from variable.models import Variable
 
         variables_data = construct_matrix(
-            self.data_file, self.file_format, self.station
+            self.data_file, self.file_format, self.station, self.data_import
         )
         self.assertEqual(len(variables_data), 2)
         vars = list(
