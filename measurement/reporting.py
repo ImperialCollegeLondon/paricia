@@ -156,9 +156,6 @@ def save_report_data(data: pd.DataFrame) -> None:
     Args:
         data: The dataframe with the report data.
     """
-    from logging import getLogger
-
-    getLogger().warning(data.columns)
     data_ = data.dropna(axis=1, how="all").dropna(axis=0, subset=["value"])
     data_import_avail = "data_import_id" in data_.columns
     Report.objects.bulk_create(
