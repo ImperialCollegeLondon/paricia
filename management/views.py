@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView
 from django.views.generic.edit import UpdateView
+from django_filters import FilterSet
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
@@ -22,16 +23,65 @@ class SignUpView(CreateView):
     template_name = "registration/signup.html"
 
 
-class CustomDetailView(LoginRequiredMixin, DetailView):
+class URLMixin:
+    """Mixin to add URLs to a view.
+
+    This mixin adds the URLs for the list, create, edit, and delete views to a view. The
+    URLs follow the pattern `app_label:model_name_action`. For example, the list URL for
+    the `DataImport` model would be `importing:dataimport_list`.
+
+    Attributes:
+        app_label (str): Application label.
+        model_name (str): Model name.
+    """
+
+    model: Model
+
+    @property
+    def app_label(self) -> str:
+        return self.model._meta.app_label
+
+    @property
+    def model_name(self) -> str:
+        return self.model._meta.model_name
+
+    @property
+    def list_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_list"
+
+    @property
+    def create_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_create"
+
+    @property
+    def edit_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_edit"
+
+    @property
+    def delete_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_delete"
+
+    @property
+    def detail_url(self) -> str:
+        return f"{self.app_label}:{self.model_name}_detail"
+
+    @property
+    def model_description(self) -> str:
+        return self.model._meta.verbose_name.title()
+
+    @property
+    def title(self) -> str:
+        return self.model._meta.verbose_name_plural.title()
+
+
+class CustomDetailView(URLMixin, LoginRequiredMixin, DetailView):
     """Generic detail view.
 
     This view is used to show the details of a model object. The user must have the
     permission to view the object, otherwise a 403 error is returned.
 
     The view includes a form with the object data, and the context includes the URLs for
-    the list, delete, and edit views, if required. They follow the pattern
-    `app_label:model_name_action`. For example, the list URL for the `DataImport` model
-    would be `importing:dataimport_list`.
+    the list, delete, and edit views.
 
     The permissions required to view the object are `app_label.view_model_name`. For
     example, the permission required to view a `DataImport` object would be
@@ -41,9 +91,7 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
 
     Attributes:
         template_name (str): Template to be used.
-        use_back_url (bool): If True, a back URL is included in the context.
-        use_delete_url (bool): If True, a delete URL is included in the context.
-        use_edit_url (bool): If True, an edit URL is included in the context.
+        fields (str): Fields to be shown in the form.
     """
 
     template_name: str = "object_detail.html"
@@ -80,41 +128,15 @@ class CustomDetailView(LoginRequiredMixin, DetailView):
         return context
 
     @property
-    def app_label(self) -> str:
-        return self.model._meta.app_label
-
-    @property
-    def model_name(self) -> str:
-        return self.model._meta.model_name
-
-    @property
     def permission_required(self) -> str:
         return f"{self.app_label}.view_{self.model_name}"
 
-    @property
-    def list_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_list"
 
-    @property
-    def delete_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_delete"
-
-    @property
-    def edit_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_edit"
-
-    @property
-    def model_description(self) -> str:
-        return self.model._meta.verbose_name.title()
-
-
-class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
+class CustomTableView(URLMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
     """This view is used to show a list of model objects.
 
     The view includes a table with the objects, and the context includes the title of
-    the view, the refresh URL, and the URL to create a new object, if required. They
-    follow the pattern `app_label:model_name_action`. For example, the list URL for the
-    `DataImport` model would be `importing:dataimport_list`.
+    the view, the refresh URL, and the URL to create a new object.
 
     The permissions required to view the objects are `app_label.view_model_name`. For
     example, the permission required to view a `DataImport` object would be
@@ -149,41 +171,37 @@ class CustomTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
         context["create_url"] = self.create_url
         return context
 
-    @property
-    def app_label(self) -> str:
-        return self.model._meta.app_label
+    def get_filterset_class(self):
+        """Return the filter class for the view.
 
-    @property
-    def model_name(self) -> str:
-        return self.model._meta.model_name
+        If no filter class is provided in the view, the default filter for the model is
+        used. The default filter is created by the `FilterSet` class, and includes only
+        the 'visibility'.
+        """
+        if not self.filterset_class:
+
+            class VisbilityFilter(FilterSet):
+                class Meta:
+                    model = self.model
+                    fields = ["visibility"]
+
+            return VisbilityFilter
+
+        return super().get_filterset_class()
 
     @property
     def permission_required(self) -> str:
         return f"{self.app_label}.view_{self.model_name}"
 
-    @property
-    def title(self) -> str:
-        return self.model._meta.verbose_name_plural.title()
 
-    @property
-    def list_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_list"
-
-    @property
-    def create_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_create"
-
-
-class CustomEditView(LoginRequiredMixin, UpdateView):
+class CustomEditView(URLMixin, LoginRequiredMixin, UpdateView):
     """Generic edit view.
 
     This view is used to edit a model object. The user must have the permission to edit
     the object, otherwise a 403 error is returned.
 
     The view includes a form with the object data, and the context includes the title of
-    the view and the URL to the list view. They follow the pattern
-    `app_label:model_name_action`. For example, the list URL for the `DataImport` model
-    would be `importing:dataimport_list`.
+    the view and the URL to the list view.
 
     The permissions required to edit the object are `app_label.change_model_name`. For
     example, the permission required to edit a `DataImport` object would be
@@ -200,6 +218,7 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
 
     template_name = "object_edit.html"
     foreign_key_fields: list[str] = []
+    exclude: list[str] = []
 
     def get_form_class(self) -> forms.BaseModelForm:
         class CustomCreateForm(forms.ModelForm):
@@ -208,6 +227,7 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
             class Meta:
                 model = self.model
                 fields = self.fields
+                exclude = self.exclude
 
             def __init__(self, *args, **kwargs):
                 """Filter the queryset for foreign key fields based on the user.
@@ -241,24 +261,8 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
         return context
 
     @property
-    def app_label(self) -> str:
-        return self.model._meta.app_label
-
-    @property
-    def model_name(self) -> str:
-        return self.model._meta.model_name
-
-    @property
-    def model_description(self) -> str:
-        return self.model._meta.verbose_name.title()
-
-    @property
     def success_url(self) -> str:
         return reverse_lazy(self.detail_url, kwargs={"pk": self.object.pk})
-
-    @property
-    def detail_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_detail"
 
     def get_form_kwargs(self):
         """Add the user to the form kwargs, so we can filter the options."""
@@ -267,16 +271,14 @@ class CustomEditView(LoginRequiredMixin, UpdateView):
         return kwargs
 
 
-class CustomCreateView(LoginRequiredMixin, CreateView):
+class CustomCreateView(URLMixin, LoginRequiredMixin, CreateView):
     """Generic create view.
 
     This view is used to create a new model object. The user must have the permission to
     create the object, otherwise a 403 error is returned.
 
     The view includes a form with the object data, and the context includes the title of
-    the view and the URL to the list view. They follow the pattern
-    `app_label:model_name_action`. For example, the list URL for the `DataImport` model
-    would be `importing:dataimport_list`.
+    the view and the URL to the list view.
 
     If provided, the `foreign_key_fields` attribute is used to limit the queryset for
     foreign key fields.
@@ -291,6 +293,7 @@ class CustomCreateView(LoginRequiredMixin, CreateView):
 
     template_name = "object_create.html"
     foreign_key_fields: list[str] = []
+    exclude: list[str] = []
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -305,6 +308,7 @@ class CustomCreateView(LoginRequiredMixin, CreateView):
             class Meta:
                 model = self.model
                 fields = self.fields
+                exclude = self.exclude
 
             def __init__(self, *args, **kwargs):
                 """Filter the queryset for foreign key fields based on the user.
@@ -368,7 +372,7 @@ class CustomCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
 
-class CustomDeleteView(LoginRequiredMixin, DeleteView):
+class CustomDeleteView(URLMixin, LoginRequiredMixin, DeleteView):
     """Generic delete view.
 
     This view is used to delete a model object. The user must have the permission to
@@ -405,24 +409,9 @@ class CustomDeleteView(LoginRequiredMixin, DeleteView):
         context["model_count"] = dict(model_count).items()
         context["protected"] = protected
         context["title"] = self.model_description
-        context["list_url"] = self.list_url
+        context["detail_url"] = self.detail_url
+        context["pk"] = self.object.pk
         return context
-
-    @property
-    def app_label(self) -> str:
-        return self.model._meta.app_label
-
-    @property
-    def model_name(self) -> str:
-        return self.model._meta.model_name
-
-    @property
-    def model_description(self) -> str:
-        return self.model._meta.verbose_name.title()
-
-    @property
-    def list_url(self) -> str:
-        return f"{self.app_label}:{self.model_name}_list"
 
     @property
     def success_url(self) -> str:

@@ -7,46 +7,56 @@
     {% endblock title %}
     object delete
   </h2>
-  <form method="post">
-    {% csrf_token %}
-    <p>Are you sure you want to delete "{{ object }}"?</p>
-    {% bootstrap_form form layout='horizontal' %}
-    <a href="{% url list_url %}" class="btn btn-success">Return to list</a>
-    <button type="submit" class="btn btn-danger">Confirm</button>
-  </form>
-  <p>&nbsp;</p>
-  <!-- Object details -->
-  Summary of objects to be deleted:
-  <div class="row">
-    <div class="col">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for model_name, object_count in model_count %}
+  <!-- If there are protected, it cannot be deleted -->
+  {% if protected %}
+    <a href="{% url detail_url pk %}" class="btn btn-success">Back</a>
+    <p>&nbsp;</p>
+    <p>
+      Some objects related to {{ object }} are protected from deletion.
+      You must delete the following objects before proceeding:
+    </p>
+    <p>
+      <ul>
+        {{ protected|unordered_list }}
+      </ul>
+    </p>
+    <!-- If there are no protected objects, show the delete form -->
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <a href="{% url detail_url pk %}" class="btn btn-success">Back</a>
+      <button type="submit" class="btn btn-danger">Confirm</button>
+      <p>&nbsp;</p>
+      <p>Are you sure you want to delete "{{ object }}"?</p>
+      {% bootstrap_form form layout='horizontal' %}
+    </form>
+    <!-- Object details -->
+    Summary of objects to be deleted:
+    <div class="row">
+      <div class="col">
+        <table class="table">
+          <thead>
             <tr>
-              <td>{{ model_name|capfirst }}</td>
-              <td>{{ object_count }}</td>
+              <th>Name</th>
+              <th>Amount</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for model_name, object_count in model_count %}
+              <tr>
+                <td>{{ model_name|capfirst }}</td>
+                <td>{{ object_count }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-  Individual objects that are protected from deletion:
-  <p>
-    <ul>
-      {{ protected|unordered_list }}
-    </ul>
-  </p>
-  Individual objects to be deleted:
-  <p>
-    <ul>
-      {{ deletable_objects|unordered_list }}
-    </ul>
-  </p>
+    Individual objects to be deleted:
+    <p>
+      <ul>
+        {{ deletable_objects|unordered_list }}
+      </ul>
+    </p>
+  {% endif %}
 {% endblock content %}
