@@ -159,7 +159,7 @@ class StationType(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Return the absolute url of the station type."""
-        return reverse("station:station_type_detail", kwargs={"pk": self.pk})
+        return reverse("station:stationtype_detail", kwargs={"pk": self.pk})
 
     class Meta:
         ordering = ("id",)
@@ -276,7 +276,7 @@ class PlaceBasin(PermissionsBase):
 
     def get_absolute_url(self) -> str:
         """Return the absolute url of the place-basin association."""
-        return reverse("station:place_basin_detail", kwargs={"pk": self.pk})
+        return reverse("station:placebasin_detail", kwargs={"pk": self.pk})
 
     class Meta:
         unique_together = ("place", "basin")
@@ -355,7 +355,7 @@ class Station(PermissionsBase):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name="Region/Province/Department",
+        verbose_name="Region",
         help_text="Region within the Country where the station is located.",
     )
     ecosystem = models.ForeignKey(
