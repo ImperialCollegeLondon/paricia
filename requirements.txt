@@ -64,7 +64,7 @@ django-filter==24.3
     # via Paricia (pyproject.toml)
 django-guardian==2.4.0
     # via Paricia (pyproject.toml)
-django-plotly-dash==2.3.1
+django-plotly-dash==2.4.0
     # via Paricia (pyproject.toml)
 django-tables2==2.7.0
     # via Paricia (pyproject.toml)
