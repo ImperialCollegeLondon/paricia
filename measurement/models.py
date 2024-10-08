@@ -17,6 +17,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from timescale.db.models.models import TimescaleDateTimeField, TimescaleModel
 
+from importing.models import DataImport
 from management.models import apply_add_permissions_to_standard_group
 from station.models import Station
 from variable.models import Variable
@@ -46,6 +47,13 @@ class MeasurementBase(TimescaleModel):
 
     time: TimescaleDateTimeField
 
+    data_import = models.ForeignKey(
+        DataImport,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Data import this measurement belongs to.",
+    )
     station = models.ForeignKey(
         Station,
         on_delete=models.PROTECT,

@@ -26,6 +26,7 @@ class TestReporting(TestCase):
         data = pd.DataFrame(
             {
                 "time": time,
+                "data_import_id": None,
                 "value": np.linspace(1, 5, len(time)),
                 "maximum": np.linspace(1, 5, len(time)) + 1,
                 "minimum": np.linspace(1, 5, len(time)) - 1,
@@ -53,6 +54,7 @@ class TestReporting(TestCase):
                 "value",
                 "maximum",
                 "minimum",
+                "data_import_id",
                 "report_type",
                 "station",
                 "variable",
@@ -181,6 +183,7 @@ class TestReporting(TestCase):
             {
                 "station": [self.station.station_code],
                 "variable": [self.variable.variable_code],
+                "data_import_id": [None],
                 "time": time,
                 "value": [1.0],
                 "report_type": ["hourly"],
@@ -259,6 +262,7 @@ class TestReporting(TestCase):
             [
                 "id",
                 "time",
+                "data_import_id",
                 "station",
                 "variable",
                 "value",

@@ -287,3 +287,6 @@ BOOTSTRAP5 = dict(
         crossorigin="anonymous",
     )
 )
+
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
