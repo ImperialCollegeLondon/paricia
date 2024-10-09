@@ -36,7 +36,11 @@ This project and everyone participating in it is governed by the [Paricia Code o
 
 ### Reporting Bugs
 
-This section guides you through submitting a bug report for Paricia. Following these guidelines helps maintainers and the community understand your report :pencil:, reproduce the behavior :computer: :computer:, and find related reports :mag_right:.
+This section guides you through submitting a bug report for Paricia. Following these guidelines helps maintainers and the community:
+
+- :pencil: understand your report
+- :computer: reproduce the behavior
+- :mag_right: find related reports
 
 Before creating bug reports, please check [this list](https://github.com/ImperialCollegeLondon/paricia/issues) (including the closed issues) as you might find out that you don't need to create one. When you are creating a bug report, please [include as many details as possible](#how-do-i-submit-a-good-bug-report).
 
