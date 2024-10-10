@@ -7,6 +7,7 @@ from django.test import TestCase
 
 class TestMatrixFunctions(TestCase):
     fixtures = [
+        "management_user",
         "variable_unit",
         "variable_variable",
         "formatting_delimiter",
@@ -71,6 +72,7 @@ class TestMatrixFunctions(TestCase):
 
 class TestDateFunctions(TestCase):
     fixtures = [
+        "management_user",
         "variable_unit",
         "variable_variable",
         "formatting_delimiter",
