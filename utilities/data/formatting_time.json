@@ -4,23 +4,18 @@
     "pk": 1,
     "fields": {
       "time_format": "HH:MM:SS AM/PM",
-      "code": "%I:%M:%S %p"
+      "code": "%I:%M:%S %p",
+      "owner": 2
     }
   },
   {
     "model": "formatting.time",
     "pk": 2,
-    "fields": {
-      "time_format": "HH:MM:SS 24H",
-      "code": "%H:%M:%S"
-    }
+    "fields": { "time_format": "HH:MM:SS 24H", "code": "%H:%M:%S", "owner": 2 }
   },
   {
     "model": "formatting.time",
     "pk": 3,
-    "fields": {
-      "time_format": "HH:MM 24H",
-      "code": "%H:%M"
-    }
+    "fields": { "time_format": "HH:MM 24H", "code": "%H:%M", "owner": 2 }
   }
 ]
