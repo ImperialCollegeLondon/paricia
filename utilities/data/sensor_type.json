@@ -2,71 +2,51 @@
   {
     "model": "sensor.sensortype",
     "pk": 1,
-    "fields": {
-      "name": "Pluvi\u00f3metro"
-    }
+    "fields": { "name": "Pluvi\u00f3metro", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 2,
-    "fields": {
-      "name": "Sonda Piezom\u00e9trico"
-    }
+    "fields": { "name": "Sonda Piezom\u00e9trico", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 3,
-    "fields": {
-      "name": "Sonda Ultras\u00f3nico"
-    }
+    "fields": { "name": "Sonda Ultras\u00f3nico", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 4,
-    "fields": {
-      "name": "Sensor de viento"
-    }
+    "fields": { "name": "Sensor de viento", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 5,
-    "fields": {
-      "name": "Humedad y Temperatura"
-    }
+    "fields": { "name": "Humedad y Temperatura", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 6,
-    "fields": {
-      "name": "Presi\u00f3n Barom\u00e9trica"
-    }
+    "fields": { "name": "Presi\u00f3n Barom\u00e9trica", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 7,
-    "fields": {
-      "name": "Radiaci\u00f3n Solar"
-    }
+    "fields": { "name": "Radiaci\u00f3n Solar", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 8,
-    "fields": {
-      "name": "Direcci\u00f3n del viento"
-    }
+    "fields": { "name": "Direcci\u00f3n del viento", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 9,
-    "fields": {
-      "name": "Velocidad del viento"
-    }
+    "fields": { "name": "Velocidad del viento", "owner": 2 }
   },
   {
     "model": "sensor.sensortype",
     "pk": 10,
-    "fields": {
-      "name": "Sensor de presi\u00f3n"
-    }
+    "fields": { "name": "Sensor de presi\u00f3n", "owner": 2 }
   }
 ]

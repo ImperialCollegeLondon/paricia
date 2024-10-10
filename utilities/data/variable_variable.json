@@ -11,7 +11,8 @@
       "diff_error": "4.00",
       "outlier_limit": "3.00",
       "nature": "sum",
-      "null_limit": "20.0"
+      "null_limit": "20.0",
+      "owner": 2
     }
   },
   {
@@ -26,7 +27,8 @@
       "diff_error": "3.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -41,7 +43,8 @@
       "diff_error": "20.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -56,7 +59,8 @@
       "diff_error": "10.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -71,7 +75,8 @@
       "diff_error": "370.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -86,7 +91,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -101,7 +107,8 @@
       "diff_error": "800.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -116,7 +123,8 @@
       "diff_error": "0.22",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -131,7 +139,8 @@
       "diff_error": "3.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -146,7 +155,8 @@
       "diff_error": "3.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -161,7 +171,8 @@
       "diff_error": "20.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -176,7 +187,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -191,7 +203,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -206,7 +219,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": 0
+      "null_limit": 0,
+      "owner": 2
     }
   },
   {
@@ -221,7 +235,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "sum",
-      "null_limit": 0
+      "null_limit": 0,
+      "owner": 2
     }
   },
   {
@@ -236,7 +251,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": 0
+      "null_limit": 0,
+      "owner": 2
     }
   },
   {
@@ -251,7 +267,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": 0
+      "null_limit": 0,
+      "owner": 2
     }
   },
   {
@@ -266,7 +283,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": 0
+      "null_limit": 0,
+      "owner": 2
     }
   },
   {
@@ -281,7 +299,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": 0
+      "null_limit": 0,
+      "owner": 2
     }
   },
   {
@@ -296,7 +315,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -311,7 +331,8 @@
       "diff_error": "100.00",
       "outlier_limit": "3.00",
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -326,7 +347,8 @@
       "diff_error": "40000.00",
       "outlier_limit": "3.00",
       "nature": "sum",
-      "null_limit": 0
+      "null_limit": 0,
+      "owner": 2
     }
   },
   {
@@ -341,7 +363,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -356,7 +379,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -371,7 +395,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -386,7 +411,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -401,7 +427,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -416,7 +443,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -431,7 +459,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   },
   {
@@ -446,7 +475,8 @@
       "diff_error": null,
       "outlier_limit": null,
       "nature": "average",
-      "null_limit": "30.0"
+      "null_limit": "30.0",
+      "owner": 2
     }
   }
 ]

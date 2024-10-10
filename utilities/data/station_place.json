@@ -2,17 +2,15 @@
   {
     "model": "station.place",
     "pk": 2,
-    "fields": {
-      "name": "Huamantanga",
-      "image": ""
-    }
+    "fields": { "name": "Huamantanga", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 3,
     "fields": {
       "name": "Lloa",
-      "image": "station/sitio_image/lloa.jpg"
+      "image": "station/sitio_image/lloa.jpg",
+      "owner": 2
     }
   },
   {
@@ -20,7 +18,8 @@
     "pk": 5,
     "fields": {
       "name": "Alto Pita",
-      "image": "station/sitio_image/ATP_01_PT_02.JPG"
+      "image": "station/sitio_image/ATP_01_PT_02.JPG",
+      "owner": 2
     }
   },
   {
@@ -28,119 +27,82 @@
     "pk": 6,
     "fields": {
       "name": "Atacazo",
-      "image": "station/sitio_image/Cuenca_Carachas.JPG"
+      "image": "station/sitio_image/Cuenca_Carachas.JPG",
+      "owner": 2
     }
   },
   {
     "model": "station.place",
     "pk": 7,
-    "fields": {
-      "name": "Piura",
-      "image": ""
-    }
+    "fields": { "name": "Piura", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 8,
     "fields": {
       "name": "Chachapoyas",
-      "image": "station/sitio_image/Ecosistema-Chachapoyas-Cerco_Urco.JPG"
+      "image": "station/sitio_image/Ecosistema-Chachapoyas-Cerco_Urco.JPG",
+      "owner": 2
     }
   },
   {
     "model": "station.place",
     "pk": 9,
-    "fields": {
-      "name": "Jatunhuaycu",
-      "image": ""
-    }
+    "fields": { "name": "Jatunhuaycu", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 10,
-    "fields": {
-      "name": "Huaraz",
-      "image": ""
-    }
+    "fields": { "name": "Huaraz", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 11,
-    "fields": {
-      "name": "Tarapoto",
-      "image": ""
-    }
+    "fields": { "name": "Tarapoto", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 12,
-    "fields": {
-      "name": "Huancayo",
-      "image": ""
-    }
+    "fields": { "name": "Huancayo", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 13,
-    "fields": {
-      "name": "Ayacucho",
-      "image": ""
-    }
+    "fields": { "name": "Ayacucho", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 14,
-    "fields": {
-      "name": "Rontoccocha",
-      "image": ""
-    }
+    "fields": { "name": "Rontoccocha", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 15,
-    "fields": {
-      "name": "Ica",
-      "image": ""
-    }
+    "fields": { "name": "Ica", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 16,
-    "fields": {
-      "name": "Tambobamba",
-      "image": ""
-    }
+    "fields": { "name": "Tambobamba", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 17,
-    "fields": {
-      "name": "Tiquipaya",
-      "image": ""
-    }
+    "fields": { "name": "Tiquipaya", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 18,
-    "fields": {
-      "name": "Vilcanota",
-      "image": ""
-    }
+    "fields": { "name": "Vilcanota", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 19,
-    "fields": {
-      "name": "Boyac\u00e1",
-      "image": ""
-    }
+    "fields": { "name": "Boyac\u00e1", "image": "", "owner": 2 }
   },
   {
     "model": "station.place",
     "pk": 21,
-    "fields": {
-      "name": "Paute",
-      "image": ""
-    }
+    "fields": { "name": "Paute", "image": "", "owner": 2 }
   }
 ]

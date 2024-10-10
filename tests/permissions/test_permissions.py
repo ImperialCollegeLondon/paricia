@@ -137,8 +137,8 @@ class SensorPermissionsTest(BasePermissionsTest, TestCase):
         super().setUpTestData()
         cls.app = "sensor"
         cls.model = "sensor"
-        brand = SensorBrand.objects.create(name="Test Brand")
-        kind = SensorType.objects.create(name="Test Type")
+        brand = SensorBrand.objects.create(owner=cls.user_owner, name="Test Brand")
+        kind = SensorType.objects.create(owner=cls.user_owner, name="Test Type")
         cls.obj_private = Sensor.objects.create(
             owner=cls.user_owner,
             visibility="private",

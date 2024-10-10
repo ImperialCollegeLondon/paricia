@@ -5,7 +5,8 @@
     "fields": {
       "name": "Shigual",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Shigual.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Shigual.pdf",
+      "owner": 2
     }
   },
   {
@@ -14,7 +15,8 @@
     "fields": {
       "name": "Anduy",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Anduy.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Anduy.pdf",
+      "owner": 2
     }
   },
   {
@@ -23,7 +25,8 @@
     "fields": {
       "name": "El Carmen",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_-_El_Carmen.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_-_El_Carmen.pdf",
+      "owner": 2
     }
   },
   {
@@ -32,44 +35,29 @@
     "fields": {
       "name": "M\u00f3nica",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_-_Monica.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_-_Monica.pdf",
+      "owner": 2
     }
   },
   {
     "model": "station.basin",
     "pk": 9,
-    "fields": {
-      "name": "Huagrahuma",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "Huagrahuma", "image": "", "file": "", "owner": 2 }
   },
   {
     "model": "station.basin",
     "pk": 10,
-    "fields": {
-      "name": "Marianza",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "Marianza", "image": "", "file": "", "owner": 2 }
   },
   {
     "model": "station.basin",
     "pk": 11,
-    "fields": {
-      "name": "Pinos_PAU",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "Pinos_PAU", "image": "", "file": "", "owner": 2 }
   },
   {
     "model": "station.basin",
     "pk": 12,
-    "fields": {
-      "name": "Soroche",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "Soroche", "image": "", "file": "", "owner": 2 }
   },
   {
     "model": "station.basin",
@@ -77,7 +65,8 @@
     "fields": {
       "name": "Kachiyaku",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Kachiyaku.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Kachiyaku.pdf",
+      "owner": 2
     }
   },
   {
@@ -86,7 +75,8 @@
     "fields": {
       "name": "El Volc\u00e1n",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_El_Volcan.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_El_Volcan.pdf",
+      "owner": 2
     }
   },
   {
@@ -95,7 +85,8 @@
     "fields": {
       "name": "Jatunhuaycu 1",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_01.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_01.pdf",
+      "owner": 2
     }
   },
   {
@@ -104,7 +95,8 @@
     "fields": {
       "name": "Jatunhuaycu 2",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_02.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_02.pdf",
+      "owner": 2
     }
   },
   {
@@ -113,7 +105,8 @@
     "fields": {
       "name": "Jatunhuaycu 3",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_03.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_03.pdf",
+      "owner": 2
     }
   },
   {
@@ -122,7 +115,8 @@
     "fields": {
       "name": "Jatunhuaycu 4",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_SUBCUENCA.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_JTU_SUBCUENCA.pdf",
+      "owner": 2
     }
   },
   {
@@ -131,7 +125,8 @@
     "fields": {
       "name": "Tungurahua",
       "image": "",
-      "file": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA-Tungurahua.pdf"
+      "file": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA-Tungurahua.pdf",
+      "owner": 2
     }
   },
   {
@@ -140,7 +135,8 @@
     "fields": {
       "name": "Chamilco",
       "image": "",
-      "file": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA-Chamilco.pdf"
+      "file": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA-Chamilco.pdf",
+      "owner": 2
     }
   },
   {
@@ -149,7 +145,8 @@
     "fields": {
       "name": "Carachas",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Carachas.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Carachas.pdf",
+      "owner": 2
     }
   },
   {
@@ -158,7 +155,8 @@
     "fields": {
       "name": "Dique Sur",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Dique_Sur.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Dique_Sur.pdf",
+      "owner": 2
     }
   },
   {
@@ -167,7 +165,8 @@
     "fields": {
       "name": "P\u00e1ramo",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Paramo.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Paramo.pdf",
+      "owner": 2
     }
   },
   {
@@ -176,7 +175,8 @@
     "fields": {
       "name": "Chames",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Chames.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Chames.pdf",
+      "owner": 2
     }
   },
   {
@@ -185,7 +185,8 @@
     "fields": {
       "name": "La Prieta",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Prieta.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Prieta.pdf",
+      "owner": 2
     }
   },
   {
@@ -194,7 +195,8 @@
     "fields": {
       "name": "Chumucos",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Chumucos.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Chumucos.pdf",
+      "owner": 2
     }
   },
   {
@@ -203,7 +205,8 @@
     "fields": {
       "name": "Bosque Chames",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Bosque_de_Chames.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Bosque_de_Chames.pdf",
+      "owner": 2
     }
   },
   {
@@ -212,7 +215,8 @@
     "fields": {
       "name": "Palo Blanco",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Palo_Blanco.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Palo_Blanco.pdf",
+      "owner": 2
     }
   },
   {
@@ -221,7 +225,8 @@
     "fields": {
       "name": "Las Pircas",
       "image": "",
-      "file": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA_-_Pircas.pdf"
+      "file": "estacion/cuenca_ficha/FichaInventario-de-Cuencas-iMHEA_-_Pircas.pdf",
+      "owner": 2
     }
   },
   {
@@ -230,7 +235,8 @@
     "fields": {
       "name": "Ramoncillo",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Ramoncillo.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Ramoncillo.pdf",
+      "owner": 2
     }
   },
   {
@@ -239,7 +245,8 @@
     "fields": {
       "name": "Cerro Urco",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Cerco_Urco.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Cerco_Urco.pdf",
+      "owner": 2
     }
   },
   {
@@ -248,7 +255,8 @@
     "fields": {
       "name": "Pocco",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Pocco.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Pocco.pdf",
+      "owner": 2
     }
   },
   {
@@ -257,7 +265,8 @@
     "fields": {
       "name": "Matoc",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Matoc.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Matoc.pdf",
+      "owner": 2
     }
   },
   {
@@ -266,7 +275,8 @@
     "fields": {
       "name": "Alto del gritadero",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Alto_del_gritadero.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Alto_del_gritadero.pdf",
+      "owner": 2
     }
   },
   {
@@ -275,7 +285,8 @@
     "fields": {
       "name": "Bel\u00e9n Sur",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Belen_Sur.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Belen_Sur.pdf",
+      "owner": 2
     }
   },
   {
@@ -284,7 +295,8 @@
     "fields": {
       "name": "Boquemonte",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Boquemonte.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Boquemonte.pdf",
+      "owner": 2
     }
   },
   {
@@ -293,7 +305,8 @@
     "fields": {
       "name": "Ci\u00e9naga",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Cienaga.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Cienaga.pdf",
+      "owner": 2
     }
   },
   {
@@ -302,7 +315,8 @@
     "fields": {
       "name": "La Rusia",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_La_Rusia.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_La_Rusia.pdf",
+      "owner": 2
     }
   },
   {
@@ -311,7 +325,8 @@
     "fields": {
       "name": "Laguna de los Patos",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Laguna_de_los_Patos.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Laguna_de_los_Patos.pdf",
+      "owner": 2
     }
   },
   {
@@ -320,7 +335,8 @@
     "fields": {
       "name": "Olla grande",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Olla_grande.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Olla_grande.pdf",
+      "owner": 2
     }
   },
   {
@@ -329,7 +345,8 @@
     "fields": {
       "name": "Ture",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Ture.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Ture.pdf",
+      "owner": 2
     }
   },
   {
@@ -338,7 +355,8 @@
     "fields": {
       "name": "Rontoccocha",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Rontoccocha.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Rontoccocha.pdf",
+      "owner": 2
     }
   },
   {
@@ -347,7 +365,8 @@
     "fields": {
       "name": "Alterada",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Alterada.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Alterada.pdf",
+      "owner": 2
     }
   },
   {
@@ -356,43 +375,28 @@
     "fields": {
       "name": "Conservada",
       "image": "",
-      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Conservada.pdf"
+      "file": "estacion/cuenca_ficha/Ficha_Inventario_de_Cuencas_iMHEA_-_Conservada.pdf",
+      "owner": 2
     }
   },
   {
     "model": "station.basin",
     "pk": 45,
-    "fields": {
-      "name": "Capillas",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "Capillas", "image": "", "file": "", "owner": 2 }
   },
   {
     "model": "station.basin",
     "pk": 46,
-    "fields": {
-      "name": "Pinos_TAM",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "Pinos_TAM", "image": "", "file": "", "owner": 2 }
   },
   {
     "model": "station.basin",
     "pk": 47,
-    "fields": {
-      "name": "Laymes",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "Laymes", "image": "", "file": "", "owner": 2 }
   },
   {
     "model": "station.basin",
     "pk": 48,
-    "fields": {
-      "name": "PAU_05",
-      "image": "",
-      "file": ""
-    }
+    "fields": { "name": "PAU_05", "image": "", "file": "", "owner": 2 }
   }
 ]

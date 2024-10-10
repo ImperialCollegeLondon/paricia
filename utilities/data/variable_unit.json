@@ -4,111 +4,81 @@
     "pk": 1,
     "fields": {
       "name": "Kil\u00f3metros por Hora",
-      "initials": "km/h"
+      "initials": "km/h",
+      "owner": 2
     }
   },
   {
     "model": "variable.unit",
     "pk": 2,
-    "fields": {
-      "name": "Grados",
-      "initials": "\u00b0"
-    }
+    "fields": { "name": "Grados", "initials": "\u00b0", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 3,
-    "fields": {
-      "name": "Porcentaje",
-      "initials": "%"
-    }
+    "fields": { "name": "Porcentaje", "initials": "%", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 4,
-    "fields": {
-      "name": "Cent\u00edmetros",
-      "initials": "cm"
-    }
+    "fields": { "name": "Cent\u00edmetros", "initials": "cm", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 5,
-    "fields": {
-      "name": "Hecto Pascales",
-      "initials": "hPa"
-    }
+    "fields": { "name": "Hecto Pascales", "initials": "hPa", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 6,
-    "fields": {
-      "name": "Mil\u00edmetros",
-      "initials": "mm"
-    }
+    "fields": { "name": "Mil\u00edmetros", "initials": "mm", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 7,
-    "fields": {
-      "name": "KiloWatts por m2",
-      "initials": "kW/m2"
-    }
+    "fields": { "name": "KiloWatts por m2", "initials": "kW/m2", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 8,
     "fields": {
       "name": "Grados Cent\u00edgrados",
-      "initials": "\u00b0C"
+      "initials": "\u00b0C",
+      "owner": 2
     }
   },
   {
     "model": "variable.unit",
     "pk": 9,
-    "fields": {
-      "name": "Metros por Segundo",
-      "initials": "m/s"
-    }
+    "fields": { "name": "Metros por Segundo", "initials": "m/s", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 10,
-    "fields": {
-      "name": "Metros",
-      "initials": "m"
-    }
+    "fields": { "name": "Metros", "initials": "m", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 11,
-    "fields": {
-      "name": "Mega Jouls por m2",
-      "initials": "MJ/m2"
-    }
+    "fields": { "name": "Mega Jouls por m2", "initials": "MJ/m2", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 12,
-    "fields": {
-      "name": "Voltios",
-      "initials": "V"
-    }
+    "fields": { "name": "Voltios", "initials": "V", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 13,
-    "fields": {
-      "name": "Watts por m2",
-      "initials": "W/m2"
-    }
+    "fields": { "name": "Watts por m2", "initials": "W/m2", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 14,
     "fields": {
       "name": "Metros C\u00fabicos por Segundo",
-      "initials": "m3/s"
+      "initials": "m3/s",
+      "owner": 2
     }
   },
   {
@@ -116,7 +86,8 @@
     "pk": 15,
     "fields": {
       "name": "Mil\u00edmetros por Hora",
-      "initials": "mm/h"
+      "initials": "mm/h",
+      "owner": 2
     }
   },
   {
@@ -124,55 +95,46 @@
     "pk": 16,
     "fields": {
       "name": "Potencial Hidr\u00f3geno",
-      "initials": "pH"
+      "initials": "pH",
+      "owner": 2
     }
   },
   {
     "model": "variable.unit",
     "pk": 17,
-    "fields": {
-      "name": "mili Voltio",
-      "initials": "mV"
-    }
+    "fields": { "name": "mili Voltio", "initials": "mV", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 18,
     "fields": {
       "name": "Nephelometric Turbidity Unit",
-      "initials": "NTU"
+      "initials": "NTU",
+      "owner": 2
     }
   },
   {
     "model": "variable.unit",
     "pk": 19,
-    "fields": {
-      "name": "microgramo por Litro",
-      "initials": "ug/L"
-    }
+    "fields": { "name": "microgramo por Litro", "initials": "ug/L", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 20,
-    "fields": {
-      "name": "miligramo por Litro",
-      "initials": "mg/L"
-    }
+    "fields": { "name": "miligramo por Litro", "initials": "mg/L", "owner": 2 }
   },
   {
     "model": "variable.unit",
     "pk": 21,
     "fields": {
       "name": "parts-per-billion 10^-9",
-      "initials": "ppb"
+      "initials": "ppb",
+      "owner": 2
     }
   },
   {
     "model": "variable.unit",
     "pk": 22,
-    "fields": {
-      "name": "Litros por segundo",
-      "initials": "L/s"
-    }
+    "fields": { "name": "Litros por segundo", "initials": "L/s", "owner": 2 }
   }
 ]

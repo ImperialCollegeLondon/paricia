@@ -2,97 +2,61 @@
   {
     "model": "formatting.date",
     "pk": 1,
-    "fields": {
-      "date_format": "DD/MM/YY",
-      "code": "%d/%m/%y"
-    }
+    "fields": { "date_format": "DD/MM/YY", "code": "%d/%m/%y", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 2,
-    "fields": {
-      "date_format": "MM/DD/YY",
-      "code": "%m/%d/%y"
-    }
+    "fields": { "date_format": "MM/DD/YY", "code": "%m/%d/%y", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 3,
-    "fields": {
-      "date_format": "YYYY-MM-DD",
-      "code": "%Y-%m-%d"
-    }
+    "fields": { "date_format": "YYYY-MM-DD", "code": "%Y-%m-%d", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 4,
-    "fields": {
-      "date_format": "DD/MM/YYYY",
-      "code": "%d/%m/%Y"
-    }
+    "fields": { "date_format": "DD/MM/YYYY", "code": "%d/%m/%Y", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 5,
-    "fields": {
-      "date_format": "MM/DD/YYYY",
-      "code": "%m/%d/%Y"
-    }
+    "fields": { "date_format": "MM/DD/YYYY", "code": "%m/%d/%Y", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 6,
-    "fields": {
-      "date_format": "DD-BB-YY",
-      "code": "%d-%b-%y"
-    }
+    "fields": { "date_format": "DD-BB-YY", "code": "%d-%b-%y", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 7,
-    "fields": {
-      "date_format": "YYYY-DD-MM",
-      "code": "%Y-%d-%m"
-    }
+    "fields": { "date_format": "YYYY-DD-MM", "code": "%Y-%d-%m", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 8,
-    "fields": {
-      "date_format": "DD-MM-YYYY",
-      "code": "%d-%m-%Y"
-    }
+    "fields": { "date_format": "DD-MM-YYYY", "code": "%d-%m-%Y", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 9,
-    "fields": {
-      "date_format": "YY-DD-MM",
-      "code": "%y-%m-%d"
-    }
+    "fields": { "date_format": "YY-DD-MM", "code": "%y-%m-%d", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 10,
-    "fields": {
-      "date_format": "YY-MM-DD",
-      "code": "%y-%m-%d"
-    }
+    "fields": { "date_format": "YY-MM-DD", "code": "%y-%m-%d", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 11,
-    "fields": {
-      "date_format": "YYYY DOY",
-      "code": "%Y %j"
-    }
+    "fields": { "date_format": "YYYY DOY", "code": "%Y %j", "owner": 2 }
   },
   {
     "model": "formatting.date",
     "pk": 12,
-    "fields": {
-      "date_format": "DD.MM.YYYY",
-      "code": "%d.%m.%Y"
-    }
+    "fields": { "date_format": "DD.MM.YYYY", "code": "%d.%m.%Y", "owner": 2 }
   }
 ]

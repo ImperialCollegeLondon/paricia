@@ -3,6 +3,7 @@ from django.test import TestCase
 
 class TestInitialData(TestCase):
     fixtures = [
+        "management_user",
         "station_country",
         "station_region",
         "station_ecosystem",

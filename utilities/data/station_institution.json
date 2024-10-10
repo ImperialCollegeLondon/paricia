@@ -2,162 +2,116 @@
   {
     "model": "station.institution",
     "pk": 1,
-    "fields": {
-      "name": "FONAG"
-    }
+    "fields": { "name": "FONAG", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 2,
-    "fields": {
-      "name": "CONDESAN"
-    }
+    "fields": { "name": "CONDESAN", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 3,
-    "fields": {
-      "name": "APECO"
-    }
+    "fields": { "name": "APECO", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 4,
-    "fields": {
-      "name": "Carpe Science"
-    }
+    "fields": { "name": "Carpe Science", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 5,
-    "fields": {
-      "name": "CEDES Apur\u00edmac"
-    }
+    "fields": { "name": "CEDES Apur\u00edmac", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 6,
-    "fields": {
-      "name": "ETAPA"
-    }
+    "fields": { "name": "ETAPA", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 7,
-    "fields": {
-      "name": "Escuela Polit\u00e9cnica Nacional"
-    }
+    "fields": { "name": "Escuela Polit\u00e9cnica Nacional", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 8,
-    "fields": {
-      "name": "Helvetas"
-    }
+    "fields": { "name": "Helvetas", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 9,
-    "fields": {
-      "name": "Imperial College London"
-    }
+    "fields": { "name": "Imperial College London", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 10,
-    "fields": {
-      "name": "Instituto de Monta\u00f1a"
-    }
+    "fields": { "name": "Instituto de Monta\u00f1a", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 11,
-    "fields": {
-      "name": "INAIGEM"
-    }
+    "fields": { "name": "INAIGEM", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 12,
-    "fields": {
-      "name": "JUASVI"
-    }
+    "fields": { "name": "JUASVI", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 13,
-    "fields": {
-      "name": "NCI"
-    }
+    "fields": { "name": "NCI", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 14,
-    "fields": {
-      "name": "SUNASS"
-    }
+    "fields": { "name": "SUNASS", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 15,
-    "fields": {
-      "name": "SENAMHI"
-    }
+    "fields": { "name": "SENAMHI", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 16,
-    "fields": {
-      "name": "UTEC"
-    }
+    "fields": { "name": "UTEC", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 17,
-    "fields": {
-      "name": "Universidad de los Andes"
-    }
+    "fields": { "name": "Universidad de los Andes", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 18,
-    "fields": {
-      "name": "Universidad de San Sim\u00f3n"
-    }
+    "fields": { "name": "Universidad de San Sim\u00f3n", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 19,
-    "fields": {
-      "name": "UNALM"
-    }
+    "fields": { "name": "UNALM", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 20,
-    "fields": {
-      "name": "UNAL"
-    }
+    "fields": { "name": "UNAL", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 21,
-    "fields": {
-      "name": "UNL"
-    }
+    "fields": { "name": "UNL", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 22,
-    "fields": {
-      "name": "UNASAM"
-    }
+    "fields": { "name": "UNASAM", "owner": 2 }
   },
   {
     "model": "station.institution",
     "pk": 23,
-    "fields": {
-      "name": "UPTC"
-    }
+    "fields": { "name": "UPTC", "owner": 2 }
   }
 ]

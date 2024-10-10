@@ -2,71 +2,51 @@
   {
     "model": "station.ecosystem",
     "pk": 1,
-    "fields": {
-      "name": "Bosque h\u00famedo"
-    }
+    "fields": { "name": "Bosque h\u00famedo", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 2,
-    "fields": {
-      "name": "Puna"
-    }
+    "fields": { "name": "Puna", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 3,
-    "fields": {
-      "name": "P\u00e1ramo"
-    }
+    "fields": { "name": "P\u00e1ramo", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 4,
-    "fields": {
-      "name": "Puna seca"
-    }
+    "fields": { "name": "Puna seca", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 5,
-    "fields": {
-      "name": "Puna h\u00fameda"
-    }
+    "fields": { "name": "Puna h\u00fameda", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 6,
-    "fields": {
-      "name": "Bosque montano alto"
-    }
+    "fields": { "name": "Bosque montano alto", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 7,
-    "fields": {
-      "name": "Bosque de neblina"
-    }
+    "fields": { "name": "Bosque de neblina", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 8,
-    "fields": {
-      "name": "Pajonal"
-    }
+    "fields": { "name": "Pajonal", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 9,
-    "fields": {
-      "name": "Bosque tropical"
-    }
+    "fields": { "name": "Bosque tropical", "owner": 2 }
   },
   {
     "model": "station.ecosystem",
     "pk": 10,
-    "fields": {
-      "name": "Jalca"
-    }
+    "fields": { "name": "Jalca", "owner": 2 }
   }
 ]
