@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block content %}
+  <h2>
+    {% block title %}
+      {{ title }}
+    {% endblock title %}
+    object edit
+  </h2>
+  <form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Update</button>
+    <button type="reset" class="btn btn-warning">Reset</button>
+    <a href="{% url detail_url pk %}" class="btn btn-danger">Cancel</a>
+    <p>&nbsp;</p>
+    {% bootstrap_form form layout='horizontal' %}
+  </form>
+{% endblock content %}

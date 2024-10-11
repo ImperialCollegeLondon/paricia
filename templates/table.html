@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
-{% load crispy_forms_tags
-%}
+{% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 {% block content %}
   <h2>
@@ -10,12 +9,9 @@
     {% endblock title %}
   </h2>
   <!-- Action buttons -->
-  {% if new_url %}
-    <a href="{% url new_url %}" class="btn btn-primary">New</a>
-  {% endif %}
-  {% if refresh %}
-    <a href="{% url refresh %}" class="btn btn-success">Refresh</a>
-  {% endif %}
+  <a href="{% url list_url %}" class="btn btn-success">Refresh</a>
+  <a href="{% url create_url %}" class="btn btn-warning">New</a>
+  <p>&nbsp;</p>
   <!-- Filter -->
   {% if filter %}
     <form action="" method="get" class="form form-inline">

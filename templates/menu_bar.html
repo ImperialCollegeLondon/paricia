@@ -10,6 +10,116 @@
       <!-- If the user is authenticated, they can access the validation page -->
       {% if user.is_authenticated %}
         <a class="nav-link" href="{% url 'measurement:daily_validation' %}">Validation</a>
+        <a class="nav-link" href="{% url 'importing:dataimport_list' %}">Import data</a>
+        <!-- Formatting app. TODO: probably this can be done programatically-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             id="formattingMenu"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">Formatting</a>
+          <ul class="dropdown-menu" aria-labelledby="formattingMenu">
+            <li>
+              <a class="dropdown-item" href="{% url 'formatting:format_list' %}">Format</a>
+            </li>
+            <li>
+              <a class="dropdown-item"
+                 href="{% url 'formatting:classification_list' %}">Classification</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'formatting:extension_list' %}">Extension</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'formatting:delimiter_list' %}">Delimiter</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'formatting:date_list' %}">Date</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'formatting:time_list' %}">Time</a>
+            </li>
+          </ul>
+        </li>
+        <!-- Variable app. TODO: probably this can be done programatically-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             id="variableMenu"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">Variable</a>
+          <ul class="dropdown-menu" aria-labelledby="variableMenu">
+            <li>
+              <a class="dropdown-item" href="{% url 'variable:unit_list' %}">Unit</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'variable:variable_list' %}">Variable</a>
+            </li>
+            <li>
+              <a class="dropdown-item"
+                 href="{% url 'variable:sensorinstallation_list' %}">Sensor installation</a>
+            </li>
+          </ul>
+        </li>
+        <!-- Sensor app. TODO: probably this can be done programatically-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             id="sensorMenu"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">Sensor</a>
+          <ul class="dropdown-menu" aria-labelledby="sensorMenu">
+            <li>
+              <a class="dropdown-item" href="{% url 'sensor:sensor_list' %}">Sensor</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'sensor:sensortype_list' %}">Sensor type</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'sensor:sensorbrand_list' %}">Sensor brand</a>
+            </li>
+          </ul>
+        </li>
+        <!-- Station app. TODO: probably this can be done programatically-->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             id="stationMenu"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">Station</a>
+          <ul class="dropdown-menu" aria-labelledby="stationMenu">
+            <li>
+              <a class="dropdown-item" href="{% url 'station:country_list' %}">Country</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:region_list' %}">Region</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:ecosystem_list' %}">Ecosystem</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:institution_list' %}">Institution</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:place_list' %}">Place</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:basin_list' %}">Basin</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:placebasin_list' %}">Place basin</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:stationtype_list' %}">Station type</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'station:station_list' %}">Station</a>
+            </li>
+          </ul>
+        </li>
       {% endif %}
     </ul>
     <!-- A separate menu for the user to log in or log out -->
