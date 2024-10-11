@@ -1,5 +1,7 @@
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly_resampler import FigureResampler
 
 
 def create_empty_plot() -> px.scatter:
@@ -26,8 +28,8 @@ def create_empty_plot() -> px.scatter:
 
 def create_validation_plot(
     data: pd.DataFrame, variable_name: str, field: str
-) -> px.scatter:
-    """Creates plot for Validation app
+) -> go.Figure:
+    """Creates plot for Validation app using plotly-resampler
 
     Args:
         data (pd.DataFrame): Data
@@ -35,7 +37,7 @@ def create_validation_plot(
         field (str): 'value', 'minimum' or 'maximum'
 
     Returns:
-        px.Scatter: Plot
+        FigureResampler: Plot
     """
 
     def status(row):
@@ -51,13 +53,17 @@ def create_validation_plot(
         "Not validated": "black",
     }
 
-    fig = px.scatter(
-        data,
-        x="time",
-        y=field,
-        color=data.apply(status, axis=1),
-        color_discrete_map=color_map,
-        labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
+    fig = FigureResampler(px.scatter)
+
+    fig.add_trace(
+        px.scatter(
+            data,
+            x="time",
+            y=field,
+            color=data.apply(status, axis=1),
+            color_discrete_map=color_map,
+            labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
+        ).data[0]
     )
 
     fig.update_traces(marker=dict(size=3))
@@ -83,8 +89,8 @@ def create_validation_plot(
 
 def create_report_plot(
     data: pd.DataFrame, variable_name: str, station_code: str
-) -> px.scatter:
-    """Creates plot for Report app
+) -> go.Figure:
+    """Creates plot for Report app using Plotly Resampler
 
     Args:
         data (pd.DataFrame): Data
@@ -92,21 +98,30 @@ def create_report_plot(
         station_code (str): Station code
 
     Returns:
-        px.Scatter: Plot
+        go.Figure: Plot
     """
-    fig = px.scatter(
-        data,
-        x="time",
-        y=["value", "minimum", "maximum"],
-        title=f"{station_code} - {variable_name}",
-        labels={
-            "time": "Date",
-        },
+    fig = FigureResampler(go.Figure())
+
+    fig.add_trace(
+        go.Scattergl(x=data["time"], y=data["value"], mode="markers", name="Value"),
+        max_n_samples=1000,
+        hf_marker_size=3.5,
+    )
+    fig.add_trace(
+        go.Scattergl(x=data["time"], y=data["minimum"], mode="markers", name="Minimum"),
+        max_n_samples=1000,
+        hf_marker_size=3.5,
+    )
+    fig.add_trace(
+        go.Scattergl(x=data["time"], y=data["maximum"], mode="markers", name="Maximum"),
+        max_n_samples=1000,
+        hf_marker_size=3.5,
     )
 
-    fig.for_each_trace(lambda trace: trace.update(name=trace.name.title()))
-    fig.update_traces(marker=dict(size=3))
     fig.update_layout(
+        title=f"{station_code} - {variable_name}",
+        xaxis_title="Date",
+        yaxis_title=f"{variable_name}",
         legend=dict(
             title=dict(text="", font=dict(size=12)),
             x=1,
@@ -121,7 +136,6 @@ def create_report_plot(
             b=0,
             t=50,
         ),
-        yaxis_title=f"{variable_name}",
         title_font=dict(
             size=14,
         ),
