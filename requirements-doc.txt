@@ -183,7 +183,7 @@ mkdocstrings==0.26.1
     #   mkdocstrings-python
 mkdocstrings-python==1.11.1
     # via Paricia (pyproject.toml)
-numpy==2.1.1
+numpy==2.1.2
     # via
     #   Paricia (pyproject.toml)
     #   pandas
