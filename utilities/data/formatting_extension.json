@@ -2,36 +2,26 @@
   {
     "model": "formatting.extension",
     "pk": 1,
-    "fields": {
-      "value": "txt"
-    }
+    "fields": { "value": "txt", "owner": 2 }
   },
   {
     "model": "formatting.extension",
     "pk": 2,
-    "fields": {
-      "value": "csv"
-    }
+    "fields": { "value": "csv", "owner": 2 }
   },
   {
     "model": "formatting.extension",
     "pk": 3,
-    "fields": {
-      "value": "xlsx"
-    }
+    "fields": { "value": "xlsx", "owner": 2 }
   },
   {
     "model": "formatting.extension",
     "pk": 4,
-    "fields": {
-      "value": "asc"
-    }
+    "fields": { "value": "asc", "owner": 2 }
   },
   {
     "model": "formatting.extension",
     "pk": 5,
-    "fields": {
-      "value": "dat"
-    }
+    "fields": { "value": "dat", "owner": 2 }
   }
 ]

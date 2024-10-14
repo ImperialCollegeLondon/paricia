@@ -5,6 +5,7 @@ from django.test import TestCase
 
 class TestSaveImportModels(TestCase):
     fixtures = [
+        "management_user",
         "variable_unit",
         "variable_variable",
         "formatting_delimiter",
@@ -53,6 +54,7 @@ class TestSaveImportModels(TestCase):
         )
 
         DataImport.objects.create(
+            owner=self.station.owner,
             station=self.station,
             format=self.file_format,
             start_date=start_date,
