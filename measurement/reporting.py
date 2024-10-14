@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pandas as pd
 
+from importing.models import DataImport
 from measurement.models import Measurement, Report
 from station.models import Station
 from variable.models import Variable
@@ -33,6 +34,17 @@ def calculate_reports(
     hourly = data[cols].resample("H", on="time").agg(operation)
     daily = hourly.resample("D").agg(operation)
     monthly = daily.resample("MS").agg(operation)
+
+    # Get the right data_import for each period. We use the mode to get the most common
+    # data_import value in the period.
+    def mode(x: pd.Series) -> str | None:
+        modes = x.mode()
+        return modes[0] if not modes.empty else None
+
+    cols2 = ["time", "data_import_id"]
+    hourly["data_import_id"] = data[cols2].resample("H", on="time").agg(mode)
+    daily["data_import_id"] = data[cols2].resample("D", on="time").agg(mode)
+    monthly["data_import_id"] = data[cols2].resample("MS", on="time").agg(mode)
 
     # Put everything together
     hourly["report_type"] = "hourly"
@@ -145,9 +157,13 @@ def save_report_data(data: pd.DataFrame) -> None:
         data: The dataframe with the report data.
     """
     data_ = data.dropna(axis=1, how="all").dropna(axis=0, subset=["value"])
+    data_import_avail = "data_import_id" in data_.columns
     Report.objects.bulk_create(
         [
             Report(
+                data_import=DataImport.objects.get(pk=row["data_import_id"])
+                if data_import_avail and not pd.isna(row["data_import_id"])
+                else None,
                 station=Station.objects.get(station_code=row["station"]),
                 variable=Variable.objects.get(variable_code=row["variable"]),
                 time=time,

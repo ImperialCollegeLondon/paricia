@@ -23,7 +23,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import FileField
 
 from formatting.models import Classification, Format
-from measurement.models import Measurement
+from importing.models import DataImport
+from measurement.models import Measurement, Report
 from station.models import Station
 
 unix_epoch = np.datetime64(0, "s")
@@ -262,7 +263,7 @@ def standardise_datetime(date_time: Any, datetime_format: str) -> datetime:
 
 
 def save_temp_data_to_permanent(
-    station: Station, file_format: Format, file: FileField
+    data_import: DataImport,
 ) -> tuple[datetime, datetime, int]:
     """Function to pass the temporary import to the final table.
 
@@ -278,14 +279,21 @@ def save_temp_data_to_permanent(
     Args:
         data_import_temp: DataImportTemp object.
     """
+    station = data_import.station
+    file_format = data_import.format
+    file = data_import.rawfile
 
-    all_data = construct_matrix(file, file_format, station)
+    # Delete exiting measurements and reports for the same data_import_id
+    Measurement.objects.filter(data_import_id=data_import.data_import_id).delete()
+    Report.objects.filter(data_import_id=data_import.data_import_id).delete()
+
+    all_data = construct_matrix(file, file_format, station, data_import)
     if not all_data:
         msg = "No data to import. Is the chosen format correct?"
         getLogger().error(msg)
         raise ValidationError(msg)
 
-    must_cols = ["station_id", "variable_id", "date", "value"]
+    must_cols = ["data_import_id", "station_id", "variable_id", "date", "value"]
     start_date = all_data[0]["date"].iloc[0]
     end_date = all_data[0]["date"].iloc[-1]
     num_records = len(all_data[0])
@@ -301,8 +309,14 @@ def save_temp_data_to_permanent(
         records = table.to_dict("records")
         variable_id = table["variable_id"].iloc[0]
 
-        # Delete existing data between the date ranges
+        # Delete existing data between the date ranges. Needed for data not linked
+        # to a data_import_id. Both measurements and reports are deleted.
         Measurement.timescale.filter(
+            time__range=[start_date, end_date],
+            station_id=station.station_id,
+            variable_id=variable_id,
+        ).delete()
+        Report.objects.filter(
             time__range=[start_date, end_date],
             station_id=station.station_id,
             variable_id=variable_id,
@@ -321,7 +335,12 @@ def save_temp_data_to_permanent(
     return start_date, end_date, num_records
 
 
-def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
+def construct_matrix(
+    matrix_source: FileField,
+    file_format: Format,
+    station: Station,
+    data_import: DataImport,
+) -> list[pd.DataFrame]:
     """Construct the "matrix" or results table. Does various cleaning / simple
     transformations depending on the date format, type of data (accumulated,
     incremental...) and deals with NANs.
@@ -443,6 +462,7 @@ def construct_matrix(matrix_source, file_format, station) -> list[pd.DataFrame]:
                 data["value"] = data["value"] * float(classification.resolution)
         data["station_id"] = station.station_id
         data["variable_id"] = classification.variable.variable_id
+        data["data_import_id"] = data_import.data_import_id
 
         # Add the data to the main list
         to_ingest.append(data)
