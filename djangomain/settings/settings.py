@@ -287,3 +287,20 @@ BOOTSTRAP5 = dict(
         crossorigin="anonymous",
     )
 )
+# Staticfiles finders for locating dash app assets and related files
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "django_plotly_dash.finders.DashAssetFinder",
+    "django_plotly_dash.finders.DashComponentFinder",
+    "django_plotly_dash.finders.DashAppDirectoryFinder",
+]
+
+# Plotly components containing static content that should
+# be handled by the Django staticfiles infrastructure
+
+PLOTLY_COMPONENTS = [
+    # Common components (ie within dash itself) are automatically added
+    # django-plotly-dash components
+    "dpd_components"
+]
