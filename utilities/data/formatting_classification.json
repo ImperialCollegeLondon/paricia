@@ -17,7 +17,8 @@
       "accumulate": false,
       "incremental": false,
       "resolution": null,
-      "decimal_comma": false
+      "decimal_comma": false,
+      "owner": 2
     }
   },
   {
@@ -38,7 +39,8 @@
       "accumulate": false,
       "incremental": false,
       "resolution": null,
-      "decimal_comma": false
+      "decimal_comma": false,
+      "owner": 2
     }
   },
   {
@@ -59,7 +61,8 @@
       "accumulate": 5,
       "incremental": false,
       "resolution": "1.00",
-      "decimal_comma": false
+      "decimal_comma": false,
+      "owner": 2
     }
   }
 ]

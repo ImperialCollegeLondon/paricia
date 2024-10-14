@@ -2,113 +2,81 @@
   {
     "model": "sensor.sensorbrand",
     "pk": 1,
-    "fields": {
-      "name": "Young"
-    }
+    "fields": { "name": "Young", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 2,
-    "fields": {
-      "name": "Texas electronics"
-    }
+    "fields": { "name": "Texas electronics", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 3,
-    "fields": {
-      "name": "Davis"
-    }
+    "fields": { "name": "Davis", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 4,
-    "fields": {
-      "name": "Weathertronics"
-    }
+    "fields": { "name": "Weathertronics", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 5,
-    "fields": {
-      "name": "ISCO"
-    }
+    "fields": { "name": "ISCO", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 6,
-    "fields": {
-      "name": "Seba"
-    }
+    "fields": { "name": "Seba", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 7,
-    "fields": {
-      "name": "Ultrasonica"
-    }
+    "fields": { "name": "Ultrasonica", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 8,
-    "fields": {
-      "name": "VAISALA"
-    }
+    "fields": { "name": "VAISALA", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 9,
-    "fields": {
-      "name": "Kipp Zonen"
-    }
+    "fields": { "name": "Kipp Zonen", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 10,
-    "fields": {
-      "name": "MET ONE"
-    }
+    "fields": { "name": "MET ONE", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 11,
-    "fields": {
-      "name": "SETRA"
-    }
+    "fields": { "name": "SETRA", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 12,
-    "fields": {
-      "name": "BISELA"
-    }
+    "fields": { "name": "BISELA", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 13,
-    "fields": {
-      "name": "Licor"
-    }
+    "fields": { "name": "Licor", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 14,
-    "fields": {
-      "name": "Keller"
-    }
+    "fields": { "name": "Keller", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 15,
-    "fields": {
-      "name": "Hukseflux"
-    }
+    "fields": { "name": "Hukseflux", "owner": 2 }
   },
   {
     "model": "sensor.sensorbrand",
     "pk": 16,
-    "fields": {
-      "name": "Apogge"
-    }
+    "fields": { "name": "Apogge", "owner": 2 }
   }
 ]

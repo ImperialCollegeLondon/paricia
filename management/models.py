@@ -27,8 +27,8 @@ class PermissionsBase(models.Model):
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
         help_text="Owner of the object.",
     )
 
