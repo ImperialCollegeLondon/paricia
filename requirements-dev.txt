@@ -201,7 +201,7 @@ pyyaml==6.0.2
     #   pre-commit
 regex==2024.9.11
     # via djlint
-ruff==0.6.5
+ruff==0.6.9
     # via Paricia (pyproject.toml)
 six==1.16.0
     # via
