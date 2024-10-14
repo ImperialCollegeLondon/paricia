@@ -7,6 +7,7 @@ from django.test import TestCase
 
 class TestMatrixFunctions(TestCase):
     fixtures = [
+        "management_user",
         "variable_unit",
         "variable_variable",
         "formatting_delimiter",
@@ -71,6 +72,7 @@ class TestMatrixFunctions(TestCase):
 
 class TestDateFunctions(TestCase):
     fixtures = [
+        "management_user",
         "variable_unit",
         "variable_variable",
         "formatting_delimiter",
@@ -120,6 +122,7 @@ class TestDateFunctions(TestCase):
         )
 
         self.data_import = DataImport.objects.create(
+            owner=self.station.owner,
             station=self.station,
             format=self.file_format,
             start_date=start_date,
