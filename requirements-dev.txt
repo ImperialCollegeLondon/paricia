@@ -49,7 +49,7 @@ dash-table==5.0.0
     # via dash
 distlib==0.3.8
     # via virtualenv
-django==5.1.1
+django==5.1.2
     # via
     #   Paricia (pyproject.toml)
     #   channels
@@ -137,7 +137,7 @@ jsbeautifier==1.15.1
     #   djlint
 json5==0.9.25
     # via djlint
-markupsafe==2.1.5
+markupsafe==3.0.1
     # via
     #   jinja2
     #   werkzeug
@@ -149,7 +149,7 @@ mypy-extensions==1.0.0
     # via mypy
 nodeenv==1.9.1
     # via pre-commit
-numpy==2.1.1
+numpy==2.1.2
     # via
     #   Paricia (pyproject.toml)
     #   pandas
@@ -201,7 +201,7 @@ pyyaml==6.0.2
     #   pre-commit
 regex==2024.9.11
     # via djlint
-ruff==0.6.5
+ruff==0.6.9
     # via Paricia (pyproject.toml)
 six==1.16.0
     # via

@@ -47,7 +47,7 @@ dash-html-components==2.0.0
     # via dash
 dash-table==5.0.0
     # via dash
-django==5.1.1
+django==5.1.2
     # via
     #   Paricia (pyproject.toml)
     #   channels
@@ -136,7 +136,7 @@ markdown==3.7
     #   pymdown-extensions
 markdown-include==0.8.1
     # via Paricia (pyproject.toml)
-markupsafe==2.1.5
+markupsafe==3.0.1
     # via
     #   jinja2
     #   mkdocs
@@ -183,7 +183,7 @@ mkdocstrings==0.26.1
     #   mkdocstrings-python
 mkdocstrings-python==1.11.1
     # via Paricia (pyproject.toml)
-numpy==2.1.1
+numpy==2.1.2
     # via
     #   Paricia (pyproject.toml)
     #   pandas
@@ -218,7 +218,7 @@ pygments==2.18.0
     # via mkdocs-material
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
-pymdown-extensions==10.11.1
+pymdown-extensions==10.11.2
     # via
     #   mkdocs-material
     #   mkdocstrings
