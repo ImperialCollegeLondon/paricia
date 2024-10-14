@@ -136,7 +136,7 @@ markdown==3.7
     #   pymdown-extensions
 markdown-include==0.8.1
     # via Paricia (pyproject.toml)
-markupsafe==2.1.5
+markupsafe==3.0.1
     # via
     #   jinja2
     #   mkdocs

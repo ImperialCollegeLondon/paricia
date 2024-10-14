@@ -137,7 +137,7 @@ jsbeautifier==1.15.1
     #   djlint
 json5==0.9.25
     # via djlint
-markupsafe==2.1.5
+markupsafe==3.0.1
     # via
     #   jinja2
     #   werkzeug
