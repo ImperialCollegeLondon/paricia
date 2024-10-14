@@ -2,36 +2,26 @@
   {
     "model": "station.stationtype",
     "pk": 1,
-    "fields": {
-      "name": "Pluviom\u00e9trica"
-    }
+    "fields": { "name": "Pluviom\u00e9trica", "owner": 2 }
   },
   {
     "model": "station.stationtype",
     "pk": 2,
-    "fields": {
-      "name": "Climatol\u00f3gica"
-    }
+    "fields": { "name": "Climatol\u00f3gica", "owner": 2 }
   },
   {
     "model": "station.stationtype",
     "pk": 3,
-    "fields": {
-      "name": "Hidrom\u00e9trica"
-    }
+    "fields": { "name": "Hidrom\u00e9trica", "owner": 2 }
   },
   {
     "model": "station.stationtype",
     "pk": 4,
-    "fields": {
-      "name": "Aforo"
-    }
+    "fields": { "name": "Aforo", "owner": 2 }
   },
   {
     "model": "station.stationtype",
     "pk": 5,
-    "fields": {
-      "name": "Calidad de agua"
-    }
+    "fields": { "name": "Calidad de agua", "owner": 2 }
   }
 ]

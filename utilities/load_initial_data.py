@@ -11,6 +11,7 @@ from measurement.models import Measurement
 # The order matters so that foreignkey objects exist when an entry is created.
 # The files are named app_model
 data_files = [
+    "management_user",
     "variable_unit",
     "variable_variable",
     "formatting_delimiter",
@@ -43,7 +44,7 @@ for file in data_files:
         [
             "manage.py",
             "loaddata",
-            settings.BASE_DIR + "/utilities/data/" + file + ".json",
+            settings.BASE_DIR + "/utilities/data/owner/" + file + ".json",
         ]
     )
 
