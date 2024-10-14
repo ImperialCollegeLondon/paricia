@@ -39,7 +39,10 @@ class TestMatrixFunctions(TestCase):
         self.station = Station.objects.get(station_id=8)
         self.station.timezone = TIMEZONES[0][0]
         self.data_import = DataImport.objects.create(
-            station=self.station, format=self.file_format, rawfile=self.data_file
+            owner=self.station.owner,
+            station=self.station,
+            format=self.file_format,
+            rawfile=self.data_file,
         )
 
     def test_preformat_matrix(self):
