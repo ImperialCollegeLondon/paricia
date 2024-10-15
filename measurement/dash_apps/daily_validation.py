@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
+from plotly_resampler import FigureResampler
 
 from variable.models import Variable
 
@@ -375,7 +376,7 @@ def callbacks(
     dash.no_update,
     dash.no_update,
     str,
-    go.Figure,
+    FigureResampler,
     list[dict],
     list[dict],
     list[dict],

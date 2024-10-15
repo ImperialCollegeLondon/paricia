@@ -2,6 +2,7 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
+from plotly_resampler import FigureResampler
 
 from variable.models import Variable
 
@@ -111,7 +112,7 @@ def update_graph(
     variable: str,
     start_time: str,
     end_time: str,
-) -> px.line:
+) -> FigureResampler:
     try:
         data = get_report_data_from_db(
             station=station,
