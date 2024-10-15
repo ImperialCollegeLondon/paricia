@@ -24,9 +24,7 @@ def ingest_data(data_import_pk: int) -> None:
     try:
         getLogger("huey").info("Ingesting data for %s", data_import)
         data_import.start_date, data_import.end_date, data_import.records = (
-            save_temp_data_to_permanent(
-                data_import.station, data_import.format, data_import.rawfile
-            )
+            save_temp_data_to_permanent(data_import)
         )
         data_import.status = "C"
         data_import.log = "Data ingestion completed successfully"

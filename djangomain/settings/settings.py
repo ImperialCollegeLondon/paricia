@@ -287,6 +287,7 @@ BOOTSTRAP5 = dict(
         crossorigin="anonymous",
     )
 )
+
 # Staticfiles finders for locating dash app assets and related files
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -304,3 +305,4 @@ PLOTLY_COMPONENTS = [
     # django-plotly-dash components
     "dpd_components"
 ]
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
