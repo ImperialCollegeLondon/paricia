@@ -1,5 +1,4 @@
 import dash_bootstrap_components as dbc
-import plotly.express as px
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
 from plotly_resampler import FigureResampler
