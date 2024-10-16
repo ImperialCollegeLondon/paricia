@@ -232,10 +232,13 @@ def get_report_data_from_db(
         )
 
     data = data.rename(columns={"station_id": "station", "variable_id": "variable"})
-    if not data.empty:
-        data = data.sort_values("time")
 
-    return data
+    if data.empty:
+        return data
+
+    tz = timezone.get_current_timezone()
+    data["time"] = data["time"].dt.tz_convert(tz)
+    return data.sort_values("time")
 
 
 def launch_reports_calculation(
