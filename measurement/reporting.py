@@ -1,7 +1,7 @@
-import zoneinfo
 from datetime import datetime
 
 import pandas as pd
+from django.utils import timezone
 
 from importing.models import DataImport
 from measurement.models import Measurement, Report
@@ -59,10 +59,9 @@ def calculate_reports(
 
 
 def reformat_dates(
-    station: str,
     start_time: str,
     end_time: str,
-) -> pd.Series:
+) -> tuple[datetime, datetime]:
     """Reformat dates so they have the right timezone and cover full days.
 
     The start date is always the first day of the first month and the end date is the
@@ -78,14 +77,14 @@ def reformat_dates(
     Returns:
         A series with the dates to be validated.
     """
-    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+    tz = timezone.get_current_timezone()
     start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(day=1, tzinfo=tz)
     end_time_ = (
-        datetime.strptime(end_time, "%Y-%m-%d").replace(day=1, tzinfo=tz)
+        datetime.strptime(end_time, "%Y-%m-%d").replace(day=1)
         + pd.DateOffset(months=1)
         - pd.DateOffset(seconds=1)
     )
-
+    end_time_ = datetime.fromtimestamp(end_time_.timestamp()).astimezone(tz)
     return start_time_, end_time_
 
 
@@ -108,14 +107,12 @@ def get_data_to_report(
     Returns:
         A dataframe with the data to report about.
     """
-    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
 
     return pd.DataFrame.from_records(
         Measurement.objects.filter(
             station__station_code=station,
             variable__variable_code=variable,
-            time__gte=start_time.replace(tzinfo=tz),
-            time__lte=end_time.replace(tzinfo=tz),
+            time__date__range=(start_time.date(), end_time.date()),
             is_active=True,
         ).values()
     )
@@ -137,13 +134,11 @@ def remove_report_data_in_range(
         start_time: Start time.
         end_time: End time.
     """
-    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
 
     Report.objects.filter(
         station__station_code=station,
         variable__variable_code=variable,
-        time__gte=start_time.replace(tzinfo=tz),
-        time__lte=end_time.replace(tzinfo=tz),
+        time__date__range=(start_time.date(), end_time.date()),
     ).delete()
 
 
@@ -199,15 +194,14 @@ def get_report_data_from_db(
     Returns:
         A dataframe with the report data.
     """
-    start_time_, end_time_ = reformat_dates(station, start_time, end_time)
+    start_time_, end_time_ = reformat_dates(start_time, end_time)
 
     if report_type == "measurement":
         data = pd.DataFrame.from_records(
             Measurement.objects.filter(
                 station__station_code=station,
                 variable__variable_code=variable,
-                time__gte=start_time_,
-                time__lte=end_time_,
+                time__date__range=(start_time_.date(), end_time_.date()),
             ).values()
         )
         raw_cols = [col for col in data.columns if col.startswith("raw_")]
@@ -219,8 +213,7 @@ def get_report_data_from_db(
             Measurement.objects.filter(
                 station__station_code=station,
                 variable__variable_code=variable,
-                time__gte=start_time_,
-                time__lte=end_time_,
+                time__date__range=(start_time_.date(), end_time_.date()),
                 is_validated=True,
                 is_active=True,
             ).values()
@@ -233,8 +226,7 @@ def get_report_data_from_db(
             Report.objects.filter(
                 station__station_code=station,
                 variable__variable_code=variable,
-                time__gte=start_time_,
-                time__lte=end_time_,
+                time__date__range=(start_time_.date(), end_time_.date()),
                 report_type=report_type,
             ).values()
         )
@@ -267,7 +259,7 @@ def launch_reports_calculation(
         "sum" if Variable.objects.get(variable_code=variable).is_cumulative else "mean"
     )
 
-    start_time_, end_time_ = reformat_dates(station, start_time, end_time)
+    start_time_, end_time_ = reformat_dates(start_time, end_time)
     data = get_data_to_report(station, variable, start_time_, end_time_)
     report = calculate_reports(data, station, variable, operation)
     remove_report_data_in_range(station, variable, start_time_, end_time_)

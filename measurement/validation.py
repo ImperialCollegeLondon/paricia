@@ -1,12 +1,12 @@
-import zoneinfo
 from datetime import datetime
 from decimal import Decimal
 
 import pandas as pd
+from django.utils import timezone
 
 from measurement import reporting
 from measurement.models import Measurement
-from station.models import Station
+from utilities.timezones import to_local_time
 from variable.models import Variable
 
 
@@ -29,7 +29,7 @@ def get_data_to_validate(
     Returns:
         A dictionary with the report for the chosen days.
     """
-    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+    tz = timezone.get_current_timezone()
     start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(tzinfo=tz)
     end_time_ = datetime.strptime(end_time, "%Y-%m-%d").replace(tzinfo=tz)
 
@@ -37,8 +37,7 @@ def get_data_to_validate(
         Measurement.objects.filter(
             station__station_code=station,
             variable__variable_code=variable,
-            time__gte=start_time_,
-            time__lte=end_time_,
+            time__date__range=(start_time_.date(), end_time_.date()),
             is_validated=is_validated,
         ).values()
     )
@@ -46,6 +45,7 @@ def get_data_to_validate(
     if df.empty:
         return df
 
+    df["time"] = df["time"].dt.tz_convert(tz)
     return df.sort_values("time")
 
 
@@ -121,6 +121,7 @@ def flag_suspicious_data(
 
 def flag_suspicious_daily_count(data: pd.Series, null_limit: Decimal) -> pd.DataFrame:
     """Finds suspicious records count for daily data.
+
     Args:
         data: The count of records per day.
         null_limit: The percentage of null data allowed.
@@ -245,7 +246,7 @@ def save_validated_entries(data: pd.DataFrame) -> None:
 
         Measurement.objects.filter(id=row["id"]).update(**update)
 
-    tz = zoneinfo.ZoneInfo(current.station.timezone)
+    tz = timezone.get_current_timezone()
     station = current.station.station_code
     variable = current.variable.variable_code
     start_time = min(times).astimezone(tz).strftime("%Y-%m-%d")
@@ -262,7 +263,7 @@ def reset_validated_entries(ids: list) -> None:
     Args:
         ids (list): List of measurement ids to reset.
     """
-    times = []
+    times: list[datetime] = []
     for _id in ids:
         current = Measurement.objects.get(id=_id)
         current.is_validated = False
@@ -273,7 +274,8 @@ def reset_validated_entries(ids: list) -> None:
     station = current.station.station_code
     variable = current.variable.variable_code
     start_time, end_time = reporting.reformat_dates(
-        station, min(times).strftime("%Y-%m-%d"), max(times).strftime("%Y-%m-%d")
+        to_local_time(min(times)).strftime("%Y-%m-%d"),
+        to_local_time(max(times)).strftime("%Y-%m-%d"),
     )
 
     reporting.remove_report_data_in_range(station, variable, start_time, end_time)
@@ -288,12 +290,14 @@ def save_validated_days(data: pd.DataFrame) -> None:
     Args:
         data: The dataframe with the validated data.
     """
+    tz = timezone.get_current_timezone()
     validate = data[data["validate?"]]
     for _, row in validate.iterrows():
+        day = datetime.strptime(row["date"], "%Y-%m-%d").replace(tzinfo=tz)
         Measurement.objects.filter(
             station__station_code=row["station"],
             variable__variable_code=row["variable"],
-            time__date=row["date"],
+            time__date=day.date(),
         ).update(is_validated=True, is_active=not row["deactivate?"])
 
     station = validate["station"].iloc[0]
@@ -319,7 +323,7 @@ def reset_validated_days(
         start_date (str): Start date
         end_date (str): End date
     """
-    tz = zoneinfo.ZoneInfo(Station.objects.get(station_code=station).timezone)
+    tz = timezone.get_current_timezone()
 
     # To update we use the exact date range.
     start_date_ = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz)
@@ -330,6 +334,6 @@ def reset_validated_days(
         time__date__range=(start_date_.date(), end_date_.date()),
     ).update(is_validated=False, is_active=True)
 
-    # To remove reports we use an extendaed date range to include the whole month.
-    start_date_, end_date_ = reporting.reformat_dates(station, start_date, end_date)
+    # To remove reports we use an extended date range to include the whole month.
+    start_date_, end_date_ = reporting.reformat_dates(start_date, end_date)
     reporting.remove_report_data_in_range(station, variable, start_date_, end_date_)
