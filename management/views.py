@@ -337,8 +337,7 @@ class CustomCreateView(URLMixin, LoginRequiredMixin, CreateView):
         Returns:
             HttpResponse: Redirect to the detail view of the created object.
         """
-        if hasattr(form.instance, "owner"):
-            form.instance.owner = self.request.user
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
     @property
