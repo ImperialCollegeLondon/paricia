@@ -290,7 +290,6 @@ def save_temp_data_to_permanent(
     all_data = construct_matrix(file, file_format, station, data_import)
     if not all_data:
         msg = "No data to import. Is the chosen format correct?"
-        getLogger().error(msg)
         raise ValidationError(msg)
 
     must_cols = ["data_import_id", "station_id", "variable_id", "date", "value"]
@@ -323,10 +322,12 @@ def save_temp_data_to_permanent(
         ).delete()
 
         # Bulk add new data
-        model_instances = [Measurement(**record) for record in records]
+        def create_and_clean(**record):
+            instance = Measurement(**record)
+            instance.clean()
+            return instance
 
-        # Call the clean method
-        map(lambda x: x.clean(), model_instances)
+        model_instances = [create_and_clean(**record) for record in records]
 
         # WARNING: This is a bulk insert, so it will not call the save()
         # method nor send the pre_save or post_save signals for each instance.
