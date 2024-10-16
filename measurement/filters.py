@@ -2,7 +2,8 @@ from decimal import Decimal
 
 from django.db.models import Max, Min
 
-from ..utilities.timezones import to_local_time
+from utilities.timezones import to_local_time
+
 from .models import Measurement
 
 
