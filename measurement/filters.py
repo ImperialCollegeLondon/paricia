@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.db.models import Max, Min
 
+from ..utilities.timezones import to_local_time
 from .models import Measurement
 
 
@@ -75,12 +76,12 @@ def get_date_range(station: str, variable: str) -> tuple[str, str]:
     )
 
     first_date = (
-        filter_vals["first_date"].strftime("%Y-%m-%d")
+        to_local_time(filter_vals["first_date"]).strftime("%Y-%m-%d")
         if filter_vals["first_date"]
         else None
     )
     last_date = (
-        filter_vals["last_date"].strftime("%Y-%m-%d")
+        to_local_time(filter_vals["last_date"]).strftime("%Y-%m-%d")
         if filter_vals["last_date"]
         else None
     )
