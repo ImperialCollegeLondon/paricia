@@ -179,6 +179,7 @@ def download_csv_report(
             ),
             [],
         )
+    return None, []
 
 
 @app.callback(
