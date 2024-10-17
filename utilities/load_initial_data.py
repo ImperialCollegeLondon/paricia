@@ -44,7 +44,7 @@ for file in data_files:
         [
             "manage.py",
             "loaddata",
-            settings.BASE_DIR + "/utilities/data/owner/" + file + ".json",
+            settings.BASE_DIR + "/utilities/data/" + file + ".json",
         ]
     )
 
