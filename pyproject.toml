@@ -43,6 +43,7 @@ dependencies = [
     "pycountry",
     "Pillow",
     "django-tables2",
+    "plotly-resampler",
 ]
 
 [project.optional-dependencies]

@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+from plotly_resampler import FigureResampler
 
 
 def create_empty_plot() -> px.scatter:
@@ -26,7 +27,7 @@ def create_empty_plot() -> px.scatter:
 
 def create_validation_plot(
     data: pd.DataFrame, variable_name: str, field: str
-) -> px.scatter:
+) -> FigureResampler:
     """Creates plot for Validation app
 
     Args:
@@ -51,13 +52,15 @@ def create_validation_plot(
         "Not validated": "black",
     }
 
-    fig = px.scatter(
-        data,
-        x="time",
-        y=field,
-        color=data.apply(status, axis=1),
-        color_discrete_map=color_map,
-        labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
+    fig = FigureResampler(
+        px.scatter(
+            data,
+            x="time",
+            y=field,
+            color=data.apply(status, axis=1),
+            color_discrete_map=color_map,
+            labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
+        )
     )
 
     fig.update_traces(marker=dict(size=3))
@@ -83,7 +86,7 @@ def create_validation_plot(
 
 def create_report_plot(
     data: pd.DataFrame, variable_name: str, station_code: str
-) -> px.scatter:
+) -> FigureResampler:
     """Creates plot for Report app
 
     Args:
@@ -94,17 +97,22 @@ def create_report_plot(
     Returns:
         px.Scatter: Plot
     """
-    fig = px.scatter(
-        data,
-        x="time",
-        y=["value", "minimum", "maximum"],
-        title=f"{station_code} - {variable_name}",
-        labels={
-            "time": "Date",
-        },
+
+    fig = FigureResampler(
+        px.scatter(
+            data,
+            x="time",
+            y=["value", "minimum", "maximum"],
+            title=f"{station_code} - {variable_name}",
+            labels={
+                "time": "Date",
+            },
+        )
     )
 
-    fig.for_each_trace(lambda trace: trace.update(name=trace.name.title()))
+    fig.for_each_trace(
+        lambda trace: trace.update(name=trace.name.title()),
+    )
     fig.update_traces(marker=dict(size=3))
     fig.update_layout(
         legend=dict(

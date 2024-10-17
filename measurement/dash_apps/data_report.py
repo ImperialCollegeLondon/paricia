@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
-import plotly.express as px
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
+from plotly_resampler import FigureResampler
 
 from variable.models import Variable
 
@@ -111,7 +111,7 @@ def update_graph(
     variable: str,
     start_time: str,
     end_time: str,
-) -> px.line:
+) -> FigureResampler:
     try:
         data = get_report_data_from_db(
             station=station,
@@ -169,16 +169,18 @@ def download_csv_report(
                 .drop(columns=["station", "variable"])
                 .to_csv(index=False)
             )
+            return (
+                dict(
+                    content=file,
+                    filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
+                ),
+                [],
+            )
         except Exception as e:
             alert = dbc.Alert(f"Could not export data to CSV: {e}", color="warning")
             return None, [alert]
-        return (
-            dict(
-                content=file,
-                filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
-            ),
-            [],
-        )
+    else:
+        return None, []
 
 
 @app.callback(
