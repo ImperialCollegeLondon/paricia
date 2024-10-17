@@ -274,6 +274,8 @@ class TestValidationFunctions(TestCase):
         return mock
 
     def test_save_validated_data(self):
+        from django.utils import timezone
+
         from measurement.models import Measurement
         from measurement.validation import save_validated_entries
 
@@ -292,7 +294,7 @@ class TestValidationFunctions(TestCase):
         data["variable"] = self.variable.variable_code
 
         # Create some times
-        tz = zoneinfo.ZoneInfo(self.station.timezone)
+        tz = timezone.get_default_timezone()
         times = [datetime(2023, 1, i).replace(tzinfo=tz) for i in range(1, 4)]
 
         # Create sample Measurement objects
@@ -414,7 +416,7 @@ class TestValidationFunctions(TestCase):
             mock_filter.assert_called_once_with(
                 station__station_code="station1",
                 variable__variable_code="variable1",
-                time__date="2023-01-01",
+                time__date=datetime.strptime("2023-01-01", "%Y-%m-%d").date(),
             )
 
             # Assert that the update method was called with the correct arguments

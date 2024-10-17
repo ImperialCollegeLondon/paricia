@@ -1,4 +1,3 @@
-import zoneinfo
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -63,35 +62,35 @@ class TestReporting(TestCase):
 
         # Assert the time column is rounded to the nearest hour
         times = result.index.to_series()
-        pd.testing.assert_series_equal(times, times.dt.round("H"))
+        pd.testing.assert_series_equal(times, times.dt.round("h"))
 
     def test_reformat_dates(self):
+        from django.utils import timezone
+
         from measurement.reporting import reformat_dates
 
         # Define test parameters
-        station = self.station.station_code
+        tz = timezone.get_current_timezone()
         start_time = "2023-01-01"
         end_time = "2023-12-31"
 
         # Call the function under test
-        result = reformat_dates(station, start_time, end_time)
+        result = reformat_dates(start_time, end_time)
 
         # Assert the start and end dates
-        expected_start_time = datetime(
-            2023, 1, 1, tzinfo=ZoneInfo(self.station.timezone)
-        )
-        expected_end_time = datetime(
-            2023, 12, 31, 23, 59, 59, tzinfo=ZoneInfo(self.station.timezone)
-        )
+        expected_start_time = datetime(2023, 1, 1, tzinfo=tz)
+        expected_end_time = datetime(2023, 12, 31, 23, 59, 59, tzinfo=tz)
         self.assertEqual(result[0], expected_start_time)
         self.assertEqual(result[1], expected_end_time)
 
     def test_get_data_to_report(self):
+        from django.utils import timezone
+
         from measurement.models import Measurement
         from measurement.reporting import get_data_to_report
 
         # Create sample data
-        tz = zoneinfo.ZoneInfo(self.station.timezone)
+        tz = timezone.get_current_timezone()
         start_time = datetime(2023, 1, 1, 0, 0, tzinfo=tz)
         end_time = datetime(2023, 1, 3, 0, 0, tzinfo=tz)
 
@@ -129,11 +128,13 @@ class TestReporting(TestCase):
         self.assertEqual(result["time"].max(), end_time)
 
     def test_remove_report_data_in_range(self):
+        from django.utils import timezone
+
         from measurement.models import Report
         from measurement.reporting import remove_report_data_in_range
 
         # Create sample data
-        tz = zoneinfo.ZoneInfo(self.station.timezone)
+        tz = timezone.get_current_timezone()
         start_time = datetime(2023, 1, 1, 0, 0, tzinfo=tz)
         end_time = datetime(2023, 1, 3, 0, 0, tzinfo=tz)
 
@@ -208,6 +209,8 @@ class TestReporting(TestCase):
         self.assertEqual(report.report_type, "hourly")
 
     def test_get_report_data(self):
+        from django.utils import timezone
+
         from measurement.models import Report
         from measurement.reporting import get_report_data_from_db
 
@@ -215,18 +218,11 @@ class TestReporting(TestCase):
         start_time = "2023-01-01"
         end_time = "2023-01-03"
         report_type = "hourly"
+        tz = timezone.get_current_timezone()
 
         # Create mock Report objects
-        time1 = (
-            pd.Timestamp("2023-01-01")
-            .replace(tzinfo=ZoneInfo(self.station.timezone))
-            .to_pydatetime()
-        )
-        time2 = (
-            pd.Timestamp("2023-01-02")
-            .replace(tzinfo=ZoneInfo(self.station.timezone))
-            .to_pydatetime()
-        )
+        time1 = pd.Timestamp("2023-01-01").replace(tzinfo=tz).to_pydatetime()
+        time2 = pd.Timestamp("2023-01-02").replace(tzinfo=tz).to_pydatetime()
         reports = [
             Report(
                 station=self.station,
@@ -297,7 +293,7 @@ class TestReporting(TestCase):
         self.variable.nature = "value"
         self.variable.save()
 
-        start_time_, end_time_ = reformat_dates(station, start_time, end_time)
+        start_time_, end_time_ = reformat_dates(start_time, end_time)
 
         # Create mock Measurement objects
         measurements = [

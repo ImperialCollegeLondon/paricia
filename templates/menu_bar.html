@@ -1,6 +1,8 @@
 {% load django_bootstrap5 %}
 {% load static %}
 {% load i18n %}
+{% load tz %}
+{% get_current_timezone as current_timezone %}
 <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
   <div class="container-fluid">
     <a class="navbar-brand" rel="nofollow" href="{% url 'home' %}">Paricia</a>
@@ -124,6 +126,7 @@
     </ul>
     <!-- A separate menu for the user to log in or log out -->
     <ul class="nav navbar-nav pull-right">
+      <a class="nav-link" href="#">{{ current_timezone }}</a>
       <a class="nav-link"
          href="https://imperialcollegelondon.github.io/paricia/">Documentation</a>
       <!-- If the user is staff, we show the link to the admin -->

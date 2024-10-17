@@ -166,7 +166,9 @@ def download_csv_report(
                     end_time=end_time,
                     report_type=temporality,
                 )
-                .drop(columns=["station", "variable"])
+                .drop(columns=["station", "variable", "data_import_id"])
+                .dropna(axis=1, how="all")
+                .dropna(axis=0)
                 .to_csv(index=False)
             )
         except Exception as e:
@@ -179,6 +181,7 @@ def download_csv_report(
             ),
             [],
         )
+    return None, []
 
 
 @app.callback(
