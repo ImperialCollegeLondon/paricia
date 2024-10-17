@@ -31,7 +31,7 @@ def calculate_reports(
         cols.append("minimum")
 
     # Calculate the reports
-    hourly = data[cols].resample("H", on="time").agg(operation)
+    hourly = data[cols].resample("h", on="time").agg(operation)
     daily = hourly.resample("D").agg(operation)
     monthly = daily.resample("MS").agg(operation)
 
@@ -42,7 +42,7 @@ def calculate_reports(
         return modes[0] if not modes.empty else None
 
     cols2 = ["time", "data_import_id"]
-    hourly["data_import_id"] = data[cols2].resample("H", on="time").agg(mode)
+    hourly["data_import_id"] = data[cols2].resample("h", on="time").agg(mode)
     daily["data_import_id"] = data[cols2].resample("D", on="time").agg(mode)
     monthly["data_import_id"] = data[cols2].resample("MS", on="time").agg(mode)
 
