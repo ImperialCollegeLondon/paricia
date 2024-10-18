@@ -1,6 +1,9 @@
 from decimal import Decimal
 
-from django.db.models import Max, Min
+from django.db.models import Max, Min, Q
+
+from station.models import Station
+from variable.models import Variable
 
 from .models import Measurement
 
@@ -17,14 +20,13 @@ def get_station_options(
     Returns:
         tuple[list[dict], str]: Options for the station dropdown, default value
     """
-    stations_with_measurements = Measurement.objects.values_list(
-        "station__station_code", flat=True
-    ).distinct()
+    stations_with_measurements = Station.objects.filter(
+        ~Q(variables=""), station_code__in=station_codes
+    ).values_list("station_code", flat=True)
 
     station_options = [
         {"label": station_code, "value": station_code}
-        for station_code in station_codes
-        if station_code in stations_with_measurements
+        for station_code in stations_with_measurements
     ]
     station_value = station_options[0]["value"] if station_options else None
     return station_options, station_value
@@ -39,19 +41,19 @@ def get_variable_options(station: str) -> tuple[list[dict], str]:
     Returns:
         tuple[list[dict], str]: Options for the variable dropdown, default value
     """
-    variable_dicts = (
-        Measurement.objects.filter(station__station_code=station)
-        .values("variable__name", "variable__variable_code")
-        .distinct()
+    variable_codes = Station.objects.get(station_code=station).variables_list
+    variable_dicts = Variable.objects.filter(variable_code__in=variable_codes).values(
+        "name", "variable_code"
     )
 
     variable_options = [
         {
-            "label": variable["variable__name"],
-            "value": variable["variable__variable_code"],
+            "label": variable["name"],
+            "value": variable["variable_code"],
         }
         for variable in variable_dicts
     ]
+
     variable_value = variable_options[0]["value"] if variable_options else None
     return variable_options, variable_value
 
