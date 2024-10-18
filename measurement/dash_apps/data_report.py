@@ -1,5 +1,7 @@
+from logging import getLogger
+
 import dash_bootstrap_components as dbc
-import plotly.express as px
+import plotly.graph_objs as go
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
 
@@ -8,6 +10,9 @@ from variable.models import Variable
 from ..filters import get_date_range, get_station_options, get_variable_options
 from ..reporting import get_report_data_from_db
 from .plots import create_empty_plot, create_report_plot
+
+MAX_POINTS = 1000
+"""Maximum number of points to display in the graph."""
 
 # Create a Dash app
 app = DjangoDash(
@@ -103,6 +108,7 @@ app.layout = html.Div(
         Input("variable_drop", "value"),
         Input("date_range_picker", "start_date"),
         Input("date_range_picker", "end_date"),
+        Input("data_report_graph", "relayoutData"),
     ],
 )
 def update_graph(
@@ -111,26 +117,42 @@ def update_graph(
     variable: str,
     start_time: str,
     end_time: str,
-) -> px.line:
+    relayout_data: dict,
+    callback_context,
+) -> go.Figure:
+    ctx = callback_context
+    triggered_id = ctx.triggered[0]["prop_id"].split(".")[0] if ctx.triggered else ""
+
+    # This is cached, so it's not a big deal to call it multiple times
+    data = get_report_data_from_db(
+        station=station,
+        variable=variable,
+        start_time=start_time,
+        end_time=end_time,
+        report_type=temporality,
+    )
+    if data.empty:
+        return create_empty_plot()
+
+    if triggered_id == "data_report_graph" and "xaxis.range[0]" in relayout_data:
+        start = relayout_data["xaxis.range[0]"]
+        end = relayout_data["xaxis.range[1]"]
+        data = data[(data["time"] >= start) & (data["time"] <= end)]
+
     try:
-        data = get_report_data_from_db(
-            station=station,
-            variable=variable,
-            start_time=start_time,
-            end_time=end_time,
-            report_type=temporality,
-        )
+        every = max(1, len(data) // MAX_POINTS)
+        resampled = data.iloc[::every]
+
         plot = create_report_plot(
-            data=data,
+            data=resampled,
             variable_name=Variable.objects.get(variable_code=variable).name,
             station_code=station,
         )
+        return plot
 
     except Exception as e:
-        print("Error:", e)
-        plot = create_empty_plot()
-
-    return plot
+        getLogger().error(e)
+        return create_empty_plot()
 
 
 @app.callback(
@@ -169,16 +191,18 @@ def download_csv_report(
                 .drop(columns=["station", "variable"])
                 .to_csv(index=False)
             )
+            return (
+                dict(
+                    content=file,
+                    filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
+                ),
+                [],
+            )
         except Exception as e:
             alert = dbc.Alert(f"Could not export data to CSV: {e}", color="warning")
             return None, [alert]
-        return (
-            dict(
-                content=file,
-                filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
-            ),
-            [],
-        )
+    else:
+        return None, []
 
 
 @app.callback(

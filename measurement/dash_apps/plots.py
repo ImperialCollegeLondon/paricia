@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+from plotly import graph_objs as go
 
 
 def create_empty_plot() -> px.scatter:
@@ -26,7 +27,7 @@ def create_empty_plot() -> px.scatter:
 
 def create_validation_plot(
     data: pd.DataFrame, variable_name: str, field: str
-) -> px.scatter:
+) -> go.Figure:
     """Creates plot for Validation app
 
     Args:
@@ -35,7 +36,7 @@ def create_validation_plot(
         field (str): 'value', 'minimum' or 'maximum'
 
     Returns:
-        px.Scatter: Plot
+        go.Figure: Plot
     """
 
     def status(row):
@@ -83,7 +84,7 @@ def create_validation_plot(
 
 def create_report_plot(
     data: pd.DataFrame, variable_name: str, station_code: str
-) -> px.scatter:
+) -> go.Figure:
     """Creates plot for Report app
 
     Args:
@@ -92,8 +93,9 @@ def create_report_plot(
         station_code (str): Station code
 
     Returns:
-        px.Scatter: Plot
+        go.Figure: Plot
     """
+
     fig = px.scatter(
         data,
         x="time",
@@ -104,7 +106,9 @@ def create_report_plot(
         },
     )
 
-    fig.for_each_trace(lambda trace: trace.update(name=trace.name.title()))
+    fig.for_each_trace(
+        lambda trace: trace.update(name=trace.name.title()),
+    )
     fig.update_traces(marker=dict(size=3))
     fig.update_layout(
         legend=dict(

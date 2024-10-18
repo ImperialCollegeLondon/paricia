@@ -4,10 +4,10 @@ from decimal import Decimal
 import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
-import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
+from plotly import graph_objs as go
 
 from variable.models import Variable
 
