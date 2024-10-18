@@ -148,6 +148,11 @@ def update_graph(
             variable_name=Variable.objects.get(variable_code=variable).name,
             station_code=station,
         )
+        if "xaxis.range[0]" in relayout_data:
+            plot["layout"]["xaxis"]["range"] = [
+                relayout_data["xaxis.range[0]"],
+                relayout_data["xaxis.range[1]"],
+            ]
         return plot
 
     except Exception as e:
