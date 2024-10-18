@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.express as px
-from plotly_resampler import FigureResampler
+from plotly import graph_objs as go
 
 
 def create_empty_plot() -> px.scatter:
@@ -27,7 +27,7 @@ def create_empty_plot() -> px.scatter:
 
 def create_validation_plot(
     data: pd.DataFrame, variable_name: str, field: str
-) -> FigureResampler:
+) -> go.Figure:
     """Creates plot for Validation app
 
     Args:
@@ -36,7 +36,7 @@ def create_validation_plot(
         field (str): 'value', 'minimum' or 'maximum'
 
     Returns:
-        px.Scatter: Plot
+        go.Figure: Plot
     """
 
     def status(row):
@@ -52,15 +52,13 @@ def create_validation_plot(
         "Not validated": "black",
     }
 
-    fig = FigureResampler(
-        px.scatter(
-            data,
-            x="time",
-            y=field,
-            color=data.apply(status, axis=1),
-            color_discrete_map=color_map,
-            labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
-        )
+    fig = px.scatter(
+        data,
+        x="time",
+        y=field,
+        color=data.apply(status, axis=1),
+        color_discrete_map=color_map,
+        labels={"time": "Date", field: f"{variable_name} ({field.capitalize()})"},
     )
 
     fig.update_traces(marker=dict(size=3))
@@ -86,7 +84,7 @@ def create_validation_plot(
 
 def create_report_plot(
     data: pd.DataFrame, variable_name: str, station_code: str
-) -> FigureResampler:
+) -> go.Figure:
     """Creates plot for Report app
 
     Args:
@@ -95,19 +93,17 @@ def create_report_plot(
         station_code (str): Station code
 
     Returns:
-        px.Scatter: Plot
+        go.Figure: Plot
     """
 
-    fig = FigureResampler(
-        px.scatter(
-            data,
-            x="time",
-            y=["value", "minimum", "maximum"],
-            title=f"{station_code} - {variable_name}",
-            labels={
-                "time": "Date",
-            },
-        )
+    fig = px.scatter(
+        data,
+        x="time",
+        y=["value", "minimum", "maximum"],
+        title=f"{station_code} - {variable_name}",
+        labels={
+            "time": "Date",
+        },
     )
 
     fig.for_each_trace(

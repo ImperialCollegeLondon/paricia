@@ -1,5 +1,6 @@
 import zoneinfo
 from datetime import datetime
+from functools import lru_cache
 
 import pandas as pd
 
@@ -177,6 +178,7 @@ def save_report_data(data: pd.DataFrame) -> None:
     )
 
 
+@lru_cache
 def get_report_data_from_db(
     station: str,
     variable: str,
