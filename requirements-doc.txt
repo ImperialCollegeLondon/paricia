@@ -183,7 +183,7 @@ mkdocstrings==0.26.2
     # via
     #   Paricia (pyproject.toml)
     #   mkdocstrings-python
-mkdocstrings-python==1.12.1
+mkdocstrings-python==1.12.2
     # via Paricia (pyproject.toml)
 nest-asyncio==1.6.0
     # via dash
