@@ -3,9 +3,8 @@ from decimal import Decimal
 from django.db.models import Max, Min, Q
 
 from station.models import Station
-from variable.models import Variable
-
 from utilities.timezones import to_local_time
+from variable.models import Variable
 
 from .models import Measurement
 
