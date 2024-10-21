@@ -321,6 +321,8 @@ class TestReporting(TestCase):
             )
             self.assertEqual(len(report), 0)
 
+        get_report_data_from_db.cache_clear()
+
         # Call the function under test. If the function is working correctly, it will
         # serves as integration tests for all the functions used in the process.
         launch_reports_calculation(station, variable, start_time, end_time)
