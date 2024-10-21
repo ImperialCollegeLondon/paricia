@@ -22,6 +22,11 @@
   </head>
   <body>
     <div role="main" class="container py-3">
+      <script>
+        // Timezone settings
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // e.g. "America/New_York"
+        document.cookie = "django_timezone=" + timezone;
+      </script>
       {% include "menu_bar.html" %}
       {% block content %}
       {% endblock content %}
