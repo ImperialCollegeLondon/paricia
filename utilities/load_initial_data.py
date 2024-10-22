@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.management import execute_from_command_line
 
 from measurement.models import Measurement
+from station.functions import update_variables_for_station
 
 # The order matters so that foreignkey objects exist when an entry is created.
 # The files are named app_model
@@ -52,3 +53,5 @@ for file in data_files:
 for meas in Measurement.objects.all():
     meas.full_clean()
     meas.save()
+
+update_variables_for_station()

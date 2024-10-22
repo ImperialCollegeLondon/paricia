@@ -1,6 +1,8 @@
 from logging import getLogger
 
-from huey.contrib.djhuey import on_commit_task
+from huey.contrib.djhuey import on_commit_task, task
+
+from station.functions import update_variables_for_station
 
 from .functions import save_temp_data_to_permanent
 from .models import DataImport
@@ -26,6 +28,7 @@ def ingest_data(data_import_pk: int) -> None:
         data_import.start_date, data_import.end_date, data_import.records = (
             save_temp_data_to_permanent(data_import)
         )
+        update_variables_for_station(data_import.station.station_code)
         data_import.status = "C"
         data_import.log = "Data ingestion completed successfully"
         getLogger("huey").info("Data ingestion for %s completed", data_import)
@@ -35,3 +38,12 @@ def ingest_data(data_import_pk: int) -> None:
         getLogger("huey").exception("Error ingesting data for %s", data_import)
     finally:
         data_import.save()
+        clear_cache()
+
+
+@task()
+def clear_cache() -> None:
+    """Clear the cache."""
+    from measurement.reporting import get_report_data_from_db
+
+    get_report_data_from_db.cache_clear()

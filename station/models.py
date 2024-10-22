@@ -306,6 +306,7 @@ class Station(PermissionsBase):
         influence_km (Decimal): Area of influence in km2.
         station_file (ImageField): Photography of the station.
         station_external (bool): Is the station external?
+        variables (str): Comma-separated list of variables measured by the station.
     """
 
     VISIBILITY_LEVELS = [
@@ -433,6 +434,26 @@ class Station(PermissionsBase):
     station_external = models.BooleanField(
         "External", default=False, help_text="Is the station external?"
     )
+    variables = models.CharField(
+        "Stored variables",
+        max_length=100,
+        null=False,
+        blank=False,
+        default="",
+        editable=False,
+        help_text="Comma-separated list of variables measured by the station.",
+    )
+
+    @property
+    def variables_list(self) -> list[str]:
+        """Return the list of variables measured by the station.
+
+        Only variables with data in the database are returned.
+
+        Returns:
+            list[str]: List of variables measured by the station.
+        """
+        return self.variables.split(",") if self.variables else []
 
     def __str__(self) -> str:
         """Return the station code."""
