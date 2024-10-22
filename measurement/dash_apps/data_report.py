@@ -103,25 +103,35 @@ app.layout = html.Div(
 @app.callback(
     Output("data_report_graph", "figure"),
     [
-        Input("temporality_drop", "value"),
-        Input("station_drop", "value"),
-        Input("variable_drop", "value"),
-        Input("date_range_picker", "start_date"),
-        Input("date_range_picker", "end_date"),
         Input("data_report_graph", "relayoutData"),
+        Input("display_button", "n_clicks"),
+    ],
+    [
+        State("temporality_drop", "value"),
+        State("station_drop", "value"),
+        State("variable_drop", "value"),
+        State("date_range_picker", "start_date"),
+        State("date_range_picker", "end_date"),
+        State("data_report_graph", "figure"),
     ],
 )
 def update_graph(
+    relayout_data: dict,
+    n_clicks: int,
     temporality: str,
     station: str,
     variable: str,
     start_time: str,
     end_time: str,
-    relayout_data: dict,
+    figure: go.Figure,
     callback_context,
 ) -> go.Figure:
     ctx = callback_context
     triggered_id = ctx.triggered[0]["prop_id"].split(".")[0] if ctx.triggered else ""
+
+    if not n_clicks:
+        # After the first load, n_clicks is always > 0, so zooming works
+        return figure
 
     # This is cached, so it's not a big deal to call it multiple times
     data = get_report_data_from_db(
@@ -148,6 +158,11 @@ def update_graph(
             variable_name=Variable.objects.get(variable_code=variable).name,
             station_code=station,
         )
+        if "xaxis.range[0]" in relayout_data:
+            plot["layout"]["xaxis"]["range"] = [
+                relayout_data["xaxis.range[0]"],
+                relayout_data["xaxis.range[1]"],
+            ]
         return plot
 
     except Exception as e:
@@ -212,17 +227,37 @@ def download_csv_report(
         Output("data_alert_div", "children"),
         Output("csv_div", "children"),
     ],
-    Input("data_report_graph", "figure"),
+    [
+        Input("temporality_drop", "value"),
+        Input("station_drop", "value"),
+        Input("variable_drop", "value"),
+        Input("date_range_picker", "start_date"),
+        Input("date_range_picker", "end_date"),
+    ],
+    State("data_report_graph", "figure"),
 )
-def update_alert(figure):
+def update_alert(
+    temporality: str,
+    station: str,
+    variable: str,
+    start_time: str,
+    end_time: str,
+    figure: go.Figure,
+):
     if figure["layout"]["title"]["text"] == "Data not found":
         alert = dbc.Alert(
             "No data was found with the selected criteria", color="warning"
         )
         return [alert], []
     else:
-        button = html.Button("Download CSV", id="csv_button")
-        return [], [button]
+        download = html.Button("Download CSV", id="csv_button")
+        display = html.Button(
+            "Display data",
+            id="display_button",
+            style={"margin-left": "10px"},
+            n_clicks=0,
+        )
+        return [], [download, display]
 
 
 @app.callback(

@@ -101,7 +101,7 @@ djlint==1.35.2
     # via Paricia (pyproject.toml)
 dpd-components==0.1.0
     # via django-plotly-dash
-drf-yasg==1.21.7
+drf-yasg==1.21.8
     # via Paricia (pyproject.toml)
 editorconfig==0.12.4
     # via
@@ -245,7 +245,7 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==2.2.3
     # via requests
-virtualenv==20.26.6
+virtualenv==20.27.0
     # via pre-commit
 werkzeug==3.0.4
     # via

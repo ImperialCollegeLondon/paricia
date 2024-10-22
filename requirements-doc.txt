@@ -92,7 +92,7 @@ djangorestframework-simplejwt==5.3.1
     # via Paricia (pyproject.toml)
 dpd-components==0.1.0
     # via django-plotly-dash
-drf-yasg==1.21.7
+drf-yasg==1.21.8
     # via Paricia (pyproject.toml)
 et-xmlfile==1.1.0
     # via openpyxl

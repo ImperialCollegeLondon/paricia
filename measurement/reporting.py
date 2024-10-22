@@ -173,7 +173,7 @@ def save_report_data(data: pd.DataFrame) -> None:
     )
 
 
-@lru_cache
+@lru_cache(1)
 def get_report_data_from_db(
     station: str,
     variable: str,
