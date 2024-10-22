@@ -102,7 +102,7 @@ flask==3.0.3
     #   django-plotly-dash
 ghp-import==2.1.0
     # via mkdocs
-griffe==1.4.1
+griffe==1.5.1
     # via mkdocstrings-python
 huey==2.5.2
     # via Paricia (pyproject.toml)
@@ -183,7 +183,7 @@ mkdocstrings==0.26.2
     # via
     #   Paricia (pyproject.toml)
     #   mkdocstrings-python
-mkdocstrings-python==1.12.1
+mkdocstrings-python==1.12.2
     # via Paricia (pyproject.toml)
 nest-asyncio==1.6.0
     # via dash
