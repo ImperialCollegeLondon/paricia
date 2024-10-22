@@ -48,6 +48,8 @@ class TestValidationFunctions(TestCase):
         Measurement.objects.bulk_create(records)
 
     def test_get_data_to_validate(self):
+        from datetime import timedelta
+
         from measurement.models import Measurement
         from measurement.validation import get_data_to_validate
 
@@ -61,8 +63,8 @@ class TestValidationFunctions(TestCase):
         data = get_data_to_validate(
             station=self.station.station_code,
             variable=self.variable.variable_code,
-            start_time=self.start.strftime("%Y-%m-%d"),
-            end_time=self.end.strftime("%Y-%m-%d"),
+            start_time=(self.start - timedelta(days=1)).strftime("%Y-%m-%d"),
+            end_time=(self.end + timedelta(days=1)).strftime("%Y-%m-%d"),
             is_validated=False,
         )
         self.assertEqual(len(data), len(self.date_range) - 1)
