@@ -62,6 +62,7 @@ def calculate_reports(
 def reformat_dates(
     start_time: str,
     end_time: str,
+    whole_months: bool = True,
 ) -> tuple[datetime, datetime]:
     """Reformat dates so they have the right timezone and cover full days.
 
@@ -70,22 +71,33 @@ def reformat_dates(
     and the timezone is set to the station timezone.
 
     Args:
-        station: Station of interest.
-        variable: Variable of interest.
         start_time: Start time.
         end_time: End time.
+        whole_months: Whether to cover whole months or not.
 
     Returns:
         A series with the dates to be validated.
     """
     tz = timezone.get_current_timezone()
-    start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(day=1, tzinfo=tz)
-    end_time_ = (
-        datetime.strptime(end_time, "%Y-%m-%d").replace(day=1)
-        + pd.DateOffset(months=1)
-        - pd.DateOffset(seconds=1)
-    )
-    end_time_ = datetime.fromtimestamp(end_time_.timestamp()).astimezone(tz)
+
+    if whole_months:
+        start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(
+            day=1, tzinfo=tz
+        )
+        end_time_ = (
+            datetime.strptime(end_time, "%Y-%m-%d").replace(day=1)
+            + pd.DateOffset(months=1)
+            - pd.DateOffset(seconds=1)
+        )
+        end_time_ = datetime.fromtimestamp(end_time_.timestamp()).astimezone(tz)
+    else:
+        start_time_ = datetime.strptime(start_time, "%Y-%m-%d").replace(tzinfo=tz)
+        end_time_ = (
+            datetime.strptime(end_time, "%Y-%m-%d")
+            + pd.DateOffset(days=1)
+            - pd.DateOffset(seconds=1)
+        )
+        end_time_ = datetime.fromtimestamp(end_time_.timestamp()).astimezone(tz)
     return start_time_, end_time_
 
 
@@ -180,6 +192,7 @@ def get_report_data_from_db(
     start_time: str,
     end_time: str,
     report_type: str,
+    whole_months: bool = True,
 ) -> pd.DataFrame:
     """Retrieves the report data from the database.
 
@@ -192,11 +205,12 @@ def get_report_data_from_db(
         start_time: Start time.
         end_time: End time.
         report_type: Type of report to retrieve.
+        whole_months: Whether to cover whole months or not.
 
     Returns:
         A dataframe with the report data.
     """
-    start_time_, end_time_ = reformat_dates(start_time, end_time)
+    start_time_, end_time_ = reformat_dates(start_time, end_time, whole_months)
 
     if report_type == "measurement":
         data = pd.DataFrame.from_records(
