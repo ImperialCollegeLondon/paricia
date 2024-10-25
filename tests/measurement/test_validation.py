@@ -508,3 +508,57 @@ class TestValidationFunctions(TestCase):
                 is_validated=True,
                 is_active=True,
             )
+
+    def test_save_validated_days_error(self):
+        from measurement.models import Measurement
+        from measurement.validation import save_validated_days
+
+        # Create sample data
+        data = pd.DataFrame(
+            {
+                "station": ["station1", "station2"],
+                "variable": ["variable1", "variable2"],
+                "date": ["2023-01-01", "2023-01-02"],
+                "validate?": [True, False],
+                "deactivate?": [False, True],
+            }
+        )
+
+        def raise_exception(*args):
+            raise Exception("launch_reports_calculation was called")
+
+        # Mock the Measurement.objects.filter and Measurement.objects.update methods
+        with patch.object(Measurement.objects, "filter") as mock_filter:
+            # Configure the mocks
+            class MockQuerySet:
+                update = MagicMock()
+
+            mock_query_set = MockQuerySet()
+            mock_filter.return_value = mock_query_set
+
+            launch_report_mock = self.create_patch(
+                "measurement.reporting.launch_reports_calculation"
+            )
+            launch_report_mock.side_effect = raise_exception
+
+            reset_validated_days_mock = self.create_patch(
+                "measurement.validation.reset_validated_days"
+            )
+            # Call the function under test
+            self.assertRaises(Exception, save_validated_days, data)
+
+            # Assert the expected call to the launch_report_calculation function
+            launch_report_mock.assert_called_once_with(
+                "station1",
+                "variable1",
+                "2023-01-01",
+                "2023-01-01",
+            )
+
+            # Assert the expected call to the reset_validated_days function
+            reset_validated_days_mock.assert_called_once_with(
+                "station1",
+                "variable1",
+                "2023-01-01",
+                "2023-01-01",
+            )
