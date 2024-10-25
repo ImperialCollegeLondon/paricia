@@ -171,7 +171,7 @@ def generate_daily_summary(
         report["minimum"] = datagroup["minimum"].min()
 
     # Count the number of entries per day and flag the suspicious ones
-    # count_report = flag_suspicious_daily_count(datagroup["value"].count(), null_limit)
+    count_report = flag_suspicious_daily_count(datagroup["value"].count(), null_limit)
 
     # Group the suspicious data by day and calculate the sum
     suspiciousgroup = suspicious.groupby(data.time.dt.date)
@@ -179,7 +179,7 @@ def generate_daily_summary(
     suspicious_report["total_suspicious_entries"] = suspicious_report.sum(axis=1)
 
     # Put together the final report
-    report = pd.concat([report, suspicious_report], axis=1)
+    report = pd.concat([report, suspicious_report, count_report], axis=1)
     report = report.sort_index().reset_index().rename(columns={"index": "date"})
     report.date = pd.to_datetime(report.date)
     return report
