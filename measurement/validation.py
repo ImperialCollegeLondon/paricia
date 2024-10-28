@@ -252,7 +252,12 @@ def save_validated_entries(data: pd.DataFrame) -> None:
     start_time = min(times).astimezone(tz).strftime("%Y-%m-%d")
     end_time = max(times).astimezone(tz).strftime("%Y-%m-%d")
 
-    reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    try:
+        reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    except Exception as e:
+        ids = data[data["validate?"]]["id"].tolist()
+        reset_validated_entries(ids)
+        raise e
 
 
 def reset_validated_entries(ids: list) -> None:
@@ -305,7 +310,11 @@ def save_validated_days(data: pd.DataFrame) -> None:
     start_time = validate["date"].min()
     end_time = validate["date"].max()
 
-    reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    try:
+        reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    except Exception as e:
+        reset_validated_days(station, variable, start_time, end_time)
+        raise e
 
 
 def reset_validated_days(
