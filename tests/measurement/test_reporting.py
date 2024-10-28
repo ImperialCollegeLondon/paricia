@@ -71,8 +71,8 @@ class TestReporting(TestCase):
 
         # Define test parameters
         tz = timezone.get_current_timezone()
-        start_time = "2023-01-01"
-        end_time = "2023-12-31"
+        start_time = "2023-01-06"
+        end_time = "2023-12-15"
 
         # Call the function under test
         result = reformat_dates(start_time, end_time)
@@ -80,6 +80,25 @@ class TestReporting(TestCase):
         # Assert the start and end dates
         expected_start_time = datetime(2023, 1, 1, tzinfo=tz)
         expected_end_time = datetime(2023, 12, 31, 23, 59, 59, tzinfo=tz)
+        self.assertEqual(result[0], expected_start_time)
+        self.assertEqual(result[1], expected_end_time)
+
+    def test_reformat_dates_partial_months(self):
+        from django.utils import timezone
+
+        from measurement.reporting import reformat_dates
+
+        # Define test parameters
+        tz = timezone.get_current_timezone()
+        start_time = "2023-01-06"
+        end_time = "2023-12-15"
+
+        # Call the function under test
+        result = reformat_dates(start_time, end_time, whole_months=False)
+
+        # Assert the start and end dates
+        expected_start_time = datetime(2023, 1, 6, tzinfo=tz)
+        expected_end_time = datetime(2023, 12, 15, 23, 59, 59, tzinfo=tz)
         self.assertEqual(result[0], expected_start_time)
         self.assertEqual(result[1], expected_end_time)
 
