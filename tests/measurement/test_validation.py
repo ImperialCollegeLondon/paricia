@@ -76,8 +76,8 @@ class TestValidationFunctions(TestCase):
         data = get_data_to_validate(
             station=self.station.station_code,
             variable=self.variable.variable_code,
-            start_time=self.start.strftime("%Y-%m-%d"),
-            end_time=self.end.strftime("%Y-%m-%d"),
+            start_time=(self.start - timedelta(days=1)).strftime("%Y-%m-%d"),
+            end_time=(self.end + timedelta(days=1)).strftime("%Y-%m-%d"),
             is_validated=True,
         )
         self.assertEqual(len(data), 1)
@@ -179,6 +179,8 @@ class TestValidationFunctions(TestCase):
                 "suspicious_maximum_limits": [1, 1],
                 "suspicious_minimum_limits": [2, 0],
                 "total_suspicious_entries": [5, 1],
+                "daily_count_fraction": [4.0, 1.0],
+                "suspicious_daily_count": [True, False],
             },
         )
         pd.testing.assert_frame_equal(result, expected)
@@ -198,6 +200,8 @@ class TestValidationFunctions(TestCase):
                 "suspicious_maximum_limits": [1, 1],
                 "suspicious_minimum_limits": [2, 0],
                 "total_suspicious_entries": [5, 1],
+                "daily_count_fraction": [4.0, 1.0],
+                "suspicious_daily_count": [True, False],
             },
         )
         pd.testing.assert_frame_equal(result, expected)
