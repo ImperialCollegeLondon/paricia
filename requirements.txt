@@ -174,7 +174,7 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==2.2.3
     # via requests
-werkzeug==3.0.4
+werkzeug==3.0.6
     # via
     #   dash
     #   django-plotly-dash
