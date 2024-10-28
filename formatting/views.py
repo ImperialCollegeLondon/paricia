@@ -1,3 +1,6 @@
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
 from management.views import (
     CustomCreateView,
     CustomDeleteView,
@@ -16,6 +19,22 @@ from .tables import (
     FormatTable,
     TimeTable,
 )
+
+
+def linkify(pk: int, address: str, label: str) -> str:
+    """Return a link to the address with the label.
+
+    Args:
+        pk (int): Primary key of the object.
+        address (str): URL address to link to. It must be a named URL, eg
+            'app_name:model_detail'.
+        label (str): Label to display on the link.
+
+    Returns:
+        str: HTML link to the address.
+    """
+    url = reverse(address, kwargs={"pk": pk})
+    return mark_safe(f"<a href='{url}' class='btn btn-link'>{label}</a>")
 
 
 # Detail views for formatting app.
@@ -47,6 +66,46 @@ class FormatDetailView(CustomDetailView):
     """View to view a format."""
 
     model = Format
+
+    def get_inline(self) -> dict | None:
+        """Return the inline data for the format.
+
+        If provided, this method should return a dictionary with the inline data to be
+        shown in the detail view. The dictionary should have the following keys:
+
+        - title: Title of the inline data.
+        - header: List with the header of the table.
+        - objects: List with the objects to be shown in the table. Each object should be
+            a list with the same length as the header.
+
+        Returns:
+            dict | None: Inline data for the format.
+        """
+        objects = [
+            [
+                linkify(obj.pk, "formatting:classification_detail", obj.pk),
+                obj.value,
+                obj.variable.name,
+                linkify(
+                    obj.variable.pk,
+                    "variable:variable_detail",
+                    obj.variable.variable_code,
+                ),
+                linkify(
+                    obj.variable.unit.pk, "variable:unit_detail", obj.variable.unit
+                ),
+            ]
+            for obj in self.object.classification_set.all()
+        ]
+        return {
+            "title": "Classifications",
+            "header": ["Id", "Column", "Variable", "Code", "Unit"],
+            "objects": objects,
+        }
+
+    def get_url(self, pk, address, label):
+        url = reverse(address, kwargs={"pk": pk})
+        return mark_safe(f"<a href='{url}' class='btn btn-link'>{label}</a>")
 
 
 class ClassificationDetailView(CustomDetailView):
