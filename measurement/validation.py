@@ -171,7 +171,7 @@ def generate_daily_summary(
         report["minimum"] = datagroup["minimum"].min()
 
     # Count the number of entries per day and flag the suspicious ones
-    # count_report = flag_suspicious_daily_count(datagroup["value"].count(), null_limit)
+    count_report = flag_suspicious_daily_count(datagroup["value"].count(), null_limit)
 
     # Group the suspicious data by day and calculate the sum
     suspiciousgroup = suspicious.groupby(data.time.dt.date)
@@ -179,7 +179,7 @@ def generate_daily_summary(
     suspicious_report["total_suspicious_entries"] = suspicious_report.sum(axis=1)
 
     # Put together the final report
-    report = pd.concat([report, suspicious_report], axis=1)
+    report = pd.concat([report, suspicious_report, count_report], axis=1)
     report = report.sort_index().reset_index().rename(columns={"index": "date"})
     report.date = pd.to_datetime(report.date)
     return report
@@ -252,7 +252,12 @@ def save_validated_entries(data: pd.DataFrame) -> None:
     start_time = min(times).astimezone(tz).strftime("%Y-%m-%d")
     end_time = max(times).astimezone(tz).strftime("%Y-%m-%d")
 
-    reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    try:
+        reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    except Exception as e:
+        ids = data[data["validate?"]]["id"].tolist()
+        reset_validated_entries(ids)
+        raise e
 
 
 def reset_validated_entries(ids: list) -> None:
@@ -305,7 +310,11 @@ def save_validated_days(data: pd.DataFrame) -> None:
     start_time = validate["date"].min()
     end_time = validate["date"].max()
 
-    reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    try:
+        reporting.launch_reports_calculation(station, variable, start_time, end_time)
+    except Exception as e:
+        reset_validated_days(station, variable, start_time, end_time)
+        raise e
 
 
 def reset_validated_days(

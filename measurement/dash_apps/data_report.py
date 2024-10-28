@@ -140,6 +140,7 @@ def update_graph(
         start_time=start_time,
         end_time=end_time,
         report_type=temporality,
+        whole_months=False,
     )
     if data.empty:
         return create_empty_plot()
@@ -202,6 +203,7 @@ def download_csv_report(
                     start_time=start_time,
                     end_time=end_time,
                     report_type=temporality,
+                    whole_months=False,
                 )
                 .drop(columns=["station", "variable", "data_import_id"])
                 .dropna(axis=1, how="all")
