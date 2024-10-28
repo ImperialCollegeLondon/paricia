@@ -254,7 +254,7 @@ werkzeug==3.0.6
     #   flask
 wheel==0.44.0
     # via pip-tools
-whitenoise==6.7.0
+whitenoise==6.8.1
     # via Paricia (pyproject.toml)
 zipp==3.20.2
     # via importlib-metadata
