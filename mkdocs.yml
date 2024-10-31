@@ -3,6 +3,8 @@ repo_url: https://github.com/ImperialCollegeLondon/paricia
 
 theme:
   name: "material"
+  features:
+    - navigation.tabs
 
 markdown_extensions:
   - admonition
@@ -43,19 +45,19 @@ plugins:
         ignore_classes: ["no-caption"]
 
 nav:
-  - Introduction: index.md
-  - Contributing: contributing.md
-  - Permissions: permissions.md
-  - Importing Data: importing_data.md
-  - Validation: validation.md
-  - Administration: admin.md
-  - Applications:
-      - Index: Applications/index.md
-      - Formatting: Applications/formatting.md
-      - Variables: Applications/variable.md
-      - Sensors: Applications/sensor.md
-      - Stations: Applications/station.md
-      - Measurements: Applications/measurement.md
-      - Importing: Applications/importing.md
-  # defer to gen-files + literate-nav
-  - Code Reference: reference/
+  - User Guide:
+      - Permissions: permissions.md
+      - Importing Data: importing_data.md
+      - Validation: validation.md
+  - Developer Guide:
+      - Contributing: contributing.md
+      - Code structure:
+          - Index: Applications/index.md
+          - Formatting: Applications/formatting.md
+          - Variables: Applications/variable.md
+          - Sensors: Applications/sensor.md
+          - Stations: Applications/station.md
+          - Measurements: Applications/measurement.md
+          - Importing: Applications/importing.md
+      - Administration: admin.md
+      - API Reference: reference/
