@@ -51,6 +51,7 @@ nav:
       - Validation: validation.md
   - Developer Guide:
       - Contributing: contributing.md
+      - Installation: installation.md
       - Code structure:
           - Index: Applications/index.md
           - Formatting: Applications/formatting.md
