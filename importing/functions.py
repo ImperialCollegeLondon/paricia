@@ -12,14 +12,12 @@
 ########################################################################################
 import zoneinfo
 from datetime import datetime
-from logging import getLogger
 from numbers import Number
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
-from django.core.exceptions import ValidationError
 from django.db.models import FileField
 
 from formatting.models import Classification, Format
@@ -240,8 +238,8 @@ def standardise_datetime(date_time: Any, datetime_format: str) -> datetime:
     if isinstance(date_time, datetime):
         return date_time
     elif isinstance(date_time, np.datetime64):
-        date_time = datetime.utcfromtimestamp(
-            float((date_time - unix_epoch) / one_second)
+        date_time = datetime.fromtimestamp(
+            float((date_time - unix_epoch) / one_second), tz=zoneinfo.ZoneInfo("UTC")
         )
         return date_time
     elif isinstance(date_time, str):
@@ -257,8 +255,7 @@ def standardise_datetime(date_time: Any, datetime_format: str) -> datetime:
     try:
         _date_time = datetime.strptime(date_time, datetime_format)
     except Exception as e:
-        getLogger().error(f"Error parsing date: {date_time} - {e}")
-        raise e
+        raise ValueError(f"Error parsing date: {date_time} - {e}")
     return _date_time
 
 
@@ -290,7 +287,7 @@ def save_temp_data_to_permanent(
     all_data = construct_matrix(file, file_format, station, data_import)
     if not all_data:
         msg = "No data to import. Is the chosen format correct?"
-        raise ValidationError(msg)
+        raise ValueError(msg)
 
     must_cols = ["data_import_id", "station_id", "variable_id", "date", "value"]
     start_date = all_data[0]["date"].iloc[0]
@@ -360,6 +357,21 @@ def construct_matrix(
     end_date = matrix["date"].iloc[-1]
 
     classifications = list(Classification.objects.filter(format=file_format))
+
+    if len(classifications) == 0:
+        msg = "No classifications found for this format. Please add some."
+        raise ValueError(msg)
+
+    max_cols = max([c.value for c in classifications])
+    ncols = len(matrix.columns)
+    if max_cols >= ncols:
+        msg = (
+            f"The number of columns in the file {ncols} is less than the maximum column"
+            f" number specified in the classifications {max_cols}. Please check the "
+            "file and the classifications for this format."
+        )
+        raise ValueError(msg)
+
     to_ingest = []
     for classification in classifications:
         columns = []
@@ -414,6 +426,12 @@ def construct_matrix(
         # Eliminate NAs
         data_columns = [column[1] for column in columns if column[1] != "date"]
         data = data.dropna(axis=0, how="all", subset=data_columns)
+        if len(data) == 0:
+            raise ValueError(
+                f"Importing variable {classification.variable.name} from "
+                f"column {classification.value} (starting in 0) results in no valid "
+                "data."
+            )
 
         # Deal with cumulative and incremental data
         if acc := classification.accumulate:
@@ -461,6 +479,7 @@ def construct_matrix(
                 data = data.dropna()
             if classification.resolution:
                 data["value"] = data["value"] * float(classification.resolution)
+
         data["station_id"] = station.station_id
         data["variable_id"] = classification.variable.variable_id
         data["data_import_id"] = data_import.data_import_id
