@@ -33,7 +33,7 @@ def get_station_options(
     return station_options, station_value
 
 
-def get_variable_options(station: str) -> tuple[list[dict], str]:
+def get_variable_options(station: str) -> tuple[list[dict[str, str]], str | None]:
     """Get valid variable options and default value based on the chosen station.
 
     Args:
@@ -77,17 +77,8 @@ def get_date_range(station: str, variable: str) -> tuple[str, str]:
         last_date=Max("time"),
     )
 
-    first_date = (
-        to_local_time(filter_vals["first_date"]).strftime("%Y-%m-%d")
-        if filter_vals["first_date"]
-        else None
-    )
-    last_date = (
-        to_local_time(filter_vals["last_date"]).strftime("%Y-%m-%d")
-        if filter_vals["last_date"]
-        else None
-    )
-
+    first_date = to_local_time(filter_vals["first_date"]).strftime("%Y-%m-%d")
+    last_date = to_local_time(filter_vals["last_date"]).strftime("%Y-%m-%d")
     return first_date, last_date
 
 
@@ -114,7 +105,7 @@ def get_min_max(
         max_value=Max("maximum"),
     )
 
-    min_value = filter_vals["min_value"] if filter_vals["min_value"] else None
-    max_value = filter_vals["max_value"] if filter_vals["max_value"] else None
+    min_value = filter_vals["min_value"]
+    max_value = filter_vals["max_value"]
 
     return min_value, max_value
