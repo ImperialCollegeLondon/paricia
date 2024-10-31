@@ -48,6 +48,7 @@ nav:
   - Permissions: permissions.md
   - Importing Data: importing_data.md
   - Validation: validation.md
+  - Administration: admin.md
   - Applications:
       - Index: Applications/index.md
       - Formatting: Applications/formatting.md

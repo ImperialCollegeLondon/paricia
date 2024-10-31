@@ -10,7 +10,7 @@ The following principles apply:
     - Create new elements, like formats, sensors, stations, etc. via the Admin interface. These elements can depend on other public objects or private objects owned by the user.
     - Upload new data to stations for which they have `change` permission (this includes stations they own).
     - Validate data associated to stations for which they have `change` permission (this includes stations they own).
-- **Admin users** can:
+- [**Admin users**](./admin.md) can:
     - Manage all data and objects, private or public.
     - Manage users.
 
