@@ -22,4 +22,22 @@
       {% bootstrap_form form layout='horizontal' %}
     </div>
   </div>
+  <!-- Inline details, if any -->
+  {% if inline %}
+    <h3>{{ inline.title }}</h3>
+    <table class="table">
+      <thead class="thead-light">
+        <tr>
+          {% for field in inline.header %}<th scope="col">{{ field }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for obj in inline.objects %}
+          <tr>
+            {% for value in obj %}<td>{{ value }}</td>{% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
 {% endblock content %}

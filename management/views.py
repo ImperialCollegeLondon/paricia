@@ -103,6 +103,22 @@ class CustomDetailView(URLMixin, LoginRequiredMixin, DetailView):
             raise PermissionDenied
         return obj
 
+    def get_inline(self) -> dict | None:
+        """Return the inline data for the format.
+
+        If provided, this method should return a dictionary with the inline data to be
+        shown in the detail view. The dictionary should have the following keys:
+
+        - title: Title of the inline data.
+        - header: List with the header of the table.
+        - objects: List with the objects to be shown in the table. Each object should be
+            a list with the same length as the header.
+
+        Returns:
+            dict | None: Inline data for the format.
+        """
+        return None
+
     def get_form(self):
         class DetailForm(forms.ModelForm):
             class Meta:
@@ -120,6 +136,7 @@ class CustomDetailView(URLMixin, LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = self.get_form()
+        context["inline"] = self.get_inline()
         context["title"] = self.model_description
         context["delete_url"] = self.delete_url
         context["edit_url"] = self.edit_url
