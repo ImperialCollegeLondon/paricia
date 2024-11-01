@@ -52,6 +52,9 @@ nav:
   - Developer Guide:
       - Contributing: contributing.md
       - Installation: installation.md
+      - Quality assurance: quality_assurance.md
+      - Synthetic data: synthetic_data.md
+      - Administrators: admin.md
       - Code structure:
           - Index: Applications/index.md
           - Formatting: Applications/formatting.md
@@ -60,5 +63,4 @@ nav:
           - Stations: Applications/station.md
           - Measurements: Applications/measurement.md
           - Importing: Applications/importing.md
-      - Administration: admin.md
       - API Reference: reference/
