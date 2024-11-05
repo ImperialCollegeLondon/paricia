@@ -8,11 +8,15 @@ The process starts by selecting the data to be validated in the validation page.
 
 ![Selection of the data to validate](images/validation_selector.png)
 
+!!! tip "Minimise the date range"
+
+    While the database can handle queries of millions of entries at once, such data will need to be manipulated, pre-analysed for suspicious values and then sent from the server to the browser and included in the table and the plot underneath. Therefore, it is important that users choose just the date range they are interested in exploring to minimise the loading times and make the whole process more fluid.
+
 ## The daily report
 
-After submitting the data, a table with a daily report is displayed, as well as a plot underneath. Both are useful to identify suspicious entries in the data that should be either manually fixed or discarded.
+After submitting the data request, a table with a daily report is displayed, as well as a plot underneath. Both are useful to identify suspicious entries in the data that should be either manually fixed or discarded.
 
-For example, the following image shows that there is a problem in first day, 2023-03-14, by highlighting in red the problematic cell. In particular, it shows that, based on the expected time difference between data points (see the description of the [Station](Applications/station.md)), there is only 80% of the data expected for this day. In addition, there are 2 suspicious entries on that day.
+For example, the following image shows that there is a problem in first day, 2023-03-14, by highlighting in red the problematic cell. In particular, it shows that, based on the expected time difference between data points (taken as the mode of the time difference for all the data in the range), there is only 80% of the data expected for this day. In addition, there are 2 suspicious entries on that day.
 
 ![Daily report showing some suspicious entries](images/validation_table.png)
 
@@ -38,8 +42,8 @@ But that is not the only problem. Some value cells are also flagged. In this cas
 
 The following list shows the checks that are performed to decide if an entry is suspicious or not:
 
-- The time difference with respect to the previous point is the same (within some tolerance) than what is stated for the station.
-- The number of entries for the day is correct, i.e. the daily count fraction is 1.
+- The time difference with respect to the previous point is the same (within some tolerance) than the most common time difference for the requested time range.
+- The number of entries for the day is correct, i.e. the daily count fraction is 1, based on the same time difference.
 - The value is within the minimum and maximum.
 - The value does not differ too much with respect to the previous one.
 
