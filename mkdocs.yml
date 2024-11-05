@@ -49,6 +49,7 @@ nav:
       - Introduction: introduction.md
       - Reports: reports.md
       - Permissions: permissions.md
+      - Adding elements: adding_elements.md
       - Importing Data: importing_data.md
       - Validation: validation.md
   - Developer Guide:
