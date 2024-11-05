@@ -25,6 +25,31 @@ def create_empty_plot() -> px.scatter:
     return fig
 
 
+def get_aggregation_level(timeseries: pd.Series, aggregate: bool = False) -> str:
+    """Calculates the aggregation level based on the timeseries separation.
+
+    Args:
+        timeseries: Time data to be aggregated.
+        aggregate: Flag indicating if there should be aggregation
+
+    Return:
+        String indicating the aggregation level as " - LEVEL UNITS aggregation" or an
+        empty string if no aggregation is required.
+    """
+    if not aggregate:
+        return ""
+
+    aggregation = timeseries.diff().dt.seconds.mean() / 60
+    unit = "minutes"
+    if aggregation > 60:
+        aggregation = aggregation / 60
+        unit = "hours"
+    if aggregation > 24:
+        aggregation = aggregation / 24
+        unit = "days"
+    return f" - {aggregation:.1f} {unit} aggregation"
+
+
 def create_validation_plot(
     data: pd.DataFrame, variable_name: str, field: str
 ) -> go.Figure:
