@@ -46,6 +46,8 @@ plugins:
 
 nav:
   - User Guide:
+      - Introduction: introduction.md
+      - Reports: reports.md
       - Permissions: permissions.md
       - Importing Data: importing_data.md
       - Validation: validation.md
