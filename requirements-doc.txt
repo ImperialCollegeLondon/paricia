@@ -94,7 +94,7 @@ dpd-components==0.1.0
     # via django-plotly-dash
 drf-yasg==1.21.8
     # via Paricia (pyproject.toml)
-et-xmlfile==1.1.0
+et-xmlfile==2.0.0
     # via openpyxl
 flask==3.0.3
     # via
@@ -173,7 +173,7 @@ mkdocs-glightbox==0.4.0
     # via Paricia (pyproject.toml)
 mkdocs-literate-nav==0.6.1
     # via Paricia (pyproject.toml)
-mkdocs-material==9.5.42
+mkdocs-material==9.5.43
     # via Paricia (pyproject.toml)
 mkdocs-material-extensions==1.3.1
     # via mkdocs-material
@@ -273,7 +273,7 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==2.2.3
     # via requests
-watchdog==5.0.3
+watchdog==6.0.0
     # via mkdocs
 werkzeug==3.0.6
     # via
