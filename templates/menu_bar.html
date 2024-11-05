@@ -130,7 +130,7 @@
       <a class="nav-link"
          href="https://imperialcollegelondon.github.io/paricia/">Documentation</a>
       <!-- If the user is staff, we show the link to the admin -->
-      {% if user.is_staff %}
+      {% if user.is_superuser %}
         <a class="nav-link" href="{% url 'admin:index' %}">Admin site</a>
       {% endif %}
       <!-- If the user is authenticated, we greet them and include a logout button -->
