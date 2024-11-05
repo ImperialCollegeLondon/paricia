@@ -83,7 +83,10 @@ def create_validation_plot(
 
 
 def create_report_plot(
-    data: pd.DataFrame, variable_name: str, station_code: str
+    data: pd.DataFrame,
+    variable_name: str,
+    station_code: str,
+    agg: str = "",
 ) -> go.Figure:
     """Creates plot for Report app
 
@@ -91,6 +94,7 @@ def create_report_plot(
         data (pd.DataFrame): Data
         variable_name (str): Variable name
         station_code (str): Station code
+        agg (str, optional): Aggregation level. Defaults to "".
 
     Returns:
         go.Figure: Plot
@@ -100,7 +104,7 @@ def create_report_plot(
         data,
         x="time",
         y=["value", "minimum", "maximum"],
-        title=f"{station_code} - {variable_name}",
+        title=f"{station_code} - {variable_name}" + agg,
         labels={
             "time": "Date",
         },

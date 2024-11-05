@@ -154,10 +154,23 @@ def update_graph(
         every = max(1, len(data) // MAX_POINTS)
         resampled = data.iloc[::every]
 
+        agg = ""
+        if every > 1:
+            aggregation = resampled["time"].diff().dt.seconds.mean() / 60
+            unit = "minutes"
+            if aggregation > 60:
+                aggregation = aggregation / 60
+                unit = "hours"
+            if aggregation > 24:
+                aggregation = aggregation / 24
+                unit = "days"
+            agg = f" - {aggregation:.1f} {unit} aggregation"
+
         plot = create_report_plot(
             data=resampled,
             variable_name=Variable.objects.get(variable_code=variable).name,
             station_code=station,
+            agg=agg,
         )
         if "xaxis.range[0]" in relayout_data:
             plot["layout"]["xaxis"]["range"] = [
