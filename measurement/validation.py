@@ -49,6 +49,30 @@ def get_data_to_validate(
     return df.sort_values("time")
 
 
+def flag_time_lapse_status(data: pd.DataFrame) -> pd.Series:
+    """Flags if period of the time entries is correct.
+
+    It is assumes that the first entry is correct. A tolerance of 2% of the period
+    is used when deciding on the suspicious status. The period is the mode of the
+    time differences.
+
+    Args:
+        data: The dataframe with allowed_difference = Variable. the data.
+
+    Returns:
+        A series with the status of the time lapse.
+    """
+    period = data.time.diff().mode().iloc[0]
+    flags = pd.DataFrame(index=data.index, columns=["suspicious_time_lapse"])
+    low = pd.Timedelta(f"{period}min") * (1 - 0.02)
+    high = pd.Timedelta(f"{period}min") * (1 + 0.02)
+    flags["suspicious_time_lapse"] = ~data.time.diff().between(
+        low, high, inclusive="both"
+    )
+    flags["suspicious_time_lapse"].iloc[0] = False
+    return flags
+
+
 def flag_value_difference(data: pd.DataFrame, allowed_difference: Decimal) -> pd.Series:
     """Flags if the differences in value of the measurements is correct.
 
@@ -114,9 +138,10 @@ def flag_suspicious_data(
     Returns:
         A dataframe with the suspicious data.
     """
+    time_lapse = flag_time_lapse_status(data)
     value_difference = flag_value_difference(data, allowed_difference)
     value_limits = flag_value_limits(data, maximum, minimum)
-    return pd.concat([value_difference, value_limits], axis=1)
+    return pd.concat([time_lapse, value_difference, value_limits], axis=1)
 
 
 def flag_suspicious_daily_count(data: pd.Series, null_limit: Decimal) -> pd.DataFrame:
