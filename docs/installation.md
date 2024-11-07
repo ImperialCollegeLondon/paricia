@@ -24,10 +24,10 @@ This will create an isolated Python environment within a directory called `.venv
 in Powershell, or
 
 ```bash
-. .venv/Scripts/activate
+source .venv/bin/activate
 ```
 
-in Bash. Note the extra `.` and space before `.venv` in this case.
+in Bash/Zsh.
 
 Once in the virtual environment, dependencies for development (linters, formatter, etc.) and documentation, respectively, can be installed with:
 
