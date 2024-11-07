@@ -67,3 +67,23 @@ Once the initial setup is done, you can:
 - If you want to use the same terminal, you can run the services in detached mode with `docker compose up -d`.
 
 Unless you destroy the docker volume containing the database or manually flush it, the database will persist between subsequent calls to docker compose.
+
+### Building the documentation
+
+The documentation uses [`mkdocs`](https://www.mkdocs.org/). This should have been installed alongside all the other doc-related dependencies if you run `python -m pip install -r requirements-doc.txt`, as described above. There's no need to use `docker` to build the documentation locally.
+
+To test the documentation live and have it rebuilt automatically while you edit the documentation files, run:
+
+```
+mkdocs serve -a localhost:8001
+```
+
+The reason for explicitly using `localhost:8001` is because port `8000`, the default, will likely be already in use by Paricia web application.
+
+To build the documentation as standalone html files and related resources, run instead:
+
+```
+mkdocs build
+```
+
+A new directory in the root of the project called `site` would have been created with all the files instead. Open `index.html` in the browser to check this documentation.
