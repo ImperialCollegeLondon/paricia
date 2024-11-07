@@ -39,7 +39,7 @@ def get_aggregation_level(timeseries: pd.Series, aggregate: bool = False) -> str
     if not aggregate:
         return ""
 
-    aggregation = timeseries.diff().dt.seconds.mean() / 60
+    aggregation = timeseries.diff().dt.seconds.median() / 60
     unit = "minutes"
     if aggregation > 60:
         aggregation = aggregation / 60
