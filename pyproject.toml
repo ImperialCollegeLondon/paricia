@@ -8,7 +8,7 @@ exclude = ["htmlcov"]
 
 [project]
 name = "Paricia"
-version = "1.0.0"
+version = "1.1.0"
 authors = [
     { name = "Imperial College London RSE Team", email = "ict-rse-team@imperial.ac.uk" },
 ]
