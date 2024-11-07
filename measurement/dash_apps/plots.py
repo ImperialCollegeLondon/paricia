@@ -44,9 +44,9 @@ def get_aggregation_level(timeseries: pd.Series, aggregate: bool = False) -> str
     if aggregation > 60:
         aggregation = aggregation / 60
         unit = "hours"
-    if aggregation > 24:
-        aggregation = aggregation / 24
-        unit = "days"
+        if aggregation > 24:
+            aggregation = aggregation / 24
+            unit = "days"
     return f" - {aggregation:.1f} {unit} aggregation"
 
 
