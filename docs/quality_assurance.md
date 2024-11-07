@@ -14,7 +14,7 @@ Tests are created using the `unittest` framework. Read the [Testing in Django do
 
 ### Run selected tests
 
-The above command will run all of the available tests. However, often - specially during debugging - you will want to run only specific tests. To do so, write the tests or group or tests that you want to run using the dot notation to indicate the path to the test:
+The above command will run all of the available tests. However, often - especially during debugging - you will want to run only specific tests. To do so, write the tests or group or tests that you want to run using the dot notation to indicate the path to the test:
 
 - Run a specific test, eg. `test_launch_reports_calculation`
 ```bash
@@ -51,4 +51,4 @@ Github workflows are set up to run the following automatically:
 
 If any deployment of Paricia is watching for new versions in the registry, the new release might trigger an automated update of such deployment.
 
-Additionally, Paricia repository is configured to receive automatic updagrades to packages and dependencies via `dependabot` and `pre-commit` bots. Periodically, they will open pull requests with the updated versions and, if the above checks are successful, they will be automatically merged. While sometimes manual intervention is necessary if the updated versions do not work, this process helps to keep Paricia up to date and simplifies the work of maintainers.
+Additionally, the Paricia repository is configured to receive automatic upgrades to packages and dependencies via `dependabot` and `pre-commit` bots. Periodically, they will open pull requests with the updated versions and, if the above checks are successful, they will be automatically merged. While sometimes manual intervention is necessary if the updated versions do not work, this process helps to keep Paricia up to date and simplifies the work of maintainers.

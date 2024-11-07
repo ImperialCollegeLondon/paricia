@@ -15,7 +15,7 @@ To setup a virtual environment with all the requirements, navigate to Paricia's 
 python -m venv .venv
 ```
 
-This will create an isolated Python environment within a directory called `.venv`. Notice that Paricia requires Python 3.11 or higher to work. Once the environment has been created, you can ativate it with:
+This will create an isolated Python environment within a directory called `.venv`. Notice that Paricia requires Python 3.11 or higher to work. Once the environment has been created, you can activate it with:
 
 ```ps
 .venv\Scripts\activate

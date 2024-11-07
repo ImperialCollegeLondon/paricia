@@ -48,7 +48,7 @@ In all cases, to go back to the full range, either use the tools in the top righ
 
 ## Missing spikes
 
-The chosen approach for selecting the data to plot - just skipping points - is extremely fast as no data processing is required, but it has some drawbacks. In particular, as the display of the data skips a few points, the more points the highest the aggregation level, some features in the data might be lost.
+The chosen approach for selecting the data to plot - just skipping points - is extremely fast as no data processing is required, but it has some drawbacks. In particular, as the display of the data skips a few points, the more points the higher the aggregation level, some features in the data might be lost.
 
 For example, if we zoom in the first part of the series, we can see some - most likely wrong - data points shooting up to 50. These were not visible in the general view.
 
