@@ -4,15 +4,19 @@ Validation is the process by which data ingested by the database is reviewed by 
 
 ## Selecting the data to validate
 
-The process starts by selecting the data to be validated in the validation page. **Only registered users with change permissions for a particular station can validate data for that station**. Once the station is selected, the variables available for that station are displayed, as well as other filters based on their values, data range or status. By default, all non-validated data for the selected variable and station is displayed once the `Submit` button is clicked.
+The process starts by selecting the data to be validated in the validation page. **Only registered users with change permissions for a particular station can validate data for that station**. Once the station is selected, the variables available for that station are displayed, as well as other filters based on their values, date range or status. By default, all non-validated data for the selected variable and station is displayed once the `Submit` button is clicked.
 
 ![Selection of the data to validate](images/validation_selector.png)
 
+!!! tip "Minimise the date range"
+
+    While the database can handle queries of millions of entries at once, such data will need to be manipulated, pre-analysed for suspicious values and then sent from the server to the browser and included in the table and the plot underneath. Therefore, it is important that users choose just the date range they are interested in exploring to minimise the loading times and make the whole process more fluid.
+
 ## The daily report
 
-After submitting the data, a table with a daily report is displayed, as well as a plot underneath. Both are useful to identify suspicious entries in the data that should be either manually fixed or discarded.
+After submitting the data request, a table with a daily report is displayed, as well as a plot underneath. Both are useful to identify suspicious entries in the data that should be either manually fixed or discarded.
 
-For example, the following image shows that there is a problem in first day, 2023-03-14, by highlighting in red the problematic cell. In particular, it shows that, based on the expected time difference between data points (see the description of the [Station](Applications/station.md)), there is only 80% of the data expected for this day. In addition, there are 2 suspicious entries on that day.
+For example, the following image shows that there is a problem in first day, 2023-03-14, by highlighting in red the problematic cell. In particular, it shows that, based on the expected time difference between data points (taken as the mode of the time difference for all the data in the range), there is only 80% of the data expected for this day. In addition, there are 2 suspicious entries on that day.
 
 ![Daily report showing some suspicious entries](images/validation_table.png)
 
@@ -38,8 +42,8 @@ But that is not the only problem. Some value cells are also flagged. In this cas
 
 The following list shows the checks that are performed to decide if an entry is suspicious or not:
 
-- The time difference with respect to the previous point is the same (within some tolerance) than what is stated for the station.
-- The number of entries for the day is correct, i.e. the daily count fraction is 1.
+- The time difference with respect to the previous point is the same (within some tolerance) than the most common time difference for the requested time range.
+- The number of entries for the day is correct, i.e. the daily count fraction is 1, based on the same time difference.
 - The value is within the minimum and maximum.
 - The value does not differ too much with respect to the previous one.
 
@@ -47,7 +51,7 @@ The following list shows the checks that are performed to decide if an entry is 
 
 Once an entry has been identified as suspicious, there are two things that can be done:
 
-1. Un-check that entry, so that is deactivated and not used in reports. You can des-select full days, not only individual entries.
+1. Un-check that entry, so that is deactivated and not used in reports. You can deselect full days, not only individual entries.
 2. Manually edit the entry
 
 To do this, simply double-click in the cell to edit and change the value to whatever is required. **Be careful when editing dates**, as the format needs to be the right one to be a valid entry.
@@ -56,8 +60,8 @@ To do this, simply double-click in the cell to edit and change the value to what
 
 ## Confirming validation
 
-Once you have des-selected the data that is not valid or edited it, then it is ready to be validated. To do this, simply click on the `Validate` button at the bottom-left of the table. You can validate individual days, if you are in the Detailed view, or the whole table.
+Once you have deselected the data that is not valid or edited it, then it is ready to be validated. To do this, simply click on the `Validate` button at the bottom-left of the table. You can validate individual days, if you are in the Detailed view, or the whole table.
 
-Data that have been des-selected will be validated but set as inactive, meaning that it will not be used for the calculation of the hourly, daily and monthly reports.
+Data that have been deselected will be validated but set as inactive, meaning that it will not be used for the calculation of the hourly, daily and monthly reports.
 
 Validating the data automatically triggers the report calculation. This calculation might take more or less time depending on the size of the dataset. Once it is concluded, the page refreshes and it should not show any data in the table, as the filters initially selected, which included showing only not-validated data, do not have any match.

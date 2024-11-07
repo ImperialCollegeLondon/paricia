@@ -9,7 +9,7 @@ from variable.models import Variable
 
 from ..filters import get_date_range, get_station_options, get_variable_options
 from ..reporting import get_report_data_from_db
-from .plots import create_empty_plot, create_report_plot
+from .plots import create_empty_plot, create_report_plot, get_aggregation_level
 
 MAX_POINTS = 1000
 """Maximum number of points to display in the graph."""
@@ -153,11 +153,13 @@ def update_graph(
     try:
         every = max(1, len(data) // MAX_POINTS)
         resampled = data.iloc[::every]
+        agg = get_aggregation_level(resampled["time"], every > 1)
 
         plot = create_report_plot(
             data=resampled,
             variable_name=Variable.objects.get(variable_code=variable).name,
             station_code=station,
+            agg=agg,
         )
         if "xaxis.range[0]" in relayout_data:
             plot["layout"]["xaxis"]["range"] = [

@@ -1,5 +1,7 @@
 # Importing Data
 
+The whole reason for Paricia to exist is to store and facilitate access to hydrology data. Therefore, one of its main components, that depends on everything else, is the data ingestion process.
+
 ## Submit the data import
 
 Data import is done via Paricia import listing, clicking in the `New` button at the top of the page.
@@ -24,7 +26,7 @@ Clicking in each classification `id` will show you more information about that p
 
 ### Station
 
-For the Station, the user will only be able to choose those for which they have `change` permission. For the Format, the will be able to choose their own formats and those labelled as `public`.
+For the Station, the user will only be able to choose those for which they have `change` permission. For the Format, they will be able to choose their own formats and those labelled as `public`.
 
 The station needs to be complete, i.e. it needs to have all the required fields filled, something that might not be the case if the station was imported into Paricia. A usual field missing is the `timezone` if that were the case, you will be notified when trying to save the data import. To fix it, just go to the station page - `Station -> Station` in the top menu - and update the fields that are missing.
 
@@ -40,7 +42,7 @@ Once the form is complete, click `Save` at the top of the page and the import pr
 
 ![Data ingestion queued](images/importing_queued.png)
 
-- **Completed**: The data ingestion has completed successfully. Information on the start and end dates of the data, as well as the number of records, will appear updated
+- **Completed**: The data ingestion has completed successfully. Information on the start and end dates of the data **in the local timezone of the user**, as well as the number of records, will appear updated
 
 ![Data ingestion completed](images/importing_completed.png)
 

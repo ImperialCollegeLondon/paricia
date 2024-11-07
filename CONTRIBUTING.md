@@ -21,13 +21,6 @@ The following is a set of guidelines for contributing to Paricia, a Python-based
 - [Git Commit Messages](#git-commit-messages)
 - [Documentation Styleguide](#documentation-styleguide)
 
-[Developer's setup](#developers-setup)
-
-- [Installing Paricia](#installing-paricia)
-- [Tests](#tests)
-- [Synthetic data](#synthetic-data)
-- [Continuous integration](#continuous-integration)
-
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the [Paricia Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [the repository Administrator](https://www.imperial.ac.uk/people/w.buytaert).
@@ -71,7 +64,7 @@ Include details about your configuration and environment:
 
 ### Suggesting Enhancements
 
-This section guides you through submitting an enhancement suggestion for Paricia, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion :pencil: and find related suggestions :mag_right:.
+This section guides you through submitting an enhancement suggestion for Paricia, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion and find related ones.
 
 Before creating enhancement suggestions, please check [this list](https://github.com/ImperialCollegeLondon/paricia/issues) (including closed issues) as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please [include as many details as possible](#how-do-i-submit-a-good-enhancement-suggestion).
 
@@ -145,53 +138,3 @@ While the prerequisites above must be satisfied prior to having your pull reques
   - Reference classes with `{ClassName}`
   - Reference instance methods with `{ClassName::methodName}`
   - Reference class methods with `{ClassName.methodName}`
-
-## Developer's setup
-
-### Installing Paricia
-
-If you want to install Paricia from scratch, follow the steps below:
-
-- Run `docker-compose up --build` (requires [Docker](https://www.docker.com/) to be running)
-- After downloading and building the images, Paricia should now be available via a web browser in `http://localhost:8000/`.
-- Create **admin** user running `python manage.py createsuperuser`.
-- If you want to load initial data (variables, units, stations...):
-  - In a separate terminal run `docker exec -it <name_of_docker_container> bash` e.g. `docker exec -it paricia-web-1 bash` to start a bash session in the container. You can find the name of the container in the Docker Desktop GUI, or by running `docker container ls`.
-  - Run `python manage.py shell < utilities/load_initial_data.py`.
-
-## Project structure
-
-In addition to the applications containing the actual functionality, and described in the documentation, the project file structure has other directories that are of interest only for developers.
-
-- The top-level directory contains various config files and directories for git, github, docker and pip.
-- Each django app is in a subdirectory and `djangomain` contains the main django settings, views and urls.
-- The `static` directory contains the static files for the project.
-- The `templates` directory contains the templates for the project.
-- The `utilities` directory contains helper functions for the project.
-- The `tests` directory contains all unit tests for the project.
-
-### Tests
-
-The tests are run with `python manage.py test` from inside the docker container.
-
-For that to work, development-related dependencies needs to be installed. To do that, get into the container (see instructions at the top) and run:
-
-```bash
-python -m pip install -r requirements-dev.txt
-```
-
-### Synthetic data
-
-Synthetic data can be added to the database for benchmarking purposes using one of the scenarios in `utilities/benchmarking` or creating one of your own. To do so:
-
-- Populate the database with some initial data for the `Station`, `Variable` and all the required models (see the *Getting Started* section).
-- Install the development dependencies (read the *Tests* section)
-- Run your desired synthetic data scenario.
-
-If you run one of the built in ones, you should see a progressbar for the process and, if you log in into the Django Admin of Paricia (`http://localhost:8000/admin`), then you will see the records for the `Measurements` model increasing.
-
-### Continuous integration
-
-Pre-commit hooks are set up to run code quality checks (isort and black) before committing. To run these locally, you will need to `pip install pre-commit` then `pre-commit install`. Now, quality assurance tools will be run automatically with every commit.
-
-Github workflows are set up to run the pre-commit actions and the tests automatically on every push action.
