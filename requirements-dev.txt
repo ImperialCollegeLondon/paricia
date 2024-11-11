@@ -227,7 +227,7 @@ sqlparse==0.5.1
     # via django
 tenacity==9.0.0
     # via plotly
-tqdm==4.66.5
+tqdm==4.67.0
     # via
     #   Paricia (pyproject.toml)
     #   djlint
