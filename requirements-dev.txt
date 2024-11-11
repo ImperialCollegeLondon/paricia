@@ -252,7 +252,7 @@ werkzeug==3.0.6
     #   dash
     #   django-plotly-dash
     #   flask
-wheel==0.44.0
+wheel==0.45.0
     # via pip-tools
 whitenoise==6.8.1
     # via Paricia (pyproject.toml)
