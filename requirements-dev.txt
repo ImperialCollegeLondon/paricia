@@ -97,7 +97,7 @@ djangorestframework==3.15.2
     #   drf-yasg
 djangorestframework-simplejwt==5.3.1
     # via Paricia (pyproject.toml)
-djlint==1.35.4
+djlint==1.36.1
     # via Paricia (pyproject.toml)
 dpd-components==0.1.0
     # via django-plotly-dash
