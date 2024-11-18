@@ -193,7 +193,7 @@ numpy==2.1.2
     #   pandas
 openpyxl==2.4.11
     # via django-excel-response
-packaging==24.1
+packaging==24.2
     # via
     #   drf-yasg
     #   mkdocs
