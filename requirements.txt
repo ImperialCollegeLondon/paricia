@@ -133,7 +133,7 @@ plotly==5.24.1
     # via
     #   dash
     #   django-plotly-dash
-psycopg2==2.9.9
+psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
     # via Paricia (pyproject.toml)
