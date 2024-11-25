@@ -9,7 +9,7 @@ asgiref==3.8.1
     #   Paricia (pyproject.toml)
     #   channels
     #   django
-blinker==1.8.2
+blinker==1.9.0
     # via flask
 certifi==2024.8.30
     # via requests
