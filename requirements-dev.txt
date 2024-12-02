@@ -223,7 +223,7 @@ six==1.16.0
     #   jsbeautifier
     #   python-dateutil
     #   retrying
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via django
 tenacity==9.0.0
     # via plotly
