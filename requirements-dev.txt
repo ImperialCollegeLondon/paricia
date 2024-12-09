@@ -217,7 +217,7 @@ retrying==1.3.4
     # via dash
 ruff==0.7.4
     # via Paricia (pyproject.toml)
-six==1.16.0
+six==1.17.0
     # via
     #   cssbeautifier
     #   jsbeautifier
