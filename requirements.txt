@@ -179,7 +179,7 @@ werkzeug==3.0.6
     #   dash
     #   django-plotly-dash
     #   flask
-whitenoise==6.8.1
+whitenoise==6.8.2
     # via Paricia (pyproject.toml)
 zipp==3.20.2
     # via importlib-metadata
