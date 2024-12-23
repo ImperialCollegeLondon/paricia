@@ -158,7 +158,7 @@ six==1.17.0
     # via
     #   python-dateutil
     #   retrying
-sqlparse==0.5.2
+sqlparse==0.5.3
     # via django
 tenacity==9.0.0
     # via plotly
