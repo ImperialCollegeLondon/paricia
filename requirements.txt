@@ -70,7 +70,7 @@ django-guardian==2.4.0
     # via Paricia (pyproject.toml)
 django-plotly-dash==2.4.3
     # via Paricia (pyproject.toml)
-django-tables2==2.7.0
+django-tables2==2.7.2
     # via Paricia (pyproject.toml)
 django-timescaledb==0.2.13
     # via Paricia (pyproject.toml)
