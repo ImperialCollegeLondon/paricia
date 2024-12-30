@@ -18,7 +18,7 @@ repos:
         # https://prettier.io for list). Add other types here.
         types_or: [yaml, json]
   - repo: https://github.com/djlint/djLint
-    rev: v1.36.3
+    rev: v1.36.4
     hooks:
       - id: djlint-reformat-django
       - id: djlint-django
