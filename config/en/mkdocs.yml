@@ -1,8 +1,13 @@
-site_name: Paricia
+site_name: Paricia user manual
 repo_url: https://github.com/ImperialCollegeLondon/paricia
+
+docs_dir: '../../docs/en'                           # Where to find the English markdown files
+site_dir: '../../site/en'                      # Where to put the English HTML files
 
 theme:
   name: "material"
+  custom_dir: '../../overrides/'                  # This is where the customization of the theme lives
+  Language: en
   features:
     - navigation.tabs
 
@@ -20,11 +25,27 @@ markdown_extensions:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
+extra_css:
+  - assets/stylesheets/yesplan.css                  # CSS is shared by all languages
+
+extra:                                              # Language Selection
+  alternate:  
+      # Switch to English
+    - name: English
+      link: /en/
+      lang: en
+    # Switch to Spanish
+    - name: Español
+      link: /es/
+      lang: es
+
+
 plugins:
-  - search
+  - search:
+      lang: en                                      # Set language for search
   - gen-files:
       scripts:
-        - docs/gen_ref_nav.py
+        - ../../includes/gen_ref_nav.py
   - literate-nav:
       nav_file: SUMMARY.md
   - section-index
@@ -45,6 +66,7 @@ plugins:
         ignore_classes: ["no-caption"]
 
 nav:
+  - Home: index.md
   - User Guide:
       - Introduction: introduction.md
       - Reports: reports.md

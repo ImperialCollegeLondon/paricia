@@ -17,7 +17,4 @@ A live version of the tool can be found in:
 
 Paricia is developed at [Imperial College London](https://www.imperial.ac.uk/) by the Research Software Engineering team within the Research Computing Group. The project is coordinated by [Prof. Wouter Buytaert](https://www.imperial.ac.uk/people/w.buytaert), who leads a group in the Civil Engineering Department and that focus on the impact of environmental change on the water cycle and its consequences for managing water resources. This work involves gathering and processing time-series data like water level, flow and temperature from various monitoring stations based in mountainous areas such as the Andes and Himalayas.
 
-The code was originally based on the iMHEA platform - Plataforma para la **I**niciativa Regional de **M**onitoreo **H**idrológico de **E**cosistemas **A**ndinos. We are grateful to the following instututions for the development of iMHEA and for sharing their code to use as a starting point for Paricia:
-
-- [Fondo para la Proteccion del Agua (FONAG)](https://www.fonag.org.ec/web/), Ecuador.
-- [Empresa Pública Metropolitana de Agua Potable Y Saneamiento de Quito (EPMAPS)](https://www.aguaquito.gob.ec/home/), Ecuador.
+The code was originally based on the SEDC platform developed by the [Fondo para la Proteccion del Agua (FONAG)](https://www.fonag.org.ec/web/) and the [Empresa Pública Metropolitana de Agua Potable Y Saneamiento de Quito (EPMAPS)](https://www.aguaquito.gob.ec/home/), Ecuador. We are grateful to these institutes for sharing their code to use as a starting point for Paricia:

@@ -1,0 +1,90 @@
+site_name: Manual de Paricia
+repo_url: https://github.com/ImperialCollegeLondon/paricia
+
+docs_dir: '../../docs/es'                           # Where to find the English markdown files
+site_dir: '../../site/es'                      # Where to put the English HTML files
+
+theme:
+  name: "material"
+  custom_dir: '../../overrides/'                  # This is where the customization of the theme lives
+  Language: es
+  features:
+    - navigation.tabs
+
+markdown_extensions:
+  - admonition
+  - pymdownx.snippets:
+      check_paths: true
+  - toc:
+      permalink: "¤"
+  - markdown_include.include:
+      base_path: .
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_css:
+  - assets/stylesheets/yesplan.css                  # CSS is shared by all languages
+
+extra:                                              # Language Selection
+  alternate:  
+      # Switch to English
+    - name: English
+      link: /en/
+      lang: en
+    # Switch to Spanish
+    - name: Español
+      link: /es/
+      lang: es
+
+
+plugins:
+  - search:
+      lang: es                                      # Set language for search
+  - gen-files:
+      scripts:
+        - ../../includes/gen_ref_nav.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - glightbox
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            show_category_heading: true
+            merge_init_into_class: true
+            members: true
+          paths: [measurement]
+  - caption:
+      figure:
+        ignore_classes: ["no-caption"]
+
+nav:
+  - Guía de usuario:
+      - Introducción: introduction.md
+      - Informes: reports.md
+      - Permisos: permissions.md
+      - Añadir elementos: adding_elements.md
+      - Importar datos: importing_data.md
+      - Validación: validation.md
+  - Guía de desarrollo:
+      - Contribuyendo: contributing.md
+      - Instalación: installation.md
+      - Control de calidad: quality_assurance.md
+      - Datos sinteticos: synthetic_data.md
+      - Administradores: admin.md
+      - Estructura del código:
+          - Índice: Applications/index.md
+          - Formatear: Applications/formatting.md
+          - Variables: Applications/variable.md
+          - Sensores: Applications/sensor.md
+          - Estationes: Applications/station.md
+          - Mediciones: Applications/measurement.md
+          - Importación: Applications/importing.md
+      - API Reference: reference/

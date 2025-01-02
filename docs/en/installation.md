@@ -36,11 +36,17 @@ python -m pip install -r requirements-dev.txt
 python -m pip install -r requirements-doc.txt
 ```
 
+Then, paricia itself can be installed with:
+
+```
+python -m pip install -e .
+```
+
 That should be it. The virtual environment should be ready for the development of Paricia and its documentation. Just indicate your code editor which environment you are using in case it does not pick it automatically.
 
 !!! warning "Running Paricia and tests"
 
-    You will not be able to run Paricia itself or the tests from the virtual environment as a TimescaleDB is required for that, which we have not installed. See the [docker deployment](#docker-deployment) section to learn how to do that.
+    You will not be able to run Paricia itself or the tests from the virtual environment because this requires TimescaleDB, which is not installed as part of the virtual environment. See the [docker deployment](#docker-deployment) section to learn how to do that.
 
 ## Docker deployment
 
@@ -72,18 +78,22 @@ Unless you destroy the docker volume containing the database or manually flush i
 
 The documentation uses [`mkdocs`](https://www.mkdocs.org/). This should have been installed alongside all the other doc-related dependencies if you run `python -m pip install -r requirements-doc.txt`, as described above. There's no need to use `docker` to build the documentation locally.
 
-To test the documentation live and have it rebuilt automatically while you edit the documentation files, run:
+Because of the multilingual nature of the documentation, the normal way to serve the documentation (via the commands 'mkdocs build' and 'mkdocs serve') will not work here. Instead you need to use the following commands to build the documentation:
 
 ```
-mkdocs serve -a localhost:8001
+mkdocs build -f config/en/mkdocs.yml
+mkdocs build -f config/es/mkdocs.yml
 ```
+
+The documentation is now available in the sites/ folder. From there, you can serve it with the python http server:
+
+```
+cd sites/
+python3 -m http.server 8001
+```
+
+The documentation site can now be accessed via a web browser on http://localhost:8001
+
 
 The reason for explicitly using `localhost:8001` is because port `8000`, the default, will likely be already in use by Paricia web application.
 
-To build the documentation as standalone html files and related resources, run instead:
-
-```
-mkdocs build
-```
-
-A new directory in the root of the project called `site` would have been created with all the files instead. Open `index.html` in the browser to check this documentation.

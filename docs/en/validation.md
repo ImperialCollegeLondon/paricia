@@ -6,7 +6,7 @@ Validation is the process by which data ingested by the database is reviewed by 
 
 The process starts by selecting the data to be validated in the validation page. **Only registered users with change permissions for a particular station can validate data for that station**. Once the station is selected, the variables available for that station are displayed, as well as other filters based on their values, date range or status. By default, all non-validated data for the selected variable and station is displayed once the `Submit` button is clicked.
 
-![Selection of the data to validate](images/validation_selector.png)
+![Selection of the data to validate](../assets/images/validation_selector.png)
 
 !!! tip "Minimise the date range"
 
@@ -18,11 +18,11 @@ After submitting the data request, a table with a daily report is displayed, as 
 
 For example, the following image shows that there is a problem in first day, 2023-03-14, by highlighting in red the problematic cell. In particular, it shows that, based on the expected time difference between data points (taken as the mode of the time difference for all the data in the range), there is only 80% of the data expected for this day. In addition, there are 2 suspicious entries on that day.
 
-![Daily report showing some suspicious entries](images/validation_table.png)
+![Daily report showing some suspicious entries](../assets/images/validation_table.png)
 
 If we scroll down in the table, we can see that there are more problems with this data. The last day only has 21% of the expected data, two suspicious entries and a problem with the `value` field. The second to last is even worse, with twice as many entries as it should and over 303 of them suspicious. The plot underneath also points to a potential problem - a gap in the data series.
 
-![Daily report with more suspicious entries and the plot](images/validation_table_other_errors.png)
+![Daily report with more suspicious entries and the plot](../assets/images/validation_table_other_errors.png)
 
 ## The detail for the day
 
@@ -30,13 +30,13 @@ To find out exactly what the suspicious entries are about, we can select the spe
 
 We can find the suspicious entries, 2 in the first case, by scrolling the table in search of flagged cells. We can see that two entries are flagged together, in the time column. This indicates a problem with the timing of these entries. It can be seen that the issue is that the periodicity is not correct, with a separation of 2 and 3 minutes with respect to the previous point, while that separation should be 5 min according to the station metadata. Most likely, the point in line 95 should not be there.
 
-![Exploring the origin of the suspicious entries](images/validation_table_detail.png)
+![Exploring the origin of the suspicious entries](../assets/images/validation_table_detail.png)
 
 The second case has more drastic errors. When we enter into the detail for the 2023-03-30 we can see that all entries are duplicated, having two points per time stamp (or almost, with just 1 or 2 seconds of difference). This, combined with the missing data for the 2023-03-31 and the fact we have exactly twice number of records suggest that half of them actually correspond to the next day. Below we see how to edit entries.
 
 But that is not the only problem. Some value cells are also flagged. In this case, the entry has been flagged, most likely, because it is a difference with the previous point too large. What an acceptable difference is is defined in the [Variable object](Applications/variable.md). If we scroll further down we can see many other entries having the same problem.
 
-![Exploring more suspicious entries](images/validation_table_suspicious_entries.png)
+![Exploring more suspicious entries](../assets/images/validation_table_suspicious_entries.png)
 
 ## What is flagged?
 
@@ -56,7 +56,7 @@ Once an entry has been identified as suspicious, there are two things that can b
 
 To do this, simply double-click in the cell to edit and change the value to whatever is required. **Be careful when editing dates**, as the format needs to be the right one to be a valid entry.
 
-![Editing an entry](images/validation_edit_entry.png)
+![Editing an entry](../assets/images/validation_edit_entry.png)
 
 ## Confirming validation
 
