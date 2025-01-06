@@ -18,5 +18,3 @@ Se puede encontrar una versión en vivo de la herramienta en:
 Paricia esta desarrollado en el [Imperial College London](https://www.imperial.ac.uk/) por el equipo de Ingeniería de Software de Investigación dentro del Research Computing Group. El proyecto está coordinado por el Prof. Wouter Buytaert (https://www.imperial.ac.uk/people/w.buytaert), quien lidera un grupo en el Departamento de Ingeniería Civil y que se enfoca en el impacto del cambio ambiental en el ciclo del agua y sus consecuencias para la gestión de los recursos hídricos. Este trabajo implica la recopilación y el procesamiento de datos de series temporales como el nivel de agua, el flujo y la temperatura de varias estaciones de monitoreo ubicadas en áreas montañosas como los Andes y el Himalaya.
 
 El código se basó originalmente en la plataforma SEDC desarrollado por el [Fondo para la Proteccion del Agua (FONAG)](https://www.fonag.org.ec/web/) y la [Empresa Pública Metropolitana de Agua Potable Y Saneamiento de Quito (EPMAPS)](https://www.aguaquito.gob.ec/home/) del Ecuador. Agradecemos a esas instituciones por compartir su código para usarlo como punto de partida para Paricia.
-
-
