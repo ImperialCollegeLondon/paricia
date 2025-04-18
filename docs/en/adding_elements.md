@@ -6,11 +6,11 @@ All elements that can be created in Paricia - except for the data import, which 
 
 - Choose the element of interest from the submenu in the top bar, e.g. `Variable` within the `Variables` menu.
 
-![Selecting a element from the top menu](../assets/images/selecting_component.png)
+![Selecting a element from the top menu](assets/images/selecting_component.png)
 
 - The page now displays the list of existing elements of that type that the user can view - i.e., those that are public or that are their own. You can sort the entries clicking on the column names or filter them to select just some entries.
 
-![List of variables a user can view](../assets/images/variables_list.png)
+![List of variables a user can view](assets/images/variables_list.png)
 
 - Clicking on an existing element ID allows to view the details of that element and to edit it, if the user has permission to do so.
 - Clicking on the `New` button at the top allows to create a new element of that type.
@@ -21,7 +21,7 @@ Some elements are very simple and have just one or two fields to complete. Other
 
 Let's take the variables creation form as an example.
 
-![Form used to create a new variable](../assets/images/variable_creation.png)
+![Form used to create a new variable](assets/images/variable_creation.png)
 
 As we can see in this form, there is a field called `Visibility`. All elements have this field and it defines who else can see the details and use the element to define their own elements.
 

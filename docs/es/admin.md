@@ -6,7 +6,7 @@ Hay dos formas de convertirse en un usuario administrador
 
 1. Pedirle a otro administrador que le dé permisos de superusuario a ese usuario. Esto se hace a través del administrador de Paricia. Dentro de la aplicación `Usuarios`, seleccione el usuario cuyos permisos necesitan cambiarse y marque la casilla que le otorga al usuario `Estado de superusuario`, como se muestra en esta imagen:
 
-![Marcar la tercera casilla le otorga al usuario todos los permisos de Paricia](../assets/images/superuser.png)
+![Marcar la tercera casilla le otorga al usuario todos los permisos de Paricia](assets/images/superuser.png)
 
 2. A través de la línea de comandos. Este es un método más avanzado y, por lo general, solo se requiere cuando se configura Paricia por primera vez, ya sea localmente para el desarrollo o en un servidor nuevo. Supondremos que Paricia se ha lanzado usando `docker compose`, como se indica en las [instrucciones de instalación](./installation.md#docker-deployment). Los pasos en este caso son:
 
