@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      - uses: umbrelladocs/action-linkspector@v1
         name: Check links in markdown files
         with:
-          use-quiet-mode: "yes"
-          use-verbose-mode: "yes"
+          reporter: github-pr-review
