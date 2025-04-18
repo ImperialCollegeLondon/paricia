@@ -433,10 +433,7 @@ class Classification(PermissionsBase):
         """
         if self.accumulate and self.resolution is None:
             raise ValidationError(
-                {
-                    "resolution": "The resolution must be set if the data is "
-                    "accumulated."
-                }
+                {"resolution": "The resolution must be set if the data is accumulated."}
             )
 
         col_names = [
