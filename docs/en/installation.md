@@ -96,4 +96,3 @@ The documentation site can now be accessed via a web browser on http://localhost
 
 
 The reason for explicitly using `localhost:8001` is because port `8000`, the default, will likely be already in use by Paricia web application.
-
