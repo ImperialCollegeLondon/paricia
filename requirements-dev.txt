@@ -149,7 +149,7 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   werkzeug
-model-bakery==1.20.0
+model-bakery==1.20.1
     # via Paricia (pyproject.toml)
 mypy==1.13.0
     # via Paricia (pyproject.toml)
