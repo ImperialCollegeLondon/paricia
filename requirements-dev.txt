@@ -111,7 +111,7 @@ et-xmlfile==2.0.0
     # via openpyxl
 filelock==3.16.1
     # via virtualenv
-flask==3.0.3
+flask==3.1.0
     # via
     #   dash
     #   django-plotly-dash
