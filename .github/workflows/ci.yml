@@ -27,7 +27,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -47,7 +47,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: 3.11
@@ -59,4 +59,6 @@ jobs:
           pip install -r requirements-doc.txt
           pip install .
       - name: Test the docs built correctly
-        run: mkdocs build
+        run: |
+          mkdocs build -f config/en/mkdocs.yml
+          mkdocs build -f config/es/mkdocs.yml

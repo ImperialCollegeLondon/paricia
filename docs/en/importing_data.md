@@ -6,11 +6,11 @@ The whole reason for Paricia to exist is to store and facilitate access to hydro
 
 Data import is done via Paricia import listing, clicking in the `New` button at the top of the page.
 
-![Data import list](../assets/images/import_list.png)
+![Data import list](assets/images/import_list.png)
 
 A form will open in a new page, containing several fields to be filled by the users.
 
-![Form to import new data](../assets/images/importing_add_data.png)
+![Form to import new data](assets/images/importing_add_data.png)
 
 ### Format
 
@@ -20,7 +20,7 @@ The **Format** is the most important option to choose. If the format is not corr
 
 The following figure shows the classifications available for a particular format:
 
-![List of variables classification into columns](../assets/images/classifications.png)
+![List of variables classification into columns](assets/images/classifications.png)
 
 Clicking in each classification `id` will show you more information about that particular classification. Keep in mind you might not have permission to see the details of that classification.
 
@@ -36,18 +36,18 @@ Once the form is complete, click `Save` at the top of the page and the import pr
 
 - **Not Queued**: The data ingestion has not started, yet.
 
-![Data ingestion not queued](../assets/images/importing_not_queued.png)
+![Data ingestion not queued](assets/images/importing_not_queued.png)
 
 - **Queued**: The data ingestion has started. Data file has been opened and is being processed.
 
-![Data ingestion queued](../assets/images/importing_queued.png)
+![Data ingestion queued](assets/images/importing_queued.png)
 
 - **Completed**: The data ingestion has completed successfully. Information on the start and end dates of the data **in the local timezone of the user**, as well as the number of records, will appear updated
 
-![Data ingestion completed](../assets/images/importing_completed.png)
+![Data ingestion completed](assets/images/importing_completed.png)
 
 - **Failed**: The data ingestion failed. Information on what went wrong should appear in the log box at the bottom of the data import detail. Try to fix the issues, based on the feedback provided, check the box `Reprocess Data`, and save the form again to trigger another data ingestion process.
 
-![Data ingestion failed](../assets/images/importing_failed.png)
+![Data ingestion failed](assets/images/importing_failed.png)
 
 Once the data has been ingested successfully, it will be available to validate in the [Validation screen](validation.md) and in the Report screen, if the Station it belongs to is labelled as public or internal.

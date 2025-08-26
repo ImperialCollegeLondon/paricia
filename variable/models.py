@@ -174,10 +174,7 @@ class Variable(PermissionsBase):
         """Validate the model fields."""
         if self.maximum < self.minimum:
             raise ValidationError(
-                {
-                    "maximum": "The maximum value must be greater than the minimum "
-                    "value."
-                }
+                {"maximum": "The maximum value must be greater than the minimum value."}
             )
         if not self.variable_code.isidentifier():
             raise ValidationError(
