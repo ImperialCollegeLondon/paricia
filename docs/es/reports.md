@@ -4,7 +4,7 @@ Patricia expone los datos que contiene a través de la página **Informes**.
 
 Esta página contiene un formulario en el lado izquierdo y un gráfico en el derecho, que mostrará los datos seleccionados en el formulario. No se muestran datos en el gráfico al acceder a la página.
 
-![Formulario para completar en la página del informe](../assets/images/reports_form.png)
+![Formulario para completar en la página del informe](assets/images/reports_form.png)
 
 ## Tipos de informes
 
@@ -34,15 +34,15 @@ El usuario puede hacer zoom, seleccionar la región de interés y se mostrarán 
 
 La siguiente figura muestra la temperatura ambiente en un periodo de unas semanas. El título indica un nivel de agregación de alrededor de 23 minutos, lo que significa que los puntos de datos mostrados están separados por 23 minutos en promedio. Tenga en cuenta que **no se realiza ningún procesamiento en los datos** - no hay promedio ni manipulación de otro tipo - simplemente se traza una selección de puntos de datos existentes en todo el rango. En otras palabras, si la separación de datos original fue de 5 minutos, entonces un nivel de agregación de 23 minutos significa que solo se traza 1 punto entre 4 o 5.
 
-![Gráfico con agregación de datos de 23,6 minutos](../assets/images/high_aggregation.png)
+![Gráfico con agregación de datos de 23,6 minutos](assets/images/high_aggregation.png)
 
 En el siguiente gráfico, hemos ampliado un poco y ahora la separación media es de 15 min.
 
-![Gráfico con agregación de datos de 15 minutos](../assets/images/some_aggregation.png)
+![Gráfico con agregación de datos de 15 minutos](assets/images/some_aggregation.png)
 
 En el gráfico final, el zoom es lo suficientemente alto como para que no sea necesaria ninguna agregación.
 
-![Gráfico sin agregación de datos](../assets/images/no_aggregation.png)
+![Gráfico sin agregación de datos](assets/images/no_aggregation.png)
 
 En todos los casos, para volver al rango completo, utilice las herramientas en la esquina superior derecha del gráfico o haga doble clic en él.
 
@@ -52,4 +52,4 @@ El enfoque elegido para seleccionar los datos a trazar (sólo omitiendo puntos) 
 
 Por ejemplo, si ampliamos la primera parte de la serie, podemos ver algunos puntos de datos (muy probablemente incorrectos) que disparan hasta 50. Estos no eran visibles en la vista general.
 
-![Trazar con picos cuando hay suficiente zoom](../assets/images/spikes.png)
+![Trazar con picos cuando hay suficiente zoom](assets/images/spikes.png)
