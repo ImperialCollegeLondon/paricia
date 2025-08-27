@@ -36,7 +36,7 @@ crispy-bootstrap5==2024.10
     # via Paricia (pyproject.toml)
 cssbeautifier==1.15.1
     # via djlint
-dash==2.18.1
+dash==3.2.0
     # via
     #   dash-ag-grid
     #   dash-bootstrap-components
@@ -84,7 +84,7 @@ django-filter==24.3
     # via Paricia (pyproject.toml)
 django-guardian==2.4.0
     # via Paricia (pyproject.toml)
-django-plotly-dash==2.4.3
+django-plotly-dash==2.5.0
     # via Paricia (pyproject.toml)
 django-tables2==2.7.4
     # via Paricia (pyproject.toml)
@@ -99,11 +99,11 @@ djangorestframework-simplejwt==5.3.1
     # via Paricia (pyproject.toml)
 djlint==1.36.4
     # via Paricia (pyproject.toml)
-dpd-components==0.1.0
+dpd-components==0.2.0
     # via django-plotly-dash
 drf-yasg==1.21.8
     # via Paricia (pyproject.toml)
-editorconfig==0.12.4
+editorconfig==0.17.0
     # via
     #   cssbeautifier
     #   jsbeautifier
@@ -111,7 +111,7 @@ et-xmlfile==2.0.0
     # via openpyxl
 filelock==3.16.1
     # via virtualenv
-flask==3.0.3
+flask==3.1.0
     # via
     #   dash
     #   django-plotly-dash
@@ -149,7 +149,7 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   werkzeug
-model-bakery==1.20.0
+model-bakery==1.20.1
     # via Paricia (pyproject.toml)
 mypy==1.13.0
     # via Paricia (pyproject.toml)
@@ -247,7 +247,7 @@ urllib3==2.3.0
     # via requests
 virtualenv==20.28.0
     # via pre-commit
-werkzeug==3.0.6
+werkzeug==3.1.3
     # via
     #   dash
     #   django-plotly-dash

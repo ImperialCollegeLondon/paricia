@@ -6,7 +6,7 @@ There are two ways of becoming an Admin user
 
 1. Asking another Admin to give superuser permissions to that user. This is done via the Paricia Admin. Within the `Users` app, select the user whose permissions need changing and check the box granting the user `Superuser status`, as shown in this picture:
 
-![Checking the third box grants the user all Paricia permissions](../assets/images/superuser.png)
+![Checking the third box grants the user all Paricia permissions](assets/images/superuser.png)
 
 2. Via the command line. This is a more advanced method and typically required only when setting up Paricia for the first time, either locally for development or in a new server. We will assume that that Paricia has been launched using `docker compose`, as instructed in the [installation instructions](./installation.md#docker-deployment). The steps in this case are:
 

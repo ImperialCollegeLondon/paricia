@@ -6,11 +6,11 @@ La razón de ser de Paricia es almacenar y facilitar el acceso a los datos hidro
 
 La importación de datos se realiza a través de la lista de importación de Paricia, haciendo clic en el botón `Nuevo` en la parte superior de la página.
 
-![Lista de importación de datos](../assets/images/import_list.png)
+![Lista de importación de datos](assets/images/import_list.png)
 
 Se abrirá un formulario en una nueva página, que contiene varios campos para que los usuarios completen.
 
-![Formulario para importar nuevos datos](../assets/images/importing_add_data.png)
+![Formulario para importar nuevos datos](assets/images/importing_add_data.png)
 
 ### Formato
 
@@ -20,7 +20,7 @@ El **Formato** es la opción más importante a elegir. Si el formato no es corre
 
 La siguiente figura muestra las clasificaciones disponibles para un formato en particular:
 
-![Lista de clasificaciones de variables en columnas](../assets/images/classifications.png)
+![Lista de clasificaciones de variables en columnas](assets/images/classifications.png)
 
 Al hacer clic en el `id` de cada clasificación, se mostrará más información sobre esa clasificación en particular. Tenga en cuenta que es posible que no tenga permiso para ver los detalles de esa clasificación.
 
@@ -36,18 +36,18 @@ Una vez que el formulario esté completo, haga clic en `Save` en la parte superi
 
 - **Not Queued**: La ingesta de datos aún no ha comenzado.
 
-![Ingestión de datos no en cola](../assets/images/importing_not_queued.png)
+![Ingestión de datos no en cola](assets/images/importing_not_queued.png)
 
 - **Queued**: La ingesta de datos ha comenzado. El archivo de datos se ha abierto y se está procesando.
 
-![Ingestión de datos en cola](../assets/images/importing_queued.png)
+![Ingestión de datos en cola](assets/images/importing_queued.png)
 
 - **Completado**: la ingesta de datos se ha completado correctamente. La información sobre las fechas de inicio y finalización de los datos **en la zona horaria local del usuario**, así como la cantidad de registros, aparecerán actualizadas
 
-![Ingestión de datos completada](../assets/images/importing_completed.png)
+![Ingestión de datos completada](assets/images/importing_completed.png)
 
 - **Error**: la ingesta de datos falló. La información sobre lo que salió mal debería aparecer en el cuadro de registro en la parte inferior del detalle de la importación de datos. Intente solucionar los problemas, según los comentarios proporcionados, marque la casilla "Reprocesar datos" y guarde el formulario nuevamente para activar otro proceso de ingesta de datos.
 
-![Error en la ingesta de datos](../assets/images/importing_failed.png)
+![Error en la ingesta de datos](assets/images/importing_failed.png)
 
 Una vez que los datos se hayan ingerido correctamente, estarán disponibles para su validación en la [Pantalla de validación](validation.md) y en la pantalla de Informe, si la estación a la que pertenecen está etiquetada como pública o interna.

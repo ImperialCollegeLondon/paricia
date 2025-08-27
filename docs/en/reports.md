@@ -4,7 +4,7 @@ Paricia exposes the data it contains via the **Reports** page.
 
 This page contains a form on the left hand side and a plot on the right, which will display the data selected in the form. No data is displayed in the plot when accessing the page.
 
-![Form to complete in the report page](../assets/images/reports_form.png)
+![Form to complete in the report page](assets/images/reports_form.png)
 
 ## Report types
 
@@ -34,15 +34,15 @@ The user can zoom in, selecting the region of interest, and finer data will be s
 
 The following figure shows the ambient temperature in a period of a few weeks. The title indicates an aggregation level of around 23 minutes, meaning that data points displayed are separated 23 minutes on average. Mind that **no processing is done in the data** - no average or other manipulation - simply a selection of existing data points are plotted across the whole range. In other words, if the original data separation was 5 min, then an aggregation level of 23 min means that only 1 point in 4 or 5 is plotted.
 
-![Plot with 23.6 min data aggregation](../assets/images/high_aggregation.png)
+![Plot with 23.6 min data aggregation](assets/images/high_aggregation.png)
 
 In the next plot, we have zoomed in a little bit and now the average separation is 15 min.
 
-![Plot with 15 min data aggregation](../assets/images/some_aggregation.png)
+![Plot with 15 min data aggregation](assets/images/some_aggregation.png)
 
 In the final plot, the zoom is high enough such that no aggregation is required.
 
-![Plot with no data aggregation](../assets/images/no_aggregation.png)
+![Plot with no data aggregation](assets/images/no_aggregation.png)
 
 In all cases, to go back to the full range, either use the tools in the top right corner of the plot or double click on it.
 
@@ -52,4 +52,4 @@ The chosen approach for selecting the data to plot - just skipping points - is e
 
 For example, if we zoom in the first part of the series, we can see some - most likely wrong - data points shooting up to 50. These were not visible in the general view.
 
-![Plot with spikes when there's enough zoom](../assets/images/spikes.png)
+![Plot with spikes when there's enough zoom](assets/images/spikes.png)
