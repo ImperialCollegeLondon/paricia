@@ -72,7 +72,7 @@ django==5.2.8
     #   model-bakery
 django-bootstrap5==24.3
     # via Paricia (pyproject.toml)
-django-crispy-forms==2.3
+django-crispy-forms==2.5
     # via
     #   Paricia (pyproject.toml)
     #   crispy-bootstrap5
