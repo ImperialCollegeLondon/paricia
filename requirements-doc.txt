@@ -218,7 +218,7 @@ psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
     # via Paricia (pyproject.toml)
-pygments==2.18.0
+pygments==2.19.2
     # via mkdocs-material
 pyjwt==2.9.0
     # via djangorestframework-simplejwt
