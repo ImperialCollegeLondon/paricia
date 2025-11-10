@@ -209,7 +209,7 @@ pyyaml==6.0.2
     #   djlint
     #   drf-yasg
     #   pre-commit
-regex==2024.11.6
+regex==2025.11.3
     # via djlint
 requests==2.32.3
     # via dash
