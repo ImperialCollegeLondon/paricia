@@ -54,7 +54,7 @@ django==5.2.8
     #   djangorestframework
     #   djangorestframework-simplejwt
     #   drf-yasg
-django-bootstrap5==24.3
+django-bootstrap5==25.3
     # via Paricia (pyproject.toml)
 django-crispy-forms==2.5
     # via
