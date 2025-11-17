@@ -176,7 +176,7 @@ pathspec==0.12.1
     # via djlint
 pillow==11.0.0
     # via Paricia (pyproject.toml)
-pip-tools==7.4.1
+pip-tools==7.5.2
     # via Paricia (pyproject.toml)
 platformdirs==4.3.6
     # via virtualenv
