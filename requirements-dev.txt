@@ -184,7 +184,7 @@ plotly==5.24.1
     # via
     #   dash
     #   django-plotly-dash
-pre-commit==4.0.1
+pre-commit==4.5.0
     # via Paricia (pyproject.toml)
 psycopg2==2.9.10
     # via Paricia (pyproject.toml)
