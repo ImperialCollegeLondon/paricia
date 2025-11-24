@@ -230,7 +230,7 @@ python-dateutil==2.9.0.post0
     # via
     #   ghp-import
     #   pandas
-pytz==2024.2
+pytz==2025.2
     # via
     #   Paricia (pyproject.toml)
     #   drf-yasg
