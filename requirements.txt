@@ -121,7 +121,7 @@ markupsafe==3.0.2
     #   werkzeug
 nest-asyncio==1.6.0
     # via dash
-numpy==2.2.0
+numpy==2.3.5
     # via
     #   Paricia (pyproject.toml)
     #   pandas
@@ -133,7 +133,7 @@ packaging==24.2
     #   plotly
 pandas==2.2.3
     # via Paricia (pyproject.toml)
-pillow==11.0.0
+pillow==12.0.0
     # via Paricia (pyproject.toml)
 plotly==5.24.1
     # via
