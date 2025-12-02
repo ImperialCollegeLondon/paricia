@@ -1,9 +1,3 @@
-from drf_spectacular.utils import (
-    extend_schema,
-    extend_schema_view,
-)
-from rest_framework import viewsets
-
 from management.views import (
     CustomCreateView,
     CustomDeleteView,
@@ -340,36 +334,3 @@ class StationListView(CustomTableView):
     model = Station
     table_class = StationTable
     filterset_class = StationFilter
-
-
-@extend_schema_view(
-    list=extend_schema(
-        summary="List all stations",
-        description="Get a list of all monitoring stations the user has access to.",
-        tags=["stations"],
-    ),
-    retrieve=extend_schema(
-        summary="Get a specific station",
-        description="Retrieve details for a specific station by its ID.",
-        tags=["stations"],
-    ),
-    create=extend_schema(
-        summary="Create a new station",
-        description="Create a new monitoring station.",
-        tags=["stations"],
-    ),
-    update=extend_schema(
-        summary="Update a station",
-        description="Update an existing monitoring station.",
-        tags=["stations"],
-    ),
-    destroy=extend_schema(
-        summary="Delete a station",
-        description="Delete a monitoring station.",
-        tags=["stations"],
-    ),
-)
-class StationViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint for managing monitoring stations.
-    """

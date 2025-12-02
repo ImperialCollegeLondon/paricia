@@ -315,13 +315,9 @@ SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,
     "SERVERS": [
         {"url": "http://localhost:8000", "description": "Local Development server"},
-    ],
-    "TAGS": [
-        {"name": "stations", "description": "Station operations"},
-        {"name": "measurements", "description": "Measurement operations"},
-        {"name": "variables", "description": "Variable operations"},
-        {"name": "sensors", "description": "Sensor operations"},
-        {"name": "importing", "description": "Data import operations"},
-        {"name": "formatting", "description": "Data formatting operations"},
+        {
+            "url": os.environ.get("PRODUCTION_URL", "http://localhost:8000"),
+            "description": "Production server",
+        },
     ],
 }
