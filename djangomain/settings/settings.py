@@ -74,7 +74,7 @@ INSTALLED_APPS = [
     "huey.contrib.djhuey",
     "rest_framework",
     "rest_framework_simplejwt",
-    "drf_yasg",
+    "drf_spectacular",
     "management",
     "crispy_forms",
     "crispy_bootstrap5",
@@ -228,6 +228,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",  # Add this
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
@@ -304,3 +305,19 @@ PLOTLY_COMPONENTS = [
     "dpd_components"
 ]
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
+# drf-spectacular settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Paricia API",
+    "DESCRIPTION": "API for the Paricia hydrological monitoring platform (iMHEA)",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SERVERS": [
+        {"url": "http://localhost:8000", "description": "Local Development server"},
+        {
+            "url": os.environ.get("PRODUCTION_URL", "http://localhost:8000"),
+            "description": "Production server",
+        },
+    ],
+}

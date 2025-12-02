@@ -43,6 +43,7 @@ dependencies = [
     "pycountry",
     "Pillow",
     "django-tables2",
+    "drf-spectacular",
 ]
 
 [project.optional-dependencies]

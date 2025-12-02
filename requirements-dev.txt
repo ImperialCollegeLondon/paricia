@@ -9,6 +9,10 @@ asgiref==3.8.1
     #   Paricia (pyproject.toml)
     #   channels
     #   django
+attrs==25.4.0
+    # via
+    #   jsonschema
+    #   referencing
 blinker==1.9.0
     # via flask
 build==1.2.2.post1
@@ -27,11 +31,7 @@ click==8.1.7
     #   flask
     #   pip-tools
 colorama==0.4.6
-    # via
-    #   build
-    #   click
-    #   djlint
-    #   tqdm
+    # via djlint
 crispy-bootstrap5==2024.10
     # via Paricia (pyproject.toml)
 cssbeautifier==1.15.1
@@ -45,12 +45,6 @@ dash-ag-grid==32.3.2
     # via Paricia (pyproject.toml)
 dash-bootstrap-components==1.6.0
     # via django-plotly-dash
-dash-core-components==2.0.0
-    # via dash
-dash-html-components==2.0.0
-    # via dash
-dash-table==5.0.0
-    # via dash
 distlib==0.3.9
     # via virtualenv
 django==5.2.8
@@ -68,6 +62,7 @@ django==5.2.8
     #   django-tables2
     #   djangorestframework
     #   djangorestframework-simplejwt
+    #   drf-spectacular
     #   drf-yasg
     #   model-bakery
 django-bootstrap5==25.3
@@ -94,6 +89,7 @@ djangorestframework==3.15.2
     # via
     #   Paricia (pyproject.toml)
     #   djangorestframework-simplejwt
+    #   drf-spectacular
     #   drf-yasg
 djangorestframework-simplejwt==5.5.1
     # via Paricia (pyproject.toml)
@@ -101,6 +97,8 @@ djlint==1.36.4
     # via Paricia (pyproject.toml)
 dpd-components==0.2.0
     # via django-plotly-dash
+drf-spectacular==0.29.0
+    # via Paricia (pyproject.toml)
 drf-yasg==1.21.8
     # via Paricia (pyproject.toml)
 editorconfig==0.17.0
@@ -115,10 +113,6 @@ flask==3.1.0
     # via
     #   dash
     #   django-plotly-dash
-html-tag-names==0.1.2
-    # via djlint
-html-void-elements==0.1.0
-    # via djlint
 huey==2.5.2
     # via Paricia (pyproject.toml)
 identify==2.6.2
@@ -130,7 +124,9 @@ idna==3.10
 importlib-metadata==8.5.0
     # via dash
 inflection==0.5.1
-    # via drf-yasg
+    # via
+    #   drf-spectacular
+    #   drf-yasg
 itsdangerous==2.2.0
     # via flask
 jdcal==1.4.1
@@ -145,6 +141,10 @@ jsbeautifier==1.15.1
     #   djlint
 json5==0.10.0
     # via djlint
+jsonschema==4.25.1
+    # via drf-spectacular
+jsonschema-specifications==2025.9.1
+    # via jsonschema
 markupsafe==3.0.2
     # via
     #   jinja2
@@ -207,14 +207,23 @@ pyyaml==6.0.2
     # via
     #   Paricia (pyproject.toml)
     #   djlint
+    #   drf-spectacular
     #   drf-yasg
     #   pre-commit
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
 regex==2025.11.3
     # via djlint
 requests==2.32.3
     # via dash
 retrying==1.3.4
     # via dash
+rpds-py==0.30.0
+    # via
+    #   jsonschema
+    #   referencing
 ruff==0.8.2
     # via Paricia (pyproject.toml)
 six==1.17.0
@@ -235,13 +244,13 @@ typing-extensions==4.12.2
     # via
     #   dash
     #   mypy
+    #   referencing
 tzdata==2024.2
-    # via
-    #   django
-    #   pandas
+    # via pandas
 uritemplate==4.1.1
     # via
     #   Paricia (pyproject.toml)
+    #   drf-spectacular
     #   drf-yasg
 urllib3==2.3.0
     # via requests
