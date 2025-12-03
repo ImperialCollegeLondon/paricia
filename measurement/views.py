@@ -66,7 +66,11 @@ class DataReport(View):
 class MeasurementDataAPIView(APIView):
     """API endpoint for downloading measurement data.
 
-    Users can only access data from stations they have view_measurements permission for.
+    Access to measurement data is controlled via object-level permissions using django-guardian.
+    Users can only access data from Station objects for which they have the `view_measurements`
+    permission assigned. This is configured via django-guardian's object-level permission system,
+    typically by assigning the `view_measurements` permission to users or groups for specific
+    Station instances.
     """
 
     permission_classes = [IsAuthenticated]
