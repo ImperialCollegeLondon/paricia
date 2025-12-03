@@ -24,6 +24,7 @@ from drf_spectacular.utils import (
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -65,6 +66,14 @@ class DataReport(View):
         return render(request, "data_report.html", context)
 
 
+class MeasurementDataPagination(PageNumberPagination):
+    """Pagination for measurement data API."""
+
+    page_size = 1000
+    page_size_query_param = "page_size"
+    max_page_size = 10000
+
+
 class MeasurementDataAPIView(APIView):
     """API endpoint for downloading measurement data.
 
@@ -76,6 +85,27 @@ class MeasurementDataAPIView(APIView):
     """  # noqa E501
 
     permission_classes = [IsAuthenticated]
+    pagination_class = MeasurementDataPagination
+
+    @property
+    def paginator(self):
+        """Return the paginator instance."""
+        if not hasattr(self, "_paginator"):
+            if self.pagination_class is None:
+                self._paginator = None
+            else:
+                self._paginator = self.pagination_class()
+        return self._paginator
+
+    def paginate_queryset(self, queryset):
+        """Paginate a list of records."""
+        if self.paginator is None:
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+    def get_paginated_response(self, data):
+        """Return a paginated response."""
+        return self.paginator.get_paginated_response(data)
 
     def get_permitted_stations(self, user):
         """Get stations the user has permission to view measurements for."""
@@ -98,6 +128,10 @@ class MeasurementDataAPIView(APIView):
 
         **Traces**: Select which data columns to include in the response.
         Common traces include `value`, `maximum`, `minimum`, `depth`, and `direction`.
+
+        **Pagination**: Results are paginated with a default page size of 1000 records.
+        Use `page` and `page_size` query parameters to control pagination.
+        Maximum page size is 10000 records.
         """,
         parameters=[
             OpenApiParameter(
@@ -143,6 +177,20 @@ class MeasurementDataAPIView(APIView):
                 description="Data traces to include",
                 required=False,
                 enum=["value", "maximum", "minimum", "depth", "direction"],
+            ),
+            OpenApiParameter(
+                name="page",
+                type=int,
+                location=OpenApiParameter.QUERY,
+                description="Page number for pagination",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="page_size",
+                type=int,
+                location=OpenApiParameter.QUERY,
+                description="Number of records per page (default: 1000, max: 10000)",
+                required=False,
             ),
         ],
         responses={
@@ -247,9 +295,14 @@ class MeasurementDataAPIView(APIView):
         columns_to_include = [c for c in columns_to_include if c in df.columns]
         result_df = df[columns_to_include]
 
-        # Serialize the result using DRF serializer for consistency and efficiency
+        # Convert to list of dicts for pagination
         result = result_df.to_dict(orient="records")
 
-        response_serializer = MeasurementDataResponseSerializer(result, many=True)
+        # Paginate the results
+        page = self.paginate_queryset(result)
+        if page is not None:
+            response_serializer = MeasurementDataResponseSerializer(page, many=True)
+            return self.get_paginated_response(response_serializer.data)
 
+        response_serializer = MeasurementDataResponseSerializer(result, many=True)
         return Response(response_serializer.data)
