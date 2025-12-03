@@ -91,6 +91,6 @@ class MeasurementDataResponseSerializer(serializers.Serializer):
         max_digits=14, decimal_places=4, read_only=True, required=False
     )
     completeness = serializers.DecimalField(
-        max_digits=5, decimal_places=2, read_only=True, required=False
+        max_digits=4, decimal_places=1, read_only=True, required=False
     )
     report_type = serializers.CharField(read_only=True, required=False)
