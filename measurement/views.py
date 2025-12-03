@@ -11,6 +11,8 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
+import logging
+
 from django.shortcuts import render
 from django.views import View
 from drf_spectacular.utils import (
@@ -27,8 +29,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from station.models import Station
-
-import logging
 
 from .reporting import get_report_data_from_db
 from .serializers import (
@@ -217,7 +217,7 @@ class MeasurementDataAPIView(APIView):
                 report_type=validated_data["report_type"],
                 whole_months=False,
             )
-        except Exception as e:
+        except Exception:
             logging.exception("Error retrieving data")
             return Response(
                 {"detail": "An internal error occurred retrieving data."},
