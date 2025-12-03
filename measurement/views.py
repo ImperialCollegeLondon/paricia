@@ -248,4 +248,5 @@ class MeasurementDataAPIView(APIView):
         # Convert to list of dicts for response
         result = result_df.to_dict(orient="records")
 
-        return Response(result)
+        serializer = MeasurementDataResponseSerializer(instance=result, many=True)
+        return Response(serializer.data)
