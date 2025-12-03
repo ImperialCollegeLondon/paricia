@@ -36,6 +36,8 @@ from .serializers import (
     MeasurementDataResponseSerializer,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class DailyValidation(LoginRequiredMixin, View):
     """View for displaying the Daily Validation dash app."""
@@ -71,7 +73,7 @@ class MeasurementDataAPIView(APIView):
     permission assigned. This is configured via django-guardian's object-level permission system,
     typically by assigning the `view_measurements` permission to users or groups for specific
     Station instances.
-    """
+    """  # noqa E501
 
     permission_classes = [IsAuthenticated]
 
@@ -222,7 +224,7 @@ class MeasurementDataAPIView(APIView):
                 whole_months=False,
             )
         except Exception:
-            logging.exception("Error retrieving data")
+            logger.exception("Error retrieving data")
             return Response(
                 {"detail": "An internal error occurred retrieving data."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -245,8 +247,9 @@ class MeasurementDataAPIView(APIView):
         columns_to_include = [c for c in columns_to_include if c in df.columns]
         result_df = df[columns_to_include]
 
-        # Convert to list of dicts for response
+        # Serialize the result using DRF serializer for consistency and efficiency
         result = result_df.to_dict(orient="records")
 
-        serializer = MeasurementDataResponseSerializer(instance=result, many=True)
-        return Response(serializer.data)
+        response_serializer = MeasurementDataResponseSerializer(result, many=True)
+
+        return Response(response_serializer.data)
