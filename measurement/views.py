@@ -28,6 +28,8 @@ from rest_framework.views import APIView
 
 from station.models import Station
 
+import logging
+
 from .reporting import get_report_data_from_db
 from .serializers import (
     MeasurementDataRequestSerializer,
@@ -216,8 +218,9 @@ class MeasurementDataAPIView(APIView):
                 whole_months=False,
             )
         except Exception as e:
+            logging.exception("Error retrieving data")
             return Response(
-                {"detail": f"Error retrieving data: {e!s}"},
+                {"detail": "An internal error occurred retrieving data."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
