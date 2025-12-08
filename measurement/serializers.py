@@ -4,7 +4,7 @@ from station.models import Station
 from variable.models import Variable
 
 
-class MeasurementDataRequestSerializer(serializers.Serializer):
+class MeasurementDataDownloadRequestSerializer(serializers.Serializer):
     """Serializer for validating measurement data download requests."""
 
     REPORT_TYPE_CHOICES = [
