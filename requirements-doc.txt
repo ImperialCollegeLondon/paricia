@@ -287,7 +287,7 @@ uritemplate==4.1.1
     #   Paricia (pyproject.toml)
     #   drf-spectacular
     #   drf-yasg
-urllib3==2.3.0
+urllib3==2.6.0
     # via requests
 watchdog==6.0.0
     # via mkdocs
