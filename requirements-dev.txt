@@ -252,7 +252,7 @@ uritemplate==4.1.1
     #   Paricia (pyproject.toml)
     #   drf-spectacular
     #   drf-yasg
-urllib3==2.3.0
+urllib3==2.6.0
     # via requests
 virtualenv==20.28.0
     # via pre-commit
