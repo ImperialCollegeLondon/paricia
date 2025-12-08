@@ -265,7 +265,7 @@ wheel==0.45.0
     # via pip-tools
 whitenoise==6.11.0
     # via Paricia (pyproject.toml)
-zipp==3.21.0
+zipp==3.23.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
