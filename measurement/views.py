@@ -74,7 +74,7 @@ class MeasurementDataPagination(PageNumberPagination):
     max_page_size = 10000
 
 
-class MeasurementDataAPIView(APIView):
+class MeasurementDataDownloadAPIView(APIView):
     """API endpoint for downloading measurement data.
 
     Access to measurement data is controlled via object-level permissions using django-guardian.
