@@ -22,7 +22,7 @@ urlpatterns = [
     path("data_report/", views.DataReport.as_view(), name="data_report"),
     path("daily_validation/", views.DailyValidation.as_view(), name="daily_validation"),
     # API endpoint for downloading measurement data
-    path("api/data/", MeasurementDataAPIView.as_view(), name="api_data"),
+    path("api/data/download", MeasurementDataDownloadAPIView.as_view(), name="api_data_download"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
