@@ -70,7 +70,7 @@ class MeasurementDataDownloadRequestSerializer(serializers.Serializer):
         return attrs
 
 
-class MeasurementDataResponseSerializer(serializers.Serializer):
+class MeasurementDataDownloadResponseSerializer(serializers.Serializer):
     """Serializer for measurement data response."""
 
     id = serializers.IntegerField(read_only=True)
