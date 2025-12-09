@@ -23,7 +23,7 @@ urlpatterns = [
     # API endpoint for downloading measurement data
     path(
         "api/data/download",
-        MeasurementDataDownloadAPIView.as_view(),
+        views.MeasurementDataDownloadAPIView.as_view(),
         name="api_data_download",
     ),
 ]
