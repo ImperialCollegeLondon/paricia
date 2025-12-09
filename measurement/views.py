@@ -33,8 +33,8 @@ from station.models import Station
 
 from .reporting import get_report_data_from_db
 from .serializers import (
-    MeasurementDataRequestSerializer,
-    MeasurementDataResponseSerializer,
+    MeasurementDataDownloadRequestSerializer,
+    MeasurementDataDownloadResponseSerializer,
 )
 
 logger = logging.getLogger(__name__)
@@ -195,7 +195,7 @@ class MeasurementDataDownloadAPIView(APIView):
         ],
         responses={
             200: OpenApiResponse(
-                response=MeasurementDataResponseSerializer(many=True),
+                response=MeasurementDataDownloadResponseSerializer(many=True),
                 description="Measurement data retrieved successfully",
                 examples=[
                     OpenApiExample(
@@ -243,7 +243,7 @@ class MeasurementDataDownloadAPIView(APIView):
         }
 
         # Validate request parameters
-        serializer = MeasurementDataRequestSerializer(data=data)
+        serializer = MeasurementDataDownloadRequestSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -301,8 +301,12 @@ class MeasurementDataDownloadAPIView(APIView):
         # Paginate the results
         page = self.paginate_queryset(result)
         if page is not None:
-            response_serializer = MeasurementDataResponseSerializer(page, many=True)
+            response_serializer = MeasurementDataDownloadResponseSerializer(
+                page, many=True
+            )
             return self.get_paginated_response(response_serializer.data)
 
-        response_serializer = MeasurementDataResponseSerializer(result, many=True)
+        response_serializer = MeasurementDataDownloadResponseSerializer(
+            result, many=True
+        )
         return Response(response_serializer.data)
