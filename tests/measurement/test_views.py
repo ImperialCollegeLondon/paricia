@@ -59,7 +59,7 @@ class TestMeasurementDataAPIView(TestCase):
         self.create_test_measurements()
 
         # API endpoint URL
-        self.url = reverse("measurement:api_data")
+        self.url = reverse("measurement:api_data_download")
 
     def create_test_measurements(self):
         """Create test measurement data."""
