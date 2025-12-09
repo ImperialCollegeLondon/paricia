@@ -230,7 +230,9 @@ class MeasurementDataDownloadAPIView(APIView):
     def get(self, request):
         """Retrieve measurement data based on query parameters."""
         # Handle traces as a list from query params
-        traces = request.query_params.getlist("traces", ["value"])
+        traces = request.query_params.getlist("traces")
+        if not traces:
+            traces = ["value", "maximum", "minimum", "depth", "direction"]
 
         # Build data dict for serializer
         data = {
@@ -300,13 +302,5 @@ class MeasurementDataDownloadAPIView(APIView):
 
         # Paginate the results
         page = self.paginate_queryset(result)
-        if page is not None:
-            response_serializer = MeasurementDataDownloadResponseSerializer(
-                page, many=True
-            )
-            return self.get_paginated_response(response_serializer.data)
-
-        response_serializer = MeasurementDataDownloadResponseSerializer(
-            result, many=True
-        )
-        return Response(response_serializer.data)
+        response_serializer = MeasurementDataDownloadResponseSerializer(page, many=True)
+        return self.get_paginated_response(response_serializer.data)
