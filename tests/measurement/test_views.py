@@ -104,6 +104,9 @@ class TestMeasurementDataAPIView(TestCase):
         # Missing all parameters
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("start_date", response.data)
+        self.assertIn("end_date", response.data)
+        self.assertIn("report_type", response.data)
 
         # Missing some parameters
         response = self.client.get(
@@ -114,6 +117,9 @@ class TestMeasurementDataAPIView(TestCase):
             },
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("start_date", response.data)
+        self.assertIn("end_date", response.data)
+        self.assertIn("report_type", response.data)
 
     def test_invalid_station_code(self):
         """Test that invalid station code returns 400 error."""
@@ -130,6 +136,10 @@ class TestMeasurementDataAPIView(TestCase):
             },
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("station", response.data)
+
+        error_message = str(response.data["station"][0]).lower()
+        self.assertTrue("does not exist" in error_message or "invalid" in error_message)
 
     def test_invalid_variable_code(self):
         """Test that invalid variable code returns 400 error."""
@@ -146,6 +156,10 @@ class TestMeasurementDataAPIView(TestCase):
             },
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("variable", response.data)
+
+        error_message = str(response.data["variable"][0]).lower()
+        self.assertTrue("does not exist" in error_message or "invalid" in error_message)
 
     def test_end_date_before_start_date(self):
         """Test that end date before start date returns 400 error."""
@@ -163,6 +177,17 @@ class TestMeasurementDataAPIView(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+        error_data = str(response.data).lower()
+        self.assertTrue(
+            "end_date" in error_data
+            or "start_date" in error_data
+            or "non_field_errors" in str(response.data)
+        )
+
+        self.assertTrue(
+            "before" in error_data or "after" in error_data or "greater" in error_data
+        )
+
     def test_invalid_report_type(self):
         """Test that invalid report type returns 400 error."""
         self.client.force_authenticate(user=self.user_with_permission)
@@ -178,6 +203,11 @@ class TestMeasurementDataAPIView(TestCase):
             },
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("report_type", response.data)
+        error_message = str(response.data["report_type"][0]).lower()
+        self.assertTrue(
+            "invalid choice" in error_message or "not a valid choice" in error_message
+        )
 
     def test_permission_denied(self):
         """Test that users without permission cannot access data."""
@@ -402,7 +432,7 @@ class TestMeasurementDataAPIView(TestCase):
         self.assertEqual(response.data, [])
 
     def test_default_traces(self):
-        """Test that default traces (value) is used when not specified."""
+        """Test that default traces is used when not specified."""
         self.client.force_authenticate(user=self.user_with_permission)
 
         response = self.client.get(
@@ -420,6 +450,8 @@ class TestMeasurementDataAPIView(TestCase):
         if len(response.data["results"]) > 0:
             first_record = response.data["results"][0]
             self.assertIn("value", first_record)
+            if "maximum" in first_record:
+                self.assertIsNotNone(first_record.get("maximum"))
 
     def test_data_ordering(self):
         """Test that data is returned in chronological order."""
@@ -465,4 +497,9 @@ class TestMeasurementDataAPIView(TestCase):
             )
 
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-            self.assertIn("variable", str(response.data).lower())
+            # Check that the error is specifically about variable availability
+            error_data = str(response.data).lower()
+            self.assertTrue(
+                "variable" in error_data
+                and ("not available" in error_data or "not configured" in error_data)
+            )
