@@ -1,4 +1,5 @@
 import logging
+
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiResponse,
@@ -207,7 +208,7 @@ class DataImportUploadAPIView(APIView):
                 rawfile=validated_data["rawfile"],
                 owner=request.user,
             )
-        except Exception as e:
+        except Exception:
             logging.exception("Error creating data import")
             return Response(
                 {"detail": "An internal error occurred while creating data import."},
