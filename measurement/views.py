@@ -173,7 +173,7 @@ class MeasurementDataDownloadAPIView(APIView):
                 location=OpenApiParameter.QUERY,
                 description="Data traces to include",
                 required=False,
-                enum=["value", "maximum", "minimum", "depth", "direction"],
+                enum=[v for v, _ in MeasurementDataDownloadRequestSerializer.TRACE_CHOICES],
             ),
             OpenApiParameter(
                 name="page",
