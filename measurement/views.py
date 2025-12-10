@@ -91,10 +91,7 @@ class MeasurementDataDownloadAPIView(APIView):
     def paginator(self):
         """Return the paginator instance."""
         if not hasattr(self, "_paginator"):
-            if self.pagination_class is None:
-                self._paginator = None
-            else:
-                self._paginator = self.pagination_class()
+            self._paginator = self.pagination_class()
         return self._paginator
 
     def paginate_queryset(self, queryset):
@@ -176,7 +173,9 @@ class MeasurementDataDownloadAPIView(APIView):
                 location=OpenApiParameter.QUERY,
                 description="Data traces to include",
                 required=False,
-                enum=["value", "maximum", "minimum", "depth", "direction"],
+                enum=[
+                    v for v, _ in MeasurementDataDownloadRequestSerializer.TRACE_CHOICES
+                ],
             ),
             OpenApiParameter(
                 name="page",

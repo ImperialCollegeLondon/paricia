@@ -135,7 +135,7 @@ pandas==2.2.3
     # via Paricia (pyproject.toml)
 pillow==12.0.0
     # via Paricia (pyproject.toml)
-plotly==5.24.1
+plotly==6.5.0
     # via
     #   dash
     #   django-plotly-dash
@@ -188,7 +188,7 @@ uritemplate==4.1.1
     #   Paricia (pyproject.toml)
     #   drf-spectacular
     #   drf-yasg
-urllib3==2.3.0
+urllib3==2.6.0
     # via requests
 werkzeug==3.1.3
     # via
@@ -197,7 +197,7 @@ werkzeug==3.1.3
     #   flask
 whitenoise==6.11.0
     # via Paricia (pyproject.toml)
-zipp==3.21.0
+zipp==3.23.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
