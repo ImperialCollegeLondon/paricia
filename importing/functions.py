@@ -152,7 +152,7 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
         delim_intcode = eval("0x" + delim_hexcode)
         delimiter = chr(delim_intcode)
     elif delimiter == " ":
-        delimiter = "\s+"  # This is a regex for whitespace
+        delimiter = r"\s+"  # This is a regex for whitespace
 
     return pd.read_csv(
         source_file,
