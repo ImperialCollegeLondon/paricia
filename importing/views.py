@@ -1,11 +1,11 @@
 from drf_spectacular.utils import (
     OpenApiExample,
-    OpenApiParameter,
     OpenApiResponse,
     extend_schema,
 )
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import status
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -73,6 +73,7 @@ class DataImportUploadAPIView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]  # Add this line
 
     def get_permitted_stations(self, user):
         """Get stations the user has permission to import data for."""
@@ -86,58 +87,44 @@ class DataImportUploadAPIView(APIView):
         **Permissions**: Users can only upload data for stations they have
         `change_station` permission for.
 
-        **File Upload**: The file should be sent as multipart/form-data with
-        the key `rawfile`.
+        **File Upload**: Send as multipart/form-data with all parameters in the body.
 
         **Reprocess**: Set to `true` to reprocess the data after import.
         """,
-        parameters=[
-            OpenApiParameter(
-                name="station",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                description="Station code",
-                required=True,
-            ),
-            OpenApiParameter(
-                name="format",
-                type=int,
-                location=OpenApiParameter.QUERY,
-                description="Format ID",
-                required=True,
-            ),
-            OpenApiParameter(
-                name="visibility",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                description="Visibility level (public/private)",
-                required=False,
-                enum=["public", "private"],
-            ),
-            OpenApiParameter(
-                name="reprocess",
-                type=bool,
-                location=OpenApiParameter.QUERY,
-                description="Reprocess data after import",
-                required=False,
-            ),
-            OpenApiParameter(
-                name="observations",
-                type=str,
-                location=OpenApiParameter.QUERY,
-                description="Additional observations",
-                required=False,
-            ),
-        ],
         request={
             "multipart/form-data": {
                 "type": "object",
                 "properties": {
+                    "station": {
+                        "type": "string",
+                        "description": "Station code",
+                    },
+                    "format": {
+                        "type": "integer",
+                        "description": "Format ID",
+                    },
                     "rawfile": {
                         "type": "string",
                         "format": "binary",
-                    }
+                        "description": "Data file to upload",
+                    },
+                    "visibility": {
+                        "type": "string",
+                        "enum": ["public", "private"],
+                        "default": "private",
+                        "description": "Visibility level",
+                    },
+                    "reprocess": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Reprocess data after import",
+                    },
+                    "observations": {
+                        "type": "string",
+                        "description": "Additional observations",
+                    },
                 },
+                "required": ["station", "format", "rawfile"],
             }
         },
         responses={
@@ -148,14 +135,15 @@ class DataImportUploadAPIView(APIView):
                     OpenApiExample(
                         "Successful upload",
                         value={
-                            "id": 123,
-                            "station": "H001",
-                            "format": 1,
+                            "data_import_id": 123,
+                            "station": "CAR_02_HC_01",
+                            "format": 47,
                             "rawfile": "/media/imports/data_2024.csv",
                             "visibility": "private",
                             "reprocess": True,
-                            "created_at": "2024-12-09T10:30:00Z",
-                            "status": "pending",
+                            "date": "2024-12-09T10:30:00Z",
+                            "status": "N",
+                            "status_display": "Not queued",
                         },
                     )
                 ],
@@ -216,9 +204,7 @@ class DataImportUploadAPIView(APIView):
                 reprocess=validated_data["reprocess"],
                 observations=validated_data.get("observations", ""),
                 rawfile=validated_data["rawfile"],
-                owner=request.user,  # Changed from 'user' to 'owner'
-                # Note: date, start_date, end_date, records, status, and log
-                # are set automatically by the model
+                owner=request.user,
             )
         except Exception as e:
             return Response(
