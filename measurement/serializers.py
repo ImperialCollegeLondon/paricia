@@ -45,13 +45,7 @@ class MeasurementDataDownloadRequestSerializer(serializers.Serializer):
     )
     traces = serializers.MultipleChoiceField(
         choices=TRACE_CHOICES,
-        default=[
-            "value",
-            "maximum",
-            "minimum",
-            "depth",
-            "direction",
-        ],
+        default=[v for v, _ in TRACE_CHOICES],
         help_text="Data traces to include in the response.",
     )
 
