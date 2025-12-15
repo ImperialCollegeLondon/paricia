@@ -153,7 +153,7 @@ model-bakery==1.20.1
     # via Paricia (pyproject.toml)
 mypy==1.13.0
     # via Paricia (pyproject.toml)
-mypy-extensions==1.0.0
+mypy-extensions==1.1.0
     # via mypy
 nest-asyncio==1.6.0
     # via dash
