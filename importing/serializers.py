@@ -1,8 +1,5 @@
 from rest_framework import serializers
 
-from formatting.models import Format
-from station.models import Station
-
 from .models import DataImport
 
 
@@ -11,7 +8,14 @@ class DataImportUploadRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DataImport
-        fields = ["station", "format", "visibility", "reprocess", "observations", "rawfile"]
+        fields = [
+            "station",
+            "format",
+            "visibility",
+            "reprocess",
+            "observations",
+            "rawfile",
+        ]
 
 
 class DataImportUploadResponseSerializer(serializers.ModelSerializer):
