@@ -156,7 +156,7 @@ class DataImportUploadAPIView(APIView):
             ),
             404: OpenApiResponse(description="Station or format not found"),
         },
-        tags=["data-import"],
+        tags=["importing"],
     )
     def post(self, request):
         """Upload a data file and create a data import."""
