@@ -6,35 +6,12 @@ from station.models import Station
 from .models import DataImport
 
 
-class DataImportUploadRequestSerializer(serializers.Serializer):
+class DataImportUploadRequestSerializer(serializers.ModelSerializer):
     """Serializer for data import upload request."""
 
-    station = serializers.SlugRelatedField(
-        slug_field="station_code",
-        queryset=Station.objects.all(),
-        help_text="Station code",
-    )
-    format = serializers.PrimaryKeyRelatedField(
-        queryset=Format.objects.all(),
-        help_text="Format ID",
-    )
-    visibility = serializers.ChoiceField(
-        choices=["public", "private"],
-        default="private",
-        help_text="Visibility level",
-    )
-    reprocess = serializers.BooleanField(
-        default=False,
-        help_text="Reprocess data after import",
-    )
-    observations = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        help_text="Additional observations",
-    )
-    rawfile = serializers.FileField(
-        help_text="Data file to upload",
-    )
+    class Meta:
+        model = DataImport
+        fields = ["station", "format", "visibility", "reprocess", "observations", "rawfile"]
 
 
 class DataImportUploadResponseSerializer(serializers.ModelSerializer):
