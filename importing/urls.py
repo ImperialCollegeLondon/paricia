@@ -19,6 +19,8 @@ urlpatterns = [
     path("delete/<int:pk>", DataImportDeleteView.as_view(), name="dataimport_delete"),
     path("api/upload/", DataImportUploadAPIView.as_view(), name="api_upload"),
     path(
-        "api/dataingestion/", DataingestionQueryView.as_view(), name="api_data_ingestion"
+        "api/dataingestion/",
+        DataingestionQueryView.as_view(),
+        name="api_data_ingestion",
     ),
 ]
