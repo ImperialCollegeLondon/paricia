@@ -93,6 +93,7 @@ class DataImportDetailSerializer(serializers.ModelSerializer):
             "status",
             "status_display",
             "reprocess",
+            "log",
         ]
         read_only_fields = [
             "data_import_id",
@@ -102,6 +103,7 @@ class DataImportDetailSerializer(serializers.ModelSerializer):
             "records",
             "status",
             "status_display",
+            "log",
         ]
 
     def get_status_display(self, obj):
