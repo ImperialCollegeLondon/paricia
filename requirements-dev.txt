@@ -43,7 +43,7 @@ dash==3.2.0
     #   django-plotly-dash
 dash-ag-grid==32.3.2
     # via Paricia (pyproject.toml)
-dash-bootstrap-components==1.6.0
+dash-bootstrap-components==2.0.4
     # via django-plotly-dash
 distlib==0.3.9
     # via virtualenv
