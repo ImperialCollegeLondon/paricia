@@ -7,6 +7,7 @@ from .views import (
     DataImportEditView,
     DataImportListView,
     DataImportUploadAPIView,
+    DataingestionQueryView,
 )
 
 app_name = "importing"
@@ -17,4 +18,7 @@ urlpatterns = [
     path("create/", DataImportCreateView.as_view(), name="dataimport_create"),
     path("delete/<int:pk>", DataImportDeleteView.as_view(), name="dataimport_delete"),
     path("api/upload/", DataImportUploadAPIView.as_view(), name="api_upload"),
+    path(
+        "api/dataingestion/", DataingestionQueryView.as_view(), name="api_dataingestion"
+    ),
 ]
