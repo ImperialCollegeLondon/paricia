@@ -29,8 +29,6 @@ from .serializers import (
 )
 from .tables import DataImportTable
 
-logger = logging.getLogger(__name__)
-
 
 class DataImportDetailView(CustomDetailView):
     """View to view a data import."""
@@ -210,8 +208,8 @@ class DataImportUploadAPIView(APIView):
                 rawfile=validated_data["rawfile"],
                 owner=request.user,
             )
-        except Exception:
-            logger.exception("Error creating data import")
+        except Exception as e:
+            logging.exception(f"Error creating data import: {e}")
             return Response(
                 {"detail": "An internal error occurred while creating data import."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
