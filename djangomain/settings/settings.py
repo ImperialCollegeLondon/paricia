@@ -332,4 +332,7 @@ SPECTACULAR_SETTINGS = {
         {"name": "importing", "description": "Data import operations"},
         {"name": "formatting", "description": "Data formatting operations"},
     ],
+    "PREPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.preprocess_exclude_path_format",
+    ],
 }
