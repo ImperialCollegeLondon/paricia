@@ -212,7 +212,7 @@ class TestDataImportUploadAPIView(TestCase):
         self.assertIn("format", response.data)
         self.assertIn("rawfile", response.data)
         self.assertIn("date", response.data)
-        self.assertIn("status", response.data)
+        self.assertIn("status_display", response.data)
 
         # Verify data
         self.assertEqual(response.data["station"], self.station.station_code)
@@ -528,7 +528,7 @@ class TestDataImportUploadAPIView(TestCase):
             "end_date",
             "records",
             "observations",
-            "status",
+            "status_display",
             "reprocess",
         ]
 

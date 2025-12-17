@@ -223,7 +223,7 @@ class DataImportUploadAPIView(APIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
 
-class DataingestionQueryView(APIView):
+class DataIngestionQueryView(APIView):
     """API endpoint for querying data ingestion status/list.
 
     - No `data_import_id` query param: return list of imports the user may view.

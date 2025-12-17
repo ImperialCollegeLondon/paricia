@@ -5,6 +5,13 @@ from station.models import Station
 from .models import DataImport
 
 
+def get_status_display(obj):
+    """Helper to get human-readable status display."""
+    return (
+        obj.get_status_display() if hasattr(obj, "get_status_display") else obj.status
+    )
+
+
 class DataImportUploadRequestSerializer(serializers.ModelSerializer):
     """Serializer for data import upload request."""
 
@@ -47,6 +54,7 @@ class DataImportUploadResponseSerializer(serializers.ModelSerializer):
             "records",  # Auto-filled during processing
             "observations",
             "status_display",  # Import status
+            "status",
             "reprocess",
         ]
         read_only_fields = [
@@ -58,12 +66,7 @@ class DataImportUploadResponseSerializer(serializers.ModelSerializer):
             "status_display",
         ]
 
-    def get_status_display(self, obj):
-        return (
-            obj.get_status_display()
-            if hasattr(obj, "get_status_display")
-            else obj.status
-        )
+    get_status_display = staticmethod(get_status_display)
 
 
 class DataImportDetailSerializer(serializers.ModelSerializer):
@@ -106,9 +109,4 @@ class DataImportDetailSerializer(serializers.ModelSerializer):
             "log",
         ]
 
-    def get_status_display(self, obj):
-        return (
-            obj.get_status_display()
-            if hasattr(obj, "get_status_display")
-            else obj.status
-        )
+    get_status_display = staticmethod(get_status_display)
