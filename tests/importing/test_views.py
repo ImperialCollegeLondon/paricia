@@ -627,7 +627,7 @@ class TestDataIngestionQueryView(TestCase):
         assign_perm("view_dataimport", self.third_user, self.public_import)
 
         # API endpoint URL
-        self.url = reverse("importing:api_dataingestion")
+        self.url = reverse("importing:api_data_ingestion")
 
     def test_authentication_required(self):
         """Test that authentication is required to access the endpoint."""
