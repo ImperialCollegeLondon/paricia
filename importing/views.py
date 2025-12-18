@@ -277,7 +277,7 @@ class DataIngestionQueryView(APIView):
             )
 
         # Only the owner may request detailed info by PK
-        if getattr(data_import, "owner", None) != request.user:
+        if data_import.owner != request.user:
             return Response(
                 {
                     "detail": "Only the owner may request this data import by primary key."  # noqa: E501
