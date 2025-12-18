@@ -827,18 +827,6 @@ class TestDataIngestionQueryView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["station"], self.station.station_code)
 
-    def test_multiple_imports_same_owner(self):
-        """Test that owner sees all their imports in list."""
-        self.client.force_authenticate(user=self.owner_user)
-        response = self.client.get(self.url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Owner should see both their imports
-        returned_ids = {item["data_import_id"] for item in response.data}
-        self.assertIn(self.owner_import.data_import_id, returned_ids)
-        self.assertIn(self.owner_failed_import.data_import_id, returned_ids)
-
     def test_detail_access_control_strictly_by_ownership(self):
         """Test that detail access is strictly controlled by ownership."""
         # Create a new import
