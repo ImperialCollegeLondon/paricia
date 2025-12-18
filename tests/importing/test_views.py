@@ -9,29 +9,31 @@ from formatting.models import Format
 from importing.models import DataImport
 from station.models import Station
 
+IMPORTING_TEST_FIXTURES = [
+    "management_user",
+    "variable_unit",
+    "variable_variable",
+    "station_country",
+    "station_region",
+    "station_ecosystem",
+    "station_institution",
+    "station_type",
+    "station_place",
+    "station_basin",
+    "station_placebasin",
+    "station_station",
+    "formatting_delimiter",
+    "formatting_extension",
+    "formatting_date",
+    "formatting_time",
+    "formatting_format",
+]
+
 
 class TestDataImportUploadAPIView(TestCase):
     """Test suite for the DataImportUploadAPIView."""
 
-    fixtures = [
-        "management_user",
-        "variable_unit",
-        "variable_variable",
-        "station_country",
-        "station_region",
-        "station_ecosystem",
-        "station_institution",
-        "station_type",
-        "station_place",
-        "station_basin",
-        "station_placebasin",
-        "station_station",
-        "formatting_delimiter",
-        "formatting_extension",
-        "formatting_date",
-        "formatting_time",
-        "formatting_format",
-    ]
+    fixtures = IMPORTING_TEST_FIXTURES
 
     def setUp(self):
         """Set up test data."""
@@ -210,7 +212,7 @@ class TestDataImportUploadAPIView(TestCase):
         self.assertIn("format", response.data)
         self.assertIn("rawfile", response.data)
         self.assertIn("date", response.data)
-        self.assertIn("status", response.data)
+        self.assertIn("status_display", response.data)
 
         # Verify data
         self.assertEqual(response.data["station"], self.station.station_code)
@@ -526,7 +528,7 @@ class TestDataImportUploadAPIView(TestCase):
             "end_date",
             "records",
             "observations",
-            "status",
+            "status_display",
             "reprocess",
         ]
 
@@ -534,3 +536,325 @@ class TestDataImportUploadAPIView(TestCase):
             self.assertIn(
                 field, response.data, f"Field '{field}' missing from response"
             )
+
+
+class TestDataIngestionQueryView(TestCase):
+    """Test suite for the DataingestionQueryView."""
+
+    fixtures = IMPORTING_TEST_FIXTURES
+
+    def setUp(self):
+        """Set up test data."""
+        User = get_user_model()
+        self.client = APIClient()
+
+        # Create test users
+        self.owner_user = User.objects.create_user(
+            username="owner", password="testpass123"
+        )
+        self.other_user = User.objects.create_user(
+            username="otheruser", password="testpass123"
+        )
+        self.third_user = User.objects.create_user(
+            username="thirduser", password="testpass123"
+        )
+
+        # Get station and format from fixtures
+        self.station = Station.objects.get(pk=1)
+        self.format = Format.objects.first()
+
+        # Create test data imports
+        # Owner's import (completed successfully)
+        self.owner_import = DataImport.objects.create(
+            station=self.station,
+            format=self.format,
+            rawfile=SimpleUploadedFile(
+                "owner_data.csv", b"time,value\n2024-01-01,10.5\n"
+            ),
+            owner=self.owner_user,
+            visibility="private",
+            status="C",
+            log="Data ingestion completed successfully",
+            records=100,
+        )
+
+        # Owner's failed import
+        self.owner_failed_import = DataImport.objects.create(
+            station=self.station,
+            format=self.format,
+            rawfile=SimpleUploadedFile("owner_failed.csv", b"invalid data"),
+            owner=self.owner_user,
+            visibility="private",
+            status="F",
+            log="Error: Invalid data format at line 5",
+            records=0,
+        )
+
+        # Other user's import
+        self.other_import = DataImport.objects.create(
+            station=self.station,
+            format=self.format,
+            rawfile=SimpleUploadedFile(
+                "other_data.csv", b"time,value\n2024-01-02,20.5\n"
+            ),
+            owner=self.other_user,
+            visibility="private",
+            status="N",
+            log="",
+        )
+
+        # Public import from other user
+        self.public_import = DataImport.objects.create(
+            station=self.station,
+            format=self.format,
+            rawfile=SimpleUploadedFile(
+                "public_data.csv", b"time,value\n2024-01-03,30.5\n"
+            ),
+            owner=self.other_user,
+            visibility="public",
+            status="C",
+            log="Public import completed",
+            records=50,
+        )
+
+        # Set object permissions (mimicking PermissionsBase behavior)
+        assign_perm("view_dataimport", self.owner_user, self.owner_import)
+        assign_perm("view_dataimport", self.owner_user, self.owner_failed_import)
+        assign_perm("view_dataimport", self.other_user, self.other_import)
+        # Public imports are viewable by all
+        assign_perm("view_dataimport", self.owner_user, self.public_import)
+        assign_perm("view_dataimport", self.other_user, self.public_import)
+        assign_perm("view_dataimport", self.third_user, self.public_import)
+
+        # API endpoint URL
+        self.url = reverse("importing:api_data_ingestion")
+
+    def test_authentication_required(self):
+        """Test that authentication is required to access the endpoint."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_returns_only_viewable_imports(self):
+        """Test that list only returns imports the user has permission to view."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data, list)
+
+        # Should see own imports and public import
+        returned_ids = {item["data_import_id"] for item in response.data}
+        self.assertIn(self.owner_import.data_import_id, returned_ids)
+        self.assertIn(self.owner_failed_import.data_import_id, returned_ids)
+        self.assertIn(self.public_import.data_import_id, returned_ids)
+        # Should NOT see other user's private import
+        self.assertNotIn(self.other_import.data_import_id, returned_ids)
+
+    def test_list_contains_expected_fields(self):
+        """Test that list items contain expected fields but not log."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertGreater(len(response.data), 0)
+
+        first_item = response.data[0]
+        expected_fields = [
+            "data_import_id",
+            "station",
+            "format",
+            "date",
+            "status_display",
+        ]
+        for field in expected_fields:
+            self.assertIn(field, first_item)
+
+        # Log should NOT be in list response
+        self.assertNotIn("log", first_item)
+
+    def test_empty_list_for_user_without_permissions(self):
+        """Test that user with no permissions sees empty list."""
+        self.client.force_authenticate(user=self.third_user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Should only see public import
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(
+            response.data[0]["data_import_id"], self.public_import.data_import_id
+        )
+
+    def test_detail_owner_can_view(self):
+        """Test that owner can view their own import detail including log."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_import.data_import_id}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["data_import_id"], self.owner_import.data_import_id
+        )
+        self.assertIn("log", response.data)
+        self.assertEqual(response.data["log"], "Data ingestion completed successfully")
+        self.assertEqual(response.data["status"], "C")
+        self.assertEqual(response.data["status_display"], "Completed")
+
+    def test_detail_owner_can_view_failed_import_with_log(self):
+        """Test that owner can see error log for failed imports."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_failed_import.data_import_id}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["data_import_id"], self.owner_failed_import.data_import_id
+        )
+        self.assertIn("log", response.data)
+        self.assertEqual(response.data["log"], "Error: Invalid data format at line 5")
+        self.assertEqual(response.data["status"], "F")
+        self.assertEqual(response.data["status_display"], "Failed")
+
+    def test_detail_non_owner_forbidden(self):
+        """Test that non-owner cannot view detail even with view permission."""
+        # Give other_user view permission on owner's import
+        assign_perm("view_dataimport", self.other_user, self.owner_import)
+
+        self.client.force_authenticate(user=self.other_user)
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_import.data_import_id}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn("owner", response.data["detail"].lower())
+
+    def test_detail_public_import_non_owner_forbidden(self):
+        """Test that non-owner cannot view detail of public import by PK."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(
+            self.url, {"data_import_id": self.public_import.data_import_id}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_detail_nonexistent_import(self):
+        """Test requesting detail for non-existent import returns 404."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(self.url, {"data_import_id": 99999})
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("not found", response.data["detail"].lower())
+
+    def test_detail_response_contains_all_fields(self):
+        """Test that detail response contains all expected fields including log."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_import.data_import_id}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        expected_fields = [
+            "data_import_id",
+            "station",
+            "format",
+            "rawfile",
+            "date",
+            "start_date",
+            "end_date",
+            "records",
+            "observations",
+            "status",
+            "status_display",
+            "reprocess",
+            "log",
+        ]
+
+        for field in expected_fields:
+            self.assertIn(
+                field, response.data, f"Field '{field}' missing from detail response"
+            )
+
+    def test_detail_rawfile_is_absolute_url(self):
+        """Test that rawfile field returns absolute URL in detail response."""
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_import.data_import_id}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("rawfile", response.data)
+        # Should be a full URL starting with http
+        rawfile_url = response.data["rawfile"]
+        self.assertTrue(
+            rawfile_url.startswith("http://") or rawfile_url.startswith("https://"),
+            f"rawfile should be absolute URL, got: {rawfile_url}",
+        )
+
+    def test_status_display_field(self):
+        """Test that status_display returns human-readable status."""
+        self.client.force_authenticate(user=self.owner_user)
+
+        # Test completed status
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_import.data_import_id}
+        )
+        self.assertEqual(response.data["status"], "C")
+        self.assertEqual(response.data["status_display"], "Completed")
+
+        # Test failed status
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_failed_import.data_import_id}
+        )
+        self.assertEqual(response.data["status"], "F")
+        self.assertEqual(response.data["status_display"], "Failed")
+
+    def test_list_and_detail_use_station_code(self):
+        """Test that station is returned as station_code (slug) not ID."""
+        self.client.force_authenticate(user=self.owner_user)
+
+        # Test list
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        first_item = response.data[0]
+        self.assertEqual(first_item["station"], self.station.station_code)
+
+        # Test detail
+        response = self.client.get(
+            self.url, {"data_import_id": self.owner_import.data_import_id}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["station"], self.station.station_code)
+
+    def test_detail_access_control_strictly_by_ownership(self):
+        """Test that detail access is strictly controlled by ownership."""
+        # Create a new import
+        special_import = DataImport.objects.create(
+            station=self.station,
+            format=self.format,
+            rawfile=SimpleUploadedFile("special.csv", b"data"),
+            owner=self.owner_user,
+            visibility="public",
+            status="C",
+            log="Special import log",
+        )
+
+        # Give third_user explicit view permission
+        assign_perm("view_dataimport", self.third_user, special_import)
+        assign_perm("change_dataimport", self.third_user, special_import)
+
+        # Even with view and change permissions, non-owner cannot access detail by PK
+        self.client.force_authenticate(user=self.third_user)
+        response = self.client.get(
+            self.url, {"data_import_id": special_import.data_import_id}
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # But owner can
+        self.client.force_authenticate(user=self.owner_user)
+        response = self.client.get(
+            self.url, {"data_import_id": special_import.data_import_id}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("log", response.data)
