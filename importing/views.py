@@ -2,7 +2,9 @@ import logging
 
 from drf_spectacular.utils import (
     OpenApiExample,
+    OpenApiParameter,
     OpenApiResponse,
+    OpenApiTypes,
     extend_schema,
 )
 from guardian.shortcuts import get_objects_for_user
@@ -242,6 +244,15 @@ class DataIngestionQueryView(APIView):
         - If no `data_import_id` is provided, the endpoint returns a list of
           DataImport objects the user can view, ordered by submission date.
         """,
+        parameters=[
+            OpenApiParameter(
+                name="data_import_id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Primary key of a DataImport to return detailed info.",
+            ),
+        ],
         responses={
             200: OpenApiResponse(
                 description="Data ingestion status retrieved successfully"
