@@ -224,7 +224,7 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.8.2
+ruff==0.14.10
     # via Paricia (pyproject.toml)
 six==1.17.0
     # via
