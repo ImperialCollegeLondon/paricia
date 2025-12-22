@@ -68,7 +68,7 @@ django-crispy-forms==2.5
     #   crispy-bootstrap5
 django-excel-response==2.0.5
     # via Paricia (pyproject.toml)
-django-extensions==3.2.3
+django-extensions==4.1
     # via Paricia (pyproject.toml)
 django-filter==24.3
     # via Paricia (pyproject.toml)
