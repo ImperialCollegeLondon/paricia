@@ -143,7 +143,7 @@ psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
     # via Paricia (pyproject.toml)
-pyjwt==2.9.0
+pyjwt==2.10.1
     # via djangorestframework-simplejwt
 python-dateutil==2.9.0.post0
     # via pandas

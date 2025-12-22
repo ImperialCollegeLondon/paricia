@@ -190,7 +190,7 @@ psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
     # via Paricia (pyproject.toml)
-pyjwt==2.9.0
+pyjwt==2.10.1
     # via djangorestframework-simplejwt
 pyproject-hooks==1.2.0
     # via

@@ -226,7 +226,7 @@ pycountry==24.6.1
     # via Paricia (pyproject.toml)
 pygments==2.19.2
     # via mkdocs-material
-pyjwt==2.9.0
+pyjwt==2.10.1
     # via djangorestframework-simplejwt
 pymdown-extensions==10.17.1
     # via
