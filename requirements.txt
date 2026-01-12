@@ -152,7 +152,7 @@ pytz==2025.2
     #   Paricia (pyproject.toml)
     #   drf-yasg
     #   pandas
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via
     #   Paricia (pyproject.toml)
     #   drf-spectacular
