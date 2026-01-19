@@ -99,7 +99,7 @@ dpd-components==0.2.0
     # via django-plotly-dash
 drf-spectacular==0.29.0
     # via Paricia (pyproject.toml)
-drf-yasg==1.21.8
+drf-yasg==1.21.14
     # via Paricia (pyproject.toml)
 editorconfig==0.17.0
     # via
