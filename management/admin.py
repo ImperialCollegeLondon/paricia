@@ -93,6 +93,9 @@ class CustomUserAdmin(UserAdmin):
                     "first_name",
                     "last_name",
                     "email",
+                    "thingsboard_username",
+                    "thingsboard_password",
+                    "thingsboard_access_token",
                 )
             },
         ),

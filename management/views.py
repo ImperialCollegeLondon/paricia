@@ -12,7 +12,8 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, UserProfileForm
+from .models import User
 from .permissions import get_queryset
 from .tools import get_deleted_objects
 
@@ -21,6 +22,16 @@ class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
+
+
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserProfileForm
+    template_name = "registration/profile.html"
+    success_url = reverse_lazy("user_profile")
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class URLMixin:

@@ -43,7 +43,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from management.views import SignUpView
+from management.views import SignUpView, UserProfileView
 
 from .views import HomePageView
 
@@ -52,6 +52,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
     path("register/", SignUpView.as_view(), name="auth_register"),
+    path("account/", UserProfileView.as_view(), name="user_profile"),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
