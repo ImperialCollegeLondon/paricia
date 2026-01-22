@@ -12,6 +12,25 @@ class User(AbstractUser):
 
     """
 
+    thingsboard_username = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        help_text="Thingsboard username for data pulls.",
+    )
+    thingsboard_password = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Thingsboard password for data pulls.",
+    )
+    thingsboard_access_token = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Thingsboard access token (preferred for scheduled pulls).",
+    )
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.username != settings.ANONYMOUS_USER_NAME:
