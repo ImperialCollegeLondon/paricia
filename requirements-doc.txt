@@ -122,7 +122,7 @@ jdcal==1.4.1
     # via
     #   Paricia (pyproject.toml)
     #   openpyxl
-jinja2==3.1.4
+jinja2==3.1.6
     # via
     #   flask
     #   mkdocs
