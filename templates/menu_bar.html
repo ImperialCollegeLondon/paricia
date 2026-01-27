@@ -136,11 +136,27 @@
       <!-- If the user is authenticated, we greet them and include a logout button -->
       <!-- within a dropdown so it is not clicked by mistake -->
       {% if user.is_authenticated %}
-        <li class="nav-item">
-          <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <input class="nav-link logout-button" type="submit" value="Logout" />
-          </form>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             id="userMenu"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">{{ user.username }}</a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+            <li>
+              <a class="dropdown-item" href="{% url 'user_profile' %}">Account</a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="dropdown-item" type="submit">Logout</button>
+              </form>
+            </li>
+          </ul>
         </li>
       {% else %}
         <!-- Otherwise we just show options to register and login -->
