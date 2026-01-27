@@ -12,6 +12,21 @@ class User(AbstractUser):
 
     """
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.username != settings.ANONYMOUS_USER_NAME:
+            standard_group = Group.objects.get(name="Standard")
+            standard_group.user_set.add(self)
+
+
+class ThingsboardCredentials(models.Model):
+    """Credentials for Thingsboard integration."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="thingsboard_credentials",
+    )
     thingsboard_username = models.CharField(
         max_length=150,
         blank=True,
@@ -31,11 +46,8 @@ class User(AbstractUser):
         help_text="Thingsboard access token (preferred for scheduled pulls).",
     )
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.username != settings.ANONYMOUS_USER_NAME:
-            standard_group = Group.objects.get(name="Standard")
-            standard_group.user_set.add(self)
+    def __str__(self):
+        return f"ThingsboardCredentials({self.user.username})"
 
 
 class PermissionsBase(models.Model):
