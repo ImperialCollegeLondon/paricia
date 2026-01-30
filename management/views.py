@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Model
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView
 from django.views.generic.edit import UpdateView
@@ -12,8 +12,8 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from guardian.shortcuts import get_objects_for_user
 
-from .forms import CustomUserCreationForm, UserProfileForm
-from .models import User
+from .forms import CustomUserCreationForm, ThingsboardCredentialsForm, UserProfileForm
+from .models import ThingsboardCredentials, User
 from .permissions import get_queryset
 from .tools import get_deleted_objects
 
@@ -32,6 +32,51 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_thingsboard_credentials(self):
+        creds, _ = ThingsboardCredentials.objects.get_or_create(user=self.request.user)
+        return creds
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault("profile_form", self.get_form())
+        context.setdefault(
+            "thingsboard_form",
+            ThingsboardCredentialsForm(instance=self.get_thingsboard_credentials()),
+        )
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        profile_form = self.get_form()
+        thingsboard_form = ThingsboardCredentialsForm(
+            instance=self.get_thingsboard_credentials()
+        )
+        return self.render_to_response(
+            self.get_context_data(
+                profile_form=profile_form,
+                thingsboard_form=thingsboard_form,
+            )
+        )
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        profile_form = UserProfileForm(request.POST, instance=self.object)
+        thingsboard_form = ThingsboardCredentialsForm(
+            request.POST, instance=self.get_thingsboard_credentials()
+        )
+
+        if profile_form.is_valid() and thingsboard_form.is_valid():
+            profile_form.save()
+            thingsboard_form.save()
+            return redirect(self.success_url)
+
+        return self.render_to_response(
+            self.get_context_data(
+                profile_form=profile_form,
+                thingsboard_form=thingsboard_form,
+            )
+        )
 
 
 class URLMixin:
