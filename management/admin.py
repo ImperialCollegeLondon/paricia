@@ -81,11 +81,6 @@ class PermissionsBaseAdmin(GuardedModelAdmin):
         return super().formfield_for_choice_field(db_field, request, **kwargs)
 
 
-class ThingsboardCredentialsInline(admin.StackedInline):
-    model = ThingsboardCredentials
-    can_delete = False
-
-
 class CustomUserAdmin(UserAdmin):
     """A slightly more restrictive user admin page."""
 
