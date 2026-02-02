@@ -121,7 +121,7 @@ markupsafe==3.0.2
     #   werkzeug
 nest-asyncio==1.6.0
     # via dash
-numpy==2.3.5
+numpy==2.4.2
     # via
     #   Paricia (pyproject.toml)
     #   pandas
