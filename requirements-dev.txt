@@ -34,7 +34,7 @@ colorama==0.4.6
     # via djlint
 crispy-bootstrap5==2024.10
     # via Paricia (pyproject.toml)
-cssbeautifier==1.15.1
+cssbeautifier==1.15.4
     # via djlint
 dash==3.2.0
     # via
