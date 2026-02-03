@@ -39,25 +39,12 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.setdefault("profile_form", self.get_form())
+        context.setdefault("profile_form", context.get("form") or self.get_form())
         context.setdefault(
             "thingsboard_form",
             ThingsboardCredentialsForm(instance=self.get_thingsboard_credentials()),
         )
         return context
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        profile_form = self.get_form()
-        thingsboard_form = ThingsboardCredentialsForm(
-            instance=self.get_thingsboard_credentials()
-        )
-        return self.render_to_response(
-            self.get_context_data(
-                profile_form=profile_form,
-                thingsboard_form=thingsboard_form,
-            )
-        )
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
