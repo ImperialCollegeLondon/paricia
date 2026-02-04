@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import get_objects_for_user
 
-from .models import User
+from .models import ThingsboardCredentials, User
 from .permissions import get_queryset
 
 # Set global preferences for the Django admin site
@@ -150,3 +150,10 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
+
+
+@admin.register(ThingsboardCredentials)
+class ThingsboardCredentialsAdmin(admin.ModelAdmin):
+    list_display = ("user", "thingsboard_username")
+    search_fields = ("user__username", "thingsboard_username")
+    list_select_related = ("user",)

@@ -1,6 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.test import RequestFactory, TestCase
-from guardian.shortcuts import assign_perm, get_user_model
+from django.urls import reverse
+from guardian.shortcuts import assign_perm
+
+from management.models import ThingsboardCredentials
 
 
 class TestModelToDict(TestCase):
@@ -165,3 +169,39 @@ class TestCustomDetailView(TestCase):
         self.assertEqual(view.delete_url, "sensor:sensor_delete")
         self.assertEqual(view.edit_url, "sensor:sensor_edit")
         self.assertEqual(view.model_description, "Sensor")
+
+
+class TestUserProfileView(TestCase):
+    fixtures = ["management_user.json"]
+
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.first()
+        self.client.force_login(self.user)
+
+    def test_get_profile_context_forms(self):
+        response = self.client.get(reverse("user_profile"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("profile_form", response.context)
+        self.assertIn("thingsboard_form", response.context)
+
+    def test_post_updates_profile_and_thingsboard(self):
+        payload = {
+            "first_name": "New",
+            "last_name": "User",
+            "email": "new@example.com",
+            "thingsboard_username": "tb_user",
+            "thingsboard_password": "tb_pass",
+            "thingsboard_access_token": "tb_token",
+        }
+        response = self.client.post(reverse("user_profile"), data=payload)
+        self.assertEqual(response.status_code, 302)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "New")
+        self.assertEqual(self.user.last_name, "User")
+        self.assertEqual(self.user.email, "new@example.com")
+
+        creds = ThingsboardCredentials.objects.get(user=self.user)
+        self.assertEqual(creds.thingsboard_username, "tb_user")
+        self.assertEqual(creds.thingsboard_password, "tb_pass")
+        self.assertEqual(creds.thingsboard_access_token, "tb_token")
