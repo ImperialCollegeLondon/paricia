@@ -19,6 +19,7 @@ from django.urls import reverse
 from formatting.models import Format
 from management.models import PermissionsBase
 from station.models import Station
+from variable.models import Variable  # Add this import at the top
 
 User = get_user_model()
 
@@ -114,3 +115,65 @@ class DataImport(PermissionsBase):
         if self.reprocess:
             self.status = "N"
             self.reprocess = False
+
+
+class ThingsboardImportMap(models.Model):
+    """Model to store Thingsboard device mappings to station variables.
+
+    This model maps Thingsboard devices to specific variables at stations, allowing
+    data from IoT devices to be imported and associated with the correct station and
+    variable combinations.
+
+    Attributes:
+        name (CharField): Name of the mapping.
+        variable (ForeignKey): Variable associated with this mapping.
+        device_id (CharField): Thingsboard device identifier.
+        station (ForeignKey): Station to which the device data belongs.
+    """
+
+    name = models.CharField(
+        "Name",
+        max_length=255,
+        blank=False,
+        null=False,
+        help_text="Name of the mapping.",
+    )
+    variable = models.ForeignKey(
+        Variable,
+        models.PROTECT,
+        verbose_name="Variable",
+        blank=False,
+        null=False,
+        help_text="Variable name in the data import.",
+    )
+
+    device_id = models.CharField(
+        "Device ID",
+        max_length=255,
+        blank=False,
+        null=False,
+        help_text="Id of the thingsboard device.",
+    )
+    station = models.ForeignKey(
+        Station,
+        models.PROTECT,
+        verbose_name="Station",
+        help_text="Station to which the data belongs.",
+    )
+
+    def __str__(self):
+        return f"{self.name} - {self.variable} - {self.device_id}"
+
+    def clean(self) -> None:
+        """Validate that the variable is valid for the station."""
+        super().clean()
+        if self.variable and self.station:
+            # Check if the variable is valid for the station
+            if not Variable.objects.filter(
+                pk=self.variable.pk, stations=self.station
+            ).exists():
+                raise ValidationError(
+                    {
+                        "variable": f'Variable "{self.variable}" is not configured for station "{self.station}".'  # noqa: E501
+                    }
+                )
