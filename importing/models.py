@@ -19,7 +19,7 @@ from django.urls import reverse
 from formatting.models import Format
 from management.models import PermissionsBase
 from station.models import Station
-from variable.models import Variable  # Add this import at the top
+from variable.models import Variable
 
 User = get_user_model()
 
