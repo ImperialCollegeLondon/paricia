@@ -19,7 +19,7 @@ from django.urls import reverse
 from formatting.models import Format
 from management.models import PermissionsBase
 from station.models import Station
-from variable.models import Variable
+from variable.models import SensorInstallation, Variable
 
 User = get_user_model()
 
@@ -168,12 +168,12 @@ class ThingsboardImportMap(models.Model):
         """Validate that the variable is valid for the station."""
         super().clean()
         if self.variable and self.station:
-            # Check if the variable is valid for the station
-            if not Variable.objects.filter(
-                pk=self.variable.pk, stations=self.station
+            # Check if the variable is valid for the station through SensorInstallation
+            if not SensorInstallation.objects.filter(
+                variable=self.variable, station=self.station
             ).exists():
                 raise ValidationError(
                     {
-                        "variable": f'Variable "{self.variable}" is not configured for station "{self.station}".'  # noqa: E501
+                        "variable": f'Variable "{self.variable}" is not configured for station "{self.station}".'  # noqa E501
                     }
                 )
