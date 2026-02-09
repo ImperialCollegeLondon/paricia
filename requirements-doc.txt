@@ -175,7 +175,7 @@ mkdocs-gen-files==0.6.0
     # via Paricia (pyproject.toml)
 mkdocs-get-deps==0.2.0
     # via mkdocs
-mkdocs-glightbox==0.4.0
+mkdocs-glightbox==0.5.2
     # via Paricia (pyproject.toml)
 mkdocs-literate-nav==0.6.1
     # via Paricia (pyproject.toml)
