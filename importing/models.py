@@ -131,14 +131,14 @@ class ThingsboardImportMap(models.Model):
         station (ForeignKey): Station to which the device data belongs.
     """
 
-    name = models.CharField(
+    name_id = models.CharField(
         "Name",
         max_length=255,
         blank=False,
         null=False,
-        help_text="Name of the mapping.",
+        help_text="Thingsboard device mapping name.",
     )
-    variable = models.ForeignKey(
+    var_id = models.ForeignKey(
         Variable,
         models.PROTECT,
         verbose_name="Variable",
@@ -162,18 +162,18 @@ class ThingsboardImportMap(models.Model):
     )
 
     def __str__(self):
-        return f"{self.name} - {self.variable} - {self.device_id}"
+        return f"{self.name_id} - {self.var_id} - {self.device_id}"
 
     def clean(self) -> None:
         """Validate that the variable is valid for the station."""
         super().clean()
-        if self.variable and self.station:
+        if self.var_id and self.station:
             # Check if the variable is valid for the station through SensorInstallation
             if not SensorInstallation.objects.filter(
-                variable=self.variable, station=self.station
+                variable=self.var_id, station=self.station
             ).exists():
                 raise ValidationError(
                     {
-                        "variable": f'Variable "{self.variable}" is not configured for station "{self.station}".'  # noqa E501
+                        "variable": f'Variable "{self.var_id}" is not configured for station "{self.station}".'  # noqa E501
                     }
                 )
