@@ -117,15 +117,15 @@ class TestThingsboardImportMap(TestCase):
         from importing.models import ThingsboardImportMap
 
         mapping = ThingsboardImportMap.objects.create(
-            name_id="Test Mapping",
-            var_id=self.variable,
+            tb_variable="Test Variable",
+            variable=self.variable,
             device_id="tb-device-001",
             station=self.station,
         )
 
         retrieved = ThingsboardImportMap.objects.get(pk=mapping.pk)
-        self.assertEqual(retrieved.name_id, "Test Mapping")
-        self.assertEqual(retrieved.var_id, self.variable)
+        self.assertEqual(retrieved.tb_variable, "Test Variable")
+        self.assertEqual(retrieved.variable, self.variable)
         self.assertEqual(retrieved.device_id, "tb-device-001")
         self.assertEqual(retrieved.station, self.station)
 
@@ -133,23 +133,23 @@ class TestThingsboardImportMap(TestCase):
         from importing.models import ThingsboardImportMap
 
         mapping = ThingsboardImportMap(
-            name_id="Test Mapping",
-            var_id=self.variable,
+            tb_variable="Test Variable",
+            variable=self.variable,
             device_id="tb-device-001",
             station=self.station,
         )
 
         self.assertEqual(
             str(mapping),
-            f"Test Mapping - {self.variable} - tb-device-001",
+            f"tb-device-001 -> {self.station}: Test Variable -> {self.variable}",
         )
 
     def test_clean_valid_variable(self):
         from importing.models import ThingsboardImportMap
 
         mapping = ThingsboardImportMap(
-            name_id="Valid Mapping",
-            var_id=self.variable,
+            tb_variable="Valid Variable",
+            variable=self.variable,
             device_id="tb-device-002",
             station=self.station,
         )
@@ -160,8 +160,8 @@ class TestThingsboardImportMap(TestCase):
         from importing.models import ThingsboardImportMap
 
         mapping = ThingsboardImportMap(
-            name_id="Invalid Mapping",
-            var_id=self.other_variable,
+            tb_variable="Invalid Variable",
+            variable=self.other_variable,
             device_id="tb-device-003",
             station=self.station,
         )
