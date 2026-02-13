@@ -28,5 +28,5 @@ class DataImportAdmin(PermissionsBaseAdmin):
 class ThingsboardImportMapAdmin(admin.ModelAdmin):
     """Admin class for the ThingsboardImportMap model."""
 
-    list_display = ["name_id", "var_id", "device_id", "station"]
-    search_fields = ["name_id", "var_id__name", "device_id", "station__name"]
+    list_display = ["tb_variable", "variable", "device_id", "station"]
+    search_fields = ["tb_variable", "variable__name", "device_id", "station__name"]
