@@ -125,20 +125,20 @@ class ThingsboardImportMap(models.Model):
     variable combinations.
 
     Attributes:
-        name (CharField): Name of the mapping.
-        variable (ForeignKey): Variable associated with this mapping.
-        device_id (CharField): Thingsboard device identifier.
-        station (ForeignKey): Station to which the device data belongs.
-    """
+        tb_variable (CharField): Name of the variable in Thingsboard.
+        variable (ForeignKey): The existing variable in Paricia associated with this mapping.
+        device_id (CharField): The id of the device in Thingsboard.
+        station (ForeignKey): The name of the corresponding station in Paricia.
+    """  # noqa E501
 
-    name_id = models.CharField(
-        "Name",
+    tb_variable = models.CharField(
+        "Thingsboard Variable",
         max_length=255,
         blank=False,
         null=False,
-        help_text="Thingsboard device mapping name.",
+        help_text="The name of the variable in Thingsboard (what is shown in the Thingsboard device).",  # noqa E501
     )
-    var_id = models.ForeignKey(
+    variable = models.ForeignKey(
         Variable,
         models.PROTECT,
         verbose_name="Variable",
@@ -152,28 +152,30 @@ class ThingsboardImportMap(models.Model):
         max_length=255,
         blank=False,
         null=False,
-        help_text="Id of the thingsboard device.",
+        help_text="The id of the device in Thingsboard.",
     )
     station = models.ForeignKey(
         Station,
         models.PROTECT,
         verbose_name="Station",
-        help_text="Station to which the data belongs.",
+        help_text="The name of the corresponding station in Paricia.",
     )
 
     def __str__(self):
-        return f"{self.name_id} - {self.var_id} - {self.device_id}"
+        return (
+            f"{self.device_id} -> {self.station}: {self.tb_variable} -> {self.variable}"
+        )
 
     def clean(self) -> None:
         """Validate that the variable is valid for the station."""
         super().clean()
-        if self.var_id and self.station:
+        if self.variable and self.station:
             # Check if the variable is valid for the station through SensorInstallation
             if not SensorInstallation.objects.filter(
-                variable=self.var_id, station=self.station
+                variable=self.variable, station=self.station
             ).exists():
                 raise ValidationError(
                     {
-                        "variable": f'Variable "{self.var_id}" is not configured for station "{self.station}".'  # noqa E501
+                        "variable": f'Variable "{self.variable}" is not configured for station "{self.station}".'  # noqa E501
                     }
                 )
