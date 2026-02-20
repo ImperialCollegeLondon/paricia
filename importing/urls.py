@@ -8,6 +8,7 @@ from .views import (
     DataImportListView,
     DataImportUploadAPIView,
     DataIngestionQueryView,
+    ThingsboardImportMapCreateView,
 )
 
 app_name = "importing"
@@ -22,5 +23,15 @@ urlpatterns = [
         "api/dataingestion/",
         DataIngestionQueryView.as_view(),
         name="api_data_ingestion",
+    ),
+    path(
+        "create-thingsboard-map/",
+        ThingsboardImportMapCreateView.as_view(),
+        name="thingsboardimportmap_create",
+    ),
+    path(
+        "create-thingsboard-map/",
+        ThingsboardImportMapCreateView.as_view(),
+        name="create_thingsboard_map",
     ),
 ]

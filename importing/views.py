@@ -1,5 +1,6 @@
 import logging
 
+from django.urls import reverse_lazy
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiParameter,
@@ -24,7 +25,7 @@ from management.views import (
 from station.models import Station
 
 from .filters import DataImportFilter
-from .models import DataImport
+from .models import DataImport, ThingsboardImportMap
 from .serializers import (
     DataImportDetailSerializer,
     DataImportUploadRequestSerializer,
@@ -67,6 +68,17 @@ class DataImportDeleteView(CustomDeleteView):
     """View to delete a data import."""
 
     model = DataImport
+
+
+class ThingsboardImportMapCreateView(CustomCreateView):
+    model = ThingsboardImportMap
+    fields = ["tb_variable", "variable", "device_id", "station"]
+    foreign_key_fields = ["station", "variable"]
+    success_url = reverse_lazy("importing:dataimport_list")
+
+    @property
+    def list_url(self) -> str:
+        return "importing:dataimport_list"
 
 
 class DataImportUploadAPIView(APIView):
