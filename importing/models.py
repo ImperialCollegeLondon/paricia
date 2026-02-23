@@ -37,6 +37,16 @@ class ImportOrigin(models.Model):
     def __str__(self):
         return self.origin
 
+    @classmethod
+    def get_default(cls) -> "ImportOrigin":
+        """Get default import origin, 'file'.
+
+        It should exist, as it is created in a data migration, but just in case it
+        is not, we use get_or_create.
+        """
+        obj, _ = cls.objects.get_or_create(origin="file")
+        return obj
+
 
 class DataImport(PermissionsBase):
     """Model to store the data imports.

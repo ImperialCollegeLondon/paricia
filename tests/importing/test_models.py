@@ -169,3 +169,11 @@ class TestThingsboardImportMap(TestCase):
             mapping.clean()
 
         self.assertIn("variable", ctx.exception.message_dict)
+
+
+class TestImportOrigin(TestCase):
+    def test_get_default(self):
+        from importing.models import ImportOrigin
+
+        result = ImportOrigin.get_default()
+        assert result.origin == "file"
