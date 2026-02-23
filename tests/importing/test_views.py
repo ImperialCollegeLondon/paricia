@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from formatting.models import Format
-from importing.models import DataImport
+from importing.models import DataImport, ImportOrigin
 from station.models import Station
 
 IMPORTING_TEST_FIXTURES = [
@@ -217,6 +217,9 @@ class TestDataImportUploadAPIView(TestCase):
         # Verify data
         self.assertEqual(response.data["station"], self.station.station_code)
         self.assertEqual(response.data["format"], self.format.pk)
+        self.assertEqual(
+            response.data["origin"], ImportOrigin.objects.get(origin="api").pk
+        )
 
     def test_successful_upload_with_optional_parameters(self):
         """Test successful file upload with optional parameters."""
@@ -246,6 +249,7 @@ class TestDataImportUploadAPIView(TestCase):
         self.assertTrue(data_import.reprocess)
         self.assertEqual(data_import.observations, "Test upload with observations")
         self.assertEqual(data_import.owner, self.user_with_permission)
+        self.assertEqual(data_import.origin, ImportOrigin.objects.get(origin="api"))
 
     def test_visibility_choices(self):
         """Test that visibility parameter accepts valid choices."""
