@@ -24,11 +24,26 @@ from variable.models import SensorInstallation, Variable
 User = get_user_model()
 
 
+class ImportOrigin(models.Model):
+    """Class that contains the origin of the data import, eg. file, API, etc."""
+
+    origin = models.CharField(
+        "Origin",
+        blank=False,
+        null=False,
+        help_text="Origin of the data imported.",
+    )
+
+    def __str__(self):
+        return self.origin
+
+
 class DataImport(PermissionsBase):
     """Model to store the data imports.
 
-    This model stores the data imports, which are files with data that are uploaded to
-    the system. The data is then processed asynchronously and stored in the database.
+    This model stores the data imports, which are, often, files with data that are
+    uploaded to the system. The data is then processed asynchronously and stored in the
+    database.
 
     Attributes:
         station (ForeignKey): Station to which the data belongs.
