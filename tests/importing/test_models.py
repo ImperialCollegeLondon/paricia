@@ -176,4 +176,4 @@ class TestImportOrigin(TestCase):
         from importing.models import ImportOrigin
 
         result = ImportOrigin.get_default()
-        assert result.origin == "file"
+        assert ImportOrigin.objects.get(pk=result).origin == "file"

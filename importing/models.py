@@ -45,7 +45,7 @@ class ImportOrigin(models.Model):
         is not, we use get_or_create.
         """
         obj, _ = cls.objects.get_or_create(origin="file")
-        return obj
+        return obj.pk
 
 
 class DataImport(PermissionsBase):
@@ -80,6 +80,12 @@ class DataImport(PermissionsBase):
     )
     format = models.ForeignKey(
         Format, models.PROTECT, verbose_name="Format", help_text="Format of the data."
+    )
+    origin = models.ForeignKey(
+        ImportOrigin,
+        models.PROTECT,
+        default=ImportOrigin.get_default,
+        help_text="Origin of the imported data",
     )
     rawfile = models.FileField(
         "Data file",

@@ -13,6 +13,7 @@ class DataImportAdmin(PermissionsBaseAdmin):
         "data_import_id",
         "station",
         "format",
+        "origin",
         "status",
         "date",
         "start_date",
