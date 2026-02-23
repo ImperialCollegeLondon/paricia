@@ -134,7 +134,7 @@ jsonschema-specifications==2025.9.1
     # via jsonschema
 lxml==5.3.0
     # via mkdocs-caption
-markdown==3.10
+markdown==3.10.2
     # via
     #   markdown-include
     #   mkdocs
