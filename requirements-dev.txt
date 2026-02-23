@@ -151,7 +151,7 @@ markupsafe==3.0.2
     #   werkzeug
 model-bakery==1.20.1
     # via Paricia (pyproject.toml)
-mypy==1.13.0
+mypy==1.19.1
     # via Paricia (pyproject.toml)
 mypy-extensions==1.1.0
     # via mypy
