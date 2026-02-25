@@ -25,7 +25,8 @@ from management.views import (
 from station.models import Station
 
 from .filters import DataImportFilter
-from .models import DataImport, ThingsboardImportMap
+from .models import DataImport, ThingsboardImportMap, ImportOrigin
+
 from .serializers import (
     DataImportDetailSerializer,
     DataImportUploadRequestSerializer,
@@ -217,6 +218,7 @@ class DataImportUploadAPIView(APIView):
             data_import = DataImport.objects.create(
                 station=station,
                 format=validated_data["format"],
+                origin=ImportOrigin.objects.get_or_create(origin="api")[0],
                 visibility=validated_data["visibility"],
                 reprocess=validated_data["reprocess"],
                 observations=validated_data.get("observations", ""),

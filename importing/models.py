@@ -24,11 +24,36 @@ from variable.models import SensorInstallation, Variable
 User = get_user_model()
 
 
+class ImportOrigin(models.Model):
+    """Class that contains the origin of the data import, eg. file, API, etc."""
+
+    origin = models.CharField(
+        "Origin",
+        blank=False,
+        null=False,
+        help_text="Origin of the data imported.",
+    )
+
+    def __str__(self):
+        return self.origin
+
+    @classmethod
+    def get_default(cls) -> "ImportOrigin":
+        """Get default import origin, 'file'.
+
+        It should exist, as it is created in a data migration, but just in case it
+        is not, we use get_or_create.
+        """
+        obj, _ = cls.objects.get_or_create(origin="file")
+        return obj.pk
+
+
 class DataImport(PermissionsBase):
     """Model to store the data imports.
 
-    This model stores the data imports, which are files with data that are uploaded to
-    the system. The data is then processed asynchronously and stored in the database.
+    This model stores the data imports, which are, often, files with data that are
+    uploaded to the system. The data is then processed asynchronously and stored in the
+    database.
 
     Attributes:
         station (ForeignKey): Station to which the data belongs.
@@ -55,6 +80,12 @@ class DataImport(PermissionsBase):
     )
     format = models.ForeignKey(
         Format, models.PROTECT, verbose_name="Format", help_text="Format of the data."
+    )
+    origin = models.ForeignKey(
+        ImportOrigin,
+        models.PROTECT,
+        default=ImportOrigin.get_default,
+        help_text="Origin of the imported data",
     )
     rawfile = models.FileField(
         "Data file",

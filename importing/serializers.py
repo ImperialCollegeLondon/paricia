@@ -47,6 +47,7 @@ class DataImportUploadResponseSerializer(serializers.ModelSerializer):
             "data_import_id",  # Primary key field
             "station",
             "format",
+            "origin",
             "rawfile",
             "date",  # Auto-generated submission date
             "start_date",  # Auto-filled during processing
