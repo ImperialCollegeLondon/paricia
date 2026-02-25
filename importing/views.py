@@ -24,14 +24,14 @@ from management.views import (
 )
 from station.models import Station
 
-from .filters import DataImportFilter
+from .filters import DataImportFilter, ThingsboardImportMapFilter
 from .models import DataImport, ImportOrigin, ThingsboardImportMap
 from .serializers import (
     DataImportDetailSerializer,
     DataImportUploadRequestSerializer,
     DataImportUploadResponseSerializer,
 )
-from .tables import DataImportTable
+from .tables import DataImportTable, ThingsboardImportMapTable
 
 
 class DataImportDetailView(CustomDetailView):
@@ -68,17 +68,6 @@ class DataImportDeleteView(CustomDeleteView):
     """View to delete a data import."""
 
     model = DataImport
-
-
-class ThingsboardImportMapCreateView(CustomCreateView):
-    model = ThingsboardImportMap
-    fields = ["tb_variable", "variable", "device_id", "station"]
-    foreign_key_fields = ["station", "variable"]
-    success_url = reverse_lazy("importing:dataimport_list")
-
-    @property
-    def list_url(self) -> str:
-        return "importing:dataimport_list"
 
 
 class DataImportUploadAPIView(APIView):
@@ -314,3 +303,39 @@ class DataIngestionQueryView(APIView):
             data_import, context={"request": request}
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ThingsboardImportMapDetailView(CustomDetailView):
+    model = ThingsboardImportMap
+
+
+class ThingsBoardImportMapListView(CustomTableView):
+    model = ThingsboardImportMap
+    table_class = ThingsboardImportMapTable
+    filterset_class = ThingsboardImportMapFilter
+
+
+class ThingsboardImportMapEditView(CustomEditView):
+    model = ThingsboardImportMap
+    fields = ["tb_variable", "variable", "device_id", "station"]
+    foreign_key_fields = ["station", "variable"]
+    success_url = reverse_lazy("importing:thingsboardimportmap_list")
+
+    @property
+    def list_url(self) -> str:
+        return "importing:thingsboardimportmap_list"
+
+
+class ThingsboardImportMapCreateView(CustomCreateView):
+    model = ThingsboardImportMap
+    fields = ["tb_variable", "variable", "device_id", "station"]
+    foreign_key_fields = ["station", "variable"]
+    success_url = reverse_lazy("importing:thingsboardimportmap_list")
+
+    @property
+    def list_url(self) -> str:
+        return "importing:thingsboardimportmap_list"
+
+
+class ThingsboardImportMapDeleteView(CustomDeleteView):
+    model = ThingsboardImportMap
