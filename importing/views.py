@@ -25,8 +25,7 @@ from management.views import (
 from station.models import Station
 
 from .filters import DataImportFilter
-from .models import DataImport, ThingsboardImportMap, ImportOrigin
-
+from .models import DataImport, ImportOrigin, ThingsboardImportMap
 from .serializers import (
     DataImportDetailSerializer,
     DataImportUploadRequestSerializer,
