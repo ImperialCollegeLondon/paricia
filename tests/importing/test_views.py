@@ -27,6 +27,8 @@ IMPORTING_TEST_FIXTURES = [
     "formatting_date",
     "formatting_time",
     "formatting_format",
+    "sensor_type",  # add these if they exist
+    "sensor_brand",
 ]
 
 
@@ -862,3 +864,257 @@ class TestDataIngestionQueryView(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("log", response.data)
+
+
+class TestThingsboardImportMapCreateView(TestCase):
+    """Test suite for the ThingsboardImportMapCreateView."""
+
+    fixtures = IMPORTING_TEST_FIXTURES
+
+    def setUp(self):
+        """Set up test data."""
+        from sensor.models import Sensor, SensorBrand, SensorType
+        from variable.models import SensorInstallation, Variable
+
+        User = get_user_model()
+
+        # Create test users
+        self.user = User.objects.create_user(
+            username="tbcreateuser", password="testpass123"
+        )
+        self.user_no_perms = User.objects.create_user(
+            username="tbnopermsuser", password="testpass123"
+        )
+
+        # Get station and variable from fixtures
+        self.station = Station.objects.get(pk=1)
+        self.other_station = Station.objects.exclude(pk=1).first()
+
+        self.variable = Variable.objects.get(variable_id=1)
+        self.other_variable = Variable.objects.get(variable_id=2)
+
+        # Create a Sensor and SensorInstallation to satisfy ThingsboardImportMap.clean()
+        sensor_type = SensorType.objects.get(type_id=1)
+        sensor_brand = SensorBrand.objects.get(brand_id=1)
+        self.sensor = Sensor.objects.create(
+            code="TB_TEST_SENSOR_01",
+            sensor_type=sensor_type,
+            sensor_brand=sensor_brand,
+            owner=self.station.owner,
+        )
+        self.sensor_installation = SensorInstallation.objects.create(
+            variable=self.variable,
+            station=self.station,
+            sensor=self.sensor,
+            start_date="2020-01-01",
+            owner=self.station.owner,
+        )
+
+        # Assign permissions
+        assign_perm("change_station", self.user, self.station)
+        assign_perm("view_station", self.user, self.station)
+        assign_perm("change_variable", self.user, self.variable)
+        assign_perm("view_variable", self.user, self.variable)
+
+        self.url = reverse("importing:thingsboardimportmap_create")
+
+    def test_authenticated_get_renders_form(self):
+        """Test that authenticated GET request renders the creation form."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_successful_creation(self):
+        """Test successful creation of a ThingsboardImportMap."""
+
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        response = self.client.post(
+            self.url,
+            {
+                "tb_variable": "temperature",
+                "variable": self.variable.pk,
+                "device_id": "device-001",
+                "station": self.station.pk,
+            },
+        )
+
+        if response.status_code == 200:
+            print("FORM ERRORS:", response.context["form"].errors)
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_on_success(self):
+        """Test that successful creation redirects to the list URL."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        response = self.client.post(
+            self.url,
+            {
+                "tb_variable": "humidity",
+                "variable": self.variable.pk,
+                "device_id": "device-002",
+                "station": self.station.pk,
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        expected_url = reverse("importing:thingsboardimportmap_list")
+        self.assertEqual(response.url, expected_url)
+
+    def test_invalid_station_fk(self):
+        """Test that a station the user has no permission for is rejected."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        # other_station exists in DB but is NOT in the user's permitted queryset,
+        # so the form field validation rejects it before model.clean() is called.
+        response = self.client.post(
+            self.url,
+            {
+                "tb_variable": "temperature",
+                "variable": self.variable.pk,
+                "device_id": "device-004",
+                "station": self.other_station.pk,
+            },
+        )
+
+        # Form should re-render with validation errors, not redirect
+        self.assertEqual(response.status_code, 200)
+        form = response.context["form"]
+        self.assertIn(
+            "station",
+            form.errors,
+            f"Expected 'station' error but got: {form.errors}",
+        )
+
+    def test_invalid_variable_fk(self):
+        """Test that a variable the user has no permission for is rejected."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        # other_variable exists in DB but is NOT in the user's permitted queryset
+        response = self.client.post(
+            self.url,
+            {
+                "tb_variable": "temperature",
+                "variable": self.other_variable.pk,
+                "device_id": "device-005",
+                "station": self.station.pk,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "variable",
+            response.context["form"].errors,
+            f"Expected 'variable' error but got: {response.context['form'].errors}",
+        )
+
+    def test_foreign_key_fields_filtered_by_permission(self):
+        """Test that station and variable dropdowns are filtered by user permissions."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        form = response.context["form"]
+        station_qs = form.fields["station"].queryset
+        variable_qs = form.fields["variable"].queryset
+
+        # The user should only see stations/variables they have permission for
+        self.assertIn(self.station, station_qs)
+        self.assertIn(self.variable, variable_qs)
+
+    def test_user_without_fk_permissions_sees_limited_choices(self):
+        """Test that user without FK permissions sees limited choices."""
+        self.client.login(username="tbnopermsuser", password="testpass123")
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        form = response.context["form"]
+        station_qs = form.fields["station"].queryset
+        variable_qs = form.fields["variable"].queryset
+
+        # User without permissions should not see the station/variable
+        self.assertNotIn(self.station, station_qs)
+        self.assertNotIn(self.variable, variable_qs)
+
+    def test_post_method_only_creates(self):
+        """Test that GET does not create any objects."""
+        from importing.models import ThingsboardImportMap
+
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        initial_count = ThingsboardImportMap.objects.count()
+        self.client.get(self.url)
+        self.assertEqual(ThingsboardImportMap.objects.count(), initial_count)
+
+    def test_multiple_creations(self):
+        """Test that multiple ThingsboardImportMaps can be created."""
+        from importing.models import ThingsboardImportMap
+
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        initial_count = ThingsboardImportMap.objects.count()
+
+        for i in range(3):
+            response = self.client.post(
+                self.url,
+                {
+                    "tb_variable": f"var_{i}",
+                    "variable": self.variable.pk,
+                    "device_id": f"device-{i:03d}",
+                    "station": self.station.pk,
+                },
+            )
+            self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(ThingsboardImportMap.objects.count(), initial_count + 3)
+
+    def test_missing_device_id(self):
+        """Test that missing device_id returns form error."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        response = self.client.post(
+            self.url,
+            {
+                "tb_variable": "temperature",
+                "variable": self.variable.pk,
+                "station": self.station.pk,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(
+            response.context["form"], "device_id", "This field is required."
+        )
+
+    def test_missing_required_fields(self):
+        """Test that missing required fields show form errors."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        form = response.context["form"]
+        self.assertFormError(form, "tb_variable", "This field is required.")
+        self.assertFormError(form, "variable", "This field is required.")
+        self.assertFormError(form, "device_id", "This field is required.")
+        self.assertFormError(form, "station", "This field is required.")
+
+    def test_missing_tb_variable(self):
+        """Test that missing tb_variable returns form error."""
+        self.client.login(username="tbcreateuser", password="testpass123")
+
+        response = self.client.post(
+            self.url,
+            {
+                "variable": self.variable.pk,
+                "device_id": "device-003",
+                "station": self.station.pk,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(
+            response.context["form"], "tb_variable", "This field is required."
+        )
