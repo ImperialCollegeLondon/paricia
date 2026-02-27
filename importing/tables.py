@@ -22,9 +22,12 @@ class DataImportTable(tables.Table):
 
 
 class ThingsboardImportMapTable(tables.Table):
+    pk = tables.Column(linkify=True)
+
     class Meta:
         model = ThingsboardImportMap
         fields = (
+            "pk",
             "tb_variable",
             "variable",
             "device_id",
