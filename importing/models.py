@@ -199,8 +199,17 @@ class ThingsboardImportMap(models.Model):
 
     def clean(self) -> None:
         """Validate that the variable is valid for the station."""
-        super().clean()
-        if self.variable and self.station:
+        try:
+            station = self.station
+        except ThingsboardImportMap.station.RelatedObjectDoesNotExist:
+            station = None
+
+        try:
+            variable = self.variable
+        except ThingsboardImportMap.variable.RelatedObjectDoesNotExist:
+            variable = None
+
+        if variable and station:
             # Check if the variable is valid for the station through SensorInstallation
             if not SensorInstallation.objects.filter(
                 variable=self.variable, station=self.station
