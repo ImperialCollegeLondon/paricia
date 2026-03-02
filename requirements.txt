@@ -131,7 +131,7 @@ packaging==24.2
     # via
     #   drf-yasg
     #   plotly
-pandas==2.2.3
+pandas==3.0.1
     # via Paricia (pyproject.toml)
 pillow==12.1.0
     # via Paricia (pyproject.toml)
