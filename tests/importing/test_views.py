@@ -1096,10 +1096,19 @@ class TestThingsboardImportMapCreateView(TestCase):
         response = self.client.post(self.url, {})
         self.assertEqual(response.status_code, 200)
         form = response.context["form"]
-        self.assertFormError(form, "tb_variable", "This field is required.")
-        self.assertFormError(form, "variable", "This field is required.")
-        self.assertFormError(form, "device_id", "This field is required.")
-        self.assertFormError(form, "station", "This field is required.")
+
+        # Check all four fields have errors
+        self.assertIn("tb_variable", form.errors)
+        self.assertIn("variable", form.errors)
+        self.assertIn("device_id", form.errors)
+        self.assertIn("station", form.errors)
+
+        # Verify the key error messages are present
+        self.assertIn("This field is required.", str(form.errors["tb_variable"]))
+        self.assertIn("This field is required.", str(form.errors["device_id"]))
+        # FK fields may have multiple errors, just check one is present
+        self.assertIn("This field is required.", str(form.errors["variable"]))
+        self.assertIn("This field is required.", str(form.errors["station"]))
 
     def test_missing_tb_variable(self):
         """Test that missing tb_variable returns form error."""

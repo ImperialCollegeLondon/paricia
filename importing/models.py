@@ -202,20 +202,19 @@ class ThingsboardImportMap(models.Model):
         try:
             station = self.station
         except ThingsboardImportMap.station.RelatedObjectDoesNotExist:
-            station = None
+            raise ValidationError({"station": "Station is required."})
 
         try:
             variable = self.variable
         except ThingsboardImportMap.variable.RelatedObjectDoesNotExist:
-            variable = None
+            raise ValidationError({"variable": "Variable is required."})
 
-        if variable and station:
-            # Check if the variable is valid for the station through SensorInstallation
-            if not SensorInstallation.objects.filter(
-                variable=self.variable, station=self.station
-            ).exists():
-                raise ValidationError(
-                    {
-                        "variable": f'Variable "{self.variable}" is not configured for station "{self.station}".'  # noqa E501
-                    }
-                )
+        # Check if the variable is valid for the station through SensorInstallation
+        if not SensorInstallation.objects.filter(
+            variable=variable, station=station
+        ).exists():
+            raise ValidationError(
+                {
+                    "variable": f'Variable "{variable}" is not configured for station "{station}".'  # noqa E501
+                }
+            )
