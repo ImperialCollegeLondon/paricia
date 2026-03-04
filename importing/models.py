@@ -215,6 +215,7 @@ class ThingsboardImportMap(models.Model):
         ).exists():
             raise ValidationError(
                 {
-                    "variable": f'Variable "{variable}" is not configured for station "{station}".'  # noqa E501
+                    "variable": f"Variable '{variable}' is not configured for"
+                    f" station '{station}' via a sensor installation."
                 }
             )
