@@ -40,7 +40,7 @@ class ThingsboardCredentials(models.Model):
         help_text="Thingsboard password for data pulls.",
     )
     thingsboard_access_token = models.CharField(
-        max_length=255,
+        max_length=1000,
         blank=True,
         null=True,
         help_text="Thingsboard access token (preferred for scheduled pulls).",

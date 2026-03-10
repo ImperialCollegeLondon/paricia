@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('thingsboard_username', models.CharField(blank=True, help_text='Thingsboard username for data pulls.', max_length=150, null=True)),
                 ('thingsboard_password', models.CharField(blank=True, help_text='Thingsboard password for data pulls.', max_length=255, null=True)),
-                ('thingsboard_access_token', models.CharField(blank=True, help_text='Thingsboard access token (preferred for scheduled pulls).', max_length=255, null=True)),
+                ('thingsboard_access_token', models.CharField(blank=True, help_text='Thingsboard access token (preferred for scheduled pulls).', max_length=1000, null=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='thingsboard_credentials', to=settings.AUTH_USER_MODEL)),
             ],
         ),
