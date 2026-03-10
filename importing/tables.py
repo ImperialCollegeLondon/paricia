@@ -30,6 +30,6 @@ class ThingsboardImportMapTable(tables.Table):
             "pk",
             "tb_variable",
             "variable",
-            "device_id",
+            "tb_device_name",
             "station",
         )
