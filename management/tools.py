@@ -1,3 +1,7 @@
+import json
+import os
+
+import requests
 from django.contrib.admin.utils import NestedObjects
 from django.db import models
 from django.utils.encoding import force_str
@@ -38,3 +42,21 @@ def get_deleted_objects(
         to_delete.append("None")
 
     return to_delete, model_count, protected
+
+
+def thingsboard_token_generator(tb_username: str, tb_password: str):
+    """Generate a token for Thingsboard API authentication."""
+
+    ip = os.getenv("TB_HOST")
+    login_url = f"https://{ip}/api/auth/login"
+    login_payload = json.dumps({"username": tb_username, "password": tb_password})
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+    response = requests.post(login_url, headers=headers, data=login_payload)
+
+    if response.status_code == 200:
+        token = response.json().get("token")
+
+        return token
+    else:
+        raise Exception(f"Failed to authenticate with Thingsboard API: {response.text}")
