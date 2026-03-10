@@ -1,6 +1,8 @@
 import logging
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.views.generic import FormView
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiParameter,
@@ -25,6 +27,7 @@ from management.views import (
 from station.models import Station
 
 from .filters import DataImportFilter, ThingsboardImportMapFilter
+from .forms import ThingsboardDataRetrievalForm
 from .models import DataImport, ImportOrigin, ThingsboardImportMap
 from .serializers import (
     DataImportDetailSerializer,
@@ -32,6 +35,7 @@ from .serializers import (
     DataImportUploadResponseSerializer,
 )
 from .tables import DataImportTable, ThingsboardImportMapTable
+from .utils import retrieve_thingsboard_data
 
 
 class DataImportDetailView(CustomDetailView):
@@ -339,3 +343,79 @@ class ThingsboardImportMapCreateView(CustomCreateView):
 
 class ThingsboardImportMapDeleteView(CustomDeleteView):
     model = ThingsboardImportMap
+
+
+class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
+    """View to retrieve data from ThingsBoard for a selected mapping."""
+
+    form_class = ThingsboardDataRetrievalForm
+    template_name = "importing/thingsboard_data_retrieval.html"
+    success_url = reverse_lazy("importing:thingsboardimportmap_list")
+
+    def get_form_kwargs(self):
+        """Pass user to form for queryset filtering."""
+        kwargs = super().get_form_kwargs()
+        return kwargs
+
+    def form_valid(self, form):
+        """Process the form and retrieve ThingsBoard data."""
+        from management.models import ThingsboardCredentials
+
+        thingsboard_map = form.cleaned_data["thingsboard_map"]
+        start_date = form.cleaned_data["start_date"]
+        end_date = form.cleaned_data["end_date"]
+
+        # Extract tb_variable and device_id from the selected map
+        tb_variable = thingsboard_map.tb_variable
+        tb_device_name = thingsboard_map.tb_device_name
+
+        # Get the current user's ThingsboardCredentials token
+        try:
+            tb_creds = ThingsboardCredentials.objects.get(user=self.request.user)
+            access_token = tb_creds.thingsboard_access_token
+        except ThingsboardCredentials.DoesNotExist:
+            from django.contrib import messages
+
+            messages.error(
+                self.request,
+                "ThingsBoard credentials not configured. Please set up your access token in your profile.",  # noqa E501
+            )
+            return self.form_invalid(form)
+
+        if not access_token:
+            from django.contrib import messages
+
+            messages.error(
+                self.request,
+                "ThingsBoard access token is not set. Please generate a token in your profile.",  # noqa E501
+            )
+            return self.form_invalid(form)
+
+        # TODO: make a function to create an import
+        try:
+            data = retrieve_thingsboard_data(  # noqa F841
+                token=access_token,
+                customer_id=tb_creds.thingsboard_customer_id,
+                tb_device_name=tb_device_name,
+                variable=str(tb_variable),
+                start_ts=int(start_date.timestamp() * 1000),
+                end_ts=int(end_date.timestamp() * 1000),
+            )
+
+            # Handle successful retrieval
+            from django.contrib import messages
+
+            messages.success(
+                self.request,
+                f"Data retrieved successfully for {thingsboard_map.tb_variable}",
+            )
+            return super().form_valid(form)
+
+        except Exception as e:
+            from django.contrib import messages
+
+            messages.error(
+                self.request,
+                f"Failed to retrieve {thingsboard_map.tb_variable} ThingsBoard data: {e!s}",  # noqa E501
+            )
+            return self.form_invalid(form)
