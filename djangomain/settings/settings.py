@@ -336,3 +336,5 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.hooks.preprocess_exclude_path_format",
     ],
 }
+
+TB_HOST = os.getenv("TB_HOST")
