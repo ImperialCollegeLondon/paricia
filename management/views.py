@@ -16,7 +16,11 @@ from guardian.shortcuts import get_objects_for_user
 from .forms import CustomUserCreationForm, ThingsboardCredentialsForm, UserProfileForm
 from .models import ThingsboardCredentials, User
 from .permissions import get_queryset
-from .tools import get_deleted_objects, thingsboard_token_generator
+from .tools import (
+    get_deleted_objects,
+    retrieve_thingsboard_customerid,
+    thingsboard_token_generator,
+)
 
 
 class SignUpView(CreateView):
@@ -117,6 +121,10 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
             tb_creds.thingsboard_username = tb_username
             tb_creds.thingsboard_password = tb_password
             tb_creds.thingsboard_access_token = token
+            if not tb_creds.thingsboard_customer_id:
+                customerid = retrieve_thingsboard_customerid(token)
+                tb_creds.thingsboard_customer_id = customerid
+                print(f"Retrieved Thingsboard customer ID: {customerid}")
             tb_creds.save()
             messages.success(
                 self.request, "Thingsboard access token generated successfully!"

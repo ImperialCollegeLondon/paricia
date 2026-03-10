@@ -45,6 +45,12 @@ class ThingsboardCredentials(models.Model):
         null=True,
         help_text="Thingsboard access token (preferred for scheduled pulls).",
     )
+    thingsboard_customer_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Thingsboard customer ID (used for data retrieval).",
+    )
 
     def __str__(self):
         return f"ThingsboardCredentials({self.user.username})"
