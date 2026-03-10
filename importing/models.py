@@ -219,3 +219,6 @@ class ThingsboardImportMap(models.Model):
                     f" station '{station}' via a sensor installation."
                 }
             )
+
+    def get_absolute_url(self):
+        return reverse("importing:thingsboardimportmap_detail", kwargs={"pk": self.pk})
