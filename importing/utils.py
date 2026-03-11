@@ -1,7 +1,4 @@
-import json
 import logging
-import os
-from datetime import datetime
 
 import requests
 
@@ -73,22 +70,7 @@ def retrieve_thingsboard_data(
     logger.error(f"Request URL: {url}")
 
     if response.status_code == 200:
-        data = response.json()
-
-        # TODO: remove after review
-        filename = f"thingsboard_{tb_device_name}_{variable}_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"  # noqa E501
-        # Save to media/thingsboard_data directory
-        media_dir = "data/thingsboard_data"
-        os.makedirs(media_dir, exist_ok=True)
-        filepath = os.path.join(media_dir, filename)
-
-        # Write JSON to file
-        with open(filepath, "w") as f:
-            json.dump(data, f, indent=2)
-
-        print(f"Data saved to {filepath}")
-        return data
-
+        return response.json()
     else:
         raise Exception(
             f"Failed to retrieve data: {response.status_code} - {response.text}"

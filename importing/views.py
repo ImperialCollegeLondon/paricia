@@ -1,6 +1,11 @@
+import json
 import logging
+from datetime import datetime
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.base import ContentFile
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from drf_spectacular.utils import (
@@ -50,6 +55,7 @@ class DataImportListView(CustomTableView):
     model = DataImport
     table_class = DataImportTable
     filterset_class = DataImportFilter
+    template_name = "importing/dataimport_table.html"
 
 
 class DataImportEditView(CustomEditView):
@@ -321,7 +327,7 @@ class ThingsBoardImportMapListView(CustomTableView):
 
 class ThingsboardImportMapEditView(CustomEditView):
     model = ThingsboardImportMap
-    fields = ["tb_variable", "variable", "device_id", "station"]
+    fields = ["tb_variable", "variable", "tb_device_name", "station"]
     foreign_key_fields = ["station", "variable"]
     success_url = reverse_lazy("importing:thingsboardimportmap_list")
 
@@ -346,36 +352,25 @@ class ThingsboardImportMapDeleteView(CustomDeleteView):
 
 
 class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
-    """View to retrieve data from ThingsBoard for a selected mapping."""
-
     form_class = ThingsboardDataRetrievalForm
     template_name = "importing/thingsboard_data_retrieval.html"
-    success_url = reverse_lazy("importing:thingsboardimportmap_list")
-
-    def get_form_kwargs(self):
-        """Pass user to form for queryset filtering."""
-        kwargs = super().get_form_kwargs()
-        return kwargs
+    success_url = reverse_lazy("importing:dataimport_list")
 
     def form_valid(self, form):
-        """Process the form and retrieve ThingsBoard data."""
         from management.models import ThingsboardCredentials
 
         thingsboard_map = form.cleaned_data["thingsboard_map"]
+        selected_format = form.cleaned_data["format"]
         start_date = form.cleaned_data["start_date"]
         end_date = form.cleaned_data["end_date"]
 
-        # Extract tb_variable and device_id from the selected map
         tb_variable = thingsboard_map.tb_variable
         tb_device_name = thingsboard_map.tb_device_name
 
-        # Get the current user's ThingsboardCredentials token
         try:
             tb_creds = ThingsboardCredentials.objects.get(user=self.request.user)
             access_token = tb_creds.thingsboard_access_token
         except ThingsboardCredentials.DoesNotExist:
-            from django.contrib import messages
-
             messages.error(
                 self.request,
                 "ThingsBoard credentials not configured. Please set up your access token in your profile.",  # noqa E501
@@ -383,17 +378,14 @@ class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
             return self.form_invalid(form)
 
         if not access_token:
-            from django.contrib import messages
-
             messages.error(
                 self.request,
                 "ThingsBoard access token is not set. Please generate a token in your profile.",  # noqa E501
             )
             return self.form_invalid(form)
 
-        # TODO: make a function to create an import
         try:
-            data = retrieve_thingsboard_data(  # noqa F841
+            data = retrieve_thingsboard_data(
                 token=access_token,
                 customer_id=tb_creds.thingsboard_customer_id,
                 tb_device_name=tb_device_name,
@@ -402,20 +394,38 @@ class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
                 end_ts=int(end_date.timestamp() * 1000),
             )
 
-            # Handle successful retrieval
-            from django.contrib import messages
+            filename = (
+                f"thingsboard_{tb_device_name}_{tb_variable}_"
+                f"{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
+            )
+            payload = ContentFile(
+                json.dumps(data, indent=2).encode("utf-8"),
+                name=filename,
+            )
+
+            data_import = DataImport(
+                station=thingsboard_map.station,
+                format=selected_format,
+                origin=ImportOrigin.objects.get_or_create(origin="Thingsboard")[0],
+                owner=self.request.user,
+                visibility="private",
+                observations=(
+                    f"ThingsBoard pull for {tb_device_name} / {tb_variable} "
+                    f"from {start_date} to {end_date}"
+                ),
+            )
+            data_import.rawfile.save(filename, payload, save=False)
+            data_import.save()
 
             messages.success(
                 self.request,
-                f"Data retrieved successfully for {thingsboard_map.tb_variable}",
+                f"Data import {data_import.pk} created successfully.",
             )
-            return super().form_valid(form)
+            return redirect("importing:dataimport_list")
 
         except Exception as e:
-            from django.contrib import messages
-
             messages.error(
                 self.request,
-                f"Failed to retrieve {thingsboard_map.tb_variable} ThingsBoard data: {e!s}",  # noqa E501
+                f"Failed to retrieve {tb_variable} ThingsBoard data: {e!s}",
             )
             return self.form_invalid(form)
