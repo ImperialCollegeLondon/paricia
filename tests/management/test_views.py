@@ -223,8 +223,14 @@ class TestUserProfileView(TestCase):
             "thingsboard_password": "tb_pass",
         }
 
-        with patch("management.views.thingsboard_token_generator") as mock_generator:
+        with (
+            patch("management.views.thingsboard_token_generator") as mock_generator,
+            patch(
+                "management.views.retrieve_thingsboard_customerid"
+            ) as mock_customerid,
+        ):
             mock_generator.return_value = "generated_token_123"
+            mock_customerid.return_value = "customer_id_456"
             response = self.client.post(reverse("user_profile"), data=payload)
 
         self.assertEqual(response.status_code, 302)
@@ -233,7 +239,9 @@ class TestUserProfileView(TestCase):
         self.assertEqual(creds.thingsboard_username, "tb_user")
         self.assertEqual(creds.thingsboard_password, "tb_pass")
         self.assertEqual(creds.thingsboard_access_token, "generated_token_123")
+        self.assertEqual(creds.thingsboard_customer_id, "customer_id_456")
         mock_generator.assert_called_once_with("tb_user", "tb_pass")
+        mock_customerid.assert_called_once_with("generated_token_123")
 
     def test_post_generate_token_missing_credentials(self):
         payload = {
@@ -255,10 +263,16 @@ class TestUserProfileView(TestCase):
             "thingsboard_password": "tb_pass",
         }
 
-        with patch("management.views.thingsboard_token_generator") as mock_generator:
+        with (
+            patch("management.views.thingsboard_token_generator") as mock_generator,
+            patch(
+                "management.views.retrieve_thingsboard_customerid"
+            ) as mock_customerid,
+        ):
             mock_generator.side_effect = Exception("API connection failed")
             response = self.client.post(reverse("user_profile"), data=payload)
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("thingsboard_form", response.context)
         self.assertTrue(response.context["thingsboard_form"].errors)
+        mock_customerid.assert_not_called()

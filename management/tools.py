@@ -56,6 +56,11 @@ def thingsboard_token_generator(tb_username: str, tb_password: str):
 
     if response.status_code == 200:
         token = response.json().get("token")
+        if not token:
+            raise Exception(
+                "Token not found in Thingsboard API response."
+                f"Response content: {response.text}"
+            )
         return token
     else:
         raise Exception(f"Failed to authenticate with Thingsboard API: {response.text}")
@@ -64,6 +69,8 @@ def thingsboard_token_generator(tb_username: str, tb_password: str):
 def retrieve_thingsboard_customerid(token: str):
     """Retrieve the customer ID for the authenticated user."""
     ip = os.getenv("TB_HOST")
+    if ip is None:
+        raise Exception("TB_HOST environment variable is not set.")
     url = f"https://{ip}/api/auth/user"
     headers = {"X-Authorization": f"Bearer {token}"}
     response = requests.get(url, headers=headers)
