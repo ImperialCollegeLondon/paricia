@@ -23,4 +23,4 @@ class ThingsboardImportMapFilter(FilterSet):
 
     class Meta:
         model = ThingsboardImportMap
-        fields = ["station", "variable", "device_id"]
+        fields = ["station", "variable", "tb_device_name"]
