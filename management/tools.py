@@ -8,6 +8,8 @@ from django.utils.text import capfirst
 
 from djangomain import settings
 
+THINGSBOARD_REQUEST_TIMEOUT = settings.THINGSBOARD_REQUEST_TIMEOUT
+
 
 def get_deleted_objects(
     objs: list[models.Model],
@@ -47,15 +49,32 @@ def get_deleted_objects(
 
 def thingsboard_token_generator(tb_username: str, tb_password: str):
     """Generate a token for Thingsboard API authentication."""
+    
+    ip = settings.TB_HOST
+    if ip is None:
+        raise Exception("TB_HOST environment variable is not set.")
 
-    login_url = f"https://{settings.TB_HOST}/api/auth/login"
+    login_url = f"https://{ip}/api/auth/login"
     login_payload = json.dumps({"username": tb_username, "password": tb_password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-    response = requests.post(login_url, headers=headers, data=login_payload)
+    try:
+        response = requests.post(
+            login_url,
+            headers=headers,
+            data=login_payload,
+            timeout=THINGSBOARD_REQUEST_TIMEOUT,
+        )
+    except requests.RequestException as exc:
+        raise Exception(f"Failed to authenticate with Thingsboard API: {exc}") from exc
 
     if response.status_code == 200:
         token = response.json().get("token")
+        if not token:
+            raise Exception(
+                "Token not found in Thingsboard API response."
+                f"Response content: {response.text}"
+            )
         return token
     else:
         raise Exception(f"Failed to authenticate with Thingsboard API: {response.text}")
@@ -63,9 +82,22 @@ def thingsboard_token_generator(tb_username: str, tb_password: str):
 
 def retrieve_thingsboard_customerid(token: str):
     """Retrieve the customer ID for the authenticated user."""
-    url = f"https://{settings.TB_HOST}/api/auth/user"
+
+    ip = settings.TB_HOST
+    if ip is None:
+        raise Exception("TB_HOST environment variable is not set.")
+    url = f"https://{ip}/api/auth/user"
+
     headers = {"X-Authorization": f"Bearer {token}"}
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(
+            url, headers=headers, timeout=THINGSBOARD_REQUEST_TIMEOUT
+        )
+    except requests.RequestException as exc:
+        raise Exception(
+            f"Failed to retrieve user info from Thingsboard: {exc}"
+        ) from exc
+
     if response.status_code == 200:
         user_info = response.json()
         customer_id = user_info.get("customerId", {}).get("id")

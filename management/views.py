@@ -124,14 +124,13 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
             if not tb_creds.thingsboard_customer_id:
                 customerid = retrieve_thingsboard_customerid(token)
                 tb_creds.thingsboard_customer_id = customerid
-                print(f"Retrieved Thingsboard customer ID: {customerid}")
             tb_creds.save()
             messages.success(
                 self.request, "Thingsboard access token generated successfully!"
             )
             return redirect(self.success_url)
         except Exception as exc:
-            messages.error(self.request, f"Failed to generate token: {exc}")
+            messages.error(self.request, "Failed to generate Thingsboard access token.")
             thingsboard_form.add_error(None, f"Thingsboard login failed: {exc}")
             return self.render_to_response(
                 self.get_context_data(
