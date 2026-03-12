@@ -7,6 +7,10 @@ from django.db import models
 from django.utils.encoding import force_str
 from django.utils.text import capfirst
 
+from djangomain.settings import settings
+
+THINGSBOARD_REQUEST_TIMEOUT = settings.THINGSBOARD_REQUEST_TIMEOUT
+
 
 def get_deleted_objects(
     objs: list[models.Model],
@@ -52,7 +56,15 @@ def thingsboard_token_generator(tb_username: str, tb_password: str):
     login_payload = json.dumps({"username": tb_username, "password": tb_password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-    response = requests.post(login_url, headers=headers, data=login_payload)
+    try:
+        response = requests.post(
+            login_url,
+            headers=headers,
+            data=login_payload,
+            timeout=THINGSBOARD_REQUEST_TIMEOUT,
+        )
+    except requests.RequestException as exc:
+        raise Exception(f"Failed to authenticate with Thingsboard API: {exc}") from exc
 
     if response.status_code == 200:
         token = response.json().get("token")
@@ -73,7 +85,15 @@ def retrieve_thingsboard_customerid(token: str):
         raise Exception("TB_HOST environment variable is not set.")
     url = f"https://{ip}/api/auth/user"
     headers = {"X-Authorization": f"Bearer {token}"}
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(
+            url, headers=headers, timeout=THINGSBOARD_REQUEST_TIMEOUT
+        )
+    except requests.RequestException as exc:
+        raise Exception(
+            f"Failed to retrieve user info from Thingsboard: {exc}"
+        ) from exc
+
     if response.status_code == 200:
         user_info = response.json()
         customer_id = user_info.get("customerId", {}).get("id")
