@@ -49,7 +49,7 @@ def get_deleted_objects(
 
 def thingsboard_token_generator(tb_username: str, tb_password: str):
     """Generate a token for Thingsboard API authentication."""
-    
+
     ip = settings.TB_HOST
     if ip is None:
         raise Exception("TB_HOST environment variable is not set.")
