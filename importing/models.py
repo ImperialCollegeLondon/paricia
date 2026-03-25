@@ -158,7 +158,7 @@ class ThingsboardImportMap(models.Model):
     Attributes:
         tb_variable (CharField): Name of the variable in Thingsboard.
         variable (ForeignKey): The existing variable in Paricia associated with this mapping.
-        device_id (CharField): The id of the device in Thingsboard.
+        tb_device_name (CharField): The name of the device in Thingsboard.
         station (ForeignKey): The name of the corresponding station in Paricia.
     """  # noqa E501
 
