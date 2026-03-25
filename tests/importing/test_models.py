@@ -119,14 +119,14 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap.objects.create(
             tb_variable="Test Variable",
             variable=self.variable,
-            device_id="tb-device-001",
+            tb_device_name="tb-device-001",
             station=self.station,
         )
 
         retrieved = ThingsboardImportMap.objects.get(pk=mapping.pk)
         self.assertEqual(retrieved.tb_variable, "Test Variable")
         self.assertEqual(retrieved.variable, self.variable)
-        self.assertEqual(retrieved.device_id, "tb-device-001")
+        self.assertEqual(retrieved.tb_device_name, "tb-device-001")
         self.assertEqual(retrieved.station, self.station)
 
     def test_str(self):
@@ -135,7 +135,7 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap(
             tb_variable="Test Variable",
             variable=self.variable,
-            device_id="tb-device-001",
+            tb_device_name="tb-device-001",
             station=self.station,
         )
 
@@ -150,7 +150,7 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap(
             tb_variable="Valid Variable",
             variable=self.variable,
-            device_id="tb-device-002",
+            tb_device_name="tb-device-002",
             station=self.station,
         )
         # Should not raise any errors
@@ -162,7 +162,7 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap(
             tb_variable="Invalid Variable",
             variable=self.other_variable,
-            device_id="tb-device-003",
+            tb_device_name="tb-device-003",
             station=self.station,
         )
         with self.assertRaises(ValidationError) as ctx:
