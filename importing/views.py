@@ -43,6 +43,8 @@ from .serializers import (
 from .tables import DataImportTable, ThingsboardImportMapTable
 from .utils import retrieve_thingsboard_data
 
+logger = logging.getLogger(__name__)
+
 
 class DataImportDetailView(CustomDetailView):
     """View to view a data import."""
@@ -429,9 +431,15 @@ class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
             )
             return redirect("importing:dataimport_list")
 
-        except Exception as e:
+        except Exception:
+            logger.error(
+                "Failed to retrieve ThingsBoard data for device '%s', variable '%s'",
+                tb_device_name,
+                tb_variable,
+            )
             messages.error(
                 self.request,
-                f"Failed to retrieve {tb_variable} ThingsBoard data: {e!s}",
+                "Failed to retrieve ThingsBoard data. Please check your credentials "
+                "and device configuration, then try again.",
             )
             return self.form_invalid(form)
