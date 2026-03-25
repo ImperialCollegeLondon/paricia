@@ -354,7 +354,11 @@ class ThingsboardImportMapDeleteView(CustomDeleteView):
 class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
     form_class = ThingsboardDataRetrievalForm
     template_name = "importing/thingsboard_data_retrieval.html"
-    success_url = reverse_lazy("importing:dataimport_list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         from management.models import ThingsboardCredentials
