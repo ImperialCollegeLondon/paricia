@@ -338,7 +338,7 @@ class ThingsboardImportMapEditView(CustomEditView):
 
 class ThingsboardImportMapCreateView(CustomCreateView):
     model = ThingsboardImportMap
-    fields = ["tb_variable", "variable", "device_id", "station"]
+    fields = ["tb_variable", "variable", "tb_device_name", "station"]
     foreign_key_fields = ["station", "variable"]
     success_url = reverse_lazy("importing:thingsboardimportmap_list")
 
