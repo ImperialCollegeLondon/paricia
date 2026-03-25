@@ -25,7 +25,9 @@ def remove_default_origins(apps, schema_editor):
         ImportOrigin.objects.filter(origin=origin).delete()
 
 
-def retrieve_thingsboard_device_id(token, customer_id, device_name):
+def retrieve_thingsboard_device_id(
+    token: str, customer_id: str, device_name: str
+) -> str:
     """Retrieve ThingsBoard device ID for a given device name."""
     api_headers = {"X-Authorization": f"Bearer {token}", "Accept": "application/json"}
 
@@ -49,8 +51,13 @@ def retrieve_thingsboard_device_id(token, customer_id, device_name):
 
 
 def retrieve_thingsboard_data(
-    token, customer_id, tb_device_name, variable, start_ts, end_ts
-):
+    token: str,
+    customer_id: str,
+    tb_device_name: str,
+    variable: str,
+    start_ts: int,
+    end_ts: int,
+) -> dict:
     """Retrieves data from ThingsBoard for a given device and variable.
 
     Saves the response to a JSON file in the media directory.
