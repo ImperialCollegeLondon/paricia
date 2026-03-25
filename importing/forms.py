@@ -10,7 +10,7 @@ class ThingsboardDataRetrievalForm(forms.Form):
     thingsboard_map = forms.ModelChoiceField(
         queryset=ThingsboardImportMap.objects.all(),
         label="Select Device/Variable Mapping",
-        help_text="Choose which ThingsBoard device and variable to fetch",
+        help_text="Choose which ThingsBoard device and variable to fetch. If you dont see your desired mapping, create one using the button above.",  # noqa: E501
     )
     format = DataImport._meta.get_field("format").formfield(
         queryset=DataImport._meta.get_field("format")
