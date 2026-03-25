@@ -2,6 +2,8 @@
 {% load django_bootstrap5 %}
 {% block content %}
   <h2>Retrieve ThingsBoard Data</h2>
+  <a href="{% url 'importing:thingsboardimportmap_create' %}"
+     class="btn btn-primary">Create Import Map</a>
   <form method="post" class="mb-4">
     {% csrf_token %}
     {% bootstrap_form form %}
