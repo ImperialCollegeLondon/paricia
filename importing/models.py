@@ -186,8 +186,6 @@ class ThingsboardImportMap(models.Model):
     tb_device_name = models.CharField(
         "Thingsboard Device Name",
         max_length=255,
-        blank=True,
-        null=True,
         help_text="The name of the device in Thingsboard.",
     )
 
