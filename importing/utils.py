@@ -30,7 +30,10 @@ def retrieve_thingsboard_device_id(
     """Retrieve ThingsBoard device ID for a given device name."""
     api_headers = {"X-Authorization": f"Bearer {token}", "Accept": "application/json"}
 
-    devices_url = settings.TB_CUSTOMER_DEVICES_URL.format(customer_id=customer_id)
+    if settings.TB_CUSTOMER_DEVICES_URL is None:
+        raise Exception("TB_CUSTOMER_DEVICES_URL environment variable is not set.")
+    else:
+        devices_url = settings.TB_CUSTOMER_DEVICES_URL.format(customer_id=customer_id)
     logger.debug(f"Using customer endpoint (customer ID: {customer_id})")
 
     r = requests.get(devices_url, headers=api_headers)
@@ -73,7 +76,10 @@ def retrieve_thingsboard_data(
     logger.debug(
         f"Retrieving ThingsBoard data for device {tb_device_id}, variable {variable}"
     )
-    url = settings.TB_TIMESERIES_URL.format(tb_device_id=tb_device_id)
+    if settings.TB_TIMESERIES_URL is None:
+        raise Exception("TB_TIMESERIES_URL environment variable is not set.")
+    else:
+        url = settings.TB_TIMESERIES_URL.format(tb_device_id=tb_device_id)
     headers = {"X-Authorization": f"Bearer {token}"}
     params: dict[str, str | int] = {
         "interval": 60000,
