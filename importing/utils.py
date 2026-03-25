@@ -73,15 +73,18 @@ def retrieve_thingsboard_data(
     logger.debug(
         f"Retrieving ThingsBoard data for device {tb_device_id}, variable {variable}"
     )
-    url = settings.TB_TIMESERIES_URL.format(
-        tb_device_id=tb_device_id,
-        variable=variable,
-        start_ts=start_ts,
-        end_ts=end_ts,
-    )
+    url = settings.TB_TIMESERIES_URL.format(tb_device_id=tb_device_id)
     headers = {"X-Authorization": f"Bearer {token}"}
+    params: dict[str, str | int] = {
+        "interval": 60000,
+        "limit": 10000,
+        "agg": "NONE",
+        "keys": variable,
+        "startTs": start_ts,
+        "endTs": end_ts,
+    }
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, params=params)
 
     if response.status_code == 200:
         return response.json()
