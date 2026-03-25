@@ -339,3 +339,13 @@ SPECTACULAR_SETTINGS = {
 
 TB_HOST = os.getenv("TB_HOST")
 THINGSBOARD_REQUEST_TIMEOUT = 60
+
+TB_CUSTOMER_DEVICES_URL = (
+    f"https://{TB_HOST}/api/customer/{{customer_id}}/devices?pageSize=10000&page=0"
+)
+TB_TIMESERIES_URL = (
+    f"https://{TB_HOST}/api/plugins/telemetry/DEVICE/{{tb_device_id}}"
+    "/values/timeseries"
+    "?interval=60000&limit=10000&agg=NONE"
+    "&keys={variable}&startTs={start_ts}&endTs={end_ts}"
+)
