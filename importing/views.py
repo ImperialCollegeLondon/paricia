@@ -1,12 +1,13 @@
 import json
 import logging
-from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.text import slugify
 from django.views.generic import FormView
 from drf_spectacular.utils import (
     OpenApiExample,
@@ -398,10 +399,11 @@ class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
                 end_ts=int(end_date.timestamp() * 1000),
             )
 
-            filename = (
-                f"thingsboard_{tb_device_name}_{tb_variable}_"
-                f"{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
-            )
+            safe_device = slugify(tb_device_name)[:50]
+            safe_variable = slugify(tb_variable)[:50]
+            timestamp = timezone.now().strftime("%Y%m%d%H%M%S")
+            filename = f"thingsboard_{safe_device}_{safe_variable}_{timestamp}.json"
+
             payload = ContentFile(
                 json.dumps(data, indent=2).encode("utf-8"),
                 name=filename,
