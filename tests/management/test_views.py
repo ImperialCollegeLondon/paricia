@@ -1,6 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.test import RequestFactory, TestCase
-from guardian.shortcuts import assign_perm, get_user_model
+from django.urls import reverse
+from guardian.shortcuts import assign_perm
+
+from management.models import ThingsboardCredentials
 
 
 class TestModelToDict(TestCase):
@@ -165,3 +169,110 @@ class TestCustomDetailView(TestCase):
         self.assertEqual(view.delete_url, "sensor:sensor_delete")
         self.assertEqual(view.edit_url, "sensor:sensor_edit")
         self.assertEqual(view.model_description, "Sensor")
+
+
+class TestUserProfileView(TestCase):
+    fixtures = ["management_user.json"]
+
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.first()
+        self.client.force_login(self.user)
+
+    def test_get_profile_context_forms(self):
+        response = self.client.get(reverse("user_profile"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("profile_form", response.context)
+        self.assertIn("thingsboard_form", response.context)
+
+    def test_post_updates_profile(self):
+        payload = {
+            "action": "save_profile",
+            "first_name": "New",
+            "last_name": "User",
+            "email": "new@example.com",
+        }
+        response = self.client.post(reverse("user_profile"), data=payload)
+        self.assertEqual(response.status_code, 302)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "New")
+        self.assertEqual(self.user.last_name, "User")
+        self.assertEqual(self.user.email, "new@example.com")
+
+    def test_post_updates_thingsboard(self):
+        payload = {
+            "action": "save_thingsboard",
+            "thingsboard_username": "tb_user",
+            "thingsboard_password": "tb_pass",
+            "thingsboard_access_token": "tb_token",
+        }
+        response = self.client.post(reverse("user_profile"), data=payload)
+        self.assertEqual(response.status_code, 302)
+
+        creds = ThingsboardCredentials.objects.get(user=self.user)
+        self.assertEqual(creds.thingsboard_username, "tb_user")
+        self.assertEqual(creds.thingsboard_password, "tb_pass")
+        self.assertEqual(creds.thingsboard_access_token, "tb_token")
+
+    def test_post_generate_token(self):
+        from unittest.mock import patch
+
+        payload = {
+            "action": "generate_token",
+            "thingsboard_username": "tb_user",
+            "thingsboard_password": "tb_pass",
+        }
+
+        with (
+            patch("management.views.thingsboard_token_generator") as mock_generator,
+            patch(
+                "management.views.retrieve_thingsboard_customerid"
+            ) as mock_customerid,
+        ):
+            mock_generator.return_value = "generated_token_123"
+            mock_customerid.return_value = "customer_id_456"
+            response = self.client.post(reverse("user_profile"), data=payload)
+
+        self.assertEqual(response.status_code, 302)
+
+        creds = ThingsboardCredentials.objects.get(user=self.user)
+        self.assertEqual(creds.thingsboard_username, "tb_user")
+        self.assertEqual(creds.thingsboard_password, "tb_pass")
+        self.assertEqual(creds.thingsboard_access_token, "generated_token_123")
+        self.assertEqual(creds.thingsboard_customer_id, "customer_id_456")
+        mock_generator.assert_called_once_with("tb_user", "tb_pass")
+        mock_customerid.assert_called_once_with("generated_token_123")
+
+    def test_post_generate_token_missing_credentials(self):
+        payload = {
+            "action": "generate_token",
+            "thingsboard_username": "",
+            "thingsboard_password": "",
+        }
+        response = self.client.post(reverse("user_profile"), data=payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("thingsboard_form", response.context)
+        self.assertTrue(response.context["thingsboard_form"].errors)
+
+    def test_post_generate_token_api_failure(self):
+        from unittest.mock import patch
+
+        payload = {
+            "action": "generate_token",
+            "thingsboard_username": "tb_user",
+            "thingsboard_password": "tb_pass",
+        }
+
+        with (
+            patch("management.views.thingsboard_token_generator") as mock_generator,
+            patch(
+                "management.views.retrieve_thingsboard_customerid"
+            ) as mock_customerid,
+        ):
+            mock_generator.side_effect = Exception("API connection failed")
+            response = self.client.post(reverse("user_profile"), data=payload)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("thingsboard_form", response.context)
+        self.assertTrue(response.context["thingsboard_form"].errors)
+        mock_customerid.assert_not_called()

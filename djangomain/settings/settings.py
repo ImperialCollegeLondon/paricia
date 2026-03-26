@@ -336,3 +336,4 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.hooks.preprocess_exclude_path_format",
     ],
 }
+THINGSBOARD_REQUEST_TIMEOUT = 60

@@ -19,15 +19,41 @@ from django.urls import reverse
 from formatting.models import Format
 from management.models import PermissionsBase
 from station.models import Station
+from variable.models import SensorInstallation, Variable
 
 User = get_user_model()
+
+
+class ImportOrigin(models.Model):
+    """Class that contains the origin of the data import, eg. file, API, etc."""
+
+    origin = models.CharField(
+        "Origin",
+        blank=False,
+        null=False,
+        help_text="Origin of the data imported.",
+    )
+
+    def __str__(self):
+        return self.origin
+
+    @classmethod
+    def get_default(cls) -> "ImportOrigin":
+        """Get default import origin, 'file'.
+
+        It should exist, as it is created in a data migration, but just in case it
+        is not, we use get_or_create.
+        """
+        obj, _ = cls.objects.get_or_create(origin="file")
+        return obj.pk
 
 
 class DataImport(PermissionsBase):
     """Model to store the data imports.
 
-    This model stores the data imports, which are files with data that are uploaded to
-    the system. The data is then processed asynchronously and stored in the database.
+    This model stores the data imports, which are, often, files with data that are
+    uploaded to the system. The data is then processed asynchronously and stored in the
+    database.
 
     Attributes:
         station (ForeignKey): Station to which the data belongs.
@@ -54,6 +80,12 @@ class DataImport(PermissionsBase):
     )
     format = models.ForeignKey(
         Format, models.PROTECT, verbose_name="Format", help_text="Format of the data."
+    )
+    origin = models.ForeignKey(
+        ImportOrigin,
+        models.PROTECT,
+        default=ImportOrigin.get_default,
+        help_text="Origin of the imported data",
     )
     rawfile = models.FileField(
         "Data file",
@@ -114,3 +146,79 @@ class DataImport(PermissionsBase):
         if self.reprocess:
             self.status = "N"
             self.reprocess = False
+
+
+class ThingsboardImportMap(models.Model):
+    """Model to store Thingsboard device mappings to station variables.
+
+    This model maps Thingsboard devices to specific variables at stations, allowing
+    data from IoT devices to be imported and associated with the correct station and
+    variable combinations.
+
+    Attributes:
+        tb_variable (CharField): Name of the variable in Thingsboard.
+        variable (ForeignKey): The existing variable in Paricia associated with this mapping.
+        device_id (CharField): The id of the device in Thingsboard.
+        station (ForeignKey): The name of the corresponding station in Paricia.
+    """  # noqa E501
+
+    tb_variable = models.CharField(
+        "Thingsboard Variable",
+        max_length=255,
+        blank=False,
+        null=False,
+        help_text="The name of the variable in Thingsboard (what is shown in the Thingsboard device).",  # noqa E501
+    )
+    variable = models.ForeignKey(
+        Variable,
+        models.PROTECT,
+        verbose_name="Variable",
+        blank=False,
+        null=False,
+        help_text="Variable name in the data import.",
+    )
+
+    device_id = models.CharField(
+        "Device ID",
+        max_length=255,
+        blank=False,
+        null=False,
+        help_text="The id of the device in Thingsboard.",
+    )
+    station = models.ForeignKey(
+        Station,
+        models.PROTECT,
+        verbose_name="Station",
+        help_text="The name of the corresponding station in Paricia.",
+    )
+
+    def __str__(self):
+        return (
+            f"{self.device_id} -> {self.station}: {self.tb_variable} -> {self.variable}"
+        )
+
+    def clean(self) -> None:
+        """Validate that the variable is valid for the station."""
+        try:
+            station = self.station
+        except ThingsboardImportMap.station.RelatedObjectDoesNotExist:
+            raise ValidationError({"station": "Station is required."})
+
+        try:
+            variable = self.variable
+        except ThingsboardImportMap.variable.RelatedObjectDoesNotExist:
+            raise ValidationError({"variable": "Variable is required."})
+
+        # Check if the variable is valid for the station through SensorInstallation
+        if not SensorInstallation.objects.filter(
+            variable=variable, station=station
+        ).exists():
+            raise ValidationError(
+                {
+                    "variable": f"Variable '{variable}' is not configured for"
+                    f" station '{station}' via a sensor installation."
+                }
+            )
+
+    def get_absolute_url(self):
+        return reverse("importing:thingsboardimportmap_detail", kwargs={"pk": self.pk})
