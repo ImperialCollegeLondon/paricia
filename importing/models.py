@@ -158,7 +158,7 @@ class ThingsboardImportMap(models.Model):
     Attributes:
         tb_variable (CharField): Name of the variable in Thingsboard.
         variable (ForeignKey): The existing variable in Paricia associated with this mapping.
-        device_id (CharField): The id of the device in Thingsboard.
+        tb_device_name (CharField): The name of the device in Thingsboard.
         station (ForeignKey): The name of the corresponding station in Paricia.
     """  # noqa E501
 
@@ -167,7 +167,7 @@ class ThingsboardImportMap(models.Model):
         max_length=255,
         blank=False,
         null=False,
-        help_text="The name of the variable in Thingsboard (what is shown in the Thingsboard device).",  # noqa E501
+        help_text="The name of the variable in Thingsboard.",
     )
     variable = models.ForeignKey(
         Variable,
@@ -177,25 +177,20 @@ class ThingsboardImportMap(models.Model):
         null=False,
         help_text="Variable name in the data import.",
     )
-
-    device_id = models.CharField(
-        "Device ID",
-        max_length=255,
-        blank=False,
-        null=False,
-        help_text="The id of the device in Thingsboard.",
-    )
     station = models.ForeignKey(
         Station,
         models.PROTECT,
         verbose_name="Station",
         help_text="The name of the corresponding station in Paricia.",
     )
+    tb_device_name = models.CharField(
+        "Thingsboard Device Name",
+        max_length=255,
+        help_text="The name of the device in Thingsboard.",
+    )
 
     def __str__(self):
-        return (
-            f"{self.device_id} -> {self.station}: {self.tb_variable} -> {self.variable}"
-        )
+        return f"{self.tb_device_name} -> {self.station}: {self.tb_variable} -> {self.variable}"  # noqa E501
 
     def clean(self) -> None:
         """Validate that the variable is valid for the station."""

@@ -8,6 +8,7 @@ from .views import (
     DataImportListView,
     DataImportUploadAPIView,
     DataIngestionQueryView,
+    ThingsboardDataRetrievalView,
     ThingsboardImportMapCreateView,
     ThingsboardImportMapDetailView,
     ThingsboardImportMapEditView,
@@ -51,5 +52,10 @@ urlpatterns = [
         "thingsboard-import-maps/delete/<int:pk>/",
         ThingsboardImportMapEditView.as_view(),
         name="thingsboardimportmap_delete",
+    ),
+    path(
+        "thingsboard-data-retrieval/",
+        ThingsboardDataRetrievalView.as_view(),
+        name="thingsboard_data_retrieval",
     ),
 ]

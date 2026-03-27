@@ -1,6 +1,14 @@
+import json
 import logging
 
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.base import ContentFile
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.text import slugify
+from django.views.generic import FormView
 from drf_spectacular.utils import (
     OpenApiExample,
     OpenApiParameter,
@@ -25,6 +33,7 @@ from management.views import (
 from station.models import Station
 
 from .filters import DataImportFilter, ThingsboardImportMapFilter
+from .forms import ThingsboardDataRetrievalForm
 from .models import DataImport, ImportOrigin, ThingsboardImportMap
 from .serializers import (
     DataImportDetailSerializer,
@@ -32,6 +41,9 @@ from .serializers import (
     DataImportUploadResponseSerializer,
 )
 from .tables import DataImportTable, ThingsboardImportMapTable
+from .utils import retrieve_thingsboard_data
+
+logger = logging.getLogger(__name__)
 
 
 class DataImportDetailView(CustomDetailView):
@@ -46,6 +58,7 @@ class DataImportListView(CustomTableView):
     model = DataImport
     table_class = DataImportTable
     filterset_class = DataImportFilter
+    template_name = "importing/dataimport_table.html"
 
 
 class DataImportEditView(CustomEditView):
@@ -317,7 +330,7 @@ class ThingsBoardImportMapListView(CustomTableView):
 
 class ThingsboardImportMapEditView(CustomEditView):
     model = ThingsboardImportMap
-    fields = ["tb_variable", "variable", "device_id", "station"]
+    fields = ["tb_variable", "variable", "tb_device_name", "station"]
     foreign_key_fields = ["station", "variable"]
     success_url = reverse_lazy("importing:thingsboardimportmap_list")
 
@@ -328,7 +341,7 @@ class ThingsboardImportMapEditView(CustomEditView):
 
 class ThingsboardImportMapCreateView(CustomCreateView):
     model = ThingsboardImportMap
-    fields = ["tb_variable", "variable", "device_id", "station"]
+    fields = ["tb_variable", "variable", "tb_device_name", "station"]
     foreign_key_fields = ["station", "variable"]
     success_url = reverse_lazy("importing:thingsboardimportmap_list")
 
@@ -339,3 +352,94 @@ class ThingsboardImportMapCreateView(CustomCreateView):
 
 class ThingsboardImportMapDeleteView(CustomDeleteView):
     model = ThingsboardImportMap
+
+
+class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
+    form_class = ThingsboardDataRetrievalForm
+    template_name = "importing/thingsboard_data_retrieval.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        from management.models import ThingsboardCredentials
+
+        thingsboard_map = form.cleaned_data["thingsboard_map"]
+        selected_format = form.cleaned_data["format"]
+        start_date = form.cleaned_data["start_date"]
+        end_date = form.cleaned_data["end_date"]
+
+        tb_variable = thingsboard_map.tb_variable
+        tb_device_name = thingsboard_map.tb_device_name
+
+        try:
+            tb_creds = ThingsboardCredentials.objects.get(user=self.request.user)
+            access_token = tb_creds.thingsboard_access_token
+        except ThingsboardCredentials.DoesNotExist:
+            messages.error(
+                self.request,
+                "ThingsBoard credentials not configured. Please set up your access token in your profile.",  # noqa E501
+            )
+            return self.form_invalid(form)
+
+        if not access_token:
+            messages.error(
+                self.request,
+                "ThingsBoard access token is not set. Please generate a token in your profile.",  # noqa E501
+            )
+            return self.form_invalid(form)
+
+        try:
+            data = retrieve_thingsboard_data(
+                token=access_token,
+                customer_id=tb_creds.thingsboard_customer_id,
+                tb_device_name=tb_device_name,
+                variable=str(tb_variable),
+                start_ts=int(start_date.timestamp() * 1000),
+                end_ts=int(end_date.timestamp() * 1000),
+            )
+
+            safe_device = slugify(tb_device_name)[:50]
+            safe_variable = slugify(tb_variable)[:50]
+            timestamp = timezone.now().strftime("%Y%m%d%H%M%S")
+            filename = f"thingsboard_{safe_device}_{safe_variable}_{timestamp}.json"
+
+            payload = ContentFile(
+                json.dumps(data, indent=2).encode("utf-8"),
+                name=filename,
+            )
+
+            data_import = DataImport(
+                station=thingsboard_map.station,
+                format=selected_format,
+                origin=ImportOrigin.objects.get_or_create(origin="Thingsboard")[0],
+                owner=self.request.user,
+                visibility="private",
+                observations=(
+                    f"ThingsBoard pull for {tb_device_name} / {tb_variable} "
+                    f"from {start_date} to {end_date}"
+                ),
+            )
+            data_import.rawfile.save(filename, payload, save=False)
+            data_import.save()
+
+            messages.success(
+                self.request,
+                f"Data import {data_import.pk} created successfully.",
+            )
+            return redirect("importing:dataimport_list")
+
+        except Exception:
+            logger.error(
+                "Failed to retrieve ThingsBoard data for device '%s', variable '%s'",
+                tb_device_name,
+                tb_variable,
+            )
+            messages.error(
+                self.request,
+                "Failed to retrieve ThingsBoard data. Please check your credentials "
+                "and device configuration, then try again.",
+            )
+            return self.form_invalid(form)

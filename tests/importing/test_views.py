@@ -934,7 +934,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "temperature",
                 "variable": self.variable.pk,
-                "device_id": "device-001",
+                "tb_device_name": "device-001",
                 "station": self.station.pk,
             },
         )
@@ -953,7 +953,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "humidity",
                 "variable": self.variable.pk,
-                "device_id": "device-002",
+                "tb_device_name": "device-002",
                 "station": self.station.pk,
             },
         )
@@ -973,7 +973,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "temperature",
                 "variable": self.variable.pk,
-                "device_id": "device-004",
+                "tb_device_name": "device-004",
                 "station": self.other_station.pk,
             },
         )
@@ -997,7 +997,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "temperature",
                 "variable": self.other_variable.pk,
-                "device_id": "device-005",
+                "tb_device_name": "device-005",
                 "station": self.station.pk,
             },
         )
@@ -1063,7 +1063,7 @@ class TestThingsboardImportMapCreateView(TestCase):
                 {
                     "tb_variable": f"var_{i}",
                     "variable": self.variable.pk,
-                    "device_id": f"device-{i:03d}",
+                    "tb_device_name": f"device-{i:03d}",
                     "station": self.station.pk,
                 },
             )
@@ -1072,7 +1072,7 @@ class TestThingsboardImportMapCreateView(TestCase):
         self.assertEqual(ThingsboardImportMap.objects.count(), initial_count + 3)
 
     def test_missing_device_id(self):
-        """Test that missing device_id returns form error."""
+        """Test that missing tb_device_name returns form error."""
         self.client.login(username="tbcreateuser", password="testpass123")
 
         response = self.client.post(
@@ -1086,7 +1086,7 @@ class TestThingsboardImportMapCreateView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFormError(
-            response.context["form"], "device_id", "This field is required."
+            response.context["form"], "tb_device_name", "This field is required."
         )
 
     def test_missing_required_fields(self):
@@ -1100,12 +1100,12 @@ class TestThingsboardImportMapCreateView(TestCase):
         # Check all four fields have errors
         self.assertIn("tb_variable", form.errors)
         self.assertIn("variable", form.errors)
-        self.assertIn("device_id", form.errors)
+        self.assertIn("tb_device_name", form.errors)
         self.assertIn("station", form.errors)
 
         # Verify the key error messages are present
         self.assertIn("This field is required.", str(form.errors["tb_variable"]))
-        self.assertIn("This field is required.", str(form.errors["device_id"]))
+        self.assertIn("This field is required.", str(form.errors["tb_device_name"]))
         # FK fields may have multiple errors, just check one is present
         self.assertIn("This field is required.", str(form.errors["variable"]))
         self.assertIn("This field is required.", str(form.errors["station"]))
@@ -1118,7 +1118,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             self.url,
             {
                 "variable": self.variable.pk,
-                "device_id": "device-003",
+                "tb_device_name": "device-003",
                 "station": self.station.pk,
             },
         )
