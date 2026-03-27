@@ -170,7 +170,7 @@ packaging==24.2
     #   build
     #   drf-yasg
     #   plotly
-pandas==2.2.3
+pandas==3.0.1
     # via Paricia (pyproject.toml)
 pathspec==0.12.1
     # via djlint
