@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Model
@@ -15,7 +16,11 @@ from guardian.shortcuts import get_objects_for_user
 from .forms import CustomUserCreationForm, ThingsboardCredentialsForm, UserProfileForm
 from .models import ThingsboardCredentials, User
 from .permissions import get_queryset
-from .tools import get_deleted_objects
+from .tools import (
+    get_deleted_objects,
+    retrieve_thingsboard_customerid,
+    thingsboard_token_generator,
+)
 
 
 class SignUpView(CreateView):
@@ -48,16 +53,96 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        profile_form = UserProfileForm(request.POST, instance=self.object)
-        thingsboard_form = ThingsboardCredentialsForm(
-            request.POST, instance=self.get_thingsboard_credentials()
+        tb_creds = self.get_thingsboard_credentials()
+        action = request.POST.get("action")
+
+        # Initialize forms based on action
+        profile_data = request.POST if action == "save_profile" else None
+        thingsboard_data = (
+            request.POST if action in ["save_thingsboard", "generate_token"] else None
         )
 
-        if profile_form.is_valid() and thingsboard_form.is_valid():
+        profile_form = UserProfileForm(profile_data, instance=self.object)
+        thingsboard_form = ThingsboardCredentialsForm(
+            thingsboard_data, instance=tb_creds
+        )
+
+        # Dispatch to handler
+        if action == "save_profile":
+            return self._handle_save_profile(profile_form, thingsboard_form)
+        elif action == "generate_token":
+            return self._handle_generate_token(profile_form, thingsboard_form, tb_creds)
+        elif action == "save_thingsboard":
+            return self._handle_save_thingsboard(profile_form, thingsboard_form)
+
+        return self.render_to_response(
+            self.get_context_data(
+                profile_form=profile_form,
+                thingsboard_form=thingsboard_form,
+            )
+        )
+
+    def _handle_save_profile(self, profile_form, thingsboard_form):
+        if profile_form.is_valid():
             profile_form.save()
+            return redirect(self.success_url)
+        return self.render_to_response(
+            self.get_context_data(
+                profile_form=profile_form,
+                thingsboard_form=thingsboard_form,
+            )
+        )
+
+    def _handle_generate_token(self, profile_form, thingsboard_form, tb_creds):
+        if not thingsboard_form.is_valid():
+            return self.render_to_response(
+                self.get_context_data(
+                    profile_form=profile_form,
+                    thingsboard_form=thingsboard_form,
+                )
+            )
+
+        tb_username = thingsboard_form.cleaned_data.get("thingsboard_username")
+        tb_password = thingsboard_form.cleaned_data.get("thingsboard_password")
+
+        if not (tb_username and tb_password):
+            thingsboard_form.add_error(
+                None, "Username and password are required to generate token."
+            )
+            return self.render_to_response(
+                self.get_context_data(
+                    profile_form=profile_form,
+                    thingsboard_form=thingsboard_form,
+                )
+            )
+
+        try:
+            token = thingsboard_token_generator(tb_username, tb_password)
+            tb_creds.thingsboard_username = tb_username
+            tb_creds.thingsboard_password = tb_password
+            tb_creds.thingsboard_access_token = token
+            if not tb_creds.thingsboard_customer_id:
+                customerid = retrieve_thingsboard_customerid(token)
+                tb_creds.thingsboard_customer_id = customerid
+            tb_creds.save()
+            messages.success(
+                self.request, "Thingsboard access token generated successfully!"
+            )
+            return redirect(self.success_url)
+        except Exception as exc:
+            messages.error(self.request, "Failed to generate Thingsboard access token.")
+            thingsboard_form.add_error(None, f"Thingsboard login failed: {exc}")
+            return self.render_to_response(
+                self.get_context_data(
+                    profile_form=profile_form,
+                    thingsboard_form=thingsboard_form,
+                )
+            )
+
+    def _handle_save_thingsboard(self, profile_form, thingsboard_form):
+        if thingsboard_form.is_valid():
             thingsboard_form.save()
             return redirect(self.success_url)
-
         return self.render_to_response(
             self.get_context_data(
                 profile_form=profile_form,

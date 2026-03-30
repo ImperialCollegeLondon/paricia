@@ -29,8 +29,18 @@ class DataImportAdmin(PermissionsBaseAdmin):
 class ThingsboardImportMapAdmin(admin.ModelAdmin):
     """Admin class for the ThingsboardImportMap model."""
 
-    list_display = ["tb_variable", "variable", "device_id", "station"]
-    search_fields = ["tb_variable", "variable__name", "device_id", "station__name"]
+    list_display = [
+        "tb_variable",
+        "variable",
+        "station",
+        "tb_device_name",
+    ]
+    search_fields = [
+        "tb_variable",
+        "variable__name",
+        "station__name",
+        "tb_device_name",
+    ]
 
 
 @admin.register(ImportOrigin)
