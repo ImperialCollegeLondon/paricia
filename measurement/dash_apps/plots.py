@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pandas as pd
 import plotly.express as px
 from plotly import graph_objs as go
@@ -157,7 +159,7 @@ def create_report_plot(
         ]
     )
 
-    fig.update_traces(marker=dict(size=3))
+    fig.update_traces(marker=dict(size=3), connectgaps=False)
     fig.update_layout(
         legend=dict(
             title=dict(text="", font=dict(size=12)),
@@ -180,3 +182,44 @@ def create_report_plot(
     )
 
     return fig
+
+
+def add_nans_for_gaps(data: pd.DataFrame) -> pd.DataFrame:
+    """Add NaN values to create gaps in the plot when there are missing points.
+
+    Using values for maximum and minimum results in a shaded area indicating the gap
+    which is more visually intuitive than just breaking the line.
+
+    We use 1.5 times the median time difference as a threshold to detect gaps.
+
+    Args:
+        data: The data to process, must contain 'time', 'value', 'maximum' and 'minimum'
+            columns.
+
+    Returns:
+        pd.DataFrame: Data with NaN values added for gaps
+    """
+    data = data.sort_values("time").reset_index(drop=True)
+    data["time_diff"] = data["time"].diff()
+    median_diff = data["time_diff"].median()
+    gap_threshold = median_diff * 1.5
+    gap_indices = data.index[data["time_diff"] > gap_threshold].tolist()
+
+    nan_rows: list[dict[str, float | datetime]] = []
+    for idx in reversed(gap_indices):
+        nan_rows.append(
+            {
+                "time": data.loc[idx, "time"] - median_diff / 2,
+                "value": float("nan"),
+                "maximum": data.loc[idx, "maximum"],
+                "minimum": data.loc[idx, "minimum"],
+            }
+        )
+    data.drop(columns=["time_diff"])
+    data = (
+        pd.concat([data, pd.DataFrame(nan_rows)], ignore_index=True)
+        .sort_values("time")
+        .reset_index(drop=True)
+    )
+
+    return data
