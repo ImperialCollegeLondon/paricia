@@ -124,20 +124,39 @@ def create_report_plot(
     Returns:
         go.Figure: Plot
     """
-
-    fig = px.scatter(
-        data,
-        x="time",
-        y=["value", "minimum", "maximum"],
-        title=f"{station_code} - {variable_name}" + agg,
-        labels={
-            "time": "Date",
-        },
+    fig = go.Figure(
+        [
+            # Main trace
+            go.Scatter(
+                name=f"{variable_name}",
+                x=data["time"],
+                y=data["value"],
+                mode="lines",
+            ),
+            # Maximum and minimum as filled area
+            go.Scatter(
+                name="Maximum",
+                x=data["time"],
+                y=data["maximum"],
+                mode="lines",
+                marker=dict(color="#444"),
+                line=dict(width=0),
+                showlegend=False,
+            ),
+            go.Scatter(
+                name="Minimum",
+                x=data["time"],
+                y=data["minimum"],
+                marker=dict(color="#444"),
+                line=dict(width=0),
+                mode="lines",
+                fillcolor="rgba(68, 68, 68, 0.3)",
+                fill="tonexty",
+                showlegend=False,
+            ),
+        ]
     )
 
-    fig.for_each_trace(
-        lambda trace: trace.update(name=trace.name.title()),
-    )
     fig.update_traces(marker=dict(size=3))
     fig.update_layout(
         legend=dict(

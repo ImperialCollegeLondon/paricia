@@ -86,7 +86,7 @@ app.layout = html.Div(
             children=[
                 filters,
                 html.Div(
-                    style={"width": "65%"},
+                    style={"width": "65%", "height": "100%"},
                     children=[
                         dcc.Graph(
                             id="data_report_graph",
