@@ -9,7 +9,12 @@ from variable.models import Variable
 
 from ..filters import get_date_range, get_station_options, get_variable_options
 from ..reporting import get_report_data_from_db
-from .plots import create_empty_plot, create_report_plot, get_aggregation_level
+from .plots import (
+    add_nans_for_gaps,
+    create_empty_plot,
+    create_report_plot,
+    get_aggregation_level,
+)
 
 MAX_POINTS = 1000
 """Maximum number of points to display in the graph."""
@@ -154,6 +159,7 @@ def update_graph(
         every = max(1, len(data) // MAX_POINTS)
         resampled = data.iloc[::every]
         agg = get_aggregation_level(resampled["time"], every > 1)
+        resampled = add_nans_for_gaps(resampled)
 
         plot = create_report_plot(
             data=resampled,
