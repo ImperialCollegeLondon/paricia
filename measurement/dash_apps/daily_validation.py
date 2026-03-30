@@ -146,10 +146,10 @@ table_daily = AgGrid(
         "resizable": True,
         "sortable": True,
         "checkboxSelection": {
-            "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            "function": "params.column == params.api.getAllDisplayedColumns()[0]"
         },
         "headerCheckboxSelection": {
-            "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            "function": "params.column == params.api.getAllDisplayedColumns()[0]"
         },
         "headerCheckboxSelectionFilteredOnly": True,
     },
@@ -170,10 +170,10 @@ table_detail = AgGrid(
         "resizable": True,
         "sortable": True,
         "checkboxSelection": {
-            "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            "function": "params.column == params.api.getAllDisplayedColumns()[0]"
         },
         "headerCheckboxSelection": {
-            "function": "params.column == params.columnApi.getAllDisplayedColumns()[0]"
+            "function": "params.column == params.api.getAllDisplayedColumns()[0]"
         },
         "headerCheckboxSelectionFilteredOnly": True,
     },
