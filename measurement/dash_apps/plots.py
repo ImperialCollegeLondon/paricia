@@ -204,6 +204,7 @@ def add_nans_for_gaps(data: pd.DataFrame) -> pd.DataFrame:
     median_diff = data["time_diff"].median()
     gap_threshold = median_diff * 1.5
     gap_indices = data.index[data["time_diff"] > gap_threshold].tolist()
+    data = data.drop(columns=["time_diff"])
 
     nan_rows: list[dict[str, float | datetime]] = []
     for idx in reversed(gap_indices):
@@ -215,7 +216,6 @@ def add_nans_for_gaps(data: pd.DataFrame) -> pd.DataFrame:
                 "minimum": data.loc[idx, "minimum"],
             }
         )
-    data.drop(columns=["time_diff"])
     data = (
         pd.concat([data, pd.DataFrame(nan_rows)], ignore_index=True)
         .sort_values("time")

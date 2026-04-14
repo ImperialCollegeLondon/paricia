@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 
 import pandas as pd
+from django.test import TestCase
 
 from measurement.dash_apps.plots import add_nans_for_gaps
 
 
-class TestAddNansForGaps:
+class TestAddNansForGaps(TestCase):
     """Tests for the add_nans_for_gaps function."""
 
     def test_no_gaps(self):
