@@ -270,6 +270,7 @@ class CustomDetailView(URLMixin, LoginRequiredMixin, DetailView):
         context["edit_url"] = self.edit_url
         context["list_url"] = self.list_url
         context["pk"] = self.object.pk
+        context["can_edit"] = self.request.user == self.object.owner
         return context
 
     @property
