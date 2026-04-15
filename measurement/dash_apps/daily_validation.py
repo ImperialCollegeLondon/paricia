@@ -353,7 +353,6 @@ app.layout = html.Div(
         State("table_detail", "selectedRows"),
         State("table_detail", "rowData"),
         State("validation_status_drop", "value"),
-        State("plot", "figure"),
     ],
     prevent_initial_call=True,
 )
@@ -375,7 +374,6 @@ def callbacks(
     in_detail_selected_rows: list[dict],
     in_detail_row_data: list[dict],
     in_validation_status: str,
-    in_plot_figure: go.Figure,
 ) -> tuple[
     dash.no_update,
     dash.no_update,
@@ -409,7 +407,6 @@ def callbacks(
         in_daily_row_data (list[dict]): Full row data for table_daily
         in_detail_selected_rows (list[dict]): Selected rows in table_detail
         in_detail_row_data (list[dict]): Full row data for table_detail
-        in_plot_figure (go.Figure): Plot
 
     Returns:
         out_loading_top (dash.no_update): Loading spinner for top
