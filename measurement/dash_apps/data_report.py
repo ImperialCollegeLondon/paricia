@@ -5,6 +5,7 @@ import plotly.graph_objs as go
 from dash import Input, Output, State, dcc, html
 from django_plotly_dash import DjangoDash
 
+from djangomain.settings.settings import MAX_POINTS
 from variable.models import Variable
 
 from ..filters import get_date_range, get_station_options, get_variable_options
@@ -16,7 +17,6 @@ from .plots import (
     get_aggregation_level,
 )
 
-MAX_POINTS = 1000
 """Maximum number of points to display in the graph."""
 
 # Create a Dash app

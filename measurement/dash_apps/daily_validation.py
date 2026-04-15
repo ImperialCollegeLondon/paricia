@@ -9,6 +9,7 @@ from dash_ag_grid import AgGrid
 from django_plotly_dash import DjangoDash
 from plotly import graph_objs as go
 
+from djangomain.settings.settings import MAX_POINTS
 from variable.models import Variable
 
 from ..filters import (
@@ -36,7 +37,7 @@ app = DjangoDash(
 SELECTED_DAY: date | None = None
 DATA_SUMMARY: pd.DataFrame = pd.DataFrame()
 DATA_GRANULAR: pd.DataFrame = pd.DataFrame()
-MAX_POINTS = 1000
+
 
 # Filters
 filters_row1 = html.Div(
@@ -588,7 +589,7 @@ def callbacks(
     # Refresh plot
     if plot_refresh_required:
         if not DATA_GRANULAR.empty:
-            plot_data = DATA_GRANULAR.copy()
+            plot_data = DATA_GRANULAR
             if "xaxis.range[0]" in in_plot_relayout_data:
                 start = in_plot_relayout_data["xaxis.range[0]"]
                 end = in_plot_relayout_data["xaxis.range[1]"]
