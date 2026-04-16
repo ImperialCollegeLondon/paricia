@@ -6,10 +6,10 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
+from django.conf import settings
 from django_plotly_dash import DjangoDash
 from plotly import graph_objs as go
 
-from djangomain.settings.settings import MAX_POINTS
 from variable.models import Variable
 
 from ..filters import (
@@ -596,7 +596,7 @@ def callbacks(
                 plot_data = plot_data[
                     (plot_data["time"] >= start) & (plot_data["time"] <= end)
                 ]
-            every = max(1, len(plot_data) // MAX_POINTS)
+            every = max(1, len(plot_data) // settings.MAX_POINTS)
             plot_data = plot_data.iloc[::every]
             out_plot = create_validation_plot(
                 data=plot_data,

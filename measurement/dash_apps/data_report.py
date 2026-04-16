@@ -3,9 +3,9 @@ from logging import getLogger
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from dash import Input, Output, State, dcc, html
+from django.conf import settings
 from django_plotly_dash import DjangoDash
 
-from djangomain.settings.settings import MAX_POINTS
 from variable.models import Variable
 
 from ..filters import get_date_range, get_station_options, get_variable_options
@@ -156,7 +156,7 @@ def update_graph(
         data = data[(data["time"] >= start) & (data["time"] <= end)]
 
     try:
-        every = max(1, len(data) // MAX_POINTS)
+        every = max(1, len(data) // settings.MAX_POINTS)
         resampled = data.iloc[::every]
         agg = get_aggregation_level(resampled["time"], every > 1)
         resampled = add_nans_for_gaps(resampled)
