@@ -11,7 +11,7 @@
   <div class="row">
     <div class="col">
       <a href="{% url list_url %}" class="btn btn-success">Return to list</a>
-      {% if can_edit or user.is_superuser %}
+      {% if can_edit %}
         <a href="{% url edit_url pk %}" class="btn btn-warning">Edit</a>
         <a href="{% url delete_url pk %}" class="btn btn-danger">Delete</a>
       {% endif %}
