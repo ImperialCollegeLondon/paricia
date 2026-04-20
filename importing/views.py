@@ -52,16 +52,6 @@ class DataImportDetailView(CustomDetailView):
 
     model = DataImport
 
-    def get_form(self):
-        """Exclude the reprocess field from the form."""
-
-        class DetailForm(forms.ModelForm):
-            class Meta:
-                model = self.model
-                exclude = ["reprocess"]
-
-        return DetailForm(instance=self.object)
-
 
 class DataImportListView(CustomTableView):
     """View to list all data imports."""
