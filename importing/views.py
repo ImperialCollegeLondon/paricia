@@ -52,6 +52,16 @@ class DataImportDetailView(CustomDetailView):
 
     model = DataImport
 
+    def get_form(self):
+        """Exclude the reprocess field from the form."""
+
+        class DetailForm(forms.ModelForm):
+            class Meta:
+                model = self.model
+                exclude = ["reprocess"]
+
+        return DetailForm(instance=self.object)
+
 
 class DataImportListView(CustomTableView):
     """View to list all data imports."""
@@ -68,6 +78,15 @@ class DataImportEditView(CustomEditView):
     model = DataImport
     fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
     foreign_key_fields = ["station", "format"]
+
+    def get_form(self, form_class=None):
+        """Implement the reprocess option as a RadioSelect button."""
+        form = super().get_form(form_class)
+        form.fields["reprocess"].widget = forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        )
+        form.fields["reprocess"].help_text = "If 'Yes', the data will be reprocessed."
+        return form
 
 
 class DataImportCreateView(CustomCreateView):
