@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
@@ -75,6 +76,15 @@ class DataImportCreateView(CustomCreateView):
     model = DataImport
     fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
     foreign_key_fields = ["station", "format"]
+
+    def get_form(self, form_class=None):
+        """Implement the reprocess option as a RadioSelect button."""
+        form = super().get_form(form_class)
+        form.fields["reprocess"].widget = forms.RadioSelect(
+            choices=((True, "Yes"), (False, "No"))
+        )
+        form.fields["reprocess"].help_text = "If 'Yes', the data will be reprocessed."
+        return form
 
 
 class DataImportDeleteView(CustomDeleteView):
