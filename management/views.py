@@ -467,6 +467,9 @@ class CustomCreateView(URLMixin, LoginRequiredMixin, CreateView):
                 """
                 user = kwargs.pop("user") if "user" in kwargs else None
                 super().__init__(*args, **kwargs)
+                for field in self.fields.values():
+                    if field.required:
+                        field.label = f"{field.label}*"
                 if user:
                     for field in self._meta.model._meta.fields:
                         if field.name in self.foreign_key_fields:
