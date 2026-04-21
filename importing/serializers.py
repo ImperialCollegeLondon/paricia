@@ -26,7 +26,6 @@ class DataImportUploadRequestSerializer(serializers.ModelSerializer):
             "station",
             "format",
             "visibility",
-            "reprocess",
             "observations",
             "rawfile",
         ]
@@ -56,7 +55,6 @@ class DataImportUploadResponseSerializer(serializers.ModelSerializer):
             "observations",
             "status_display",  # Import status
             "status",
-            "reprocess",
         ]
         read_only_fields = [
             "data_import_id",
@@ -96,7 +94,6 @@ class DataImportDetailSerializer(serializers.ModelSerializer):
             "observations",
             "status",
             "status_display",
-            "reprocess",
             "log",
         ]
         read_only_fields = [
