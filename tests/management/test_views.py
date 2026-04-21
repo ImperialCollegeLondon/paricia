@@ -142,6 +142,9 @@ class TestCustomDetailView(TestCase):
         from management.views import CustomDetailView
         from sensor.models import Sensor
 
+        self.sensor.owner = self.user
+        self.sensor.save()
+
         request = self.factory.get("/fake-url")
         request.user = self.user
         view = CustomDetailView()
@@ -155,6 +158,24 @@ class TestCustomDetailView(TestCase):
         self.assertIsNone(context["delete_url"])
         self.assertIsNone(context["edit_url"])
         self.assertIsNone(context["list_url"])
+        self.assertTrue(context["can_edit"])
+
+    def test_get_context_data_can_edit_false(self):
+        from management.views import CustomDetailView
+        from sensor.models import Sensor
+
+        self.sensor.owner = None
+        self.sensor.save()
+
+        request = self.factory.get("/fake-url")
+        request.user = self.user
+        view = CustomDetailView()
+        view.request = request
+        view.kwargs = {"pk": self.sensor.pk}
+        view.model = Sensor
+        view.object = view.get_object()
+        context = view.get_context_data()
+        self.assertFalse(context["can_edit"])
 
     def test_properties(self):
         from management.views import CustomDetailView
