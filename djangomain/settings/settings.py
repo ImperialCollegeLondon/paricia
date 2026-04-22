@@ -346,3 +346,5 @@ TB_CUSTOMER_DEVICES_URL = (
 TB_TIMESERIES_URL = (
     f"https://{TB_HOST}/api/plugins/telemetry/DEVICE/{{tb_device_id}}/values/timeseries"
 )
+
+MAX_POINTS = 1000  # Max points to display in plots

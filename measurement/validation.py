@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from functools import lru_cache
 
 import pandas as pd
 from django.utils import timezone
@@ -210,6 +211,7 @@ def generate_daily_summary(
     return report
 
 
+@lru_cache(1)
 def generate_validation_report(
     station: str,
     variable: str,
