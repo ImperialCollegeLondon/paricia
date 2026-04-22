@@ -10,7 +10,7 @@ from contextlib import suppress
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objs as go
-from dash import Input, Output, Patch, State, dcc, html
+from dash import MATCH, Input, Output, Patch, State, dcc, html
 from django.forms.models import model_to_dict
 from django_plotly_dash import DjangoDash
 
@@ -35,7 +35,7 @@ def _scrollable_checklist(block_id):
     """
     return html.Div(
         dcc.Checklist(
-            id=f"{block_id}-checklist",
+            id={"type": "checklist", "index": block_id},
             options=[],
             value=[],
             inputStyle={"marginRight": "6px"},
@@ -64,14 +64,14 @@ def _all_none_buttons(block_id):
         [
             dbc.Button(
                 "All",
-                id=f"{block_id}-select-all",
+                id={"type": "select-all", "index": block_id},
                 size="sm",
                 color="secondary",
                 outline=True,
             ),
             dbc.Button(
                 "None",
-                id=f"{block_id}-select-none",
+                id={"type": "select-none", "index": block_id},
                 size="sm",
                 color="secondary",
                 outline=True,
@@ -153,8 +153,8 @@ app.layout = dbc.Container(
     children=[
         dbc.Row([_sidebar, _map_col], className="g-0"),
         html.Div(id="stations_list", style={"display": "none"}),
-        dcc.Store(id="owned-btn-store", data={"n_all": 0, "n_none": 0}),
-        dcc.Store(id="public-btn-store", data={"n_all": 0, "n_none": 0}),
+        dcc.Store(id={"type": "btn-store", "index": "owned"}, data=0),
+        dcc.Store(id={"type": "btn-store", "index": "public"}, data=0),
     ],
 )
 
@@ -204,8 +204,8 @@ def _build_options(codes):
 
 @app.callback(
     [
-        Output("owned-checklist", "options"),
-        Output("public-checklist", "options"),
+        Output({"type": "checklist", "index": "owned"}, "options"),
+        Output({"type": "checklist", "index": "public"}, "options"),
         Output("owned-block", "style"),
     ],
     Input("stations_list", "children"),
@@ -250,110 +250,45 @@ def populate_options(all_raw, **kwargs):
     return _build_options(owned), _build_options(public), owned_block_style
 
 
-# ── Owned selection ───────────────────────────────────────────────────────────
+# ── Selection ─────────────────────────────────────────────────────────────────
 
 
 @app.callback(
-    Output("owned-checklist", "value"),
+    Output({"type": "checklist", "index": MATCH}, "value"),
     [
-        Input("owned-checklist", "options"),
-        Input("owned-select-all", "n_clicks"),
-        Input("owned-select-none", "n_clicks"),
+        Input({"type": "checklist", "index": MATCH}, "options"),
+        Input({"type": "select-all", "index": MATCH}, "n_clicks"),
+        Input({"type": "select-none", "index": MATCH}, "n_clicks"),
     ],
-    State("owned-btn-store", "data"),
+    State({"type": "btn-store", "index": MATCH}, "data"),
 )
-def owned_selection(options, n_all, n_none, store):
-    """Resolve the selected values for the owned stations checklist.
+def checklist_selection(options, _n_all, n_none, prev_none):
+    """Resolve the selected values for a station checklist.
 
     All options are selected by default.  The selection is cleared only when
     the *None* button click count has increased since it was last stored.
 
     Args:
         options (list[dict] | None): Current checklist options.
-        n_all (int | None): Total click count for the *All* button.
+        _n_all (int | None): Total click count for the *All* button.
         n_none (int | None): Total click count for the *None* button.
-        store (dict | None): Previously stored click counts.
+        prev_none (int): Stored click count from the last time *None* fired.
 
     Returns:
         list[str]: Station codes to mark as selected.
     """
-    options = options or []
-    if (n_none or 0) > (store or {}).get("n_none", 0):
+    if (n_none or 0) > prev_none:
         return []
-    return [o["value"] for o in options]
+    return [o["value"] for o in (options or [])]
 
 
 @app.callback(
-    Output("owned-btn-store", "data"),
-    [
-        Input("owned-select-all", "n_clicks"),
-        Input("owned-select-none", "n_clicks"),
-    ],
+    Output({"type": "btn-store", "index": MATCH}, "data"),
+    Input({"type": "select-none", "index": MATCH}, "n_clicks"),
 )
-def owned_store(n_all, n_none):
-    """Persist the owned checklist bulk-button click counters.
-
-    Args:
-        n_all (int | None): Total click count for the *All* button.
-        n_none (int | None): Total click count for the *None* button.
-
-    Returns:
-        dict[str, int]: Updated click counters for use as callback state.
-    """
-    return {"n_all": n_all or 0, "n_none": n_none or 0}
-
-
-# ── Public selection ──────────────────────────────────────────────────────────
-
-
-@app.callback(
-    Output("public-checklist", "value"),
-    [
-        Input("public-checklist", "options"),
-        Input("public-select-all", "n_clicks"),
-        Input("public-select-none", "n_clicks"),
-    ],
-    State("public-btn-store", "data"),
-)
-def public_selection(options, n_all, n_none, store):
-    """Resolve the selected values for the public stations checklist.
-
-    All options are selected by default.  The selection is cleared only when
-    the *None* button click count has increased since it was last stored.
-
-    Args:
-        options (list[dict] | None): Current checklist options.
-        n_all (int | None): Total click count for the *All* button.
-        n_none (int | None): Total click count for the *None* button.
-        store (dict | None): Previously stored click counts.
-
-    Returns:
-        list[str]: Station codes to mark as selected.
-    """
-    options = options or []
-    if (n_none or 0) > (store or {}).get("n_none", 0):
-        return []
-    return [o["value"] for o in options]
-
-
-@app.callback(
-    Output("public-btn-store", "data"),
-    [
-        Input("public-select-all", "n_clicks"),
-        Input("public-select-none", "n_clicks"),
-    ],
-)
-def public_store(n_all, n_none):
-    """Persist the public checklist bulk-button click counters.
-
-    Args:
-        n_all (int | None): Total click count for the *All* button.
-        n_none (int | None): Total click count for the *None* button.
-
-    Returns:
-        dict[str, int]: Updated click counters for use as callback state.
-    """
-    return {"n_all": n_all or 0, "n_none": n_none or 0}
+def checklist_store(n_none):
+    """Store the click count for a *None* button."""
+    return n_none or 0
 
 
 # ── Map ───────────────────────────────────────────────────────────────────────
@@ -366,7 +301,10 @@ _COLOR_MAP = {
 
 @app.callback(
     Output("map_graph", "figure"),
-    [Input("owned-checklist", "value"), Input("public-checklist", "value")],
+    [
+        Input({"type": "checklist", "index": "owned"}, "value"),
+        Input({"type": "checklist", "index": "public"}, "value"),
+    ],
 )
 def update_map(owned_selected, public_selected):
     """Build a scatter-mapbox figure for the currently selected stations.
