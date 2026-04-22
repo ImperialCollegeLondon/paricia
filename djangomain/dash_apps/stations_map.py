@@ -10,7 +10,7 @@ from contextlib import suppress
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objs as go
-from dash import MATCH, Input, Output, Patch, State, dcc, html
+from dash import MATCH, Input, Output, Patch, dcc, html
 from django.forms.models import model_to_dict
 from django_plotly_dash import DjangoDash
 
@@ -153,8 +153,6 @@ app.layout = dbc.Container(
     children=[
         dbc.Row([_sidebar, _map_col], className="g-0"),
         html.Div(id="stations_list", style={"display": "none"}),
-        dcc.Store(id={"type": "btn-store", "index": "owned"}, data=0),
-        dcc.Store(id={"type": "btn-store", "index": "public"}, data=0),
     ],
 )
 
@@ -260,35 +258,17 @@ def populate_options(all_raw, **kwargs):
         Input({"type": "select-all", "index": MATCH}, "n_clicks"),
         Input({"type": "select-none", "index": MATCH}, "n_clicks"),
     ],
-    State({"type": "btn-store", "index": MATCH}, "data"),
 )
-def checklist_selection(options, _n_all, n_none, prev_none):
-    """Resolve the selected values for a station checklist.
+def checklist_selection(options, _n_all, _n_none, callback_context):
+    triggered = (
+        callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
+    )
+    triggered_component = triggered.rsplit(".", 1)[0]
 
-    All options are selected by default.  The selection is cleared only when
-    the *None* button click count has increased since it was last stored.
-
-    Args:
-        options (list[dict] | None): Current checklist options.
-        _n_all (int | None): Total click count for the *All* button.
-        n_none (int | None): Total click count for the *None* button.
-        prev_none (int): Stored click count from the last time *None* fired.
-
-    Returns:
-        list[str]: Station codes to mark as selected.
-    """
-    if (n_none or 0) > prev_none:
+    if "select-none" in triggered_component:
         return []
+
     return [o["value"] for o in (options or [])]
-
-
-@app.callback(
-    Output({"type": "btn-store", "index": MATCH}, "data"),
-    Input({"type": "select-none", "index": MATCH}, "n_clicks"),
-)
-def checklist_store(n_none):
-    """Store the click count for a *None* button."""
-    return n_none or 0
 
 
 # ── Map ───────────────────────────────────────────────────────────────────────
