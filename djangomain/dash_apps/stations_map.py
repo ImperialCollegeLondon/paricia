@@ -5,10 +5,12 @@ This module defines a DjangoDash application with two checklist sections
 from current checklist selections.
 """
 
+from contextlib import suppress
+
 import dash_bootstrap_components as dbc
 import pandas as pd
-import plotly.express as px
-from dash import Input, Output, State, dcc, html
+import plotly.graph_objs as go
+from dash import Input, Output, Patch, State, dcc, html
 from django.forms.models import model_to_dict
 from django_plotly_dash import DjangoDash
 
@@ -118,7 +120,29 @@ _sidebar = dbc.Col(
 )
 
 _map_col = dbc.Col(
-    dcc.Graph(id="map_graph", style={"height": "100vh"}, config={"scrollZoom": True}),
+    dcc.Graph(
+        id="map_graph",
+        style={"height": "100vh"},
+        config={"scrollZoom": True},
+        figure={
+            "data": [],
+            "layout": {
+                "mapbox": {
+                    "style": "open-street-map",
+                    "zoom": 3.6,
+                    "center": {"lat": -9.182731, "lon": -60.658738},
+                },
+                "margin": {"r": 0, "t": 0, "l": 0, "b": 0},
+                "uirevision": True,
+                "legend": {
+                    "title": "",
+                    "x": 0.01,
+                    "y": 0.99,
+                    "bgcolor": "rgba(255,255,255,0.8)",
+                },
+            },
+        },
+    ),
     width=9,
     style={"padding": "0"},
 )
@@ -168,12 +192,10 @@ def _build_options(codes):
     """
     options = []
     for code in sorted(codes):
-        try:
+        with suppress(Station.DoesNotExist):
             obj = Station.objects.get(station_code=code)
-            label = f"{code} \u2013 {obj.station_name}" if obj.station_name else code
-        except Station.DoesNotExist:
-            label = code
-        options.append({"label": label, "value": code})
+            label = f"{code} - {obj.station_name}" if obj.station_name else code
+            options.append({"label": label, "value": code})
     return options
 
 
@@ -344,10 +366,7 @@ _COLOR_MAP = {
 
 @app.callback(
     Output("map_graph", "figure"),
-    [
-        Input("owned-checklist", "value"),
-        Input("public-checklist", "value"),
-    ],
+    [Input("owned-checklist", "value"), Input("public-checklist", "value")],
 )
 def update_map(owned_selected, public_selected):
     """Build a scatter-mapbox figure for the currently selected stations.
@@ -376,46 +395,41 @@ def update_map(owned_selected, public_selected):
 
     rows = []
     for code in owned_selected or []:
-        row = {
-            k: model_to_dict(Station.objects.get(station_code=code))[k] for k in keys
-        }
-        row["type"] = "My Stations"
-        rows.append(row)
+        with suppress(Station.DoesNotExist):
+            row = {
+                k: model_to_dict(Station.objects.get(station_code=code))[k]
+                for k in keys
+            }
+            row["type"] = "My Stations"
+            rows.append(row)
     for code in public_selected or []:
-        row = {
-            k: model_to_dict(Station.objects.get(station_code=code))[k] for k in keys
-        }
-        row["type"] = "Public"
-        rows.append(row)
+        with suppress(Station.DoesNotExist):
+            row = {
+                k: model_to_dict(Station.objects.get(station_code=code))[k]
+                for k in keys
+            }
+            row["type"] = "Public"
+            rows.append(row)
 
-    base_layout = {
-        "mapbox": {"style": "open-street-map", "zoom": 3.6},
-        "margin": {"r": 0, "t": 0, "l": 0, "b": 0},
-        "legend": {
-            "title": "",
-            "x": 0.01,
-            "y": 0.99,
-            "bgcolor": "rgba(255,255,255,0.8)",
-        },
-    }
-
+    patched = Patch()
     if not rows:
-        return px.scatter_mapbox(lat=[], lon=[]).update_layout(**base_layout)
+        patched["data"] = []
+        return patched
 
     df = pd.DataFrame(rows, columns=[*keys, "type"])
-    plot = px.scatter_mapbox(
-        df,
-        lat="station_latitude",
-        lon="station_longitude",
-        hover_name="station_code",
-        color="type",
-        color_discrete_map=_COLOR_MAP,
-        category_orders={"type": list(_COLOR_MAP)},
-        zoom=3.6,
-    )
-    plot.update_layout(
-        mapbox_style="open-street-map",
-        margin={"r": 0, "t": 0, "l": 0, "b": 0},
-        legend={"title": "", "x": 0.01, "y": 0.99, "bgcolor": "rgba(255,255,255,0.8)"},
-    )
-    return plot
+    traces = []
+    for group, color in _COLOR_MAP.items():
+        sub = df[df["type"] == group]
+        traces.append(
+            go.Scattermapbox(
+                lat=sub["station_latitude"],
+                lon=sub["station_longitude"],
+                mode="markers",
+                marker={"color": color},
+                name=group,
+                hovertext=sub["station_code"],
+                hoverinfo="text",
+            )
+        )
+    patched["data"] = traces
+    return patched
