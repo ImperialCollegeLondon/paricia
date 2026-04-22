@@ -9,7 +9,7 @@
   </h2>
   <form enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    <button type="submit" class="btn btn-success">Update</button>
+    <button name="action" value="update" type="submit" class="btn btn-success">Update</button>
     <button type="reset" class="btn btn-warning">Reset</button>
     <a href="{% url detail_url pk %}" class="btn btn-danger">Cancel</a>
     <button name="action" value="reprocess" class="btn btn-secondary">Reprocess</button>
