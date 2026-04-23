@@ -32,15 +32,15 @@ from management.views import (
 )
 from station.models import Station
 
-from .filters import DataImportFilter, ThingsboardImportMapFilter
+from .filters import DataImportFilter, MapLayerImportFilter, ThingsboardImportMapFilter
 from .forms import ThingsboardDataRetrievalForm
-from .models import DataImport, ImportOrigin, ThingsboardImportMap
+from .models import DataImport, ImportOrigin, MapLayerImport, ThingsboardImportMap
 from .serializers import (
     DataImportDetailSerializer,
     DataImportUploadRequestSerializer,
     DataImportUploadResponseSerializer,
 )
-from .tables import DataImportTable, ThingsboardImportMapTable
+from .tables import DataImportTable, MapLayerImportTable, ThingsboardImportMapTable
 from .utils import retrieve_thingsboard_data
 
 logger = logging.getLogger(__name__)
@@ -443,3 +443,38 @@ class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
                 "and device configuration, then try again.",
             )
             return self.form_invalid(form)
+
+
+class MapLayerDetailView(CustomDetailView):
+    """View to view a data import."""
+
+    model = MapLayerImport
+
+
+class MapLayerListView(CustomTableView):
+    """View to list all data imports."""
+
+    model = MapLayerImport
+    table_class = MapLayerImportTable
+    filterset_class = MapLayerImportFilter
+    template_name = "importing/maplayerimport_table.html"
+
+
+class MapLayerEditView(CustomEditView):
+    """View to edit a data import."""
+
+    model = MapLayerImport
+    fields = ["name", "description", "file"]
+
+
+class MapLayerCreateView(CustomCreateView):
+    """View to create a data import."""
+
+    model = MapLayerImport
+    fields = ["name", "description", "file"]
+
+
+class MapLayerDeleteView(CustomDeleteView):
+    """View to delete a data import."""
+
+    model = MapLayerImport
