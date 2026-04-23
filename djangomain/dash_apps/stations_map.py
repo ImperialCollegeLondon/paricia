@@ -122,7 +122,7 @@ _sidebar = dbc.Col(
 _map_col = dbc.Col(
     dcc.Graph(
         id="map_graph",
-        style={"height": "100vh"},
+        style={"height": "50vh"},
         config={"scrollZoom": True},
         figure={
             "data": [],
@@ -301,7 +301,8 @@ def update_map(owned_selected, public_selected):
 
     Returns:
         plotly.graph_objects.Figure: Scatter-mapbox figure coloured by station
-            group, or a blank basemap when the selection is empty.
+            group; empty groups render as zero-point traces so the tile layer
+            remains visible when nothing is selected.
     """
     keys = [
         "station_id",
@@ -330,10 +331,6 @@ def update_map(owned_selected, public_selected):
             rows.append(row)
 
     patched = Patch()
-    if not rows:
-        patched["data"] = []
-        return patched
-
     df = pd.DataFrame(rows, columns=[*keys, "type"])
     traces = []
     for group, color in _COLOR_MAP.items():
