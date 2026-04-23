@@ -1127,3 +1127,54 @@ class TestThingsboardImportMapCreateView(TestCase):
         self.assertFormError(
             response.context["form"], "tb_variable", "This field is required."
         )
+
+
+class TestMapLayerImportCreateView(TestCase):
+    """Test suite for the MapLayerImportCreateView."""
+
+    fixtures = IMPORTING_TEST_FIXTURES
+
+    def setUp(self):
+        """Set up test data."""
+        User = get_user_model()
+        self.client = APIClient()
+
+        # Create test user
+        self.user = User.objects.create_user(
+            username="maplayeruser", password="testpass123"
+        )
+
+        # Get station from fixtures
+        self.station = Station.objects.get(pk=1)
+
+        # Assign permissions
+        assign_perm("change_station", self.user, self.station)
+        assign_perm("view_station", self.user, self.station)
+
+        self.url = reverse("importing:maplayerimport_create")
+
+    def test_authenticated_get_renders_form(self):
+        """Test that authenticated GET request renders the creation form."""
+        self.client.login(username="maplayeruser", password="testpass123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_successful_creation(self):
+        """Test successful creation of a MapLayerImport."""
+        self.client.login(username="maplayeruser", password="testpass123")
+
+        response = self.client.post(
+            self.url,
+            {
+                "name": "Test Map Layer",
+                "description": "This is a test map layer import.",
+                "file": SimpleUploadedFile(
+                    "layer.tif", b"fake-tiff-content", content_type="image/tiff"
+                ),
+            },
+        )
+
+        if response.status_code == 200:
+            print("FORM ERRORS:", response.context["form"].errors)
+
+        self.assertEqual(response.status_code, 302)
