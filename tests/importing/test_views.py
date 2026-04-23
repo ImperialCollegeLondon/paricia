@@ -1124,6 +1124,7 @@ class TestDataImportEditView(TestCase):
                 "original_file.csv", b"01/01/2024 14:35:10,10.5\n"
             ),
             owner=self.user,
+            status="C",
         )
         self.url = reverse(
             "importing:dataimport_edit", kwargs={"pk": self.data_import.pk}
@@ -1132,6 +1133,7 @@ class TestDataImportEditView(TestCase):
 
     def test_form_valid_new_file_upload(self):
         """Test that uploading a new file triggers reprocessing."""
+        self.assertEqual(self.data_import.status, "C")
         response = self.client.post(
             self.url,
             {
@@ -1152,8 +1154,6 @@ class TestDataImportEditView(TestCase):
     def test_form_valid_reprocess_button(self):
         """Test that the 'reprocess' button triggers a change in object status."""
         # No reprocess action
-        self.data_import.status = "C"
-        self.data_import.save()
         data = {
             "visibility": "private",
             "station": self.station.pk,
