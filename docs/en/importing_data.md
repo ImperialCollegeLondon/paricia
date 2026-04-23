@@ -46,7 +46,7 @@ Once the form is complete, click `Save` at the top of the page and the import pr
 
 ![Data ingestion completed](assets/images/importing_completed.png)
 
-- **Failed**: The data ingestion failed. Information on what went wrong should appear in the log box at the bottom of the data import detail. Try to fix the issues, based on the feedback provided, check the box `Reprocess Data`, and save the form again to trigger another data ingestion process.
+- **Failed**: The data ingestion failed. Information on what went wrong should appear in the log box at the bottom of the data import detail. Try to fix the issues, based on the feedback provided, by selecting `Edit`, then save the form again to update the import. To trigger another data ingestion process, click `Reprocess` at the top of the page.
 
 ![Data ingestion failed](assets/images/importing_failed.png)
 
