@@ -452,7 +452,7 @@ class MapLayerDetailView(CustomDetailView):
 
 
 class MapLayerListView(CustomTableView):
-    """View to list all data imports."""
+    """View to list all map layer imports."""
 
     model = MapLayerImport
     table_class = MapLayerImportTable
@@ -461,20 +461,20 @@ class MapLayerListView(CustomTableView):
 
 
 class MapLayerEditView(CustomEditView):
-    """View to edit a data import."""
+    """View to edit a map layer imports."""
 
     model = MapLayerImport
     fields = ["name", "description", "file"]
 
 
 class MapLayerCreateView(CustomCreateView):
-    """View to create a data import."""
+    """View to create a map layer import."""
 
     model = MapLayerImport
     fields = ["name", "description", "file"]
 
 
 class MapLayerDeleteView(CustomDeleteView):
-    """View to delete a data import."""
+    """View to delete a map layer import."""
 
     model = MapLayerImport
