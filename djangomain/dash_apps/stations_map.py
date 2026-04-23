@@ -343,7 +343,7 @@ def update_map(owned_selected, public_selected):
                 lat=sub["station_latitude"],
                 lon=sub["station_longitude"],
                 mode="markers",
-                marker={"color": color},
+                marker={"color": color, "size": 10},
                 name=group,
                 hovertext=sub["station_code"],
                 hoverinfo="text",
