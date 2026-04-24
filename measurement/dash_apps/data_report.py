@@ -321,14 +321,14 @@ def download_csv_report(
                     content=file,
                     filename=f"{station}_{variable}_{temporality}_{start_time}-{end_time}.csv",
                 ),
-                True,
                 [],
+                True,
             )
         except Exception as e:
             alert = dbc.Alert(f"Could not export data to CSV: {e}", color="warning")
-            return None, False, [alert]
+            return None, [alert], False
 
-    return None, []
+    return None, [], True
 
 
 @app.callback(
@@ -354,7 +354,7 @@ def update_alert(
     end_time: str,
     figure: go.Figure,
 ):
-    if figure["layout"]["title"]["text"] == "Data not found":
+    if figure["layout"]["title"]["text"] == "No data to plot":
         alert = dbc.Alert(
             "No data was found with the selected criteria", color="warning"
         )
