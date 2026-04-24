@@ -1107,14 +1107,14 @@ class TestMapLayerImportCreateView(TestCase):
 """Test suite for the MapLayerImportCreateView."""
     def test_authenticated_get_renders_form(self):
     """Test that authenticated GET request renders the creation form."""
-     
+
         self.client.login(username="maplayeruser", password="testpass123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_successful_creation(self):
         """Test successful creation of a MapLayerImport."""
-        
+
         self.client.login(username="maplayeruser", password="testpass123")
 
         response = self.client.post(
