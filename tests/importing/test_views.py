@@ -235,7 +235,6 @@ class TestDataImportUploadAPIView(TestCase):
                 "format": self.format.pk,
                 "rawfile": test_file,
                 "visibility": "public",
-                "reprocess": True,
                 "observations": "Test upload with observations",
             },
             format="multipart",
@@ -248,7 +247,6 @@ class TestDataImportUploadAPIView(TestCase):
             data_import_id=response.data["data_import_id"]
         )
         self.assertEqual(data_import.visibility, "public")
-        self.assertTrue(data_import.reprocess)
         self.assertEqual(data_import.observations, "Test upload with observations")
         self.assertEqual(data_import.owner, self.user_with_permission)
         self.assertEqual(data_import.origin, ImportOrigin.objects.get(origin="api"))
@@ -328,27 +326,6 @@ class TestDataImportUploadAPIView(TestCase):
             data_import_id=response.data["data_import_id"]
         )
         self.assertEqual(data_import.visibility, "private")
-
-    def test_default_reprocess(self):
-        """Test that default reprocess is False."""
-        self.client.force_authenticate(user=self.user_with_permission)
-        test_file = self.create_test_file()
-
-        response = self.client.post(
-            self.url,
-            {
-                "station": self.station.station_code,
-                "format": self.format.pk,
-                "rawfile": test_file,
-            },
-            format="multipart",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data_import = DataImport.objects.get(
-            data_import_id=response.data["data_import_id"]
-        )
-        self.assertFalse(data_import.reprocess)
 
     def test_file_types(self):
         """Test uploading different file types."""
@@ -515,7 +492,6 @@ class TestDataImportUploadAPIView(TestCase):
                 "format": self.format.pk,
                 "rawfile": test_file,
                 "visibility": "public",
-                "reprocess": True,
                 "observations": "Test observations",
             },
             format="multipart",
@@ -535,7 +511,6 @@ class TestDataImportUploadAPIView(TestCase):
             "records",
             "observations",
             "status_display",
-            "reprocess",
         ]
 
         for field in expected_fields:
@@ -773,7 +748,6 @@ class TestDataIngestionQueryView(TestCase):
             "observations",
             "status",
             "status_display",
-            "reprocess",
             "log",
         ]
 
@@ -1127,3 +1101,74 @@ class TestThingsboardImportMapCreateView(TestCase):
         self.assertFormError(
             response.context["form"], "tb_variable", "This field is required."
         )
+
+
+class TestDataImportEditView(TestCase):
+    """Test suite for the DataImportEditView."""
+
+    fixtures = IMPORTING_TEST_FIXTURES
+
+    def setUp(self):
+        """Set up test data."""
+        User = get_user_model()
+        self.user = User.objects.create_user(username="owner", password="testpass123")
+        self.station = Station.objects.get(station_id=1)
+        self.format = Format.objects.get(format_id=46)
+        assign_perm("change_station", self.user, self.station)
+        assign_perm("change_format", self.user, self.format)
+        self.data_import = DataImport.objects.create(
+            visibility="private",
+            station=self.station,
+            format=self.format,
+            rawfile=SimpleUploadedFile(
+                "original_file.csv", b"01/01/2024 14:35:10,10.5\n"
+            ),
+            owner=self.user,
+            status="C",
+        )
+        self.url = reverse(
+            "importing:dataimport_edit", kwargs={"pk": self.data_import.pk}
+        )
+        self.client.force_login(self.user)
+
+    def test_form_valid_new_file_upload(self):
+        """Test that uploading a new file triggers reprocessing."""
+        self.assertEqual(self.data_import.status, "C")
+        response = self.client.post(
+            self.url,
+            {
+                "visibility": "private",
+                "station": self.station.pk,
+                "format": self.format.pk,
+                "rawfile": SimpleUploadedFile(
+                    "new_file.csv", b"01/01/2024 14:35:10,20.5\n"
+                ),
+                "observations": "",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.data_import.refresh_from_db()
+        self.assertEqual(self.data_import.status, "N")
+        self.assertIn("new_file", self.data_import.rawfile.name)
+
+    def test_form_valid_reprocess_button(self):
+        """Test that the 'reprocess' button triggers a change in object status."""
+        # No reprocess action
+        data = {
+            "visibility": "private",
+            "station": self.station.pk,
+            "format": self.format.pk,
+            "observations": "",
+            "action": "update",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.data_import.refresh_from_db()
+        self.assertEqual(self.data_import.status, "C")
+
+        # With reprocess action
+        data["action"] = "reprocess"
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.data_import.refresh_from_db()
+        self.assertEqual(self.data_import.status, "N")

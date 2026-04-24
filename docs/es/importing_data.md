@@ -46,7 +46,7 @@ Una vez que el formulario esté completo, haga clic en `Save` en la parte superi
 
 ![Ingestión de datos completada](assets/images/importing_completed.png)
 
-- **Error**: la ingesta de datos falló. La información sobre lo que salió mal debería aparecer en el cuadro de registro en la parte inferior del detalle de la importación de datos. Intente solucionar los problemas, según los comentarios proporcionados, marque la casilla "Reprocesar datos" y guarde el formulario nuevamente para activar otro proceso de ingesta de datos.
+- **Error**: la ingesta de datos falló. La información sobre lo que salió mal debería aparecer en el cuadro de registro en la parte inferior del detalle de la importación de datos. Para solucionar los problemas, según los comentarios proporcionados, marquen `Edit` y guarden el formulario nuevamente para actualizar. Para empezar otra ingesta de datos, marquen la casilla `Reprocess` en la parte de arriba de la pagina.
 
 ![Error en la ingesta de datos](assets/images/importing_failed.png)
 

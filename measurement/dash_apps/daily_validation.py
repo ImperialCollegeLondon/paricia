@@ -6,6 +6,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Input, Output, State, dcc, html
 from dash_ag_grid import AgGrid
+from django.conf import settings
 from django_plotly_dash import DjangoDash
 from plotly import graph_objs as go
 
@@ -36,6 +37,7 @@ app = DjangoDash(
 SELECTED_DAY: date | None = None
 DATA_SUMMARY: pd.DataFrame = pd.DataFrame()
 DATA_GRANULAR: pd.DataFrame = pd.DataFrame()
+
 
 # Filters
 filters_row1 = html.Div(
@@ -337,6 +339,7 @@ app.layout = html.Div(
         Input("save-button", "n_clicks"),
         Input("detail-date-picker", "date"),
         Input("plot_radio", "value"),
+        Input("plot", "relayoutData"),
     ],
     [
         State("tabs", "value"),
@@ -359,6 +362,7 @@ def callbacks(
     in_save_clicks: int,
     in_detail_date: str,
     in_plot_radio_value: str,
+    in_plot_relayout_data: dict,
     in_tabs_value: str,
     in_station: str,
     in_variable: str,
@@ -392,6 +396,7 @@ def callbacks(
         in_save_clicks (int): Number of times save-button was clicked
         in_detail_date (str): Date for detail view
         in_plot_radio_value (str): Value of plot radio button
+        in_plot_relayout_data (dict): Plot relayout data
         in_tabs_value (str): Value of tabs
         in_station (str): Station from filters
         in_variable (str): Variable from filters
@@ -565,6 +570,10 @@ def callbacks(
     elif input_id == "plot_radio":
         plot_refresh_required = True
 
+    # Plot
+    elif input_id == "plot":
+        plot_refresh_required = True
+
     # Reload data
     if data_refresh_required:
         DATA_SUMMARY, DATA_GRANULAR = generate_validation_report(
@@ -580,8 +589,17 @@ def callbacks(
     # Refresh plot
     if plot_refresh_required:
         if not DATA_GRANULAR.empty:
+            plot_data = DATA_GRANULAR
+            if "xaxis.range[0]" in in_plot_relayout_data:
+                start = in_plot_relayout_data["xaxis.range[0]"]
+                end = in_plot_relayout_data["xaxis.range[1]"]
+                plot_data = plot_data[
+                    (plot_data["time"] >= start) & (plot_data["time"] <= end)
+                ]
+            every = max(1, len(plot_data) // settings.MAX_POINTS)
+            plot_data = plot_data.iloc[::every]
             out_plot = create_validation_plot(
-                data=DATA_GRANULAR,
+                data=plot_data,
                 variable_name=Variable.objects.get(variable_code=in_variable).name,
                 field=in_plot_radio_value,
             )

@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objs as go
 from dash import Input, Output, State, dcc, html
+from django.conf import settings
 from django_plotly_dash import DjangoDash
 
 from variable.models import Variable
@@ -232,7 +233,7 @@ def update_graph(
             ]
 
     try:
-        every = max(1, len(data) // MAX_POINTS)
+        every = max(1, len(data) // settings.MAX_POINTS)
         resampled = data.iloc[::every]
         agg = get_aggregation_level(resampled["time"], every > 1)
         resampled = add_nans_for_gaps(resampled)
@@ -354,7 +355,16 @@ def update_alert(
     end_time: str,
     figure: go.Figure,
 ):
-    if figure["layout"]["title"]["text"] == "No data to plot":
+    # This is cached, so it's not a big deal to call it multiple times
+    data = get_report_data_from_db(
+        station=station,
+        variable=variable,
+        start_time=start_time,
+        end_time=end_time,
+        report_type=temporality,
+        whole_months=False,
+    )
+    if data.empty:
         alert = dbc.Alert(
             "No data was found with the selected criteria", color="warning"
         )
