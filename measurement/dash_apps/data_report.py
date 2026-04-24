@@ -3,6 +3,7 @@ from logging import getLogger
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from dash import Input, Output, State, dcc, html
+from django.conf import settings
 from django_plotly_dash import DjangoDash
 
 from variable.models import Variable
@@ -16,7 +17,6 @@ from .plots import (
     get_aggregation_level,
 )
 
-MAX_POINTS = 1000
 """Maximum number of points to display in the graph."""
 
 
@@ -188,7 +188,7 @@ def update_graph(
         data = data[(data["time"] >= start) & (data["time"] <= end)]
 
     try:
-        every = max(1, len(data) // MAX_POINTS)
+        every = max(1, len(data) // settings.MAX_POINTS)
         resampled = data.iloc[::every]
         agg = get_aggregation_level(resampled["time"], every > 1)
         resampled = add_nans_for_gaps(resampled)
