@@ -1216,6 +1216,7 @@ class TestMapLayerImportCreateView(TestCase):
                 "file": SimpleUploadedFile(
                     "layer.tif", b"fake-tiff-content", content_type="image/tiff"
                 ),
+                "visibility": "private",
             },
         )
 
