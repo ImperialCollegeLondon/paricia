@@ -65,15 +65,26 @@ class DataImportEditView(CustomEditView):
     """View to edit a data import."""
 
     model = DataImport
-    fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
+    fields = ["visibility", "station", "format", "rawfile", "observations"]
     foreign_key_fields = ["station", "format"]
+    template_name = "importing/dataimport_edit.html"
+
+    def form_valid(self, form):
+        """Reprocess if a new file is uploaded or the reprocess button is selected."""
+        reprocess = self.request.POST.get("action") == "reprocess"
+        new_file = self.object.pk and "rawfile" in form.changed_data
+        if reprocess or new_file:
+            self.object.status = "N"
+            self.object.save()
+
+        return super().form_valid(form)
 
 
 class DataImportCreateView(CustomCreateView):
     """View to create a data import."""
 
     model = DataImport
-    fields = ["visibility", "station", "format", "rawfile", "reprocess", "observations"]
+    fields = ["visibility", "station", "format", "rawfile", "observations"]
     foreign_key_fields = ["station", "format"]
 
 
@@ -107,8 +118,6 @@ class DataImportUploadAPIView(APIView):
         `change_station` permission for.
 
         **File Upload**: Send as multipart/form-data with all parameters in the body.
-
-        **Reprocess**: Set to `true` to reprocess the data after import.
         """,
         request={
             "multipart/form-data": {
@@ -133,11 +142,6 @@ class DataImportUploadAPIView(APIView):
                         "default": "private",
                         "description": "Visibility level",
                     },
-                    "reprocess": {
-                        "type": "boolean",
-                        "default": False,
-                        "description": "Reprocess data after import",
-                    },
                     "observations": {
                         "type": "string",
                         "description": "Additional observations",
@@ -159,7 +163,6 @@ class DataImportUploadAPIView(APIView):
                             "format": 47,
                             "rawfile": "/media/imports/data_2024.csv",
                             "visibility": "private",
-                            "reprocess": True,
                             "date": "2024-12-09T10:30:00Z",
                             "status": "N",
                             "status_display": "Not queued",
@@ -190,7 +193,6 @@ class DataImportUploadAPIView(APIView):
             "station": request.data.get("station"),
             "format": request.data.get("format"),
             "visibility": request.data.get("visibility", "private"),
-            "reprocess": request.data.get("reprocess", False),
             "observations": request.data.get("observations", ""),
             "rawfile": rawfile,
         }
@@ -221,7 +223,6 @@ class DataImportUploadAPIView(APIView):
                 format=validated_data["format"],
                 origin=ImportOrigin.objects.get_or_create(origin="api")[0],
                 visibility=validated_data["visibility"],
-                reprocess=validated_data["reprocess"],
                 observations=validated_data.get("observations", ""),
                 rawfile=validated_data["rawfile"],
                 owner=request.user,
