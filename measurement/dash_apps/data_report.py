@@ -19,45 +19,76 @@ from .plots import (
 
 """Maximum number of points to display in the graph."""
 
+
+def _traces_selection(block_id):
+    """Build the traces selection widgets.
+
+    Args:
+        block_id (str): Prefix used to build the component id.
+
+    Returns:
+        html.Div: Scrollable container holding the traces selection widgets.
+    """
+    return html.Div(
+        children=[
+            html.Label("Temporality:", style={"font-weight": "bold"}),
+            dcc.Dropdown(
+                id=f"{block_id}_temporality_drop",
+                options=[
+                    {"label": "Raw measurement", "value": "measurement"},
+                    {
+                        "label": "Validated measurement",
+                        "value": "validated",
+                    },
+                    {"label": "Hourly", "value": "hourly"},
+                    {"label": "Daily", "value": "daily"},
+                    {"label": "Monthly", "value": "monthly"},
+                ],
+                value="measurement",
+            ),
+            html.Label("Station:", style={"font-weight": "bold"}),
+            dcc.Dropdown(
+                id=f"{block_id}_station_drop",
+                options=[],
+                value=None,
+            ),
+            html.Label("Variable:", style={"font-weight": "bold"}),
+            dcc.Dropdown(
+                id=f"{block_id}_variable_drop",
+                options=[],
+                value=None,
+            ),
+        ],
+    )
+
+
 # Create a Dash app
 app = DjangoDash(
     "DataReport",
     external_stylesheets=[dbc.themes.BOOTSTRAP, "/static/styles/dashstyle.css"],
 )
 
-filters = html.Div(
-    style={"width": "286px"},
+secondary_trace = html.Div(
+    style={"margin-top": "10px", "margin-left": "10px"},
     children=[
-        html.Label("Temporality:", style={"font-weight": "bold"}),
-        dcc.Dropdown(
-            id="temporality_drop",
+        dbc.Checklist(
             options=[
-                {"label": "Raw measurement", "value": "measurement"},
-                {
-                    "label": "Validated measurement",
-                    "value": "validated",
-                },
-                {"label": "Hourly", "value": "hourly"},
-                {"label": "Daily", "value": "daily"},
-                {"label": "Monthly", "value": "monthly"},
+                {"label": "Add secondary trace", "value": 1},
             ],
-            value="measurement",
+            value=[],
+            id="switch-show-secondary",
+            switch=True,
         ),
-        html.Br(),
-        html.Label("Station:", style={"font-weight": "bold"}),
-        dcc.Dropdown(
-            id="station_drop",
-            options=[],
-            value=None,
+        html.Div(
+            _traces_selection("secondary"), id="secondary_traces_div", hidden=True
         ),
-        html.Br(),
-        html.Label("Variable:", style={"font-weight": "bold"}),
-        dcc.Dropdown(
-            id="variable_drop",
-            options=[],
-            value=None,
-        ),
-        html.Br(),
+    ],
+)
+
+filters = html.Div(
+    style={"width": "35%", "height": "100%", "padding": "10px"},
+    children=[
+        _traces_selection("primary"),
         html.Label("Date Range:", style={"font-weight": "bold"}),
         dcc.DatePickerRange(
             id="date_range_picker",
@@ -65,7 +96,7 @@ filters = html.Div(
             start_date=None,
             end_date=None,
         ),
-        html.Br(),
+        secondary_trace,
         html.Div(
             id="csv_div",
             style={"margin-top": "30px"},
@@ -75,6 +106,7 @@ filters = html.Div(
 
 # Create layout
 app.layout = html.Div(
+    style={"padding": "10px"},
     children=[
         html.Div(id="stations_list", hidden=True),
         dcc.Download(id="download_csv"),
@@ -91,7 +123,7 @@ app.layout = html.Div(
             children=[
                 filters,
                 html.Div(
-                    style={"width": "65%", "height": "100%"},
+                    style={"width": "100%", "height": "100%"},
                     children=[
                         dcc.Graph(
                             id="data_report_graph",
@@ -101,7 +133,7 @@ app.layout = html.Div(
                 ),
             ],
         ),
-    ]
+    ],
 )
 
 
@@ -112,9 +144,9 @@ app.layout = html.Div(
         Input("display_button", "n_clicks"),
     ],
     [
-        State("temporality_drop", "value"),
-        State("station_drop", "value"),
-        State("variable_drop", "value"),
+        State("primary_temporality_drop", "value"),
+        State("primary_station_drop", "value"),
+        State("primary_variable_drop", "value"),
         State("date_range_picker", "start_date"),
         State("date_range_picker", "end_date"),
         State("data_report_graph", "figure"),
@@ -186,9 +218,9 @@ def update_graph(
     ],
     Input("csv_button", "n_clicks"),
     [
-        State("temporality_drop", "value"),
-        State("station_drop", "value"),
-        State("variable_drop", "value"),
+        State("primary_temporality_drop", "value"),
+        State("primary_station_drop", "value"),
+        State("primary_variable_drop", "value"),
         State("date_range_picker", "start_date"),
         State("date_range_picker", "end_date"),
     ],
@@ -238,9 +270,9 @@ def download_csv_report(
         Output("csv_div", "children"),
     ],
     [
-        Input("temporality_drop", "value"),
-        Input("station_drop", "value"),
-        Input("variable_drop", "value"),
+        Input("primary_temporality_drop", "value"),
+        Input("primary_station_drop", "value"),
+        Input("primary_variable_drop", "value"),
         Input("date_range_picker", "start_date"),
         Input("date_range_picker", "end_date"),
     ],
@@ -260,9 +292,13 @@ def update_alert(
         )
         return [alert], []
     else:
-        download = html.Button("Download CSV", id="csv_button")
-        display = html.Button(
+        download = dbc.Button(
+            "Download CSV", color="primary", className="me-1", id="csv_button"
+        )
+        display = dbc.Button(
             "Display data",
+            color="success",
+            className="me-1",
             id="display_button",
             style={"margin-left": "10px"},
             n_clicks=0,
@@ -271,25 +307,46 @@ def update_alert(
 
 
 @app.callback(
-    [Output("station_drop", "options"), Output("station_drop", "value")],
+    Output("secondary_traces_div", "hidden"),
+    Input("switch-show-secondary", "value"),
+)
+def toggle_secondary_traces_div(show_secondary: list[int]) -> bool:
+    """Show or hide the secondary traces selection div based on the switch value."""
+    return not bool(show_secondary)
+
+
+@app.callback(
+    [
+        Output("primary_station_drop", "options"),
+        Output("primary_station_drop", "value"),
+        Output("secondary_station_drop", "options"),
+        Output("secondary_station_drop", "value"),
+    ],
     Input("stations_list", "children"),
 )
 def populate_stations_dropdown(
     station_codes: list[str],
-) -> tuple[list[dict[str, str]], str | None]:
+) -> tuple[list[dict[str, str]], str | None, list[dict[str, str]], str | None]:
     """Populate the station dropdown based on the list of station codes."""
-    return get_station_options(station_codes)
+    options = get_station_options(station_codes)
+    return *options, *options
 
 
 @app.callback(
-    [Output("variable_drop", "options"), Output("variable_drop", "value")],
-    Input("station_drop", "value"),
+    [
+        Output("primary_variable_drop", "options"),
+        Output("primary_variable_drop", "value"),
+        Output("secondary_variable_drop", "options"),
+        Output("secondary_variable_drop", "value"),
+    ],
+    Input("primary_station_drop", "value"),
 )
 def populate_variable_dropdown(
     chosen_station: str,
-) -> tuple[list[dict[str, str]], str | None]:
+) -> tuple[list[dict[str, str]], str | None, list[dict[str, str]], str | None]:
     """Populate the variable dropdown based on the chosen station."""
-    return get_variable_options(chosen_station)
+    options = get_variable_options(chosen_station)
+    return *options, *options
 
 
 @app.callback(
@@ -298,8 +355,8 @@ def populate_variable_dropdown(
         Output("date_range_picker", "end_date"),
     ],
     [
-        Input("station_drop", "value"),
-        Input("variable_drop", "value"),
+        Input("primary_station_drop", "value"),
+        Input("primary_variable_drop", "value"),
     ],
 )
 def set_date_range(
