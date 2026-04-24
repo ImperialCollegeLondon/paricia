@@ -464,14 +464,14 @@ class MapLayerEditView(CustomEditView):
     """View to edit a map layer imports."""
 
     model = MapLayerImport
-    fields = ["name", "description", "file"]
+    fields = ["name", "description", "file", "visibility"]
 
 
 class MapLayerCreateView(CustomCreateView):
     """View to create a map layer import."""
 
     model = MapLayerImport
-    fields = ["name", "description", "file"]
+    fields = ["name", "description", "file", "visibility"]
 
 
 class MapLayerDeleteView(CustomDeleteView):
