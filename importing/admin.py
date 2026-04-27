@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from management.admin import PermissionsBaseAdmin
 
-from .models import DataImport, ImportOrigin, ThingsboardImportMap
+from .models import DataImport, ImportOrigin, MapLayerImport, ThingsboardImportMap
 
 
 @admin.register(DataImport)
@@ -46,3 +46,8 @@ class ThingsboardImportMapAdmin(admin.ModelAdmin):
 @admin.register(ImportOrigin)
 class ImportOriginAdmin(admin.ModelAdmin):
     """Admin class for the ImportOrigin model."""
+
+
+@admin.register(MapLayerImport)
+class MapLayerImportAdmin(admin.ModelAdmin):
+    """Admin class for the MapLayerImport model."""
