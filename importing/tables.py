@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import DataImport, ThingsboardImportMap
+from .models import DataImport, MapLayerImport, ThingsboardImportMap
 
 
 class DataImportTable(tables.Table):
@@ -32,4 +32,16 @@ class ThingsboardImportMapTable(tables.Table):
             "variable",
             "tb_device_name",
             "station",
+        )
+
+
+class MapLayerImportTable(tables.Table):
+    pk = tables.Column(linkify=True)
+
+    class Meta:
+        model = MapLayerImport
+        fields = (
+            "pk",
+            "name",
+            "description",
         )

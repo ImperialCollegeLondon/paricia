@@ -66,7 +66,6 @@ class DataImport(PermissionsBase):
         observations (TextField): Notes or observations about the data.
         status (TextField): Status of the import.
         log (TextField): Log of the data ingestion, indicating any errors.
-        reprocess (BooleanField): If checked, the data will be reprocessed.
     """
 
     STATUS = (("N", "Not queued"), ("Q", "Queued"), ("C", "Completed"), ("F", "Failed"))
@@ -121,11 +120,6 @@ class DataImport(PermissionsBase):
         help_text="Log of the data ingestion, indicating any errors",
         default="",
     )
-    reprocess = models.BooleanField(
-        "Reprocess data",
-        help_text="If checked, the data will be reprocessed",
-        default=False,
-    )
 
     def get_absolute_url(self):
         return reverse("importing:dataimport_detail", kwargs={"pk": self.pk})
@@ -138,14 +132,6 @@ class DataImport(PermissionsBase):
         tz = self.station.timezone
         if not tz:
             raise ValidationError("Station must have a timezone set.")
-
-        # If the file has changed, we reprocess the data
-        if self.pk and self.rawfile != self.__class__.objects.get(pk=self.pk).rawfile:
-            self.reprocess = True
-
-        if self.reprocess:
-            self.status = "N"
-            self.reprocess = False
 
 
 class ThingsboardImportMap(PermissionsBase):
@@ -217,3 +203,30 @@ class ThingsboardImportMap(PermissionsBase):
 
     def get_absolute_url(self):
         return reverse("importing:thingsboardimportmap_detail", kwargs={"pk": self.pk})
+
+
+class MapLayerImport(PermissionsBase):
+    name = models.CharField(
+        "Name",
+        max_length=255,
+        blank=False,
+        null=False,
+        help_text="Name of the layer to be imported.",
+    )
+    description = models.TextField(
+        "Description",
+        blank=True,
+        null=True,
+        help_text="Description of the layer to be imported.",
+    )
+    file = models.FileField(
+        "Layer file",
+        blank=False,
+        help_text="Tiff file with the layer to be imported.",
+    )
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("importing:maplayerimport_detail", kwargs={"pk": self.pk})

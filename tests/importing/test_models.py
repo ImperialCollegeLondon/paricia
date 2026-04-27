@@ -181,3 +181,11 @@ class TestImportOrigin(TestCase):
 
         result = ImportOrigin.get_default()
         assert ImportOrigin.objects.get(pk=result).origin == "file"
+
+
+class TestMapLayerImport(TestCase):
+    def test_str(self):
+        from importing.models import MapLayerImport
+
+        map_layer = MapLayerImport(name="Test Layer", description="A test layer.")
+        self.assertEqual(str(map_layer), "Test Layer")

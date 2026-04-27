@@ -4,7 +4,7 @@ from formatting.models import Format
 from management.filters import FilterVisible
 from station.models import Station
 
-from .models import DataImport, ThingsboardImportMap
+from .models import DataImport, MapLayerImport, ThingsboardImportMap
 
 
 class DataImportFilter(FilterSet):
@@ -24,3 +24,9 @@ class ThingsboardImportMapFilter(FilterSet):
     class Meta:
         model = ThingsboardImportMap
         fields = ["station", "variable", "tb_device_name"]
+
+
+class MapLayerImportFilter(FilterSet):
+    class Meta:
+        model = MapLayerImport
+        fields = ["name"]

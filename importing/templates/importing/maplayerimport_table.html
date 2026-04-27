@@ -6,9 +6,6 @@
   <h2>{{ title }}</h2>
   <a href="{% url list_url %}" class="btn btn-success">Refresh</a>
   <a href="{% url create_url %}" class="btn btn-warning">New</a>
-  <a href="{% url 'importing:thingsboard_data_retrieval' %}"
-     class="btn btn-primary">Retrieve From ThingsBoard</a>
-  <a href="{% url 'importing:maplayerimport_list' %}" class="btn btn-info">Import Map Layer</a>
   <p>&nbsp;</p>
   {% if filter %}
     <form action="" method="get" class="form form-inline">
