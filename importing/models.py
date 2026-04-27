@@ -148,7 +148,7 @@ class DataImport(PermissionsBase):
             self.reprocess = False
 
 
-class ThingsboardImportMap(models.Model):
+class ThingsboardImportMap(PermissionsBase):
     """Model to store Thingsboard device mappings to station variables.
 
     This model maps Thingsboard devices to specific variables at stations, allowing
