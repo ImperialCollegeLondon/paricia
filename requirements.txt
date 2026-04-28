@@ -119,12 +119,15 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   werkzeug
+narwhals==2.20.0
+    # via plotly
 nest-asyncio==1.6.0
     # via dash
 numpy==2.4.2
     # via
     #   Paricia (pyproject.toml)
     #   pandas
+    #   tifffile
 openpyxl==2.4.11
     # via django-excel-response
 packaging==24.2
@@ -170,13 +173,11 @@ rpds-py==0.30.0
     #   jsonschema
     #   referencing
 six==1.17.0
-    # via
-    #   python-dateutil
-    #   retrying
+    # via python-dateutil
 sqlparse==0.5.5
     # via django
-tenacity==9.0.0
-    # via plotly
+tifffile==2026.4.11
+    # via Paricia (pyproject.toml)
 typing-extensions==4.15.0
     # via
     #   dash
