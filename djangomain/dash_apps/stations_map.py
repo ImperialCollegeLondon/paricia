@@ -715,7 +715,6 @@ def update_spatial_layers(
                 "id": selected_layer["id"],
                 "name": selected_layer["name"],
                 "source_kind": "geotiff",
-                "file_path": selected_layer["file_path"],
                 "visible": True,
                 "order": next_order,
             }
