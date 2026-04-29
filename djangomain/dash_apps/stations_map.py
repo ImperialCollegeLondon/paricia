@@ -7,6 +7,7 @@ MapLayerImport entries and rendered below station points.
 
 import base64
 import io
+import logging
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -40,6 +41,8 @@ _MAP_STYLE_OPTIONS = [
     {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
     {"label": "OpenStreetMap", "value": "open-street-map"},
 ]
+
+logger = logging.getLogger(__name__)
 
 
 app = DjangoDash(
@@ -310,7 +313,8 @@ def _available_map_layers_by_id(user):
             "importing.view_maplayerimport",
             klass=MapLayerImport,
         )
-    except Exception:
+    except Exception as e:
+        logger.error("Error occurred while fetching available map layers: %s", e)
         return {}
 
     layer_index = {}
