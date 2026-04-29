@@ -210,18 +210,9 @@ _map_col = dbc.Col(
             "data": [],
             "layout": {
                 "mapbox": {
-                    "style": "white-bg",
+                    "style": "open-street-map",
                     "zoom": 3.6,
                     "center": {"lat": -9.182731, "lon": -60.658738},
-                    "layers": [
-                        {
-                            "type": "raster",
-                            "sourcetype": "raster",
-                            "source": [_OSM_TILE_URL],
-                            "opacity": 1,
-                            "below": "traces",
-                        }
-                    ],
                 },
                 "margin": {"r": 0, "t": 0, "l": 0, "b": 0},
                 "uirevision": True,
