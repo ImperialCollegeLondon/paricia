@@ -50,6 +50,7 @@ _DEFAULT_SPATIAL_LAYERS = [
     }
 ]
 
+
 app = DjangoDash(
     "StationsMap",
     external_stylesheets=[dbc.themes.BOOTSTRAP],
@@ -366,10 +367,6 @@ def _normalise_spatial_layers(layers_raw):
         if source_kind != "geotiff":
             continue
 
-        file_path = str(raw.get("file_path", "")).strip()
-        if not file_path:
-            continue
-
         order = raw.get("order", index + 1)
         if not isinstance(order, int | float):
             order = index + 1
@@ -379,7 +376,6 @@ def _normalise_spatial_layers(layers_raw):
                 "id": layer_id,
                 "name": str(raw.get("name", "")).strip() or f"Layer {index + 1}",
                 "source_kind": "geotiff",
-                "file_path": file_path,
                 "visible": bool(raw.get("visible", True)),
                 "order": int(order),
             }
@@ -490,23 +486,33 @@ def _load_geotiff_payload(file_path, mtime):
     """Load GeoTIFF and return mapbox image source plus coordinates."""
     del mtime
 
+    tif = None
     try:
-        with tifffile.TiffFile(file_path) as tif:
-            if not tif.pages:
-                raise ValueError("TIFF file has no pages.")
+        tif = tifffile.TiffFile(file_path)
+        if not tif.pages:
+            raise ValueError("TIFF file has no pages.")
 
-            first_page = tif.pages[0]
-            coordinates = _extract_geotiff_coordinates_from_tifffile_page(first_page)
-            image_data = _array_to_png_data_uri(first_page.asarray())
+        page = tif.pages[0]
+        coordinates = _extract_geotiff_coordinates_from_tifffile_page(page)
+        image_data = _array_to_png_data_uri(page.asarray())
     except Exception as exc:
         raise ValueError("Layer file is not a valid georeferenced GeoTIFF.") from exc
+    finally:
+        if tif is not None:
+            tif.close()
 
     return {"image": image_data, "coordinates": coordinates}
 
 
-def _build_mapbox_layers(layers_raw):
-    """Build mapbox layout layers for currently visible spatial layers."""
+def _build_mapbox_layers(layers_raw, user):
+    """Build mapbox layout layers for currently visible spatial layers.
+
+    GeoTIFF sources are resolved server-side from currently authorised
+    MapLayerImport objects and never from client store values.
+    """
     map_layers = []
+    available_layers = _available_map_layers_by_id(user)
+
     for layer in _normalise_spatial_layers(layers_raw):
         if layer["id"] == _OSM_LAYER_ID:
             map_layers.append(
@@ -523,9 +529,13 @@ def _build_mapbox_layers(layers_raw):
         if not layer["visible"]:
             continue
 
+        resolved_layer = available_layers.get(layer["id"])
+        if not resolved_layer:
+            continue
+
         try:
-            mtime = os.path.getmtime(layer["file_path"])
-            payload = _load_geotiff_payload(layer["file_path"], mtime)
+            mtime = os.path.getmtime(resolved_layer["file_path"])
+            payload = _load_geotiff_payload(resolved_layer["file_path"], mtime)
         except (OSError, ValueError):
             continue
 
@@ -759,13 +769,17 @@ _COLOR_MAP = {
         Input("spatial-layers-store", "data"),
     ],
 )
-def update_map(owned_selected, public_selected, spatial_layers_raw):
+def update_map(owned_selected, public_selected, spatial_layers_raw, **kwargs):
     """Build a scatter-mapbox figure for currently selected stations and layers."""
     rows = _station_rows_for_codes(owned_selected, "My Stations")
     rows.extend(_station_rows_for_codes(public_selected, "Public"))
+    user = _get_request_user(kwargs)
 
     patched = Patch()
-    patched["layout"]["mapbox"]["layers"] = _build_mapbox_layers(spatial_layers_raw)
+    patched["layout"]["mapbox"]["layers"] = _build_mapbox_layers(
+        spatial_layers_raw,
+        user,
+    )
 
     df = pd.DataFrame(rows, columns=[*_STATION_KEYS, "type"])
     traces = []
