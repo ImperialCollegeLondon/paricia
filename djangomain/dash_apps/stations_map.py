@@ -452,34 +452,65 @@ def _extract_geotiff_coordinates_from_tifffile_page(page):
     )
 
 
+def _scale_to_uint8(values, finite_mask):
+    if not finite_mask.any():
+        return np.zeros(values.shape, dtype=np.uint8)
+
+    finite_values = values[finite_mask]
+    minimum = float(finite_values.min())
+    maximum = float(finite_values.max())
+    if maximum <= minimum:
+        return np.zeros(values.shape, dtype=np.uint8)
+
+    norm = (np.nan_to_num(values, nan=minimum) - minimum) / (maximum - minimum)
+    return np.clip(norm * 255, 0, 255).astype(np.uint8)
+
+
+def _apply_viridis_like(norm):
+    """Map normalised [0,1] values to RGB."""
+    stops = np.array(
+        [
+            [68, 1, 84],
+            [59, 82, 139],
+            [33, 145, 140],
+            [94, 201, 98],
+            [253, 231, 37],
+        ],
+        dtype=np.float32,
+    )
+    x = np.clip(norm, 0.0, 1.0) * (len(stops) - 1)
+    i0 = np.floor(x).astype(np.int32)
+    i1 = np.clip(i0 + 1, 0, len(stops) - 1)
+    w = (x - i0)[..., None]
+    rgb = stops[i0] * (1.0 - w) + stops[i1] * w
+    return np.clip(rgb, 0, 255).astype(np.uint8)
+
+
 def _array_to_png_data_uri(raster):
-    """Convert a numeric raster array to a grayscale RGBA PNG data URI."""
+    """Convert a numeric raster array to a color RGBA PNG data URI."""
     array = np.asarray(raster, dtype=float)
-    if array.ndim == 3:
-        array = array[..., 0]
-    if array.ndim != 2:
+
+    # Handle channel-first arrays: (C, H, W) -> (H, W, C)
+    if array.ndim == 3 and array.shape[0] in (3, 4) and array.shape[-1] not in (3, 4):
+        array = np.moveaxis(array, 0, -1)
+
+    if array.ndim == 3 and array.shape[-1] >= 3:
+        # True-color TIFF: keep RGB information
+        rgb_source = array[..., :3]
+        finite_mask = np.isfinite(rgb_source).all(axis=-1)
+        rgb = np.zeros(rgb_source.shape, dtype=np.uint8)
+        for ch in range(3):
+            rgb[..., ch] = _scale_to_uint8(rgb_source[..., ch], finite_mask)
+    elif array.ndim == 2:
+        # Single-band TIFF: pseudocolor it
+        finite_mask = np.isfinite(array)
+        gray = _scale_to_uint8(array, finite_mask).astype(np.float32) / 255.0
+        rgb = _apply_viridis_like(gray)
+    else:
         raise ValueError("GeoTIFF image could not be converted to a displayable PNG.")
 
-    finite_mask = np.isfinite(array)
-    if finite_mask.any():
-        finite_values = array[finite_mask]
-        minimum = float(finite_values.min())
-        maximum = float(finite_values.max())
-        if maximum > minimum:
-            normalised = (np.nan_to_num(array, nan=minimum) - minimum) / (
-                maximum - minimum
-            )
-            scaled = np.clip(normalised * 255, 0, 255).astype(np.uint8)
-        else:
-            scaled = np.zeros(array.shape, dtype=np.uint8)
-    else:
-        scaled = np.zeros(array.shape, dtype=np.uint8)
-
-    rgba = np.zeros((*array.shape, 4), dtype=np.uint8)
-    rgba[..., 0] = scaled
-    rgba[..., 1] = scaled
-    rgba[..., 2] = scaled
-    rgba[..., 3] = np.where(finite_mask, 255, 0).astype(np.uint8)
+    alpha = np.where(finite_mask, 255, 0).astype(np.uint8)
+    rgba = np.dstack((rgb, alpha))
 
     with io.BytesIO() as output:
         Image.fromarray(rgba, mode="RGBA").save(output, format="PNG")
