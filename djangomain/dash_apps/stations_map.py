@@ -26,10 +26,6 @@ from station.models import Station
 
 SCROLL_HEIGHT = "280px"
 
-_OSM_LAYER_ID = "osm"
-_OSM_LAYER_NAME = "OSM"
-_OSM_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-
 _ALLOWED_TIFF_EXTENSIONS = {".tif", ".tiff"}
 _STATION_KEYS = (
     "station_id",
@@ -38,16 +34,11 @@ _STATION_KEYS = (
     "station_latitude",
     "station_longitude",
 )
-
-_DEFAULT_SPATIAL_LAYERS = [
-    {
-        "id": _OSM_LAYER_ID,
-        "name": _OSM_LAYER_NAME,
-        "source_kind": "tiles",
-        "url": _OSM_TILE_URL,
-        "visible": True,
-        "order": 0,
-    }
+_DEFAULT_MAP_STYLE = "carto-positron"
+_MAP_STYLE_OPTIONS = [
+    {"label": "Carto Positron", "value": "carto-positron"},
+    {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
+    {"label": "OpenStreetMap", "value": "open-street-map"},
 ]
 
 
@@ -137,13 +128,8 @@ def _spatial_data_block():
                 [
                     dbc.Select(
                         id="spatial-layer-select",
-                        options=[
-                            {
-                                "label": f"{_OSM_LAYER_NAME} (default basemap)",
-                                "value": _OSM_LAYER_ID,
-                            }
-                        ],
-                        value=_OSM_LAYER_ID,
+                        options=[],
+                        value=None,
                         size="sm",
                         className="mb-2",
                     ),
@@ -186,8 +172,28 @@ def _spatial_data_block():
     )
 
 
+def _map_style_block():
+    """Build controls for selecting the map base style."""
+    return dbc.Card(
+        [
+            dbc.CardHeader("Map Style", className="py-2"),
+            dbc.CardBody(
+                dbc.Select(
+                    id="map-style-select",
+                    options=_MAP_STYLE_OPTIONS,
+                    value=_DEFAULT_MAP_STYLE,
+                    size="sm",
+                ),
+                className="py-2",
+            ),
+        ],
+        className="mb-3 shadow-sm",
+    )
+
+
 _sidebar = dbc.Col(
     [
+        _map_style_block(),
         html.H6("Stations", className="fw-bold mb-3 mt-3 ps-1"),
         html.Div(_station_block("owned", "My Stations"), id="owned-block"),
         _station_block("public", "Public Stations"),
@@ -211,7 +217,7 @@ _map_col = dbc.Col(
             "data": [],
             "layout": {
                 "mapbox": {
-                    "style": "open-street-map",
+                    "style": _DEFAULT_MAP_STYLE,
                     "zoom": 3.6,
                     "center": {"lat": -9.182731, "lon": -60.658738},
                 },
@@ -239,7 +245,7 @@ app.layout = dbc.Container(
         dcc.Store(
             id="spatial-layers-store",
             storage_type="memory",
-            data=[dict(layer) for layer in _DEFAULT_SPATIAL_LAYERS],
+            data=[],
         ),
     ],
 )
@@ -349,10 +355,9 @@ def _station_rows_for_codes(codes, station_group):
 
 
 def _normalise_spatial_layers(layers_raw):
-    """Normalise store data and enforce a fixed OSM base layer."""
+    """Normalise GeoTIFF layer data from spatial layer store."""
     layers = []
-    seen_ids = {_OSM_LAYER_ID}
-    layers.append(dict(_DEFAULT_SPATIAL_LAYERS[0]))
+    seen_ids = set()
 
     for index, raw in enumerate(layers_raw if isinstance(layers_raw, list) else []):
         if not isinstance(raw, dict):
@@ -381,10 +386,7 @@ def _normalise_spatial_layers(layers_raw):
             }
         )
 
-    return sorted(
-        layers,
-        key=lambda layer: (0 if layer["id"] == _OSM_LAYER_ID else 1, layer["order"]),
-    )
+    return sorted(layers, key=lambda layer: layer["order"])
 
 
 def _is_valid_lon_lat(lon, lat):
@@ -514,18 +516,6 @@ def _build_mapbox_layers(layers_raw, user):
     available_layers = _available_map_layers_by_id(user)
 
     for layer in _normalise_spatial_layers(layers_raw):
-        if layer["id"] == _OSM_LAYER_ID:
-            map_layers.append(
-                {
-                    "type": "raster",
-                    "sourcetype": "raster",
-                    "source": [layer["url"]],
-                    "opacity": 1,
-                    "below": "traces",
-                }
-            )
-            continue
-
         if not layer["visible"]:
             continue
 
@@ -606,18 +596,17 @@ def populate_spatial_layer_dropdown(
     layer_index = _available_map_layers_by_id(user)
 
     options = [
-        {
-            "label": f"{_OSM_LAYER_NAME} (default basemap)",
-            "value": _OSM_LAYER_ID,
-        }
-    ]
-    options.extend(
         {"label": layer["name"], "value": layer_id}
         for layer_id, layer in layer_index.items()
-    )
+    ]
 
     valid_values = {option["value"] for option in options}
-    value = selected_value if selected_value in valid_values else _OSM_LAYER_ID
+    if selected_value in valid_values:
+        value = selected_value
+    elif options:
+        value = options[0]["value"]
+    else:
+        value = None
     return options, value
 
 
@@ -672,7 +661,7 @@ def update_spatial_layers(
     """Apply add/hide/remove actions to spatial layer state."""
     layers = _normalise_spatial_layers(layers_raw)
     layer_by_id = {layer["id"]: dict(layer) for layer in layers}
-    selected_id = selected_layer_id or _OSM_LAYER_ID
+    selected_id = selected_layer_id
 
     triggered = (
         callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
@@ -683,8 +672,8 @@ def update_spatial_layers(
     available_layers = _available_map_layers_by_id(user)
 
     if triggered_component == "spatial-layer-add":
-        if selected_id == _OSM_LAYER_ID:
-            return layers, "OSM is already active."
+        if not selected_id:
+            return layers, "Select a layer to add."
 
         selected_layer = available_layers.get(selected_id)
         if not selected_layer:
@@ -710,7 +699,7 @@ def update_spatial_layers(
                 f'Layer "{layer_by_id[selected_id]["name"]}" is now visible.',
             )
 
-        next_order = max(layer["order"] for layer in layers) + 1
+        next_order = max((layer["order"] for layer in layers), default=0) + 1
         layers.append(
             {
                 "id": selected_layer["id"],
@@ -725,8 +714,8 @@ def update_spatial_layers(
         ), f'Added layer "{selected_layer["name"]}".'
 
     if triggered_component == "spatial-layer-hide":
-        if selected_id == _OSM_LAYER_ID:
-            return layers, "OSM cannot be hidden."
+        if not selected_id:
+            return layers, "Select an active layer first."
 
         target = layer_by_id.get(selected_id)
         if not target:
@@ -738,8 +727,8 @@ def update_spatial_layers(
         return updated_layers, f'Layer "{target["name"]}" is now {visibility}.'
 
     if triggered_component == "spatial-layer-remove":
-        if selected_id == _OSM_LAYER_ID:
-            return layers, "OSM cannot be removed."
+        if not selected_id:
+            return layers, "Select an active layer first."
 
         target = layer_by_id.get(selected_id)
         if not target:
@@ -767,13 +756,21 @@ _COLOR_MAP = {
         Input({"type": "checklist", "index": "owned"}, "value"),
         Input({"type": "checklist", "index": "public"}, "value"),
         Input("spatial-layers-store", "data"),
+        Input("map-style-select", "value"),
     ],
 )
-def update_map(owned_selected, public_selected, spatial_layers_raw, **kwargs):
+def update_map(
+    owned_selected, public_selected, spatial_layers_raw, map_style_value, **kwargs
+):
     """Build a scatter-mapbox figure for currently selected stations and layers."""
     rows = _station_rows_for_codes(owned_selected, "My Stations")
     rows.extend(_station_rows_for_codes(public_selected, "Public"))
     user = _get_request_user(kwargs)
+
+    valid_styles = {option["value"] for option in _MAP_STYLE_OPTIONS}
+    map_style = (
+        map_style_value if map_style_value in valid_styles else _DEFAULT_MAP_STYLE
+    )
 
     patched = Patch()
     patched["layout"]["mapbox"]["layers"] = _build_mapbox_layers(
@@ -798,4 +795,6 @@ def update_map(owned_selected, public_selected, spatial_layers_raw, **kwargs):
         )
 
     patched["data"] = traces
+    patched["layout"]["mapbox"]["style"] = map_style
+
     return patched
