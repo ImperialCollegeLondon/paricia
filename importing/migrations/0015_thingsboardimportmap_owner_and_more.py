@@ -6,6 +6,12 @@ from django.db import migrations, models
 
 
 def set_default_owner(apps, schema_editor):
+    """Set the ThingsboardImportMap owner to the station owner, if not already set.
+
+    Args:
+        apps: The app registry.
+        schema_editor: The database schema editor.
+    """
     ThingsboardImportMap = apps.get_model('importing', 'ThingsboardImportMap')
 
     for tb_map in ThingsboardImportMap.objects.filter(owner__isnull=True).iterator():
@@ -14,6 +20,12 @@ def set_default_owner(apps, schema_editor):
 
 
 def reverse_set_default_owner(apps, schema_editor):
+    """Reverse the set_default_owner operation.
+
+    Args:
+        apps: The app registry.
+        schema_editor: The database schema editor.
+    """
     pass
 
 
