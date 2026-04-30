@@ -134,7 +134,7 @@ class DataImport(PermissionsBase):
             raise ValidationError("Station must have a timezone set.")
 
 
-class ThingsboardImportMap(models.Model):
+class ThingsboardImportMap(PermissionsBase):
     """Model to store Thingsboard device mappings to station variables.
 
     This model maps Thingsboard devices to specific variables at stations, allowing
