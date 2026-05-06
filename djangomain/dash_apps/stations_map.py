@@ -5,29 +5,24 @@ plus a third block for spatial layer controls. GeoTIFF layers are loaded from
 MapLayerImport entries and rendered below station points.
 """
 
-import base64
-import io
-import logging
 import os
-from functools import lru_cache
-from pathlib import Path
 
 import dash_bootstrap_components as dbc
-import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
-import tifffile
 from dash import MATCH, Input, Output, Patch, State, dcc, html, no_update
 from django_plotly_dash import DjangoDash
-from guardian.shortcuts import get_objects_for_user
-from PIL import Image
 
-from importing.models import MapLayerImport
+from djangomain.dash_apps.geotiff_layers import (
+    available_map_layers_by_id,
+    build_mapbox_layers,
+    load_geotiff_payload,
+    normalise_spatial_layers,
+)
 from station.models import Station
 
 SCROLL_HEIGHT = "280px"
 
-_ALLOWED_TIFF_EXTENSIONS = {".tif", ".tiff"}
 _STATION_KEYS = (
     "station_id",
     "station_code",
@@ -41,9 +36,6 @@ _MAP_STYLE_OPTIONS = [
     {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
     {"label": "OpenStreetMap", "value": "open-street-map"},
 ]
-
-logger = logging.getLogger(__name__)
-
 
 app = DjangoDash(
     "StationsMap",
@@ -109,7 +101,15 @@ def _all_none_buttons(block_id):
 
 
 def _station_block(block_id, title):
-    """Build a station-selection card containing controls and checklist."""
+    """Build a station-selection card containing controls and checklist.
+
+    Args:
+        block_id (str): Prefix used for checklist and button ids.
+        title (str): Card title text.
+
+    Returns:
+        dbc.Card: Card containing checklist controls for a station group.
+    """
     return dbc.Card(
         [
             dbc.CardHeader(title, className="py-2"),
@@ -123,7 +123,11 @@ def _station_block(block_id, title):
 
 
 def _spatial_data_block():
-    """Build controls for selecting and managing spatial layers."""
+    """Build controls for selecting and managing spatial layers.
+
+    Returns:
+        dbc.Card: Card containing spatial layer selection and action buttons.
+    """
     return dbc.Card(
         [
             dbc.CardHeader("Spatial Data", className="py-2"),
@@ -176,7 +180,11 @@ def _spatial_data_block():
 
 
 def _map_style_block():
-    """Build controls for selecting the map base style."""
+    """Build controls for selecting the map base style.
+
+    Returns:
+        dbc.Card: Card containing the base map style selector.
+    """
     return dbc.Card(
         [
             dbc.CardHeader("Map Style", className="py-2"),
@@ -241,7 +249,7 @@ _map_col = dbc.Col(
 
 app.layout = dbc.Container(
     fluid=True,
-    style={"height": "100vh", "padding": "0"},
+    style={"height": "100vh", "padding": "0.5"},
     children=[
         dbc.Row([_sidebar, _map_col], className="g-0"),
         html.Div(id="stations_list", style={"display": "none"}),
@@ -258,14 +266,29 @@ app.layout = dbc.Container(
 
 
 def _ensure_list(value):
-    """Normalise a callback input value to a plain Python list."""
+    """Normalise a callback input value to a plain Python list.
+
+    Args:
+        value: Callback value that may be None, a scalar or a list.
+
+    Returns:
+        list: Input value converted to a list, or an empty list for falsey
+            values.
+    """
     if not value:
         return []
     return value if isinstance(value, list) else [value]
 
 
 def _build_options(codes):
-    """Build checklist options from station code values."""
+    """Build checklist options from station code values.
+
+    Args:
+        codes: Iterable of station code values.
+
+    Returns:
+        list[dict[str, str]]: Checklist options with label and value keys.
+    """
     sorted_codes = sorted(_ensure_list(codes))
     station_names = {
         station.station_code: station.station_name
@@ -289,55 +312,29 @@ def _build_options(codes):
 
 
 def _get_request_user(kwargs):
-    """Get callback request user from django_plotly_dash callback kwargs."""
+    """Get callback request user from django_plotly_dash callback kwargs.
+
+    Args:
+        kwargs (dict): Callback keyword arguments from django_plotly_dash.
+
+    Returns:
+        object | None: Authenticated user object when present, else None.
+    """
     request = kwargs.get("request")
     return getattr(request, "user", None)
 
 
-def _layer_file_path(layer):
-    """Return safe file-system path for a map layer upload."""
-    try:
-        return str(layer.file.path)
-    except (ValueError, OSError):
-        return None
-
-
-def _available_map_layers_by_id(user):
-    """Return user-viewable GeoTIFF layers keyed by dash dropdown id."""
-    if user is None:
-        return {}
-
-    try:
-        queryset = get_objects_for_user(
-            user,
-            "importing.view_maplayerimport",
-            klass=MapLayerImport,
-        )
-    except Exception as e:
-        logger.error("Error occurred while fetching available map layers: %s", e)
-        return {}
-
-    layer_index = {}
-    for layer in queryset.order_by("name", "pk"):
-        file_path = _layer_file_path(layer)
-        if (
-            not file_path
-            or Path(file_path).suffix.lower() not in _ALLOWED_TIFF_EXTENSIONS
-        ):
-            continue
-
-        layer_id = f"maplayer-{layer.pk}"
-        layer_index[layer_id] = {
-            "id": layer_id,
-            "name": str(layer.name),
-            "file_path": file_path,
-        }
-
-    return layer_index
-
-
 def _station_rows_for_codes(codes, station_group):
-    """Build map rows for selected station codes in display order."""
+    """Build map rows for selected station codes in display order.
+
+    Args:
+        codes: Selected station codes in desired output order.
+        station_group (str): Label used to tag rows for trace grouping.
+
+    Returns:
+        list[dict[str, object]]: Station row dictionaries ready for map
+            trace construction.
+    """
     selected_codes = _ensure_list(codes)
     if not selected_codes:
         return []
@@ -358,226 +355,6 @@ def _station_rows_for_codes(codes, station_group):
     return rows
 
 
-def _normalise_spatial_layers(layers_raw):
-    """Normalise GeoTIFF layer data from spatial layer store."""
-    layers = []
-    seen_ids = set()
-
-    for index, raw in enumerate(layers_raw if isinstance(layers_raw, list) else []):
-        if not isinstance(raw, dict):
-            continue
-
-        layer_id = str(raw.get("id", "")).strip()
-        if not layer_id or layer_id in seen_ids:
-            continue
-        seen_ids.add(layer_id)
-
-        source_kind = str(raw.get("source_kind", "")).strip().lower()
-        if source_kind != "geotiff":
-            continue
-
-        order = raw.get("order", index + 1)
-        if not isinstance(order, int | float):
-            order = index + 1
-
-        layers.append(
-            {
-                "id": layer_id,
-                "name": str(raw.get("name", "")).strip() or f"Layer {index + 1}",
-                "source_kind": "geotiff",
-                "visible": bool(raw.get("visible", True)),
-                "order": int(order),
-            }
-        )
-
-    return sorted(layers, key=lambda layer: layer["order"])
-
-
-def _is_valid_lon_lat(lon, lat):
-    """Return True when coordinates are plausible longitude/latitude values."""
-    return -180 <= lon <= 180 and -90 <= lat <= 90
-
-
-def _compute_geotiff_coordinates(width, height, pixel_scale_raw, tiepoint_raw):
-    """Compute map corner coordinates from GeoTIFF model tags."""
-    try:
-        scale_x = float(pixel_scale_raw[0])
-        scale_y = float(pixel_scale_raw[1])
-        tie_i, tie_j, _, tie_lon, tie_lat, _ = [
-            float(value) for value in tiepoint_raw[:6]
-        ]
-    except (TypeError, ValueError, IndexError) as exc:
-        raise ValueError("GeoTIFF metadata contains non-numeric values.") from exc
-
-    if scale_x == 0 or scale_y == 0:
-        raise ValueError("GeoTIFF pixel scales must be non-zero.")
-
-    left = tie_lon + (0 - tie_i) * scale_x
-    right = tie_lon + (width - tie_i) * scale_x
-    top = tie_lat - (0 - tie_j) * abs(scale_y)
-    bottom = tie_lat - (height - tie_j) * abs(scale_y)
-
-    if right < left:
-        left, right = right, left
-    if top < bottom:
-        top, bottom = bottom, top
-
-    coordinates = [
-        [left, top],
-        [right, top],
-        [right, bottom],
-        [left, bottom],
-    ]
-    if not all(_is_valid_lon_lat(lon, lat) for lon, lat in coordinates):
-        raise ValueError("GeoTIFF coordinates must be valid lon/lat values.")
-
-    return [[float(lon), float(lat)] for lon, lat in coordinates]
-
-
-def _extract_geotiff_coordinates_from_tifffile_page(page):
-    """Compute lon/lat coordinates from a tifffile page object."""
-    pixel_scale_tag = page.tags.get("ModelPixelScaleTag")
-    tiepoint_tag = page.tags.get("ModelTiepointTag")
-
-    if not pixel_scale_tag or len(pixel_scale_tag.value) < 2:
-        raise ValueError("GeoTIFF is missing ModelPixelScaleTag (33550).")
-    if not tiepoint_tag or len(tiepoint_tag.value) < 6:
-        raise ValueError("GeoTIFF is missing ModelTiepointTag (33922).")
-
-    return _compute_geotiff_coordinates(
-        page.imagewidth,
-        page.imagelength,
-        pixel_scale_tag.value,
-        tiepoint_tag.value,
-    )
-
-
-def _scale_to_uint8(values, finite_mask):
-    if not finite_mask.any():
-        return np.zeros(values.shape, dtype=np.uint8)
-
-    finite_values = values[finite_mask]
-    minimum = float(finite_values.min())
-    maximum = float(finite_values.max())
-    if maximum <= minimum:
-        return np.zeros(values.shape, dtype=np.uint8)
-
-    norm = (np.nan_to_num(values, nan=minimum) - minimum) / (maximum - minimum)
-    return np.clip(norm * 255, 0, 255).astype(np.uint8)
-
-
-def _apply_viridis_like(norm):
-    """Map normalised [0,1] values to RGB."""
-    stops = np.array(
-        [
-            [68, 1, 84],
-            [59, 82, 139],
-            [33, 145, 140],
-            [94, 201, 98],
-            [253, 231, 37],
-        ],
-        dtype=np.float32,
-    )
-    x = np.clip(norm, 0.0, 1.0) * (len(stops) - 1)
-    i0 = np.floor(x).astype(np.int32)
-    i1 = np.clip(i0 + 1, 0, len(stops) - 1)
-    w = (x - i0)[..., None]
-    rgb = stops[i0] * (1.0 - w) + stops[i1] * w
-    return np.clip(rgb, 0, 255).astype(np.uint8)
-
-
-def _array_to_png_data_uri(raster):
-    """Convert a numeric raster array to a color RGBA PNG data URI."""
-    array = np.asarray(raster, dtype=float)
-
-    # Handle channel-first arrays: (C, H, W) -> (H, W, C)
-    if array.ndim == 3 and array.shape[0] in (3, 4) and array.shape[-1] not in (3, 4):
-        array = np.moveaxis(array, 0, -1)
-
-    if array.ndim == 3 and array.shape[-1] >= 3:
-        # True-color TIFF: keep RGB information
-        rgb_source = array[..., :3]
-        finite_mask = np.isfinite(rgb_source).all(axis=-1)
-        rgb = np.zeros(rgb_source.shape, dtype=np.uint8)
-        for ch in range(3):
-            rgb[..., ch] = _scale_to_uint8(rgb_source[..., ch], finite_mask)
-    elif array.ndim == 2:
-        # Single-band TIFF: pseudocolor it
-        finite_mask = np.isfinite(array)
-        gray = _scale_to_uint8(array, finite_mask).astype(np.float32) / 255.0
-        rgb = _apply_viridis_like(gray)
-    else:
-        raise ValueError("GeoTIFF image could not be converted to a displayable PNG.")
-
-    alpha = np.where(finite_mask, 255, 0).astype(np.uint8)
-    rgba = np.dstack((rgb, alpha))
-
-    with io.BytesIO() as output:
-        Image.fromarray(rgba, mode="RGBA").save(output, format="PNG")
-        encoded = base64.b64encode(output.getvalue()).decode("ascii")
-    return f"data:image/png;base64,{encoded}"
-
-
-@lru_cache(maxsize=32)
-def _load_geotiff_payload(file_path, mtime):
-    """Load GeoTIFF and return mapbox image source plus coordinates."""
-    del mtime
-
-    tif = None
-    try:
-        tif = tifffile.TiffFile(file_path)
-        if not tif.pages:
-            raise ValueError("TIFF file has no pages.")
-
-        page = tif.pages[0]
-        coordinates = _extract_geotiff_coordinates_from_tifffile_page(page)
-        image_data = _array_to_png_data_uri(page.asarray())
-    except Exception as exc:
-        raise ValueError("Layer file is not a valid georeferenced GeoTIFF.") from exc
-    finally:
-        if tif is not None:
-            tif.close()
-
-    return {"image": image_data, "coordinates": coordinates}
-
-
-def _build_mapbox_layers(layers_raw, user):
-    """Build mapbox layout layers for currently visible spatial layers.
-
-    GeoTIFF sources are resolved server-side from currently authorised
-    MapLayerImport objects and never from client store values.
-    """
-    map_layers = []
-    available_layers = _available_map_layers_by_id(user)
-
-    for layer in _normalise_spatial_layers(layers_raw):
-        if not layer["visible"]:
-            continue
-
-        resolved_layer = available_layers.get(layer["id"])
-        if not resolved_layer:
-            continue
-
-        try:
-            mtime = os.path.getmtime(resolved_layer["file_path"])
-            payload = _load_geotiff_payload(resolved_layer["file_path"], mtime)
-        except (OSError, ValueError):
-            continue
-
-        map_layers.append(
-            {
-                "type": "raster",
-                "sourcetype": "image",
-                "source": payload["image"],
-                "coordinates": payload["coordinates"],
-                "opacity": 0.75,
-                "below": "traces",
-            }
-        )
-
-    return map_layers
-
-
 # populate checklist options
 
 
@@ -590,7 +367,16 @@ def _build_mapbox_layers(layers_raw, user):
     Input("stations_list", "children"),
 )
 def populate_options(all_raw, **kwargs):
-    """Populate owned and public checklist options from visible station codes."""
+    """Populate owned and public checklist options from visible station codes.
+
+    Args:
+        all_raw: Raw station code values from the hidden station list.
+        **kwargs: Callback kwargs containing request context.
+
+    Returns:
+        tuple[list[dict[str, str]], list[dict[str, str]], dict]: Owned options,
+            public options, and owned block style.
+    """
     all_codes = _ensure_list(all_raw)
 
     request = kwargs.get("request")
@@ -626,9 +412,20 @@ def populate_options(all_raw, **kwargs):
 def populate_spatial_layer_dropdown(
     _stations_raw, _layers_raw, selected_value, **kwargs
 ):
-    """Populate spatial layer dropdown from viewable MapLayerImport objects."""
+    """Populate spatial layer dropdown from viewable MapLayerImport objects.
+
+    Args:
+        _stations_raw: Unused trigger input for station list changes.
+        _layers_raw: Unused trigger input for active layer list changes.
+        selected_value: Currently selected dropdown value.
+        **kwargs: Callback kwargs containing request context.
+
+    Returns:
+        tuple[list[dict[str, str]], str | None]: Dropdown options and selected
+            value.
+    """
     user = _get_request_user(kwargs)
-    layer_index = _available_map_layers_by_id(user)
+    layer_index = available_map_layers_by_id(user)
 
     options = [
         {"label": layer["name"], "value": layer_id}
@@ -655,17 +452,40 @@ def populate_spatial_layer_dropdown(
         Input({"type": "select-all", "index": MATCH}, "n_clicks"),
         Input({"type": "select-none", "index": MATCH}, "n_clicks"),
     ],
+    State({"type": "checklist", "index": MATCH}, "value"),
 )
-def checklist_selection(options, _n_all, _n_none, callback_context):
+def checklist_selection(options, _n_all, _n_none, current_value, callback_context):
+    """Resolve station checklist selection for all/none and refresh events.
+
+    Args:
+        options: Checklist options for the matched block.
+        _n_all: Click count for the "All" button.
+        _n_none: Click count for the "None" button.
+        current_value: Currently selected option values.
+        callback_context: Dash callback context used to inspect trigger source.
+
+    Returns:
+        list: Updated selected values for the matched checklist.
+    """
     triggered = (
         callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
     )
     triggered_component = triggered.rsplit(".", 1)[0]
+    option_values = [option["value"] for option in (options or [])]
 
     if "select-none" in triggered_component:
         return []
+    if "select-all" in triggered_component:
+        return option_values
 
-    return [o["value"] for o in (options or [])]
+    # Keep the current user selection whenever options are refreshed.
+    selected_values = [
+        value for value in _ensure_list(current_value) if value in set(option_values)
+    ]
+    if selected_values:
+        return selected_values
+
+    return option_values
 
 
 @app.callback(
@@ -693,8 +513,22 @@ def update_spatial_layers(
     callback_context,
     **kwargs,
 ):
-    """Apply add/hide/remove actions to spatial layer state."""
-    layers = _normalise_spatial_layers(layers_raw)
+    """Apply add/hide/remove actions to spatial layer state.
+
+    Args:
+        _n_add: Click count for the add button.
+        _n_hide: Click count for the hide button.
+        _n_remove: Click count for the remove button.
+        selected_layer_id: Currently selected spatial layer id.
+        layers_raw: Current stored layer state from dcc.Store.
+        callback_context: Dash callback context used to inspect trigger source.
+        **kwargs: Callback kwargs containing request context.
+
+    Returns:
+        tuple[list[dict[str, object]] | object, str | object]: Updated layer
+            list and status message, or no_update values when unchanged.
+    """
+    layers = normalise_spatial_layers(layers_raw)
     layer_by_id = {layer["id"]: dict(layer) for layer in layers}
     selected_id = selected_layer_id
 
@@ -704,7 +538,7 @@ def update_spatial_layers(
     triggered_component = triggered.rsplit(".", 1)[0]
 
     user = _get_request_user(kwargs)
-    available_layers = _available_map_layers_by_id(user)
+    available_layers = available_map_layers_by_id(user)
 
     if triggered_component == "spatial-layer-add":
         if not selected_id:
@@ -716,7 +550,7 @@ def update_spatial_layers(
 
         try:
             mtime = os.path.getmtime(selected_layer["file_path"])
-            _load_geotiff_payload(selected_layer["file_path"], mtime)
+            load_geotiff_payload(selected_layer["file_path"], mtime)
         except (OSError, ValueError) as exc:
             return layers, f"Selected layer could not be loaded: {exc}"
 
@@ -728,7 +562,7 @@ def update_spatial_layers(
                 )
 
             layer_by_id[selected_id]["visible"] = True
-            updated_layers = _normalise_spatial_layers(list(layer_by_id.values()))
+            updated_layers = normalise_spatial_layers(list(layer_by_id.values()))
             return (
                 updated_layers,
                 f'Layer "{layer_by_id[selected_id]["name"]}" is now visible.',
@@ -744,7 +578,7 @@ def update_spatial_layers(
                 "order": next_order,
             }
         )
-        return _normalise_spatial_layers(
+        return normalise_spatial_layers(
             layers
         ), f'Added layer "{selected_layer["name"]}".'
 
@@ -757,7 +591,7 @@ def update_spatial_layers(
             return layers, "Add the selected layer first."
 
         target["visible"] = not bool(target["visible"])
-        updated_layers = _normalise_spatial_layers(list(layer_by_id.values()))
+        updated_layers = normalise_spatial_layers(list(layer_by_id.values()))
         visibility = "visible" if target["visible"] else "hidden"
         return updated_layers, f'Layer "{target["name"]}" is now {visibility}.'
 
@@ -770,7 +604,7 @@ def update_spatial_layers(
             return layers, "Layer is not currently active."
 
         updated_layers = [layer for layer in layers if layer["id"] != selected_id]
-        return _normalise_spatial_layers(
+        return normalise_spatial_layers(
             updated_layers
         ), f'Removed layer "{target["name"]}".'
 
@@ -795,11 +629,26 @@ _COLOR_MAP = {
     ],
 )
 def update_map(
-    owned_selected, public_selected, spatial_layers_raw, map_style_value, **kwargs
+    owned_selected,
+    public_selected,
+    spatial_layers_raw,
+    map_style_value,
+    callback_context,
+    **kwargs,
 ):
-    """Build a scatter-mapbox figure for currently selected stations and layers."""
-    rows = _station_rows_for_codes(owned_selected, "My Stations")
-    rows.extend(_station_rows_for_codes(public_selected, "Public"))
+    """Build a scatter-mapbox figure for currently selected stations and layers.
+
+    Args:
+        owned_selected: Selected station codes from the owned checklist.
+        public_selected: Selected station codes from the public checklist.
+        spatial_layers_raw: Spatial layer state from dcc.Store.
+        map_style_value: Requested map style value.
+        callback_context: Dash callback context used to inspect trigger source.
+        **kwargs: Callback kwargs containing request context.
+
+    Returns:
+        Patch | object: Patch update for the map figure or no_update.
+    """
     user = _get_request_user(kwargs)
 
     valid_styles = {option["value"] for option in _MAP_STYLE_OPTIONS}
@@ -807,29 +656,50 @@ def update_map(
         map_style_value if map_style_value in valid_styles else _DEFAULT_MAP_STYLE
     )
 
-    patched = Patch()
-    patched["layout"]["mapbox"]["layers"] = _build_mapbox_layers(
-        spatial_layers_raw,
-        user,
+    triggered = (
+        callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
     )
+    triggered_component = triggered.rsplit(".", 1)[0]
+    is_initial_call = not triggered_component
 
-    df = pd.DataFrame(rows, columns=[*_STATION_KEYS, "type"])
-    traces = []
-    for group, color in _COLOR_MAP.items():
-        sub = df[df["type"] == group]
-        traces.append(
-            go.Scattermapbox(
-                lat=sub["station_latitude"],
-                lon=sub["station_longitude"],
-                mode="markers",
-                marker={"color": color, "size": 10},
-                name=group,
-                hovertext=sub["station_code"],
-                hoverinfo="text",
+    patched = Patch()
+
+    if (
+        is_initial_call
+        or '"type":"checklist"' in triggered_component
+        or "'type': 'checklist'" in triggered_component
+    ):
+        rows = _station_rows_for_codes(owned_selected, "My Stations")
+        rows.extend(_station_rows_for_codes(public_selected, "Public"))
+
+        df = pd.DataFrame(rows, columns=[*_STATION_KEYS, "type"])
+        traces = []
+        for group, color in _COLOR_MAP.items():
+            sub = df[df["type"] == group]
+            traces.append(
+                go.Scattermapbox(
+                    lat=sub["station_latitude"],
+                    lon=sub["station_longitude"],
+                    mode="markers",
+                    marker={"color": color, "size": 10},
+                    name=group,
+                    hovertext=sub["station_code"],
+                    hoverinfo="text",
+                )
             )
+
+        patched["data"] = traces
+
+    if is_initial_call or triggered_component == "spatial-layers-store":
+        patched["layout"]["mapbox"]["layers"] = build_mapbox_layers(
+            spatial_layers_raw,
+            user,
         )
 
-    patched["data"] = traces
-    patched["layout"]["mapbox"]["style"] = map_style
+    if is_initial_call or triggered_component == "map-style-select":
+        patched["layout"]["mapbox"]["style"] = map_style
+
+    if patched == {}:
+        return no_update
 
     return patched
