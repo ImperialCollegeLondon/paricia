@@ -374,120 +374,198 @@ def construct_matrix(
 
     to_ingest = []
     for classification in classifications:
-        columns = []
-        columns.append(("date", "date"))
-
-        # Validation of values
-        columns.append((classification.value, "value"))
-        if classification.value_validator_column:
-            matrix.loc[
-                matrix[classification.value_validator_column]
-                != classification.value_validator_text,
-                classification.value,
-            ] = np.nan
-
-        # Validation of maximum
-        if classification.maximum:
-            columns.append((classification.maximum, "maximum"))
-            if classification.maximum_validator_column:
-                matrix.loc[
-                    matrix[classification.maximum_validator_column]
-                    != classification.maximum_validator_text,
-                    classification.maximum,
-                ] = np.nan
-
-        # Validation of minimum
-        if classification.minimum:
-            columns.append((classification.minimum, "minimum"))
-            if classification.minimum_validator_column:
-                matrix.loc[
-                    matrix[classification.minimum_validator_column]
-                    != classification.minimum_validator_text,
-                    classification.minimum,
-                ] = np.nan
-
-        data = matrix.loc[:, [v[0] for v in columns]].rename(columns=dict(columns))
-
-        # More data cleaning, column by column, deal with decimal comma vs point.
-        for col in data:
-            if col == "date":
-                continue
-            if classification.decimal_comma:
-                data[col] = pd.Series(
-                    [standardise_float_comma(val) for val in data[col].values],
-                    index=matrix.index,
-                )
-            else:
-                data[col] = pd.Series(
-                    [standardise_float(val) for val in data[col].values],
-                    index=matrix.index,
-                )
-
-        # Eliminate NAs
-        data_columns = [column[1] for column in columns if column[1] != "date"]
-        data = data.dropna(axis=0, how="all", subset=data_columns)
-        if len(data) == 0:
-            raise ValueError(
-                f"Importing variable {classification.variable.name} from "
-                f"column {classification.value} (starting in 0) results in no valid "
-                "data."
-            )
-
-        # Deal with cumulative and incremental data
-        if acc := classification.accumulate:
-            # assumes that if incremental it only works with VALUE
-            # (MAXIMUM and MINIMUM are excluded)
-            if classification.incremental:
-                data["value"] = data["value"].diff()
-                data.loc[data["value"] < 0, "value"] = np.nan
-                data = data.dropna()
-            data["date"] = data["date"].apply(
-                lambda x: x.replace(
-                    minute=int(x.minute / acc) * acc,
-                    second=0,
-                    microsecond=0,
-                    nanosecond=0,
-                )
-            )
-            data["date"] = data["date"] + pd.Timedelta(minutes=acc)
-            count = data.groupby("date")["value"].sum().to_frame()
-            data = count["value"] * float(classification.resolution)
-
-            start_date = start_date.replace(
-                minute=int(start_date.minute / acc) * acc,
-                second=0,
-                microsecond=0,
-                nanosecond=0,
-            ) + pd.Timedelta(minutes=acc)
-            end_date = end_date.replace(
-                minute=int(end_date.minute / acc) * acc,
-                second=0,
-                microsecond=0,
-                nanosecond=0,
-            ) + pd.Timedelta(minutes=acc)
-            table = pd.date_range(
-                start_date, end_date, freq=f"{acc}min", name="date"
-            ).to_frame()
-            data = pd.concat([table, data], axis=1)
-            data = data.fillna(0)
-
-        # Deal with non cumulative but incremental data
-        else:
-            if classification.incremental:
-                data["value"] = data["value"].diff()
-                data.loc[data["value"] < 0, "value"] = np.nan
-                data = data.dropna()
-            if classification.resolution:
-                data["value"] = data["value"] * float(classification.resolution)
-
-        data["station_id"] = station.station_id
-        data["variable_id"] = classification.variable.variable_id
-        data["data_import_id"] = data_import.data_import_id
+        data = get_classification_table(
+            classification, matrix, station, data_import, start_date, end_date
+        )
 
         # Add the data to the main list
         to_ingest.append(data)
 
     return to_ingest
+
+
+def validate_values(classification, matrix):
+    """Validates the values, maxima and minima according to the classification model,
+    and renames the columns to standard names.
+
+    Args:
+        classification: a formatting.Classification object.
+        matrix: the preformatted matrix containing the raw data.
+
+    Returns:
+        A tuple of the validated data and a mapping for the columns that have been
+            validated, to be used in renaming.
+    """
+    columns = [("date", "date")]
+
+    # Validation of values; non-validated values are set to np.nan
+    columns.append((classification.value, "value"))
+    if classification.value_validator_column:
+        matrix.loc[
+            matrix[classification.value_validator_column]
+            != classification.value_validator_text,
+            classification.value,
+        ] = np.nan
+
+    # Validation of maximum
+    if classification.maximum:
+        columns.append((classification.maximum, "maximum"))
+        if classification.maximum_validator_column:
+            matrix.loc[
+                matrix[classification.maximum_validator_column]
+                != classification.maximum_validator_text,
+                classification.maximum,
+            ] = np.nan
+
+    # Validation of minimum
+    if classification.minimum:
+        columns.append((classification.minimum, "minimum"))
+        if classification.minimum_validator_column:
+            matrix.loc[
+                matrix[classification.minimum_validator_column]
+                != classification.minimum_validator_text,
+                classification.minimum,
+            ] = np.nan
+
+    # Rename validated columns
+    data = matrix.loc[:, [v[0] for v in columns]].rename(columns=dict(columns))
+    return data, columns
+
+
+def clean_dataframe(data, classification, matrix, columns):
+    """Cleans the dataframe by standardising the float format and removing NA rows.
+
+    Args:
+        data: the dataframe to be cleaned.
+        classification: a formatting.Classification object.
+        matrix: the preformatted matrix containing the raw data.
+        columns: A mapping for the validated columns.
+
+    Returns:
+        The cleaned dataframe.
+    """
+    # Deal with decimal comma vs point
+    for col in data:
+        if col == "date":
+            continue
+        if classification.decimal_comma:
+            data[col] = pd.Series(
+                [standardise_float_comma(val) for val in data[col].values],
+                index=matrix.index,
+            )
+        else:
+            data[col] = pd.Series(
+                [standardise_float(val) for val in data[col].values],
+                index=matrix.index,
+            )
+
+    # Eliminate NAs if all values in row are nan
+    data_columns = [column[1] for column in columns if column[1] != "date"]
+    data = data.dropna(axis=0, how="all", subset=data_columns)
+    if len(data) == 0:
+        raise ValueError(
+            f"Importing variable {classification.variable.name} from "
+            f"column {classification.value} (starting in 0) results in no valid "
+            "data."
+        )
+    return data
+
+
+def process_incremental_data(data):
+    """Processes incremental time series data.
+
+    If incremental, it is assumed to only work with 'value' columns; maximum and
+    minimum are excluded.
+
+    Args:
+        data: Dataframe containing validated data to be processed.
+
+    Returns:
+        The processed dataframe with incremental data.
+    """
+    data["value"] = data["value"].diff()
+    data.loc[data["value"] < 0, "value"] = np.nan
+    return data.dropna()
+
+
+def process_cumulative_data(data, classification, acc, start_date, end_date):
+    """Processes cumulative time series data aggregates over specified time periods.
+
+    Args:
+        data: Dataframe containing validated data to be processed.
+        classification: a formatting.Classification object.
+        acc: The accumulation period in minutes.
+
+    Returns:
+        The processed dataframe with cumulative data.
+    """
+    # Timestamps are rounded down to nearest acc minutes
+    data["date"] = data["date"].apply(
+        lambda x: x.replace(
+            minute=int(x.minute / acc) * acc,
+            second=0,
+            microsecond=0,
+            nanosecond=0,
+        )
+    )
+    data["date"] = data["date"] + pd.Timedelta(minutes=acc)  # Shift timestamps forward
+    count = data.groupby("date")["value"].sum().to_frame()  # Group and aggregate
+    data = count["value"] * float(classification.resolution)
+
+    # Create new date range with acc
+    start_date = start_date.replace(
+        minute=int(start_date.minute / acc) * acc,
+        second=0,
+        microsecond=0,
+        nanosecond=0,
+    ) + pd.Timedelta(minutes=acc)
+    end_date = end_date.replace(
+        minute=int(end_date.minute / acc) * acc,
+        second=0,
+        microsecond=0,
+        nanosecond=0,
+    ) + pd.Timedelta(minutes=acc)
+    table = pd.date_range(
+        start_date, end_date, freq=f"{acc}min", name="date"
+    ).to_frame()
+    data = pd.concat([table, data], axis=1)
+
+    return data.fillna(0)  # Fill missing values
+
+
+def get_classification_table(
+    classification, matrix, station, data_import, start_date, end_date
+):
+    """Returns the data table for a given variable, performing necessary validation
+    and data processing steps.
+
+    Args:
+        classification: a formatting.Classification object.
+        matrix: the preformatted matrix containing the raw data.
+        station: the station for which the data is being imported.
+        data_import: the DataImport object.
+        start_date: the start date of the data being imported.
+        end_date: the end date of the data being imported.
+
+    Returns:
+        The processed dataframe for the given classification.
+    """
+    data, columns = validate_values(classification, matrix)
+    data = clean_dataframe(data, classification, matrix, columns)
+
+    if classification.incremental:
+        data = process_incremental_data(data)
+
+    if acc := classification.accumulate:
+        data = process_cumulative_data(data, classification, acc, start_date, end_date)
+    else:
+        if classification.resolution:
+            data["value"] = data["value"] * float(classification.resolution)
+
+    data["station_id"] = station.station_id
+    data["variable_id"] = classification.variable.variable_id
+    data["data_import_id"] = data_import.data_import_id
+    return data
 
 
 def standardise_float(val_str):

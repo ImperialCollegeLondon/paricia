@@ -1,6 +1,9 @@
 from datetime import datetime
 from pathlib import Path
+from unittest.mock import Mock
 
+import numpy as np
+import pandas as pd
 import pytz
 from django.test import TestCase
 
@@ -52,6 +55,136 @@ class TestMatrixFunctions(TestCase):
             self.data_file, self.file_format, self.station.timezone
         )
         self.assertEqual(df.shape, (263371, 5))
+
+    def test_validate_values(self):
+        from importing.functions import validate_values
+
+        mock_classification = Mock()
+        mock_classification.value = 1
+        mock_classification.value_validator_column = 2
+        mock_classification.value_validator_text = "valid"
+        mock_classification.maximum = None
+        mock_classification.minimum = None
+
+        matrix = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=3),
+                1: [10, 20, 30],
+                2: ["valid", "invalid", "valid"],
+            }
+        )
+
+        expected_data = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=3),
+                "value": [10, np.nan, 30],
+            }
+        )
+        expected_columns = [("date", "date"), (1, "value")]
+
+        data, columns = validate_values(mock_classification, matrix)
+        pd.testing.assert_frame_equal(data, expected_data)
+        self.assertEqual(columns, expected_columns)
+
+    def test_clean_dataframe(self):
+        from importing.functions import clean_dataframe
+
+        data = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=4),
+                "value": [10.0, np.nan, 30.0, np.nan],
+                "maximum": [15.0, 25.0, 35.0, np.nan],
+            }
+        )
+        matrix = data.copy()
+        columns = [("date", "date"), (1, "value"), (2, "maximum")]
+
+        mock_classification = Mock()
+        mock_classification.variable.name = "Variable"
+        mock_classification.value = 1
+
+        expected_data = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=3),
+                "value": [10.0, np.nan, 30.0],
+                "maximum": [15.0, 25.0, 35.0],
+            }
+        )
+        cleaned_data = clean_dataframe(data, mock_classification, matrix, columns)
+        pd.testing.assert_frame_equal(cleaned_data, expected_data)
+
+        # Check null data raises error
+        data = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=4),
+                "value": [np.nan] * 4,
+                "maximum": [np.nan] * 4,
+            }
+        )
+
+        with self.assertRaises(ValueError):
+            clean_dataframe(data, mock_classification, matrix, columns)
+
+    def test_process_incremental_data(self):
+        from importing.functions import process_incremental_data
+
+        data = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=5),
+                "value": [10.0, 25.0, 37.0, 49.0, 44.0],
+            }
+        )
+        expected_data = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-02", periods=3),
+                "value": [15.0, 12.0, 12.0],
+            }
+        )
+
+        processed_data = process_incremental_data(data).reset_index(drop=True)
+        pd.testing.assert_frame_equal(expected_data, processed_data)
+
+    def test_process_cumulative_data(self):
+        from importing.functions import process_cumulative_data
+
+        dates = pd.to_datetime(
+            [
+                datetime(2026, 1, 1, 9, 0, 0),
+                datetime(2026, 1, 1, 9, 5, 30),
+                datetime(2026, 1, 1, 9, 15, 0),
+                datetime(2026, 1, 1, 9, 17, 20),
+                datetime(2026, 1, 1, 9, 22, 47),
+            ]
+        )
+        data = pd.DataFrame(
+            {
+                "date": dates,
+                "value": [10.0, 25.0, 37.0, 40.0, 52.0],
+            }
+        )
+
+        expected_dates = pd.to_datetime(
+            [
+                datetime(2026, 1, 1, 9, 5, 0),
+                datetime(2026, 1, 1, 9, 10, 0),
+                datetime(2026, 1, 1, 9, 15, 0),
+                datetime(2026, 1, 1, 9, 20, 0),
+                datetime(2026, 1, 1, 9, 25, 0),
+            ]
+        )
+        expected_values = [i * 0.5 for i in [10.0, 25.0, 0.0, 77.0, 52.0]]
+        expected_data = pd.DataFrame(
+            {
+                "date": expected_dates,
+                "value": expected_values,
+            }
+        )
+        mock_classification = Mock()
+        mock_classification.resolution = 0.5
+        processed_data = process_cumulative_data(
+            data, mock_classification, acc=5, start_date=dates[0], end_date=dates[-1]
+        ).reset_index(drop=True)
+        pd.testing.assert_frame_equal(expected_data, processed_data)
 
     def test_construct_matrix(self):
         from importing.functions import construct_matrix
