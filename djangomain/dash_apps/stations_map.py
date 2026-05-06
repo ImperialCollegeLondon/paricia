@@ -383,15 +383,26 @@ def populate_options(all_raw, **kwargs):
         Output("spatial-layer-checklist", "options"),
         Output("spatial-layer-checklist", "value"),
     ],
-    Input("stations_list", "children"),
+    [
+        Input("stations_list", "children"),
+        Input("map-style-select", "value"),
+    ],
     State("spatial-layer-checklist", "value"),
 )
-def populate_spatial_layer_checklist(_stations_raw, selected_values, **kwargs):
+def populate_spatial_layer_checklist(
+    _stations_raw,
+    _map_style_value,
+    selected_values,
+    callback_context,
+    **kwargs,
+):
     """Populate spatial layer checklist from viewable MapLayerImport objects.
 
     Args:
         _stations_raw: Unused trigger input for station list changes.
+        _map_style_value: Current map style value.
         selected_values: Currently checked layer ids.
+        callback_context: Dash callback context used to inspect trigger source.
         **kwargs: Callback kwargs containing request context.
 
     Returns:
@@ -405,6 +416,13 @@ def populate_spatial_layer_checklist(_stations_raw, selected_values, **kwargs):
         {"label": layer["name"], "value": layer_id}
         for layer_id, layer in layer_index.items()
     ]
+
+    triggered = (
+        callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
+    )
+    triggered_component = triggered.rsplit(".", 1)[0]
+    if triggered_component == "map-style-select":
+        return options, []
 
     valid_values = {option["value"] for option in options}
     value = [
@@ -566,6 +584,8 @@ def update_map(
 
     if is_initial_call or triggered_component == "map-style-select":
         patched["layout"]["mapbox"]["style"] = map_style
+    if triggered_component == "map-style-select":
+        patched["layout"]["mapbox"]["layers"] = []
 
     if patched == {}:
         return no_update
