@@ -44,7 +44,7 @@ dependencies = [
     "Pillow",
     "django-tables2",
     "drf-spectacular",
-    "tifffile",
+    "rasterio",
 ]
 
 [project.optional-dependencies]
