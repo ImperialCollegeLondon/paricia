@@ -5,8 +5,6 @@ plus a third block for spatial layer controls. GeoTIFF layers are loaded from
 MapLayerImport entries and rendered below station points.
 """
 
-import os
-
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objs as go
@@ -16,8 +14,6 @@ from django_plotly_dash import DjangoDash
 from djangomain.dash_apps.geotiff_layers import (
     available_map_layers_by_id,
     build_mapbox_layers,
-    load_geotiff_payload,
-    normalise_spatial_layers,
 )
 from station.models import Station
 
@@ -124,55 +120,31 @@ def _station_block(block_id, title):
 
 
 def _spatial_data_block():
-    """Build controls for selecting and managing spatial layers.
+    """Build controls for selecting and toggling spatial layers.
 
     Returns:
-        dbc.Card: Card containing spatial layer selection and action buttons.
+        dbc.Card: Card containing a checklist of available spatial layers.
     """
     return dbc.Card(
         [
             dbc.CardHeader("Spatial Data", className="py-2"),
             dbc.CardBody(
-                [
-                    dbc.Select(
-                        id="spatial-layer-select",
+                html.Div(
+                    dcc.Checklist(
+                        id="spatial-layer-checklist",
                         options=[],
-                        value=None,
-                        size="sm",
-                        className="mb-2",
+                        value=[],
+                        inputStyle={"marginRight": "6px"},
+                        labelStyle={"display": "block", "paddingBottom": "3px"},
                     ),
-                    dbc.ButtonGroup(
-                        [
-                            dbc.Button(
-                                "Add",
-                                id="spatial-layer-add",
-                                size="sm",
-                                color="secondary",
-                                outline=True,
-                            ),
-                            dbc.Button(
-                                "Hide",
-                                id="spatial-layer-hide",
-                                size="sm",
-                                color="secondary",
-                                outline=True,
-                            ),
-                            dbc.Button(
-                                "Remove",
-                                id="spatial-layer-remove",
-                                size="sm",
-                                color="danger",
-                                outline=True,
-                            ),
-                        ],
-                        className="mb-2",
-                    ),
-                    html.Div(
-                        id="spatial-layer-status",
-                        className="small",
-                        style={"minHeight": "1.25rem"},
-                    ),
-                ],
+                    style={
+                        "maxHeight": SCROLL_HEIGHT,
+                        "overflowY": "auto",
+                        "border": "1px solid #dee2e6",
+                        "borderRadius": "4px",
+                        "padding": "6px 8px",
+                    },
+                ),
                 className="py-2",
             ),
         ],
@@ -254,11 +226,6 @@ app.layout = dbc.Container(
     children=[
         dbc.Row([_sidebar, _map_col], className="g-0"),
         html.Div(id="stations_list", style={"display": "none"}),
-        dcc.Store(
-            id="spatial-layers-store",
-            storage_type="memory",
-            data=[],
-        ),
     ],
 )
 
@@ -413,29 +380,23 @@ def populate_options(all_raw, **kwargs):
 
 @app.callback(
     [
-        Output("spatial-layer-select", "options"),
-        Output("spatial-layer-select", "value"),
+        Output("spatial-layer-checklist", "options"),
+        Output("spatial-layer-checklist", "value"),
     ],
-    [
-        Input("stations_list", "children"),
-        Input("spatial-layers-store", "data"),
-    ],
-    State("spatial-layer-select", "value"),
+    Input("stations_list", "children"),
+    State("spatial-layer-checklist", "value"),
 )
-def populate_spatial_layer_dropdown(
-    _stations_raw, _layers_raw, selected_value, **kwargs
-):
-    """Populate spatial layer dropdown from viewable MapLayerImport objects.
+def populate_spatial_layer_checklist(_stations_raw, selected_values, **kwargs):
+    """Populate spatial layer checklist from viewable MapLayerImport objects.
 
     Args:
         _stations_raw: Unused trigger input for station list changes.
-        _layers_raw: Unused trigger input for active layer list changes.
-        selected_value: Currently selected dropdown value.
+        selected_values: Currently checked layer ids.
         **kwargs: Callback kwargs containing request context.
 
     Returns:
-        tuple[list[dict[str, str]], str | None]: Dropdown options and selected
-            value.
+        tuple[list[dict[str, str]], list[str]]: Checklist options and checked
+            values.
     """
     user = _get_request_user(kwargs)
     layer_index = available_map_layers_by_id(user)
@@ -446,12 +407,11 @@ def populate_spatial_layer_dropdown(
     ]
 
     valid_values = {option["value"] for option in options}
-    if selected_value in valid_values:
-        value = selected_value
-    elif options:
-        value = options[0]["value"]
-    else:
-        value = None
+    value = [
+        layer_id
+        for layer_id in _ensure_list(selected_values)
+        if layer_id in valid_values
+    ]
     return options, value
 
 
@@ -501,129 +461,6 @@ def checklist_selection(options, _n_all, _n_none, current_value, callback_contex
     return option_values
 
 
-@app.callback(
-    [
-        Output("spatial-layers-store", "data"),
-        Output("spatial-layer-status", "children"),
-    ],
-    [
-        Input("spatial-layer-add", "n_clicks"),
-        Input("spatial-layer-hide", "n_clicks"),
-        Input("spatial-layer-remove", "n_clicks"),
-    ],
-    [
-        State("spatial-layer-select", "value"),
-        State("spatial-layers-store", "data"),
-    ],
-    prevent_initial_call=True,
-)
-def update_spatial_layers(
-    _n_add,
-    _n_hide,
-    _n_remove,
-    selected_layer_id,
-    layers_raw,
-    callback_context,
-    **kwargs,
-):
-    """Apply add/hide/remove actions to spatial layer state.
-
-    Args:
-        _n_add: Click count for the add button.
-        _n_hide: Click count for the hide button.
-        _n_remove: Click count for the remove button.
-        selected_layer_id: Currently selected spatial layer id.
-        layers_raw: Current stored layer state from dcc.Store.
-        callback_context: Dash callback context used to inspect trigger source.
-        **kwargs: Callback kwargs containing request context.
-
-    Returns:
-        tuple[list[dict[str, object]] | object, str | object]: Updated layer
-            list and status message, or no_update values when unchanged.
-    """
-    layers = normalise_spatial_layers(layers_raw)
-    layer_by_id = {layer["id"]: dict(layer) for layer in layers}
-    selected_id = selected_layer_id
-
-    triggered = (
-        callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
-    )
-    triggered_component = triggered.rsplit(".", 1)[0]
-
-    user = _get_request_user(kwargs)
-    available_layers = available_map_layers_by_id(user)
-
-    if triggered_component == "spatial-layer-add":
-        if not selected_id:
-            return layers, "Select a layer to add."
-
-        selected_layer = available_layers.get(selected_id)
-        if not selected_layer:
-            return layers, "Selected layer is unavailable."
-
-        try:
-            mtime = os.path.getmtime(selected_layer["file_path"])
-            load_geotiff_payload(selected_layer["file_path"], mtime)
-        except (OSError, ValueError) as exc:
-            return layers, f"Selected layer could not be loaded: {exc}"
-
-        if selected_id in layer_by_id:
-            if layer_by_id[selected_id]["visible"]:
-                return (
-                    layers,
-                    f'Layer "{layer_by_id[selected_id]["name"]}" is already active.',
-                )
-
-            layer_by_id[selected_id]["visible"] = True
-            updated_layers = normalise_spatial_layers(list(layer_by_id.values()))
-            return (
-                updated_layers,
-                f'Layer "{layer_by_id[selected_id]["name"]}" is now visible.',
-            )
-
-        next_order = max((layer["order"] for layer in layers), default=0) + 1
-        layers.append(
-            {
-                "id": selected_layer["id"],
-                "name": selected_layer["name"],
-                "source_kind": "geotiff",
-                "visible": True,
-                "order": next_order,
-            }
-        )
-        return normalise_spatial_layers(
-            layers
-        ), f'Added layer "{selected_layer["name"]}".'
-
-    if triggered_component == "spatial-layer-hide":
-        if not selected_id:
-            return layers, "Select an active layer first."
-
-        target = layer_by_id.get(selected_id)
-        if not target:
-            return layers, "Add the selected layer first."
-
-        target["visible"] = not bool(target["visible"])
-        updated_layers = normalise_spatial_layers(list(layer_by_id.values()))
-        visibility = "visible" if target["visible"] else "hidden"
-        return updated_layers, f'Layer "{target["name"]}" is now {visibility}.'
-
-    if triggered_component == "spatial-layer-remove":
-        if not selected_id:
-            return layers, "Select an active layer first."
-
-        target = layer_by_id.get(selected_id)
-        if not target:
-            return layers, "Layer is not currently active."
-
-        updated_layers = [layer for layer in layers if layer["id"] != selected_id]
-        return normalise_spatial_layers(
-            updated_layers
-        ), f'Removed layer "{target["name"]}".'
-
-    return no_update, no_update
-
-
 # map
 
 _COLOR_MAP = {
@@ -637,14 +474,14 @@ _COLOR_MAP = {
     [
         Input({"type": "checklist", "index": "owned"}, "value"),
         Input({"type": "checklist", "index": "public"}, "value"),
-        Input("spatial-layers-store", "data"),
+        Input("spatial-layer-checklist", "value"),
         Input("map-style-select", "value"),
     ],
 )
 def update_map(
     owned_selected,
     public_selected,
-    spatial_layers_raw,
+    spatial_layer_selected_ids,
     map_style_value,
     callback_context,
     **kwargs,
@@ -654,7 +491,8 @@ def update_map(
     Args:
         owned_selected: Selected station codes from the owned checklist.
         public_selected: Selected station codes from the public checklist.
-        spatial_layers_raw: Spatial layer state from dcc.Store.
+        spatial_layer_selected_ids: Checked spatial layer ids from the
+            spatial layer checklist.
         map_style_value: Requested map style value.
         callback_context: Dash callback context used to inspect trigger source.
         **kwargs: Callback kwargs containing request context.
@@ -681,6 +519,7 @@ def update_map(
         is_initial_call
         or '"type":"checklist"' in triggered_component
         or "'type': 'checklist'" in triggered_component
+        or triggered_component == "spatial-layer-checklist"
     ):
         rows = _station_rows_for_codes(owned_selected, "My Stations")
         rows.extend(_station_rows_for_codes(public_selected, "Public"))
@@ -703,7 +542,23 @@ def update_map(
 
         patched["data"] = traces
 
-    if is_initial_call or triggered_component == "spatial-layers-store":
+    if is_initial_call or triggered_component == "spatial-layer-checklist":
+        available_layers = available_map_layers_by_id(user)
+        selected_layer_ids = [
+            layer_id
+            for layer_id in _ensure_list(spatial_layer_selected_ids)
+            if layer_id in available_layers
+        ]
+        spatial_layers_raw = [
+            {
+                "id": layer_id,
+                "name": available_layers[layer_id]["name"],
+                "source_kind": "geotiff",
+                "visible": True,
+                "order": order,
+            }
+            for order, layer_id in enumerate(selected_layer_ids, start=1)
+        ]
         patched["layout"]["mapbox"]["layers"] = build_mapbox_layers(
             spatial_layers_raw,
             user,
