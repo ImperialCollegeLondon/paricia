@@ -121,6 +121,7 @@ class TestThingsboardImportMap(TestCase):
             variable=self.variable,
             tb_device_name="tb-device-001",
             station=self.station,
+            owner=self.station.owner,
         )
 
         retrieved = ThingsboardImportMap.objects.get(pk=mapping.pk)
@@ -137,6 +138,7 @@ class TestThingsboardImportMap(TestCase):
             variable=self.variable,
             tb_device_name="tb-device-001",
             station=self.station,
+            owner=self.station.owner,
         )
 
         self.assertEqual(
@@ -152,6 +154,7 @@ class TestThingsboardImportMap(TestCase):
             variable=self.variable,
             tb_device_name="tb-device-002",
             station=self.station,
+            owner=self.station.owner,
         )
         # Should not raise any errors
         mapping.clean()
@@ -164,6 +167,7 @@ class TestThingsboardImportMap(TestCase):
             variable=self.other_variable,
             tb_device_name="tb-device-003",
             station=self.station,
+            owner=self.station.owner,
         )
         with self.assertRaises(ValidationError) as ctx:
             mapping.clean()
