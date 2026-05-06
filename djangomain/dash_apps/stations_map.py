@@ -50,7 +50,7 @@ def _scrollable_checklist(block_id):
         block_id (str): Prefix used to build the checklist component id.
 
     Returns:
-        html.Div: Scrollable container holding a dcc.Checklist.
+        html.Div: Scrollable container holding a ``dcc.Checklist``.
     """
     return html.Div(
         dcc.Checklist(
@@ -77,7 +77,7 @@ def _all_none_buttons(block_id):
         block_id (str): Prefix used to build the button component ids.
 
     Returns:
-        dbc.ButtonGroup: Button group containing All and None buttons.
+        dbc.ButtonGroup: Button group containing *All* and *None* buttons.
     """
     return dbc.ButtonGroup(
         [
@@ -101,14 +101,15 @@ def _all_none_buttons(block_id):
 
 
 def _station_block(block_id, title):
-    """Build a station-selection card containing controls and checklist.
+    """Build a station-selection card containing bulk controls and a checklist.
 
     Args:
-        block_id (str): Prefix used for checklist and button ids.
-        title (str): Card title text.
+        block_id (str): Prefix used for internal control ids.
+        title (str): Text rendered in the card header.
 
     Returns:
-        dbc.Card: Card containing checklist controls for a station group.
+        dbc.Card: Card containing an All/None button group and a scrollable
+            checklist.
     """
     return dbc.Card(
         [
@@ -262,18 +263,18 @@ app.layout = dbc.Container(
 )
 
 
-# helpers
+# ── helpers ───────────────────────────────────────────────────────────────────
 
 
 def _ensure_list(value):
     """Normalise a callback input value to a plain Python list.
 
     Args:
-        value: Callback value that may be None, a scalar or a list.
+        value: Input that may be ``None``, a scalar, or a list.
 
     Returns:
-        list: Input value converted to a list, or an empty list for falsey
-            values.
+        list: Empty list for falsy input; the original list; or a single-item
+            list wrapping a scalar value.
     """
     if not value:
         return []
@@ -281,13 +282,17 @@ def _ensure_list(value):
 
 
 def _build_options(codes):
-    """Build checklist options from station code values.
+    """Build Dash checklist option dicts from an iterable of station codes.
+
+    Each option label is ``"<code> - <name>"`` when the station has a name,
+    otherwise just the code. Codes are sorted alphabetically.
 
     Args:
-        codes: Iterable of station code values.
+        codes (Iterable[str]): Station codes to include.
 
     Returns:
-        list[dict[str, str]]: Checklist options with label and value keys.
+        list[dict[str, str]]: Option dicts with ``"label"`` and ``"value"``
+            keys, ready for use in ``dcc.Checklist``.
     """
     sorted_codes = sorted(_ensure_list(codes))
     station_names = {
@@ -369,13 +374,21 @@ def _station_rows_for_codes(codes, station_group):
 def populate_options(all_raw, **kwargs):
     """Populate owned and public checklist options from visible station codes.
 
+    For authenticated users the owned section is shown and populated with
+    stations that belong to the current user; the remaining visible stations
+    go into the public section.  For anonymous users all visible stations are
+    treated as public and the owned section is hidden.
+
     Args:
-        all_raw: Raw station code values from the hidden station list.
-        **kwargs: Callback kwargs containing request context.
+        all_raw (list[str] | str | None): Raw children value of the hidden
+            ``stations_list`` div, containing the station codes the current
+            user may see.
+        **kwargs: Extra keyword arguments injected by ``django_plotly_dash``,
+            expected to include ``request``.
 
     Returns:
-        tuple[list[dict[str, str]], list[dict[str, str]], dict]: Owned options,
-            public options, and owned block style.
+        tuple[list[dict], list[dict], dict]: Owned checklist options, public
+            checklist options, and a CSS style dict for the owned block.
     """
     all_codes = _ensure_list(all_raw)
 
