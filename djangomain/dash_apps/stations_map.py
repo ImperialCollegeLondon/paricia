@@ -522,10 +522,7 @@ def sync_spatial_layer_controls(
         ):
             # New layers start unchecked and only show once user enables them.
             selected_layers.append({"id": dropdown_layer_id, "visible": False})
-    elif (
-        '"type":"spatial-layer-remove"' in triggered_component
-        or "'type': 'spatial-layer-remove'" in triggered_component
-    ):
+    elif '"type":"spatial-layer-remove"' in triggered_component:
         clicked_remove_ids = [
             (button_id.get("index"), clicks)
             for button_id, clicks in zip(
@@ -543,10 +540,7 @@ def sync_spatial_layer_controls(
         selected_layers = [
             entry for entry in selected_layers if entry["id"] != removed_id
         ]
-    elif (
-        '"type":"spatial-layer-visible"' in triggered_component
-        or "'type': 'spatial-layer-visible'" in triggered_component
-    ):
+    elif '"type":"spatial-layer-visible"' in triggered_component:
         visibility_by_id = {
             visibility_id.get("index"): bool(value)
             for visibility_id, value in zip(
@@ -685,7 +679,6 @@ def update_map(
     if (
         is_initial_call
         or '"type":"checklist"' in triggered_component
-        or "'type': 'checklist'" in triggered_component
         or triggered_component == "spatial-layer-store"
     ):
         rows = _station_rows_for_codes(owned_selected, "My Stations")
