@@ -183,7 +183,6 @@ def _map_style_block():
 _sidebar = dbc.Col(
     [
         _map_style_block(),
-        html.H6("Stations", className="fw-bold mb-3 mt-3 ps-1"),
         html.Div(_station_block("owned", "My Stations"), id="owned-block"),
         _station_block("public", "Public Stations"),
         _spatial_data_block(),
