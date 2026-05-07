@@ -348,7 +348,6 @@ def construct_matrix(
         file_format: a formatting.Format object.
     Returns: Dict of dataframes for results (one for each variable type in the raw data
         file).
-    TODO: Probably refactor into smaller chunks.
     """
     # Get the "preformatted matrix" sorted by date col
     matrix = read_data_to_import(matrix_source, file_format, station.timezone)
