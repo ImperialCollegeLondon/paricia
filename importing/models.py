@@ -38,7 +38,7 @@ class ImportOrigin(models.Model):
         return self.origin
 
     @classmethod
-    def get_default(cls) -> "ImportOrigin":
+    def get_default(cls) -> ImportOrigin:
         """Get default import origin, 'file'.
 
         It should exist, as it is created in a data migration, but just in case it
