@@ -348,3 +348,5 @@ TB_TIMESERIES_URL = (
 )
 
 MAX_POINTS = 1000  # Max points to display in plots
+
+IMPORT_BATCH_SIZE = 10000
