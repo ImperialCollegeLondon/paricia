@@ -197,15 +197,79 @@ class GeoTiffLayerUtilityTests(TestCase):
     @patch(
         "djangomain.dash_apps.geotiff_layers._extract_geotiff_coordinates_from_dataset"
     )
+    @patch("djangomain.dash_apps.geotiff_layers.WarpedVRT")
     @patch("djangomain.dash_apps.geotiff_layers.rasterio.open")
-    def test_load_geotiff_payload_returns_image_and_coordinates(
+    def test_load_geotiff_payload_reprojects_crs_aware_raster_with_warped_vrt(
         self,
         mock_open,
+        mock_warped_vrt,
         mock_extract_coordinates,
         mock_array_to_png,
     ):
         dataset = MagicMock()
         dataset.count = 1
+        dataset.crs = "EPSG:32630"
+
+        open_ctx = MagicMock()
+        open_ctx.__enter__.return_value = dataset
+        open_ctx.__exit__.return_value = False
+        mock_open.return_value = open_ctx
+
+        warped_dataset = MagicMock()
+        warped_dataset.count = 1
+        warped_dataset.read.return_value = np.ma.array(
+            [[[1.0, 2.0], [3.0, np.nan]]],
+            mask=[[[False, False], [False, True]]],
+        )
+
+        warped_ctx = MagicMock()
+        warped_ctx.__enter__.return_value = warped_dataset
+        warped_ctx.__exit__.return_value = False
+        mock_warped_vrt.return_value = warped_ctx
+
+        mock_extract_coordinates.return_value = [
+            [0.0, 1.0],
+            [1.0, 1.0],
+            [1.0, 0.0],
+            [0.0, 0.0],
+        ]
+        mock_array_to_png.return_value = "data:image/png;base64,abc"
+
+        payload = geotiff_layers.load_geotiff_payload("/tmp/layer.tif", 100.0)
+
+        self.assertEqual(
+            payload,
+            {
+                "image": "data:image/png;base64,abc",
+                "coordinates": [[0.0, 1.0], [1.0, 1.0], [1.0, 0.0], [0.0, 0.0]],
+            },
+        )
+        mock_warped_vrt.assert_called_once_with(
+            dataset,
+            crs=geotiff_layers._TARGET_RASTER_RENDER_CRS,
+            resampling=geotiff_layers.Resampling.bilinear,
+        )
+        dataset.read.assert_not_called()
+        warped_dataset.read.assert_called_once_with(masked=True)
+        converted_raster = mock_array_to_png.call_args[0][0]
+        self.assertEqual(converted_raster.shape, (2, 2))
+
+    @patch("djangomain.dash_apps.geotiff_layers._array_to_png_data_uri")
+    @patch(
+        "djangomain.dash_apps.geotiff_layers._extract_geotiff_coordinates_from_dataset"
+    )
+    @patch("djangomain.dash_apps.geotiff_layers.WarpedVRT")
+    @patch("djangomain.dash_apps.geotiff_layers.rasterio.open")
+    def test_load_geotiff_payload_uses_source_raster_when_crs_is_missing(
+        self,
+        mock_open,
+        mock_warped_vrt,
+        mock_extract_coordinates,
+        mock_array_to_png,
+    ):
+        dataset = MagicMock()
+        dataset.count = 1
+        dataset.crs = None
         dataset.read.return_value = np.ma.array(
             [[[1.0, 2.0], [3.0, np.nan]]],
             mask=[[[False, False], [False, True]]],
@@ -233,9 +297,8 @@ class GeoTiffLayerUtilityTests(TestCase):
                 "coordinates": [[0.0, 1.0], [1.0, 1.0], [1.0, 0.0], [0.0, 0.0]],
             },
         )
+        mock_warped_vrt.assert_not_called()
         dataset.read.assert_called_once_with(masked=True)
-        converted_raster = mock_array_to_png.call_args[0][0]
-        self.assertEqual(converted_raster.shape, (2, 2))
 
     @patch("djangomain.dash_apps.geotiff_layers.rasterio.open")
     def test_load_geotiff_payload_raises_for_empty_raster(self, mock_open):

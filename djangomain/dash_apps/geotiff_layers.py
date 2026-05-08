@@ -13,11 +13,15 @@ from guardian.shortcuts import get_objects_for_user
 from matplotlib import cm
 from matplotlib.colors import Normalize
 from PIL import Image
+from rasterio.enums import Resampling
+from rasterio.vrt import WarpedVRT
 from rasterio.warp import transform_bounds
 
 from importing.models import MapLayerImport
 
 _ALLOWED_TIFF_EXTENSIONS = {".tif", ".tiff"}
+_TARGET_MAPBOX_COORDS_CRS = "EPSG:4326"
+_TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +136,7 @@ def _extract_geotiff_coordinates_from_dataset(dataset, transform_bounds_fn):
         try:
             left, bottom, right, top = transform_bounds_fn(
                 dataset.crs,
-                "EPSG:4326",
+                _TARGET_MAPBOX_COORDS_CRS,
                 left,
                 bottom,
                 right,
@@ -245,6 +249,31 @@ def _array_to_png_data_uri(raster):
     return f"data:image/png;base64,{encoded}"
 
 
+def _build_image_payload_from_dataset(dataset):
+    """Build image payload from an open raster dataset.
+
+    Args:
+        dataset: Open rasterio dataset or WarpedVRT dataset.
+
+    Returns:
+        dict[str, object]: Payload containing image data URI and map
+            coordinates.
+    """
+    coordinates = _extract_geotiff_coordinates_from_dataset(
+        dataset,
+        transform_bounds,
+    )
+
+    raster = dataset.read(masked=True)
+    if dataset.count == 1:
+        raster = raster[0]
+    elif dataset.count > 4:
+        raster = raster[:3]
+
+    image_data = _array_to_png_data_uri(raster.filled(np.nan))
+    return {"image": image_data, "coordinates": coordinates}
+
+
 @lru_cache(maxsize=32)
 def load_geotiff_payload(file_path, mtime):
     """Load GeoTIFF and return mapbox image source plus coordinates.
@@ -264,24 +293,21 @@ def load_geotiff_payload(file_path, mtime):
             if dataset.count < 1:
                 raise ValueError("TIFF file has no bands.")
 
-            coordinates = _extract_geotiff_coordinates_from_dataset(
-                dataset,
-                transform_bounds,
-            )
+            # For CRS-aware rasters, always render from a Web Mercator VRT.
+            if dataset.crs:
+                with WarpedVRT(
+                    dataset,
+                    crs=_TARGET_RASTER_RENDER_CRS,
+                    resampling=Resampling.bilinear,
+                ) as warped_dataset:
+                    return _build_image_payload_from_dataset(warped_dataset)
 
-            raster = dataset.read(masked=True)
-            if dataset.count == 1:
-                raster = raster[0]
-            elif dataset.count > 4:
-                raster = raster[:3]
-
-            image_data = _array_to_png_data_uri(raster.filled(np.nan))
+            # Fall back to the source raster only when CRS metadata is absent.
+            return _build_image_payload_from_dataset(dataset)
     except ValueError:
         raise
     except Exception as exc:
         raise ValueError("Layer file is not a valid georeferenced GeoTIFF.") from exc
-
-    return {"image": image_data, "coordinates": coordinates}
 
 
 def build_mapbox_layers(layers_raw, user):
