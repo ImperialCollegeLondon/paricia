@@ -19,7 +19,6 @@ dependencies = [
     "Django",
     "django-bootstrap5",
     "django-crispy-forms",
-    "django-excel-response",
     "django-extensions",
     "django-filter",
     "django-timescaledb",
@@ -44,6 +43,7 @@ dependencies = [
     "Pillow",
     "django-tables2",
     "drf-spectacular",
+    "openpyxl",
 ]
 
 [project.optional-dependencies]

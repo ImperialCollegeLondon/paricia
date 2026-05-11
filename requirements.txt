@@ -41,7 +41,6 @@ django==5.2.8
     #   crispy-bootstrap5
     #   django-bootstrap5
     #   django-crispy-forms
-    #   django-excel-response
     #   django-extensions
     #   django-filter
     #   django-guardian
@@ -57,8 +56,6 @@ django-crispy-forms==2.5
     # via
     #   Paricia (pyproject.toml)
     #   crispy-bootstrap5
-django-excel-response==2.0.5
-    # via Paricia (pyproject.toml)
 django-extensions==4.1
     # via Paricia (pyproject.toml)
 django-filter==24.3
@@ -128,7 +125,7 @@ numpy==2.4.2
     #   Paricia (pyproject.toml)
     #   pandas
 openpyxl==2.4.11
-    # via django-excel-response
+    # via Paricia (pyproject.toml)
 packaging==24.2
     # via
     #   drf-yasg
