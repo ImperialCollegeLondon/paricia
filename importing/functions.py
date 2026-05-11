@@ -12,7 +12,6 @@
 ########################################################################################
 import zoneinfo
 from datetime import datetime
-from numbers import Number
 from pathlib import Path
 from typing import Any
 
@@ -27,76 +26,6 @@ from station.models import Station
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
-
-
-def validate_dates(data_import):
-    """Verify if there already exists data for the dates of the data being imported.
-
-    Args:
-        data_import: DataImportFull or DataImportTemp object.
-
-    Returns:
-        tuple of:
-            result: (list of dicts): one per classification for this file format of
-            summary:
-                dict containing information on the variable, the end date and whether
-                the data exists.
-            overwrite: (bool) True if any of the data already exists.
-    """
-    start_date = data_import.start_date
-    end_date = data_import.end_date
-    file_format = data_import.format_id
-    station = data_import.station
-    classifications = list(Classification.objects.filter(format=file_format))
-
-    overwrite = False
-    result = []
-    for classification in classifications:
-        # variable_code is used to select the measurmenet class
-        var_code = str(classification.variable.variable_code)
-        last_upload_date = get_last_uploaded_date(station.station_id, var_code)
-
-        # Check if data exists between dates)
-        query = Measurement.timescale.filter(
-            time__range=[start_date, end_date],
-            station_id=station.station_id,
-            variable_id=classification.variable.variable_id,
-        )
-        exists = True if query else False
-        overwrite = overwrite or exists
-        summary = {
-            "variable_id": classification.variable.variable_id,
-            "variable_code": classification.variable.variable_code,
-            "variable_name": classification.variable.name,
-            "last_upload_date": last_upload_date,
-            "exists": exists,
-        }
-        result.append(summary)
-    return result, overwrite
-
-
-def get_last_uploaded_date(station_id: int, var_code: str) -> datetime | None:
-    """Get the last date of uploaded data for a given station ID and variable code.
-
-    Args:
-        station_id: The station ID.
-        var_code: The variable code.
-
-    Returns:
-        The last date that data was uploaded for the given station ID and variable code
-        or None if no data was found.
-    """
-    query = (
-        Measurement.timescale.filter(
-            station__station_id=station_id, variable__variable_code=var_code
-        )
-        .order_by("time")
-        .last()
-    )
-    if query:
-        return query.time
-
-    return None
 
 
 def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
@@ -114,10 +43,9 @@ def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
     return pd.read_excel(
         file_path,
         header=None,
-        skiprows=firstline - 1,
+        skiprows=firstline,
         skipfooter=skipfooter,
         engine=None,
-        error_bad_lines=False,
         index_col=None,
     )
 
@@ -180,23 +108,18 @@ def process_datetime_columns(
     """
     tz = zoneinfo.ZoneInfo(timezone)
     dt_format = file_format.datetime_format
-    if file_format.date_column == file_format.time_column:
-        data["date"] = pd.Series(
-            [
-                standardise_datetime(row, dt_format).replace(tzinfo=tz)
-                for row in data.iloc[:, file_format.date_column].values
-            ],
-            index=data.index,
-        )
-    else:
+
+    # Join columns if date and time are separate
+    if file_format.date_column != file_format.time_column:
         cols = file_format.datetime_columns(file_format.delimiter.character)
-        data["datetime_str"] = data.iloc[:, cols].agg(
-            lambda row: " ".join([str(r) for r in row]), axis=1
-        )
-        data["date"] = data["datetime_str"].apply(
-            lambda row: standardise_datetime(row, dt_format).replace(tzinfo=tz)
-        )
-        data.drop(columns=["datetime_str"], inplace=True)
+        data["date"] = data.iloc[:, cols].astype(str).agg(" ".join, axis=1)
+    else:  # If single column, rename to 'date'
+        data = data.rename(columns={data.columns[file_format.date_column]: "date"})
+
+    # Invalid dates become NaT
+    data["date"] = pd.to_datetime(
+        data["date"], format=dt_format, errors="coerce"
+    ).dt.tz_localize(tz)
 
     return data.sort_values("date").reset_index(drop=True)
 
@@ -222,41 +145,6 @@ def read_data_to_import(source_file: Any, file_format: Format, timezone: str):
         data = read_file_csv(source_file, file_format)
 
     return process_datetime_columns(data, file_format, timezone)
-
-
-def standardise_datetime(date_time: Any, datetime_format: str) -> datetime:
-    """Returns a datetime object in the case that date_time is not already in that form.
-
-    Args:
-        date_time: The date_time to be transformed.
-        datetime_format: The format that date_time is in (to be passed to
-            datetime.strptime()).
-
-    Returns:
-        A datetime object or None if date_time is not in a recognised format.
-    """
-    if isinstance(date_time, datetime):
-        return date_time
-    elif isinstance(date_time, np.datetime64):
-        date_time = datetime.fromtimestamp(
-            float((date_time - unix_epoch) / one_second), tz=zoneinfo.ZoneInfo("UTC")
-        )
-        return date_time
-    elif isinstance(date_time, str):
-        pass
-    elif isinstance(date_time, list):
-        date_time = " ".join(date_time)
-    elif isinstance(date_time, pd.Series):
-        date_time = " ".join([str(val) for val in list(date_time[:])])
-    else:
-        date_time = ""
-
-    # Now try converting the resulting string into a datetime obj
-    try:
-        _date_time = datetime.strptime(date_time, datetime_format)
-    except Exception as e:
-        raise ValueError(f"Error parsing date: {date_time} - {e}")
-    return _date_time
 
 
 def save_temp_data_to_permanent(
@@ -339,15 +227,17 @@ def construct_matrix(
     station: Station,
     data_import: DataImport,
 ) -> list[pd.DataFrame]:
-    """Construct the "matrix" or results table. Does various cleaning / simple
-    transformations depending on the date format, type of data (accumulated,
-    incremental...) and deals with NANs.
+    """Creates dataframes containing the processed data for each variable.
+
+    Checks classifications exist for the file format and that there are enough
+    columns in the data file.
 
     Args:
         matrix_source: raw data file path
         file_format: a formatting.Format object.
-    Returns: Dict of dataframes for results (one for each variable type in the raw data
-        file).
+
+    Returns:
+        List of dataframes (one for each variable type in the raw data file).
     """
     # Get the "preformatted matrix" sorted by date col
     matrix = read_data_to_import(matrix_source, file_format, station.timezone)
@@ -373,17 +263,17 @@ def construct_matrix(
 
     to_ingest = []
     for classification in classifications:
-        data = get_classification_table(
-            classification, matrix, station, data_import, start_date, end_date
+        data = get_processed_variable_data(
+            matrix, classification, station, data_import, start_date, end_date
         )
-
-        # Add the data to the main list
         to_ingest.append(data)
 
     return to_ingest
 
 
-def validate_values(classification, matrix):
+def validate_values(
+    matrix: pd.DataFrame, classification: Classification
+) -> tuple[pd.DataFrame, list[tuple[str, str]]]:
     """Validates the values, maxima and minima according to the classification model,
     and renames the columns to standard names.
 
@@ -392,8 +282,8 @@ def validate_values(classification, matrix):
         matrix: the preformatted matrix containing the raw data.
 
     Returns:
-        A tuple of the validated data and a mapping for the columns that have been
-            validated, to be used in renaming.
+        A tuple of the validated data and a list of mappings for the columns that have
+            been validated, to be used in renaming.
     """
     columns = [("date", "date")]
 
@@ -431,33 +321,19 @@ def validate_values(classification, matrix):
     return data, columns
 
 
-def clean_dataframe(data, classification, matrix, columns):
-    """Cleans the dataframe by standardising the float format and removing NA rows.
+def remove_nan_rows(
+    data: pd.DataFrame, classification: Classification, columns: list[tuple[str, str]]
+) -> pd.DataFrame:
+    """Cleans the dataframe by removing rows composed of only nan values.
 
     Args:
         data: the dataframe to be cleaned.
         classification: a formatting.Classification object.
-        matrix: the preformatted matrix containing the raw data.
         columns: A mapping for the validated columns.
 
     Returns:
         The cleaned dataframe.
     """
-    # Deal with decimal comma vs point
-    for col in data:
-        if col == "date":
-            continue
-        if classification.decimal_comma:
-            data[col] = pd.Series(
-                [standardise_float_comma(val) for val in data[col].values],
-                index=matrix.index,
-            )
-        else:
-            data[col] = pd.Series(
-                [standardise_float(val) for val in data[col].values],
-                index=matrix.index,
-            )
-
     # Eliminate NAs if all values in row are nan
     data_columns = [column[1] for column in columns if column[1] != "date"]
     data = data.dropna(axis=0, how="all", subset=data_columns)
@@ -470,14 +346,14 @@ def clean_dataframe(data, classification, matrix, columns):
     return data
 
 
-def process_incremental_data(data):
+def process_incremental_data(data: pd.Dataframe) -> pd.DataFrame:
     """Processes incremental time series data.
 
     If incremental, it is assumed to only work with 'value' columns; maximum and
     minimum are excluded.
 
     Args:
-        data: Dataframe containing validated data to be processed.
+        data: the dataframe containing validated data to be processed.
 
     Returns:
         The processed dataframe with incremental data.
@@ -487,26 +363,27 @@ def process_incremental_data(data):
     return data.dropna()
 
 
-def process_cumulative_data(data, classification, acc, start_date, end_date):
+def process_cumulative_data(
+    data: pd.Dataframe,
+    classification: Classification,
+    acc: int,
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
+) -> pd.DataFrame:
     """Processes cumulative time series data aggregates over specified time periods.
 
     Args:
         data: Dataframe containing validated data to be processed.
         classification: a formatting.Classification object.
         acc: The accumulation period in minutes.
+        start_date: the start date of the data being imported.
+        end_date: the end date of the data being imported.
 
     Returns:
         The processed dataframe with cumulative data.
     """
     # Timestamps are rounded down to nearest acc minutes
-    data["date"] = data["date"].apply(
-        lambda x: x.replace(
-            minute=int(x.minute / acc) * acc,
-            second=0,
-            microsecond=0,
-            nanosecond=0,
-        )
-    )
+    data["date"] = data["date"].dt.floor(f"{acc}min")
     data["date"] = data["date"] + pd.Timedelta(minutes=acc)  # Shift timestamps forward
     count = data.groupby("date")["value"].sum().to_frame()  # Group and aggregate
     data = count["value"] * float(classification.resolution)
@@ -532,15 +409,20 @@ def process_cumulative_data(data, classification, acc, start_date, end_date):
     return data.fillna(0)  # Fill missing values
 
 
-def get_classification_table(
-    classification, matrix, station, data_import, start_date, end_date
-):
+def get_processed_variable_data(
+    matrix: pd.DataFrame,
+    classification: Classification,
+    station: Station,
+    data_import: DataImport,
+    start_date: pd.Timestamp,
+    end_date: pd.Timestamp,
+) -> pd.DataFrame:
     """Returns the data table for a given variable, performing necessary validation
     and data processing steps.
 
     Args:
-        classification: a formatting.Classification object.
         matrix: the preformatted matrix containing the raw data.
+        classification: a formatting.Classification object.
         station: the station for which the data is being imported.
         data_import: the DataImport object.
         start_date: the start date of the data being imported.
@@ -549,8 +431,9 @@ def get_classification_table(
     Returns:
         The processed dataframe for the given classification.
     """
-    data, columns = validate_values(classification, matrix)
-    data = clean_dataframe(data, classification, matrix, columns)
+    data, columns = validate_values(matrix, classification)
+    data = standardise_floats(data, classification)
+    data = remove_nan_rows(data, classification, columns)
 
     if classification.incremental:
         data = process_incremental_data(data)
@@ -561,41 +444,39 @@ def get_classification_table(
         if classification.resolution:
             data["value"] = data["value"] * float(classification.resolution)
 
+    # TODO: avoid storing one value as entire column?
     data["station_id"] = station.station_id
     data["variable_id"] = classification.variable.variable_id
     data["data_import_id"] = data_import.data_import_id
     return data
 
 
-def standardise_float(val_str):
-    """Removes commas from strings for numbers that use a period as a decimal separator.
+def standardise_floats(
+    data: pd.DataFrame, classification: Classification
+) -> pd.DataFrame:
+    """Standardises floats and commas.
 
-    Args: val_str: string or Number-like
-    Returns: val_num: float or None
+    If a period is used as a decimal separator, commas are removed. If a comma is used,
+    periods are removed and commas replaced with periods. Columns are then converted
+    to numeric type. Note: this assumes that all values are formatted in the same way.
+
+    Args:
+        data: the dataframe containing data to standardise.
+        classification: a formatting.Classification object.
+
+    Returns:
+        The dataframe with data now standardised.
     """
-    if isinstance(val_str, Number):
-        return float(val_str)
-    try:
-        val_str = val_str.replace(",", "")
-        val_num = float(val_str)
-    except ValueError:
-        val_num = None
-    return val_num
-
-
-def standardise_float_comma(val_str):
-    """For strings representing numbers that use a comma as a decimal separator:
-    (i) Removes full stops
-    (ii) Replaces commas for full stops
-    Args: val_str: string or Number-like
-    Returns: val_num: float or None
-    """
-    if isinstance(val_str, Number):
-        return float(val_str)
-    try:
-        val_str = val_str.replace(".", "")
-        val_str = val_str.replace(",", ".")
-        val_num = float(val_str)
-    except ValueError:
-        val_num = None
-    return val_num
+    for col in data:
+        if col == "date":
+            continue
+        if classification.decimal_comma:
+            data[col] = pd.to_numeric(
+                data[col].astype(str).str.replace(".", "").str.replace(",", "."),
+                errors="coerce",
+            )
+        else:  # if float commas
+            data[col] = pd.to_numeric(
+                data[col].astype(str).str.replace(",", ""), errors="coerce"
+            )
+    return data
