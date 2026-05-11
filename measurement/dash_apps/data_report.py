@@ -407,13 +407,16 @@ def populate_stations_dropdown(
         Output("secondary_variable_drop", "value"),
     ],
     Input("primary_station_drop", "value"),
+    Input("secondary_station_drop", "value"),
 )
 def populate_variable_dropdown(
-    chosen_station: str,
+    primary_chosen_station: str,
+    secondary_chosen_station: str,
 ) -> tuple[list[dict[str, str]], str | None, list[dict[str, str]], str | None]:
     """Populate the variable dropdown based on the chosen station."""
-    options = get_variable_options(chosen_station)
-    return *options, *options
+    primary_options = get_variable_options(primary_chosen_station)
+    secondary_options = get_variable_options(secondary_chosen_station)
+    return *primary_options, *secondary_options
 
 
 @app.callback(
