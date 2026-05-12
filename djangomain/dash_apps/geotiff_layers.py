@@ -1,21 +1,16 @@
 """GeoTIFF layer utilities for the stations map Dash app."""
 
 import base64
-import io
 import logging
 import os
 from functools import lru_cache
 from pathlib import Path
 
-import numpy as np
-import rasterio
 from guardian.shortcuts import get_objects_for_user
-from matplotlib import cm
-from matplotlib.colors import Normalize
-from PIL import Image
-from rasterio.enums import Resampling
-from rasterio.vrt import WarpedVRT
 from rasterio.warp import transform_bounds
+from rio_tiler.colormap import cmap
+from rio_tiler.errors import RioTilerError
+from rio_tiler.io import Reader
 
 from importing.models import MapLayerImport
 
@@ -115,27 +110,24 @@ def normalise_spatial_layers(layers_raw):
     return sorted(layers, key=lambda layer: layer["order"])
 
 
-def _extract_geotiff_coordinates_from_dataset(dataset, transform_bounds_fn):
-    """Compute lon/lat coordinates from a rasterio dataset.
+def _bounds_to_lonlat_coordinates(bounds, src_crs):
+    """Transform a (left, bottom, right, top) bounds tuple into lon/lat corner
+    coordinates ordered for mapbox image layers.
 
     Args:
-        dataset: Open rasterio dataset with bounds and optional CRS metadata.
-        transform_bounds_fn: Callable used to transform dataset bounds to
-            EPSG:4326.
+        bounds: Sequence of (left, bottom, right, top) in src_crs units.
+        src_crs: CRS the bounds are expressed in.
 
     Returns:
-        list[list[float]]: Image corner coordinates ordered for mapbox image
-            layers as [top-left, top-right, bottom-right, bottom-left].
+        list[list[float]]: Corner coordinates ordered [top-left, top-right,
+            bottom-right, bottom-left].
     """
-    if not dataset.crs and dataset.transform.is_identity:
-        raise ValueError("GeoTIFF is missing georeferencing metadata.")
+    left, bottom, right, top = bounds
 
-    left, bottom, right, top = dataset.bounds
-
-    if dataset.crs:
+    if str(src_crs) != _TARGET_MAPBOX_COORDS_CRS:
         try:
-            left, bottom, right, top = transform_bounds_fn(
-                dataset.crs,
+            left, bottom, right, top = transform_bounds(
+                src_crs,
                 _TARGET_MAPBOX_COORDS_CRS,
                 left,
                 bottom,
@@ -148,130 +140,58 @@ def _extract_geotiff_coordinates_from_dataset(dataset, transform_bounds_fn):
                 "GeoTIFF coordinates could not be transformed to lon/lat."
             ) from exc
 
-    coordinates = [
-        [left, top],
-        [right, top],
-        [right, bottom],
-        [left, bottom],
-    ]
-    if not all(-180 <= lon <= 180 and -90 <= lat <= 90 for lon, lat in coordinates):
+    if not (-180 <= left <= 180 and -180 <= right <= 180):
+        raise ValueError("GeoTIFF coordinates must be valid lon/lat values.")
+    if not (-90 <= bottom <= 90 and -90 <= top <= 90):
         raise ValueError("GeoTIFF coordinates must be valid lon/lat values.")
 
-    return [[float(lon), float(lat)] for lon, lat in coordinates]
+    return [
+        [float(left), float(top)],
+        [float(right), float(top)],
+        [float(right), float(bottom)],
+        [float(left), float(bottom)],
+    ]
 
 
-def _scale_to_uint8(values, finite_mask):
-    """Scale array values to an 8-bit range using finite values only.
+def _build_image_payload(file_path):
+    """Read a georeferenced single-band GeoTIFF and render it for mapbox.
 
-    Args:
-        values: Numeric array to scale.
-        finite_mask: Boolean mask indicating finite values.
-
-    Returns:
-        np.ndarray: uint8 array scaled into the range [0, 255].
-    """
-    if not finite_mask.any():
-        return np.zeros(values.shape, dtype=np.uint8)
-
-    finite_values = values[finite_mask]
-    minimum = float(finite_values.min())
-    maximum = float(finite_values.max())
-    if maximum <= minimum:
-        return np.zeros(values.shape, dtype=np.uint8)
-
-    norm = (np.nan_to_num(values, nan=minimum) - minimum) / (maximum - minimum)
-    return np.clip(norm * 255, 0, 255).astype(np.uint8)
-
-
-def _apply_viridis_like(norm):
-    """Map normalised [0,1] values to RGB using matplotlib viridis.
+    Pixels are warped to Web Mercator (EPSG:3857) so mapbox image placement on
+    a Mercator basemap stays spatially consistent. Corner coordinates are then
+    transformed back to lon/lat for the mapbox API.
 
     Args:
-        norm: Array-like normalised values expected in [0.0, 1.0].
-
-    Returns:
-        np.ndarray: RGB uint8 array with shape (..., 3).
-    """
-    rgba = np.asarray(
-        cm.get_cmap("viridis")(np.clip(norm, 0.0, 1.0), bytes=True),
-        dtype=np.uint8,
-    )
-    return rgba[..., :3]
-
-
-def _array_to_png_data_uri(raster):
-    """Convert a numeric raster array to a color RGBA PNG data URI.
-
-    Args:
-        raster: 2D single-band or 3D multi-band raster data.
-
-    Returns:
-        str: Base64 encoded PNG as a data URI.
-    """
-    array = np.asarray(raster, dtype=float)
-
-    # Handle channel-first arrays: (C, H, W) -> (H, W, C)
-    if array.ndim == 3 and array.shape[0] in (3, 4) and array.shape[-1] not in (3, 4):
-        array = np.moveaxis(array, 0, -1)
-
-    if array.ndim == 3 and array.shape[-1] >= 3:
-        # True-color TIFF: keep RGB information
-        rgb_source = array[..., :3]
-        finite_mask = np.isfinite(rgb_source).all(axis=-1)
-        rgb = np.zeros(rgb_source.shape, dtype=np.uint8)
-        for ch in range(3):
-            rgb[..., ch] = _scale_to_uint8(rgb_source[..., ch], finite_mask)
-    elif array.ndim == 2:
-        # Single-band TIFF: pseudocolor it
-        finite_mask = np.isfinite(array)
-        if finite_mask.any():
-            finite_values = array[finite_mask]
-            minimum = float(finite_values.min())
-            maximum = float(finite_values.max())
-
-            if maximum > minimum:
-                normaliser = Normalize(vmin=minimum, vmax=maximum, clip=True)
-                normalised = normaliser(np.nan_to_num(array, nan=minimum))
-                rgb = _apply_viridis_like(normalised)
-            else:
-                rgb = np.zeros((*array.shape, 3), dtype=np.uint8)
-        else:
-            rgb = np.zeros((*array.shape, 3), dtype=np.uint8)
-    else:
-        raise ValueError("GeoTIFF image could not be converted to a displayable PNG.")
-
-    alpha = np.where(finite_mask, 255, 0).astype(np.uint8)
-    rgba = np.dstack((rgb, alpha))
-
-    with io.BytesIO() as output:
-        Image.fromarray(rgba, mode="RGBA").save(output, format="PNG")
-        encoded = base64.b64encode(output.getvalue()).decode("ascii")
-    return f"data:image/png;base64,{encoded}"
-
-
-def _build_image_payload_from_dataset(dataset):
-    """Build image payload from an open raster dataset.
-
-    Args:
-        dataset: Open rasterio dataset or WarpedVRT dataset.
+        file_path: Absolute path to the GeoTIFF file on disk.
 
     Returns:
         dict[str, object]: Payload containing image data URI and map
             coordinates.
     """
-    coordinates = _extract_geotiff_coordinates_from_dataset(
-        dataset,
-        transform_bounds,
-    )
+    with Reader(input=file_path, options={}) as src:
+        dataset = src.dataset
+        if dataset is None:
+            raise ValueError("GeoTIFF dataset could not be opened.")
+        img = src.preview(
+            dst_crs=_TARGET_RASTER_RENDER_CRS,
+            max_size=4096,
+        )
+        coordinates = _bounds_to_lonlat_coordinates(
+            img.bounds,
+            _TARGET_RASTER_RENDER_CRS,
+        )
 
-    raster = dataset.read(masked=True)
-    if dataset.count == 1:
-        raster = raster[0]
-    elif dataset.count > 4:
-        raster = raster[:3]
+        min_value = float(img.array.min())
+        max_value = float(img.array.max())
+        if max_value > min_value:
+            img.rescale(in_range=((min_value, max_value),))
 
-    image_data = _array_to_png_data_uri(raster.filled(np.nan))
-    return {"image": image_data, "coordinates": coordinates}
+        png_bytes = img.render(img_format="PNG", colormap=cmap.get("viridis"))
+
+    encoded = base64.b64encode(png_bytes).decode("ascii")
+    return {
+        "image": f"data:image/png;base64,{encoded}",
+        "coordinates": coordinates,
+    }
 
 
 @lru_cache(maxsize=32)
@@ -289,24 +209,10 @@ def load_geotiff_payload(file_path, mtime):
     del mtime
 
     try:
-        with rasterio.open(file_path) as dataset:
-            if dataset.count < 1:
-                raise ValueError("TIFF file has no bands.")
-
-            # For CRS-aware rasters, always render from a Web Mercator VRT.
-            if dataset.crs:
-                with WarpedVRT(
-                    dataset,
-                    crs=_TARGET_RASTER_RENDER_CRS,
-                    resampling=Resampling.bilinear,
-                ) as warped_dataset:
-                    return _build_image_payload_from_dataset(warped_dataset)
-
-            # Fall back to the source raster only when CRS metadata is absent.
-            return _build_image_payload_from_dataset(dataset)
+        return _build_image_payload(file_path)
     except ValueError:
         raise
-    except Exception as exc:
+    except (RioTilerError, Exception) as exc:
         raise ValueError("Layer file is not a valid georeferenced GeoTIFF.") from exc
 
 
