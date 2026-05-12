@@ -45,7 +45,7 @@ dependencies = [
     "django-tables2",
     "drf-spectacular",
     "rasterio",
-    "matplotlib"
+    "rio-tiler",
 ]
 
 [project.optional-dependencies]
