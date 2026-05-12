@@ -4,13 +4,14 @@ from unittest.mock import Mock, patch
 
 import numpy as np
 import pandas as pd
-import pytz
 from django.test import TestCase
 
 from formatting.models import Format
 
 
 class TestMatrixFunctions(TestCase):
+    """Test suite for functions to construct the matrix."""
+
     fixtures = [
         "management_user",
         "variable_unit",
@@ -33,6 +34,7 @@ class TestMatrixFunctions(TestCase):
     ]
 
     def setUp(self):
+        """Set up the test data."""
         from importing.models import DataImport
         from station.models import TIMEZONES, Station
 
@@ -49,7 +51,8 @@ class TestMatrixFunctions(TestCase):
             rawfile=self.data_file,
         )
 
-    def test_preformat_matrix(self):
+    def test_read_data_to_import(self):
+        """Test the imported data is in the correct dimensions."""
         from importing.functions import read_data_to_import
 
         df = read_data_to_import(
@@ -58,6 +61,7 @@ class TestMatrixFunctions(TestCase):
         self.assertEqual(df.shape, (263371, 4))
 
     def test_validate_values(self):
+        """Test the validate_values function."""
         from importing.functions import validate_values
 
         mock_classification = Mock()
@@ -88,6 +92,7 @@ class TestMatrixFunctions(TestCase):
         self.assertEqual(columns, expected_columns)
 
     def test_remove_nan_rows(self):
+        """Test the remove_nan_rows function."""
         from importing.functions import remove_nan_rows
 
         data = pd.DataFrame(
@@ -126,6 +131,7 @@ class TestMatrixFunctions(TestCase):
             remove_nan_rows(data, mock_classification, columns)
 
     def test_process_incremental_data(self):
+        """Test the process_incremental_data function."""
         from importing.functions import process_incremental_data
 
         data = pd.DataFrame(
@@ -145,6 +151,7 @@ class TestMatrixFunctions(TestCase):
         pd.testing.assert_frame_equal(expected_data, processed_data)
 
     def test_process_cumulative_data(self):
+        """Test the process_cumulative_data function."""
         from importing.functions import process_cumulative_data
 
         dates = pd.to_datetime(
@@ -269,6 +276,7 @@ class TestMatrixFunctions(TestCase):
         pd.testing.assert_frame_equal(expected_data, result)
 
     def test_construct_matrix(self):
+        """Test the construct_matrix function."""
         from importing.functions import construct_matrix
         from variable.models import Variable
 
@@ -338,83 +346,11 @@ class TestMatrixFunctions(TestCase):
         )
 
 
-class TestDateFunctions(TestCase):
-    fixtures = [
-        "management_user",
-        "variable_unit",
-        "variable_variable",
-        "formatting_delimiter",
-        "formatting_extension",
-        "formatting_date",
-        "formatting_time",
-        "formatting_format",
-        "formatting_classification",
-        "station_country",
-        "station_region",
-        "station_ecosystem",
-        "station_institution",
-        "station_type",
-        "station_place",
-        "station_basin",
-        "station_placebasin",
-        "station_station",
-    ]
-
-    def setUp(self):
-        from django.core.files.uploadedfile import SimpleUploadedFile
-
-        from importing.functions import read_data_to_import
-        from importing.models import DataImport
-        from measurement.models import Measurement
-        from station.models import TIMEZONES, Station
-        from variable.models import Variable
-
-        self.file_format = Format.objects.get(format_id=45)
-        self.data_file = str(
-            Path(__file__).parent.parent / "test_data" / "iMHEA_HMT_01_HI_01_raw.csv"
-        )
-        self.station = Station.objects.get(station_id=8)
-        self.variable = Variable.objects.get(variable_id=10)
-        self.station.timezone = TIMEZONES[0][0]
-
-        matrix = read_data_to_import(
-            self.data_file, self.file_format, self.station.timezone
-        )
-        start_date = matrix.loc[0, "date"]
-        end_date = matrix.loc[matrix.shape[0] - 1, "date"]
-
-        # Note: This sample file is not used by any functions
-        sample_file = SimpleUploadedFile(
-            content=b"some data file", name="test_upload.csv"
-        )
-
-        self.data_import = DataImport.objects.create(
-            owner=self.station.owner,
-            station=self.station,
-            format=self.file_format,
-            start_date=start_date,
-            end_date=end_date,
-            rawfile=sample_file,
-            records=matrix.shape[0],
-        )
-
-        # Two lines of dummy data from the actual file
-        Measurement.objects.create(
-            station=self.station,
-            variable=self.variable,
-            time=datetime(2014, 6, 28, 0, 35, 0, tzinfo=pytz.UTC),
-            value=3.4,
-        )
-        Measurement.objects.create(
-            station=self.station,
-            variable=self.variable,
-            time=datetime(2016, 3, 7, 18, 5, 0, tzinfo=pytz.UTC),
-            value=5.7,
-        )
-
-
 class TestReadFile(TestCase):
+    """Test suite for functions to read the raw data files."""
+
     def test_read_file_excel(self):
+        """Test the read_file_excel function."""
         import io
 
         from formatting.models import Delimiter
@@ -453,6 +389,7 @@ class TestReadFile(TestCase):
         self.assertEqual(result.values.tolist(), expected_result)
 
     def test_read_file_csv(self):
+        """Test the read_file_csv function."""
         import io
 
         from formatting.models import Delimiter
@@ -490,7 +427,10 @@ class TestReadFile(TestCase):
 
 
 class TestProcessDatetimeColumns(TestCase):
+    """Test suite for processing the datetime columns."""
+
     def test_process_datetime_columns_same_column(self):
+        """Test process_datetime_columns when date and time are in the same column."""
         import pandas as pd
 
         from formatting.models import Date, Delimiter, Time
@@ -531,6 +471,7 @@ class TestProcessDatetimeColumns(TestCase):
         )
 
     def test_process_datetime_columns_different_columns(self):
+        """Test process_datetime_columns when datetime in a single column."""
         import pandas as pd
 
         from formatting.models import Date, Delimiter, Time
@@ -571,7 +512,8 @@ class TestProcessDatetimeColumns(TestCase):
             processed_data[["date", "value"]], expected_data, check_dtype=False
         )
 
-    def test_process_datetime_different_formats(self):
+    def test_process_datetime_columns_different_formats(self):
+        """Test process_datetime_columns when there are different date formats."""
         import pandas as pd
 
         from formatting.models import Date, Delimiter, Time
@@ -618,7 +560,10 @@ class TestProcessDatetimeColumns(TestCase):
 
 
 class TestStandardiseFloats(TestCase):
+    """Test suite for functions to standardise floats."""
+
     def test_standardise_floats_remove_comma(self):
+        """Test standardise floats where commas should be removed."""
         from importing.functions import standardise_floats
 
         # Commas removed entirely
@@ -640,6 +585,7 @@ class TestStandardiseFloats(TestCase):
         pd.testing.assert_frame_equal(result, expected_df)
 
     def test_standardise_floats_numeric(self):
+        """Test standardise_floats when the values are numeric."""
         from importing.functions import standardise_floats
 
         # Values provided area already floats
@@ -661,6 +607,7 @@ class TestStandardiseFloats(TestCase):
         pd.testing.assert_frame_equal(result, expected_df)
 
     def test_standardise_floats_replace_commas(self):
+        """Test standardise_floats where commas should be changed to periods."""
         from importing.functions import standardise_floats
 
         # Periods removed and commas replaced by periods
