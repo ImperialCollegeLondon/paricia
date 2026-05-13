@@ -124,7 +124,9 @@ def process_datetime_columns(
     return data.sort_values("date").reset_index(drop=True)
 
 
-def read_data_to_import(source_file: Any, file_format: Format, timezone: str):
+def read_data_to_import(
+    source_file: Any, file_format: Format, timezone: str
+) -> pd.DataFrame:
     """Reads the data from file into a pandas DataFrame.
 
     Works out what sort of file is being read and adds standardised columns for
@@ -136,7 +138,7 @@ def read_data_to_import(source_file: Any, file_format: Format, timezone: str):
         timezone: Timezone name, eg. 'America/Chicago'.
 
     Returns:
-        Pandas.DataFrame with raw data read and extra column(s) for datetime
+        The DataFrame with raw data read and extra column(s) for datetime
         correctly parsed.
     """
     if file_format.extension.value in ["xlsx", "xlx"]:
@@ -152,17 +154,16 @@ def save_temp_data_to_permanent(
 ) -> tuple[datetime, datetime, int]:
     """Function to pass the temporary import to the final table.
 
-    Uses the data_import_temp object only to get all required information from its
-    fields.
-
     This function carries out the following steps:
-
     - Bulk delete of existing data between two times on a given measurement table for
     the station in question.
     - Bulk create to add the new data from the uploaded file.
 
     Args:
-        data_import_temp: DataImportTemp object.
+        data_import: The DataImport object.
+
+    Returns:
+        A tuple containing the start date, end date and number of records inserted.
     """
     station = data_import.station
     file_format = data_import.format
@@ -238,6 +239,7 @@ def construct_matrix(
     Args:
         matrix_source: raw data file path
         file_format: a formatting.Format object.
+        station: a Station object.
 
     Returns:
         List of tuples containing the variable ID and the associated dataframe
@@ -280,12 +282,12 @@ def validate_values(
     and renames the columns to standard names.
 
     Args:
-        classification: a formatting.Classification object.
         matrix: the preformatted matrix containing the raw data.
+        classification: a formatting.Classification object.
 
     Returns:
-        A tuple of the validated data and a list of mappings for the columns that have
-            been validated, to be used in renaming.
+        A tuple of the validated DataFrame and a list of mappings for the columns that
+            have been validated, to be used in renaming.
     """
     columns = [("date", "date")]
 
@@ -423,8 +425,6 @@ def get_processed_variable_data(
     Args:
         matrix: the preformatted matrix containing the raw data.
         classification: a formatting.Classification object.
-        station: the station for which the data is being imported.
-        data_import: the DataImport object.
         start_date: the start date of the data being imported.
         end_date: the end date of the data being imported.
 
