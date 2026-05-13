@@ -231,24 +231,16 @@ class TestMatrixFunctions(TestCase):
         classification_mock.incremental = True
         classification_mock.accumulate = 3
         classification_mock.resolution = 2
-        classification_mock.variable.variable_id = 4
-        station_mock = Mock()
-        station_mock.station_id = 1
-        import_mock = Mock()
-        import_mock.data_import_id = 7
         start_mock, end_mock = Mock(), Mock()
 
         expected_data = pd.DataFrame(
             {
                 "date": dates,
                 "value": [10.0, 25.0, 37.0, 40.0, 52.0],
-                "station_id": [1] * 5,
-                "variable_id": [4] * 5,
-                "data_import_id": [7] * 5,
             }
         )
         result = get_processed_variable_data(
-            matrix, classification_mock, station_mock, import_mock, start_mock, end_mock
+            matrix, classification_mock, start_mock, end_mock
         )
         pd.testing.assert_frame_equal(expected_data, result)
         nan_mock.assert_called_once_with(matrix, classification_mock, columns)
@@ -265,13 +257,10 @@ class TestMatrixFunctions(TestCase):
             {
                 "date": dates,
                 "value": [i * 2 for i in [10.0, 25.0, 37.0, 40.0, 52.0]],
-                "station_id": [1] * 5,
-                "variable_id": [4] * 5,
-                "data_import_id": [7] * 5,
             }
         )
         result = get_processed_variable_data(
-            matrix, classification_mock, station_mock, import_mock, start_mock, end_mock
+            matrix, classification_mock, start_mock, end_mock
         )
         pd.testing.assert_frame_equal(expected_data, result)
 
@@ -281,19 +270,20 @@ class TestMatrixFunctions(TestCase):
         from variable.models import Variable
 
         variables_data = construct_matrix(
-            self.data_file, self.file_format, self.station, self.data_import
+            self.data_file, self.file_format, self.station
         )
         self.assertEqual(len(variables_data), 2)
-        self.assertEqual(len(variables_data[0]), 263370)
-        self.assertEqual(len(variables_data[1]), 263370)
+        self.assertEqual(len(variables_data[0][1]), 263370)
+        self.assertEqual(len(variables_data[1][1]), 263370)
+        var_ids = [var[0] for var in variables_data]
         vars = list(
-            Variable.objects.filter(
-                variable_id__in=[var["variable_id"][0] for var in variables_data]
-            ).values_list("variable_code", flat=True)
+            Variable.objects.filter(variable_id__in=var_ids).values_list(
+                "variable_code", flat=True
+            )
         )
         self.assertListEqual(vars, ["flow", "waterlevel"])
 
-        data_dict = {var: data for var, data in zip(vars, variables_data)}
+        data_dict = {var: data[1] for var, data in zip(vars, variables_data)}
 
         self.assertEqual(data_dict["flow"].value.min(), 0.0)
         self.assertEqual(data_dict["flow"].value.max(), 1624.4041)
@@ -308,7 +298,7 @@ class TestMatrixFunctions(TestCase):
         format = self.file_format
         format.format_id = 1000
         with self.assertRaises(ValueError) as msg:
-            construct_matrix(self.data_file, format, self.station, self.data_import)
+            construct_matrix(self.data_file, format, self.station)
 
         self.assertEqual(
             str(msg.exception),
@@ -327,9 +317,7 @@ class TestMatrixFunctions(TestCase):
             }
         )
         with self.assertRaises(ValueError) as msg:
-            construct_matrix(
-                self.data_file, self.file_format, self.station, self.data_import
-            )
+            construct_matrix(self.data_file, self.file_format, self.station)
         self.assertStartsWith(str(msg.exception), "The number of columns in the file")
 
     @patch("importing.functions.construct_matrix")
