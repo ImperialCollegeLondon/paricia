@@ -172,16 +172,16 @@ def save_temp_data_to_permanent(
     Measurement.objects.filter(data_import_id=data_import.data_import_id).delete()
     Report.objects.filter(data_import_id=data_import.data_import_id).delete()
 
-    all_data = construct_matrix(file, file_format, station, data_import)
+    all_data = construct_matrix(file, file_format, station)
     if not all_data:
         msg = "No data to import. Is the chosen format correct?"
         raise ValueError(msg)
 
-    must_cols = ["data_import_id", "station_id", "variable_id", "date", "value"]
-    start_date = all_data[0]["date"].iloc[0]
-    end_date = all_data[0]["date"].iloc[-1]
-    num_records = len(all_data[0])
-    for table in all_data:
+    must_cols = ["date", "value"]
+    start_date = all_data[0][1]["date"].iloc[0]
+    end_date = all_data[0][1]["date"].iloc[-1]
+    num_records = len(all_data[0][1])
+    for variable_id, table in all_data:
         cols = [
             c for c in table.columns if c in Measurement._meta.fields or c in must_cols
         ]
@@ -191,7 +191,6 @@ def save_temp_data_to_permanent(
             .rename(columns={"date": "time"})
         )
         records = table.to_dict("records")
-        variable_id = table["variable_id"].iloc[0]
 
         # Delete existing data between the date ranges. Needed for data not linked
         # to a data_import_id. Both measurements and reports are deleted.
@@ -208,7 +207,12 @@ def save_temp_data_to_permanent(
 
         # Bulk add new data
         def create_and_clean(**record):
-            instance = Measurement(**record)
+            instance = Measurement(
+                **record,
+                station_id=station.station_id,
+                variable_id=variable_id,
+                data_import_id=data_import.data_import_id,
+            )
             instance.clean()
             return instance
 
@@ -225,8 +229,7 @@ def construct_matrix(
     matrix_source: FileField,
     file_format: Format,
     station: Station,
-    data_import: DataImport,
-) -> list[pd.DataFrame]:
+) -> list[tuple[int, pd.DataFrame]]:
     """Creates dataframes containing the processed data for each variable.
 
     Checks classifications exist for the file format and that there are enough
@@ -237,7 +240,8 @@ def construct_matrix(
         file_format: a formatting.Format object.
 
     Returns:
-        List of dataframes (one for each variable type in the raw data file).
+        List of tuples containing the variable ID and the associated dataframe
+            containing the variable data.
     """
     # Get the "preformatted matrix" sorted by date col
     matrix = read_data_to_import(matrix_source, file_format, station.timezone)
@@ -263,10 +267,8 @@ def construct_matrix(
 
     to_ingest = []
     for classification in classifications:
-        data = get_processed_variable_data(
-            matrix, classification, station, data_import, start_date, end_date
-        )
-        to_ingest.append(data)
+        data = get_processed_variable_data(matrix, classification, start_date, end_date)
+        to_ingest.append((classification.variable.variable_id, data))
 
     return to_ingest
 
@@ -412,8 +414,6 @@ def process_cumulative_data(
 def get_processed_variable_data(
     matrix: pd.DataFrame,
     classification: Classification,
-    station: Station,
-    data_import: DataImport,
     start_date: pd.Timestamp,
     end_date: pd.Timestamp,
 ) -> pd.DataFrame:
@@ -444,10 +444,6 @@ def get_processed_variable_data(
         if classification.resolution:
             data["value"] = data["value"] * float(classification.resolution)
 
-    # TODO: avoid storing one value as entire column?
-    data["station_id"] = station.station_id
-    data["variable_id"] = classification.variable.variable_id
-    data["data_import_id"] = data_import.data_import_id
     return data
 
 
