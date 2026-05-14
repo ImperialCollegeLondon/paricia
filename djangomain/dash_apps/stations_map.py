@@ -617,8 +617,9 @@ def checklist_selection(options, _n_all, _n_none, current_value, callback_contex
         return option_values
 
     # Keep the current user selection whenever options are refreshed.
+    option_values_set = set(option_values)
     selected_values = [
-        value for value in _ensure_list(current_value) if value in set(option_values)
+        value for value in _ensure_list(current_value) if value in option_values_set
     ]
     if selected_values:
         return selected_values
@@ -704,20 +705,10 @@ def update_map(
 
     if is_initial_call or triggered_component == "spatial-layer-store":
         available_layers = available_map_layers_by_id(user)
-        selected_layer_ids = [
-            entry["id"]
+        spatial_layers_raw = [
+            {"id": entry["id"], "visible": True}
             for entry in _normalise_spatial_layer_store(spatial_layer_store)
             if entry["visible"] and entry["id"] in available_layers
-        ]
-        spatial_layers_raw = [
-            {
-                "id": layer_id,
-                "name": available_layers[layer_id]["name"],
-                "source_kind": "geotiff",
-                "visible": True,
-                "order": order,
-            }
-            for order, layer_id in enumerate(selected_layer_ids, start=1)
         ]
         patched["layout"]["mapbox"]["layers"] = build_mapbox_layers(
             spatial_layers_raw,
