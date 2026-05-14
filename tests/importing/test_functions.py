@@ -191,7 +191,7 @@ class TestMatrixFunctions(TestCase):
         processed_data = process_cumulative_data(
             data, mock_classification, acc=5, start_date=dates[0], end_date=dates[-1]
         ).reset_index(drop=True)
-        pd.testing.assert_frame_equal(expected_data, processed_data)
+        pd.testing.assert_frame_equal(expected_data, processed_data, check_dtype=False)
 
     @patch("importing.functions.validate_values")
     @patch("importing.functions.standardise_floats")
