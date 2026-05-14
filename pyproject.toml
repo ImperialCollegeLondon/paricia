@@ -12,14 +12,13 @@ version = "1.1.0"
 authors = [
     { name = "Imperial College London RSE Team", email = "ict-rse-team@imperial.ac.uk" },
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 
 dependencies = [
     "asgiref",
     "Django",
     "django-bootstrap5",
     "django-crispy-forms",
-    "django-excel-response",
     "django-extensions",
     "django-filter",
     "django-timescaledb",
@@ -29,7 +28,7 @@ dependencies = [
     "idna",
     "jdcal",
     "numpy",
-    "pandas",
+    "pandas>=3.0.1",
     "psycopg2",
     "pytz",
     "PyYAML",
@@ -44,6 +43,7 @@ dependencies = [
     "Pillow",
     "django-tables2",
     "drf-spectacular",
+    "openpyxl>=3.1.5",
 ]
 
 [project.optional-dependencies]
@@ -68,6 +68,7 @@ doc = [
     "markdown-include",
     "mkdocs-glightbox",
     "mkdocs-caption",
+    "lxml==6.1.0",
 ]
 
 [tool.mypy] # TODO: increase the strictness here
@@ -80,7 +81,7 @@ explicit_package_bases = true
 
 [tool.ruff]
 exclude = ["*/migrations"]
-target-version = "py311"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = [

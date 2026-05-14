@@ -105,7 +105,7 @@ buttons_div = html.Div(
         ),
     ],
     id="buttons_div",
-    hidden=True,
+    hidden=False,
     style={"margin-top": "30px"},
 )
 
@@ -144,7 +144,7 @@ app.layout = html.Div(
             children=[
                 filters,
                 html.Div(
-                    style={"width": "100%", "height": "90vh"},
+                    style={"width": "100%", "height": "80vh"},
                     children=[
                         dcc.Graph(
                             id="data_report_graph",
@@ -159,7 +159,11 @@ app.layout = html.Div(
 
 
 @app.callback(
-    Output("data_report_graph", "figure"),
+    [
+        Output("data_report_graph", "figure"),
+        Output("data_alert_div", "children"),
+        Output("data_alert_div", "hidden"),
+    ],
     [
         Input("data_report_graph", "relayoutData"),
         Input("display_button", "n_clicks"),
@@ -197,7 +201,7 @@ def update_graph(
 
     if not n_clicks:
         # After the first load, n_clicks is always > 0, so zooming works
-        return figure
+        return figure, [], True
 
     # This is cached, so it's not a big deal to call it multiple times
     data = get_report_data_from_db(
@@ -209,7 +213,9 @@ def update_graph(
         whole_months=False,
     )
     if data.empty:
-        return create_empty_plot()
+        # If there's no data to plot, we warn about it, to distinguish from other errors
+        alert = dbc.Alert("No data to plot for this time range.", color="warning")
+        return create_empty_plot(), [alert], False
 
     secondary_data = pd.DataFrame()
     if bool(show_secondary):
@@ -270,11 +276,33 @@ def update_graph(
                 relayout_data["xaxis.range[0]"],
                 relayout_data["xaxis.range[1]"],
             ]
-        return plot
+
+        # If the user request secondary data, but there's no data to plot, we
+        # warn about it.
+        if bool(show_secondary) and not secondary_available:
+            alert = dbc.Alert(
+                "Secondary data not available for this time range.", color="warning"
+            )
+            return plot, [alert], False
+        return plot, [], True
 
     except Exception as e:
         getLogger().error(e)
-        return create_empty_plot()
+
+        # If there's an unknown error, we warn about it, giving more or less details
+        # depending on the debug mode.
+        if settings.DEBUG:
+            alert = dbc.Alert(
+                f"There was an error during plotting: {e}.",
+                color="warning",
+            )
+        else:
+            alert = dbc.Alert(
+                "There was an error during plotting. "
+                "Please, contact Paricia Admins for details.",
+                color="warning",
+            )
+        return create_empty_plot(), [alert], False
 
 
 @app.callback(
@@ -333,47 +361,6 @@ def download_csv_report(
 
 
 @app.callback(
-    [
-        Output("data_alert_div", "children"),
-        Output("data_alert_div", "hidden"),
-        Output("buttons_div", "hidden"),
-    ],
-    [
-        Input("primary_temporality_drop", "value"),
-        Input("primary_station_drop", "value"),
-        Input("primary_variable_drop", "value"),
-        Input("date_range_picker", "start_date"),
-        Input("date_range_picker", "end_date"),
-    ],
-    State("data_report_graph", "figure"),
-)
-def update_alert(
-    temporality: str,
-    station: str,
-    variable: str,
-    start_time: str,
-    end_time: str,
-    figure: go.Figure,
-):
-    # This is cached, so it's not a big deal to call it multiple times
-    data = get_report_data_from_db(
-        station=station,
-        variable=variable,
-        start_time=start_time,
-        end_time=end_time,
-        report_type=temporality,
-        whole_months=False,
-    )
-    if data.empty:
-        alert = dbc.Alert(
-            "No data was found with the selected criteria", color="warning"
-        )
-        return [alert], False, True
-    else:
-        return [], True, False
-
-
-@app.callback(
     Output("secondary_traces_div", "hidden"),
     Input("switch-show-secondary", "value"),
 )
@@ -407,13 +394,16 @@ def populate_stations_dropdown(
         Output("secondary_variable_drop", "value"),
     ],
     Input("primary_station_drop", "value"),
+    Input("secondary_station_drop", "value"),
 )
 def populate_variable_dropdown(
-    chosen_station: str,
+    primary_chosen_station: str,
+    secondary_chosen_station: str,
 ) -> tuple[list[dict[str, str]], str | None, list[dict[str, str]], str | None]:
     """Populate the variable dropdown based on the chosen station."""
-    options = get_variable_options(chosen_station)
-    return *options, *options
+    primary_options = get_variable_options(primary_chosen_station)
+    secondary_options = get_variable_options(secondary_chosen_station)
+    return *primary_options, *secondary_options
 
 
 @app.callback(

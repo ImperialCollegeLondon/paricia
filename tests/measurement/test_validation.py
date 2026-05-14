@@ -183,7 +183,7 @@ class TestValidationFunctions(TestCase):
                 "suspicious_daily_count": [True, False],
             },
         )
-        pd.testing.assert_frame_equal(result, expected)
+        pd.testing.assert_frame_equal(result, expected, check_dtype=False)
 
         # Call the function under test when value is NOT cummulative
         is_cumulative = False
@@ -204,7 +204,7 @@ class TestValidationFunctions(TestCase):
                 "suspicious_daily_count": [True, False],
             },
         )
-        pd.testing.assert_frame_equal(result, expected)
+        pd.testing.assert_frame_equal(result, expected, check_dtype=False)
 
     def test_generate_validation_report(self):
         from measurement.validation import generate_validation_report
