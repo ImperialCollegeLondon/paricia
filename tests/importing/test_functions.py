@@ -269,7 +269,7 @@ class TestMatrixFunctions(TestCase):
         from importing.functions import construct_matrix
         from variable.models import Variable
 
-        variables_data = construct_matrix(
+        start_date, end_date, variables_data = construct_matrix(
             self.data_file, self.file_format, self.station
         )
         self.assertEqual(len(variables_data), 2)
@@ -290,6 +290,15 @@ class TestMatrixFunctions(TestCase):
 
         self.assertEqual(data_dict["waterlevel"].value.min(), 0.0)
         self.assertEqual(data_dict["waterlevel"].value.max(), 96.54)
+
+        expected_start_date = pd.to_datetime(
+            "28/06/2014 00:00:00", format=self.file_format.datetime_format
+        ).tz_localize(self.station.timezone)
+        expected_end_date = pd.to_datetime(
+            "04/01/2017 12:40:00", format=self.file_format.datetime_format
+        ).tz_localize(self.station.timezone)
+        self.assertEqual(start_date, expected_start_date)
+        self.assertEqual(end_date, expected_end_date)
 
     def test_construct_matrix_no_classifications(self):
         """Test construct_matrix raises an error with no classifications."""
@@ -325,7 +334,7 @@ class TestMatrixFunctions(TestCase):
         """Test save_temp_data_to_permanent raises an error when no data to import."""
         from importing.functions import save_temp_data_to_permanent
 
-        matrix_mock.return_value = []
+        matrix_mock.return_value = "start date", "end date", []
         with self.assertRaises(ValueError) as msg:
             save_temp_data_to_permanent(self.data_import)
 

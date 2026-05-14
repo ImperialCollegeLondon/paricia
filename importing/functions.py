@@ -169,18 +169,16 @@ def save_temp_data_to_permanent(
     file_format = data_import.format
     file = data_import.rawfile
 
-    # Delete exiting measurements and reports for the same data_import_id
+    # Delete existing measurements and reports for the same data_import_id
     Measurement.objects.filter(data_import_id=data_import.data_import_id).delete()
     Report.objects.filter(data_import_id=data_import.data_import_id).delete()
 
-    all_data = construct_matrix(file, file_format, station)
+    start_date, end_date, all_data = construct_matrix(file, file_format, station)
     if not all_data:
         msg = "No data to import. Is the chosen format correct?"
         raise ValueError(msg)
 
     must_cols = ["date", "value"]
-    start_date = all_data[0][1]["date"].iloc[0]
-    end_date = all_data[0][1]["date"].iloc[-1]
     num_records = len(all_data[0][1])
     for variable_id, table in all_data:
         cols = [
@@ -230,7 +228,7 @@ def construct_matrix(
     matrix_source: FileField,
     file_format: Format,
     station: Station,
-) -> list[tuple[int, pd.DataFrame]]:
+) -> tuple[pd.Timestamp, pd.Timestamp, list[tuple[int, pd.DataFrame]]]:
     """Creates dataframes containing the processed data for each variable.
 
     Checks classifications exist for the file format and that there are enough
@@ -242,8 +240,8 @@ def construct_matrix(
         station: a Station object.
 
     Returns:
-        List of tuples containing the variable ID and the associated dataframe
-            containing the variable data.
+        The start and end dates and a list of tuples containing the variable ID and the
+            associated dataframe containing the variable data.
     """
     # Get the "preformatted matrix" sorted by date col
     matrix = read_data_to_import(matrix_source, file_format, station.timezone)
@@ -272,7 +270,7 @@ def construct_matrix(
         data = get_processed_variable_data(matrix, classification, start_date, end_date)
         to_ingest.append((classification.variable.variable_id, data))
 
-    return to_ingest
+    return start_date, end_date, to_ingest
 
 
 def validate_values(
