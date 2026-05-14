@@ -124,55 +124,6 @@ class GeoTiffLayerUtilityTests(TestCase):
             },
         )
 
-    def test_normalise_spatial_layers_filters_duplicates_and_sorts(self):
-        layers_raw = [
-            {
-                "id": "layer-a",
-                "source_kind": "geotiff",
-                "name": "A",
-                "visible": True,
-                "order": 3,
-            },
-            {
-                "id": "layer-a",
-                "source_kind": "geotiff",
-                "name": "duplicate",
-                "visible": True,
-                "order": 1,
-            },
-            {
-                "id": "layer-b",
-                "source_kind": "wms",
-                "name": "Not GeoTIFF",
-                "visible": True,
-                "order": 1,
-            },
-            {
-                "id": "layer-c",
-                "source_kind": "GeoTiff",
-                "name": "C",
-                "order": 1.9,
-            },
-            {
-                "id": "layer-d",
-                "source_kind": "geotiff",
-                "name": "",
-                "order": "bad-value",
-            },
-        ]
-
-        result = geotiff_layers.normalise_spatial_layers(layers_raw)
-
-        self.assertEqual(
-            [layer["id"] for layer in result],
-            ["layer-c", "layer-a", "layer-d"],
-        )
-        self.assertEqual(result[0]["order"], 1)
-        self.assertEqual(result[1]["order"], 3)
-        self.assertEqual(result[2]["order"], 5)
-        self.assertEqual(result[2]["name"], "Layer 5")
-        self.assertTrue(result[2]["visible"])
-
     def test_bounds_to_lonlat_coordinates_returns_expected_order(self):
         result = geotiff_layers._bounds_to_lonlat_coordinates(
             bounds=(-10.5, -5.25, 10.5, 5.25),

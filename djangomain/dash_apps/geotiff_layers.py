@@ -4,7 +4,6 @@ import base64
 import logging
 import os
 from functools import lru_cache
-from pathlib import Path
 
 from guardian.shortcuts import get_objects_for_user
 from rasterio.warp import transform_bounds
@@ -14,9 +13,10 @@ from rio_tiler.io import Reader
 
 from importing.models import MapLayerImport
 
-_ALLOWED_TIFF_EXTENSIONS = {".tif", ".tiff"}
 _TARGET_MAPBOX_COORDS_CRS = "EPSG:4326"
+"""Provides coordinates in lon/lat rather than Mercator meters."""
 _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
+"""Provides Mercator meters for rendering raster data in Mapbox."""
 
 logger = logging.getLogger(__name__)
 
@@ -51,12 +51,6 @@ def available_map_layers_by_id(user):
         except (ValueError, OSError):
             continue
 
-        if (
-            not file_path
-            or Path(file_path).suffix.lower() not in _ALLOWED_TIFF_EXTENSIONS
-        ):
-            continue
-
         layer_id = f"maplayer-{layer.pk}"
         layer_index[layer_id] = {
             "id": layer_id,
@@ -65,49 +59,6 @@ def available_map_layers_by_id(user):
         }
 
     return layer_index
-
-
-def normalise_spatial_layers(layers_raw):
-    """Normalise GeoTIFF layer data from spatial layer store.
-
-    Args:
-        layers_raw: Raw list-like layer payload from the client store.
-
-    Returns:
-        list[dict[str, object]]: De-duplicated and sorted GeoTIFF layer
-            dictionaries containing id, name, source_kind, visible and order.
-    """
-    layers = []
-    seen_ids = set()
-
-    for index, raw in enumerate(layers_raw if isinstance(layers_raw, list) else []):
-        if not isinstance(raw, dict):
-            continue
-
-        layer_id = str(raw.get("id", "")).strip()
-        if not layer_id or layer_id in seen_ids:
-            continue
-        seen_ids.add(layer_id)
-
-        source_kind = str(raw.get("source_kind", "")).strip().lower()
-        if source_kind != "geotiff":
-            continue
-
-        order = raw.get("order", index + 1)
-        if not isinstance(order, int | float):
-            order = index + 1
-
-        layers.append(
-            {
-                "id": layer_id,
-                "name": str(raw.get("name", "")).strip() or f"Layer {index + 1}",
-                "source_kind": "geotiff",
-                "visible": bool(raw.get("visible", True)),
-                "order": int(order),
-            }
-        )
-
-    return sorted(layers, key=lambda layer: layer["order"])
 
 
 def _bounds_to_lonlat_coordinates(bounds, src_crs):
@@ -223,7 +174,8 @@ def build_mapbox_layers(layers_raw, user):
     MapLayerImport objects and never from client store values.
 
     Args:
-        layers_raw: Raw spatial layer payload from the client state.
+        layers_raw: Trusted spatial layer payload from server-side callback
+            state.
         user: Django user used for per-object authorization.
 
     Returns:
@@ -233,7 +185,7 @@ def build_mapbox_layers(layers_raw, user):
     map_layers = []
     available_layers = available_map_layers_by_id(user)
 
-    for layer in normalise_spatial_layers(layers_raw):
+    for layer in layers_raw:
         if not layer["visible"]:
             continue
 
