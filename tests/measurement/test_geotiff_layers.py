@@ -4,7 +4,7 @@ from pathlib import Path
 
 import numpy as np
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import AnonymousUser, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from guardian.shortcuts import assign_perm
@@ -86,17 +86,23 @@ class GeoTiffLayerUtilityTests(TestCase):
     def test_available_map_layers_by_id_returns_empty_for_none_user(self):
         self.assertEqual(geotiff_layers.available_map_layers_by_id(None), {})
 
-    def test_available_map_layers_by_id_handles_invalid_user(self):
-        self.assertEqual(geotiff_layers.available_map_layers_by_id(object()), {})
+    def test_available_map_layers_by_id_returns_empty_for_anonymous_user(self):
+        self.assertEqual(geotiff_layers.available_map_layers_by_id(AnonymousUser()), {})
 
-    def test_available_map_layers_by_id_filters_by_permissions_and_extension(self):
+    def test_available_map_layers_by_id_filters_by_permissions_only(self):
         owner = self._create_user("owner")
         viewer = self._create_user("viewer")
 
-        valid = self._create_layer(
+        visible_tif = self._create_layer(
             owner=owner,
             name="Visible GeoTIFF",
             filename="visible.tif",
+            grant_view_to=viewer,
+        )
+        visible_png_name = self._create_layer(
+            owner=owner,
+            name="Visible layer with png filename",
+            filename="visible.png",
             grant_view_to=viewer,
         )
         self._create_layer(
@@ -104,23 +110,22 @@ class GeoTiffLayerUtilityTests(TestCase):
             name="Hidden GeoTIFF",
             filename="hidden.tif",
         )
-        self._create_layer(
-            owner=owner,
-            name="Not a GeoTIFF",
-            filename="not-geotiff.png",
-            grant_view_to=viewer,
-        )
 
         result = geotiff_layers.available_map_layers_by_id(viewer)
 
         self.assertEqual(
             result,
             {
-                f"maplayer-{valid.pk}": {
-                    "id": f"maplayer-{valid.pk}",
+                f"maplayer-{visible_tif.pk}": {
+                    "id": f"maplayer-{visible_tif.pk}",
                     "name": "Visible GeoTIFF",
-                    "file_path": valid.file.path,
-                }
+                    "file_path": visible_tif.file.path,
+                },
+                f"maplayer-{visible_png_name.pk}": {
+                    "id": f"maplayer-{visible_png_name.pk}",
+                    "name": "Visible layer with png filename",
+                    "file_path": visible_png_name.file.path,
+                },
             },
         )
 
@@ -230,9 +235,7 @@ class GeoTiffLayerUtilityTests(TestCase):
             layers_raw=[
                 {
                     "id": f"maplayer-{layer.pk}",
-                    "source_kind": "geotiff",
                     "visible": True,
-                    "order": 1,
                 }
             ],
             user=viewer,
@@ -260,9 +263,7 @@ class GeoTiffLayerUtilityTests(TestCase):
             layers_raw=[
                 {
                     "id": f"maplayer-{broken.pk}",
-                    "source_kind": "geotiff",
                     "visible": True,
-                    "order": 1,
                 }
             ],
             user=viewer,
