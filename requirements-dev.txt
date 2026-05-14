@@ -127,9 +127,7 @@ inflection==0.5.1
 itsdangerous==2.2.0
     # via flask
 jdcal==1.4.1
-    # via
-    #   Paricia (pyproject.toml)
-    #   openpyxl
+    # via Paricia (pyproject.toml)
 jinja2==3.1.6
     # via flask
 jsbeautifier==1.15.1
@@ -164,14 +162,14 @@ numpy==2.4.2
     # via
     #   Paricia (pyproject.toml)
     #   pandas
-openpyxl==2.4.11
+openpyxl==3.1.5
     # via Paricia (pyproject.toml)
 packaging==24.2
     # via
     #   build
     #   drf-yasg
     #   plotly
-pandas==2.2.3
+pandas==3.0.3
     # via Paricia (pyproject.toml)
 pathspec==0.12.1
     # via
@@ -205,7 +203,6 @@ pytz==2025.2
     # via
     #   Paricia (pyproject.toml)
     #   drf-yasg
-    #   pandas
 pyyaml==6.0.3
     # via
     #   Paricia (pyproject.toml)
@@ -244,8 +241,6 @@ typing-extensions==4.15.0
     # via
     #   dash
     #   mypy
-tzdata==2024.2
-    # via pandas
 uritemplate==4.2.0
     # via
     #   Paricia (pyproject.toml)
