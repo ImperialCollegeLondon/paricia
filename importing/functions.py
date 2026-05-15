@@ -67,11 +67,9 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     skiprows: int | list[int] = firstline
     if not isinstance(source_file, str | Path):
         # The file was uploaded as binary
-        lines = len(source_file.readlines())
+        lines = sum(1 for _ in source_file)
         source_file.seek(0)
-        skiprows = [i for i in range(0, firstline)] + [
-            i - 1 for i in range(lines, lines - skipfooter, -1)
-        ]
+        skiprows = list(range(0, firstline)) + list(range(lines - skipfooter, lines))
         skipfooter = 0
 
     # Deal with the delimiter
