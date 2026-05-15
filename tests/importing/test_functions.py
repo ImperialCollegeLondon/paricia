@@ -422,6 +422,50 @@ class TestReadFile(TestCase):
         expected_result = [[1, 2, 3], [4, 5, 6]]
         self.assertEqual(result.values.tolist(), expected_result)
 
+        # Delimiter is a hexcode
+        file_format = Format(
+            first_row=1, delimiter=Delimiter(name="comma", character="\\x2C")
+        )
+        result = read_file_csv(csv_file, file_format)
+        expected_result = [[4, 5, 6], [7, 8, 9]]
+        self.assertEqual(result.values.tolist(), expected_result)
+
+    def test_read_file_csv_space_delimiter(self):
+        """Test the read_file_csv function with a space delimiter."""
+        import io
+
+        from formatting.models import Delimiter
+        from importing.functions import read_file_csv
+
+        # Create a sample CSV file
+        csv_data = "1 2 3\n4 5 6\n7 8 9\n"
+        csv_file = io.StringIO(csv_data)
+
+        # Delimiter is a white space
+        file_format = Format(
+            first_row=1, delimiter=Delimiter(name="space", character=" ")
+        )
+        result = read_file_csv(csv_file, file_format)
+        expected_result = [[4, 5, 6], [7, 8, 9]]
+        self.assertEqual(result.values.tolist(), expected_result)
+
+    def test_read_file_csv_from_path(self):
+        """Test the read_file_csv function when file provided."""
+
+        from formatting.models import Delimiter
+        from importing.functions import read_file_csv
+
+        data_file = str(
+            Path(__file__).parent.parent / "test_data/iMHEA_HMT_01_HI_01_raw.csv"
+        )
+        file_format = Format(
+            first_row=1, delimiter=Delimiter(name="comma", character=","), footer_rows=2
+        )
+        result = read_file_csv(data_file, file_format).values.tolist()
+        # Check the first and last
+        self.assertEqual(result[0][0], "28/06/2014 00:00:00")
+        self.assertEqual(result[-1][0], "04/01/2017 12:30:00")
+
 
 class TestProcessDatetimeColumns(TestCase):
     """Test suite for processing the datetime columns."""
