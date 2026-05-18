@@ -114,10 +114,14 @@ def process_datetime_columns(
     else:  # If single column, rename to 'date'
         data = data.rename(columns={data.columns[file_format.date_column]: "date"})
 
-    # Invalid dates become NaT
-    data["date"] = pd.to_datetime(
-        data["date"], format=dt_format, errors="coerce"
-    ).dt.tz_localize(tz)
+    # Invalid dates will cause an error
+    try:
+        data["date"] = pd.to_datetime(data["date"], format=dt_format).dt.tz_localize(tz)
+    except ValueError as exc:
+        raise ValueError(
+            "Failed to process datetime column(s). Ensure datetimes are provided in the"
+            f" correct format: {dt_format}."
+        ) from exc
 
     return data.sort_values("date").reset_index(drop=True)
 
@@ -285,10 +289,9 @@ def validate_values(
         A tuple of the validated DataFrame and a list of mappings for the columns that
             have been validated, to be used in renaming.
     """
-    columns = [("date", "date")]
+    columns = [("date", "date"), (classification.value, "value")]
 
     # Validation of values; non-validated values are set to np.nan
-    columns.append((classification.value, "value"))
     if classification.value_validator_column:
         matrix.loc[
             matrix[classification.value_validator_column]
@@ -462,13 +465,22 @@ def standardise_floats(
     for col in data:
         if col == "date":
             continue
-        if classification.decimal_comma:
-            data[col] = pd.to_numeric(
-                data[col].astype(str).str.replace(".", "").str.replace(",", "."),
-                errors="coerce",
-            )
-        else:  # if float commas
-            data[col] = pd.to_numeric(
-                data[col].astype(str).str.replace(",", ""), errors="coerce"
-            )
+        if classification.decimal_comma:  # comma used as decimal separator
+            try:
+                data[col] = pd.to_numeric(
+                    data[col].astype(str).str.replace(".", "").str.replace(",", "."),
+                )
+            except ValueError as exc:
+                raise ValueError(
+                    "Failed to parse value column. Expected values formatted with "
+                    "commas as decimal separators."
+                ) from exc
+        else:  # float used as decimal separator
+            try:
+                data[col] = pd.to_numeric(data[col].astype(str).str.replace(",", ""))
+            except ValueError as exc:
+                raise ValueError(
+                    "Failed to parse value column. Expected values formatted with "
+                    "periods as decimal separators."
+                ) from exc
     return data

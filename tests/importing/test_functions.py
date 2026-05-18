@@ -566,8 +566,8 @@ class TestProcessDatetimeColumns(TestCase):
                 "date": [
                     datetime(2022, 1, 1, 10, 0, 0),
                     "2022-01-01 09:00:00",
-                    "not a date",
                     np.datetime64("2022-01-01T11:00:00"),
+                    pd.Timestamp("2022-01-01 12:00:00"),
                 ],
                 "value": [1, 2, 3, 4],
             }
@@ -592,12 +592,48 @@ class TestProcessDatetimeColumns(TestCase):
                     pd.Timestamp("2022-01-01 09:00:00", tz="America/New_York"),
                     pd.Timestamp("2022-01-01 10:00:00", tz="America/New_York"),
                     pd.Timestamp("2022-01-01 11:00:00", tz="America/New_York"),
-                    pd.NaT,
+                    pd.Timestamp("2022-01-01 12:00:00", tz="America/New_York"),
                 ],
-                "value": [2, 1, 4, 3],
+                "value": [2, 1, 3, 4],
             }
         )
         pd.testing.assert_frame_equal(processed_data, expected_data, check_dtype=False)
+
+    def test_process_datetime_columns_error_raised(self):
+        """Test process_datetime_columns raises an error with invalid datetimes."""
+        import pandas as pd
+
+        from formatting.models import Date, Delimiter, Time
+        from importing.functions import process_datetime_columns
+
+        # Prepare test data
+        data = pd.DataFrame(
+            {
+                "date": ["not a date"],
+                "value": [1],
+            }
+        )
+        file_format = Format(
+            first_row=0,
+            date_column=0,
+            time_column=0,
+            date=Date(date_format="", code="%Y-%m-%d"),
+            time=Time(time_format="", code="%H:%M:%S"),
+            delimiter=Delimiter(name="comma", character=","),
+        )
+        timezone = "America/New_York"
+
+        # Call the function
+        with self.assertRaises(ValueError) as msg:
+            process_datetime_columns(data, file_format, timezone)
+
+        self.assertEqual(
+            str(msg.exception),
+            (
+                "Failed to process datetime column(s). Ensure datetimes are provided "
+                "in the correct format: %Y-%m-%d %H:%M:%S."
+            ),
+        )
 
 
 class TestStandardiseFloats(TestCase):
@@ -610,20 +646,35 @@ class TestStandardiseFloats(TestCase):
         # Commas removed entirely
         df = pd.DataFrame(
             {
-                "date": pd.date_range("2026-01-01", periods=4),
-                "values": ["10.4,", "10.5,", "10.6", "10:7"],
+                "date": pd.date_range("2026-01-01", periods=3),
+                "values": ["10.4,", "10.5,", "10.6"],
             }
         )
         mock_classification = Mock()
         mock_classification.decimal_comma = False
         expected_df = pd.DataFrame(
             {
-                "date": pd.date_range("2026-01-01", periods=4),
-                "values": [10.4, 10.5, 10.6, np.nan],
+                "date": pd.date_range("2026-01-01", periods=3),
+                "values": [10.4, 10.5, 10.6],
             }
         )
         result = standardise_floats(df, mock_classification)
         pd.testing.assert_frame_equal(result, expected_df)
+
+        # Check error raised with invalid data
+        df = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=2),
+                "values": ["10.4,", "10:6"],
+            }
+        )
+        with self.assertRaises(ValueError) as msg:
+            standardise_floats(df, mock_classification)
+        self.assertStartsWith(
+            str(msg.exception),
+            "Failed to parse value column. Expected values formatted with periods as "
+            "decimal separators.",
+        )
 
     def test_standardise_floats_numeric(self):
         """Test standardise_floats when the values are numeric."""
@@ -632,16 +683,16 @@ class TestStandardiseFloats(TestCase):
         # Values provided area already floats
         df = pd.DataFrame(
             {
-                "date": pd.date_range("2026-01-01", periods=4),
-                "values": [10.4, 10.5, 10.6, np.nan],
+                "date": pd.date_range("2026-01-01", periods=3),
+                "values": [10.4, 10.5, 10.6],
             }
         )
         mock_classification = Mock()
         mock_classification.decimal_comma = False
         expected_df = pd.DataFrame(
             {
-                "date": pd.date_range("2026-01-01", periods=4),
-                "values": [10.4, 10.5, 10.6, np.nan],
+                "date": pd.date_range("2026-01-01", periods=3),
+                "values": [10.4, 10.5, 10.6],
             }
         )
         result = standardise_floats(df, mock_classification)
@@ -654,17 +705,32 @@ class TestStandardiseFloats(TestCase):
         # Periods removed and commas replaced by periods
         df = pd.DataFrame(
             {
-                "date": pd.date_range("2026-01-01", periods=4),
-                "values": ["10,4.", "10,5.", "10,6", "10:7"],
+                "date": pd.date_range("2026-01-01", periods=3),
+                "values": ["10,4.", "10,5.", "10,6"],
             }
         )
         mock_classification = Mock()
         mock_classification.decimal_comma = True
         expected_df = pd.DataFrame(
             {
-                "date": pd.date_range("2026-01-01", periods=4),
-                "values": [10.4, 10.5, 10.6, np.nan],
+                "date": pd.date_range("2026-01-01", periods=3),
+                "values": [10.4, 10.5, 10.6],
             }
         )
         result = standardise_floats(df, mock_classification)
         pd.testing.assert_frame_equal(result, expected_df)
+
+        # Check error raised with invalid data
+        df = pd.DataFrame(
+            {
+                "date": pd.date_range("2026-01-01", periods=2),
+                "values": ["10,4,", "10:6"],
+            }
+        )
+        with self.assertRaises(ValueError) as msg:
+            standardise_floats(df, mock_classification)
+        self.assertStartsWith(
+            str(msg.exception),
+            "Failed to parse value column. Expected values formatted with commas as "
+            "decimal separators.",
+        )
