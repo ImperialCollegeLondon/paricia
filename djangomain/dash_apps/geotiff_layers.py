@@ -4,13 +4,12 @@ import base64
 import logging
 import os
 from functools import lru_cache
+from typing import Any
 
 from guardian.shortcuts import get_objects_for_user
 from rasterio.warp import transform_bounds
 from rio_tiler.colormap import cmap
-from rio_tiler.errors import RioTilerError
 from rio_tiler.io import Reader
-from typing import Any, Dict, Optional
 
 from importing.models import MapLayerImport
 
@@ -22,7 +21,7 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 logger = logging.getLogger(__name__)
 
 
-def available_map_layers_by_id(user: Optional[Any]) -> Dict[str, Dict[str, str]]:
+def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
     """Return user-viewable GeoTIFF layers keyed by dash dropdown id.
 
     Args:
@@ -71,21 +70,19 @@ def _bounds_to_lonlat_coordinates(bounds: tuple, src_crs: str) -> list[list[floa
     """
     left, bottom, right, top = bounds
 
-    if str(src_crs) != _TARGET_MAPBOX_COORDS_CRS:
-        try:
-            left, bottom, right, top = transform_bounds(
-                src_crs,
-                _TARGET_MAPBOX_COORDS_CRS,
-                left,
-                bottom,
-                right,
-                top,
-                densify_pts=21,
-            )
-        except Exception as exc:
-            raise ValueError(
-                "GeoTIFF coordinates could not be transformed to lon/lat."
-            ) from exc
+    try:
+        left, bottom, right, top = transform_bounds(
+            src_crs,
+            _TARGET_MAPBOX_COORDS_CRS,
+            left,
+            bottom,
+            right,
+            top,
+        )
+    except Exception as exc:
+        raise ValueError(
+            "GeoTIFF coordinates could not be transformed to lon/lat."
+        ) from exc
 
     if not (-180 <= left <= 180 and -180 <= right <= 180):
         raise ValueError("GeoTIFF coordinates must be valid lon/lat values.")
@@ -100,7 +97,7 @@ def _bounds_to_lonlat_coordinates(bounds: tuple, src_crs: str) -> list[list[floa
     ]
 
 
-def _build_image_payload(file_path: str) -> Dict[str, Any]:
+def _build_image_payload(file_path: str) -> dict[str, Any]:
     """Read a georeferenced single-band GeoTIFF and render it for mapbox.
 
     Pixels are warped to Web Mercator (EPSG:3857) so mapbox image placement on
@@ -120,17 +117,14 @@ def _build_image_payload(file_path: str) -> Dict[str, Any]:
             raise ValueError("GeoTIFF dataset could not be opened.")
         img = src.preview(
             dst_crs=_TARGET_RASTER_RENDER_CRS,
-            max_size=4096,
         )
         coordinates = _bounds_to_lonlat_coordinates(
-            img.bounds,
-            _TARGET_RASTER_RENDER_CRS,
+            dataset.bounds,
+            src.crs,
         )
 
-        min_value = float(img.array.min())
-        max_value = float(img.array.max())
-        if max_value > min_value:
-            img.rescale(in_range=((min_value, max_value),))
+        band_stats = next(iter(src.statistics().values()))
+        img.rescale(in_range=((band_stats.min, band_stats.max),))
 
         png_bytes = img.render(img_format="PNG", colormap=cmap.get("viridis"))
 
@@ -142,7 +136,7 @@ def _build_image_payload(file_path: str) -> Dict[str, Any]:
 
 
 @lru_cache(maxsize=32)
-def load_geotiff_payload(file_path: str, _mtime: float) -> Dict[str, Any]:
+def load_geotiff_payload(file_path: str, _mtime: float) -> dict[str, Any]:
     """Load and cache GeoTIFF payload from disk.
 
     The mtime parameter is not used directly but is part of the cache key,
@@ -160,7 +154,7 @@ def load_geotiff_payload(file_path: str, _mtime: float) -> Dict[str, Any]:
     return _build_image_payload(file_path)
 
 
-def build_mapbox_layers(layers_raw: list, user: Any) -> list[Dict[str, Any]]:
+def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
     """Build mapbox layout layers for currently visible spatial layers.
 
     GeoTIFF sources are resolved server-side from currently authorised
