@@ -19,7 +19,7 @@ from djangomain.dash_apps.geotiff_layers import (
 )
 from station.models import Station
 
-SCROLL_HEIGHT = "280px"
+SCROLL_HEIGHT = "150px"
 
 _STATION_KEYS = (
     "station_id",
