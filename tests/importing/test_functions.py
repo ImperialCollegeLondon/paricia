@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import numpy as np
 import pandas as pd
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from formatting.models import Format
 
@@ -341,6 +341,31 @@ class TestMatrixFunctions(TestCase):
         self.assertEqual(
             str(msg.exception), "No data to import. Is the chosen format correct?"
         )
+
+    @override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
+    def test_save_temp_data_to_permanent(self):
+        """Test the save_temp_data_to_permanent function."""
+        from importing.functions import save_temp_data_to_permanent
+        from measurement.models import Measurement
+
+        start_date, end_date, num_records = save_temp_data_to_permanent(
+            self.data_import
+        )
+        expected_start_date = pd.to_datetime(
+            "28/06/2014 00:00:00", format=self.file_format.datetime_format
+        ).tz_localize(self.station.timezone)
+        expected_end_date = pd.to_datetime(
+            "04/01/2017 12:40:00", format=self.file_format.datetime_format
+        ).tz_localize(self.station.timezone)
+
+        self.assertEqual(num_records, 263370)
+        self.assertEqual(start_date, expected_start_date)
+        self.assertEqual(end_date, expected_end_date)
+
+        results = Measurement.objects.filter(
+            data_import=self.data_import, variable_id=10
+        )
+        self.assertEqual(results.count(), 263370)
 
 
 class TestReadFile(TestCase):

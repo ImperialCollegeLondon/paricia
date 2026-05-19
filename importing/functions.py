@@ -17,6 +17,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from django.conf import settings
 from django.db.models import FileField
 
 from formatting.models import Classification, Format
@@ -191,7 +192,6 @@ def save_temp_data_to_permanent(
             .dropna(axis=0, subset=must_cols)
             .rename(columns={"date": "time"})
         )
-        records = table.to_dict("records")
 
         # Delete existing data between the date ranges. Needed for data not linked
         # to a data_import_id. Both measurements and reports are deleted.
@@ -206,22 +206,24 @@ def save_temp_data_to_permanent(
             variable_id=variable_id,
         ).delete()
 
-        # Bulk add new data
-        def create_and_clean(**record):
-            instance = Measurement(
-                **record,
-                station_id=station.station_id,
-                variable_id=variable_id,
-                data_import_id=data_import.data_import_id,
-            )
-            instance.clean()
-            return instance
+        # Add data to the database in batches
+        for start in range(0, len(table), settings.IMPORT_BATCH_SIZE):
+            batch = table.iloc[start : start + settings.IMPORT_BATCH_SIZE]
 
-        model_instances = [create_and_clean(**record) for record in records]
+            model_instances = []
+            for row in batch.itertuples(index=False):
+                instance = Measurement(
+                    **row._asdict(),
+                    station_id=station.station_id,
+                    variable_id=variable_id,
+                    data_import_id=data_import.data_import_id,
+                )
+                instance.clean()
+                model_instances.append(instance)
 
-        # WARNING: This is a bulk insert, so it will not call the save()
-        # method nor send the pre_save or post_save signals for each instance.
-        Measurement.objects.bulk_create(model_instances)
+            # WARNING: This is a bulk insert, so it will not call the save()
+            # method nor send the pre_save or post_save signals for each instance.
+            Measurement.objects.bulk_create(model_instances)
 
     return start_date, end_date, num_records
 
