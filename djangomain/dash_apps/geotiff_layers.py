@@ -10,6 +10,7 @@ from rasterio.warp import transform_bounds
 from rio_tiler.colormap import cmap
 from rio_tiler.errors import RioTilerError
 from rio_tiler.io import Reader
+from typing import Any, Dict, Optional
 
 from importing.models import MapLayerImport
 
@@ -21,7 +22,7 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 logger = logging.getLogger(__name__)
 
 
-def available_map_layers_by_id(user):
+def available_map_layers_by_id(user: Optional[Any]) -> Dict[str, Dict[str, str]]:
     """Return user-viewable GeoTIFF layers keyed by dash dropdown id.
 
     Args:
@@ -56,7 +57,7 @@ def available_map_layers_by_id(user):
     return layer_index
 
 
-def _bounds_to_lonlat_coordinates(bounds, src_crs):
+def _bounds_to_lonlat_coordinates(bounds: tuple, src_crs: str) -> list[list[float]]:
     """Transform a (left, bottom, right, top) bounds tuple into lon/lat corner
     coordinates ordered for mapbox image layers.
 
@@ -99,7 +100,7 @@ def _bounds_to_lonlat_coordinates(bounds, src_crs):
     ]
 
 
-def _build_image_payload(file_path):
+def _build_image_payload(file_path: str) -> Dict[str, Any]:
     """Read a georeferenced single-band GeoTIFF and render it for mapbox.
 
     Pixels are warped to Web Mercator (EPSG:3857) so mapbox image placement on
@@ -141,28 +142,25 @@ def _build_image_payload(file_path):
 
 
 @lru_cache(maxsize=32)
-def load_geotiff_payload(file_path, mtime):
-    """Load GeoTIFF and return mapbox image source plus coordinates.
+def load_geotiff_payload(file_path: str, _mtime: float) -> Dict[str, Any]:
+    """Load and cache GeoTIFF payload from disk.
+
+    The mtime parameter is not used directly but is part of the cache key,
+    allowing the cache to invalidate when files are modified on disk.
 
     Args:
         file_path: Absolute path to the GeoTIFF file on disk.
-        mtime: File modification time used as part of the cache key.
+        _mtime: File modification time used to invalidate cache when file
+            changes.
 
     Returns:
         dict[str, object]: Payload containing image data URI and map
             coordinates.
     """
-    del mtime
-
-    try:
-        return _build_image_payload(file_path)
-    except ValueError:
-        raise
-    except (RioTilerError, Exception) as exc:
-        raise ValueError("Layer file is not a valid georeferenced GeoTIFF.") from exc
+    return _build_image_payload(file_path)
 
 
-def build_mapbox_layers(layers_raw, user):
+def build_mapbox_layers(layers_raw: list, user: Any) -> list[Dict[str, Any]]:
     """Build mapbox layout layers for currently visible spatial layers.
 
     GeoTIFF sources are resolved server-side from currently authorised
@@ -191,7 +189,8 @@ def build_mapbox_layers(layers_raw, user):
         try:
             mtime = os.path.getmtime(resolved_layer["file_path"])
             payload = load_geotiff_payload(resolved_layer["file_path"], mtime)
-        except (OSError, ValueError):
+        except (OSError, ValueError) as exc:
+            logger.warning("Skipping map layer %s: %s", layer["id"], exc)
             continue
 
         map_layers.append(

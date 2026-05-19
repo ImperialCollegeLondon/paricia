@@ -5,6 +5,8 @@ plus a third block for spatial layer controls. GeoTIFF layers are loaded from
 MapLayerImport entries and rendered below station points.
 """
 
+from typing import Any
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objs as go
@@ -39,7 +41,7 @@ app = DjangoDash(
 )
 
 
-def _scrollable_checklist(block_id):
+def _scrollable_checklist(block_id: str) -> html.Div:
     """Build a checklist wrapped in a fixed-height scroll container.
 
     Args:
@@ -66,7 +68,7 @@ def _scrollable_checklist(block_id):
     )
 
 
-def _all_none_buttons(block_id):
+def _all_none_buttons(block_id: str) -> dbc.ButtonGroup:
     """Build the bulk-selection button group for a station checklist.
 
     Args:
@@ -96,7 +98,7 @@ def _all_none_buttons(block_id):
     )
 
 
-def _station_block(block_id, title):
+def _station_block(block_id: str, title: str) -> dbc.Card:
     """Build a station-selection card containing bulk controls and a checklist.
 
     Args:
@@ -119,7 +121,7 @@ def _station_block(block_id, title):
     )
 
 
-def _spatial_data_block():
+def _spatial_data_block() -> dbc.Card:
     """Build controls for selecting and toggling spatial layers.
 
     Returns:
@@ -157,7 +159,7 @@ def _spatial_data_block():
     )
 
 
-def _map_style_block():
+def _map_style_block() -> dbc.Card:
     """Build controls for selecting the map base style.
 
     Returns:
@@ -237,7 +239,7 @@ app.layout = dbc.Container(
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 
-def _ensure_list(value):
+def _ensure_list(value: Any) -> list:
     """Normalise a callback input value to a plain Python list.
 
     Args:
@@ -252,7 +254,7 @@ def _ensure_list(value):
     return value if isinstance(value, list) else [value]
 
 
-def _build_options(codes):
+def _build_options(codes: Any) -> list[dict[str, str]]:
     """Build Dash checklist option dicts from an iterable of station codes.
 
     Each option label is ``"<code> - <name>"`` when the station has a name,
@@ -287,7 +289,7 @@ def _build_options(codes):
     return options
 
 
-def _get_request_user(kwargs):
+def _get_request_user(kwargs: dict) -> Any | None:
     """Get callback request user from django_plotly_dash callback kwargs.
 
     Args:
@@ -300,7 +302,7 @@ def _get_request_user(kwargs):
     return getattr(request, "user", None)
 
 
-def _normalise_spatial_layer_store(store_data):
+def _normalise_spatial_layer_store(store_data: Any) -> list[dict[str, Any]]:
     """Normalise layer-store payload to an ordered list of unique entries.
 
     Args:
@@ -329,7 +331,7 @@ def _normalise_spatial_layer_store(store_data):
     return normalised
 
 
-def _triggered_component(callback_context):
+def _triggered_component(callback_context: Any) -> str:
     """Return component id from django-plotly-dash callback context."""
     triggered_prop = (
         callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
@@ -337,7 +339,7 @@ def _triggered_component(callback_context):
     return triggered_prop.rsplit(".", 1)[0] if triggered_prop else ""
 
 
-def _build_spatial_layer_row(layer_id, layer_name, visible):
+def _build_spatial_layer_row(layer_id: str, layer_name: str, visible: bool) -> html.Div:
     """Build one selected-layer row with a visibility toggle and remove button.
 
     Args:
@@ -369,7 +371,7 @@ def _build_spatial_layer_row(layer_id, layer_name, visible):
     )
 
 
-def _station_rows_for_codes(codes, station_group):
+def _station_rows_for_codes(codes: Any, station_group: str) -> list[dict[str, Any]]:
     """Build map rows for selected station codes in display order.
 
     Args:
@@ -411,7 +413,9 @@ def _station_rows_for_codes(codes, station_group):
     ],
     Input("stations_list", "children"),
 )
-def populate_options(all_raw, **kwargs):
+def populate_options(
+    all_raw: Any, **kwargs: Any
+) -> tuple[list[dict[str, str]], list[dict[str, str]], dict]:
     """Populate owned and public checklist options from visible station codes.
 
     For authenticated users the owned section is shown and populated with
@@ -472,17 +476,17 @@ def populate_options(all_raw, **kwargs):
     ],
 )
 def sync_spatial_layer_controls(
-    _stations_raw,
-    _map_style_value,
-    dropdown_layer_id,
-    _remove_clicks,
-    visibility_values,
-    remove_ids,
-    visibility_ids,
-    store_data,
-    callback_context,
-    **kwargs,
-):
+    _stations_raw: Any,
+    _map_style_value: Any,
+    dropdown_layer_id: Any,
+    _remove_clicks: Any,
+    visibility_values: Any,
+    remove_ids: Any,
+    visibility_ids: Any,
+    store_data: Any,
+    callback_context: Any,
+    **kwargs: Any,
+) -> tuple[list[dict[str, Any]], list[dict[str, str]], None, list]:
     """Sync spatial-layer picker, selected-list rows, and map visibility state.
 
     Args:
@@ -595,7 +599,9 @@ def sync_spatial_layer_controls(
     ],
     State({"type": "checklist", "index": MATCH}, "value"),
 )
-def checklist_selection(options, _n_all, _n_none, current_value, callback_context):
+def checklist_selection(
+    options: Any, _n_all: Any, _n_none: Any, current_value: Any, callback_context: Any
+) -> list:
     """Resolve station checklist selection for all/none and refresh events.
 
     Args:
@@ -645,13 +651,13 @@ _COLOR_MAP = {
     ],
 )
 def update_map(
-    owned_selected,
-    public_selected,
-    spatial_layer_store,
-    map_style_value,
-    callback_context,
-    **kwargs,
-):
+    owned_selected: Any,
+    public_selected: Any,
+    spatial_layer_store: Any,
+    map_style_value: str,
+    callback_context: Any,
+    **kwargs: Any,
+) -> Patch | object:
     """Build a scatter-mapbox figure for currently selected stations and layers.
 
     Args:
