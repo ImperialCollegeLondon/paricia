@@ -22,7 +22,7 @@ attrs==25.4.0
     #   rasterio
     #   referencing
     #   rio-tiler
-babel==2.17.0
+babel==2.18.0
     # via mkdocs-material
 backrefs==7.0
     # via mkdocs-material
@@ -53,10 +53,9 @@ cligj==0.7.2
     # via rasterio
 color-operations==0.2.0
     # via rio-tiler
+    #   properdocs
 colorama==0.4.6
-    # via
-    #   griffe
-    #   mkdocs-material
+    # via mkdocs-material
 crispy-bootstrap5==2024.10
     # via Paricia (pyproject.toml)
 dash==3.2.0
@@ -75,7 +74,6 @@ django==5.2.8
     #   crispy-bootstrap5
     #   django-bootstrap5
     #   django-crispy-forms
-    #   django-excel-response
     #   django-extensions
     #   django-filter
     #   django-guardian
@@ -91,8 +89,6 @@ django-crispy-forms==2.5
     # via
     #   Paricia (pyproject.toml)
     #   crispy-bootstrap5
-django-excel-response==2.0.5
-    # via Paricia (pyproject.toml)
 django-extensions==4.1
     # via Paricia (pyproject.toml)
 django-filter==24.3
@@ -126,8 +122,10 @@ flask==3.1.0
     #   dash
     #   django-plotly-dash
 ghp-import==2.1.0
-    # via mkdocs
-griffe==1.15.0
+    # via
+    #   mkdocs
+    #   properdocs
+griffelib==2.0.2
     # via mkdocstrings-python
 h11==0.16.0
     # via httpcore
@@ -152,15 +150,14 @@ inflection==0.5.1
 itsdangerous==2.2.0
     # via flask
 jdcal==1.4.1
-    # via
-    #   Paricia (pyproject.toml)
-    #   openpyxl
+    # via Paricia (pyproject.toml)
 jinja2==3.1.6
     # via
     #   flask
     #   mkdocs
     #   mkdocs-material
     #   mkdocstrings
+    #   properdocs
 jsonschema==4.25.1
     # via drf-spectacular
 jsonschema-specifications==2025.9.1
@@ -176,6 +173,7 @@ markdown==3.10.2
     #   mkdocs-autorefs
     #   mkdocs-material
     #   mkdocstrings
+    #   properdocs
     #   pymdown-extensions
 markdown-include==0.8.1
     # via Paricia (pyproject.toml)
@@ -185,6 +183,7 @@ markupsafe==3.0.2
     #   mkdocs
     #   mkdocs-autorefs
     #   mkdocstrings
+    #   properdocs
     #   werkzeug
 mergedeep==1.3.4
     # via
@@ -200,31 +199,31 @@ mkdocs==1.6.1
     #   mkdocs-material
     #   mkdocs-section-index
     #   mkdocstrings
-mkdocs-autorefs==1.4.3
+mkdocs-autorefs==1.4.4
     # via
     #   mkdocstrings
     #   mkdocstrings-python
-mkdocs-caption==1.2.0
+mkdocs-caption==1.3.0
     # via Paricia (pyproject.toml)
-mkdocs-gen-files==0.6.0
+mkdocs-gen-files==0.6.1
     # via Paricia (pyproject.toml)
-mkdocs-get-deps==0.2.0
+mkdocs-get-deps==0.2.2
     # via mkdocs
 mkdocs-glightbox==0.5.2
     # via Paricia (pyproject.toml)
-mkdocs-literate-nav==0.6.1
+mkdocs-literate-nav==0.6.3
     # via Paricia (pyproject.toml)
-mkdocs-material==9.7.1
+mkdocs-material==9.7.6
     # via Paricia (pyproject.toml)
 mkdocs-material-extensions==1.3.1
     # via mkdocs-material
-mkdocs-section-index==0.3.9
+mkdocs-section-index==0.3.12
     # via Paricia (pyproject.toml)
-mkdocstrings==0.27.0
+mkdocstrings==1.0.4
     # via
     #   Paricia (pyproject.toml)
     #   mkdocstrings-python
-mkdocstrings-python==1.12.2
+mkdocstrings-python==2.0.3
     # via Paricia (pyproject.toml)
 morecantile==7.0.3
     # via rio-tiler
@@ -242,29 +241,37 @@ numpy==2.4.2
     #   pandas
     #   rasterio
     #   rio-tiler
-openpyxl==2.4.11
-    # via django-excel-response
+openpyxl==3.1.5
+    # via Paricia (pyproject.toml)
 packaging==24.2
     # via
     #   drf-yasg
     #   mkdocs
     #   plotly
+    #   properdocs
 paginate==0.5.7
     # via mkdocs-material
-pandas==2.2.3
+pandas==3.0.3
     # via Paricia (pyproject.toml)
 pathspec==0.12.1
-    # via mkdocs
+    # via
+    #   mkdocs
+    #   properdocs
 pillow==12.1.0
     # via Paricia (pyproject.toml)
 platformdirs==4.3.6
     # via
     #   mkdocs-get-deps
-    #   mkdocstrings
+    #   properdocs
 plotly==6.5.0
     # via
     #   dash
     #   django-plotly-dash
+properdocs==1.6.7
+    # via
+    #   mkdocs-gen-files
+    #   mkdocs-literate-nav
+    #   mkdocs-section-index
 psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
@@ -275,11 +282,11 @@ pydantic==2.13.4
     #   rio-tiler
 pydantic-core==2.46.4
     # via pydantic
-pygments==2.19.2
+pygments==2.20.0
     # via mkdocs-material
 pyjwt==2.10.1
     # via djangorestframework-simplejwt
-pymdown-extensions==10.17.1
+pymdown-extensions==10.21.3
     # via
     #   mkdocs-material
     #   mkdocstrings
@@ -298,7 +305,6 @@ pytz==2025.2
     # via
     #   Paricia (pyproject.toml)
     #   drf-yasg
-    #   pandas
 pyyaml==6.0.3
     # via
     #   Paricia (pyproject.toml)
@@ -306,6 +312,7 @@ pyyaml==6.0.3
     #   drf-yasg
     #   mkdocs
     #   mkdocs-get-deps
+    #   properdocs
     #   pymdown-extensions
     #   pyyaml-env-tag
 pyyaml-env-tag==1.1
@@ -314,6 +321,9 @@ rasterio==1.5.0
     # via
     #   Paricia (pyproject.toml)
     #   rio-tiler
+    # via
+    #   mkdocs
+    #   properdocs
 referencing==0.37.0
     # via
     #   jsonschema
@@ -347,6 +357,7 @@ typing-inspection==0.4.2
     # via pydantic
 tzdata==2024.2
     # via pandas
+    # via dash
 uritemplate==4.2.0
     # via
     #   Paricia (pyproject.toml)
@@ -355,7 +366,9 @@ uritemplate==4.2.0
 urllib3==2.6.0
     # via requests
 watchdog==6.0.0
-    # via mkdocs
+    # via
+    #   mkdocs
+    #   properdocs
 werkzeug==3.1.4
     # via
     #   dash

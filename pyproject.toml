@@ -19,7 +19,6 @@ dependencies = [
     "Django",
     "django-bootstrap5",
     "django-crispy-forms",
-    "django-excel-response",
     "django-extensions",
     "django-filter",
     "django-timescaledb",
@@ -29,7 +28,7 @@ dependencies = [
     "idna",
     "jdcal",
     "numpy",
-    "pandas",
+    "pandas>=3.0.1",
     "psycopg2",
     "pytz",
     "PyYAML",
@@ -46,6 +45,7 @@ dependencies = [
     "drf-spectacular",
     "rasterio",
     "rio-tiler",
+    "openpyxl>=3.1.5",
 ]
 
 [project.optional-dependencies]

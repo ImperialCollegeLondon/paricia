@@ -77,7 +77,6 @@ django==5.2.8
     #   crispy-bootstrap5
     #   django-bootstrap5
     #   django-crispy-forms
-    #   django-excel-response
     #   django-extensions
     #   django-filter
     #   django-guardian
@@ -94,8 +93,6 @@ django-crispy-forms==2.5
     # via
     #   Paricia (pyproject.toml)
     #   crispy-bootstrap5
-django-excel-response==2.0.5
-    # via Paricia (pyproject.toml)
 django-extensions==4.1
     # via Paricia (pyproject.toml)
 django-filter==24.3
@@ -161,9 +158,7 @@ inflection==0.5.1
 itsdangerous==2.2.0
     # via flask
 jdcal==1.4.1
-    # via
-    #   Paricia (pyproject.toml)
-    #   openpyxl
+    # via Paricia (pyproject.toml)
 jinja2==3.1.6
     # via flask
 jsbeautifier==1.15.1
@@ -208,12 +203,14 @@ numpy==2.4.2
     #   rio-tiler
 openpyxl==2.4.11
     # via django-excel-response
+openpyxl==3.1.5
+    # via Paricia (pyproject.toml)
 packaging==24.2
     # via
     #   build
     #   drf-yasg
     #   plotly
-pandas==2.2.3
+pandas==3.0.3
     # via Paricia (pyproject.toml)
 pathspec==0.12.1
     # via
@@ -261,7 +258,6 @@ pytz==2025.2
     # via
     #   Paricia (pyproject.toml)
     #   drf-yasg
-    #   pandas
 pyyaml==6.0.3
     # via
     #   Paricia (pyproject.toml)
