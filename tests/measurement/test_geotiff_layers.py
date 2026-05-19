@@ -8,6 +8,7 @@ from django.contrib.auth.models import AnonymousUser, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from guardian.shortcuts import assign_perm
+from rasterio.errors import RasterioIOError
 from rasterio.io import MemoryFile
 from rasterio.transform import from_origin
 
@@ -213,11 +214,11 @@ class GeoTiffLayerUtilityTests(TestCase):
         self.assertEqual(second_info.hits, first_info.hits + 1)
         self.assertEqual(third_info.misses, second_info.misses + 1)
 
-    def test_load_geotiff_payload_wraps_invalid_geotiff_errors(self):
+    def test_load_geotiff_payload_raises_rasterio_error_for_invalid_geotiff(self):
         broken_path = Path(self._temp_media.name) / "broken.tif"
         broken_path.write_bytes(b"this is not a geotiff")
 
-        with self.assertRaisesRegex(ValueError, "valid georeferenced GeoTIFF"):
+        with self.assertRaises(RasterioIOError):
             geotiff_layers.load_geotiff_payload(str(broken_path), 1.0)
 
     def test_build_mapbox_layers_builds_entries_for_resolved_visible_layers(self):
