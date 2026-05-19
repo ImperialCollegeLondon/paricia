@@ -46,16 +46,11 @@ def available_map_layers_by_id(user):
 
     layer_index = {}
     for layer in queryset.order_by("name", "pk"):
-        try:
-            file_path = str(layer.file.path)
-        except (ValueError, OSError):
-            continue
-
         layer_id = f"maplayer-{layer.pk}"
         layer_index[layer_id] = {
             "id": layer_id,
             "name": str(layer.name),
-            "file_path": file_path,
+            "file_path": str(layer.file.path),
         }
 
     return layer_index
