@@ -45,10 +45,10 @@ def _scrollable_checklist(block_id: str) -> html.Div:
     """Build a checklist wrapped in a fixed-height scroll container.
 
     Args:
-        block_id (str): Prefix used to build the checklist component id.
+        block_id: Prefix used to build the checklist component id.
 
     Returns:
-        html.Div: Scrollable container holding a ``dcc.Checklist``.
+        Scrollable container holding a ``dcc.Checklist``.
     """
     return html.Div(
         dcc.Checklist(
@@ -72,10 +72,10 @@ def _all_none_buttons(block_id: str) -> dbc.ButtonGroup:
     """Build the bulk-selection button group for a station checklist.
 
     Args:
-        block_id (str): Prefix used to build the button component ids.
+        block_id: Prefix used to build the button component ids.
 
     Returns:
-        dbc.ButtonGroup: Button group containing *All* and *None* buttons.
+        Button group containing *All* and *None* buttons.
     """
     return dbc.ButtonGroup(
         [
@@ -102,11 +102,11 @@ def _station_block(block_id: str, title: str) -> dbc.Card:
     """Build a station-selection card containing bulk controls and a checklist.
 
     Args:
-        block_id (str): Prefix used for internal control ids.
-        title (str): Text rendered in the card header.
+        block_id: Prefix used for internal control ids.
+        title: Text rendered in the card header.
 
     Returns:
-        dbc.Card: Card containing an All/None button group and a scrollable
+        Card containing an All/None button group and a scrollable
             checklist.
     """
     return dbc.Card(
@@ -125,7 +125,7 @@ def _spatial_data_block() -> dbc.Card:
     """Build controls for selecting and toggling spatial layers.
 
     Returns:
-        dbc.Card: Card containing a layer picker and selected-layer list.
+        Card containing a layer picker and selected-layer list.
     """
     return dbc.Card(
         [
@@ -163,7 +163,7 @@ def _map_style_block() -> dbc.Card:
     """Build controls for selecting the map base style.
 
     Returns:
-        dbc.Card: Card containing the base map style selector.
+        Card containing the base map style selector.
     """
     return dbc.Card(
         [
@@ -246,7 +246,7 @@ def _ensure_list(value: Any) -> list:
         value: Input that may be ``None``, a scalar, or a list.
 
     Returns:
-        list: Empty list for falsy input; the original list; or a single-item
+        Empty list for falsy input; the original list; or a single-item
             list wrapping a scalar value.
     """
     if not value:
@@ -261,10 +261,10 @@ def _build_options(codes: Any) -> list[dict[str, str]]:
     otherwise just the code. Codes are sorted alphabetically.
 
     Args:
-        codes (Iterable[str]): Station codes to include.
+        codes: Station codes to include.
 
     Returns:
-        list[dict[str, str]]: Option dicts with ``"label"`` and ``"value"``
+        Option dicts with ``"label"`` and ``"value"``
             keys, ready for use in ``dcc.Checklist``.
     """
     sorted_codes = sorted(_ensure_list(codes))
@@ -293,10 +293,10 @@ def _get_request_user(kwargs: dict) -> Any | None:
     """Get callback request user from django_plotly_dash callback kwargs.
 
     Args:
-        kwargs (dict): Callback keyword arguments from django_plotly_dash.
+        kwargs: Callback keyword arguments from django_plotly_dash.
 
     Returns:
-        object | None: Authenticated user object when present, else None.
+        Authenticated user object when present, else None.
     """
     request = kwargs.get("request")
     return getattr(request, "user", None)
@@ -309,7 +309,7 @@ def _normalise_spatial_layer_store(store_data: Any) -> list[dict[str, Any]]:
         store_data: List-like payload containing layer ids or entry dictionaries.
 
     Returns:
-        list[dict[str, object]]: Entries with ``id`` and ``visible`` keys.
+        Entries with ``id`` and ``visible`` keys.
     """
     normalised = []
     seen = set()
@@ -344,11 +344,11 @@ def _build_spatial_layer_row(layer_id: str, layer_name: str, visible: bool) -> h
 
     Args:
         layer_id: Map layer identifier used by callbacks.
-        layer_name (str): Label shown to the user.
-        visible (bool): Whether the layer is currently visible on the map.
+        layer_name: Label shown to the user.
+        visible: Whether the layer is currently visible on the map.
 
     Returns:
-        html.Div: Row containing checkbox, name, and a remove button.
+        Row containing checkbox, name, and a remove button.
     """
     return html.Div(
         [
@@ -376,10 +376,10 @@ def _station_rows_for_codes(codes: Any, station_group: str) -> list[dict[str, An
 
     Args:
         codes: Selected station codes in desired output order.
-        station_group (str): Label used to tag rows for trace grouping.
+        station_group: Label used to tag rows for trace grouping.
 
     Returns:
-        list[dict[str, object]]: Station row dictionaries ready for map
+        Station row dictionaries ready for map
             trace construction.
     """
     selected_codes = _ensure_list(codes)
@@ -424,14 +424,14 @@ def populate_options(
     treated as public and the owned section is hidden.
 
     Args:
-        all_raw (list[str] | str | None): Raw children value of the hidden
+        all_raw: Raw children value of the hidden
             ``stations_list`` div, containing the station codes the current
             user may see.
         **kwargs: Extra keyword arguments injected by ``django_plotly_dash``,
             expected to include ``request``.
 
     Returns:
-        tuple[list[dict], list[dict], dict]: Owned checklist options, public
+        Owned checklist options, public
             checklist options, and a CSS style dict for the owned block.
     """
     all_codes = _ensure_list(all_raw)
@@ -502,7 +502,7 @@ def sync_spatial_layer_controls(
         **kwargs: Callback kwargs containing request context.
 
     Returns:
-        tuple[list[dict], list[dict], None, list[html.Div]]: Selected layer
+        Selected layer
             store data, add-layer dropdown options, reset dropdown value, and
             selected-layer row components.
     """
@@ -612,7 +612,7 @@ def checklist_selection(
         callback_context: Dash callback context used to inspect trigger source.
 
     Returns:
-        list: Updated selected values for the matched checklist.
+        Updated selected values for the matched checklist.
     """
     triggered_component = _triggered_component(callback_context)
     option_values = [option["value"] for option in (options or [])]
@@ -669,7 +669,7 @@ def update_map(
         **kwargs: Callback kwargs containing request context.
 
     Returns:
-        Patch | object: Patch update for the map figure or no_update.
+        Patch update for the map figure or no_update.
     """
     user = _get_request_user(kwargs)
 

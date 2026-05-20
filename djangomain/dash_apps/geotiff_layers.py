@@ -28,8 +28,8 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
         user: Django user used to resolve object-level permissions.
 
     Returns:
-        dict[str, dict[str, str]]: Layer metadata keyed by maplayer id. Returns
-            an empty dict when the user is None or lookup fails.
+        Layer metadata keyed by maplayer id. Returns an empty dict when the
+            user is None or lookup fails.
     """
     if user is None:
         return {}
@@ -65,7 +65,7 @@ def _bounds_to_lonlat_coordinates(bounds: tuple, src_crs: str) -> list[list[floa
         src_crs: CRS the bounds are expressed in.
 
     Returns:
-        list[list[float]]: Corner coordinates ordered [top-left, top-right,
+        Corner coordinates ordered [top-left, top-right,
             bottom-right, bottom-left].
     """
     left, bottom, right, top = bounds
@@ -108,7 +108,7 @@ def _build_image_payload(file_path: str) -> dict[str, Any]:
         file_path: Absolute path to the GeoTIFF file on disk.
 
     Returns:
-        dict[str, object]: Payload containing image data URI and map
+        Payload containing image data URI and map
             coordinates.
     """
     with Reader(input=file_path, options={}) as src:
@@ -148,7 +148,7 @@ def load_geotiff_payload(file_path: str, _mtime: float) -> dict[str, Any]:
             changes.
 
     Returns:
-        dict[str, object]: Payload containing image data URI and map
+        Payload containing image data URI and map
             coordinates.
     """
     return _build_image_payload(file_path)
@@ -166,7 +166,7 @@ def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
         user: Django user used for per-object authorization.
 
     Returns:
-        list[dict[str, object]]: Mapbox image layer dictionaries for visible
+        Mapbox image layer dictionaries for visible
             and authorized GeoTIFF layers.
     """
     map_layers = []
