@@ -58,7 +58,7 @@ dev = [
 ]
 
 doc = [
-    "mkdocs",
+    "mkdocs<2.0.0",
     "mkdocstrings",
     "mkdocstrings-python>=1.11",
     "mkdocs-material",
