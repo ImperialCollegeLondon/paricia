@@ -1,9 +1,13 @@
 import logging
 
 import requests
-from django.conf import settings
+from django.core.exceptions import ValidationError
+
+from djangomain import settings
 
 logger = logging.getLogger(__name__)
+
+MAX_FILE_SIZE = settings.MAX_LAYER_FILE_SIZE_MB
 
 
 def create_default_origins(apps, schema_editor):
@@ -94,3 +98,8 @@ def retrieve_thingsboard_data(
         raise Exception(
             f"Failed to retrieve data: {response.status_code} - {response.text}"
         )
+
+
+def validate_layer_file_size(file) -> None:
+    if file.size > MAX_FILE_SIZE * 1024 * 1024:
+        raise ValidationError(f"File size must not exceed {MAX_FILE_SIZE} MB.")
