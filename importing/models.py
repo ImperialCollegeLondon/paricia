@@ -13,15 +13,20 @@
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 
+from djangomain import settings
 from formatting.models import Format
+from importing.utils import validate_layer_file_size
 from management.models import PermissionsBase
 from station.models import Station
 from variable.models import SensorInstallation, Variable
 
 User = get_user_model()
+
+MAX_FILE_SIZE = settings.MAX_LAYER_FILE_SIZE_MB
 
 
 class ImportOrigin(models.Model):
@@ -222,7 +227,11 @@ class MapLayerImport(PermissionsBase):
     file = models.FileField(
         "Layer file",
         blank=False,
-        help_text="Tiff file with the layer to be imported.",
+        help_text=f"Must be a tiff file. File size must not exceed {MAX_FILE_SIZE} MB",
+        validators=[
+            FileExtensionValidator(allowed_extensions=["tif", "tiff"]),
+            validate_layer_file_size,
+        ],
     )
 
     def __str__(self):
