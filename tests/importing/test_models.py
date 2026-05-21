@@ -184,8 +184,51 @@ class TestImportOrigin(TestCase):
 
 
 class TestMapLayerImport(TestCase):
+    fixtures = ["management_user"]
+
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+
+        self.user = get_user_model().objects.get(username="default")
+
+    def _make_layer(self, filename, content=b"fake tiff content"):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        from importing.models import MapLayerImport
+
+        return MapLayerImport(
+            owner=self.user,
+            name="Test Layer",
+            file=SimpleUploadedFile(filename, content, content_type="image/tiff"),
+        )
+
     def test_str(self):
         from importing.models import MapLayerImport
 
         map_layer = MapLayerImport(name="Test Layer", description="A test layer.")
         self.assertEqual(str(map_layer), "Test Layer")
+
+    def test_valid_tif_extension_passes(self):
+        self._make_layer("layer.tif").full_clean()
+
+    def test_valid_tiff_extension_passes(self):
+        self._make_layer("layer.tiff").full_clean()
+
+    def test_invalid_extension_raises(self):
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_layer("layer.png").full_clean()
+        self.assertIn("file", ctx.exception.message_dict)
+
+    def test_oversized_file_raises(self):
+        from importing.utils import MAX_FILE_SIZE
+
+        oversized = b"x" * (MAX_FILE_SIZE * 1024 * 1024 + 1)
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_layer("layer.tif", oversized).full_clean()
+        self.assertIn("file", ctx.exception.message_dict)
+
+    def test_file_at_size_limit_passes(self):
+        from importing.utils import MAX_FILE_SIZE
+
+        content = b"x" * (MAX_FILE_SIZE * 1024 * 1024)
+        self._make_layer("layer.tif", content).full_clean()
