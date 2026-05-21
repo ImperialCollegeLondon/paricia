@@ -1,6 +1,7 @@
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 from django.contrib.auth import get_user_model
@@ -270,4 +271,71 @@ class GeoTiffLayerUtilityTests(TestCase):
             user=viewer,
         )
 
+        self.assertEqual(result, [])
+
+    def test_available_map_layers_by_id_returns_empty_when_lookup_raises(self):
+        user = self._create_user("lookup-exception-user")
+        with patch(
+            "djangomain.dash_apps.geotiff_layers.get_objects_for_user",
+            side_effect=Exception("db error"),
+        ):
+            result = geotiff_layers.available_map_layers_by_id(user)
+        self.assertEqual(result, {})
+
+    def test_bounds_to_lonlat_coordinates_rejects_invalid_lat(self):
+        with self.assertRaisesRegex(ValueError, "valid lon/lat"):
+            geotiff_layers._bounds_to_lonlat_coordinates(
+                bounds=(-10.0, -91.0, 10.0, 5.0),
+                src_crs=geotiff_layers._TARGET_MAPBOX_COORDS_CRS,
+            )
+
+    def test_bounds_to_lonlat_coordinates_raises_on_transform_failure(self):
+        with patch(
+            "djangomain.dash_apps.geotiff_layers.transform_bounds",
+            side_effect=Exception("bad CRS"),
+        ):
+            with self.assertRaisesRegex(ValueError, "could not be transformed"):
+                geotiff_layers._bounds_to_lonlat_coordinates(
+                    bounds=(-10.0, -5.0, 10.0, 5.0),
+                    src_crs=geotiff_layers._TARGET_MAPBOX_COORDS_CRS,
+                )
+
+    def test_build_mapbox_layers_skips_invisible_layers(self):
+        owner = self._create_user("invisible-owner")
+        viewer = self._create_user("invisible-viewer")
+
+        layer = self._create_layer(
+            owner=owner,
+            name="Invisible layer",
+            filename="invisible.tif",
+            grant_view_to=viewer,
+        )
+
+        result = geotiff_layers.build_mapbox_layers(
+            layers_raw=[{"id": f"maplayer-{layer.pk}", "visible": False}],
+            user=viewer,
+        )
+
+        self.assertEqual(result, [])
+
+    def test_build_mapbox_layers_skips_unauthorised_layers(self):
+        owner = self._create_user("unauth-owner")
+        viewer = self._create_user("unauth-viewer")
+
+        layer = self._create_layer(
+            owner=owner,
+            name="Unauthorised layer",
+            filename="unauth.tif",
+        )
+
+        result = geotiff_layers.build_mapbox_layers(
+            layers_raw=[{"id": f"maplayer-{layer.pk}", "visible": True}],
+            user=viewer,
+        )
+
+        self.assertEqual(result, [])
+
+    def test_build_mapbox_layers_returns_empty_for_empty_input(self):
+        user = self._create_user("empty-input-user")
+        result = geotiff_layers.build_mapbox_layers(layers_raw=[], user=user)
         self.assertEqual(result, [])
