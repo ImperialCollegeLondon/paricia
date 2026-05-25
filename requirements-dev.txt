@@ -164,7 +164,7 @@ numpy==2.4.2
     #   pandas
 openpyxl==3.1.5
     # via Paricia (pyproject.toml)
-packaging==24.2
+packaging==26.2
     # via
     #   build
     #   drf-yasg
