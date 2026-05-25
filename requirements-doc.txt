@@ -223,7 +223,7 @@ platformdirs==4.3.6
     # via
     #   mkdocs-get-deps
     #   properdocs
-plotly==6.5.0
+plotly==6.7.0
     # via
     #   dash
     #   django-plotly-dash
