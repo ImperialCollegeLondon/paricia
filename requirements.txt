@@ -132,7 +132,7 @@ pandas==3.0.3
     # via Paricia (pyproject.toml)
 pillow==12.1.0
     # via Paricia (pyproject.toml)
-plotly==6.5.0
+plotly==6.7.0
     # via
     #   dash
     #   django-plotly-dash
