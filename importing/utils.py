@@ -102,4 +102,7 @@ def retrieve_thingsboard_data(
 
 def validate_layer_file_size(file) -> None:
     if file.size > MAX_FILE_SIZE * 1024 * 1024:
-        raise ValidationError(f"File size must not exceed {MAX_FILE_SIZE} MB.")
+        raise ValidationError(
+            f"File size must not exceed {MAX_FILE_SIZE} MB."
+            f" Uploaded file is {file.size / (1024 * 1024):.1f} MB."
+        )
