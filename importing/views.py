@@ -368,7 +368,6 @@ class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
         from management.models import ThingsboardCredentials
 
         thingsboard_map = form.cleaned_data["thingsboard_map"]
-        selected_format = form.cleaned_data["format"]
         start_date = form.cleaned_data["start_date"]
         end_date = form.cleaned_data["end_date"]
 
@@ -414,7 +413,6 @@ class ThingsboardDataRetrievalView(LoginRequiredMixin, FormView):
 
             data_import = DataImport(
                 station=thingsboard_map.station,
-                format=selected_format,
                 origin=ImportOrigin.objects.get_or_create(origin="Thingsboard")[0],
                 owner=self.request.user,
                 visibility="private",
