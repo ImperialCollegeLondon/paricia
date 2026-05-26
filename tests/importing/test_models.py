@@ -191,10 +191,39 @@ class TestMapLayerImport(TestCase):
 
         self.user = get_user_model().objects.get(username="default")
 
-    def _make_layer(self, filename, content=b"fake tiff content"):
+    @staticmethod
+    def _make_valid_geotiff_bytes() -> bytes:
+        """Return bytes of a minimal single-band GeoTIFF with valid EPSG:4326 CRS."""
+        import io
+
+        import numpy as np
+        import rasterio
+        from rasterio.crs import CRS
+        from rasterio.transform import from_bounds
+
+        buf = io.BytesIO()
+        transform = from_bounds(-10, -10, 10, 10, width=4, height=4)
+        with rasterio.open(
+            buf,
+            "w",
+            driver="GTiff",
+            height=4,
+            width=4,
+            count=1,
+            dtype=np.uint8,
+            crs=CRS.from_epsg(4326),
+            transform=transform,
+        ) as dst:
+            dst.write(np.zeros((1, 4, 4), dtype=np.uint8))
+        return buf.getvalue()
+
+    def _make_layer(self, filename, content=None):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
         from importing.models import MapLayerImport
+
+        if content is None:
+            content = self._make_valid_geotiff_bytes()
 
         return MapLayerImport(
             owner=self.user,
@@ -220,15 +249,40 @@ class TestMapLayerImport(TestCase):
         self.assertIn("file", ctx.exception.message_dict)
 
     def test_oversized_file_raises(self):
-        from importing.utils import MAX_FILE_SIZE
+        from unittest.mock import patch
 
-        oversized = b"x" * (MAX_FILE_SIZE * 1024 * 1024 + 1)
-        with self.assertRaises(ValidationError) as ctx:
-            self._make_layer("layer.tif", oversized).full_clean()
+        oversized = b"x" * (1 * 1024 * 1024 + 1)
+        with patch("importing.utils.MAX_FILE_SIZE", 1):
+            with self.assertRaises(ValidationError) as ctx:
+                self._make_layer("layer.tif", oversized).full_clean()
         self.assertIn("file", ctx.exception.message_dict)
 
-    def test_file_at_size_limit_passes(self):
-        from importing.utils import MAX_FILE_SIZE
+    def test_invalid_geotiff_content_raises(self):
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_layer("layer.tif", b"not a real tiff").full_clean()
+        self.assertIn("file", ctx.exception.message_dict)
 
-        content = b"x" * (MAX_FILE_SIZE * 1024 * 1024)
-        self._make_layer("layer.tif", content).full_clean()
+    def test_geotiff_without_crs_raises(self):
+        import io
+
+        import numpy as np
+        import rasterio
+        from rasterio.transform import from_bounds
+
+        buf = io.BytesIO()
+        transform = from_bounds(-10, -10, 10, 10, width=4, height=4)
+        with rasterio.open(
+            buf,
+            "w",
+            driver="GTiff",
+            height=4,
+            width=4,
+            count=1,
+            dtype=np.uint8,
+            transform=transform,
+        ) as dst:
+            dst.write(np.zeros((1, 4, 4), dtype=np.uint8))
+
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_layer("layer.tif", buf.getvalue()).full_clean()
+        self.assertIn("file", ctx.exception.message_dict)
