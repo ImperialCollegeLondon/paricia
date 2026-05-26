@@ -78,7 +78,6 @@ def retrieve_thingsboard_data(
     url = settings.TB_TIMESERIES_URL.format(tb_device_id=tb_device_id)
     headers = {"X-Authorization": f"Bearer {token}"}
     params: dict[str, str | int] = {
-        "interval": 60000,
         "limit": 10000,
         "agg": "NONE",
         "keys": variable,
