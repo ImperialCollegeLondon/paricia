@@ -239,3 +239,62 @@ class MapLayerImport(PermissionsBase):
 
     def get_absolute_url(self):
         return reverse("importing:maplayerimport_detail", kwargs={"pk": self.pk})
+
+    def clean(self) -> None:
+        """Validate the uploaded GeoTIFF and its transformed lon/lat bounds."""
+
+        if not self.file:
+            return
+
+        import rasterio
+        from rasterio.warp import transform_bounds
+
+        file_obj = self.file.file
+        try:
+            file_obj.seek(0)
+            with rasterio.MemoryFile(file_obj.read()) as memfile:
+                with memfile.open() as dataset:
+                    if dataset.count == 0:
+                        raise ValidationError(
+                            {"file": "File contains no raster bands."}
+                        )
+                    if dataset.crs is None:
+                        raise ValidationError(
+                            {"file": "File has no coordinate reference system (CRS)."}
+                        )
+
+                    left, bottom, right, top = transform_bounds(
+                        dataset.crs,
+                        "EPSG:4326",
+                        dataset.bounds.left,
+                        dataset.bounds.bottom,
+                        dataset.bounds.right,
+                        dataset.bounds.top,
+                    )
+
+                    if not (-180 <= left <= 180 and -180 <= right <= 180):
+                        raise ValidationError(
+                            {
+                                "file": (
+                                    "GeoTIFF longitude values are out of range "
+                                    "[-180, 180]."
+                                )
+                            }
+                        )
+                    if not (-90 <= bottom <= 90 and -90 <= top <= 90):
+                        raise ValidationError(
+                            {
+                                "file": (
+                                    "GeoTIFF latitude values are out of range "
+                                    "[-90, 90]."
+                                )
+                            }
+                        )
+        except ValidationError:
+            raise
+        except Exception as e:
+            raise ValidationError(
+                {"file": f"Could not open as a valid GeoTIFF or read coordinates: {e}"}
+            )
+        finally:
+            file_obj.seek(0)
