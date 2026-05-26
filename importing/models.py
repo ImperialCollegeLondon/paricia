@@ -251,7 +251,6 @@ class MapLayerImport(PermissionsBase):
 
         file_obj = self.file.file
         try:
-            file_obj.seek(0)
             with rasterio.MemoryFile(file_obj.read()) as memfile:
                 with memfile.open() as dataset:
                     if dataset.count == 0:
