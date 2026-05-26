@@ -9,6 +9,104 @@ from django.test import TestCase, override_settings
 from formatting.models import Format
 
 
+class TestThingsboardFunctions(TestCase):
+    """Test suits for functions to read Thingsboard data."""
+
+    fixtures = [
+        "management_user",
+        "variable_unit",
+        "variable_variable",
+        "formatting_delimiter",
+        "formatting_extension",
+        "formatting_date",
+        "formatting_time",
+        "formatting_format",
+        "formatting_classification",
+        "station_country",
+        "station_region",
+        "station_ecosystem",
+        "station_institution",
+        "station_type",
+        "station_place",
+        "station_basin",
+        "station_placebasin",
+        "station_station",
+    ]
+
+    def setUp(self):
+        """Set up the test data."""
+        from importing.models import DataImport, ImportOrigin, ThingsboardImportMap
+        from station.models import TIMEZONES, Station
+        from variable.models import Variable
+
+        self.data_file = str(
+            Path(__file__).parent.parent / "test_data/thingsboard_test.json"
+        )
+        self.station = Station.objects.get(station_id=8)
+        self.station.timezone = TIMEZONES[0][0]
+        self.origin = ImportOrigin.objects.create(origin="Thingsboard")
+        self.data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            station=self.station,
+            rawfile=self.data_file,
+            origin=self.origin,
+        )
+        self.variable = Variable.objects.get(pk=104)
+        self.import_map = ThingsboardImportMap.objects.create(
+            tb_variable="turbidity",
+            variable=self.variable,
+            tb_device_name="tb-device-001",
+            station=self.station,
+            owner=self.station.owner,
+        )
+
+    @override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
+    def test_process_thingsboard_data(self):
+        """Test the process_thingsboard_data function."""
+        from importing.functions import process_thingsboard_data
+
+        start_date, end_date, data = process_thingsboard_data(
+            self.data_import, self.station
+        )
+        var_id, df = data[0]
+        self.assertEqual(max(df["value"].tolist()), 3993.6)
+        self.assertEqual(min(df["value"].tolist()), 665.6)
+        self.assertEqual(len(df), 1000)
+        self.assertEqual(var_id, self.variable.variable_id)
+        self.assertEqual(
+            start_date,
+            pd.Timestamp(1778855732730, unit="ms").tz_localize(self.station.timezone),
+        )
+        self.assertEqual(
+            end_date,
+            pd.Timestamp(1779787177749, unit="ms").tz_localize(self.station.timezone),
+        )
+
+    @override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
+    def test_save_temp_data_to_permanent_thingsboard(self):
+        """Test the save_temp_data_to_permanent function for thingsboard data."""
+        from importing.functions import save_temp_data_to_permanent
+        from measurement.models import Measurement
+
+        start_date, end_date, num_records = save_temp_data_to_permanent(
+            self.data_import
+        )
+        self.assertEqual(num_records, 1000)
+        self.assertEqual(
+            start_date,
+            pd.Timestamp(1778855732730, unit="ms").tz_localize(self.station.timezone),
+        )
+        self.assertEqual(
+            end_date,
+            pd.Timestamp(1779787177749, unit="ms").tz_localize(self.station.timezone),
+        )
+
+        results = Measurement.objects.filter(
+            data_import=self.data_import, variable_id=self.variable.variable_id
+        )
+        self.assertEqual(results.count(), 1000)
+
+
 class TestMatrixFunctions(TestCase):
     """Test suite for functions to construct the matrix."""
 

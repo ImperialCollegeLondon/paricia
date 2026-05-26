@@ -10,6 +10,7 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
+import json
 import zoneinfo
 from datetime import datetime
 from pathlib import Path
@@ -21,7 +22,7 @@ from django.conf import settings
 from django.db.models import FileField
 
 from formatting.models import Classification, Format
-from importing.models import DataImport
+from importing.models import DataImport, ThingsboardImportMap
 from measurement.models import Measurement, Report
 from station.models import Station
 
@@ -152,6 +153,48 @@ def read_data_to_import(
     return process_datetime_columns(data, file_format, timezone)
 
 
+def process_thingsboard_data(
+    data_import: DataImport, station: Station
+) -> tuple[pd.Timestamp, pd.Timestamp, list[tuple[int, pd.DataFrame]]]:
+    """Function to extract data from a Thingsboard json file.
+
+    Args:
+        data_import: The DataImport object.
+        station: a Station object.
+
+    Returns:
+        The start and end dates and a list of tuples containing the variable ID and the
+            associated dataframe containing the variable data.
+    """
+    data_file = data_import.rawfile.path
+    with open(data_file, encoding="utf-8") as f:
+        raw_data = json.load(f)
+
+    thingsboard_variable = next(iter(raw_data))
+    df = pd.DataFrame(raw_data[thingsboard_variable])
+
+    # Set the date column
+    tz = zoneinfo.ZoneInfo(station.timezone)
+    df["date"] = pd.to_datetime(df["ts"], unit="ms").dt.tz_localize(tz)
+    df = df.drop(columns="ts").sort_values("date").reset_index(drop=True)
+
+    # Set the value column
+    try:
+        df["value"] = pd.to_numeric(df["value"])
+    except ValueError as exc:
+        raise ValueError(
+            "Failed to parse value column for Thingsboard data. Check that numerical"
+            " data are provided."
+        ) from exc
+
+    thingsboard_import_map = next(
+        iter(ThingsboardImportMap.objects.filter(tb_variable=thingsboard_variable))
+    )
+    variable_id = thingsboard_import_map.variable.variable_id
+    start_date, end_date = df["date"].iloc[0], df["date"].iloc[-1]
+    return start_date, end_date, [(variable_id, df)]
+
+
 def save_temp_data_to_permanent(
     data_import: DataImport,
 ) -> tuple[datetime, datetime, int]:
@@ -176,7 +219,11 @@ def save_temp_data_to_permanent(
     Measurement.objects.filter(data_import_id=data_import.data_import_id).delete()
     Report.objects.filter(data_import_id=data_import.data_import_id).delete()
 
-    start_date, end_date, all_data = construct_matrix(file, file_format, station)
+    if data_import.origin.origin == "Thingsboard":
+        start_date, end_date, all_data = process_thingsboard_data(data_import, station)
+    else:
+        start_date, end_date, all_data = construct_matrix(file, file_format, station)
+
     if not all_data:
         msg = "No data to import. Is the chosen format correct?"
         raise ValueError(msg)
