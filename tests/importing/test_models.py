@@ -68,6 +68,49 @@ class TestSaveImportModels(TestCase):
         self.assertEqual(retrieved_dit.station, self.station)
         self.assertEqual(retrieved_dit.format, self.file_format)
 
+    def test_clean_no_timezone(self):
+        from importing.models import DataImport
+
+        self.station.timezone = None
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            station=self.station,
+            format=self.file_format,
+            rawfile=self.data_file,
+        )
+
+        with self.assertRaises(ValidationError) as ctx:
+            data_import.clean()
+
+        self.assertEqual("Station must have a timezone set.", ctx.exception.message)
+
+    def test_clean_no_format(self):
+        from importing.models import DataImport, ImportOrigin
+
+        # Format required for non-Thingsboard import
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            station=self.station,
+            rawfile=self.data_file,
+        )
+
+        with self.assertRaises(ValidationError) as ctx:
+            data_import.clean()
+
+        self.assertEqual(
+            "Please specify a format for this import.", ctx.exception.message
+        )
+
+        # No format required for Thingsboard format
+        origin = ImportOrigin.objects.create(origin="Thingsboard")
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            station=self.station,
+            rawfile=self.data_file,
+            origin=origin,
+        )
+        data_import.clean()
+
 
 class TestThingsboardImportMap(TestCase):
     fixtures = [
