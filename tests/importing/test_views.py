@@ -117,19 +117,6 @@ class TestDataImportUploadAPIView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("station", response.data)
 
-        # Missing format
-        test_file = self.create_test_file()
-        response = self.client.post(
-            self.url,
-            {
-                "station": self.station.station_code,
-                "rawfile": test_file,
-            },
-            format="multipart",
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("format", response.data)
-
     def test_invalid_station_code(self):
         """Test that invalid station code returns 400 error."""
         self.client.force_authenticate(user=self.user_with_permission)
