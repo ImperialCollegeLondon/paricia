@@ -4,6 +4,12 @@
 #
 #    pip-compile --extra=dev --output-file=requirements-dev.txt
 #
+affine==2.4.0
+    # via rasterio
+annotated-types==0.7.0
+    # via pydantic
+anyio==4.13.0
+    # via httpx
 asgiref==3.8.1
     # via
     #   Paricia (pyproject.toml)
@@ -12,13 +18,23 @@ asgiref==3.8.1
 attrs==25.4.0
     # via
     #   jsonschema
+    #   morecantile
+    #   rasterio
     #   referencing
+    #   rio-tiler
 blinker==1.9.0
     # via flask
 build==1.4.0
     # via pip-tools
+cachetools==7.1.1
+    # via rio-tiler
 certifi==2024.8.30
-    # via requests
+    # via
+    #   httpcore
+    #   httpx
+    #   pyproj
+    #   rasterio
+    #   requests
 cfgv==3.4.0
     # via pre-commit
 channels==4.2.0
@@ -27,9 +43,16 @@ charset-normalizer==3.4.4
     # via requests
 click==8.1.7
     # via
+    #   cligj
     #   djlint
     #   flask
+    #   morecantile
     #   pip-tools
+    #   rasterio
+cligj==0.7.2
+    # via rasterio
+color-operations==0.2.0
+    # via rio-tiler
 colorama==0.4.6
     # via djlint
 crispy-bootstrap5==2024.10
@@ -110,6 +133,12 @@ flask==3.1.0
     # via
     #   dash
     #   django-plotly-dash
+h11==0.16.0
+    # via httpcore
+httpcore==1.0.9
+    # via httpx
+httpx==0.28.1
+    # via rio-tiler
 huey==2.5.2
     # via Paricia (pyproject.toml)
 identify==2.6.16
@@ -117,6 +146,8 @@ identify==2.6.16
 idna==3.10
     # via
     #   Paricia (pyproject.toml)
+    #   anyio
+    #   httpx
     #   requests
 importlib-metadata==8.7.1
     # via dash
@@ -148,6 +179,8 @@ markupsafe==3.0.2
     #   werkzeug
 model-bakery==1.20.1
     # via Paricia (pyproject.toml)
+morecantile==7.0.3
+    # via rio-tiler
 mypy==1.19.1
     # via Paricia (pyproject.toml)
 mypy-extensions==1.1.0
@@ -158,10 +191,16 @@ nest-asyncio==1.6.0
     # via dash
 nodeenv==1.9.1
     # via pre-commit
+numexpr==2.14.1
+    # via rio-tiler
 numpy==2.4.2
     # via
     #   Paricia (pyproject.toml)
+    #   color-operations
+    #   numexpr
     #   pandas
+    #   rasterio
+    #   rio-tiler
 openpyxl==3.1.5
     # via Paricia (pyproject.toml)
 packaging==26.2
@@ -191,14 +230,28 @@ psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
     # via Paricia (pyproject.toml)
+pydantic==2.13.4
+    # via
+    #   morecantile
+    #   rio-tiler
+pydantic-core==2.46.4
+    # via pydantic
 pyjwt==2.10.1
     # via djangorestframework-simplejwt
+pyparsing==3.3.2
+    # via rasterio
+pyproj==3.7.2
+    # via morecantile
 pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
+pystac==1.14.3
+    # via rio-tiler
 python-dateutil==2.9.0.post0
-    # via pandas
+    # via
+    #   pandas
+    #   pystac
 pytz==2025.2
     # via
     #   Paricia (pyproject.toml)
@@ -210,6 +263,10 @@ pyyaml==6.0.3
     #   drf-spectacular
     #   drf-yasg
     #   pre-commit
+rasterio==1.5.0
+    # via
+    #   Paricia (pyproject.toml)
+    #   rio-tiler
 referencing==0.37.0
     # via
     #   jsonschema
@@ -220,6 +277,8 @@ requests==2.32.5
     # via dash
 retrying==1.4.2
     # via dash
+rio-tiler==9.0.6
+    # via Paricia (pyproject.toml)
 rpds-py==0.30.0
     # via
     #   jsonschema
@@ -241,6 +300,14 @@ typing-extensions==4.15.0
     # via
     #   dash
     #   mypy
+    #   pydantic
+    #   pydantic-core
+    #   rio-tiler
+    #   typing-inspection
+typing-inspection==0.4.2
+    # via pydantic
+tzdata==2024.2
+    # via pandas
 uritemplate==4.2.0
     # via
     #   Paricia (pyproject.toml)

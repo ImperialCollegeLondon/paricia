@@ -4,6 +4,12 @@
 #
 #    pip-compile --extra=doc --output-file=requirements-doc.txt
 #
+affine==2.4.0
+    # via rasterio
+annotated-types==0.7.0
+    # via pydantic
+anyio==4.13.0
+    # via httpx
 asgiref==3.8.1
     # via
     #   Paricia (pyproject.toml)
@@ -12,23 +18,41 @@ asgiref==3.8.1
 attrs==25.4.0
     # via
     #   jsonschema
+    #   morecantile
+    #   rasterio
     #   referencing
+    #   rio-tiler
 babel==2.18.0
     # via mkdocs-material
 backrefs==7.0
     # via mkdocs-material
 blinker==1.9.0
     # via flask
+cachetools==7.1.1
+    # via rio-tiler
 certifi==2024.8.30
-    # via requests
+    # via
+    #   httpcore
+    #   httpx
+    #   pyproj
+    #   rasterio
+    #   requests
 channels==4.2.0
     # via django-plotly-dash
 charset-normalizer==3.4.4
     # via requests
 click==8.1.7
     # via
+    #   cligj
     #   flask
     #   mkdocs
+    #   mkdocstrings
+    #   morecantile
+    #   rasterio
+cligj==0.7.2
+    # via rasterio
+color-operations==0.2.0
+    # via rio-tiler
     #   properdocs
 colorama==0.4.6
     # via mkdocs-material
@@ -103,11 +127,19 @@ ghp-import==2.1.0
     #   properdocs
 griffelib==2.0.2
     # via mkdocstrings-python
+h11==0.16.0
+    # via httpcore
+httpcore==1.0.9
+    # via httpx
+httpx==0.28.1
+    # via rio-tiler
 huey==2.5.2
     # via Paricia (pyproject.toml)
 idna==3.10
     # via
     #   Paricia (pyproject.toml)
+    #   anyio
+    #   httpx
     #   requests
 importlib-metadata==8.7.1
     # via dash
@@ -193,14 +225,22 @@ mkdocstrings==1.0.4
     #   mkdocstrings-python
 mkdocstrings-python==2.0.3
     # via Paricia (pyproject.toml)
+morecantile==7.0.3
+    # via rio-tiler
 narwhals==2.20.0
     # via plotly
 nest-asyncio==1.6.0
     # via dash
+numexpr==2.14.1
+    # via rio-tiler
 numpy==2.4.2
     # via
     #   Paricia (pyproject.toml)
+    #   color-operations
+    #   numexpr
     #   pandas
+    #   rasterio
+    #   rio-tiler
 openpyxl==3.1.5
     # via Paricia (pyproject.toml)
 packaging==26.2
@@ -236,6 +276,12 @@ psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
     # via Paricia (pyproject.toml)
+pydantic==2.13.4
+    # via
+    #   morecantile
+    #   rio-tiler
+pydantic-core==2.46.4
+    # via pydantic
 pygments==2.20.0
     # via mkdocs-material
 pyjwt==2.10.1
@@ -244,10 +290,17 @@ pymdown-extensions==10.21.3
     # via
     #   mkdocs-material
     #   mkdocstrings
+pyparsing==3.3.2
+    # via rasterio
+pyproj==3.7.2
+    # via morecantile
+pystac==1.14.3
+    # via rio-tiler
 python-dateutil==2.9.0.post0
     # via
     #   ghp-import
     #   pandas
+    #   pystac
 pytz==2025.2
     # via
     #   Paricia (pyproject.toml)
@@ -263,6 +316,11 @@ pyyaml==6.0.3
     #   pymdown-extensions
     #   pyyaml-env-tag
 pyyaml-env-tag==1.1
+    # via mkdocs
+rasterio==1.5.0
+    # via
+    #   Paricia (pyproject.toml)
+    #   rio-tiler
     # via
     #   mkdocs
     #   properdocs
@@ -276,6 +334,8 @@ requests==2.32.5
     #   mkdocs-material
 retrying==1.4.2
     # via dash
+rio-tiler==9.0.6
+    # via Paricia (pyproject.toml)
 rpds-py==0.30.0
     # via
     #   jsonschema
@@ -287,6 +347,16 @@ six==1.17.0
 sqlparse==0.5.5
     # via django
 typing-extensions==4.15.0
+    # via
+    #   dash
+    #   pydantic
+    #   pydantic-core
+    #   rio-tiler
+    #   typing-inspection
+typing-inspection==0.4.2
+    # via pydantic
+tzdata==2024.2
+    # via pandas
     # via dash
 uritemplate==4.2.0
     # via
