@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from guardian.shortcuts import get_user_model
 
 
 class TestInitialData(TestCase):
@@ -65,7 +66,71 @@ class TestInitialData(TestCase):
         self.assertEqual(classification.variable.name, "Caudal")
 
 
+class TestFormat(TestCase):
+    """Tests for the Format object."""
+
+    def setUp(self):
+        """Set up the model objects."""
+        User = get_user_model()
+
+        self.user = User.objects.create_user(
+            username="tbcreateuser", password="testpass123"
+        )
+
+    def test_clean_thingsboard(self):
+        """Test the clean method for a Thingsboard format."""
+        from formatting.models import Format
+
+        # Column-related fields are not required
+        format = Format.objects.create(
+            owner=self.user,
+            thingsboard=True,
+        )
+        format.clean()
+
+    def test_clean_non_thingsboard(self):
+        """Test the clean method for a non-Thingsboard format."""
+        from formatting.models import Extension, Format
+
+        format = Format.objects.create(
+            owner=self.user,
+            extension=None,
+            first_row=None,
+            footer_rows=None,
+            date_column=None,
+            time_column=None,
+            thingsboard=False,
+        )
+
+        with self.assertRaises(ValidationError) as ctx:
+            format.clean()
+        self.assertEqual(
+            {
+                "extension": ["Field is required for non-Thingsboard data."],
+                "first_row": ["Field is required for non-Thingsboard data."],
+                "footer_rows": ["Field is required for non-Thingsboard data."],
+                "date_column": ["Field is required for non-Thingsboard data."],
+                "time_column": ["Field is required for non-Thingsboard data."],
+            },
+            ctx.exception.message_dict,
+        )
+
+        ext = Extension.objects.create(owner=self.user, value="csv")
+        format = Format.objects.create(
+            owner=self.user,
+            extension=ext,
+            first_row=1,
+            footer_rows=0,
+            date_column=0,
+            time_column=0,
+            thingsboard=False,
+        )
+        format.clean()
+
+
 class TestClassification(TestCase):
+    """Tests for the Classification object."""
+
     fixtures = [
         "management_user",
         "variable_unit",
@@ -79,6 +144,7 @@ class TestClassification(TestCase):
     ]
 
     def setUp(self):
+        """Set up the model objects."""
         from formatting.models import Format
         from variable.models import Variable
 
@@ -132,8 +198,8 @@ class TestClassification(TestCase):
         classification.clean()
 
     def test_clean_value(self):
-        """Test the clean method checks value is provided if there is a Format."""
-        from formatting.models import Classification
+        """Test the clean method checks value is provided if non-Thingsboard Format."""
+        from formatting.models import Classification, Format
 
         classification = Classification.objects.create(
             owner=self.variable.owner,
@@ -145,7 +211,9 @@ class TestClassification(TestCase):
             classification.clean()
         self.assertEqual(
             {
-                "value": ["A value column must be specified if a format is provided."],
+                "value": [
+                    ("A value column must be specified for non-Thingsboard formats.")
+                ],
             },
             ctx.exception.message_dict,
         )
@@ -153,10 +221,15 @@ class TestClassification(TestCase):
         classification.value = 0
         classification.clean()
 
-        # No format provided (only for Thingsboard)
+        # Thingsboard format provided
+        tb_format = Format.objects.create(
+            owner=self.variable.owner,
+            thingsboard=True,
+        )
         classification = Classification.objects.create(
             owner=self.variable.owner,
             visibility="Public",
+            format=tb_format,
             variable=self.variable,
         )
         classification.clean()
