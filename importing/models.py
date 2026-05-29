@@ -82,8 +82,6 @@ class DataImport(PermissionsBase):
         models.PROTECT,
         verbose_name="Format",
         help_text="Format of the data.",
-        null=True,
-        blank=True,
     )
     origin = models.ForeignKey(
         ImportOrigin,
@@ -138,8 +136,8 @@ class DataImport(PermissionsBase):
         if not tz:
             raise ValidationError("Station must have a timezone set.")
 
-        if self.origin.origin != "Thingsboard" and self.format is None:
-            raise ValidationError("Please specify a format for this import.")
+        if self.origin.origin == "Thingsboard" and not self.format.thingsboard:
+            raise ValidationError("Ensure a Thingsboard-specific format is specified.")
 
 
 class ThingsboardImportMap(PermissionsBase):
