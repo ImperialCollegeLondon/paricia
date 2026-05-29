@@ -9,6 +9,7 @@ from django.test import TestCase, override_settings
 from formatting.models import Format
 
 
+@override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
 class TestThingsboardFunctions(TestCase):
     """Test suits for functions to read Thingsboard data."""
 
@@ -35,6 +36,7 @@ class TestThingsboardFunctions(TestCase):
 
     def setUp(self):
         """Set up the test data."""
+        from formatting.models import Classification, Format
         from importing.models import DataImport, ImportOrigin, ThingsboardImportMap
         from station.models import TIMEZONES, Station
         from variable.models import Variable
@@ -45,13 +47,17 @@ class TestThingsboardFunctions(TestCase):
         self.station = Station.objects.get(station_id=8)
         self.station.timezone = TIMEZONES[0][0]
         self.origin = ImportOrigin.objects.create(origin="Thingsboard")
-        self.data_import = DataImport.objects.create(
-            owner=self.station.owner,
-            station=self.station,
-            rawfile=self.data_file,
-            origin=self.origin,
-        )
         self.variable = Variable.objects.get(pk=104)
+        self.format = Format.objects.create(
+            owner=self.variable.owner,
+            thingsboard=True,
+        )
+        self.classification = Classification.objects.create(
+            owner=self.variable.owner,
+            visibility="Public",
+            format=self.format,
+            variable=self.variable,
+        )
         self.import_map = ThingsboardImportMap.objects.create(
             tb_variable="turbidity",
             variable=self.variable,
@@ -59,20 +65,23 @@ class TestThingsboardFunctions(TestCase):
             station=self.station,
             owner=self.station.owner,
         )
-
-    @override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
-    def test_process_thingsboard_data(self):
-        """Test the process_thingsboard_data function."""
-        from importing.functions import process_thingsboard_data
-
-        start_date, end_date, data = process_thingsboard_data(
-            self.data_import, self.station
+        self.data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            station=self.station,
+            format=self.format,
+            rawfile=self.data_file,
+            origin=self.origin,
         )
-        var_id, df = data[0]
-        self.assertEqual(max(df["value"].tolist()), 3993.6)
-        self.assertEqual(min(df["value"].tolist()), 665.6)
+
+    def test_read_thingsboard_data_to_import(self):
+        """Test the read_thingsboard_data_to_import function."""
+        from importing.functions import read_thingsboard_data_to_import
+
+        df = read_thingsboard_data_to_import(
+            self.data_import.rawfile, self.station.timezone
+        )
         self.assertEqual(len(df), 1000)
-        self.assertEqual(var_id, self.variable.variable_id)
+        start_date, end_date = df["date"].iloc[0], df["date"].iloc[-1]
         self.assertEqual(
             start_date,
             pd.Timestamp(1778855732730, unit="ms").tz_localize(self.station.timezone),
@@ -82,7 +91,6 @@ class TestThingsboardFunctions(TestCase):
             pd.Timestamp(1779787177749, unit="ms").tz_localize(self.station.timezone),
         )
 
-    @override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
     def test_save_temp_data_to_permanent_thingsboard(self):
         """Test the save_temp_data_to_permanent function for thingsboard data."""
         from importing.functions import save_temp_data_to_permanent
@@ -106,7 +114,75 @@ class TestThingsboardFunctions(TestCase):
         )
         self.assertEqual(results.count(), 1000)
 
+    def test_parse_thingsboard_values(self):
+        """Test the parse_thingsboard_values function."""
+        from importing.functions import parse_thingsboard_values
 
+        dates = pd.to_datetime(
+            [
+                datetime(2026, 1, 1, 9, 0, 0),
+                datetime(2026, 1, 1, 9, 5, 30),
+                datetime(2026, 1, 1, 9, 15, 0),
+            ]
+        )
+        data = pd.DataFrame(
+            {
+                "date": dates,
+                "value": ["10.0", "25.0", "37"],
+            }
+        )
+        parsed_data = parse_thingsboard_values(data)
+        self.assertIsInstance(parsed_data["value"].iloc[0], float)
+
+        data["value"] = ["number", "10.0", "20.0"]
+        with self.assertRaises(ValueError) as msg:
+            parse_thingsboard_values(data)
+
+        self.assertEqual(
+            "Failed to parse value column for Thingsboard data. Check that numerical"
+            " data are provided.",
+            str(msg.exception),
+        )
+
+    def test_get_processed_variable_data(self):
+        """Test the get_processed_variable_data_function."""
+        import zoneinfo
+
+        from formatting.models import Classification
+        from importing.functions import get_processed_variable_data
+
+        tz = zoneinfo.ZoneInfo(self.station.timezone)
+        dates = pd.to_datetime(
+            [
+                datetime(2026, 1, 1, 9, 0, 0),
+                datetime(2026, 1, 1, 9, 5, 0),
+                datetime(2026, 1, 1, 9, 15, 0),
+            ]
+        ).tz_localize(tz)
+        data = pd.DataFrame(
+            {
+                "date": dates,
+                "value": ["10.0", "25.0", "37.0"],
+            }
+        )
+        classification = Classification.objects.create(
+            owner=self.variable.owner,
+            visibility="Public",
+            format=self.format,
+            variable=self.variable,
+            incremental=True,
+            accumulate=5,
+            resolution=4,
+        )
+        start_date = dates[0]
+        end_date = dates[-1]
+        processed_data = get_processed_variable_data(
+            data, classification, start_date, end_date, True
+        )
+        self.assertEqual(processed_data["value"].tolist(), [0.0, 60.0, 0.0, 48.0])
+
+
+@override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
 class TestMatrixFunctions(TestCase):
     """Test suite for functions to construct the matrix."""
 
@@ -367,9 +443,7 @@ class TestMatrixFunctions(TestCase):
         from importing.functions import construct_matrix
         from variable.models import Variable
 
-        start_date, end_date, variables_data = construct_matrix(
-            self.data_file, self.file_format, self.station
-        )
+        start_date, end_date, variables_data = construct_matrix(self.data_import)
         self.assertEqual(len(variables_data), 2)
         self.assertEqual(len(variables_data[0][1]), 263370)
         self.assertEqual(len(variables_data[1][1]), 263370)
@@ -402,10 +476,9 @@ class TestMatrixFunctions(TestCase):
         """Test construct_matrix raises an error with no classifications."""
         from importing.functions import construct_matrix
 
-        format = self.file_format
-        format.format_id = 1000
+        self.data_import.format.format_id = 1000
         with self.assertRaises(ValueError) as msg:
-            construct_matrix(self.data_file, format, self.station)
+            construct_matrix(self.data_import)
 
         self.assertEqual(
             str(msg.exception),
@@ -424,7 +497,7 @@ class TestMatrixFunctions(TestCase):
             }
         )
         with self.assertRaises(ValueError) as msg:
-            construct_matrix(self.data_file, self.file_format, self.station)
+            construct_matrix(self.data_import)
         self.assertStartsWith(str(msg.exception), "The number of columns in the file")
 
     @patch("importing.functions.construct_matrix")
