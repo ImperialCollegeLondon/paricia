@@ -203,7 +203,7 @@ numpy==2.4.2
     #   rio-tiler
 openpyxl==3.1.5
     # via Paricia (pyproject.toml)
-packaging==24.2
+packaging==26.2
     # via
     #   build
     #   drf-yasg
@@ -220,7 +220,7 @@ pip-tools==7.5.3
     # via Paricia (pyproject.toml)
 platformdirs==4.3.6
     # via virtualenv
-plotly==6.5.0
+plotly==6.7.0
     # via
     #   dash
     #   django-plotly-dash
