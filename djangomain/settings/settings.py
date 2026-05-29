@@ -32,6 +32,7 @@ from django_bootstrap5.core import BOOTSTRAP5_DEFAULTS
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 FILE_UPLOAD_MAX_MEMORY_SIZE = 27000000
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
 
@@ -350,3 +351,5 @@ TB_TIMESERIES_URL = (
 MAX_POINTS = 1000  # Max points to display in plots
 
 IMPORT_BATCH_SIZE = 10000
+
+MAX_LAYER_FILE_SIZE_MB = 100
