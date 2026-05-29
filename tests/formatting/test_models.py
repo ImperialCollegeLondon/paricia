@@ -157,7 +157,9 @@ class TestClassification(TestCase):
 
         classification = Classification.objects.create(
             owner=self.variable.owner,
+            format=self.format,
             visibility="Public",
+            value=0,
             variable=self.variable,
             accumulate=3,
         )
