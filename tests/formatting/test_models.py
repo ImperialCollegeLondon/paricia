@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 
@@ -62,3 +63,100 @@ class TestInitialData(TestCase):
         self.assertEqual(classification.format.name, "iMHEA nivel y flujo periódico")
         self.assertEqual(classification.format.delimiter.name, "Coma")
         self.assertEqual(classification.variable.name, "Caudal")
+
+
+class TestClassification(TestCase):
+    fixtures = [
+        "management_user",
+        "variable_unit",
+        "variable_variable",
+        "formatting_delimiter",
+        "formatting_extension",
+        "formatting_date",
+        "formatting_time",
+        "formatting_format",
+        "formatting_classification",
+    ]
+
+    def setUp(self):
+        from formatting.models import Format
+        from variable.models import Variable
+
+        self.variable = Variable.objects.get(variable_id=1)
+        self.format = Format.objects.get(format_id=46)
+
+    def test_clean_resolution(self):
+        """Test the clean method checks the resolution is set."""
+        from formatting.models import Classification
+
+        classification = Classification.objects.create(
+            owner=self.variable.owner,
+            visibility="Public",
+            variable=self.variable,
+            accumulate=3,
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            classification.clean()
+        self.assertEqual(
+            {"resolution": ["The resolution must be set if the data is accumulated."]},
+            ctx.exception.message_dict,
+        )
+
+        classification.resolution = 2.0
+        classification.clean()
+
+    def test_clean_different_columns(self):
+        """Test the clean method checks that columns provided are different."""
+        from formatting.models import Classification
+
+        classification = Classification.objects.create(
+            owner=self.variable.owner,
+            visibility="Public",
+            format=self.format,
+            variable=self.variable,
+            value=0,
+            maximum=1,
+            minimum=1,
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            classification.clean()
+        self.assertEqual(
+            {
+                "maximum": ["The columns must be different."],
+                "minimum": ["The columns must be different."],
+            },
+            ctx.exception.message_dict,
+        )
+
+        classification.minimum = 2
+        classification.clean()
+
+    def test_clean_value(self):
+        """Test the clean method checks value is provided if there is a Format."""
+        from formatting.models import Classification
+
+        classification = Classification.objects.create(
+            owner=self.variable.owner,
+            visibility="Public",
+            format=self.format,
+            variable=self.variable,
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            classification.clean()
+        self.assertEqual(
+            {
+                "value": ["A value column must be specified if a format is provided."],
+            },
+            ctx.exception.message_dict,
+        )
+
+        classification.value = 0
+        classification.clean()
+
+        # No format provided (only for Thingsboard)
+        classification = Classification.objects.create(
+            owner=self.variable.owner,
+            visibility="Public",
+            variable=self.variable,
+        )
+        classification.clean()

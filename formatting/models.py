@@ -323,6 +323,8 @@ class Classification(PermissionsBase):
         Format,
         on_delete=models.PROTECT,
         verbose_name="Format",
+        blank=True,
+        null=True,
         help_text="The format of the data file.",
     )
     variable = models.ForeignKey(
@@ -332,7 +334,10 @@ class Classification(PermissionsBase):
         help_text="The variable to which the data belongs.",
     )
     value = models.PositiveSmallIntegerField(
-        "Value column", help_text="Index of the value column, starting in 0."
+        "Value column",
+        blank=True,
+        null=True,
+        help_text="Index of the value column, starting in 0.",
     )
     maximum = models.PositiveSmallIntegerField(
         "Maximum value column",
@@ -428,8 +433,9 @@ class Classification(PermissionsBase):
         """Validate the model instance.
 
         It checks that the column indices are different, and that the accumulation
-        period is greater than zero if it is set. It also checks that the resolution is
-        set if the data is accumulated.
+        period is greater than zero if it is set; the resolution is set if the data is
+        accumulated; and that the value column is set if a format is provided (for
+        non-Thingsboard imports).
         """
         if self.accumulate and self.resolution is None:
             raise ValidationError(
@@ -452,6 +458,12 @@ class Classification(PermissionsBase):
             if len(names) != 1:
                 msg = "The columns must be different."
                 raise ValidationError({field: msg for field in names})
+
+        # for non-Thingsboard classifications
+        if self.format is not None and self.value is None:
+            raise ValidationError(
+                {"value": "A value column must be specified if a format is provided."}
+            )
 
     class Meta:
         ordering = ("variable",)
