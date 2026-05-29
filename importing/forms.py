@@ -2,8 +2,6 @@ from django import forms
 from django.utils import timezone
 from guardian.shortcuts import get_objects_for_user
 
-from formatting.models import Format
-
 from .models import ThingsboardImportMap
 
 
@@ -14,10 +12,6 @@ class ThingsboardDataRetrievalForm(forms.Form):
         queryset=ThingsboardImportMap.objects.none(),
         label="Select Device/Variable Mapping",
         help_text="Choose which ThingsBoard device and variable to fetch. If you dont see your desired mapping, create one using the button above.",  # noqa: E501
-    )
-    format = forms.ModelChoiceField(
-        queryset=Format.objects.none(),
-        label="Format",
     )
     start_date = forms.DateTimeField(
         label="Start Date & Time",
@@ -39,11 +33,6 @@ class ThingsboardDataRetrievalForm(forms.Form):
                 "importing.view_thingsboardimportmap",
                 klass=ThingsboardImportMap,
             )
-            self.fields["format"].queryset = get_objects_for_user(
-                user,
-                "formatting.view_format",
-                klass=Format,
-            ).order_by("name")
 
     def clean(self):
         cleaned_data = super().clean()

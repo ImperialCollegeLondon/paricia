@@ -203,8 +203,8 @@ class Format(PermissionsBase):
     extension = models.ForeignKey(
         Extension,
         on_delete=models.PROTECT,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
         verbose_name="File extension",
         help_text="The extension of the data file.",
     )
@@ -219,11 +219,15 @@ class Format(PermissionsBase):
     )
     first_row = models.PositiveSmallIntegerField(
         "First row",
+        blank=True,
+        null=True,
         default=1,
         help_text="Index of the first row with data, starting in 0.",
     )
     footer_rows = models.PositiveSmallIntegerField(
         "Number of footer rows",
+        blank=True,
+        null=True,
         default=0,
         help_text="Number of footer rows to be ignored at the end.",
     )
@@ -236,7 +240,11 @@ class Format(PermissionsBase):
         help_text="Format for the date column. Only required for text files.",
     )
     date_column = models.PositiveSmallIntegerField(
-        "Date column", default=0, help_text="Index of the date column, starting in 0."
+        "Date column",
+        blank=True,
+        null=True,
+        default=0,
+        help_text="Index of the date column, starting in 0.",
     )
     time = models.ForeignKey(
         Time,
@@ -247,7 +255,16 @@ class Format(PermissionsBase):
         help_text="Format for the time column. Only required for text files.",
     )
     time_column = models.PositiveSmallIntegerField(
-        "Time column", default=0, help_text="Index of the time column, starting in 0."
+        "Time column",
+        blank=True,
+        null=True,
+        default=0,
+        help_text="Index of the time column, starting in 0.",
+    )
+    thingsboard = models.BooleanField(
+        "Thingsboard data",
+        default=False,
+        help_text="Whether the data is being imported from Thingsboard.",
     )
 
     def __str__(self) -> str:
@@ -280,6 +297,28 @@ class Format(PermissionsBase):
 
     class Meta:
         ordering = ("-format_id",)
+
+    def clean(self) -> None:
+        """Validate the model instance.
+
+        Checks that the required fields for non-Thingsboard data are provided.
+        """
+        super().clean()
+        errors = {}
+        if not self.thingsboard:
+            required_fields = (
+                "extension",
+                "first_row",
+                "footer_rows",
+                "date_column",
+                "time_column",
+            )
+            for field in required_fields:
+                if getattr(self, field) is None:
+                    errors[field] = "Field is required for non-Thingsboard data."
+
+        if errors:
+            raise ValidationError(errors)
 
 
 class Classification(PermissionsBase):
@@ -332,7 +371,10 @@ class Classification(PermissionsBase):
         help_text="The variable to which the data belongs.",
     )
     value = models.PositiveSmallIntegerField(
-        "Value column", help_text="Index of the value column, starting in 0."
+        "Value column",
+        blank=True,
+        null=True,
+        help_text="Index of the value column, starting in 0.",
     )
     maximum = models.PositiveSmallIntegerField(
         "Maximum value column",
@@ -428,8 +470,9 @@ class Classification(PermissionsBase):
         """Validate the model instance.
 
         It checks that the column indices are different, and that the accumulation
-        period is greater than zero if it is set. It also checks that the resolution is
-        set if the data is accumulated.
+        period is greater than zero if it is set; the resolution is set if the data is
+        accumulated; and that the value column is set if a format is provided (for
+        non-Thingsboard imports).
         """
         if self.accumulate and self.resolution is None:
             raise ValidationError(
@@ -452,6 +495,16 @@ class Classification(PermissionsBase):
             if len(names) != 1:
                 msg = "The columns must be different."
                 raise ValidationError({field: msg for field in names})
+
+        # for non-Thingsboard classifications
+        if not self.format.thingsboard and self.value is None:
+            raise ValidationError(
+                {
+                    "value": (
+                        "A value column must be specified for non-Thingsboard formats."
+                    )
+                }
+            )
 
     class Meta:
         ordering = ("variable",)
