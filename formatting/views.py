@@ -165,6 +165,13 @@ class ClassificationCreateView(CustomCreateView):
     foreign_key_fields = ["format", "variable"]
 
 
+class ThingsboardClassificationCreateView(CustomCreateView):
+    """View to create a Thingsboard classification."""
+
+    model = Classification
+    fields = ["visibility", "variable", "accumulate", "resolution", "incremental"]
+
+
 # Edit views for formatting app.
 class ExtensionEditView(CustomEditView):
     """View to edit a extension."""

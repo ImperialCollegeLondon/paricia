@@ -471,8 +471,8 @@ class Classification(PermissionsBase):
 
         It checks that the column indices are different, and that the accumulation
         period is greater than zero if it is set; the resolution is set if the data is
-        accumulated; and that the value column is set if a format is provided (for
-        non-Thingsboard imports).
+        accumulated; and that the value column is set if the import is not from
+        Thingsboard.
         """
         if self.accumulate and self.resolution is None:
             raise ValidationError(
