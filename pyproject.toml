@@ -43,6 +43,8 @@ dependencies = [
     "Pillow",
     "django-tables2",
     "drf-spectacular",
+    "rasterio",
+    "rio-tiler",
     "openpyxl>=3.1.5",
 ]
 

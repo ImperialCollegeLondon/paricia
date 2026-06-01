@@ -1,22 +1,39 @@
 """Dash app for selecting stations and rendering them on an interactive map.
 
-This module defines a DjangoDash application with two checklist sections
-(owned and public stations), bulk selection controls, and a map view updated
-from current checklist selections.
+This module defines a DjangoDash application with two station checklist sections,
+plus a third block for spatial layer controls. GeoTIFF layers are loaded from
+MapLayerImport entries and rendered below station points.
 """
 
-from contextlib import suppress
+from typing import Any
 
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objs as go
-from dash import MATCH, Input, Output, Patch, dcc, html
-from django.forms.models import model_to_dict
+from dash import ALL, MATCH, Input, Output, Patch, State, dcc, html, no_update
 from django_plotly_dash import DjangoDash
 
+from djangomain.dash_apps.geotiff_layers import (
+    available_map_layers_by_id,
+    build_mapbox_layers,
+)
 from station.models import Station
 
-SCROLL_HEIGHT = "280px"
+SCROLL_HEIGHT = "150px"
+
+_STATION_KEYS = (
+    "station_id",
+    "station_code",
+    "station_name",
+    "station_latitude",
+    "station_longitude",
+)
+_DEFAULT_MAP_STYLE = "carto-positron"
+_MAP_STYLE_OPTIONS = [
+    {"label": "Carto Positron", "value": "carto-positron"},
+    {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
+    {"label": "OpenStreetMap", "value": "open-street-map"},
+]
 
 app = DjangoDash(
     "StationsMap",
@@ -24,14 +41,14 @@ app = DjangoDash(
 )
 
 
-def _scrollable_checklist(block_id):
+def _scrollable_checklist(block_id: str) -> html.Div:
     """Build a checklist wrapped in a fixed-height scroll container.
 
     Args:
-        block_id (str): Prefix used to build the checklist component id.
+        block_id: Prefix used to build the checklist component id.
 
     Returns:
-        html.Div: Scrollable container holding a ``dcc.Checklist``.
+        Scrollable container holding a ``dcc.Checklist``.
     """
     return html.Div(
         dcc.Checklist(
@@ -51,14 +68,14 @@ def _scrollable_checklist(block_id):
     )
 
 
-def _all_none_buttons(block_id):
+def _all_none_buttons(block_id: str) -> dbc.ButtonGroup:
     """Build the bulk-selection button group for a station checklist.
 
     Args:
-        block_id (str): Prefix used to build the button component ids.
+        block_id: Prefix used to build the button component ids.
 
     Returns:
-        dbc.ButtonGroup: Button group containing *All* and *None* buttons.
+        Button group containing *All* and *None* buttons.
     """
     return dbc.ButtonGroup(
         [
@@ -81,15 +98,15 @@ def _all_none_buttons(block_id):
     )
 
 
-def _station_block(block_id, title):
+def _station_block(block_id: str, title: str) -> dbc.Card:
     """Build a station-selection card containing bulk controls and a checklist.
 
     Args:
-        block_id (str): Prefix used for internal control ids.
-        title (str): Text rendered in the card header.
+        block_id: Prefix used for internal control ids.
+        title: Text rendered in the card header.
 
     Returns:
-        dbc.Card: Card containing an All/None button group and a scrollable
+        Card containing an All/None button group and a scrollable
             checklist.
     """
     return dbc.Card(
@@ -104,11 +121,73 @@ def _station_block(block_id, title):
     )
 
 
+def _spatial_data_block() -> dbc.Card:
+    """Build controls for selecting and toggling spatial layers.
+
+    Returns:
+        Card containing a layer picker and selected-layer list.
+    """
+    return dbc.Card(
+        [
+            dbc.CardHeader("Spatial Data", className="py-2"),
+            dbc.CardBody(
+                [
+                    dcc.Dropdown(
+                        id="spatial-layer-dropdown",
+                        options=[],
+                        value=None,
+                        placeholder="Add a spatial layer...",
+                        clearable=True,
+                    ),
+                    html.Div(
+                        id="spatial-layer-list",
+                        className="mt-2",
+                        style={
+                            "maxHeight": SCROLL_HEIGHT,
+                            "overflowY": "auto",
+                            "border": "1px solid #dee2e6",
+                            "borderRadius": "4px",
+                            "padding": "6px 8px",
+                        },
+                    ),
+                    dcc.Store(id="spatial-layer-store", data=[]),
+                ],
+                className="py-2",
+            ),
+        ],
+        className="mb-3 shadow-sm",
+    )
+
+
+def _map_style_block() -> dbc.Card:
+    """Build controls for selecting the map base style.
+
+    Returns:
+        Card containing the base map style selector.
+    """
+    return dbc.Card(
+        [
+            dbc.CardHeader("Map Style", className="py-2"),
+            dbc.CardBody(
+                dbc.Select(
+                    id="map-style-select",
+                    options=_MAP_STYLE_OPTIONS,
+                    value=_DEFAULT_MAP_STYLE,
+                    size="sm",
+                ),
+                className="py-2",
+            ),
+        ],
+        className="mb-3 shadow-sm",
+    )
+
+
 _sidebar = dbc.Col(
     [
-        html.H6("Stations", className="fw-bold mb-3 mt-3 ps-1"),
+        _map_style_block(),
         html.Div(_station_block("owned", "My Stations"), id="owned-block"),
         _station_block("public", "Public Stations"),
+        _spatial_data_block(),
     ],
     width=3,
     style={
@@ -128,7 +207,7 @@ _map_col = dbc.Col(
             "data": [],
             "layout": {
                 "mapbox": {
-                    "style": "open-street-map",
+                    "style": _DEFAULT_MAP_STYLE,
                     "zoom": 3.6,
                     "center": {"lat": -9.182731, "lon": -60.658738},
                 },
@@ -149,7 +228,7 @@ _map_col = dbc.Col(
 
 app.layout = dbc.Container(
     fluid=True,
-    style={"height": "100vh", "padding": "0"},
+    style={"height": "100vh", "padding": "0.5"},
     children=[
         dbc.Row([_sidebar, _map_col], className="g-0"),
         html.Div(id="stations_list", style={"display": "none"}),
@@ -160,14 +239,14 @@ app.layout = dbc.Container(
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 
-def _ensure_list(value):
+def _ensure_list(value: Any) -> list:
     """Normalise a callback input value to a plain Python list.
 
     Args:
         value: Input that may be ``None``, a scalar, or a list.
 
     Returns:
-        list: Empty list for falsy input; the original list; or a single-item
+        Empty list for falsy input; the original list; or a single-item
             list wrapping a scalar value.
     """
     if not value:
@@ -175,29 +254,155 @@ def _ensure_list(value):
     return value if isinstance(value, list) else [value]
 
 
-def _build_options(codes):
+def _build_options(codes: Any) -> list[dict[str, str]]:
     """Build Dash checklist option dicts from an iterable of station codes.
 
     Each option label is ``"<code> - <name>"`` when the station has a name,
     otherwise just the code. Codes are sorted alphabetically.
 
     Args:
-        codes (Iterable[str]): Station codes to include.
+        codes: Station codes to include.
 
     Returns:
-        list[dict[str, str]]: Option dicts with ``"label"`` and ``"value"``
+        Option dicts with ``"label"`` and ``"value"``
             keys, ready for use in ``dcc.Checklist``.
     """
+    sorted_codes = sorted(_ensure_list(codes))
+    station_names = {
+        station.station_code: station.station_name
+        for station in Station.objects.filter(station_code__in=sorted_codes).only(
+            "station_code", "station_name"
+        )
+    }
+
     options = []
-    for code in sorted(codes):
-        with suppress(Station.DoesNotExist):
-            obj = Station.objects.get(station_code=code)
-            label = f"{code} - {obj.station_name}" if obj.station_name else code
-            options.append({"label": label, "value": code})
+    for code in sorted_codes:
+        if code not in station_names:
+            continue
+        name = station_names[code]
+        options.append(
+            {
+                "label": f"{code} - {name}" if name else code,
+                "value": code,
+            }
+        )
     return options
 
 
-# ── Populate checklist options ────────────────────────────────────────────────
+def _get_request_user(kwargs: dict) -> Any | None:
+    """Get callback request user from django_plotly_dash callback kwargs.
+
+    Args:
+        kwargs: Callback keyword arguments from django_plotly_dash.
+
+    Returns:
+        Authenticated user object when present, else None.
+    """
+    request = kwargs.get("request")
+    return getattr(request, "user", None)
+
+
+def _normalise_spatial_layer_store(store_data: Any) -> list[dict[str, Any]]:
+    """Normalise layer-store payload to an ordered list of unique entries.
+
+    Args:
+        store_data: List-like payload containing layer ids or entry dictionaries.
+
+    Returns:
+        Entries with ``id`` and ``visible`` keys.
+    """
+    normalised = []
+    seen = set()
+
+    for item in _ensure_list(store_data):
+        if isinstance(item, dict):
+            layer_id = item.get("id")
+            visible = bool(item.get("visible", True))
+        else:
+            layer_id = item
+            visible = True
+
+        if layer_id in (None, "") or layer_id in seen:
+            continue
+
+        normalised.append({"id": layer_id, "visible": visible})
+        seen.add(layer_id)
+
+    return normalised
+
+
+def _triggered_component(callback_context: Any) -> str:
+    """Return component id from django-plotly-dash callback context."""
+    triggered_prop = (
+        callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
+    )
+    return triggered_prop.rsplit(".", 1)[0] if triggered_prop else ""
+
+
+def _build_spatial_layer_row(layer_id: str, layer_name: str, visible: bool) -> html.Div:
+    """Build one selected-layer row with a visibility toggle and remove button.
+
+    Args:
+        layer_id: Map layer identifier used by callbacks.
+        layer_name: Label shown to the user.
+        visible: Whether the layer is currently visible on the map.
+
+    Returns:
+        Row containing checkbox, name, and a remove button.
+    """
+    return html.Div(
+        [
+            dbc.Checkbox(
+                id={"type": "spatial-layer-visible", "index": layer_id},
+                value=visible,
+                className="me-2",
+            ),
+            html.Span(layer_name, className="flex-grow-1"),
+            html.Button(
+                "x",
+                id={"type": "spatial-layer-remove", "index": layer_id},
+                n_clicks=0,
+                type="button",
+                className="btn btn-link text-danger p-0 ms-2",
+                title=f"Remove {layer_name}",
+            ),
+        ],
+        className="d-flex align-items-center py-1 border-bottom",
+    )
+
+
+def _station_rows_for_codes(codes: Any, station_group: str) -> list[dict[str, Any]]:
+    """Build map rows for selected station codes in display order.
+
+    Args:
+        codes: Selected station codes in desired output order.
+        station_group: Label used to tag rows for trace grouping.
+
+    Returns:
+        Station row dictionaries ready for map
+            trace construction.
+    """
+    selected_codes = _ensure_list(codes)
+    if not selected_codes:
+        return []
+
+    station_rows = {
+        row["station_code"]: row
+        for row in Station.objects.filter(station_code__in=selected_codes).values(
+            *_STATION_KEYS
+        )
+    }
+
+    rows = []
+    for code in selected_codes:
+        row = station_rows.get(code)
+        if not row:
+            continue
+        rows.append({**row, "type": station_group})
+    return rows
+
+
+# populate checklist options
 
 
 @app.callback(
@@ -208,7 +413,9 @@ def _build_options(codes):
     ],
     Input("stations_list", "children"),
 )
-def populate_options(all_raw, **kwargs):
+def populate_options(
+    all_raw: Any, **kwargs: Any
+) -> tuple[list[dict[str, str]], list[dict[str, str]], dict]:
     """Populate owned and public checklist options from visible station codes.
 
     For authenticated users the owned section is shown and populated with
@@ -217,14 +424,14 @@ def populate_options(all_raw, **kwargs):
     treated as public and the owned section is hidden.
 
     Args:
-        all_raw (list[str] | str | None): Raw children value of the hidden
+        all_raw: Raw children value of the hidden
             ``stations_list`` div, containing the station codes the current
             user may see.
         **kwargs: Extra keyword arguments injected by ``django_plotly_dash``,
             expected to include ``request``.
 
     Returns:
-        tuple[list[dict], list[dict], dict]: Owned checklist options, public
+        Owned checklist options, public
             checklist options, and a CSS style dict for the owned block.
     """
     all_codes = _ensure_list(all_raw)
@@ -248,7 +455,139 @@ def populate_options(all_raw, **kwargs):
     return _build_options(owned), _build_options(public), owned_block_style
 
 
-# ── Selection ─────────────────────────────────────────────────────────────────
+@app.callback(
+    [
+        Output("spatial-layer-store", "data"),
+        Output("spatial-layer-dropdown", "options"),
+        Output("spatial-layer-dropdown", "value"),
+        Output("spatial-layer-list", "children"),
+    ],
+    [
+        Input("stations_list", "children"),
+        Input("map-style-select", "value"),
+        Input("spatial-layer-dropdown", "value"),
+        Input({"type": "spatial-layer-remove", "index": ALL}, "n_clicks"),
+        Input({"type": "spatial-layer-visible", "index": ALL}, "value"),
+    ],
+    [
+        State({"type": "spatial-layer-remove", "index": ALL}, "id"),
+        State({"type": "spatial-layer-visible", "index": ALL}, "id"),
+        State("spatial-layer-store", "data"),
+    ],
+)
+def sync_spatial_layer_controls(
+    _stations_raw: Any,
+    _map_style_value: Any,
+    dropdown_layer_id: Any,
+    _remove_clicks: Any,
+    visibility_values: Any,
+    remove_ids: Any,
+    visibility_ids: Any,
+    store_data: Any,
+    callback_context: Any,
+    **kwargs: Any,
+) -> tuple[list[dict[str, Any]], list[dict[str, str]], None, list]:
+    """Sync spatial-layer picker, selected-list rows, and map visibility state.
+
+    Args:
+        _stations_raw: Unused trigger input for station list changes.
+        _map_style_value: Current map style value.
+        dropdown_layer_id: Layer id selected from the add-layer dropdown.
+        _remove_clicks: Click counts from per-layer remove buttons.
+        visibility_values: Visibility booleans for selected layer checkboxes.
+        remove_ids: Pattern-matching ids for the remove buttons.
+        visibility_ids: Pattern-matching ids for the visibility checkboxes.
+        store_data: Current selected-layer store payload.
+        callback_context: Dash callback context used to inspect trigger source.
+        **kwargs: Callback kwargs containing request context.
+
+    Returns:
+        Selected layer
+            store data, add-layer dropdown options, reset dropdown value, and
+            selected-layer row components.
+    """
+    user = _get_request_user(kwargs)
+    layer_index = available_map_layers_by_id(user)
+    selected_layers = [
+        entry
+        for entry in _normalise_spatial_layer_store(store_data)
+        if entry["id"] in layer_index
+    ]
+
+    triggered_component = _triggered_component(callback_context)
+
+    if triggered_component == "map-style-select":
+        selected_layers = []
+    elif triggered_component == "spatial-layer-dropdown":
+        selected_layer_ids = {entry["id"] for entry in selected_layers}
+        if (
+            dropdown_layer_id in layer_index
+            and dropdown_layer_id not in selected_layer_ids
+        ):
+            # New layers start unchecked and only show once user enables them.
+            selected_layers.append({"id": dropdown_layer_id, "visible": False})
+    elif '"type":"spatial-layer-remove"' in triggered_component:
+        clicked_remove_ids = [
+            (button_id.get("index"), clicks)
+            for button_id, clicks in zip(
+                _ensure_list(remove_ids),
+                _ensure_list(_remove_clicks),
+            )
+            if isinstance(button_id, dict) and clicks
+        ]
+        removed_id = (
+            max(clicked_remove_ids, key=lambda item: item[1])[0]
+            if clicked_remove_ids
+            else None
+        )
+
+        selected_layers = [
+            entry for entry in selected_layers if entry["id"] != removed_id
+        ]
+    elif '"type":"spatial-layer-visible"' in triggered_component:
+        visibility_by_id = {
+            visibility_id.get("index"): bool(value)
+            for visibility_id, value in zip(
+                _ensure_list(visibility_ids),
+                _ensure_list(visibility_values),
+            )
+            if isinstance(visibility_id, dict) and "index" in visibility_id
+        }
+        selected_layers = [
+            {
+                "id": entry["id"],
+                "visible": visibility_by_id.get(entry["id"], entry["visible"]),
+            }
+            for entry in selected_layers
+        ]
+
+    selected_layer_ids = {entry["id"] for entry in selected_layers}
+    dropdown_options = [
+        {"label": layer["name"], "value": layer_id}
+        for layer_id, layer in layer_index.items()
+        if layer_id not in selected_layer_ids
+    ]
+
+    layer_rows = [
+        _build_spatial_layer_row(
+            entry["id"],
+            layer_index[entry["id"]]["name"],
+            entry["visible"],
+        )
+        for entry in selected_layers
+    ]
+    if not layer_rows:
+        layer_rows = [
+            html.Div(
+                "No spatial layers selected.",
+                className="text-muted fst-italic small",
+            )
+        ]
+
+    return selected_layers, dropdown_options, None, layer_rows
+
+
+# selection
 
 
 @app.callback(
@@ -258,20 +597,43 @@ def populate_options(all_raw, **kwargs):
         Input({"type": "select-all", "index": MATCH}, "n_clicks"),
         Input({"type": "select-none", "index": MATCH}, "n_clicks"),
     ],
+    State({"type": "checklist", "index": MATCH}, "value"),
 )
-def checklist_selection(options, _n_all, _n_none, callback_context):
-    triggered = (
-        callback_context.triggered[0]["prop_id"] if callback_context.triggered else ""
-    )
-    triggered_component = triggered.rsplit(".", 1)[0]
+def checklist_selection(
+    options: Any, _n_all: Any, _n_none: Any, current_value: Any, callback_context: Any
+) -> list:
+    """Resolve station checklist selection for all/none and refresh events.
+
+    Args:
+        options: Checklist options for the matched block.
+        _n_all: Click count for the "All" button.
+        _n_none: Click count for the "None" button.
+        current_value: Currently selected option values.
+        callback_context: Dash callback context used to inspect trigger source.
+
+    Returns:
+        Updated selected values for the matched checklist.
+    """
+    triggered_component = _triggered_component(callback_context)
+    option_values = [option["value"] for option in (options or [])]
 
     if "select-none" in triggered_component:
         return []
+    if "select-all" in triggered_component:
+        return option_values
 
-    return [o["value"] for o in (options or [])]
+    # Keep the current user selection whenever options are refreshed.
+    option_values_set = set(option_values)
+    selected_values = [
+        value for value in _ensure_list(current_value) if value in option_values_set
+    ]
+    if selected_values:
+        return selected_values
+
+    return option_values
 
 
-# ── Map ───────────────────────────────────────────────────────────────────────
+# map
 
 _COLOR_MAP = {
     "My Stations": "#e74c3c",
@@ -284,67 +646,87 @@ _COLOR_MAP = {
     [
         Input({"type": "checklist", "index": "owned"}, "value"),
         Input({"type": "checklist", "index": "public"}, "value"),
+        Input("spatial-layer-store", "data"),
+        Input("map-style-select", "value"),
     ],
 )
-def update_map(owned_selected, public_selected):
-    """Build a scatter-mapbox figure for the currently selected stations.
-
-    Owned and public stations are rendered in different colours defined by
-    ``_COLOR_MAP``.  When no stations are selected an empty basemap is
-    returned so the tile layer remains visible.
+def update_map(
+    owned_selected: Any,
+    public_selected: Any,
+    spatial_layer_store: Any,
+    map_style_value: str,
+    callback_context: Any,
+    **kwargs: Any,
+) -> Patch | object:
+    """Build a scatter-mapbox figure for currently selected stations and layers.
 
     Args:
-        owned_selected (list[str] | None): Station codes selected in the
-            owned group.
-        public_selected (list[str] | None): Station codes selected in the
-            public group.
+        owned_selected: Selected station codes from the owned checklist.
+        public_selected: Selected station codes from the public checklist.
+        spatial_layer_store: Selected spatial layers and their visibility.
+        map_style_value: Requested map style value.
+        callback_context: Dash callback context used to inspect trigger source.
+        **kwargs: Callback kwargs containing request context.
 
     Returns:
-        plotly.graph_objects.Figure: Scatter-mapbox figure coloured by station
-            group; empty groups render as zero-point traces so the tile layer
-            remains visible when nothing is selected.
+        Patch update for the map figure or no_update.
     """
-    keys = [
-        "station_id",
-        "station_code",
-        "station_name",
-        "station_latitude",
-        "station_longitude",
-    ]
+    user = _get_request_user(kwargs)
 
-    rows = []
-    for code in owned_selected or []:
-        with suppress(Station.DoesNotExist):
-            row = {
-                k: model_to_dict(Station.objects.get(station_code=code))[k]
-                for k in keys
-            }
-            row["type"] = "My Stations"
-            rows.append(row)
-    for code in public_selected or []:
-        with suppress(Station.DoesNotExist):
-            row = {
-                k: model_to_dict(Station.objects.get(station_code=code))[k]
-                for k in keys
-            }
-            row["type"] = "Public"
-            rows.append(row)
+    valid_styles = {option["value"] for option in _MAP_STYLE_OPTIONS}
+    map_style = (
+        map_style_value if map_style_value in valid_styles else _DEFAULT_MAP_STYLE
+    )
+
+    triggered_component = _triggered_component(callback_context)
+    is_initial_call = not triggered_component
 
     patched = Patch()
-    df = pd.DataFrame(rows, columns=[*keys, "type"])
-    traces = []
-    for group, color in _COLOR_MAP.items():
-        sub = df[df["type"] == group]
-        traces.append(
-            go.Scattermapbox(
-                lat=sub["station_latitude"],
-                lon=sub["station_longitude"],
-                mode="markers",
-                marker={"color": color, "size": 10},
-                name=group,
-                hovertext=sub["station_code"],
-                hoverinfo="text",
+
+    if (
+        is_initial_call
+        or '"type":"checklist"' in triggered_component
+        or triggered_component == "spatial-layer-store"
+    ):
+        rows = _station_rows_for_codes(owned_selected, "My Stations")
+        rows.extend(_station_rows_for_codes(public_selected, "Public"))
+
+        df = pd.DataFrame(rows, columns=[*_STATION_KEYS, "type"])
+        traces = []
+        for group, color in _COLOR_MAP.items():
+            sub = df[df["type"] == group]
+            traces.append(
+                go.Scattermapbox(
+                    lat=sub["station_latitude"],
+                    lon=sub["station_longitude"],
+                    mode="markers",
+                    marker={"color": color, "size": 10},
+                    name=group,
+                    hovertext=sub["station_code"],
+                    hoverinfo="text",
+                )
             )
+
+        patched["data"] = traces
+
+    if is_initial_call or triggered_component == "spatial-layer-store":
+        available_layers = available_map_layers_by_id(user)
+        spatial_layers_raw = [
+            {"id": entry["id"], "visible": True}
+            for entry in _normalise_spatial_layer_store(spatial_layer_store)
+            if entry["visible"] and entry["id"] in available_layers
+        ]
+        patched["layout"]["mapbox"]["layers"] = build_mapbox_layers(
+            spatial_layers_raw,
+            user,
         )
-    patched["data"] = traces
+
+    if is_initial_call or triggered_component == "map-style-select":
+        patched["layout"]["mapbox"]["style"] = map_style
+    if triggered_component == "map-style-select":
+        patched["layout"]["mapbox"]["layers"] = []
+
+    if patched == {}:
+        return no_update
+
     return patched
