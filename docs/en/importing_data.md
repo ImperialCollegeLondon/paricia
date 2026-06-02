@@ -51,3 +51,15 @@ Once the form is complete, click `Save` at the top of the page and the import pr
 ![Data ingestion failed](assets/images/importing_failed.png)
 
 Once the data has been ingested successfully, it will be available to validate in the [Validation screen](validation.md) and in the Report screen, if the Station it belongs to is labelled as public or internal.
+
+## Importing data from Thingsboard
+
+To import data from Thingsboard, you must first enter your ThingsBoard credentials in the `Account` page (this can be found by clicking the dropdown on your username in the top right-hand corner). Following this, generate an access token by selecting `Save Thingsboard` followed by `Generate Token from API`.
+
+![Thingsboard credentials](assets/images/thingsboard_credential.png)
+
+To retrieve your data, in `Import data`, select the `Retrieve from ThingsBoard` button at the top of the page. You will need to create an Import Map, which maps the name of the variable and device in Thingsboard to a Variable element (see [`Adding elements`](adding_elements.md) for more details). Ensure variable and device names match the details in Thingsboard, otherwise your import will fail.
+
+![Retrieving data from Thingsboard](assets/images/retrieve_thingsboard.png)
+
+You will also need to create Format and Classification elements for your Thingsboard import, though many of the processiong options relevant to uploading your own data file can be disregarded. For the Format, only `Visibility`, `Format name` and the Thingsboard data checkbox need to be specified. For the Classification, only `Visibility`, `Format` and `Variable` need specifying (and optionally if the data is cumulative, incremental or uses a resolution).
