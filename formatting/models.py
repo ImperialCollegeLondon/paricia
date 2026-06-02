@@ -170,7 +170,8 @@ class Format(PermissionsBase):
     It combines several properties, such as the file extension, the delimiter, the date
     and time formats, and the column indices for the date and time columns, instructing
     how to read the data file and parse the dates. It is mostly used to ingest data from
-    text files, like CSV.
+    text files, like CSV. For Thingsboard imports, only the name, description and
+    thingsboard fields are applicable.
 
     Attributes:
         format_id (AutoField): Primary key.
@@ -189,6 +190,7 @@ class Format(PermissionsBase):
         time (ForeignKey): Format for the time column. Only required for text files.
         time_column (PositiveSmallIntegerField): Index of the time column, starting in
             0.
+        thingsboard (BooleanField): Whether the data is being imported from Thingsboard.
     """
 
     format_id = models.AutoField(
@@ -327,7 +329,8 @@ class Classification(PermissionsBase):
     In particular, it links a format to a variable, and provides the column indices for
     the value, maximum, and minimum columns, as well as the validator columns. It also
     contains information on whether the data is accumulated, incremental, and the
-    resolution of the data.
+    resolution of the data. For Thingsboard imports, only the format, variable,
+    accumulate, resolution and incremental fields are applicable.
 
     Attributes:
         cls_id (AutoField): Primary key.
