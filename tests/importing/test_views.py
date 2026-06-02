@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -1214,7 +1216,11 @@ class TestMapLayerImportCreateView(TestCase):
                 "name": "Test Map Layer",
                 "description": "This is a test map layer import.",
                 "file": SimpleUploadedFile(
-                    "layer.tif", b"fake-tiff-content", content_type="image/tiff"
+                    "layer.tif",
+                    (
+                        Path(__file__).parent.parent / "test_data/test_layer.tif"
+                    ).read_bytes(),
+                    content_type="image/tiff",
                 ),
                 "visibility": "private",
             },
