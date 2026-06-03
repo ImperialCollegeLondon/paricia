@@ -12,19 +12,19 @@ La aplicación Sensor es una aplicación pequeña y sencilla que contiene metada
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: sensor.models.SensorBrand
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: sensor.models.Sensor
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
