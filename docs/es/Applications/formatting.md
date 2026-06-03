@@ -12,28 +12,28 @@ La aplicación de formato describe cómo se debe ingerir un archivo de datos: qu
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Delimiter
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Date
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Time
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ## Componentes principales
@@ -42,12 +42,12 @@ La aplicación de formato describe cómo se debe ingerir un archivo de datos: qu
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Classification
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
