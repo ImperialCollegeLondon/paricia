@@ -51,3 +51,15 @@ Una vez que el formulario esté completo, haga clic en `Save` en la parte superi
 ![Error en la ingesta de datos](assets/images/importing_failed.png)
 
 Una vez que los datos se hayan ingerido correctamente, estarán disponibles para su validación en la [Pantalla de validación](validation.md) y en la pantalla de Informe, si la estación a la que pertenecen está etiquetada como pública o interna.
+
+## Importación de datos de Thingsboard
+
+Para importar datos de Thingsboard, primero debes introducir tus credenciales de Thingsboard en la página `Account` (puedes acceder a ella haciendo clic en el menú desplegable de tu nombre de usuario en la esquina superior derecha). A continuación, genera un token de acceso seleccionando `Save Thingsboard` y luego `Generate Token from API`.
+
+![Credenciales de Thingsboard](assets/images/thingsboard_credentials.png)
+
+Para recuperar tus datos, en `Import data`, selecciona el botón `Retrieve from ThingsBoard` en la parte superior de la página. Deberás crear un mapa de importación, que asigna el nombre de la variable y el dispositivo en Thingsboard a un elemento de variable (consulta [`Añadir elementos`](adding_elements.md) para obtener más información). Asegúrate de que los nombres de las variables y los dispositivos coincidan con los detalles en Thingsboard; de lo contrario, la importación fallará.
+
+![Recuperando datos de Thingsboard](assets/images/retrieve_thingsboard.png)
+
+También deberá crear elementos de Format y Classification para la importación de Thingsboard, aunque muchas de las opciones de procesamiento relevantes para cargar su propio archivo de datos pueden ignorarse. Para el Format, solo es necesario especificar `Visibility`, `Format name` y la casilla de verificación de datos de Thingsboard. Para la Classification, solo es necesario especificar `Visibility`, `Format` y `Variable` (y opcionalmente si los datos son acumulativos, incrementales o utilizan una resolución).

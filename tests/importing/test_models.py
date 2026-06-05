@@ -29,6 +29,7 @@ class TestSaveImportModels(TestCase):
     def setUp(self):
         from formatting.models import Format
         from station.models import TIMEZONES, Station
+        from variable.models import Variable
 
         self.file_format = Format.objects.get(format_id=45)
         self.data_file = str(
@@ -36,6 +37,7 @@ class TestSaveImportModels(TestCase):
         )
         self.station = Station.objects.get(station_id=8)
         self.station.timezone = TIMEZONES[0][0]
+        self.variable = Variable.objects.get(variable_id=1)
 
     def test_save_import(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
@@ -67,6 +69,55 @@ class TestSaveImportModels(TestCase):
         retrieved_dit = DataImport.objects.get_queryset()[0]
         self.assertEqual(retrieved_dit.station, self.station)
         self.assertEqual(retrieved_dit.format, self.file_format)
+
+    def test_clean_no_timezone(self):
+        from importing.models import DataImport
+
+        self.station.timezone = None
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            station=self.station,
+            format=self.file_format,
+            rawfile=self.data_file,
+        )
+
+        with self.assertRaises(ValidationError) as ctx:
+            data_import.clean()
+
+        self.assertEqual("Station must have a timezone set.", ctx.exception.message)
+
+    def test_clean_thingsboard_format_provided(self):
+        from formatting.models import Format
+        from importing.models import DataImport, ImportOrigin
+
+        # No format required for Thingsboard format
+        origin = ImportOrigin.objects.create(origin="Thingsboard")
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            format=self.file_format,
+            station=self.station,
+            rawfile=self.data_file,
+            origin=origin,
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            data_import.clean()
+
+        self.assertEqual(
+            "Ensure a Thingsboard-specific format is specified.", ctx.exception.message
+        )
+
+        tb_format = Format.objects.create(
+            owner=self.variable.owner,
+            thingsboard=True,
+        )
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            format=tb_format,
+            station=self.station,
+            rawfile=self.data_file,
+            origin=origin,
+        )
+        data_import.clean()
 
 
 class TestThingsboardImportMap(TestCase):
