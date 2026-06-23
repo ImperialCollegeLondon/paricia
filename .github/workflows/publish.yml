@@ -35,20 +35,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 
   docs:
+    uses: ./.github/workflows/docs.yml
     needs: test
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
-        with:
-          python-version: 3.14
-          cache: pip
-          cache-dependency-path: requirements*.txt
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-doc.txt
-          pip install .
-      - name: Deploy Docs
-        run: mkdocs gh-deploy --force
