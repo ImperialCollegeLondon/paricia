@@ -1,7 +1,4 @@
-
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
+<!DOCTYPE html><html lang="en" class="no-js"><head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,11 +9,18 @@
         <link rel="prev" href="../functions/">
       
       
-        <link rel="next" href="../signals/">
+        <link rel="next" href="../serializers/">
+      
+      
+        
+          <link rel="alternate" href="/paricia/en/" hreflang="en">
+        
+          <link rel="alternate" href="/paricia/es/" hreflang="es">
+        
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.46">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -24,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -37,8 +41,8 @@
       
         
         
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -53,17 +57,17 @@
 
     
     
-    
-   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
-    html.glightbox-open { overflow: initial; height: 100%; }
-    .gslide-title { margin-top: 0px; user-select: text; }
-    .gslide-desc { color: #666; user-select: text; }
-    .gslide-image img { background: white; }
-    .gscrollbar-fixer { padding-right: 15px; }
-    .gdesc-inner { font-size: 0.75rem; }
-    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
-    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
-    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
   
   
     <body dir="ltr">
@@ -92,12 +96,12 @@
     <a href="../../.." title="Paricia user manual" class="md-header__button md-logo" aria-label="Paricia user manual" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -124,7 +128,7 @@
   <div class="md-select">
     
     <button class="md-header__button md-icon" aria-label="Select language">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"></path></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
@@ -147,32 +151,34 @@
 </div>
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
       <label class="md-search__icon md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -183,13 +189,14 @@
     </div>
   </div>
 </div>
+      
     
     
       <div class="md-header__source">
         <a href="https://github.com/ImperialCollegeLondon/paricia" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -215,9 +222,11 @@
   
   
   
+  
     <li class="md-tabs__item">
       <a href="../../.." class="md-tabs__link">
         
+  
   
     
   
@@ -232,11 +241,13 @@
   
   
   
+  
     
     
       <li class="md-tabs__item">
         <a href="../../../introduction/" class="md-tabs__link">
           
+  
   
   User Guide
 
@@ -249,6 +260,7 @@
         
   
   
+  
     
   
   
@@ -257,6 +269,7 @@
       <li class="md-tabs__item md-tabs__item--active">
         <a href="../../../contributing/" class="md-tabs__link">
           
+  
   
   Developer Guide
 
@@ -277,7 +290,7 @@
           
             
               
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -291,7 +304,7 @@
     <a href="../../.." title="Paricia user manual" class="md-nav__button md-logo" aria-label="Paricia user manual" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
 
     </a>
     Paricia user manual
@@ -301,7 +314,7 @@
       <a href="https://github.com/ImperialCollegeLondon/paricia" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
   </div>
   <div class="md-source__repository">
     GitHub
@@ -309,7 +322,7 @@
 </a>
     </div>
   
-  <ul class="md-nav__list" data-md-scrollfix>
+  <ul class="md-nav__list" data-md-scrollfix="">
     
       
       
@@ -321,9 +334,16 @@
       <a href="../../.." class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Home
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -340,6 +360,7 @@
     
     
     
+    
       
       
     
@@ -348,15 +369,22 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2">
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     User Guide
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -365,9 +393,13 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            User Guide
+            
+  
+    User Guide
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -379,9 +411,16 @@
       <a href="../../../introduction/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Introduction
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -400,9 +439,16 @@
       <a href="../../../reports/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Reports
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -421,9 +467,16 @@
       <a href="../../../permissions/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Permissions
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -442,9 +495,16 @@
       <a href="../../../adding_elements/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Adding elements
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -463,9 +523,16 @@
       <a href="../../../importing_data/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Importing Data
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -484,9 +551,16 @@
       <a href="../../../validation/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Validation
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -513,6 +587,7 @@
     
     
     
+    
       
         
         
@@ -524,15 +599,22 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked="">
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Developer Guide
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -541,9 +623,13 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Developer Guide
+            
+  
+    Developer Guide
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -555,9 +641,16 @@
       <a href="../../../contributing/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Contributing
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -576,9 +669,16 @@
       <a href="../../../installation/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Installation
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -597,9 +697,16 @@
       <a href="../../../quality_assurance/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Quality assurance
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -618,9 +725,16 @@
       <a href="../../../synthetic_data/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Synthetic data
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -639,9 +753,16 @@
       <a href="../../../admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Administrators
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -659,6 +780,7 @@
     
     
     
+    
       
       
     
@@ -667,15 +789,22 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6">
         
           
           <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Code structure
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -684,9 +813,13 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
-            Code structure
+            
+  
+    Code structure
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -698,9 +831,16 @@
       <a href="../../../Applications/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Index
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -719,9 +859,16 @@
       <a href="../../../Applications/formatting/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Formatting
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -740,9 +887,16 @@
       <a href="../../../Applications/variable/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Variables
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -761,9 +915,16 @@
       <a href="../../../Applications/sensor/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Sensors
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -782,9 +943,16 @@
       <a href="../../../Applications/station/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Stations
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -803,9 +971,16 @@
       <a href="../../../Applications/measurement/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Measurements
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -824,9 +999,16 @@
       <a href="../../../Applications/importing/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Importing
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -854,6 +1036,7 @@
     
     
     
+    
       
       
     
@@ -862,15 +1045,22 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" checked="">
         
           
           <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     API Reference
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -879,9 +1069,13 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_7">
             <span class="md-nav__icon md-icon"></span>
-            API Reference
+            
+  
+    API Reference
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -889,6 +1083,7 @@
   
   
   
+    
     
     
     
@@ -900,17 +1095,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_1">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../djangomain/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     djangomain
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -925,9 +1126,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_1">
             <span class="md-nav__icon md-icon"></span>
-            djangomain
+            
+  
+    djangomain
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -939,9 +1144,16 @@
       <a href="../../djangomain/asgi/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     asgi
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -959,6 +1171,7 @@
     
     
     
+    
       
       
     
@@ -967,17 +1180,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_1_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_1_2">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../djangomain/dash_apps/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     dash_apps
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -992,9 +1211,41 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_1_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_1_2">
             <span class="md-nav__icon md-icon"></span>
-            dash_apps
+            
+  
+    dash_apps
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../djangomain/dash_apps/geotiff_layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    geotiff_layers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1006,9 +1257,16 @@
       <a href="../../djangomain/dash_apps/stations_map/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     stations_map
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1035,9 +1293,16 @@
       <a href="../../djangomain/middleware/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     middleware
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1056,9 +1321,16 @@
       <a href="../../djangomain/renderers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     renderers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1076,6 +1348,7 @@
     
     
     
+    
       
       
     
@@ -1084,17 +1357,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_1_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_1_5">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../djangomain/settings/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     settings
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -1109,9 +1388,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_1_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_1_5">
             <span class="md-nav__icon md-icon"></span>
-            settings
+            
+  
+    settings
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -1123,9 +1406,16 @@
       <a href="../../djangomain/settings/production/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     production
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1144,9 +1434,16 @@
       <a href="../../djangomain/settings/settings/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     settings
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1173,9 +1470,16 @@
       <a href="../../djangomain/urls/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     urls
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1194,9 +1498,16 @@
       <a href="../../djangomain/views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1215,9 +1526,16 @@
       <a href="../../djangomain/wsgi/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     wsgi
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1243,6 +1561,7 @@
     
     
     
+    
       
       
     
@@ -1251,17 +1570,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_2">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../formatting/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     formatting
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -1276,9 +1601,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_2">
             <span class="md-nav__icon md-icon"></span>
-            formatting
+            
+  
+    formatting
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -1290,9 +1619,16 @@
       <a href="../../formatting/admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     admin
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1311,9 +1647,16 @@
       <a href="../../formatting/apps/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     apps
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1332,9 +1675,16 @@
       <a href="../../formatting/filters/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     filters
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1353,9 +1703,16 @@
       <a href="../../formatting/models/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1373,6 +1730,7 @@
     
     
     
+    
       
       
     
@@ -1381,17 +1739,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_2_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_2_5">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../formatting/signals/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     signals
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -1406,9 +1770,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_2_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_2_5">
             <span class="md-nav__icon md-icon"></span>
-            signals
+            
+  
+    signals
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -1420,9 +1788,16 @@
       <a href="../../formatting/signals/handlers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     handlers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1449,9 +1824,16 @@
       <a href="../../formatting/tables/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tables
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1470,9 +1852,16 @@
       <a href="../../formatting/urls/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     urls
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1491,9 +1880,16 @@
       <a href="../../formatting/views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1521,6 +1917,7 @@
     
     
     
+    
       
       
     
@@ -1529,17 +1926,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_3" checked="">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     importing
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -1554,9 +1957,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_7_3">
             <span class="md-nav__icon md-icon"></span>
-            importing
+            
+  
+    importing
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -1568,9 +1975,16 @@
       <a href="../admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     admin
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1589,9 +2003,16 @@
       <a href="../apps/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     apps
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1610,9 +2031,44 @@
       <a href="../filters/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     filters
+  
+
+    
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../forms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    forms
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1631,9 +2087,16 @@
       <a href="../functions/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     functions
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1659,9 +2122,16 @@
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
           <span class="md-nav__icon md-icon"></span>
@@ -1670,9 +2140,16 @@
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -1688,12 +2165,14 @@
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
       
         <li class="md-nav__item">
   <a href="#importing.models" class="md-nav__link">
     <span class="md-ellipsis">
-      models
+      
+        models
+      
     </span>
   </a>
   
@@ -1703,7 +2182,9 @@
           <li class="md-nav__item">
   <a href="#importing.models-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Attributes
+      
+        Attributes
+      
     </span>
   </a>
   
@@ -1711,9 +2192,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#importing.models.MAX_FILE_SIZE" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAX_FILE_SIZE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#importing.models.User" class="md-nav__link">
     <span class="md-ellipsis">
-      User
+      
+        User
+      
     </span>
   </a>
   
@@ -1727,7 +2221,9 @@
           <li class="md-nav__item">
   <a href="#importing.models-classes" class="md-nav__link">
     <span class="md-ellipsis">
-      Classes
+      
+        Classes
+      
     </span>
   </a>
   
@@ -1737,7 +2233,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.DataImport" class="md-nav__link">
     <span class="md-ellipsis">
-      DataImport
+      
+        DataImport
+      
     </span>
   </a>
   
@@ -1747,7 +2245,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.DataImport-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Functions
+      
+        Functions
+      
     </span>
   </a>
   
@@ -1757,7 +2257,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.DataImport.clean" class="md-nav__link">
     <span class="md-ellipsis">
-      clean
+      
+        clean
+      
     </span>
   </a>
   
@@ -1776,7 +2278,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format" class="md-nav__link">
     <span class="md-ellipsis">
-      Format
+      
+        Format
+      
     </span>
   </a>
   
@@ -1786,7 +2290,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Attributes
+      
+        Attributes
+      
     </span>
   </a>
   
@@ -1796,7 +2302,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.datetime_format" class="md-nav__link">
     <span class="md-ellipsis">
-      datetime_format
+      
+        datetime_format
+      
     </span>
   </a>
   
@@ -1810,7 +2318,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Functions
+      
+        Functions
+      
     </span>
   </a>
   
@@ -1820,7 +2330,20 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.__str__" class="md-nav__link">
     <span class="md-ellipsis">
-      __str__
+      
+        __str__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Format.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
     </span>
   </a>
   
@@ -1829,7 +2352,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.datetime_columns" class="md-nav__link">
     <span class="md-ellipsis">
-      datetime_columns
+      
+        datetime_columns
+      
     </span>
   </a>
   
@@ -1838,7 +2363,144 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.get_absolute_url" class="md-nav__link">
     <span class="md-ellipsis">
-      get_absolute_url
+      
+        get_absolute_url
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ImportOrigin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ImportOrigin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ImportOrigin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ImportOrigin-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ImportOrigin.get_default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_default
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.MapLayerImport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MapLayerImport
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MapLayerImport">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.MapLayerImport-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.MapLayerImport.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.SensorInstallation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorInstallation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SensorInstallation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.SensorInstallation-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.SensorInstallation.get_absolute_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_absolute_url
+      
     </span>
   </a>
   
@@ -1857,7 +2519,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station" class="md-nav__link">
     <span class="md-ellipsis">
-      Station
+      
+        Station
+      
     </span>
   </a>
   
@@ -1867,7 +2531,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Attributes
+      
+        Attributes
+      
     </span>
   </a>
   
@@ -1877,7 +2543,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.variables_list" class="md-nav__link">
     <span class="md-ellipsis">
-      variables_list
+      
+        variables_list
+      
     </span>
   </a>
   
@@ -1891,7 +2559,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Functions
+      
+        Functions
+      
     </span>
   </a>
   
@@ -1901,7 +2571,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.__str__" class="md-nav__link">
     <span class="md-ellipsis">
-      __str__
+      
+        __str__
+      
     </span>
   </a>
   
@@ -1910,7 +2582,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.get_absolute_url" class="md-nav__link">
     <span class="md-ellipsis">
-      get_absolute_url
+      
+        get_absolute_url
+      
     </span>
   </a>
   
@@ -1919,7 +2593,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.set_object_permissions" class="md-nav__link">
     <span class="md-ellipsis">
-      set_object_permissions
+      
+        set_object_permissions
+      
     </span>
   </a>
   
@@ -1932,6 +2608,174 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ThingsboardImportMap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ThingsboardImportMap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ThingsboardImportMap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ThingsboardImportMap-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ThingsboardImportMap.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variable
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Variable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attributes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.is_cumulative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_cumulative
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __str__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.get_absolute_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_absolute_url
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.validate_layer_file_size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        validate_layer_file_size
+      
+    </span>
+  </a>
   
 </li>
         
@@ -1960,6 +2804,35 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
     
     
     
@@ -1971,34 +2844,44 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_3_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_3_8">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../signals/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     signals
+  
+
+    
   </span>
+  
   
 
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3_7_3_6" id="__nav_3_7_3_6_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_3_7_3_8" id="__nav_3_7_3_8_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_3_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_7_3_6">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_3_8">
             <span class="md-nav__icon md-icon"></span>
-            signals
+            
+  
+    signals
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -2010,9 +2893,16 @@
       <a href="../signals/handlers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     handlers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2039,9 +2929,16 @@
       <a href="../tables/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tables
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2060,9 +2957,16 @@
       <a href="../tasks/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tasks
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2081,9 +2985,44 @@
       <a href="../urls/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     urls
+  
+
+    
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -2102,9 +3041,16 @@
       <a href="../views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2130,6 +3076,7 @@
     
     
     
+    
       
       
     
@@ -2138,17 +3085,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_4">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../management/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     management
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -2163,9 +3116,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_4">
             <span class="md-nav__icon md-icon"></span>
-            management
+            
+  
+    management
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -2177,9 +3134,16 @@
       <a href="../../management/admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     admin
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2198,9 +3162,16 @@
       <a href="../../management/apps/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     apps
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2219,9 +3190,16 @@
       <a href="../../management/filters/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     filters
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2240,9 +3218,16 @@
       <a href="../../management/forms/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     forms
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2261,9 +3246,16 @@
       <a href="../../management/initial_data/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     initial_data
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2282,9 +3274,16 @@
       <a href="../../management/models/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2303,9 +3302,16 @@
       <a href="../../management/permissions/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     permissions
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2324,9 +3330,16 @@
       <a href="../../management/serializers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     serializers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2345,9 +3358,16 @@
       <a href="../../management/tests/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tests
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2366,9 +3386,16 @@
       <a href="../../management/tools/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tools
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2387,9 +3414,16 @@
       <a href="../../management/views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2415,6 +3449,7 @@
     
     
     
+    
       
       
     
@@ -2423,17 +3458,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_5">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../measurement/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     measurement
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -2448,9 +3489,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_5">
             <span class="md-nav__icon md-icon"></span>
-            measurement
+            
+  
+    measurement
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -2462,9 +3507,16 @@
       <a href="../../measurement/admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     admin
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2483,9 +3535,16 @@
       <a href="../../measurement/apps/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     apps
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2503,6 +3562,7 @@
     
     
     
+    
       
       
     
@@ -2511,17 +3571,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_5_3">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../measurement/dash_apps/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     dash_apps
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -2536,9 +3602,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_5_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_5_3">
             <span class="md-nav__icon md-icon"></span>
-            dash_apps
+            
+  
+    dash_apps
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -2550,9 +3620,16 @@
       <a href="../../measurement/dash_apps/daily_validation/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     daily_validation
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2571,9 +3648,16 @@
       <a href="../../measurement/dash_apps/data_report/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     data_report
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2592,9 +3676,16 @@
       <a href="../../measurement/dash_apps/plots/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     plots
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2613,9 +3704,16 @@
       <a href="../../measurement/dash_apps/tables/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tables
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2642,9 +3740,16 @@
       <a href="../../measurement/filters/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     filters
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2663,9 +3768,16 @@
       <a href="../../measurement/models/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2684,9 +3796,44 @@
       <a href="../../measurement/reporting/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     reporting
+  
+
+    
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../measurement/serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    serializers
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -2704,6 +3851,7 @@
     
     
     
+    
       
       
     
@@ -2712,34 +3860,44 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_5_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_5_8">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../measurement/signals/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     signals
+  
+
+    
   </span>
+  
   
 
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3_7_5_7" id="__nav_3_7_5_7_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_3_7_5_8" id="__nav_3_7_5_8_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_5_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_7_5_7">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7_5_8">
             <span class="md-nav__icon md-icon"></span>
-            signals
+            
+  
+    signals
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -2751,9 +3909,16 @@
       <a href="../../measurement/signals/handlers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     handlers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2780,9 +3945,16 @@
       <a href="../../measurement/urls/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     urls
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2801,9 +3973,16 @@
       <a href="../../measurement/validation/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     validation
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2822,9 +4001,16 @@
       <a href="../../measurement/views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2850,6 +4036,7 @@
     
     
     
+    
       
       
     
@@ -2858,17 +4045,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_6">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../sensor/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     sensor
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -2883,9 +4076,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_6">
             <span class="md-nav__icon md-icon"></span>
-            sensor
+            
+  
+    sensor
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -2897,9 +4094,16 @@
       <a href="../../sensor/admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     admin
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2918,9 +4122,16 @@
       <a href="../../sensor/apps/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     apps
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2939,9 +4150,16 @@
       <a href="../../sensor/filters/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     filters
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2960,9 +4178,16 @@
       <a href="../../sensor/models/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -2980,6 +4205,7 @@
     
     
     
+    
       
       
     
@@ -2988,17 +4214,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_6_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_6_5">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../sensor/signals/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     signals
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3013,9 +4245,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_6_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_6_5">
             <span class="md-nav__icon md-icon"></span>
-            signals
+            
+  
+    signals
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3027,9 +4263,16 @@
       <a href="../../sensor/signals/handlers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     handlers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3056,9 +4299,16 @@
       <a href="../../sensor/tables/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tables
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3077,9 +4327,16 @@
       <a href="../../sensor/urls/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     urls
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3098,9 +4355,16 @@
       <a href="../../sensor/views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3126,6 +4390,7 @@
     
     
     
+    
       
       
     
@@ -3134,17 +4399,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_7">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../station/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     station
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3159,9 +4430,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_7">
             <span class="md-nav__icon md-icon"></span>
-            station
+            
+  
+    station
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3173,9 +4448,16 @@
       <a href="../../station/admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     admin
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3194,9 +4476,16 @@
       <a href="../../station/apps/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     apps
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3215,9 +4504,16 @@
       <a href="../../station/countries/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     countries
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3236,9 +4532,16 @@
       <a href="../../station/filters/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     filters
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3257,9 +4560,16 @@
       <a href="../../station/functions/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     functions
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3278,9 +4588,16 @@
       <a href="../../station/models/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3298,6 +4615,7 @@
     
     
     
+    
       
       
     
@@ -3306,17 +4624,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_7_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_7_7">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../station/signals/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     signals
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3331,9 +4655,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_7_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_7_7">
             <span class="md-nav__icon md-icon"></span>
-            signals
+            
+  
+    signals
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3345,9 +4673,16 @@
       <a href="../../station/signals/handlers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     handlers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3374,9 +4709,16 @@
       <a href="../../station/tables/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tables
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3395,9 +4737,16 @@
       <a href="../../station/timezones/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     timezones
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3416,9 +4765,16 @@
       <a href="../../station/urls/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     urls
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3437,9 +4793,16 @@
       <a href="../../station/views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3465,6 +4828,7 @@
     
     
     
+    
       
       
     
@@ -3473,17 +4837,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_8">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../utilities/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     utilities
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3498,9 +4868,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_8">
             <span class="md-nav__icon md-icon"></span>
-            utilities
+            
+  
+    utilities
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3508,6 +4882,7 @@
   
   
   
+    
     
     
     
@@ -3519,17 +4894,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_8_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_8_1">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../utilities/benchmarking/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     benchmarking
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3544,9 +4925,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_8_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_8_1">
             <span class="md-nav__icon md-icon"></span>
-            benchmarking
+            
+  
+    benchmarking
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3558,9 +4943,16 @@
       <a href="../../utilities/benchmarking/benchmark_queries/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     benchmark_queries
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3579,9 +4971,16 @@
       <a href="../../utilities/benchmarking/create_synthetic_data_scenario1/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     create_synthetic_data_scenario1
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3600,9 +4999,16 @@
       <a href="../../utilities/benchmarking/create_synthetic_data_scenario2/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     create_synthetic_data_scenario2
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3628,6 +5034,7 @@
     
     
     
+    
       
       
     
@@ -3636,17 +5043,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_8_2">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../utilities/frontend_menu/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     frontend_menu
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3661,9 +5074,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_8_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_8_2">
             <span class="md-nav__icon md-icon"></span>
-            frontend_menu
+            
+  
+    frontend_menu
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3675,9 +5092,16 @@
       <a href="../../utilities/frontend_menu/constants/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     constants
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3696,9 +5120,16 @@
       <a href="../../utilities/frontend_menu/context_processor/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     context_processor
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3725,9 +5156,16 @@
       <a href="../../utilities/functions/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     functions
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3746,9 +5184,16 @@
       <a href="../../utilities/load_initial_data/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     load_initial_data
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3767,9 +5212,16 @@
       <a href="../../utilities/timezones/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     timezones
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3795,6 +5247,7 @@
     
     
     
+    
       
       
     
@@ -3803,17 +5256,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_9">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../variable/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     variable
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3828,9 +5287,13 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_7_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_9">
             <span class="md-nav__icon md-icon"></span>
-            variable
+            
+  
+    variable
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3842,9 +5305,16 @@
       <a href="../../variable/admin/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     admin
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3863,9 +5333,16 @@
       <a href="../../variable/apps/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     apps
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3884,9 +5361,16 @@
       <a href="../../variable/filters/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     filters
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3905,9 +5389,16 @@
       <a href="../../variable/models/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     models
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -3925,6 +5416,7 @@
     
     
     
+    
       
       
     
@@ -3933,17 +5425,23 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_9_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7_9_5">
         
-          
           
           <div class="md-nav__link md-nav__container">
             <a href="../../variable/signals/" class="md-nav__link ">
               
   
+  
   <span class="md-ellipsis">
+    
+  
     signals
+  
+
+    
   </span>
+  
   
 
             </a>
@@ -3958,9 +5456,13 @@
         <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_7_9_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_7_9_5">
             <span class="md-nav__icon md-icon"></span>
-            signals
+            
+  
+    signals
+  
+
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
+          <ul class="md-nav__list" data-md-scrollfix="">
             
               
                 
@@ -3972,9 +5474,16 @@
       <a href="../../variable/signals/handlers/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     handlers
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -4001,9 +5510,16 @@
       <a href="../../variable/tables/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     tables
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -4022,9 +5538,16 @@
       <a href="../../variable/urls/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     urls
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -4043,9 +5566,16 @@
       <a href="../../variable/views/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     views
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -4085,7 +5615,7 @@
             
             
               
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -4099,12 +5629,14 @@
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
       
         <li class="md-nav__item">
   <a href="#importing.models" class="md-nav__link">
     <span class="md-ellipsis">
-      models
+      
+        models
+      
     </span>
   </a>
   
@@ -4114,7 +5646,9 @@
           <li class="md-nav__item">
   <a href="#importing.models-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Attributes
+      
+        Attributes
+      
     </span>
   </a>
   
@@ -4122,9 +5656,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#importing.models.MAX_FILE_SIZE" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAX_FILE_SIZE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#importing.models.User" class="md-nav__link">
     <span class="md-ellipsis">
-      User
+      
+        User
+      
     </span>
   </a>
   
@@ -4138,7 +5685,9 @@
           <li class="md-nav__item">
   <a href="#importing.models-classes" class="md-nav__link">
     <span class="md-ellipsis">
-      Classes
+      
+        Classes
+      
     </span>
   </a>
   
@@ -4148,7 +5697,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.DataImport" class="md-nav__link">
     <span class="md-ellipsis">
-      DataImport
+      
+        DataImport
+      
     </span>
   </a>
   
@@ -4158,7 +5709,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.DataImport-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Functions
+      
+        Functions
+      
     </span>
   </a>
   
@@ -4168,7 +5721,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.DataImport.clean" class="md-nav__link">
     <span class="md-ellipsis">
-      clean
+      
+        clean
+      
     </span>
   </a>
   
@@ -4187,7 +5742,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format" class="md-nav__link">
     <span class="md-ellipsis">
-      Format
+      
+        Format
+      
     </span>
   </a>
   
@@ -4197,7 +5754,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Attributes
+      
+        Attributes
+      
     </span>
   </a>
   
@@ -4207,7 +5766,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.datetime_format" class="md-nav__link">
     <span class="md-ellipsis">
-      datetime_format
+      
+        datetime_format
+      
     </span>
   </a>
   
@@ -4221,7 +5782,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Functions
+      
+        Functions
+      
     </span>
   </a>
   
@@ -4231,7 +5794,20 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.__str__" class="md-nav__link">
     <span class="md-ellipsis">
-      __str__
+      
+        __str__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Format.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
     </span>
   </a>
   
@@ -4240,7 +5816,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.datetime_columns" class="md-nav__link">
     <span class="md-ellipsis">
-      datetime_columns
+      
+        datetime_columns
+      
     </span>
   </a>
   
@@ -4249,7 +5827,144 @@
           <li class="md-nav__item">
   <a href="#importing.models.Format.get_absolute_url" class="md-nav__link">
     <span class="md-ellipsis">
-      get_absolute_url
+      
+        get_absolute_url
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ImportOrigin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ImportOrigin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ImportOrigin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ImportOrigin-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ImportOrigin.get_default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_default
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.MapLayerImport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MapLayerImport
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MapLayerImport">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.MapLayerImport-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.MapLayerImport.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.SensorInstallation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SensorInstallation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SensorInstallation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.SensorInstallation-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.SensorInstallation.get_absolute_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_absolute_url
+      
     </span>
   </a>
   
@@ -4268,7 +5983,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station" class="md-nav__link">
     <span class="md-ellipsis">
-      Station
+      
+        Station
+      
     </span>
   </a>
   
@@ -4278,7 +5995,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Attributes
+      
+        Attributes
+      
     </span>
   </a>
   
@@ -4288,7 +6007,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.variables_list" class="md-nav__link">
     <span class="md-ellipsis">
-      variables_list
+      
+        variables_list
+      
     </span>
   </a>
   
@@ -4302,7 +6023,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Functions
+      
+        Functions
+      
     </span>
   </a>
   
@@ -4312,7 +6035,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.__str__" class="md-nav__link">
     <span class="md-ellipsis">
-      __str__
+      
+        __str__
+      
     </span>
   </a>
   
@@ -4321,7 +6046,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.get_absolute_url" class="md-nav__link">
     <span class="md-ellipsis">
-      get_absolute_url
+      
+        get_absolute_url
+      
     </span>
   </a>
   
@@ -4330,7 +6057,9 @@
           <li class="md-nav__item">
   <a href="#importing.models.Station.set_object_permissions" class="md-nav__link">
     <span class="md-ellipsis">
-      set_object_permissions
+      
+        set_object_permissions
+      
     </span>
   </a>
   
@@ -4343,6 +6072,174 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ThingsboardImportMap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ThingsboardImportMap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ThingsboardImportMap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ThingsboardImportMap-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.ThingsboardImportMap.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variable
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Variable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attributes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.is_cumulative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_cumulative
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __str__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.clean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clean
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.Variable.get_absolute_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_absolute_url
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importing.models-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#importing.models.validate_layer_file_size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        validate_layer_file_size
+      
+    </span>
+  </a>
   
 </li>
         
@@ -4366,9 +6263,11 @@
           
           
             <div class="md-content" data-md-component="content">
+              
               <article class="md-content__inner md-typeset">
                 
                   
+
 
   
   
@@ -4395,13 +6294,35 @@
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
 
 
 
 
 
 <h3 id="importing.models-attributes">Attributes<a href="#importing.models-attributes" class="headerlink" title="Permanent link">¤</a></h3>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="importing.models.MAX_FILE_SIZE" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">MAX_FILE_SIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_LAYER_FILE_SIZE_MB</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#importing.models.MAX_FILE_SIZE" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
@@ -4418,9 +6339,11 @@
 
 
     <div class="doc doc-contents ">
+
     </div>
 
 </div>
+
 <h3 id="importing.models-classes">Classes<a href="#importing.models-classes" class="headerlink" title="Permanent link">¤</a></h3>
 
 <div class="doc doc-object doc-class">
@@ -4436,12 +6359,14 @@
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="management.models.PermissionsBase" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="PermissionsBase (management.models.PermissionsBase)" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+
 
 
         <p>Model to store the data imports.</p>
-<p>This model stores the data imports, which are files with data that are uploaded to
-the system. The data is then processed asynchronously and stored in the database.</p>
+<p>This model stores the data imports, which are, often, files with data that are
+uploaded to the system. The data is then processed asynchronously and stored in the
+database.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -4457,7 +6382,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.station">station</span></code></td>
             <td>
-                  <code>ForeignKey</code>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4468,7 +6393,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.format">format</span></code></td>
             <td>
-                  <code>ForeignKey</code>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4479,7 +6404,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.rawfile">rawfile</span></code></td>
             <td>
-                  <code>FileField</code>
+                  <code><span title="FileField">FileField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4490,7 +6415,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.date">date</span></code></td>
             <td>
-                  <code>DateTimeField</code>
+                  <code><span title="DateTimeField">DateTimeField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4501,7 +6426,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.start_date">start_date</span></code></td>
             <td>
-                  <code>DateTimeField</code>
+                  <code><span title="DateTimeField">DateTimeField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4512,7 +6437,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.end_date">end_date</span></code></td>
             <td>
-                  <code>DateTimeField</code>
+                  <code><span title="DateTimeField">DateTimeField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4523,7 +6448,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.records">records</span></code></td>
             <td>
-                  <code>IntegerField</code>
+                  <code><span title="IntegerField">IntegerField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4534,7 +6459,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.observations">observations</span></code></td>
             <td>
-                  <code>TextField</code>
+                  <code><span title="TextField">TextField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4545,7 +6470,7 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.status">status</span></code></td>
             <td>
-                  <code>TextField</code>
+                  <code><span title="TextField">TextField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4556,22 +6481,11 @@ the system. The data is then processed asynchronously and stored in the database
           <tr class="doc-section-item">
             <td><code><span title="importing.models.DataImport.log">log</span></code></td>
             <td>
-                  <code>TextField</code>
+                  <code><span title="TextField">TextField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Log of the data ingestion, indicating any errors.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="importing.models.DataImport.reprocess">reprocess</span></code></td>
-            <td>
-                  <code>BooleanField</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If checked, the data will be reprocessed.</p>
               </div>
             </td>
           </tr>
@@ -4586,7 +6500,10 @@ the system. The data is then processed asynchronously and stored in the database
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -4609,34 +6526,25 @@ the system. The data is then processed asynchronously and stored in the database
 
         <p>Validate information and uploads the measurement data.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>importing/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Validate information and uploads the measurement data."""</span>
     <span class="n">tz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">station</span><span class="o">.</span><span class="n">timezone</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tz</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">"Station must have a timezone set."</span><span class="p">)</span>
 
-    <span class="c1"># If the file has changed, we reprocess the data</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawfile</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">rawfile</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reprocess</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reprocess</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">"N"</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reprocess</span> <span class="o">=</span> <span class="kc">False</span>
-</code></pre></div></td></tr></table></div>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s2">"Thingsboard"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">thingsboard</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">"Ensure a Thingsboard-specific format is specified."</span><span class="p">)</span>
+</code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
 
@@ -4663,14 +6571,16 @@ the system. The data is then processed asynchronously and stored in the database
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="management.models.PermissionsBase" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="PermissionsBase (management.models.PermissionsBase)" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+
 
 
         <p>Details of the data file format, describing how to read the file.</p>
 <p>It combines several properties, such as the file extension, the delimiter, the date
 and time formats, and the column indices for the date and time columns, instructing
 how to read the data file and parse the dates. It is mostly used to ingest data from
-text files, like CSV.</p>
+text files, like CSV. For Thingsboard imports, only the name, description and
+thingsboard fields are applicable.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -4686,7 +6596,7 @@ text files, like CSV.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.format_id">format_id</span></code></td>
             <td>
-                  <code>AutoField</code>
+                  <code><span title="AutoField">AutoField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4697,7 +6607,7 @@ text files, like CSV.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.name">name</span></code></td>
             <td>
-                  <code>CharField</code>
+                  <code><span title="CharField">CharField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4708,7 +6618,7 @@ text files, like CSV.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.description">description</span></code></td>
             <td>
-                  <code>TextField</code>
+                  <code><span title="TextField">TextField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4719,7 +6629,7 @@ text files, like CSV.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.extension">extension</span></code></td>
             <td>
-                  <code>ForeignKey</code>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4730,7 +6640,7 @@ text files, like CSV.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.delimiter">delimiter</span></code></td>
             <td>
-                  <code>ForeignKey</code>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4742,7 +6652,7 @@ required for text files.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.first_row">first_row</span></code></td>
             <td>
-                  <code>PositiveSmallIntegerField</code>
+                  <code><span title="PositiveSmallIntegerField">PositiveSmallIntegerField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4754,7 +6664,7 @@ starting in 0.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.footer_rows">footer_rows</span></code></td>
             <td>
-                  <code>PositiveSmallIntegerField</code>
+                  <code><span title="PositiveSmallIntegerField">PositiveSmallIntegerField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4766,7 +6676,7 @@ the end.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.date">date</span></code></td>
             <td>
-                  <code>ForeignKey</code>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4777,7 +6687,7 @@ the end.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.date_column">date_column</span></code></td>
             <td>
-                  <code>PositiveSmallIntegerField</code>
+                  <code><span title="PositiveSmallIntegerField">PositiveSmallIntegerField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4789,7 +6699,7 @@ the end.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.time">time</span></code></td>
             <td>
-                  <code>ForeignKey</code>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4800,12 +6710,23 @@ the end.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Format.time_column">time_column</span></code></td>
             <td>
-                  <code>PositiveSmallIntegerField</code>
+                  <code><span title="PositiveSmallIntegerField">PositiveSmallIntegerField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Index of the time column, starting in
 0.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Format.thingsboard">thingsboard</span></code></td>
+            <td>
+                  <code><span title="BooleanField">BooleanField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether the data is being imported from Thingsboard.</p>
               </div>
             </td>
           </tr>
@@ -4820,7 +6741,9 @@ the end.</p>
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
 
 
 
@@ -4833,7 +6756,7 @@ the end.</p>
 
 
 <h6 id="importing.models.Format.datetime_format" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">datetime_format</span><span class="p">:</span> <span class="nb">str</span></code>
+            <code class="highlight language-python"><span class="n">datetime_format</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -4845,9 +6768,11 @@ the end.</p>
     <div class="doc doc-contents ">
 
         <p>Obtain the datetime format string.</p>
+
     </div>
 
 </div>
+
 
 <h5 id="importing.models.Format-functions">Functions<a href="#importing.models.Format-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
@@ -4864,14 +6789,79 @@ the end.</p>
 
         <p>Return the string representation of the object.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>formatting/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the string representation of the object."""</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.Format.clean" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clean</span><span class="p">()</span></code>
+
+<a href="#importing.models.Format.clean" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validate the model instance.</p>
+<p>Checks that the required fields for non-Thingsboard data are provided.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>formatting/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Validate the model instance.</span>
+
+<span class="sd">    Checks that the required fields for non-Thingsboard data are provided.</span>
+<span class="sd">    """</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">thingsboard</span><span class="p">:</span>
+        <span class="n">required_fields</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"extension"</span><span class="p">,</span>
+            <span class="s2">"first_row"</span><span class="p">,</span>
+            <span class="s2">"footer_rows"</span><span class="p">,</span>
+            <span class="s2">"date_column"</span><span class="p">,</span>
+            <span class="s2">"time_column"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">errors</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Field is required for non-Thingsboard data."</span>
+
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+</code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
 
@@ -4907,7 +6897,7 @@ the end.</p>
                 <code>delimiter</code>
             </td>
             <td>
-                  <code>str</code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4933,7 +6923,7 @@ the end.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code>list[int]</code>
+                  <code><span title="list">list</span>[<span title="int">int</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4944,22 +6934,23 @@ the end.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>formatting/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">datetime_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">datetime_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Column indices that correspond to the date and time columns in the dataset.</span>
 
 <span class="sd">    Args:</span>
@@ -4973,7 +6964,7 @@ the end.</p>
     <span class="n">time_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span>
     <span class="n">time_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_column</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_column</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_items</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">date_cols</span> <span class="o">+</span> <span class="n">time_cols</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
 
@@ -4992,14 +6983,457 @@ the end.</p>
 
         <p>Get the absolute URL of the object.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>formatting/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Get the absolute URL of the object."""</span>
     <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">"formatting:format_detail"</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"pk"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="importing.models.ImportOrigin" class="doc doc-heading">
+            <code>ImportOrigin</code>
+
+
+<a href="#importing.models.ImportOrigin" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="django.db.models.Model">Model</span></code></p>
+
+
+
+        <p>Class that contains the origin of the data import, eg. file, API, etc.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h5 id="importing.models.ImportOrigin-functions">Functions<a href="#importing.models.ImportOrigin-functions" class="headerlink" title="Permanent link">¤</a></h5>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.ImportOrigin.get_default" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_default</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#importing.models.ImportOrigin.get_default" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get default import origin, 'file'.</p>
+<p>It should exist, as it is created in a data migration, but just in case it
+is not, we use get_or_create.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>importing/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImportOrigin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Get default import origin, 'file'.</span>
+
+<span class="sd">    It should exist, as it is created in a data migration, but just in case it</span>
+<span class="sd">    is not, we use get_or_create.</span>
+<span class="sd">    """</span>
+    <span class="n">obj</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s2">"file"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="importing.models.MapLayerImport" class="doc doc-heading">
+            <code>MapLayerImport</code>
+
+
+<a href="#importing.models.MapLayerImport" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="PermissionsBase (management.models.PermissionsBase)" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h5 id="importing.models.MapLayerImport-functions">Functions<a href="#importing.models.MapLayerImport-functions" class="headerlink" title="Permanent link">¤</a></h5>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.MapLayerImport.clean" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clean</span><span class="p">()</span></code>
+
+<a href="#importing.models.MapLayerImport.clean" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validate the uploaded GeoTIFF and its transformed lon/lat bounds.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>importing/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Validate the uploaded GeoTIFF and its transformed lon/lat bounds."""</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">rasterio</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rasterio.warp</span><span class="w"> </span><span class="kn">import</span> <span class="n">transform_bounds</span>
+
+    <span class="n">file_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">MemoryFile</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span> <span class="k">as</span> <span class="n">memfile</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">memfile</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">dataset</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                        <span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="s2">"File contains no raster bands."</span><span class="p">}</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">crs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                        <span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="s2">"File has no coordinate reference system (CRS)."</span><span class="p">}</span>
+                    <span class="p">)</span>
+
+                <span class="n">left</span><span class="p">,</span> <span class="n">bottom</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">top</span> <span class="o">=</span> <span class="n">transform_bounds</span><span class="p">(</span>
+                    <span class="n">dataset</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+                    <span class="s2">"EPSG:4326"</span><span class="p">,</span>
+                    <span class="n">dataset</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">left</span><span class="p">,</span>
+                    <span class="n">dataset</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span>
+                    <span class="n">dataset</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">right</span><span class="p">,</span>
+                    <span class="n">dataset</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">top</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="mi">180</span> <span class="o">&lt;=</span> <span class="n">left</span> <span class="o">&lt;=</span> <span class="mi">180</span> <span class="ow">and</span> <span class="o">-</span><span class="mi">180</span> <span class="o">&lt;=</span> <span class="n">right</span> <span class="o">&lt;=</span> <span class="mi">180</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">"file"</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="s2">"GeoTIFF longitude values are out of range "</span>
+                                <span class="s2">"[-180, 180]."</span>
+                            <span class="p">)</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="mi">90</span> <span class="o">&lt;=</span> <span class="n">bottom</span> <span class="o">&lt;=</span> <span class="mi">90</span> <span class="ow">and</span> <span class="o">-</span><span class="mi">90</span> <span class="o">&lt;=</span> <span class="n">top</span> <span class="o">&lt;=</span> <span class="mi">90</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">"file"</span><span class="p">:</span> <span class="p">(</span>
+                                <span class="s2">"GeoTIFF latitude values are out of range "</span>
+                                <span class="s2">"[-90, 90]."</span>
+                            <span class="p">)</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+    <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+        <span class="k">raise</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Could not open as a valid GeoTIFF or read coordinates: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">file_obj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="importing.models.SensorInstallation" class="doc doc-heading">
+            <code>SensorInstallation</code>
+
+
+<a href="#importing.models.SensorInstallation" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="PermissionsBase (management.models.PermissionsBase)" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+
+
+
+        <p>Represents an installation of a Sensor at a Station, which measures a Variable.</p>
+<p>It includes metadata for installation and finishing date, as well as state (active
+or not).</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.SensorInstallation.sensorinstallation_id">sensorinstallation_id</span></code></td>
+            <td>
+                  <code><span title="AutoField">AutoField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Primary key.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.SensorInstallation.variable">variable</span></code></td>
+            <td>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Variable measured by the sensor.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.SensorInstallation.station">station</span></code></td>
+            <td>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Station where the sensor is installed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.SensorInstallation.sensor">sensor</span></code></td>
+            <td>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sensor used for the measurement.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.SensorInstallation.start_date">start_date</span></code></td>
+            <td>
+                  <code><span title="DateField">DateField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Start date of the installation.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.SensorInstallation.end_date">end_date</span></code></td>
+            <td>
+                  <code><span title="DateField">DateField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>End date of the installation.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.SensorInstallation.state">state</span></code></td>
+            <td>
+                  <code><span title="BooleanField">BooleanField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Is the sensor active?</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h5 id="importing.models.SensorInstallation-functions">Functions<a href="#importing.models.SensorInstallation-functions" class="headerlink" title="Permanent link">¤</a></h5>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.SensorInstallation.get_absolute_url" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_absolute_url</span><span class="p">()</span></code>
+
+<a href="#importing.models.SensorInstallation.get_absolute_url" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get the absolute URL of the object.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>variable/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Get the absolute URL of the object."""</span>
+    <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">"variable:sensorinstallation_detail"</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"pk"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+</code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
 
@@ -5026,7 +7460,8 @@ the end.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="management.models.PermissionsBase" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="PermissionsBase (management.models.PermissionsBase)" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+
 
 
         <p>Main representation of a station, including several metadata.</p>
@@ -5045,7 +7480,7 @@ the end.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.visibility">visibility</span></code></td>
             <td>
-                  <code>str</code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5057,7 +7492,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_id">station_id</span></code></td>
             <td>
-                  <code>int</code>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5068,7 +7503,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_code">station_code</span></code></td>
             <td>
-                  <code>str</code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5079,7 +7514,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_name">station_name</span></code></td>
             <td>
-                  <code>str</code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5090,7 +7525,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_type">station_type</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="station.models.StationType" href="../../../Applications/station/#station.models.StationType">StationType</a></code>
+                  <code><a class="autorefs autorefs-internal" title="StationType (station.models.StationType)" href="../../../Applications/station/#station.models.StationType">StationType</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5101,7 +7536,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.country">country</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="station.models.Country" href="../../../Applications/station/#station.models.Country">Country</a></code>
+                  <code><a class="autorefs autorefs-internal" title="Country (station.models.Country)" href="../../../Applications/station/#station.models.Country">Country</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5112,7 +7547,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.region">region</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="station.models.Region" href="../../../Applications/station/#station.models.Region">Region</a></code>
+                  <code><a class="autorefs autorefs-internal" title="Region (station.models.Region)" href="../../../Applications/station/#station.models.Region">Region</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5123,7 +7558,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.ecosystem">ecosystem</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="station.models.Ecosystem" href="../../../Applications/station/#station.models.Ecosystem">Ecosystem</a></code>
+                  <code><a class="autorefs autorefs-internal" title="Ecosystem (station.models.Ecosystem)" href="../../../Applications/station/#station.models.Ecosystem">Ecosystem</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5134,7 +7569,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.institution">institution</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="station.models.Institution" href="../../../Applications/station/#station.models.Institution">Institution</a></code>
+                  <code><a class="autorefs autorefs-internal" title="Institution (station.models.Institution)" href="../../../Applications/station/#station.models.Institution">Institution</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5145,7 +7580,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.place_basin">place_basin</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="station.models.PlaceBasin" href="../../../Applications/station/#station.models.PlaceBasin">PlaceBasin</a></code>
+                  <code><a class="autorefs autorefs-internal" title="PlaceBasin (station.models.PlaceBasin)" href="../../../Applications/station/#station.models.PlaceBasin">PlaceBasin</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5156,7 +7591,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_state">station_state</span></code></td>
             <td>
-                  <code>bool</code>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5167,7 +7602,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.timezone">timezone</span></code></td>
             <td>
-                  <code>str</code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5178,7 +7613,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_latitude">station_latitude</span></code></td>
             <td>
-                  <code>Decimal</code>
+                  <code><span title="Decimal">Decimal</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5189,7 +7624,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_longitude">station_longitude</span></code></td>
             <td>
-                  <code>Decimal</code>
+                  <code><span title="Decimal">Decimal</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5200,7 +7635,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_altitude">station_altitude</span></code></td>
             <td>
-                  <code>int</code>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5211,7 +7646,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.influence_km">influence_km</span></code></td>
             <td>
-                  <code>Decimal</code>
+                  <code><span title="Decimal">Decimal</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5222,7 +7657,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_file">station_file</span></code></td>
             <td>
-                  <code>ImageField</code>
+                  <code><span title="ImageField">ImageField</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5233,7 +7668,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.station_external">station_external</span></code></td>
             <td>
-                  <code>bool</code>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5244,7 +7679,7 @@ option.</p>
           <tr class="doc-section-item">
             <td><code><span title="importing.models.Station.variables">variables</span></code></td>
             <td>
-                  <code>str</code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5263,7 +7698,9 @@ option.</p>
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
 
 
 
@@ -5276,7 +7713,7 @@ option.</p>
 
 
 <h6 id="importing.models.Station.variables_list" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">variables_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+            <code class="highlight language-python"><span class="n">variables_list</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -5302,7 +7739,7 @@ option.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code>list[str]</code>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5312,9 +7749,11 @@ option.</p>
           </tr>
       </tbody>
     </table>
+
     </div>
 
 </div>
+
 
 <h5 id="importing.models.Station-functions">Functions<a href="#importing.models.Station-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
@@ -5331,14 +7770,15 @@ option.</p>
 
         <p>Return the station code.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>station/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
 <span class="normal">459</span>
-<span class="normal">460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the station code."""</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">station_code</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
 
@@ -5357,14 +7797,15 @@ option.</p>
 
         <p>Return the absolute url of the station.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>station/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
 <span class="normal">463</span>
-<span class="normal">464</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">464</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the absolute url of the station."""</span>
     <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">"station:station_detail"</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"pk"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
 
@@ -5387,9 +7828,10 @@ permissions based on the visibility level of the object. In addition to the
 standard permissions for the station, the view_measurements permission is set
 which controls who can view the measurements associated to the station.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>station/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">466</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">466</span>
 <span class="normal">467</span>
 <span class="normal">468</span>
 <span class="normal">469</span>
@@ -5417,7 +7859,7 @@ which controls who can view the measurements associated to the station.</p>
 <span class="normal">491</span>
 <span class="normal">492</span>
 <span class="normal">493</span>
-<span class="normal">494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_object_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_object_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Set object-level permissions.</span>
 
 <span class="sd">    This method is called by the save method of the model to set the object-level</span>
@@ -5446,7 +7888,7 @@ which controls who can view the measurements associated to the station.</p>
         <span class="n">remove_perm</span><span class="p">(</span><span class="s2">"view_measurements"</span><span class="p">,</span> <span class="n">anonymous_user</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
             <span class="n">assign_perm</span><span class="p">(</span><span class="s2">"view_measurements"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+</code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
 
@@ -5460,6 +7902,527 @@ which controls who can view the measurements associated to the station.</p>
 
 </div>
 
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="importing.models.ThingsboardImportMap" class="doc doc-heading">
+            <code>ThingsboardImportMap</code>
+
+
+<a href="#importing.models.ThingsboardImportMap" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="PermissionsBase (management.models.PermissionsBase)" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+
+
+
+        <p>Model to store Thingsboard device mappings to station variables.</p>
+<p>This model maps Thingsboard devices to specific variables at stations, allowing
+data from IoT devices to be imported and associated with the correct station and
+variable combinations.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.ThingsboardImportMap.tb_variable">tb_variable</span></code></td>
+            <td>
+                  <code><span title="CharField">CharField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the variable in Thingsboard.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.ThingsboardImportMap.variable">variable</span></code></td>
+            <td>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The existing variable in Paricia associated with this mapping.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.ThingsboardImportMap.tb_device_name">tb_device_name</span></code></td>
+            <td>
+                  <code><span title="CharField">CharField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name of the device in Thingsboard.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.ThingsboardImportMap.station">station</span></code></td>
+            <td>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name of the corresponding station in Paricia.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h5 id="importing.models.ThingsboardImportMap-functions">Functions<a href="#importing.models.ThingsboardImportMap-functions" class="headerlink" title="Permanent link">¤</a></h5>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.ThingsboardImportMap.clean" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clean</span><span class="p">()</span></code>
+
+<a href="#importing.models.ThingsboardImportMap.clean" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validate that the variable is valid for the station.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>importing/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Validate that the variable is valid for the station."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">station</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">station</span>
+    <span class="k">except</span> <span class="n">ThingsboardImportMap</span><span class="o">.</span><span class="n">station</span><span class="o">.</span><span class="n">RelatedObjectDoesNotExist</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">({</span><span class="s2">"station"</span><span class="p">:</span> <span class="s2">"Station is required."</span><span class="p">})</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable</span>
+    <span class="k">except</span> <span class="n">ThingsboardImportMap</span><span class="o">.</span><span class="n">variable</span><span class="o">.</span><span class="n">RelatedObjectDoesNotExist</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">({</span><span class="s2">"variable"</span><span class="p">:</span> <span class="s2">"Variable is required."</span><span class="p">})</span>
+
+    <span class="c1"># Check if the variable is valid for the station through SensorInstallation</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">SensorInstallation</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">variable</span><span class="o">=</span><span class="n">variable</span><span class="p">,</span> <span class="n">station</span><span class="o">=</span><span class="n">station</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"variable"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Variable '</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">' is not configured for"</span>
+                <span class="sa">f</span><span class="s2">" station '</span><span class="si">{</span><span class="n">station</span><span class="si">}</span><span class="s2">' via a sensor installation."</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="importing.models.Variable" class="doc doc-heading">
+            <code>Variable</code>
+
+
+<a href="#importing.models.Variable" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="PermissionsBase (management.models.PermissionsBase)" href="../../management/models/#management.models.PermissionsBase">PermissionsBase</a></code></p>
+
+
+
+        <p>A variable with a physical meaning.</p>
+<p>Such as precipitation, wind speed, wind direction, soil moisture, including the
+associated unit. It also includes metadata to help identify what is a reasonable
+value for the data, to flag outliers and to help with the validation process.</p>
+<p>The nature of the variable can be one of the following:</p>
+<ul>
+<li>sum: Cumulative value over a period of time.</li>
+<li>average: Average value over a period of time.</li>
+<li>value: One-off value.</li>
+</ul>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.variable_id">variable_id</span></code></td>
+            <td>
+                  <code><span title="AutoField">AutoField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Primary key.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.variable_code">variable_code</span></code></td>
+            <td>
+                  <code><span title="CharField">CharField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Code of the variable, eg. airtemperature.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.name">name</span></code></td>
+            <td>
+                  <code><span title="CharField">CharField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Human-readable name of the variable, eg. Air temperature.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.unit">unit</span></code></td>
+            <td>
+                  <code><span title="ForeignKey">ForeignKey</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Unit of the variable.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.maximum">maximum</span></code></td>
+            <td>
+                  <code><span title="DecimalField">DecimalField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum value allowed for the variable.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.minimum">minimum</span></code></td>
+            <td>
+                  <code><span title="DecimalField">DecimalField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum value allowed for the variable.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.diff_error">diff_error</span></code></td>
+            <td>
+                  <code><span title="DecimalField">DecimalField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If two sequential values in the time-series data of
+this variable differ by more than this value, the validation process can
+mark this with an error flag.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.outlier_limit">outlier_limit</span></code></td>
+            <td>
+                  <code><span title="DecimalField">DecimalField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The statistical deviation for defining outliers,
+ in times the standard deviation (sigma).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.null_limit">null_limit</span></code></td>
+            <td>
+                  <code><span title="DecimalField">DecimalField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The max % of null values (missing, caused by e.g.
+equipment malfunction) allowed for hourly, daily, monthly data. Cumulative
+values are not deemed trustworthy if the number of missing values in a given
+period is greater than the null_limit.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="importing.models.Variable.nature">nature</span></code></td>
+            <td>
+                  <code><span title="CharField">CharField</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Nature of the variable, eg. if it represents a one-off
+value, the average over a period of time or the cumulative value over a
+period</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+<h5 id="importing.models.Variable-attributes">Attributes<a href="#importing.models.Variable-attributes" class="headerlink" title="Permanent link">¤</a></h5>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="importing.models.Variable.is_cumulative" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_cumulative</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#importing.models.Variable.is_cumulative" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return True if the nature of the variable is sum.</p>
+
+    </div>
+
+</div>
+
+
+<h5 id="importing.models.Variable-functions">Functions<a href="#importing.models.Variable-functions" class="headerlink" title="Permanent link">¤</a></h5>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.Variable.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+<a href="#importing.models.Variable.__str__" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the string representation of the object.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>variable/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the string representation of the object."""</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.Variable.clean" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clean</span><span class="p">()</span></code>
+
+<a href="#importing.models.Variable.clean" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validate the model fields.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>variable/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Validate the model fields."""</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"maximum"</span><span class="p">:</span> <span class="s2">"The maximum value must be greater than the minimum value."</span><span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_code</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"variable_code"</span><span class="p">:</span> <span class="s2">"The variable code must be a valid Python "</span>
+                <span class="s2">"identifier. Only letters, numbers and underscores are allowed, and"</span>
+                <span class="s2">" it cannot start with a number."</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="importing.models.Variable.get_absolute_url" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_absolute_url</span><span class="p">()</span></code>
+
+<a href="#importing.models.Variable.get_absolute_url" class="headerlink" title="Permanent link">¤</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Get the absolute URL of the object.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>variable/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_absolute_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Get the absolute URL of the object."""</span>
+    <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">"variable:variable_detail"</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"pk"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+<h3 id="importing.models-functions">Functions<a href="#importing.models-functions" class="headerlink" title="Permanent link">¤</a></h3>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="importing.models.validate_layer_file_size" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">validate_layer_file_size</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></code>
+
+<a href="#importing.models.validate_layer_file_size" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>importing/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_layer_file_size</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">MAX_FILE_SIZE</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"File size must not exceed </span><span class="si">{</span><span class="n">MAX_FILE_SIZE</span><span class="si">}</span><span class="s2"> MB."</span>
+            <span class="sa">f</span><span class="s2">" Uploaded file is </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB."</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></tbody></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -5514,13 +8477,16 @@ which controls who can view the measurements associated to the station.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs"], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
-  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
-document$.subscribe(() => { lightbox.reload() });
-</script></body>
-</html>
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
