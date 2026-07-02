@@ -3,6 +3,8 @@
 echo "Running migrations..."
 python manage.py migrate
 
-echo "Starting Django server..."
+echo "Starting Huey task queue..."
 python manage.py run_huey &
-python manage.py runserver 0:8000
+
+echo "Starting Gunicorn:..."
+exec gunicorn djangomain.wsgi:application --bind 0.0.0.0:8000

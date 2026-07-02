@@ -46,14 +46,13 @@ click==8.1.7
     #   cligj
     #   flask
     #   mkdocs
-    #   mkdocstrings
     #   morecantile
+    #   properdocs
     #   rasterio
 cligj==0.7.2
     # via rasterio
 color-operations==0.2.0
     # via rio-tiler
-    #   properdocs
 colorama==0.4.6
     # via mkdocs-material
 crispy-bootstrap5==2024.10
@@ -127,6 +126,8 @@ ghp-import==2.1.0
     #   properdocs
 griffelib==2.0.2
     # via mkdocstrings-python
+gunicorn==26.0.0
+    # via Paricia (pyproject.toml)
 h11==0.16.0
     # via httpcore
 httpcore==1.0.9
@@ -246,6 +247,7 @@ openpyxl==3.1.5
 packaging==26.2
     # via
     #   drf-yasg
+    #   gunicorn
     #   mkdocs
     #   plotly
     #   properdocs
@@ -316,14 +318,13 @@ pyyaml==6.0.3
     #   pymdown-extensions
     #   pyyaml-env-tag
 pyyaml-env-tag==1.1
-    # via mkdocs
+    # via
+    #   mkdocs
+    #   properdocs
 rasterio==1.5.0
     # via
     #   Paricia (pyproject.toml)
     #   rio-tiler
-    # via
-    #   mkdocs
-    #   properdocs
 referencing==0.37.0
     # via
     #   jsonschema
@@ -355,9 +356,6 @@ typing-extensions==4.15.0
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
-tzdata==2024.2
-    # via pandas
-    # via dash
 uritemplate==4.2.0
     # via
     #   Paricia (pyproject.toml)
