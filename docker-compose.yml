@@ -20,6 +20,8 @@ services:
       - LOGGING_FILE=/usr/src/app/log/paricia
     volumes:
       - .:/usr/src/app
+      - static:/usr/src/app/staticfiles
+      - media:/usr/src/app/data/media
     ports:
       - 8000:8000
     depends_on:
@@ -27,5 +29,25 @@ services:
         condition: service_healthy
     env_file:
       - .env
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - static:/usr/src/app/staticfiles
+      - media:/usr/src/app/data/media
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file:
+      - .env
+    depends_on:
+      - web
+
 volumes:
   db:
+  static:
+  media:
+  caddy_data:
+  caddy_config:
