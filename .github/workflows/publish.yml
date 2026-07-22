@@ -1,6 +1,7 @@
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -33,6 +34,7 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
   docs:
     uses: ./.github/workflows/docs.yml
