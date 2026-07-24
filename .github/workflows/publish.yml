@@ -1,6 +1,7 @@
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -26,6 +27,12 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository }}
+          flavor: |
+            latest=auto
+          tags: |
+            type=ref,event=tag
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
 
       - name: Build and push Docker image for the web app
         uses: docker/build-push-action@v7
@@ -33,6 +40,7 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
   docs:
     uses: ./.github/workflows/docs.yml
