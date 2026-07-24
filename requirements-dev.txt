@@ -133,6 +133,8 @@ flask==3.1.0
     # via
     #   dash
     #   django-plotly-dash
+gunicorn==26.0.0
+    # via Paricia (pyproject.toml)
 h11==0.16.0
     # via httpcore
 httpcore==1.0.9
@@ -207,6 +209,7 @@ packaging==26.2
     # via
     #   build
     #   drf-yasg
+    #   gunicorn
     #   plotly
 pandas==3.0.3
     # via Paricia (pyproject.toml)
@@ -306,8 +309,6 @@ typing-extensions==4.15.0
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
-tzdata==2024.2
-    # via pandas
 uritemplate==4.2.0
     # via
     #   Paricia (pyproject.toml)

@@ -16,4 +16,3 @@ DATABASES["default"] = {  # noqa: F405
     "HOST": os.environ["POSTGRES_HOST"],
     "PORT": os.environ.get("POSTGRES_PORT", "5432"),
 }
-MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa: F405
