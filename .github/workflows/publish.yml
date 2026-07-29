@@ -47,7 +47,7 @@ jobs:
         with:
           app-name: paricia-app
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ghcr.io/${{ github.repository }}:automate-azure-deployment
+          images: ghcr.io/${{ github.repository }}:latest
 
   docs:
     uses: ./.github/workflows/docs.yml
