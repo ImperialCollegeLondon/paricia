@@ -19,7 +19,7 @@ DATABASES["default"] = {  # noqa: F405
     "PORT": os.environ.get("POSTGRES_PORT", "5432"),
 }
 INSTALLED_APPS += ["storages"]  # noqa: F405
-AZURE_ACCOUNT_NAME = "paricia_storage"
+AZURE_ACCOUNT_NAME = "pariciastorage"
 AZURE_CONTAINER_MEDIA = "media"
 STORAGES = {
     "default": {
