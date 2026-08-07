@@ -30,6 +30,9 @@ STORAGES = {
             "azure_container": AZURE_CONTAINER_MEDIA,
         },
     },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
 }
 MEDIA_URL = (
     f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER_MEDIA}/"
