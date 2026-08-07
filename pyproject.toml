@@ -47,6 +47,8 @@ dependencies = [
     "rio-tiler",
     "openpyxl>=3.1.5",
     "gunicorn",
+    "django-storages[azure]",
+    "azure-identity",
 ]
 
 [project.optional-dependencies]
