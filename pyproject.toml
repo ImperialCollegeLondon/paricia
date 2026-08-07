@@ -49,6 +49,7 @@ dependencies = [
     "gunicorn",
     "django-storages[azure]",
     "azure-identity",
+    "azure-storage-blob",
 ]
 
 [project.optional-dependencies]

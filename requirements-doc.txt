@@ -30,7 +30,9 @@ azure-core==1.41.0
 azure-identity==1.25.3
     # via Paricia (pyproject.toml)
 azure-storage-blob==12.30.0
-    # via django-storages
+    # via
+    #   Paricia (pyproject.toml)
+    #   django-storages
 babel==2.18.0
     # via mkdocs-material
 backrefs==7.0
