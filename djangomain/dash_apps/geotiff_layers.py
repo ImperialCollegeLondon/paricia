@@ -50,7 +50,7 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
         layer_index[layer_id] = {
             "id": layer_id,
             "name": str(layer.name),
-            "file_path": str(layer.file.path),
+            "file_path": str(layer.file.url),
         }
 
     return layer_index
