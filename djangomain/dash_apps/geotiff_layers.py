@@ -6,6 +6,7 @@ import os
 from functools import lru_cache
 from typing import Any
 
+from django.core.files.storage import FileSystemStorage, default_storage
 from guardian.shortcuts import get_objects_for_user
 from rasterio.warp import transform_bounds
 from rio_tiler.colormap import cmap
@@ -19,6 +20,25 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 """Provides Mercator meters for rendering raster data in Mapbox."""
 
 logger = logging.getLogger(__name__)
+
+
+def get_geotiff_path(file_name: str) -> str:
+    """Get the path/URL for the GeoTIFF depending on where it is stored.
+
+    If stored locally (i.e. the default storage is FileSystemStorage), the local file
+    path is returned. Otherwise (e.g., if stored in Azure Blob Storage), the URL to the
+    file is returned.
+
+    Args:
+        file_name: The name of the GeoTIFF file.
+
+    Returns:
+        The local file path or URL to the GeoTIFF file.
+    """
+    if isinstance(default_storage, FileSystemStorage):
+        return default_storage.path(file_name)
+    else:
+        return default_storage.url(file_name)
 
 
 def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
@@ -50,7 +70,7 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
         layer_index[layer_id] = {
             "id": layer_id,
             "name": str(layer.name),
-            "file_path": str(layer.file.url),
+            "file_path": get_geotiff_path(layer.file.name),
         }
 
     return layer_index
