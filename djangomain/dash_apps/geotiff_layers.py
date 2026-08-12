@@ -3,9 +3,16 @@
 import base64
 import logging
 import os
+from datetime import datetime, timedelta
 from functools import lru_cache
 from typing import Any
 
+from azure.identity import DefaultAzureCredential
+from azure.storage.blob import (
+    BlobSasPermissions,
+    BlobServiceClient,
+    generate_blob_sas,
+)
 from django.core.files.storage import FileSystemStorage, default_storage
 from guardian.shortcuts import get_objects_for_user
 from rasterio.warp import transform_bounds
@@ -38,7 +45,27 @@ def get_geotiff_path(file_name: str) -> str:
     if isinstance(default_storage, FileSystemStorage):
         return default_storage.path(file_name)
     else:
-        return default_storage.url(file_name)
+        blob_service_client = BlobServiceClient(
+            account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
+            credential=DefaultAzureCredential(),
+        )
+        start = datetime.utcnow()
+        expiry = start + timedelta(hours=1)
+        delegation_key = blob_service_client.get_user_delegation_key(
+            key_start_time=start, key_expiry_time=expiry
+        )
+        sas_token = generate_blob_sas(
+            account_name=default_storage.account_name,
+            container_name=default_storage.azure_container,
+            blob_name=file_name,
+            user_delegation_key=delegation_key,
+            permission=BlobSasPermissions(read=True),
+            expiry=expiry,
+        )
+        return (
+            f"https://{default_storage.account_name}.blob.core.windows.net/"
+            f"{default_storage.azure_container}/{file_name}?{sas_token}"
+        )
 
 
 def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
