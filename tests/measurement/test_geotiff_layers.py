@@ -91,9 +91,11 @@ class GeoTiffLayerUtilityTests(TestCase):
     def test_available_map_layers_by_id_returns_empty_for_anonymous_user(self):
         self.assertEqual(geotiff_layers.available_map_layers_by_id(AnonymousUser()), {})
 
-    def test_available_map_layers_by_id_filters_by_permissions_only(self):
+    @patch("djangomain.dash_apps.geotiff_layers.os.path.getmtime")
+    def test_available_map_layers_by_id_filters_by_permissions_only(self, mtime_mock):
         owner = self._create_user("owner")
         viewer = self._create_user("viewer")
+        mtime_mock.return_value = 123456789.0
 
         visible_tif = self._create_layer(
             owner=owner,
@@ -122,11 +124,13 @@ class GeoTiffLayerUtilityTests(TestCase):
                     "id": f"maplayer-{visible_tif.pk}",
                     "name": "Visible GeoTIFF",
                     "file_path": visible_tif.file.path,
+                    "mtime": mtime_mock.return_value,
                 },
                 f"maplayer-{visible_png_name.pk}": {
                     "id": f"maplayer-{visible_png_name.pk}",
                     "name": "Visible layer with png filename",
                     "file_path": visible_png_name.file.path,
+                    "mtime": mtime_mock.return_value,
                 },
             },
         )

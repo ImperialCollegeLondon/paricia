@@ -3,7 +3,7 @@
 import base64
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from typing import Any
 
@@ -29,46 +29,50 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 logger = logging.getLogger(__name__)
 
 
-def get_geotiff_path(file_name: str) -> str:
-    """Get the path/URL for the GeoTIFF depending on where it is stored.
+def get_geotiff_path(layer: MapLayerImport) -> tuple[str, float]:
+    """Get the path/URL for the GeoTIFF and its last modified time.
 
     If stored locally (i.e. the default storage is FileSystemStorage), the local file
-    path is returned. Otherwise (e.g., if stored in Azure Blob Storage), the URL to the
-    file is returned.
+    path and mtime are returned. Otherwise (if stored in Azure Blob Storage), the URL to
+    the file and the Django model's updated_at timestamp are returned.
 
     Args:
-        file_name: The name of the GeoTIFF file.
+        layer: The MapLayerImport instance containing the GeoTIFF file.
 
     Returns:
-        The local file path or URL to the GeoTIFF file.
+        The local file path or URL to the GeoTIFF file and its last modified time.
     """
+    file_name = layer.file.name
     if isinstance(default_storage, FileSystemStorage):
-        return default_storage.path(file_name)
-    else:
-        blob_service_client = BlobServiceClient(
-            account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
-            credential=DefaultAzureCredential(),
-        )
-        start = datetime.utcnow()
-        expiry = start + timedelta(hours=1)
-        delegation_key = blob_service_client.get_user_delegation_key(
-            key_start_time=start, key_expiry_time=expiry
-        )
-        sas_token = generate_blob_sas(
-            account_name=default_storage.account_name,
-            container_name=default_storage.azure_container,
-            blob_name=file_name,
-            user_delegation_key=delegation_key,
-            permission=BlobSasPermissions(read=True),
-            expiry=expiry,
-        )
-        return (
-            f"https://{default_storage.account_name}.blob.core.windows.net/"
-            f"{default_storage.azure_container}/{file_name}?{sas_token}"
-        )
+        path = default_storage.path(file_name)
+        return path, os.path.getmtime(path)
+
+    blob_service_client = BlobServiceClient(
+        account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
+        credential=DefaultAzureCredential(),
+    )
+    start = datetime.now(UTC)
+    expiry = start + timedelta(hours=1)
+    delegation_key = blob_service_client.get_user_delegation_key(
+        key_start_time=start, key_expiry_time=expiry
+    )
+    sas_token = generate_blob_sas(
+        account_name=default_storage.account_name,
+        container_name=default_storage.azure_container,
+        blob_name=file_name,
+        user_delegation_key=delegation_key,
+        permission=BlobSasPermissions(read=True),
+        expiry=expiry,
+    )
+    mtime = layer.updated_at.timestamp()
+    return (
+        f"https://{default_storage.account_name}.blob.core.windows.net/"
+        f"{default_storage.azure_container}/{file_name}?{sas_token}",
+        mtime,
+    )
 
 
-def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
+def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | float]]:
     """Return user-viewable GeoTIFF layers keyed by dash dropdown id.
 
     Args:
@@ -91,13 +95,15 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
         logger.error("Error occurred while fetching available map layers: %s", e)
         return {}
 
-    layer_index = {}
+    layer_index: dict[str, dict[str, str | float]] = {}
     for layer in queryset.order_by("name", "pk"):
         layer_id = f"maplayer-{layer.pk}"
+        file_path, mtime = get_geotiff_path(layer)
         layer_index[layer_id] = {
             "id": layer_id,
             "name": str(layer.name),
-            "file_path": get_geotiff_path(layer.file.name),
+            "file_path": file_path,
+            "mtime": mtime,
         }
 
     return layer_index
@@ -231,8 +237,9 @@ def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
             continue
 
         try:
-            mtime = os.path.getmtime(resolved_layer["file_path"])
-            payload = load_geotiff_payload(resolved_layer["file_path"], mtime)
+            payload = load_geotiff_payload(
+                resolved_layer["file_path"], resolved_layer["mtime"]
+            )
         except (OSError, ValueError) as exc:
             logger.warning("Skipping map layer %s: %s", layer["id"], exc)
             continue
