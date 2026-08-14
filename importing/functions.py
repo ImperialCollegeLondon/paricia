@@ -180,13 +180,13 @@ def read_thingsboard_data_to_import(
     """Reads the data from a Thingsboard json file into a pandas DataFrame.
 
     Args:
-        data_file: The path to the json file.
+        source_file: The path to the json file.
         timezone: The station timezone.
 
     Returns:
         The DataFrame with raw data read and datetime parsed.
     """
-    with open(source_file.path, encoding="utf-8") as f:
+    with default_storage.open(source_file.name, "r") as f:
         raw_data = json.load(f)
 
     thingsboard_variable = next(iter(raw_data))
