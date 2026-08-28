@@ -1,4 +1,3 @@
-import os
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -91,11 +90,9 @@ class GeoTiffLayerUtilityTests(TestCase):
     def test_available_map_layers_by_id_returns_empty_for_anonymous_user(self):
         self.assertEqual(geotiff_layers.available_map_layers_by_id(AnonymousUser()), {})
 
-    @patch("djangomain.dash_apps.geotiff_layers.os.path.getmtime")
-    def test_available_map_layers_by_id_filters_by_permissions_only(self, mtime_mock):
+    def test_available_map_layers_by_id_filters_by_permissions_only(self):
         owner = self._create_user("owner")
         viewer = self._create_user("viewer")
-        mtime_mock.return_value = 123456789.0
 
         visible_tif = self._create_layer(
             owner=owner,
@@ -123,14 +120,14 @@ class GeoTiffLayerUtilityTests(TestCase):
                 f"maplayer-{visible_tif.pk}": {
                     "id": f"maplayer-{visible_tif.pk}",
                     "name": "Visible GeoTIFF",
-                    "file_path": visible_tif.file.path,
-                    "mtime": mtime_mock.return_value,
+                    "mtime": visible_tif.updated_at.timestamp(),
+                    "file_name": visible_tif.file.name,
                 },
                 f"maplayer-{visible_png_name.pk}": {
                     "id": f"maplayer-{visible_png_name.pk}",
                     "name": "Visible layer with png filename",
-                    "file_path": visible_png_name.file.path,
-                    "mtime": mtime_mock.return_value,
+                    "mtime": visible_png_name.updated_at.timestamp(),
+                    "file_name": visible_png_name.file.name,
                 },
             },
         )
@@ -203,17 +200,16 @@ class GeoTiffLayerUtilityTests(TestCase):
             filename="cache.tif",
         )
 
-        path = layer.file.path
-        mtime = os.path.getmtime(path)
+        mtime = layer.updated_at.timestamp()
 
         geotiff_layers.load_geotiff_payload.cache_clear()
-        geotiff_layers.load_geotiff_payload(path, mtime)
+        geotiff_layers.load_geotiff_payload(layer.file.name, mtime)
         first_info = geotiff_layers.load_geotiff_payload.cache_info()
 
-        geotiff_layers.load_geotiff_payload(path, mtime)
+        geotiff_layers.load_geotiff_payload(layer.file.name, mtime)
         second_info = geotiff_layers.load_geotiff_payload.cache_info()
 
-        geotiff_layers.load_geotiff_payload(path, mtime + 1)
+        geotiff_layers.load_geotiff_payload(layer.file.name, mtime + 1)
         third_info = geotiff_layers.load_geotiff_payload.cache_info()
 
         self.assertEqual(second_info.hits, first_info.hits + 1)

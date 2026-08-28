@@ -2,7 +2,6 @@
 
 import base64
 import logging
-import os
 from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from typing import Any
@@ -29,23 +28,21 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 logger = logging.getLogger(__name__)
 
 
-def get_geotiff_path(layer: MapLayerImport) -> tuple[str, float]:
-    """Get the path/URL for the GeoTIFF and its last modified time.
+def get_geotiff_path(file_name: str) -> str:
+    """Get the path/URL for the GeoTIFF.
 
     If stored locally (i.e. the default storage is FileSystemStorage), the local file
-    path and mtime are returned. Otherwise (if stored in Azure Blob Storage), the URL to
-    the file and the Django model's updated_at timestamp are returned.
+    path is returned. Otherwise (if stored in Azure Blob Storage), a temporary URL to
+    the file is returned.
 
     Args:
-        layer: The MapLayerImport instance containing the GeoTIFF file.
+        file_name: Name of the GeoTIFF file.
 
     Returns:
-        The local file path or URL to the GeoTIFF file and its last modified time.
+        The local file path or URL to the GeoTIFF file.
     """
-    file_name = layer.file.name
     if isinstance(default_storage, FileSystemStorage):
-        path = default_storage.path(file_name)
-        return path, os.path.getmtime(path)
+        return default_storage.path(file_name)
 
     blob_service_client = BlobServiceClient(
         account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
@@ -65,11 +62,9 @@ def get_geotiff_path(layer: MapLayerImport) -> tuple[str, float]:
         permission=BlobSasPermissions(read=True),
         expiry=expiry,
     )
-    mtime = layer.updated_at.timestamp()
     return (
         f"https://{default_storage.account_name}.blob.core.windows.net/"
-        f"{default_storage.azure_container}/{file_name}?{sas_token}",
-        mtime,
+        f"{default_storage.azure_container}/{file_name}?{sas_token}"
     )
 
 
@@ -99,12 +94,11 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | fl
     layer_index: dict[str, dict[str, str | float]] = {}
     for layer in queryset.order_by("name", "pk"):
         layer_id = f"maplayer-{layer.pk}"
-        file_path, mtime = get_geotiff_path(layer)
         layer_index[layer_id] = {
             "id": layer_id,
             "name": str(layer.name),
-            "file_path": file_path,
-            "mtime": mtime,
+            "mtime": layer.updated_at.timestamp(),
+            "file_name": layer.file.name,
         }
 
     return layer_index
@@ -193,14 +187,14 @@ def _build_image_payload(file_path: str) -> dict[str, Any]:
 
 
 @lru_cache(maxsize=32)
-def load_geotiff_payload(file_path: str, _mtime: float) -> dict[str, Any]:
+def load_geotiff_payload(file_name: str, _mtime: float) -> dict[str, Any]:
     """Load and cache GeoTIFF payload from disk.
 
     The mtime parameter is not used directly but is part of the cache key,
     allowing the cache to invalidate when files are modified on disk.
 
     Args:
-        file_path: Absolute path to the GeoTIFF file on disk.
+        file_name: Name of the GeoTIFF file to load.
         _mtime: File modification time used to invalidate cache when file
             changes.
 
@@ -208,6 +202,7 @@ def load_geotiff_payload(file_path: str, _mtime: float) -> dict[str, Any]:
         Payload containing image data URI and map
             coordinates.
     """
+    file_path = get_geotiff_path(file_name)
     return _build_image_payload(file_path)
 
 
@@ -239,7 +234,7 @@ def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
 
         try:
             payload = load_geotiff_payload(
-                resolved_layer["file_path"], resolved_layer["mtime"]
+                resolved_layer["file_name"], resolved_layer["mtime"]
             )
         except (OSError, ValueError) as exc:
             logger.warning("Skipping map layer %s: %s", layer["id"], exc)
