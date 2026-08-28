@@ -51,8 +51,9 @@ def get_geotiff_path(layer: MapLayerImport) -> tuple[str, float]:
         account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
         credential=DefaultAzureCredential(),
     )
-    start = datetime.now(UTC)
-    expiry = start + timedelta(hours=1)
+    now = datetime.now(UTC)
+    start = now - timedelta(minutes=15)
+    expiry = now + timedelta(hours=1)
     delegation_key = blob_service_client.get_user_delegation_key(
         key_start_time=start, key_expiry_time=expiry
     )
