@@ -5824,7 +5824,12 @@ bottom-right, bottom-left].</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/geotiff_layers.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -5857,12 +5862,7 @@ bottom-right, bottom-left].</p>
 <span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_bounds_to_lonlat_coordinates</span><span class="p">(</span><span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">src_crs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_bounds_to_lonlat_coordinates</span><span class="p">(</span><span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">src_crs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""Transform a (left, bottom, right, top) bounds tuple into lon/lat corner</span>
 <span class="sd">    coordinates ordered for mapbox image layers.</span>
 
@@ -5981,7 +5981,12 @@ coordinates.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/geotiff_layers.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -6014,12 +6019,7 @@ coordinates.</p>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_build_image_payload</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_build_image_payload</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Read a georeferenced single-band GeoTIFF and render it for mapbox.</span>
 
 <span class="sd">    Pixels are warped to Web Mercator (EPSG:3857) so mapbox image placement on</span>
@@ -6135,7 +6135,11 @@ user is None or lookup fails.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/geotiff_layers.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
 <span class="normal"> 76</span>
 <span class="normal"> 77</span>
 <span class="normal"> 78</span>
@@ -6164,12 +6168,7 @@ user is None or lookup fails.</p>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">available_map_layers_by_id</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">available_map_layers_by_id</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""Return user-viewable GeoTIFF layers keyed by dash dropdown id.</span>
 
 <span class="sd">    Args:</span>
@@ -6195,12 +6194,11 @@ user is None or lookup fails.</p>
     <span class="n">layer_index</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">queryset</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"pk"</span><span class="p">):</span>
         <span class="n">layer_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"maplayer-</span><span class="si">{</span><span class="n">layer</span><span class="o">.</span><span class="n">pk</span><span class="si">}</span><span class="s2">"</span>
-        <span class="n">file_path</span><span class="p">,</span> <span class="n">mtime</span> <span class="o">=</span> <span class="n">get_geotiff_path</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
         <span class="n">layer_index</span><span class="p">[</span><span class="n">layer_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"id"</span><span class="p">:</span> <span class="n">layer_id</span><span class="p">,</span>
             <span class="s2">"name"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
-            <span class="s2">"file_path"</span><span class="p">:</span> <span class="n">file_path</span><span class="p">,</span>
-            <span class="s2">"mtime"</span><span class="p">:</span> <span class="n">mtime</span><span class="p">,</span>
+            <span class="s2">"mtime"</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">updated_at</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(),</span>
+            <span class="s2">"file_name"</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">return</span> <span class="n">layer_index</span>
@@ -6300,7 +6298,11 @@ and authorized GeoTIFF layers.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/geotiff_layers.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">213</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
 <span class="normal">214</span>
 <span class="normal">215</span>
 <span class="normal">216</span>
@@ -6341,11 +6343,7 @@ and authorized GeoTIFF layers.</p>
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_mapbox_layers</span><span class="p">(</span><span class="n">layers_raw</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_mapbox_layers</span><span class="p">(</span><span class="n">layers_raw</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""Build mapbox layout layers for currently visible spatial layers.</span>
 
 <span class="sd">    GeoTIFF sources are resolved server-side from currently authorised</span>
@@ -6373,7 +6371,7 @@ and authorized GeoTIFF layers.</p>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">payload</span> <span class="o">=</span> <span class="n">load_geotiff_payload</span><span class="p">(</span>
-                <span class="n">resolved_layer</span><span class="p">[</span><span class="s2">"file_path"</span><span class="p">],</span> <span class="n">resolved_layer</span><span class="p">[</span><span class="s2">"mtime"</span><span class="p">]</span>
+                <span class="n">resolved_layer</span><span class="p">[</span><span class="s2">"file_name"</span><span class="p">],</span> <span class="n">resolved_layer</span><span class="p">[</span><span class="s2">"mtime"</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Skipping map layer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">layer</span><span class="p">[</span><span class="s2">"id"</span><span class="p">],</span> <span class="n">exc</span><span class="p">)</span>
@@ -6401,17 +6399,17 @@ and authorized GeoTIFF layers.</p>
 
 
 <h4 id="djangomain.dash_apps.geotiff_layers.get_geotiff_path" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_geotiff_path</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">get_geotiff_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span></code>
 
 <a href="#djangomain.dash_apps.geotiff_layers.get_geotiff_path" class="headerlink" title="Permanent link">¤</a></h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>Get the path/URL for the GeoTIFF and its last modified time.</p>
+        <p>Get the path/URL for the GeoTIFF.</p>
 <p>If stored locally (i.e. the default storage is FileSystemStorage), the local file
-path and mtime are returned. Otherwise (if stored in Azure Blob Storage), the URL to
-the file and the Django model's updated_at timestamp are returned.</p>
+path is returned. Otherwise (if stored in Azure Blob Storage), a temporary URL to
+the file is returned.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -6427,14 +6425,14 @@ the file and the Django model's updated_at timestamp are returned.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>layer</code>
+                <code>file_name</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="MapLayerImport (importing.models.MapLayerImport)" href="../../../importing/models/#importing.models.MapLayerImport">MapLayerImport</a></code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The MapLayerImport instance containing the GeoTIFF file.</p>
+                <p>Name of the GeoTIFF file.</p>
               </div>
             </td>
             <td>
@@ -6456,11 +6454,11 @@ the file and the Django model's updated_at timestamp are returned.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="tuple">tuple</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The local file path or URL to the GeoTIFF file and its last modified time.</p>
+                <p>The local file path or URL to the GeoTIFF file.</p>
               </div>
             </td>
           </tr>
@@ -6470,7 +6468,8 @@ the file and the Django model's updated_at timestamp are returned.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/geotiff_layers.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+<span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
@@ -6506,34 +6505,29 @@ the file and the Django model's updated_at timestamp are returned.</p>
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_geotiff_path</span><span class="p">(</span><span class="n">layer</span><span class="p">:</span> <span class="n">MapLayerImport</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Get the path/URL for the GeoTIFF and its last modified time.</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_geotiff_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Get the path/URL for the GeoTIFF.</span>
 
 <span class="sd">    If stored locally (i.e. the default storage is FileSystemStorage), the local file</span>
-<span class="sd">    path and mtime are returned. Otherwise (if stored in Azure Blob Storage), the URL to</span>
-<span class="sd">    the file and the Django model's updated_at timestamp are returned.</span>
+<span class="sd">    path is returned. Otherwise (if stored in Azure Blob Storage), a temporary URL to</span>
+<span class="sd">    the file is returned.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        layer: The MapLayerImport instance containing the GeoTIFF file.</span>
+<span class="sd">        file_name: Name of the GeoTIFF file.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The local file path or URL to the GeoTIFF file and its last modified time.</span>
+<span class="sd">        The local file path or URL to the GeoTIFF file.</span>
 <span class="sd">    """</span>
-    <span class="n">file_name</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">name</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_storage</span><span class="p">,</span> <span class="n">FileSystemStorage</span><span class="p">):</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">default_storage</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">default_storage</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
 
     <span class="n">blob_service_client</span> <span class="o">=</span> <span class="n">BlobServiceClient</span><span class="p">(</span>
         <span class="n">account_url</span><span class="o">=</span><span class="sa">f</span><span class="s2">"https://</span><span class="si">{</span><span class="n">default_storage</span><span class="o">.</span><span class="n">account_name</span><span class="si">}</span><span class="s2">.blob.core.windows.net"</span><span class="p">,</span>
         <span class="n">credential</span><span class="o">=</span><span class="n">DefaultAzureCredential</span><span class="p">(),</span>
     <span class="p">)</span>
-    <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
-    <span class="n">expiry</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">expiry</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">delegation_key</span> <span class="o">=</span> <span class="n">blob_service_client</span><span class="o">.</span><span class="n">get_user_delegation_key</span><span class="p">(</span>
         <span class="n">key_start_time</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">key_expiry_time</span><span class="o">=</span><span class="n">expiry</span>
     <span class="p">)</span>
@@ -6545,11 +6539,9 @@ the file and the Django model's updated_at timestamp are returned.</p>
         <span class="n">permission</span><span class="o">=</span><span class="n">BlobSasPermissions</span><span class="p">(</span><span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
         <span class="n">expiry</span><span class="o">=</span><span class="n">expiry</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">mtime</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">updated_at</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">"https://</span><span class="si">{</span><span class="n">default_storage</span><span class="o">.</span><span class="n">account_name</span><span class="si">}</span><span class="s2">.blob.core.windows.net/"</span>
-        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">default_storage</span><span class="o">.</span><span class="n">azure_container</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">?</span><span class="si">{</span><span class="n">sas_token</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-        <span class="n">mtime</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">default_storage</span><span class="o">.</span><span class="n">azure_container</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">?</span><span class="si">{</span><span class="n">sas_token</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
@@ -6561,7 +6553,7 @@ the file and the Django model's updated_at timestamp are returned.</p>
 
 
 <h4 id="djangomain.dash_apps.geotiff_layers.load_geotiff_payload" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">load_geotiff_payload</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">_mtime</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">load_geotiff_payload</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">_mtime</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
@@ -6590,14 +6582,14 @@ allowing the cache to invalidate when files are modified on disk.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>file_path</code>
+                <code>file_name</code>
             </td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Absolute path to the GeoTIFF file on disk.</p>
+                <p>Name of the GeoTIFF file to load.</p>
               </div>
             </td>
             <td>
@@ -6651,7 +6643,12 @@ coordinates.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/geotiff_layers.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">194</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
@@ -6663,19 +6660,15 @@ coordinates.</p>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_geotiff_payload</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_mtime</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_geotiff_payload</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_mtime</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Load and cache GeoTIFF payload from disk.</span>
 
 <span class="sd">    The mtime parameter is not used directly but is part of the cache key,</span>
 <span class="sd">    allowing the cache to invalidate when files are modified on disk.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        file_path: Absolute path to the GeoTIFF file on disk.</span>
+<span class="sd">        file_name: Name of the GeoTIFF file to load.</span>
 <span class="sd">        _mtime: File modification time used to invalidate cache when file</span>
 <span class="sd">            changes.</span>
 
@@ -6683,6 +6676,7 @@ coordinates.</p>
 <span class="sd">        Payload containing image data URI and map</span>
 <span class="sd">            coordinates.</span>
 <span class="sd">    """</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">get_geotiff_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_build_image_payload</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 </code></pre></div></td></tr></tbody></table></div>
             </details>
