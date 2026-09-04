@@ -22,6 +22,17 @@ attrs==25.4.0
     #   rasterio
     #   referencing
     #   rio-tiler
+azure-core==1.41.0
+    # via
+    #   azure-identity
+    #   azure-storage-blob
+    #   django-storages
+azure-identity==1.25.3
+    # via Paricia (pyproject.toml)
+azure-storage-blob==12.30.0
+    # via
+    #   Paricia (pyproject.toml)
+    #   django-storages
 babel==2.18.0
     # via mkdocs-material
 backrefs==7.0
@@ -37,6 +48,8 @@ certifi==2024.8.30
     #   pyproj
     #   rasterio
     #   requests
+cffi==2.1.1
+    # via cryptography
 channels==4.2.0
     # via django-plotly-dash
 charset-normalizer==3.4.4
@@ -57,6 +70,12 @@ colorama==0.4.6
     # via mkdocs-material
 crispy-bootstrap5==2024.10
     # via Paricia (pyproject.toml)
+cryptography==50.0.0
+    # via
+    #   azure-identity
+    #   azure-storage-blob
+    #   msal
+    #   pyjwt
 dash==3.2.0
     # via
     #   dash-ag-grid
@@ -77,6 +96,7 @@ django==5.2.8
     #   django-filter
     #   django-guardian
     #   django-plotly-dash
+    #   django-storages
     #   django-tables2
     #   djangorestframework
     #   djangorestframework-simplejwt
@@ -95,6 +115,8 @@ django-filter==24.3
 django-guardian==2.4.0
     # via Paricia (pyproject.toml)
 django-plotly-dash==2.5.0
+    # via Paricia (pyproject.toml)
+django-storages[azure]==1.14.6
     # via Paricia (pyproject.toml)
 django-tables2==2.8.0
     # via Paricia (pyproject.toml)
@@ -148,6 +170,8 @@ inflection==0.5.1
     # via
     #   drf-spectacular
     #   drf-yasg
+isodate==0.7.2
+    # via azure-storage-blob
 itsdangerous==2.2.0
     # via flask
 jdcal==1.4.1
@@ -228,6 +252,12 @@ mkdocstrings-python==2.0.3
     # via Paricia (pyproject.toml)
 morecantile==7.0.3
     # via rio-tiler
+msal==1.37.0
+    # via
+    #   azure-identity
+    #   msal-extensions
+msal-extensions==1.3.1
+    # via azure-identity
 narwhals==2.20.0
     # via plotly
 nest-asyncio==1.6.0
@@ -278,6 +308,8 @@ psycopg2==2.9.10
     # via Paricia (pyproject.toml)
 pycountry==24.6.1
     # via Paricia (pyproject.toml)
+pycparser==3.0
+    # via cffi
 pydantic==2.13.4
     # via
     #   morecantile
@@ -286,8 +318,10 @@ pydantic-core==2.46.4
     # via pydantic
 pygments==2.20.0
     # via mkdocs-material
-pyjwt==2.10.1
-    # via djangorestframework-simplejwt
+pyjwt[crypto]==2.10.1
+    # via
+    #   djangorestframework-simplejwt
+    #   msal
 pymdown-extensions==10.21.3
     # via
     #   mkdocs-material
@@ -331,8 +365,10 @@ referencing==0.37.0
     #   jsonschema-specifications
 requests==2.32.5
     # via
+    #   azure-core
     #   dash
     #   mkdocs-material
+    #   msal
 retrying==1.4.2
     # via dash
 rio-tiler==9.0.6
@@ -349,6 +385,9 @@ sqlparse==0.5.5
     # via django
 typing-extensions==4.15.0
     # via
+    #   azure-core
+    #   azure-identity
+    #   azure-storage-blob
     #   dash
     #   pydantic
     #   pydantic-core

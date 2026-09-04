@@ -239,6 +239,11 @@ class MapLayerImport(PermissionsBase):
             validate_layer_file_size,
         ],
     )
+    updated_at = models.DateTimeField(
+        "Updated at",
+        auto_now=True,
+        help_text="The time at which the layer was last updated.",
+    )
 
     def __str__(self):
         return self.name

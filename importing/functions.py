@@ -13,12 +13,12 @@
 import json
 import zoneinfo
 from datetime import datetime
-from pathlib import Path
-from typing import Any
+from typing import Any, BinaryIO
 
 import numpy as np
 import pandas as pd
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.db.models.fields.files import FieldFile
 
 from formatting.models import Classification, Format
@@ -29,11 +29,11 @@ unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
 
 
-def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
+def read_file_excel(source_file: str | BinaryIO, file_format: Format) -> pd.DataFrame:
     """Reads an Excel file into a pandas DataFrame.
 
     Args:
-        file_path: The path to the file to be read.
+        source_file: The file path or stream of data to be parsed.
         file_format: The file format.
 
     Returns:
@@ -41,21 +41,33 @@ def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
     """
     firstline = file_format.first_row if file_format.first_row else 0
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
-    return pd.read_excel(
-        file_path,
-        header=None,
-        skiprows=firstline,
-        skipfooter=skipfooter,
-        engine=None,
-        index_col=None,
-    )
+
+    if not isinstance(source_file, str):
+        return pd.read_excel(
+            source_file,
+            header=None,
+            skiprows=firstline,
+            skipfooter=skipfooter,
+            engine=None,
+            index_col=None,
+        )
+
+    with default_storage.open(source_file, "rb") as f:
+        return pd.read_excel(
+            f,
+            header=None,
+            skiprows=firstline,
+            skipfooter=skipfooter,
+            engine=None,
+            index_col=None,
+        )
 
 
-def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
+def read_file_csv(source_file: str | BinaryIO, file_format: Format) -> pd.DataFrame:
     """Reads a CSV file into a pandas DataFrame.
 
     Args:
-        source_file: Stream of data to be parsed.
+        source_file: The file path or stream of data to be parsed.
         file_format: The file format.
 
     Returns:
@@ -65,14 +77,6 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
     delimiter = file_format.delimiter.character
 
-    skiprows: int | list[int] = firstline
-    if not isinstance(source_file, str | Path):
-        # The file was uploaded as binary
-        lines = sum(1 for _ in source_file)
-        source_file.seek(0)
-        skiprows = list(range(0, firstline)) + list(range(lines - skipfooter, lines))
-        skipfooter = 0
-
     # Deal with the delimiter
     if "\\x" in delimiter:
         delim_hexcode = delimiter.replace("\\x", "")
@@ -81,15 +85,33 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     elif delimiter == " ":
         delimiter = r"\s+"  # This is a regex for whitespace
 
-    return pd.read_csv(
-        source_file,
-        sep=delimiter,
-        header=None,
-        index_col=False,
-        skiprows=skiprows,
-        skipfooter=skipfooter,
-        encoding="ISO-8859-1",
-    )
+    skiprows: int | list[int] = firstline
+    if not isinstance(source_file, str):
+        # The file was uploaded as binary
+        lines = sum(1 for _ in source_file)
+        source_file.seek(0)
+        skiprows = list(range(0, firstline)) + list(range(lines - skipfooter, lines))
+        skipfooter = 0
+        return pd.read_csv(
+            source_file,
+            sep=delimiter,
+            header=None,
+            index_col=False,
+            skiprows=skiprows,
+            skipfooter=skipfooter,
+            encoding="ISO-8859-1",
+        )
+
+    with default_storage.open(source_file, "rb") as f:
+        return pd.read_csv(
+            f,
+            sep=delimiter,
+            header=None,
+            index_col=False,
+            skiprows=skiprows,
+            skipfooter=skipfooter,
+            encoding="ISO-8859-1",
+        )
 
 
 def process_datetime_columns(
@@ -158,13 +180,13 @@ def read_thingsboard_data_to_import(
     """Reads the data from a Thingsboard json file into a pandas DataFrame.
 
     Args:
-        data_file: The path to the json file.
+        source_file: The path to the json file.
         timezone: The station timezone.
 
     Returns:
         The DataFrame with raw data read and datetime parsed.
     """
-    with open(source_file.path, encoding="utf-8") as f:
+    with default_storage.open(source_file.name, "r") as f:
         raw_data = json.load(f)
 
     thingsboard_variable = next(iter(raw_data))
@@ -274,7 +296,7 @@ def construct_matrix(
         )
     else:
         matrix = read_data_to_import(
-            data_import.rawfile, data_import.format, data_import.station.timezone
+            data_import.rawfile.name, data_import.format, data_import.station.timezone
         )
 
     # Find start and end dates from top and bottom row
