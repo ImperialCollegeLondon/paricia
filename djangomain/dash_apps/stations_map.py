@@ -201,7 +201,7 @@ _sidebar = dbc.Col(
 _map_col = dbc.Col(
     dcc.Graph(
         id="map_graph",
-        style={"height": "50vh"},
+        style={"height": "100vh"},
         config={"scrollZoom": True},
         figure={
             "data": [],
