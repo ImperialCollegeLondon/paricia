@@ -13,6 +13,7 @@ import plotly.graph_objs as go
 from dash import ALL, MATCH, Input, Output, Patch, State, dcc, html, no_update
 from django_plotly_dash import DjangoDash
 
+from djangomain import settings
 from djangomain.dash_apps.geotiff_layers import (
     available_map_layers_by_id,
     build_mapbox_layers,
@@ -28,11 +29,21 @@ _STATION_KEYS = (
     "station_latitude",
     "station_longitude",
 )
-_DEFAULT_MAP_STYLE = "open-street-map"
+_MAP_STYLE_URLS = {
+    "carto-positron": (
+        "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json?"
+        f"key={settings.CARTO_API_KEY}"
+    ),
+    "carto-darkmatter": (
+        "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        f"?key={settings.CARTO_API_KEY}"
+    ),
+}
+_DEFAULT_MAP_STYLE = _MAP_STYLE_URLS["carto-positron"]
 _MAP_STYLE_OPTIONS = [
+    {"label": "Carto Positron", "value": _MAP_STYLE_URLS["carto-positron"]},
+    {"label": "Carto Darkmatter", "value": _MAP_STYLE_URLS["carto-darkmatter"]},
     {"label": "OpenStreetMap", "value": "open-street-map"},
-    {"label": "Carto Positron", "value": "carto-positron"},
-    {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
 ]
 
 app = DjangoDash(
