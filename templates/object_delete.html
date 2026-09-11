@@ -15,11 +15,9 @@
       Some objects related to {{ object }} are protected from deletion.
       You must delete the following objects before proceeding:
     </p>
-    <p>
-      <ul>
-        {{ protected|unordered_list }}
-      </ul>
-    </p>
+    <ul>
+      {{ protected|unordered_list }}
+    </ul>
     <!-- If there are no protected objects, show the delete form -->
   {% else %}
     <form method="post">
@@ -53,10 +51,8 @@
       </div>
     </div>
     Individual objects to be deleted:
-    <p>
-      <ul>
-        {{ deletable_objects|unordered_list }}
-      </ul>
-    </p>
+    <ul>
+      {{ deletable_objects|unordered_list }}
+    </ul>
   {% endif %}
 {% endblock content %}
