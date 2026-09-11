@@ -4,13 +4,14 @@ from django.dispatch import receiver
 
 from management.models import PermissionsBase
 
-from ..models import DataImport
+from ..models import DataImport, MapLayerImport
 from ..tasks import ingest_data
 
 User = get_user_model()
 
 
 @receiver(post_save, sender=DataImport)
+@receiver(post_save, sender=MapLayerImport)
 def set_object_permissions(sender, instance: PermissionsBase, **kwargs):
     """Set object-level permissions."""
     instance.set_object_permissions()

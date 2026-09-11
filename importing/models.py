@@ -13,15 +13,20 @@
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 
+from djangomain import settings
 from formatting.models import Format
+from importing.utils import validate_layer_file_size
 from management.models import PermissionsBase
 from station.models import Station
 from variable.models import SensorInstallation, Variable
 
 User = get_user_model()
+
+MAX_FILE_SIZE = settings.MAX_LAYER_FILE_SIZE_MB
 
 
 class ImportOrigin(models.Model):
@@ -38,7 +43,7 @@ class ImportOrigin(models.Model):
         return self.origin
 
     @classmethod
-    def get_default(cls) -> "ImportOrigin":
+    def get_default(cls) -> ImportOrigin:
         """Get default import origin, 'file'.
 
         It should exist, as it is created in a data migration, but just in case it
@@ -66,7 +71,6 @@ class DataImport(PermissionsBase):
         observations (TextField): Notes or observations about the data.
         status (TextField): Status of the import.
         log (TextField): Log of the data ingestion, indicating any errors.
-        reprocess (BooleanField): If checked, the data will be reprocessed.
     """
 
     STATUS = (("N", "Not queued"), ("Q", "Queued"), ("C", "Completed"), ("F", "Failed"))
@@ -79,7 +83,10 @@ class DataImport(PermissionsBase):
         help_text="Station to which the data belongs.",
     )
     format = models.ForeignKey(
-        Format, models.PROTECT, verbose_name="Format", help_text="Format of the data."
+        Format,
+        models.PROTECT,
+        verbose_name="Format",
+        help_text="Format of the data.",
     )
     origin = models.ForeignKey(
         ImportOrigin,
@@ -121,11 +128,6 @@ class DataImport(PermissionsBase):
         help_text="Log of the data ingestion, indicating any errors",
         default="",
     )
-    reprocess = models.BooleanField(
-        "Reprocess data",
-        help_text="If checked, the data will be reprocessed",
-        default=False,
-    )
 
     def get_absolute_url(self):
         return reverse("importing:dataimport_detail", kwargs={"pk": self.pk})
@@ -139,16 +141,11 @@ class DataImport(PermissionsBase):
         if not tz:
             raise ValidationError("Station must have a timezone set.")
 
-        # If the file has changed, we reprocess the data
-        if self.pk and self.rawfile != self.__class__.objects.get(pk=self.pk).rawfile:
-            self.reprocess = True
-
-        if self.reprocess:
-            self.status = "N"
-            self.reprocess = False
+        if self.origin.origin == "Thingsboard" and not self.format.thingsboard:
+            raise ValidationError("Ensure a Thingsboard-specific format is specified.")
 
 
-class ThingsboardImportMap(models.Model):
+class ThingsboardImportMap(PermissionsBase):
     """Model to store Thingsboard device mappings to station variables.
 
     This model maps Thingsboard devices to specific variables at stations, allowing
@@ -158,7 +155,7 @@ class ThingsboardImportMap(models.Model):
     Attributes:
         tb_variable (CharField): Name of the variable in Thingsboard.
         variable (ForeignKey): The existing variable in Paricia associated with this mapping.
-        device_id (CharField): The id of the device in Thingsboard.
+        tb_device_name (CharField): The name of the device in Thingsboard.
         station (ForeignKey): The name of the corresponding station in Paricia.
     """  # noqa E501
 
@@ -167,7 +164,7 @@ class ThingsboardImportMap(models.Model):
         max_length=255,
         blank=False,
         null=False,
-        help_text="The name of the variable in Thingsboard (what is shown in the Thingsboard device).",  # noqa E501
+        help_text="The name of the variable in Thingsboard.",
     )
     variable = models.ForeignKey(
         Variable,
@@ -177,36 +174,137 @@ class ThingsboardImportMap(models.Model):
         null=False,
         help_text="Variable name in the data import.",
     )
-
-    device_id = models.CharField(
-        "Device ID",
-        max_length=255,
-        blank=False,
-        null=False,
-        help_text="The id of the device in Thingsboard.",
-    )
     station = models.ForeignKey(
         Station,
         models.PROTECT,
         verbose_name="Station",
         help_text="The name of the corresponding station in Paricia.",
     )
+    tb_device_name = models.CharField(
+        "Thingsboard Device Name",
+        max_length=255,
+        help_text="The name of the device in Thingsboard.",
+    )
 
     def __str__(self):
-        return (
-            f"{self.device_id} -> {self.station}: {self.tb_variable} -> {self.variable}"
-        )
+        return f"{self.tb_device_name} -> {self.station}: {self.tb_variable} -> {self.variable}"  # noqa E501
 
     def clean(self) -> None:
         """Validate that the variable is valid for the station."""
-        super().clean()
-        if self.variable and self.station:
-            # Check if the variable is valid for the station through SensorInstallation
-            if not SensorInstallation.objects.filter(
-                variable=self.variable, station=self.station
-            ).exists():
-                raise ValidationError(
-                    {
-                        "variable": f'Variable "{self.variable}" is not configured for station "{self.station}".'  # noqa E501
-                    }
-                )
+        try:
+            station = self.station
+        except ThingsboardImportMap.station.RelatedObjectDoesNotExist:
+            raise ValidationError({"station": "Station is required."})
+
+        try:
+            variable = self.variable
+        except ThingsboardImportMap.variable.RelatedObjectDoesNotExist:
+            raise ValidationError({"variable": "Variable is required."})
+
+        # Check if the variable is valid for the station through SensorInstallation
+        if not SensorInstallation.objects.filter(
+            variable=variable, station=station
+        ).exists():
+            raise ValidationError(
+                {
+                    "variable": f"Variable '{variable}' is not configured for"
+                    f" station '{station}' via a sensor installation."
+                }
+            )
+
+    def get_absolute_url(self):
+        return reverse("importing:thingsboardimportmap_detail", kwargs={"pk": self.pk})
+
+
+class MapLayerImport(PermissionsBase):
+    name = models.CharField(
+        "Name",
+        max_length=255,
+        blank=False,
+        null=False,
+        help_text="Name of the layer to be imported.",
+    )
+    description = models.TextField(
+        "Description",
+        blank=True,
+        null=True,
+        help_text="Description of the layer to be imported.",
+    )
+    file = models.FileField(
+        "Layer file",
+        blank=False,
+        help_text=f"Must be a tiff file. File size must not exceed {MAX_FILE_SIZE} MB",
+        validators=[
+            FileExtensionValidator(allowed_extensions=["tif", "tiff"]),
+            validate_layer_file_size,
+        ],
+    )
+    updated_at = models.DateTimeField(
+        "Updated at",
+        auto_now=True,
+        help_text="The time at which the layer was last updated.",
+    )
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("importing:maplayerimport_detail", kwargs={"pk": self.pk})
+
+    def clean(self) -> None:
+        """Validate the uploaded GeoTIFF and its transformed lon/lat bounds."""
+
+        if not self.file:
+            return
+
+        import rasterio
+        from rasterio.warp import transform_bounds
+
+        file_obj = self.file.file
+        try:
+            with rasterio.MemoryFile(file_obj.read()) as memfile:
+                with memfile.open() as dataset:
+                    if dataset.count == 0:
+                        raise ValidationError(
+                            {"file": "File contains no raster bands."}
+                        )
+                    if dataset.crs is None:
+                        raise ValidationError(
+                            {"file": "File has no coordinate reference system (CRS)."}
+                        )
+
+                    left, bottom, right, top = transform_bounds(
+                        dataset.crs,
+                        "EPSG:4326",
+                        dataset.bounds.left,
+                        dataset.bounds.bottom,
+                        dataset.bounds.right,
+                        dataset.bounds.top,
+                    )
+
+                    if not (-180 <= left <= 180 and -180 <= right <= 180):
+                        raise ValidationError(
+                            {
+                                "file": (
+                                    "GeoTIFF longitude values are out of range "
+                                    "[-180, 180]."
+                                )
+                            }
+                        )
+                    if not (-90 <= bottom <= 90 and -90 <= top <= 90):
+                        raise ValidationError(
+                            {
+                                "file": (
+                                    "GeoTIFF latitude values are out of range "
+                                    "[-90, 90]."
+                                )
+                            }
+                        )
+        except ValidationError:
+            raise
+        except Exception as e:
+            raise ValidationError(
+                {"file": f"Could not open as a valid GeoTIFF or read coordinates: {e}"}
+            )
+        finally:
+            file_obj.seek(0)

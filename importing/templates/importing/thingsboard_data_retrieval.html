@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block content %}
+  <h2>Retrieve ThingsBoard Data</h2>
+  <a href="{% url 'importing:thingsboardimportmap_create' %}"
+     class="btn btn-primary">Create Import Map</a>
+  <form method="post" class="mb-4">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-success">Retrieve Data</button>
+      <a href="{% url 'importing:thingsboardimportmap_list' %}"
+         class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+{% endblock content %}

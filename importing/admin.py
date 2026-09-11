@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from management.admin import PermissionsBaseAdmin
 
-from .models import DataImport, ImportOrigin, ThingsboardImportMap
+from .models import DataImport, ImportOrigin, MapLayerImport, ThingsboardImportMap
 
 
 @admin.register(DataImport)
@@ -29,10 +29,25 @@ class DataImportAdmin(PermissionsBaseAdmin):
 class ThingsboardImportMapAdmin(admin.ModelAdmin):
     """Admin class for the ThingsboardImportMap model."""
 
-    list_display = ["tb_variable", "variable", "device_id", "station"]
-    search_fields = ["tb_variable", "variable__name", "device_id", "station__name"]
+    list_display = [
+        "tb_variable",
+        "variable",
+        "station",
+        "tb_device_name",
+    ]
+    search_fields = [
+        "tb_variable",
+        "variable__name",
+        "station__name",
+        "tb_device_name",
+    ]
 
 
 @admin.register(ImportOrigin)
 class ImportOriginAdmin(admin.ModelAdmin):
     """Admin class for the ImportOrigin model."""
+
+
+@admin.register(MapLayerImport)
+class MapLayerImportAdmin(admin.ModelAdmin):
+    """Admin class for the MapLayerImport model."""
