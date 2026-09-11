@@ -28,11 +28,11 @@ _STATION_KEYS = (
     "station_latitude",
     "station_longitude",
 )
-_DEFAULT_MAP_STYLE = "carto-positron"
+_DEFAULT_MAP_STYLE = "open-street-map"
 _MAP_STYLE_OPTIONS = [
+    {"label": "OpenStreetMap", "value": "open-street-map"},
     {"label": "Carto Positron", "value": "carto-positron"},
     {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
-    {"label": "OpenStreetMap", "value": "open-street-map"},
 ]
 
 app = DjangoDash(
