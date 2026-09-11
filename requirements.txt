@@ -96,7 +96,7 @@ django==5.2.8
     #   drf-yasg
 django-bootstrap5==25.3
     # via Paricia (pyproject.toml)
-django-crispy-forms==2.5
+django-crispy-forms==2.6
     # via
     #   Paricia (pyproject.toml)
     #   crispy-bootstrap5
