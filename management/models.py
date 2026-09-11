@@ -85,7 +85,7 @@ class PermissionsBase(models.Model):
 
     def set_object_permissions(self):
         """Set object-level delete, change and view permissions."""
-        delete, change, view, add = _get_perm_codenames(self.__class__)
+        delete, change, view, add = _get_perm_codenames(self.__class__)  # noqa: RUF059
         standard_group = Group.objects.get(name="Standard")
         anonymous_user = get_anonymous_user()
 
@@ -136,10 +136,10 @@ def apply_add_permissions_to_standard_group(model):
         model (Model): Model to apply permissions to.
 
     """
-    delete, change, view, add = _get_perm_codenames(model)
+    delete, change, view, add = _get_perm_codenames(model)  # noqa: RUF059
     standard_group = Group.objects.get(name="Standard")
     content_type = ContentType.objects.get_for_model(model)
-    permission, created = Permission.objects.get_or_create(
+    permission, created = Permission.objects.get_or_create(  # noqa: RUF059
         codename=add, content_type=content_type
     )
     standard_group.permissions.add(permission)

@@ -5,7 +5,7 @@ plus a third block for spatial layer controls. GeoTIFF layers are loaded from
 MapLayerImport entries and rendered below station points.
 """
 
-from typing import Any
+from typing import Any, cast
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -28,11 +28,11 @@ _STATION_KEYS = (
     "station_latitude",
     "station_longitude",
 )
-_DEFAULT_MAP_STYLE = "carto-positron"
+_DEFAULT_MAP_STYLE = "open-street-map"
 _MAP_STYLE_OPTIONS = [
+    {"label": "OpenStreetMap", "value": "open-street-map"},
     {"label": "Carto Positron", "value": "carto-positron"},
     {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
-    {"label": "OpenStreetMap", "value": "open-street-map"},
 ]
 
 app = DjangoDash(
@@ -201,7 +201,7 @@ _sidebar = dbc.Col(
 _map_col = dbc.Col(
     dcc.Graph(
         id="map_graph",
-        style={"height": "50vh"},
+        style={"height": "100vh"},
         config={"scrollZoom": True},
         figure={
             "data": [],
@@ -563,7 +563,7 @@ def sync_spatial_layer_controls(
 
     selected_layer_ids = {entry["id"] for entry in selected_layers}
     dropdown_options = [
-        {"label": layer["name"], "value": layer_id}
+        {"label": cast(str, layer["name"]), "value": layer_id}
         for layer_id, layer in layer_index.items()
         if layer_id not in selected_layer_ids
     ]
@@ -571,7 +571,7 @@ def sync_spatial_layer_controls(
     layer_rows = [
         _build_spatial_layer_row(
             entry["id"],
-            layer_index[entry["id"]]["name"],
+            cast(str, layer_index[entry["id"]]["name"]),
             entry["visible"],
         )
         for entry in selected_layers

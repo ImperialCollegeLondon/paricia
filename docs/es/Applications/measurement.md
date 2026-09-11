@@ -24,19 +24,19 @@ Ambos objetos de tipo derivan de una clase abstracta `MeasurementBase` que conti
     options:
       heading_level: 3
       show_bases: True
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: measurement.models.Measurement
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: measurement.models.Report
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False

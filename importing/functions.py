@@ -10,30 +10,30 @@
 #  IMPORTANTE: Mantener o incluir esta cabecera con la mención de las instituciones
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
+import json
 import zoneinfo
 from datetime import datetime
-from pathlib import Path
-from typing import Any
+from typing import Any, BinaryIO
 
 import numpy as np
 import pandas as pd
 from django.conf import settings
-from django.db.models import FileField
+from django.core.files.storage import default_storage
+from django.db.models.fields.files import FieldFile
 
 from formatting.models import Classification, Format
 from importing.models import DataImport
 from measurement.models import Measurement, Report
-from station.models import Station
 
 unix_epoch = np.datetime64(0, "s")
 one_second = np.timedelta64(1, "s")
 
 
-def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
+def read_file_excel(source_file: str | BinaryIO, file_format: Format) -> pd.DataFrame:
     """Reads an Excel file into a pandas DataFrame.
 
     Args:
-        file_path: The path to the file to be read.
+        source_file: The file path or stream of data to be parsed.
         file_format: The file format.
 
     Returns:
@@ -41,21 +41,33 @@ def read_file_excel(file_path: str, file_format: Format) -> pd.DataFrame:
     """
     firstline = file_format.first_row if file_format.first_row else 0
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
-    return pd.read_excel(
-        file_path,
-        header=None,
-        skiprows=firstline,
-        skipfooter=skipfooter,
-        engine=None,
-        index_col=None,
-    )
+
+    if not isinstance(source_file, str):
+        return pd.read_excel(
+            source_file,
+            header=None,
+            skiprows=firstline,
+            skipfooter=skipfooter,
+            engine=None,
+            index_col=None,
+        )
+
+    with default_storage.open(source_file, "rb") as f:
+        return pd.read_excel(
+            f,
+            header=None,
+            skiprows=firstline,
+            skipfooter=skipfooter,
+            engine=None,
+            index_col=None,
+        )
 
 
-def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
+def read_file_csv(source_file: str | BinaryIO, file_format: Format) -> pd.DataFrame:
     """Reads a CSV file into a pandas DataFrame.
 
     Args:
-        source_file: Stream of data to be parsed.
+        source_file: The file path or stream of data to be parsed.
         file_format: The file format.
 
     Returns:
@@ -65,14 +77,6 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     skipfooter = file_format.footer_rows if file_format.footer_rows else 0
     delimiter = file_format.delimiter.character
 
-    skiprows: int | list[int] = firstline
-    if not isinstance(source_file, str | Path):
-        # The file was uploaded as binary
-        lines = sum(1 for _ in source_file)
-        source_file.seek(0)
-        skiprows = list(range(0, firstline)) + list(range(lines - skipfooter, lines))
-        skipfooter = 0
-
     # Deal with the delimiter
     if "\\x" in delimiter:
         delim_hexcode = delimiter.replace("\\x", "")
@@ -81,15 +85,33 @@ def read_file_csv(source_file: Any, file_format: Format) -> pd.DataFrame:
     elif delimiter == " ":
         delimiter = r"\s+"  # This is a regex for whitespace
 
-    return pd.read_csv(
-        source_file,
-        sep=delimiter,
-        header=None,
-        index_col=False,
-        skiprows=skiprows,
-        skipfooter=skipfooter,
-        encoding="ISO-8859-1",
-    )
+    skiprows: int | list[int] = firstline
+    if not isinstance(source_file, str):
+        # The file was uploaded as binary
+        lines = sum(1 for _ in source_file)
+        source_file.seek(0)
+        skiprows = list(range(0, firstline)) + list(range(lines - skipfooter, lines))
+        skipfooter = 0
+        return pd.read_csv(
+            source_file,
+            sep=delimiter,
+            header=None,
+            index_col=False,
+            skiprows=skiprows,
+            skipfooter=skipfooter,
+            encoding="ISO-8859-1",
+        )
+
+    with default_storage.open(source_file, "rb") as f:
+        return pd.read_csv(
+            f,
+            sep=delimiter,
+            header=None,
+            index_col=False,
+            skiprows=skiprows,
+            skipfooter=skipfooter,
+            encoding="ISO-8859-1",
+        )
 
 
 def process_datetime_columns(
@@ -142,7 +164,7 @@ def read_data_to_import(
 
     Returns:
         The DataFrame with raw data read and extra column(s) for datetime
-        correctly parsed.
+            correctly parsed.
     """
     if file_format.extension.value in ["xlsx", "xlx"]:
         data = read_file_excel(source_file, file_format)
@@ -150,6 +172,31 @@ def read_data_to_import(
         data = read_file_csv(source_file, file_format)
 
     return process_datetime_columns(data, file_format, timezone)
+
+
+def read_thingsboard_data_to_import(
+    source_file: FieldFile, timezone: str
+) -> pd.DataFrame:
+    """Reads the data from a Thingsboard json file into a pandas DataFrame.
+
+    Args:
+        source_file: The path to the json file.
+        timezone: The station timezone.
+
+    Returns:
+        The DataFrame with raw data read and datetime parsed.
+    """
+    with default_storage.open(source_file.name, "r") as f:
+        raw_data = json.load(f)
+
+    thingsboard_variable = next(iter(raw_data))
+    data = pd.DataFrame(raw_data[thingsboard_variable])
+
+    # Set the date column
+    tz = zoneinfo.ZoneInfo(timezone)
+    data["date"] = pd.to_datetime(data["ts"], unit="ms").dt.tz_localize(tz)
+    data = data.drop(columns="ts").sort_values("date").reset_index(drop=True)
+    return data
 
 
 def save_temp_data_to_permanent(
@@ -168,15 +215,12 @@ def save_temp_data_to_permanent(
     Returns:
         A tuple containing the start date, end date and number of records inserted.
     """
-    station = data_import.station
-    file_format = data_import.format
-    file = data_import.rawfile
-
     # Delete existing measurements and reports for the same data_import_id
     Measurement.objects.filter(data_import_id=data_import.data_import_id).delete()
     Report.objects.filter(data_import_id=data_import.data_import_id).delete()
 
-    start_date, end_date, all_data = construct_matrix(file, file_format, station)
+    start_date, end_date, all_data = construct_matrix(data_import)
+
     if not all_data:
         msg = "No data to import. Is the chosen format correct?"
         raise ValueError(msg)
@@ -195,14 +239,15 @@ def save_temp_data_to_permanent(
 
         # Delete existing data between the date ranges. Needed for data not linked
         # to a data_import_id. Both measurements and reports are deleted.
+        station_id = data_import.station.station_id
         Measurement.timescale.filter(
             time__range=[start_date, end_date],
-            station_id=station.station_id,
+            station_id=station_id,
             variable_id=variable_id,
         ).delete()
         Report.objects.filter(
             time__range=[start_date, end_date],
-            station_id=station.station_id,
+            station_id=station_id,
             variable_id=variable_id,
         ).delete()
 
@@ -214,7 +259,7 @@ def save_temp_data_to_permanent(
             for row in batch.itertuples(index=False):
                 instance = Measurement(
                     **row._asdict(),
-                    station_id=station.station_id,
+                    station_id=station_id,
                     variable_id=variable_id,
                     data_import_id=data_import.data_import_id,
                 )
@@ -229,9 +274,7 @@ def save_temp_data_to_permanent(
 
 
 def construct_matrix(
-    matrix_source: FileField,
-    file_format: Format,
-    station: Station,
+    data_import: DataImport,
 ) -> tuple[pd.Timestamp, pd.Timestamp, list[tuple[int, pd.DataFrame]]]:
     """Creates dataframes containing the processed data for each variable.
 
@@ -239,39 +282,49 @@ def construct_matrix(
     columns in the data file.
 
     Args:
-        matrix_source: raw data file path
-        file_format: a formatting.Format object.
-        station: a Station object.
+        data_import: The DataImport object.
 
     Returns:
         The start and end dates and a list of tuples containing the variable ID and the
             associated dataframe containing the variable data.
     """
     # Get the "preformatted matrix" sorted by date col
-    matrix = read_data_to_import(matrix_source, file_format, station.timezone)
+    is_thingsboard = data_import.origin.origin == "Thingsboard"
+    if is_thingsboard:
+        matrix = read_thingsboard_data_to_import(
+            data_import.rawfile, data_import.station.timezone
+        )
+    else:
+        matrix = read_data_to_import(
+            data_import.rawfile.name, data_import.format, data_import.station.timezone
+        )
+
     # Find start and end dates from top and bottom row
     start_date = matrix["date"].iloc[0]
     end_date = matrix["date"].iloc[-1]
 
-    classifications = list(Classification.objects.filter(format=file_format))
+    classifications = list(Classification.objects.filter(format=data_import.format))
 
     if len(classifications) == 0:
         msg = "No classifications found for this format. Please add some."
         raise ValueError(msg)
 
-    max_cols = max([c.value for c in classifications])
-    ncols = len(matrix.columns)
-    if max_cols >= ncols:
-        msg = (
-            f"The number of columns in the file {ncols} is less than the maximum column"
-            f" number specified in the classifications {max_cols}. Please check the "
-            "file and the classifications for this format."
-        )
-        raise ValueError(msg)
+    if not is_thingsboard:
+        max_cols = max([c.value for c in classifications])
+        ncols = len(matrix.columns)
+        if max_cols >= ncols:
+            msg = (
+                f"The number of columns in the file {ncols} is less than the maximum "
+                f"column number specified in the classifications {max_cols}. Please "
+                "check the file and the classifications for this format."
+            )
+            raise ValueError(msg)
 
     to_ingest = []
     for classification in classifications:
-        data = get_processed_variable_data(matrix, classification, start_date, end_date)
+        data = get_processed_variable_data(
+            matrix, classification, start_date, end_date, is_thingsboard
+        )
         to_ingest.append((classification.variable.variable_id, data))
 
     return start_date, end_date, to_ingest
@@ -414,11 +467,31 @@ def process_cumulative_data(
     return data.fillna(0)  # Fill missing values
 
 
+def parse_thingsboard_values(data: pd.DataFrame) -> pd.DataFrame:
+    """Parse the values column for Thingsboard dataframe.
+
+    Args:
+        data: the dataframe containing data to parse.
+
+    Returns:
+        The dataframe with a numeric values column.
+    """
+    try:
+        data["value"] = pd.to_numeric(data["value"])
+    except ValueError as exc:
+        raise ValueError(
+            "Failed to parse value column for Thingsboard data. Check that numerical"
+            " data are provided."
+        ) from exc
+    return data
+
+
 def get_processed_variable_data(
     matrix: pd.DataFrame,
     classification: Classification,
     start_date: pd.Timestamp,
     end_date: pd.Timestamp,
+    thingsboard: bool = False,
 ) -> pd.DataFrame:
     """Returns the data table for a given variable, performing necessary validation
     and data processing steps.
@@ -432,9 +505,12 @@ def get_processed_variable_data(
     Returns:
         The processed dataframe for the given classification.
     """
-    data, columns = validate_values(matrix, classification)
-    data = standardise_floats(data, classification)
-    data = remove_nan_rows(data, classification, columns)
+    if not thingsboard:
+        data, columns = validate_values(matrix, classification)
+        data = standardise_floats(data, classification)
+        data = remove_nan_rows(data, classification, columns)
+    else:
+        data = parse_thingsboard_values(matrix)
 
     if classification.incremental:
         data = process_incremental_data(data)
