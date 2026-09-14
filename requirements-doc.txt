@@ -248,7 +248,7 @@ mkdocstrings==1.0.4
     # via
     #   Paricia (pyproject.toml)
     #   mkdocstrings-python
-mkdocstrings-python==2.0.3
+mkdocstrings-python==2.0.8
     # via Paricia (pyproject.toml)
 morecantile==7.0.3
     # via rio-tiler
