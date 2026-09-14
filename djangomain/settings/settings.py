@@ -354,3 +354,5 @@ MAX_POINTS = 1000  # Max points to display in plots
 IMPORT_BATCH_SIZE = 10000
 
 MAX_LAYER_FILE_SIZE_MB = 100
+
+CARTO_API_KEY = os.environ.get("CARTO_API_KEY", "")
