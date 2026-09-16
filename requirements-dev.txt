@@ -39,7 +39,7 @@ build==1.4.0
     # via pip-tools
 cachetools==7.1.1
     # via rio-tiler
-certifi==2024.8.30
+certifi==2026.7.22
     # via
     #   httpcore
     #   httpx
@@ -308,7 +308,7 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2025.11.3
+regex==2026.9.10
     # via djlint
 requests==2.32.5
     # via
@@ -323,7 +323,7 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.14.10
+ruff==0.16.7
     # via Paricia (pyproject.toml)
 six==1.17.0
     # via
