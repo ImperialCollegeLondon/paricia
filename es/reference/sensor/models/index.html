@@ -3559,12 +3559,12 @@
   <a href="#sensor.models.PermissionsBase-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3615,12 +3615,12 @@
   <a href="#sensor.models.Sensor-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3671,12 +3671,12 @@
   <a href="#sensor.models.SensorBrand-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3727,12 +3727,12 @@
   <a href="#sensor.models.SensorType-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5261,12 +5261,12 @@
   <a href="#sensor.models.PermissionsBase-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5317,12 +5317,12 @@
   <a href="#sensor.models.Sensor-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5373,12 +5373,12 @@
   <a href="#sensor.models.SensorBrand-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5429,12 +5429,12 @@
   <a href="#sensor.models.SensorType-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5570,7 +5570,7 @@
 
 
 
-<h5 id="sensor.models.PermissionsBase-functions">Functions<a href="#sensor.models.PermissionsBase-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="sensor.models.PermissionsBase-functions">Methods:<a href="#sensor.models.PermissionsBase-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -5646,7 +5646,7 @@
 <span class="normal">108</span>
 <span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_object_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Set object-level delete, change and view permissions."""</span>
-    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>  <span class="c1"># noqa: RUF059</span>
     <span class="n">standard_group</span> <span class="o">=</span> <span class="n">Group</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Standard"</span><span class="p">)</span>
     <span class="n">anonymous_user</span> <span class="o">=</span> <span class="n">get_anonymous_user</span><span class="p">()</span>
 
@@ -5810,7 +5810,7 @@
 
 
 
-<h5 id="sensor.models.Sensor-functions">Functions<a href="#sensor.models.Sensor-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="sensor.models.Sensor-functions">Methods:<a href="#sensor.models.Sensor-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -5946,7 +5946,7 @@
 
 
 
-<h5 id="sensor.models.SensorBrand-functions">Functions<a href="#sensor.models.SensorBrand-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="sensor.models.SensorBrand-functions">Methods:<a href="#sensor.models.SensorBrand-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -6082,7 +6082,7 @@
 
 
 
-<h5 id="sensor.models.SensorType-functions">Functions<a href="#sensor.models.SensorType-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="sensor.models.SensorType-functions">Methods:<a href="#sensor.models.SensorType-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 

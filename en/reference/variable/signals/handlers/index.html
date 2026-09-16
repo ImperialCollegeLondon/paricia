@@ -4931,12 +4931,12 @@
   <a href="#variable.signals.handlers.PermissionsBase-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4987,12 +4987,12 @@
   <a href="#variable.signals.handlers.SensorInstallation-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5032,12 +5032,12 @@
   <a href="#variable.signals.handlers.Unit-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5116,12 +5116,12 @@
   <a href="#variable.signals.handlers.Variable-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5176,12 +5176,12 @@
   <a href="#variable.signals.handlers-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5432,12 +5432,12 @@
   <a href="#variable.signals.handlers.PermissionsBase-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5488,12 +5488,12 @@
   <a href="#variable.signals.handlers.SensorInstallation-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5533,12 +5533,12 @@
   <a href="#variable.signals.handlers.Unit-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5617,12 +5617,12 @@
   <a href="#variable.signals.handlers.Variable-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5677,12 +5677,12 @@
   <a href="#variable.signals.handlers-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5828,7 +5828,7 @@
 
 
 
-<h5 id="variable.signals.handlers.PermissionsBase-functions">Functions<a href="#variable.signals.handlers.PermissionsBase-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="variable.signals.handlers.PermissionsBase-functions">Methods:<a href="#variable.signals.handlers.PermissionsBase-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -5904,7 +5904,7 @@
 <span class="normal">108</span>
 <span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_object_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Set object-level delete, change and view permissions."""</span>
-    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>  <span class="c1"># noqa: RUF059</span>
     <span class="n">standard_group</span> <span class="o">=</span> <span class="n">Group</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Standard"</span><span class="p">)</span>
     <span class="n">anonymous_user</span> <span class="o">=</span> <span class="n">get_anonymous_user</span><span class="p">()</span>
 
@@ -6071,7 +6071,7 @@ or not).</p>
 
 
 
-<h5 id="variable.signals.handlers.SensorInstallation-functions">Functions<a href="#variable.signals.handlers.SensorInstallation-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="variable.signals.handlers.SensorInstallation-functions">Methods:<a href="#variable.signals.handlers.SensorInstallation-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -6193,7 +6193,7 @@ or not).</p>
 
 
 
-<h5 id="variable.signals.handlers.Unit-functions">Functions<a href="#variable.signals.handlers.Unit-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="variable.signals.handlers.Unit-functions">Methods:<a href="#variable.signals.handlers.Unit-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -6458,7 +6458,7 @@ period</p>
 </div>
 
 
-<h5 id="variable.signals.handlers.Variable-functions">Functions<a href="#variable.signals.handlers.Variable-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="variable.signals.handlers.Variable-functions">Methods:<a href="#variable.signals.handlers.Variable-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -6572,7 +6572,7 @@ period</p>
     </div>
 
 </div>
-<h3 id="variable.signals.handlers-functions">Functions<a href="#variable.signals.handlers-functions" class="headerlink" title="Permanent link">¤</a></h3>
+<h3 id="variable.signals.handlers-functions">Functions:<a href="#variable.signals.handlers-functions" class="headerlink" title="Permanent link">¤</a></h3>
 
 <div class="doc doc-object doc-function">
 

@@ -1336,6 +1336,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#djangomain.dash_apps.stations_map._MAP_STYLE_URLS" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _MAP_STYLE_URLS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#djangomain.dash_apps.stations_map._STATION_KEYS" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1440,12 +1451,12 @@
   <a href="#djangomain.dash_apps.stations_map.Station-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1500,12 +1511,12 @@
   <a href="#djangomain.dash_apps.stations_map-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5483,6 +5494,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#djangomain.dash_apps.stations_map._MAP_STYLE_URLS" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _MAP_STYLE_URLS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#djangomain.dash_apps.stations_map._STATION_KEYS" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5587,12 +5609,12 @@
   <a href="#djangomain.dash_apps.stations_map.Station-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5647,12 +5669,12 @@
   <a href="#djangomain.dash_apps.stations_map-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5964,7 +5986,7 @@ MapLayerImport entries and rendered below station points.</p>
 
 
 <h4 id="djangomain.dash_apps.stations_map._DEFAULT_MAP_STYLE" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_DEFAULT_MAP_STYLE</span> <span class="o">=</span> <span class="s1">'open-street-map'</span></code>
+            <code class="highlight language-python"><span class="n">_DEFAULT_MAP_STYLE</span> <span class="o">=</span> <span class="n">_MAP_STYLE_URLS</span><span class="p">[</span><span class="s1">'carto-positron'</span><span class="p">]</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -5984,13 +6006,33 @@ MapLayerImport entries and rendered below station points.</p>
 
 
 <h4 id="djangomain.dash_apps.stations_map._MAP_STYLE_OPTIONS" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_MAP_STYLE_OPTIONS</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'label'</span><span class="p">:</span> <span class="s1">'OpenStreetMap'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="s1">'open-street-map'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'label'</span><span class="p">:</span> <span class="s1">'Carto Positron'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="s1">'carto-positron'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'label'</span><span class="p">:</span> <span class="s1">'Carto Darkmatter'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="s1">'carto-darkmatter'</span><span class="p">}]</span></code>
+            <code class="highlight language-python"><span class="n">_MAP_STYLE_OPTIONS</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'label'</span><span class="p">:</span> <span class="s1">'Carto Positron'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="n">_MAP_STYLE_URLS</span><span class="p">[</span><span class="s1">'carto-positron'</span><span class="p">]},</span> <span class="p">{</span><span class="s1">'label'</span><span class="p">:</span> <span class="s1">'Carto Darkmatter'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="n">_MAP_STYLE_URLS</span><span class="p">[</span><span class="s1">'carto-darkmatter'</span><span class="p">]},</span> <span class="p">{</span><span class="s1">'label'</span><span class="p">:</span> <span class="s1">'OpenStreetMap'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="s1">'open-street-map'</span><span class="p">}]</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
   </span>
 
 <a href="#djangomain.dash_apps.stations_map._MAP_STYLE_OPTIONS" class="headerlink" title="Permanent link">¤</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="djangomain.dash_apps.stations_map._MAP_STYLE_URLS" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">_MAP_STYLE_URLS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'carto-positron'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json?key=</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">CARTO_API_KEY</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'carto-darkmatter'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json?key=</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">CARTO_API_KEY</span><span class="si">}</span><span class="s1">'</span><span class="p">}</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#djangomain.dash_apps.stations_map._MAP_STYLE_URLS" class="headerlink" title="Permanent link">¤</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -6389,7 +6431,7 @@ option.</p>
 </div>
 
 
-<h5 id="djangomain.dash_apps.stations_map.Station-functions">Functions<a href="#djangomain.dash_apps.stations_map.Station-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="djangomain.dash_apps.stations_map.Station-functions">Methods:<a href="#djangomain.dash_apps.stations_map.Station-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -6535,7 +6577,7 @@ which controls who can view the measurements associated to the station.</p>
     </div>
 
 </div>
-<h3 id="djangomain.dash_apps.stations_map-functions">Functions<a href="#djangomain.dash_apps.stations_map-functions" class="headerlink" title="Permanent link">¤</a></h3>
+<h3 id="djangomain.dash_apps.stations_map-functions">Functions:<a href="#djangomain.dash_apps.stations_map-functions" class="headerlink" title="Permanent link">¤</a></h3>
 
 <div class="doc doc-object doc-function">
 
@@ -6607,34 +6649,34 @@ which controls who can view the measurements associated to the station.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_all_none_buttons</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">ButtonGroup</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_all_none_buttons</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">ButtonGroup</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build the bulk-selection button group for a station checklist.</span>
 
 <span class="sd">    Args:</span>
@@ -6741,18 +6783,7 @@ keys, ready for use in <code>dcc.Checklist</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
@@ -6773,7 +6804,18 @@ keys, ready for use in <code>dcc.Checklist</code>.</p>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
-<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_build_options</span><span class="p">(</span><span class="n">codes</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_build_options</span><span class="p">(</span><span class="n">codes</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""Build Dash checklist option dicts from an iterable of station codes.</span>
 
 <span class="sd">    Each option label is ``"&lt;code&gt; - &lt;name&gt;"`` when the station has a name,</span>
@@ -6914,18 +6956,7 @@ keys, ready for use in <code>dcc.Checklist</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">353</span>
 <span class="normal">354</span>
 <span class="normal">355</span>
 <span class="normal">356</span>
@@ -6943,7 +6974,18 @@ keys, ready for use in <code>dcc.Checklist</code>.</p>
 <span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
-<span class="normal">371</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_build_spatial_layer_row</span><span class="p">(</span><span class="n">layer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">:</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_build_spatial_layer_row</span><span class="p">(</span><span class="n">layer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build one selected-layer row with a visibility toggle and remove button.</span>
 
 <span class="sd">    Args:</span>
@@ -7050,19 +7092,19 @@ list wrapping a scalar value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_ensure_list</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_ensure_list</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Normalise a callback input value to a plain Python list.</span>
 
 <span class="sd">    Args:</span>
@@ -7151,17 +7193,17 @@ list wrapping a scalar value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_get_request_user</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_get_request_user</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Get callback request user from django_plotly_dash callback kwargs.</span>
 
 <span class="sd">    Args:</span>
@@ -7217,18 +7259,7 @@ list wrapping a scalar value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
@@ -7237,7 +7268,18 @@ list wrapping a scalar value.</p>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_map_style_block</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">:</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_map_style_block</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build controls for selecting the map base style.</span>
 
 <span class="sd">    Returns:</span>
@@ -7334,18 +7376,7 @@ list wrapping a scalar value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
@@ -7360,7 +7391,18 @@ list wrapping a scalar value.</p>
 <span class="normal">328</span>
 <span class="normal">329</span>
 <span class="normal">330</span>
-<span class="normal">331</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_normalise_spatial_layer_store</span><span class="p">(</span><span class="n">store_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_normalise_spatial_layer_store</span><span class="p">(</span><span class="n">store_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""Normalise layer-store payload to an ordered list of unique entries.</span>
 
 <span class="sd">    Args:</span>
@@ -7463,18 +7505,7 @@ list wrapping a scalar value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
@@ -7487,7 +7518,18 @@ list wrapping a scalar value.</p>
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_scrollable_checklist</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">:</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_scrollable_checklist</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build a checklist wrapped in a fixed-height scroll container.</span>
 
 <span class="sd">    Args:</span>
@@ -7557,18 +7599,7 @@ list wrapping a scalar value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
@@ -7592,7 +7623,18 @@ list wrapping a scalar value.</p>
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_spatial_data_block</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">:</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_spatial_data_block</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build controls for selecting and toggling spatial layers.</span>
 
 <span class="sd">    Returns:</span>
@@ -7721,18 +7763,7 @@ checklist.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -7741,7 +7772,18 @@ checklist.</p>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_station_block</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">:</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_station_block</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build a station-selection card containing bulk controls and a checklist.</span>
 
 <span class="sd">    Args:</span>
@@ -7855,18 +7897,7 @@ trace construction.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
@@ -7883,7 +7914,18 @@ trace construction.</p>
 <span class="normal">399</span>
 <span class="normal">400</span>
 <span class="normal">401</span>
-<span class="normal">402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_station_rows_for_codes</span><span class="p">(</span><span class="n">codes</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">station_group</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_station_rows_for_codes</span><span class="p">(</span><span class="n">codes</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">station_group</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""Build map rows for selected station codes in display order.</span>
 
 <span class="sd">    Args:</span>
@@ -7934,12 +7976,12 @@ trace construction.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_triggered_component</span><span class="p">(</span><span class="n">callback_context</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_triggered_component</span><span class="p">(</span><span class="n">callback_context</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return component id from django-plotly-dash callback context."""</span>
     <span class="n">triggered_prop</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">callback_context</span><span class="o">.</span><span class="n">triggered</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"prop_id"</span><span class="p">]</span> <span class="k">if</span> <span class="n">callback_context</span><span class="o">.</span><span class="n">triggered</span> <span class="k">else</span> <span class="s2">""</span>
@@ -8416,18 +8458,7 @@ and authorized GeoTIFF layers.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">593</span>
-<span class="normal">594</span>
-<span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
-<span class="normal">598</span>
-<span class="normal">599</span>
-<span class="normal">600</span>
-<span class="normal">601</span>
-<span class="normal">602</span>
-<span class="normal">603</span>
-<span class="normal">604</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">604</span>
 <span class="normal">605</span>
 <span class="normal">606</span>
 <span class="normal">607</span>
@@ -8456,7 +8487,18 @@ and authorized GeoTIFF layers.</p>
 <span class="normal">630</span>
 <span class="normal">631</span>
 <span class="normal">632</span>
-<span class="normal">633</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
     <span class="n">Output</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"checklist"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">:</span> <span class="n">MATCH</span><span class="p">},</span> <span class="s2">"value"</span><span class="p">),</span>
     <span class="p">[</span>
         <span class="n">Input</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"checklist"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">:</span> <span class="n">MATCH</span><span class="p">},</span> <span class="s2">"options"</span><span class="p">),</span>
@@ -8597,18 +8639,7 @@ checklist options, and a CSS style dict for the owned block.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">419</span>
 <span class="normal">420</span>
 <span class="normal">421</span>
 <span class="normal">422</span>
@@ -8644,7 +8675,18 @@ checklist options, and a CSS style dict for the owned block.</p>
 <span class="normal">452</span>
 <span class="normal">453</span>
 <span class="normal">454</span>
-<span class="normal">455</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
     <span class="p">[</span>
         <span class="n">Output</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"checklist"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">:</span> <span class="s2">"owned"</span><span class="p">},</span> <span class="s2">"options"</span><span class="p">),</span>
         <span class="n">Output</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"checklist"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">:</span> <span class="s2">"public"</span><span class="p">},</span> <span class="s2">"options"</span><span class="p">),</span>
@@ -8914,18 +8956,7 @@ selected-layer row components.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span>
-<span class="normal">467</span>
-<span class="normal">468</span>
-<span class="normal">469</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">469</span>
 <span class="normal">470</span>
 <span class="normal">471</span>
 <span class="normal">472</span>
@@ -9043,7 +9074,18 @@ selected-layer row components.</p>
 <span class="normal">584</span>
 <span class="normal">585</span>
 <span class="normal">586</span>
-<span class="normal">587</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
     <span class="p">[</span>
         <span class="n">Output</span><span class="p">(</span><span class="s2">"spatial-layer-store"</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">),</span>
         <span class="n">Output</span><span class="p">(</span><span class="s2">"spatial-layer-dropdown"</span><span class="p">,</span> <span class="s2">"options"</span><span class="p">),</span>
@@ -9329,18 +9371,7 @@ selected-layer row components.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>djangomain/dash_apps/stations_map.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span>
-<span class="normal">649</span>
-<span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
+              <div class="highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">655</span>
 <span class="normal">656</span>
 <span class="normal">657</span>
 <span class="normal">658</span>
@@ -9417,7 +9448,18 @@ selected-layer row components.</p>
 <span class="normal">729</span>
 <span class="normal">730</span>
 <span class="normal">731</span>
-<span class="normal">732</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
     <span class="n">Output</span><span class="p">(</span><span class="s2">"map_graph"</span><span class="p">,</span> <span class="s2">"figure"</span><span class="p">),</span>
     <span class="p">[</span>
         <span class="n">Input</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"checklist"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">:</span> <span class="s2">"owned"</span><span class="p">},</span> <span class="s2">"value"</span><span class="p">),</span>

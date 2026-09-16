@@ -2701,12 +2701,12 @@
   <a href="#management.models.PermissionsBase-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2772,12 +2772,12 @@
   <a href="#management.models-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5200,12 +5200,12 @@
   <a href="#management.models.PermissionsBase-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Methods:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Methods:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5271,12 +5271,12 @@
   <a href="#management.models-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5402,7 +5402,7 @@
 
 
 
-<h5 id="management.models.PermissionsBase-functions">Functions<a href="#management.models.PermissionsBase-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="management.models.PermissionsBase-functions">Methods:<a href="#management.models.PermissionsBase-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
@@ -5478,7 +5478,7 @@
 <span class="normal">108</span>
 <span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_object_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Set object-level delete, change and view permissions."""</span>
-    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>  <span class="c1"># noqa: RUF059</span>
     <span class="n">standard_group</span> <span class="o">=</span> <span class="n">Group</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Standard"</span><span class="p">)</span>
     <span class="n">anonymous_user</span> <span class="o">=</span> <span class="n">get_anonymous_user</span><span class="p">()</span>
 
@@ -5610,7 +5610,7 @@
     </div>
 
 </div>
-<h3 id="management.models-functions">Functions<a href="#management.models-functions" class="headerlink" title="Permanent link">¤</a></h3>
+<h3 id="management.models-functions">Functions:<a href="#management.models-functions" class="headerlink" title="Permanent link">¤</a></h3>
 
 <div class="doc doc-object doc-function">
 
@@ -5721,10 +5721,10 @@ given model.</p>
 <span class="sd">        model (Model): Model to apply permissions to.</span>
 
 <span class="sd">    """</span>
-    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">delete</span><span class="p">,</span> <span class="n">change</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">add</span> <span class="o">=</span> <span class="n">_get_perm_codenames</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># noqa: RUF059</span>
     <span class="n">standard_group</span> <span class="o">=</span> <span class="n">Group</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Standard"</span><span class="p">)</span>
     <span class="n">content_type</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-    <span class="n">permission</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">Permission</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+    <span class="n">permission</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">Permission</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>  <span class="c1"># noqa: RUF059</span>
         <span class="n">codename</span><span class="o">=</span><span class="n">add</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span>
     <span class="p">)</span>
     <span class="n">standard_group</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">permission</span><span class="p">)</span>
