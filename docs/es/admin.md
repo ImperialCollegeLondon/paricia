@@ -8,7 +8,7 @@ Hay dos formas de convertirse en un usuario administrador
 
 ![Marcar la tercera casilla le otorga al usuario todos los permisos de Paricia](assets/images/superuser.png)
 
-2. A través de la línea de comandos. Este es un método más avanzado y, por lo general, solo se requiere cuando se configura Paricia por primera vez, ya sea localmente para el desarrollo o en un servidor nuevo. Supondremos que Paricia se ha lanzado usando `docker compose`, como se indica en las [instrucciones de instalación](./installation.md#docker-deployment). Los pasos en este caso son:
+2. A través de la línea de comandos. Este es un método más avanzado y, por lo general, solo se requiere cuando se configura Paricia por primera vez, ya sea localmente para el desarrollo o en un servidor nuevo. Supondremos que Paricia se ha lanzado usando `docker compose`, como se indica en las [instrucciones de instalación](./installation.md#implementacion-de-docker). Los pasos en este caso son:
 
 1. Abra una terminal y acceda al servidor, si no es para desarrollo local, mediante SSH u otro método.
 2. Busque el nombre del contenedor que ejecuta la imagen `paricia` ejecutando `docker ps`. Debería ser algo como `paricia-web-1` o `paricia-app-1`.
