@@ -174,7 +174,7 @@ markupsafe==3.0.2
     #   werkzeug
 morecantile==7.0.3
     # via rio-tiler
-msal==1.37.0
+msal==1.39.0
     # via
     #   azure-identity
     #   msal-extensions

@@ -207,7 +207,7 @@ model-bakery==1.20.1
     # via Paricia (pyproject.toml)
 morecantile==7.0.3
     # via rio-tiler
-msal==1.37.0
+msal==1.39.0
     # via
     #   azure-identity
     #   msal-extensions
