@@ -211,7 +211,7 @@ plotly==6.7.0
     #   django-plotly-dash
 psycopg2==2.9.10
     # via Paricia (pyproject.toml)
-pycountry==24.6.1
+pycountry==26.2.16
     # via Paricia (pyproject.toml)
 pycparser==3.0
     # via cffi

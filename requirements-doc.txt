@@ -306,7 +306,7 @@ properdocs==1.6.7
     #   mkdocs-section-index
 psycopg2==2.9.10
     # via Paricia (pyproject.toml)
-pycountry==24.6.1
+pycountry==26.2.16
     # via Paricia (pyproject.toml)
 pycparser==3.0
     # via cffi
