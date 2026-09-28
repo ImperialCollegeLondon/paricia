@@ -74,7 +74,7 @@ doc = [
     "markdown-include",
     "mkdocs-glightbox",
     "mkdocs-caption",
-    "lxml==6.1.0",
+    "lxml==6.1.3",
 ]
 
 [tool.mypy] # TODO: increase the strictness here
