@@ -35,7 +35,7 @@ azure-storage-blob==12.30.0
     #   django-storages
 babel==2.18.0
     # via mkdocs-material
-backrefs==7.0
+backrefs==8.0
     # via mkdocs-material
 blinker==1.9.0
     # via flask
