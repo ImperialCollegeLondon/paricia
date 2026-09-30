@@ -10,7 +10,7 @@ annotated-types==0.7.0
     # via pydantic
 anyio==4.13.0
     # via httpx
-asgiref==3.8.1
+asgiref==3.12.1
     # via
     #   Paricia (pyproject.toml)
     #   channels
@@ -50,7 +50,7 @@ cffi==2.1.1
     # via cryptography
 cfgv==3.4.0
     # via pre-commit
-channels==4.2.0
+channels==4.3.2
     # via django-plotly-dash
 charset-normalizer==3.4.4
     # via requests
@@ -66,8 +66,6 @@ cligj==0.7.2
     # via rasterio
 color-operations==0.2.0
     # via rio-tiler
-colorama==0.4.6
-    # via djlint
 crispy-bootstrap5==2024.10
     # via Paricia (pyproject.toml)
 cryptography==50.0.0
@@ -333,9 +331,7 @@ six==1.17.0
 sqlparse==0.5.5
     # via django
 tqdm==4.67.1
-    # via
-    #   Paricia (pyproject.toml)
-    #   djlint
+    # via Paricia (pyproject.toml)
 typing-extensions==4.15.0
     # via
     #   azure-core
