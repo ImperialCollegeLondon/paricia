@@ -18,3 +18,4 @@
 !README.md
 !data
 data/*
+!entrypoint.sh

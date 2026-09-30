@@ -170,7 +170,8 @@ class Format(PermissionsBase):
     It combines several properties, such as the file extension, the delimiter, the date
     and time formats, and the column indices for the date and time columns, instructing
     how to read the data file and parse the dates. It is mostly used to ingest data from
-    text files, like CSV.
+    text files, like CSV. For Thingsboard imports, only the name, description and
+    thingsboard fields are applicable.
 
     Attributes:
         format_id (AutoField): Primary key.
@@ -189,6 +190,7 @@ class Format(PermissionsBase):
         time (ForeignKey): Format for the time column. Only required for text files.
         time_column (PositiveSmallIntegerField): Index of the time column, starting in
             0.
+        thingsboard (BooleanField): Whether the data is being imported from Thingsboard.
     """
 
     format_id = models.AutoField(
@@ -203,8 +205,8 @@ class Format(PermissionsBase):
     extension = models.ForeignKey(
         Extension,
         on_delete=models.PROTECT,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
         verbose_name="File extension",
         help_text="The extension of the data file.",
     )
@@ -219,11 +221,15 @@ class Format(PermissionsBase):
     )
     first_row = models.PositiveSmallIntegerField(
         "First row",
+        blank=True,
+        null=True,
         default=1,
         help_text="Index of the first row with data, starting in 0.",
     )
     footer_rows = models.PositiveSmallIntegerField(
         "Number of footer rows",
+        blank=True,
+        null=True,
         default=0,
         help_text="Number of footer rows to be ignored at the end.",
     )
@@ -236,7 +242,11 @@ class Format(PermissionsBase):
         help_text="Format for the date column. Only required for text files.",
     )
     date_column = models.PositiveSmallIntegerField(
-        "Date column", default=0, help_text="Index of the date column, starting in 0."
+        "Date column",
+        blank=True,
+        null=True,
+        default=0,
+        help_text="Index of the date column, starting in 0.",
     )
     time = models.ForeignKey(
         Time,
@@ -247,7 +257,16 @@ class Format(PermissionsBase):
         help_text="Format for the time column. Only required for text files.",
     )
     time_column = models.PositiveSmallIntegerField(
-        "Time column", default=0, help_text="Index of the time column, starting in 0."
+        "Time column",
+        blank=True,
+        null=True,
+        default=0,
+        help_text="Index of the time column, starting in 0.",
+    )
+    thingsboard = models.BooleanField(
+        "Thingsboard data",
+        default=False,
+        help_text="Whether the data is being imported from Thingsboard.",
     )
 
     def __str__(self) -> str:
@@ -281,6 +300,28 @@ class Format(PermissionsBase):
     class Meta:
         ordering = ("-format_id",)
 
+    def clean(self) -> None:
+        """Validate the model instance.
+
+        Checks that the required fields for non-Thingsboard data are provided.
+        """
+        super().clean()
+        errors = {}
+        if not self.thingsboard:
+            required_fields = (
+                "extension",
+                "first_row",
+                "footer_rows",
+                "date_column",
+                "time_column",
+            )
+            for field in required_fields:
+                if getattr(self, field) is None:
+                    errors[field] = "Field is required for non-Thingsboard data."
+
+        if errors:
+            raise ValidationError(errors)
+
 
 class Classification(PermissionsBase):
     """Contains instructions on how to classify the data into a specific variable.
@@ -288,7 +329,8 @@ class Classification(PermissionsBase):
     In particular, it links a format to a variable, and provides the column indices for
     the value, maximum, and minimum columns, as well as the validator columns. It also
     contains information on whether the data is accumulated, incremental, and the
-    resolution of the data.
+    resolution of the data. For Thingsboard imports, only the format, variable,
+    accumulate, resolution and incremental fields are applicable.
 
     Attributes:
         cls_id (AutoField): Primary key.
@@ -332,7 +374,10 @@ class Classification(PermissionsBase):
         help_text="The variable to which the data belongs.",
     )
     value = models.PositiveSmallIntegerField(
-        "Value column", help_text="Index of the value column, starting in 0."
+        "Value column",
+        blank=True,
+        null=True,
+        help_text="Index of the value column, starting in 0.",
     )
     maximum = models.PositiveSmallIntegerField(
         "Maximum value column",
@@ -428,8 +473,9 @@ class Classification(PermissionsBase):
         """Validate the model instance.
 
         It checks that the column indices are different, and that the accumulation
-        period is greater than zero if it is set. It also checks that the resolution is
-        set if the data is accumulated.
+        period is greater than zero if it is set; the resolution is set if the data is
+        accumulated; and that the value column is set if the import is not from
+        Thingsboard.
         """
         if self.accumulate and self.resolution is None:
             raise ValidationError(
@@ -452,6 +498,16 @@ class Classification(PermissionsBase):
             if len(names) != 1:
                 msg = "The columns must be different."
                 raise ValidationError({field: msg for field in names})
+
+        # for non-Thingsboard classifications
+        if not self.format.thingsboard and self.value is None:
+            raise ValidationError(
+                {
+                    "value": (
+                        "A value column must be specified for non-Thingsboard formats."
+                    )
+                }
+            )
 
     class Meta:
         ordering = ("variable",)

@@ -1,5 +1,4 @@
 import json
-import os
 
 import requests
 from django.contrib.admin.utils import NestedObjects
@@ -7,7 +6,7 @@ from django.db import models
 from django.utils.encoding import force_str
 from django.utils.text import capfirst
 
-from djangomain.settings import settings
+from djangomain import settings
 
 THINGSBOARD_REQUEST_TIMEOUT = settings.THINGSBOARD_REQUEST_TIMEOUT
 
@@ -51,7 +50,10 @@ def get_deleted_objects(
 def thingsboard_token_generator(tb_username: str, tb_password: str):
     """Generate a token for Thingsboard API authentication."""
 
-    ip = os.getenv("TB_HOST")
+    ip = settings.TB_HOST
+    if ip is None:
+        raise Exception("TB_HOST environment variable is not set.")
+
     login_url = f"https://{ip}/api/auth/login"
     login_payload = json.dumps({"username": tb_username, "password": tb_password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
@@ -80,10 +82,12 @@ def thingsboard_token_generator(tb_username: str, tb_password: str):
 
 def retrieve_thingsboard_customerid(token: str):
     """Retrieve the customer ID for the authenticated user."""
-    ip = os.getenv("TB_HOST")
+
+    ip = settings.TB_HOST
     if ip is None:
         raise Exception("TB_HOST environment variable is not set.")
     url = f"https://{ip}/api/auth/user"
+
     headers = {"X-Authorization": f"Bearer {token}"}
     try:
         response = requests.get(

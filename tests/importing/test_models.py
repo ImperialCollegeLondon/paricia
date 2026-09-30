@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 
 class TestSaveImportModels(TestCase):
@@ -29,6 +29,7 @@ class TestSaveImportModels(TestCase):
     def setUp(self):
         from formatting.models import Format
         from station.models import TIMEZONES, Station
+        from variable.models import Variable
 
         self.file_format = Format.objects.get(format_id=45)
         self.data_file = str(
@@ -36,7 +37,9 @@ class TestSaveImportModels(TestCase):
         )
         self.station = Station.objects.get(station_id=8)
         self.station.timezone = TIMEZONES[0][0]
+        self.variable = Variable.objects.get(variable_id=1)
 
+    @override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
     def test_save_import(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -67,6 +70,55 @@ class TestSaveImportModels(TestCase):
         retrieved_dit = DataImport.objects.get_queryset()[0]
         self.assertEqual(retrieved_dit.station, self.station)
         self.assertEqual(retrieved_dit.format, self.file_format)
+
+    def test_clean_no_timezone(self):
+        from importing.models import DataImport
+
+        self.station.timezone = None
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            station=self.station,
+            format=self.file_format,
+            rawfile=self.data_file,
+        )
+
+        with self.assertRaises(ValidationError) as ctx:
+            data_import.clean()
+
+        self.assertEqual("Station must have a timezone set.", ctx.exception.message)
+
+    def test_clean_thingsboard_format_provided(self):
+        from formatting.models import Format
+        from importing.models import DataImport, ImportOrigin
+
+        # No format required for Thingsboard format
+        origin = ImportOrigin.objects.create(origin="Thingsboard")
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            format=self.file_format,
+            station=self.station,
+            rawfile=self.data_file,
+            origin=origin,
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            data_import.clean()
+
+        self.assertEqual(
+            "Ensure a Thingsboard-specific format is specified.", ctx.exception.message
+        )
+
+        tb_format = Format.objects.create(
+            owner=self.variable.owner,
+            thingsboard=True,
+        )
+        data_import = DataImport.objects.create(
+            owner=self.station.owner,
+            format=tb_format,
+            station=self.station,
+            rawfile=self.data_file,
+            origin=origin,
+        )
+        data_import.clean()
 
 
 class TestThingsboardImportMap(TestCase):
@@ -119,14 +171,15 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap.objects.create(
             tb_variable="Test Variable",
             variable=self.variable,
-            device_id="tb-device-001",
+            tb_device_name="tb-device-001",
             station=self.station,
+            owner=self.station.owner,
         )
 
         retrieved = ThingsboardImportMap.objects.get(pk=mapping.pk)
         self.assertEqual(retrieved.tb_variable, "Test Variable")
         self.assertEqual(retrieved.variable, self.variable)
-        self.assertEqual(retrieved.device_id, "tb-device-001")
+        self.assertEqual(retrieved.tb_device_name, "tb-device-001")
         self.assertEqual(retrieved.station, self.station)
 
     def test_str(self):
@@ -135,8 +188,9 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap(
             tb_variable="Test Variable",
             variable=self.variable,
-            device_id="tb-device-001",
+            tb_device_name="tb-device-001",
             station=self.station,
+            owner=self.station.owner,
         )
 
         self.assertEqual(
@@ -150,8 +204,9 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap(
             tb_variable="Valid Variable",
             variable=self.variable,
-            device_id="tb-device-002",
+            tb_device_name="tb-device-002",
             station=self.station,
+            owner=self.station.owner,
         )
         # Should not raise any errors
         mapping.clean()
@@ -162,8 +217,9 @@ class TestThingsboardImportMap(TestCase):
         mapping = ThingsboardImportMap(
             tb_variable="Invalid Variable",
             variable=self.other_variable,
-            device_id="tb-device-003",
+            tb_device_name="tb-device-003",
             station=self.station,
+            owner=self.station.owner,
         )
         with self.assertRaises(ValidationError) as ctx:
             mapping.clean()
@@ -177,3 +233,108 @@ class TestImportOrigin(TestCase):
 
         result = ImportOrigin.get_default()
         assert ImportOrigin.objects.get(pk=result).origin == "file"
+
+
+class TestMapLayerImport(TestCase):
+    fixtures = ["management_user"]
+
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+
+        self.user = get_user_model().objects.get(username="default")
+
+    @staticmethod
+    def _make_valid_geotiff_bytes() -> bytes:
+        """Return bytes of a minimal single-band GeoTIFF with valid EPSG:4326 CRS."""
+        import io
+
+        import numpy as np
+        import rasterio
+        from rasterio.crs import CRS
+        from rasterio.transform import from_bounds
+
+        buf = io.BytesIO()
+        transform = from_bounds(-10, -10, 10, 10, width=4, height=4)
+        with rasterio.open(
+            buf,
+            "w",
+            driver="GTiff",
+            height=4,
+            width=4,
+            count=1,
+            dtype=np.uint8,
+            crs=CRS.from_epsg(4326),
+            transform=transform,
+        ) as dst:
+            dst.write(np.zeros((1, 4, 4), dtype=np.uint8))
+        return buf.getvalue()
+
+    def _make_layer(self, filename, content=None):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        from importing.models import MapLayerImport
+
+        if content is None:
+            content = self._make_valid_geotiff_bytes()
+
+        return MapLayerImport(
+            owner=self.user,
+            name="Test Layer",
+            file=SimpleUploadedFile(filename, content, content_type="image/tiff"),
+        )
+
+    def test_str(self):
+        from importing.models import MapLayerImport
+
+        map_layer = MapLayerImport(name="Test Layer", description="A test layer.")
+        self.assertEqual(str(map_layer), "Test Layer")
+
+    def test_valid_tif_extension_passes(self):
+        self._make_layer("layer.tif").full_clean()
+
+    def test_valid_tiff_extension_passes(self):
+        self._make_layer("layer.tiff").full_clean()
+
+    def test_invalid_extension_raises(self):
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_layer("layer.png").full_clean()
+        self.assertIn("file", ctx.exception.message_dict)
+
+    def test_oversized_file_raises(self):
+        from unittest.mock import patch
+
+        oversized = b"x" * (1 * 1024 * 1024 + 1)
+        with patch("importing.utils.MAX_FILE_SIZE", 1):
+            with self.assertRaises(ValidationError) as ctx:
+                self._make_layer("layer.tif", oversized).full_clean()
+        self.assertIn("file", ctx.exception.message_dict)
+
+    def test_invalid_geotiff_content_raises(self):
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_layer("layer.tif", b"not a real tiff").full_clean()
+        self.assertIn("file", ctx.exception.message_dict)
+
+    def test_geotiff_without_crs_raises(self):
+        import io
+
+        import numpy as np
+        import rasterio
+        from rasterio.transform import from_bounds
+
+        buf = io.BytesIO()
+        transform = from_bounds(-10, -10, 10, 10, width=4, height=4)
+        with rasterio.open(
+            buf,
+            "w",
+            driver="GTiff",
+            height=4,
+            width=4,
+            count=1,
+            dtype=np.uint8,
+            transform=transform,
+        ) as dst:
+            dst.write(np.zeros((1, 4, 4), dtype=np.uint8))
+
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_layer("layer.tif", buf.getvalue()).full_clean()
+        self.assertIn("file", ctx.exception.message_dict)

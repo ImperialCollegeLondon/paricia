@@ -17,19 +17,19 @@ La aplicación Variable se ocupa de las variables que pueden ser ingeridas por P
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: variable.models.Variable
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: variable.models.SensorInstallation
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False

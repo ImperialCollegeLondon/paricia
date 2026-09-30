@@ -20,56 +20,56 @@ Como se indica en la [página de permisos](../permissions.md), la visibilidad de
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: station.models.Region
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: station.models.Ecosystem
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: station.models.Institution
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: station.models.StationType
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: station.models.Place
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: station.models.Basin
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: station.models.PlaceBasin
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ## Componentes principales
@@ -78,5 +78,5 @@ Como se indica en la [página de permisos](../permissions.md), la visibilidad de
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False

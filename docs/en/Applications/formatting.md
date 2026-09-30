@@ -12,28 +12,28 @@ The formatting application describes how a data file should be ingested: what co
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Delimiter
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Date
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Time
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ## Core component
@@ -42,12 +42,12 @@ The formatting application describes how a data file should be ingested: what co
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False
 
 ::: formatting.models.Classification
     options:
       heading_level: 3
       show_bases: False
-      members: None
+      members: null
       show_root_full_path: False

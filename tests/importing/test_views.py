@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -235,7 +237,6 @@ class TestDataImportUploadAPIView(TestCase):
                 "format": self.format.pk,
                 "rawfile": test_file,
                 "visibility": "public",
-                "reprocess": True,
                 "observations": "Test upload with observations",
             },
             format="multipart",
@@ -248,7 +249,6 @@ class TestDataImportUploadAPIView(TestCase):
             data_import_id=response.data["data_import_id"]
         )
         self.assertEqual(data_import.visibility, "public")
-        self.assertTrue(data_import.reprocess)
         self.assertEqual(data_import.observations, "Test upload with observations")
         self.assertEqual(data_import.owner, self.user_with_permission)
         self.assertEqual(data_import.origin, ImportOrigin.objects.get(origin="api"))
@@ -328,27 +328,6 @@ class TestDataImportUploadAPIView(TestCase):
             data_import_id=response.data["data_import_id"]
         )
         self.assertEqual(data_import.visibility, "private")
-
-    def test_default_reprocess(self):
-        """Test that default reprocess is False."""
-        self.client.force_authenticate(user=self.user_with_permission)
-        test_file = self.create_test_file()
-
-        response = self.client.post(
-            self.url,
-            {
-                "station": self.station.station_code,
-                "format": self.format.pk,
-                "rawfile": test_file,
-            },
-            format="multipart",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data_import = DataImport.objects.get(
-            data_import_id=response.data["data_import_id"]
-        )
-        self.assertFalse(data_import.reprocess)
 
     def test_file_types(self):
         """Test uploading different file types."""
@@ -515,7 +494,6 @@ class TestDataImportUploadAPIView(TestCase):
                 "format": self.format.pk,
                 "rawfile": test_file,
                 "visibility": "public",
-                "reprocess": True,
                 "observations": "Test observations",
             },
             format="multipart",
@@ -535,7 +513,6 @@ class TestDataImportUploadAPIView(TestCase):
             "records",
             "observations",
             "status_display",
-            "reprocess",
         ]
 
         for field in expected_fields:
@@ -773,7 +750,6 @@ class TestDataIngestionQueryView(TestCase):
             "observations",
             "status",
             "status_display",
-            "reprocess",
             "log",
         ]
 
@@ -934,7 +910,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "temperature",
                 "variable": self.variable.pk,
-                "device_id": "device-001",
+                "tb_device_name": "device-001",
                 "station": self.station.pk,
             },
         )
@@ -953,7 +929,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "humidity",
                 "variable": self.variable.pk,
-                "device_id": "device-002",
+                "tb_device_name": "device-002",
                 "station": self.station.pk,
             },
         )
@@ -973,7 +949,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "temperature",
                 "variable": self.variable.pk,
-                "device_id": "device-004",
+                "tb_device_name": "device-004",
                 "station": self.other_station.pk,
             },
         )
@@ -997,7 +973,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             {
                 "tb_variable": "temperature",
                 "variable": self.other_variable.pk,
-                "device_id": "device-005",
+                "tb_device_name": "device-005",
                 "station": self.station.pk,
             },
         )
@@ -1063,7 +1039,7 @@ class TestThingsboardImportMapCreateView(TestCase):
                 {
                     "tb_variable": f"var_{i}",
                     "variable": self.variable.pk,
-                    "device_id": f"device-{i:03d}",
+                    "tb_device_name": f"device-{i:03d}",
                     "station": self.station.pk,
                 },
             )
@@ -1072,7 +1048,7 @@ class TestThingsboardImportMapCreateView(TestCase):
         self.assertEqual(ThingsboardImportMap.objects.count(), initial_count + 3)
 
     def test_missing_device_id(self):
-        """Test that missing device_id returns form error."""
+        """Test that missing tb_device_name returns form error."""
         self.client.login(username="tbcreateuser", password="testpass123")
 
         response = self.client.post(
@@ -1086,7 +1062,7 @@ class TestThingsboardImportMapCreateView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFormError(
-            response.context["form"], "device_id", "This field is required."
+            response.context["form"], "tb_device_name", "This field is required."
         )
 
     def test_missing_required_fields(self):
@@ -1100,12 +1076,12 @@ class TestThingsboardImportMapCreateView(TestCase):
         # Check all four fields have errors
         self.assertIn("tb_variable", form.errors)
         self.assertIn("variable", form.errors)
-        self.assertIn("device_id", form.errors)
+        self.assertIn("tb_device_name", form.errors)
         self.assertIn("station", form.errors)
 
         # Verify the key error messages are present
         self.assertIn("This field is required.", str(form.errors["tb_variable"]))
-        self.assertIn("This field is required.", str(form.errors["device_id"]))
+        self.assertIn("This field is required.", str(form.errors["tb_device_name"]))
         # FK fields may have multiple errors, just check one is present
         self.assertIn("This field is required.", str(form.errors["variable"]))
         self.assertIn("This field is required.", str(form.errors["station"]))
@@ -1118,7 +1094,7 @@ class TestThingsboardImportMapCreateView(TestCase):
             self.url,
             {
                 "variable": self.variable.pk,
-                "device_id": "device-003",
+                "tb_device_name": "device-003",
                 "station": self.station.pk,
             },
         )
@@ -1127,3 +1103,130 @@ class TestThingsboardImportMapCreateView(TestCase):
         self.assertFormError(
             response.context["form"], "tb_variable", "This field is required."
         )
+
+
+class TestDataImportEditView(TestCase):
+    """Test suite for the DataImportEditView."""
+
+    fixtures = IMPORTING_TEST_FIXTURES
+
+    def setUp(self):
+        """Set up test data."""
+        User = get_user_model()
+        self.user = User.objects.create_user(username="owner", password="testpass123")
+        self.station = Station.objects.get(station_id=1)
+        self.format = Format.objects.get(format_id=46)
+        assign_perm("change_station", self.user, self.station)
+        assign_perm("change_format", self.user, self.format)
+        self.data_import = DataImport.objects.create(
+            visibility="private",
+            station=self.station,
+            format=self.format,
+            rawfile=SimpleUploadedFile(
+                "original_file.csv", b"01/01/2024 14:35:10,10.5\n"
+            ),
+            owner=self.user,
+            status="C",
+        )
+        self.url = reverse(
+            "importing:dataimport_edit", kwargs={"pk": self.data_import.pk}
+        )
+        self.client.force_login(self.user)
+
+    def test_form_valid_new_file_upload(self):
+        """Test that uploading a new file triggers reprocessing."""
+        self.assertEqual(self.data_import.status, "C")
+        response = self.client.post(
+            self.url,
+            {
+                "visibility": "private",
+                "station": self.station.pk,
+                "format": self.format.pk,
+                "rawfile": SimpleUploadedFile(
+                    "new_file.csv", b"01/01/2024 14:35:10,20.5\n"
+                ),
+                "observations": "",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.data_import.refresh_from_db()
+        self.assertEqual(self.data_import.status, "N")
+        self.assertIn("new_file", self.data_import.rawfile.name)
+
+    def test_form_valid_reprocess_button(self):
+        """Test that the 'reprocess' button triggers a change in object status."""
+        # No reprocess action
+        data = {
+            "visibility": "private",
+            "station": self.station.pk,
+            "format": self.format.pk,
+            "observations": "",
+            "action": "update",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.data_import.refresh_from_db()
+        self.assertEqual(self.data_import.status, "C")
+
+        # With reprocess action
+        data["action"] = "reprocess"
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.data_import.refresh_from_db()
+        self.assertEqual(self.data_import.status, "N")
+
+
+class TestMapLayerImportCreateView(TestCase):
+    """Test suite for the MapLayerImportCreateView."""
+
+    fixtures = IMPORTING_TEST_FIXTURES
+
+    def setUp(self):
+        """Set up test data."""
+        User = get_user_model()
+        self.client = APIClient()
+
+        # Create test user
+        self.user = User.objects.create_user(
+            username="maplayeruser", password="testpass123"
+        )
+
+        # Get station from fixtures
+        self.station = Station.objects.get(pk=1)
+
+        # Assign permissions
+        assign_perm("change_station", self.user, self.station)
+        assign_perm("view_station", self.user, self.station)
+
+        self.url = reverse("importing:maplayerimport_create")
+
+    def test_authenticated_get_renders_form(self):
+        """Test that authenticated GET request renders the creation form."""
+        self.client.login(username="maplayeruser", password="testpass123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_successful_creation(self):
+        """Test successful creation of a MapLayerImport."""
+        self.client.login(username="maplayeruser", password="testpass123")
+
+        response = self.client.post(
+            self.url,
+            {
+                "name": "Test Map Layer",
+                "description": "This is a test map layer import.",
+                "file": SimpleUploadedFile(
+                    "layer.tif",
+                    (
+                        Path(__file__).parent.parent / "test_data/test_layer.tif"
+                    ).read_bytes(),
+                    content_type="image/tiff",
+                ),
+                "visibility": "private",
+            },
+        )
+
+        if response.status_code == 200:
+            print("FORM ERRORS:", response.context["form"].errors)
+
+        self.assertEqual(response.status_code, 302)
