@@ -350,8 +350,9 @@ class Classification(PermissionsBase):
         minimum_validator_column (PositiveSmallIntegerField): Index of the minimum value
             validator column, starting in 0.
         minimum_validator_text (CharField): Minimum value validator text.
-        accumulate (PositiveSmallIntegerField): If set to a number of minutes, the data
-            will be accumulated over that period.
+        accumulate (PositiveSmallIntegerField): If set, measurements will be summed into
+            fixed time windows of this length (in minutes). Leave blank to use
+            unaggregated data.
         resolution (DecimalField): Resolution of the data.
         incremental (BooleanField): Whether the data is an incremental counter. If it
             is, any value below the previous one will be removed.
@@ -433,8 +434,8 @@ class Classification(PermissionsBase):
         "Accumulate minutes",
         null=True,
         blank=True,
-        help_text="When set to a number of minutes, the data will be accumulated over"
-        " that period.",
+        help_text="If set, measurements will be summed into fixed time windows of this "
+        "length (in minutes). Leave blank to use unaggregated data.",
         validators=[MinValueValidator(1)],
     )
     resolution = models.DecimalField(
@@ -443,7 +444,7 @@ class Classification(PermissionsBase):
         decimal_places=2,
         blank=True,
         null=True,
-        help_text="Resolution of the data. Only used if it is to be accumulated.",
+        help_text="Resolution of the data.",
         validators=[
             MinValueValidator(0.01)  # Smallest positive number with 2 decimals
         ],
