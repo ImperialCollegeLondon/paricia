@@ -352,8 +352,7 @@ class Classification(PermissionsBase):
         minimum_validator_text (CharField): Minimum value validator text.
         accumulate (PositiveSmallIntegerField): If set to a number of minutes, the data
             will be accumulated over that period.
-        resolution (DecimalField): Resolution of the data. Only used if it is to be
-            accumulated.
+        resolution (DecimalField): Resolution of the data.
         incremental (BooleanField): Whether the data is an incremental counter. If it
             is, any value below the previous one will be removed.
         decimal_comma (BooleanField): Whether the data uses a comma as a decimal
