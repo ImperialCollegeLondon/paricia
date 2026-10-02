@@ -57,6 +57,7 @@ dev = [
     "ruff",
     "mypy",
     "pip-tools",
+    "psycopg2-binary",
     "pre-commit",
     "model_bakery",
     "tqdm",
