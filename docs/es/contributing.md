@@ -21,11 +21,11 @@ El siguiente es un conjunto de pautas para contribuir a Paricia, un proyecto de 
 - [Mensajes de confirmación de Git](#mensajes-de-confirmacion-de-git)
 - [Guía de estilo de la documentación](#guia-de-estilo-de-la-documentacion)
 
-## Código de conducta
+## Código de conducta {#codigo-de-conducta}
 
 Este proyecto y todos los participantes en él se rigen por el [Código de conducta de Paricia](CODE_OF_CONDUCT.md). Al participar, se espera que respetes este código. Por favor, informe cualquier comportamiento inaceptable al [Administrador del repositorio](https://www.imperial.ac.uk/people/w.buytaert).
 
-## ¿Cómo puedo contribuir?
+## ¿Cómo puedo contribuir? {#como-puedo-contribuir}
 
 ### Informar errores
 
@@ -72,7 +72,7 @@ Antes de crear sugerencias de mejora, consulta [esta lista](https://github.com/I
 
 Las sugerencias de mejora se registran como [problemas de GitHub](https://guides.github.com/features/issues/). Cree un problema en ese repositorio y proporcione la siguiente información:
 
-### Tu primera contribución de código
+### Tu primera contribución de código {#tu-primera-contribucion-de-codigo}
 
 ¿No estás seguro de por dónde empezar a contribuir con Paricia? Puedes empezar por revisar estos problemas para principiantes y para quienes necesitan ayuda:
 
@@ -98,9 +98,9 @@ Siga estos pasos para que los encargados de mantenimiento consideren su contribu
 
 Si bien los requisitos previos anteriores deben cumplirse antes de que se revise su solicitud de incorporación de cambios, el revisor o los revisores pueden solicitarle que complete trabajo de diseño adicional, pruebas u otros cambios antes de que su solicitud de incorporación de cambios pueda ser finalmente aceptada.
 
-## Guías de estilo
+## Guías de estilo {#guias-de-estilo}
 
-### Mensajes de confirmación de Git
+### Mensajes de confirmación de Git {#mensajes-de-confirmacion-de-git}
 
 - Use el tiempo presente ("Agregar característica" no "Característica agregada")
 - Use el modo imperativo ("Mover el cursor a..." no "Mueve el cursor a...")
@@ -124,7 +124,7 @@ Si bien los requisitos previos anteriores deben cumplirse antes de que se revise
 - :arrow_down: `:arrow_down:` al degradar dependencias
 - :shirt: `:shirt:` al eliminar advertencias de linter
 
-### Guía de estilo de la documentación
+### Guía de estilo de la documentación {#guia-de-estilo-de-la-documentacion}
 
 - Use [Markdown](https://daringfireball.net/projects/markdown).
 - Métodos y clases de referencia en Markdown con la notación personalizada `{}`:
