@@ -539,6 +539,7 @@ class TestMatrixFunctions(TestCase):
         self.assertEqual(results.count(), 263370)
 
 
+@override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
 class TestReadFile(TestCase):
     """Test suite for functions to read the raw data files."""
 

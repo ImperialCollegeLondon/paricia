@@ -2,10 +2,17 @@
 
 import base64
 import logging
-import os
+from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from typing import Any
 
+from azure.identity import DefaultAzureCredential
+from azure.storage.blob import (
+    BlobSasPermissions,
+    BlobServiceClient,
+    generate_blob_sas,
+)
+from django.core.files.storage import FileSystemStorage, default_storage
 from guardian.shortcuts import get_objects_for_user
 from rasterio.warp import transform_bounds
 from rio_tiler.colormap import cmap
@@ -21,7 +28,47 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 logger = logging.getLogger(__name__)
 
 
-def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
+def get_geotiff_path(file_name: str) -> str:
+    """Get the path/URL for the GeoTIFF.
+
+    If stored locally (i.e. the default storage is FileSystemStorage), the local file
+    path is returned. Otherwise (if stored in Azure Blob Storage), a temporary URL to
+    the file is returned.
+
+    Args:
+        file_name: Name of the GeoTIFF file.
+
+    Returns:
+        The local file path or URL to the GeoTIFF file.
+    """
+    if isinstance(default_storage, FileSystemStorage):
+        return default_storage.path(file_name)
+
+    blob_service_client = BlobServiceClient(
+        account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
+        credential=DefaultAzureCredential(),
+    )
+    now = datetime.now(UTC)
+    start = now - timedelta(minutes=15)
+    expiry = now + timedelta(hours=1)
+    delegation_key = blob_service_client.get_user_delegation_key(
+        key_start_time=start, key_expiry_time=expiry
+    )
+    sas_token = generate_blob_sas(
+        account_name=default_storage.account_name,
+        container_name=default_storage.azure_container,
+        blob_name=file_name,
+        user_delegation_key=delegation_key,
+        permission=BlobSasPermissions(read=True),
+        expiry=expiry,
+    )
+    return (
+        f"https://{default_storage.account_name}.blob.core.windows.net/"
+        f"{default_storage.azure_container}/{file_name}?{sas_token}"
+    )
+
+
+def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | float]]:
     """Return user-viewable GeoTIFF layers keyed by dash dropdown id.
 
     Args:
@@ -44,13 +91,14 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str]]:
         logger.error("Error occurred while fetching available map layers: %s", e)
         return {}
 
-    layer_index = {}
+    layer_index: dict[str, dict[str, str | float]] = {}
     for layer in queryset.order_by("name", "pk"):
         layer_id = f"maplayer-{layer.pk}"
         layer_index[layer_id] = {
             "id": layer_id,
             "name": str(layer.name),
-            "file_path": str(layer.file.path),
+            "mtime": layer.updated_at.timestamp(),
+            "file_name": layer.file.name,
         }
 
     return layer_index
@@ -139,14 +187,14 @@ def _build_image_payload(file_path: str) -> dict[str, Any]:
 
 
 @lru_cache(maxsize=32)
-def load_geotiff_payload(file_path: str, _mtime: float) -> dict[str, Any]:
+def load_geotiff_payload(file_name: str, _mtime: float) -> dict[str, Any]:
     """Load and cache GeoTIFF payload from disk.
 
     The mtime parameter is not used directly but is part of the cache key,
     allowing the cache to invalidate when files are modified on disk.
 
     Args:
-        file_path: Absolute path to the GeoTIFF file on disk.
+        file_name: Name of the GeoTIFF file to load.
         _mtime: File modification time used to invalidate cache when file
             changes.
 
@@ -154,6 +202,7 @@ def load_geotiff_payload(file_path: str, _mtime: float) -> dict[str, Any]:
         Payload containing image data URI and map
             coordinates.
     """
+    file_path = get_geotiff_path(file_name)
     return _build_image_payload(file_path)
 
 
@@ -184,8 +233,9 @@ def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
             continue
 
         try:
-            mtime = os.path.getmtime(resolved_layer["file_path"])
-            payload = load_geotiff_payload(resolved_layer["file_path"], mtime)
+            payload = load_geotiff_payload(
+                resolved_layer["file_name"], resolved_layer["mtime"]
+            )
         except (OSError, ValueError) as exc:
             logger.warning("Skipping map layer %s: %s", layer["id"], exc)
             continue

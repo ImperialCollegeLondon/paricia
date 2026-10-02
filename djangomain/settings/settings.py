@@ -86,6 +86,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -353,3 +354,5 @@ MAX_POINTS = 1000  # Max points to display in plots
 IMPORT_BATCH_SIZE = 10000
 
 MAX_LAYER_FILE_SIZE_MB = 100
+
+CARTO_API_KEY = os.environ.get("CARTO_API_KEY", "")

@@ -1,11 +1,12 @@
-import os
 import tempfile
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, Group
+from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from guardian.shortcuts import assign_perm
@@ -121,14 +122,77 @@ class GeoTiffLayerUtilityTests(TestCase):
                 f"maplayer-{visible_tif.pk}": {
                     "id": f"maplayer-{visible_tif.pk}",
                     "name": "Visible GeoTIFF",
-                    "file_path": visible_tif.file.path,
+                    "mtime": visible_tif.updated_at.timestamp(),
+                    "file_name": visible_tif.file.name,
                 },
                 f"maplayer-{visible_png_name.pk}": {
                     "id": f"maplayer-{visible_png_name.pk}",
                     "name": "Visible layer with png filename",
-                    "file_path": visible_png_name.file.path,
+                    "mtime": visible_png_name.updated_at.timestamp(),
+                    "file_name": visible_png_name.file.name,
                 },
             },
+        )
+
+    @patch(
+        "djangomain.dash_apps.geotiff_layers.default_storage", spec=FileSystemStorage
+    )
+    def test_get_geotiff_path_file_system(self, storage_mock):
+        storage_mock.path.return_value = "/path/to/test.tif"
+        geotiff_path = geotiff_layers.get_geotiff_path("test.tif")
+        storage_mock.path.assert_called_once_with("test.tif")
+        self.assertEqual(geotiff_path, "/path/to/test.tif")
+
+    @patch("djangomain.dash_apps.geotiff_layers.default_storage")
+    @patch("djangomain.dash_apps.geotiff_layers.BlobServiceClient")
+    @patch("djangomain.dash_apps.geotiff_layers.generate_blob_sas")
+    @patch("djangomain.dash_apps.geotiff_layers.DefaultAzureCredential")
+    @patch("djangomain.dash_apps.geotiff_layers.datetime")
+    @patch("djangomain.dash_apps.geotiff_layers.BlobSasPermissions")
+    def test_get_geotiff_path_azure(
+        self,
+        permissions_mock,
+        datetime_mock,
+        credential_mock,
+        sas_mock,
+        client_mock,
+        storage_mock,
+    ):
+        storage_mock.account_name = "account"
+        storage_mock.azure_container = "container"
+        credential_mock.return_value = "credential"
+        now = datetime.now(UTC)
+        datetime_mock.now.return_value = now
+        start = now - timedelta(minutes=15)
+        expiry = now + timedelta(hours=1)
+        client_mock.return_value = MagicMock()
+        client_mock.return_value.get_user_delegation_key.return_value = "delegation_key"
+        sas_mock.return_value = "sas_token"
+        permissions_mock.return_value = "permission"
+        geotiff_path = geotiff_layers.get_geotiff_path("test.tif")
+
+        client_mock.assert_called_once_with(
+            account_url="https://account.blob.core.windows.net",
+            credential="credential",
+        )
+
+        client_mock.return_value.get_user_delegation_key.assert_called_once_with(
+            key_start_time=start,
+            key_expiry_time=expiry,
+        )
+
+        sas_mock.assert_called_once_with(
+            account_name="account",
+            container_name="container",
+            blob_name="test.tif",
+            user_delegation_key="delegation_key",
+            permission="permission",
+            expiry=expiry,
+        )
+
+        self.assertEqual(
+            geotiff_path,
+            "https://account.blob.core.windows.net/container/test.tif?sas_token",
         )
 
     def test_bounds_to_lonlat_coordinates_returns_expected_order(self):
@@ -199,17 +263,16 @@ class GeoTiffLayerUtilityTests(TestCase):
             filename="cache.tif",
         )
 
-        path = layer.file.path
-        mtime = os.path.getmtime(path)
+        mtime = layer.updated_at.timestamp()
 
         geotiff_layers.load_geotiff_payload.cache_clear()
-        geotiff_layers.load_geotiff_payload(path, mtime)
+        geotiff_layers.load_geotiff_payload(layer.file.name, mtime)
         first_info = geotiff_layers.load_geotiff_payload.cache_info()
 
-        geotiff_layers.load_geotiff_payload(path, mtime)
+        geotiff_layers.load_geotiff_payload(layer.file.name, mtime)
         second_info = geotiff_layers.load_geotiff_payload.cache_info()
 
-        geotiff_layers.load_geotiff_payload(path, mtime + 1)
+        geotiff_layers.load_geotiff_payload(layer.file.name, mtime + 1)
         third_info = geotiff_layers.load_geotiff_payload.cache_info()
 
         self.assertEqual(second_info.hits, first_info.hits + 1)

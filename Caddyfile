@@ -1,0 +1,23 @@
+{$DOMAIN:localhost} {
+
+    # Serve static files directly from the filesystem
+    @static {
+        path /static/*
+    }
+    handle @static {
+        root * /usr/src/app
+        file_server
+    }
+
+    # Serve media files directly from the filesystem
+    @media {
+        path /media/*
+    }
+    handle @media {
+        root * /usr/src/app
+        file_server
+    }
+
+    # Everything else goes to Django via Gunicorn
+    reverse_proxy web:8000
+}

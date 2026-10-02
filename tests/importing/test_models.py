@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 
 class TestSaveImportModels(TestCase):
@@ -39,6 +39,7 @@ class TestSaveImportModels(TestCase):
         self.station.timezone = TIMEZONES[0][0]
         self.variable = Variable.objects.get(variable_id=1)
 
+    @override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
     def test_save_import(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
 

@@ -5,7 +5,7 @@ plus a third block for spatial layer controls. GeoTIFF layers are loaded from
 MapLayerImport entries and rendered below station points.
 """
 
-from typing import Any
+from typing import Any, cast
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -13,6 +13,7 @@ import plotly.graph_objs as go
 from dash import ALL, MATCH, Input, Output, Patch, State, dcc, html, no_update
 from django_plotly_dash import DjangoDash
 
+from djangomain import settings
 from djangomain.dash_apps.geotiff_layers import (
     available_map_layers_by_id,
     build_mapbox_layers,
@@ -28,10 +29,20 @@ _STATION_KEYS = (
     "station_latitude",
     "station_longitude",
 )
-_DEFAULT_MAP_STYLE = "carto-positron"
+_MAP_STYLE_URLS = {
+    "carto-positron": (
+        "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json?"
+        f"key={settings.CARTO_API_KEY}"
+    ),
+    "carto-darkmatter": (
+        "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        f"?key={settings.CARTO_API_KEY}"
+    ),
+}
+_DEFAULT_MAP_STYLE = _MAP_STYLE_URLS["carto-positron"]
 _MAP_STYLE_OPTIONS = [
-    {"label": "Carto Positron", "value": "carto-positron"},
-    {"label": "Carto Darkmatter", "value": "carto-darkmatter"},
+    {"label": "Carto Positron", "value": _MAP_STYLE_URLS["carto-positron"]},
+    {"label": "Carto Darkmatter", "value": _MAP_STYLE_URLS["carto-darkmatter"]},
     {"label": "OpenStreetMap", "value": "open-street-map"},
 ]
 
@@ -201,7 +212,7 @@ _sidebar = dbc.Col(
 _map_col = dbc.Col(
     dcc.Graph(
         id="map_graph",
-        style={"height": "50vh"},
+        style={"height": "100vh"},
         config={"scrollZoom": True},
         figure={
             "data": [],
@@ -563,7 +574,7 @@ def sync_spatial_layer_controls(
 
     selected_layer_ids = {entry["id"] for entry in selected_layers}
     dropdown_options = [
-        {"label": layer["name"], "value": layer_id}
+        {"label": cast(str, layer["name"]), "value": layer_id}
         for layer_id, layer in layer_index.items()
         if layer_id not in selected_layer_ids
     ]
@@ -571,7 +582,7 @@ def sync_spatial_layer_controls(
     layer_rows = [
         _build_spatial_layer_row(
             entry["id"],
-            layer_index[entry["id"]]["name"],
+            cast(str, layer_index[entry["id"]]["name"]),
             entry["visible"],
         )
         for entry in selected_layers

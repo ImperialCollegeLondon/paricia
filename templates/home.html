@@ -5,8 +5,10 @@
 {% block content %}
   <div class="container py-2">
     Welcome to the <b>Paricia</b> system.
+    {# djlint:off #}
     <br />
     <br />
+    {# djlint:on #}
     <b>Paricia</b> is a <b>hydroclimatic data management system</b>. Originally
     focused on managing data from stations in the Andes region, it has recently
     generalized to be able to ingest data from <b>anywhere in the world</b>.
@@ -17,6 +19,6 @@
     }
   </style>
   <div class="{% plotly_class name='StationsMap' %} card stations-map-card">
-    {% plotly_app name="StationsMap" initial_arguments=django_context ratio=1 %}
+    {% plotly_app name="StationsMap" initial_arguments=django_context ratio=0.5 %}
   </div>
 {% endblock content %}
