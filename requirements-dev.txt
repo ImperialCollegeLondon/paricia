@@ -215,7 +215,7 @@ mypy==1.19.1
     # via Paricia (pyproject.toml)
 mypy-extensions==1.1.0
     # via mypy
-narwhals==2.20.0
+narwhals==2.26.0
     # via plotly
 nest-asyncio==1.6.0
     # via dash
