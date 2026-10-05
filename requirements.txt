@@ -244,7 +244,7 @@ pyyaml==6.0.3
     #   Paricia (pyproject.toml)
     #   drf-spectacular
     #   drf-yasg
-rasterio==1.5.0
+rasterio==1.5.2
     # via
     #   Paricia (pyproject.toml)
     #   rio-tiler
