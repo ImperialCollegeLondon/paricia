@@ -6,7 +6,7 @@
 #
 affine==2.4.0
     # via rasterio
-annotated-types==0.7.0
+annotated-types==0.8.0
     # via pydantic
 anyio==4.13.0
     # via httpx
@@ -35,7 +35,7 @@ azure-storage-blob==12.30.0
     #   django-storages
 blinker==1.9.0
     # via flask
-build==1.4.0
+build==1.6.1
     # via pip-tools
 cachetools==7.1.1
     # via rio-tiler
@@ -215,7 +215,7 @@ mypy==1.19.1
     # via Paricia (pyproject.toml)
 mypy-extensions==1.1.0
     # via mypy
-narwhals==2.20.0
+narwhals==2.26.0
     # via plotly
 nest-asyncio==1.6.0
     # via dash
@@ -271,7 +271,7 @@ pydantic==2.13.4
     #   rio-tiler
 pydantic-core==2.46.4
     # via pydantic
-pyjwt[crypto]==2.10.1
+pyjwt[crypto]==2.15.1
     # via
     #   djangorestframework-simplejwt
     #   msal
@@ -300,7 +300,7 @@ pyyaml==6.0.3
     #   drf-spectacular
     #   drf-yasg
     #   pre-commit
-rasterio==1.5.0
+rasterio==1.5.2
     # via
     #   Paricia (pyproject.toml)
     #   rio-tiler
@@ -332,7 +332,7 @@ six==1.17.0
     #   python-dateutil
 sqlparse==0.5.5
     # via django
-tqdm==4.67.1
+tqdm==4.70.1
     # via Paricia (pyproject.toml)
 typing-extensions==4.15.0
     # via
