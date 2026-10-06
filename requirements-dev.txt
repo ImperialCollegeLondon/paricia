@@ -259,6 +259,8 @@ pre-commit==4.5.1
     # via Paricia (pyproject.toml)
 psycopg2==2.9.10
     # via Paricia (pyproject.toml)
+psycopg2-binary==2.9.13
+    # via Paricia (pyproject.toml)
 pycountry==26.2.16
     # via Paricia (pyproject.toml)
 pycparser==3.0
