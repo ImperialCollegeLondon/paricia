@@ -3,7 +3,7 @@
 Hay dos configuraciones básicas que se pueden implementar para desarrollar y probar Paricia localmente:
 
 - Entorno virtual, utilizado para el desarrollo diario del código y la documentación. Consulte la sección sobre [configuración del entorno virtual](#entorno-virtual).
-- Docker, utilizado para ejecutar la herramienta localmente, accesible en el navegador así como para ejecutar pruebas. Consulte la sección sobre [docker](#docker-deployment).
+- Docker, utilizado para ejecutar la herramienta localmente, accesible en el navegador así como para ejecutar pruebas. Consulte la sección sobre [docker](#implementacion-de-docker).
 
 ## Entorno virtual
 
@@ -46,18 +46,18 @@ Eso debería ser todo. El entorno virtual deberá estar preparado para el desarr
 
 !!! Advertencia "Ejecutando Paricia y pruebas"
 
-No podrá ejecutar Paricia ni las pruebas desde el entorno virtual porque esto requiere TimescaleDB, que no está instalado como parte del entorno virtual. Consulte la sección [implementación de Docker](#docker-deployment) para aprender cómo hacerlo.
+No podrá ejecutar Paricia ni las pruebas desde el entorno virtual porque esto requiere TimescaleDB, que no está instalado como parte del entorno virtual. Consulte la sección [implementación de Docker](#implementacion-de-docker) para aprender cómo hacerlo.
 
-## Implementación de Docker
+## Implementación de Docker {#implementacion-de-docker}
 
 La configuración del desarrollador de Paricia requiere el uso de "docker" para administrar fácilmente los diferentes servicios que lo componen, es decir, la aplicación web en sí y la base de datos, y hacer que la herramienta sea accesible desde el navegador web. También es necesario realizar las pruebas.
 
 Los pasos para configurar su sistema en este caso son:
 
-- Instalar [Docker] (https://www.docker.com/)
+- Instalar [Docker](https://www.docker.com/)
 - En una terminal, ejecute `docker-compose up --build`. Esto extraerá las imágenes de la ventana acoplable de Internet, creará las locales e iniciará los servicios. Dependiendo de su conexión a Internet, es posible que tarde unos minutos en completarse.
 - Después de descargar y crear las imágenes, Paricia ahora debería estar disponible a través de un navegador web en `http://localhost:8000/`.
-- Cree un usuario **admin** siguiendo las instrucciones de la línea de comando descritas en la [sección Administrador de Paricia](./admin.md#paricia-administrator).
+- Cree un usuario **admin** siguiendo las instrucciones de la línea de comando descritas en la [sección Administrador de Paricia](./admin.md#administrador-de-paricia).
 
 Si quieres cargar datos iniciales (variables, unidades, estaciones...):
 

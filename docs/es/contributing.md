@@ -7,25 +7,25 @@ El siguiente es un conjunto de pautas para contribuir a Paricia, un proyecto de 
 
 ## Índice
 
-[Código de conducta](#code-of-conduct)
+[Código de conducta](#codigo-de-conducta)
 
-[¿Cómo puedo contribuir?](#how-can-i-contribute)
+[¿Cómo puedo contribuir?](#como-puedo-contribuir)
 
-- [Informar errores](#reporting-bugs)
-- [Sugerir mejoras](#suggesting-enhancements)
-- [Tu primera contribución de código](#your-first-code-contribution)
+- [Informar errores](#informar-errores)
+- [Sugerir mejoras](#sugerencias-de-mejoras)
+- [Tu primera contribución de código](#tu-primera-contribucion-de-codigo)
 - [Solicitudes de incorporación de cambios](#pull-requests)
 
-[Guías de estilo](#styleguides)
+[Guías de estilo](#guias-de-estilo)
 
-- [Mensajes de confirmación de Git](#git-commit-messages)
-- [Guía de estilo de la documentación](#documentation-styleguide)
+- [Mensajes de confirmación de Git](#mensajes-de-confirmacion-de-git)
+- [Guía de estilo de la documentación](#guia-de-estilo-de-la-documentacion)
 
-## Código de conducta
+## Código de conducta {#codigo-de-conducta}
 
 Este proyecto y todos los participantes en él se rigen por el [Código de conducta de Paricia](CODE_OF_CONDUCT.md). Al participar, se espera que respetes este código. Por favor, informe cualquier comportamiento inaceptable al [Administrador del repositorio](https://www.imperial.ac.uk/people/w.buytaert).
 
-## ¿Cómo puedo contribuir?
+## ¿Cómo puedo contribuir? {#como-puedo-contribuir}
 
 ### Informar errores
 
@@ -35,7 +35,7 @@ Esta sección le guía a través del envío de un informe de error para Paricia.
 - :computer: reproducir el comportamiento
 - :mag_right: encontrar informes relacionados
 
-Antes de crear informes de error, consulte [esta lista](https://github.com/ImperialCollegeLondon/paricia/issues) (incluidos los problemas cerrados) ya que puede descubrir que no necesita crear uno. Cuando esté creando un informe de error, [incluya tantos detalles como sea posible](#cómo-envío-un-buen-informe-de-error).
+Antes de crear informes de error, consulte [esta lista](https://github.com/ImperialCollegeLondon/paricia/issues) (incluidos los problemas cerrados) ya que puede descubrir que no necesita crear uno. Cuando esté creando un informe de error, [incluya tantos detalles como sea posible](#informar-errores).
 
 > **Nota:** Si encuentra un problema **Cerrado** que parece ser lo mismo que está experimentando, abra un nuevo problema e incluya un enlace al problema original en el cuerpo del nuevo.
 
@@ -72,7 +72,7 @@ Antes de crear sugerencias de mejora, consulta [esta lista](https://github.com/I
 
 Las sugerencias de mejora se registran como [problemas de GitHub](https://guides.github.com/features/issues/). Cree un problema en ese repositorio y proporcione la siguiente información:
 
-### Tu primera contribución de código
+### Tu primera contribución de código {#tu-primera-contribucion-de-codigo}
 
 ¿No estás seguro de por dónde empezar a contribuir con Paricia? Puedes empezar por revisar estos problemas para principiantes y para quienes necesitan ayuda:
 
@@ -90,17 +90,17 @@ El proceso que se describe aquí tiene varios objetivos:
 
 Siga estos pasos para que los encargados de mantenimiento consideren su contribución:
 
-1. **Describa claramente cuál es el propósito de la pull request**. Consulte los problemas relevantes en [Errores](#reporting-bugs) o [Mejoras](#suggesting-enhancements). En general, un problema siempre debe abrirse *antes* de una pull request, para discutir su contenido con un encargado de mantenimiento y asegurarse de que tenga sentido para Paricia. Si la pull request es un trabajo en progreso que llevará algún tiempo para estar listo pero aún así desea discutirlo con la comunidad, abra un [borrador de pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/).
+1. **Describa claramente cuál es el propósito de la pull request**. Consulte los problemas relevantes en [Errores](#informar-errores) o [Mejoras](#sugerencias-de-mejoras). En general, un problema siempre debe abrirse *antes* de una pull request, para discutir su contenido con un encargado de mantenimiento y asegurarse de que tenga sentido para Paricia. Si la pull request es un trabajo en progreso que llevará algún tiempo para estar listo pero aún así desea discutirlo con la comunidad, abra un [borrador de pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/).
 2. **Incluya pruebas unitarias y pruebas de integración relevantes, cuando sea necesario**. El conjunto de pruebas de Paricia es bastante limitado en este momento. Estamos trabajando para mejorar esto y probar tantas características como sea posible, por lo que cualquier nueva incorporación al código debe venir con su propio conjunto de pruebas para evitar retroceder en este asunto.
 3. **Para nuevas características y mejoras, incluya documentación y ejemplos**. Tanto en el código, como cadenas de documentación en clases, funciones y módulos, y como documentación adecuada que describa cómo usar la nueva característica.
-4. Siga las [guías de estilo](#styleguides)
+4. Siga las [guías de estilo](#guias-de-estilo)
 5. Después de enviar su solicitud de extracción, verifique que todas las [verificaciones de estado](https://help.github.com/articles/about-status-checks/) estén pasando <details><summary>¿Qué pasa si las verificaciones de estado fallan?</summary>Si una verificación de estado falla y cree que el error no está relacionado con su cambio, deje un comentario en la solicitud de extracción explicando por qué cree que el error no está relacionado. Un encargado de mantenimiento volverá a ejecutar la verificación de estado por usted. Si concluimos que el error fue un falso positivo, abriremos un problema para rastrear ese problema con nuestro conjunto de verificación de estado.
 
 Si bien los requisitos previos anteriores deben cumplirse antes de que se revise su solicitud de incorporación de cambios, el revisor o los revisores pueden solicitarle que complete trabajo de diseño adicional, pruebas u otros cambios antes de que su solicitud de incorporación de cambios pueda ser finalmente aceptada.
 
-## Guías de estilo
+## Guías de estilo {#guias-de-estilo}
 
-### Mensajes de confirmación de Git
+### Mensajes de confirmación de Git {#mensajes-de-confirmacion-de-git}
 
 - Use el tiempo presente ("Agregar característica" no "Característica agregada")
 - Use el modo imperativo ("Mover el cursor a..." no "Mueve el cursor a...")
@@ -124,7 +124,7 @@ Si bien los requisitos previos anteriores deben cumplirse antes de que se revise
 - :arrow_down: `:arrow_down:` al degradar dependencias
 - :shirt: `:shirt:` al eliminar advertencias de linter
 
-### Guía de estilo de la documentación
+### Guía de estilo de la documentación {#guia-de-estilo-de-la-documentacion}
 
 - Use [Markdown](https://daringfireball.net/projects/markdown).
 - Métodos y clases de referencia en Markdown con la notación personalizada `{}`:
