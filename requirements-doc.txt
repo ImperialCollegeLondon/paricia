@@ -377,7 +377,7 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
-selectolax==0.4.8
+selectolax==1.0.0
     # via mkdocs-glightbox
 six==1.17.0
     # via python-dateutil
