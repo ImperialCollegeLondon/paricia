@@ -227,7 +227,7 @@ pyjwt[crypto]==2.15.1
     #   msal
 pyparsing==3.3.3
     # via rasterio
-pyproj==3.7.2
+pyproj==3.8.0
     # via morecantile
 pystac==1.14.3
     # via rio-tiler
