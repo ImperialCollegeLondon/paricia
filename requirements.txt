@@ -225,7 +225,7 @@ pyjwt[crypto]==2.15.1
     # via
     #   djangorestframework-simplejwt
     #   msal
-pyparsing==3.3.2
+pyparsing==3.3.3
     # via rasterio
 pyproj==3.7.2
     # via morecantile
