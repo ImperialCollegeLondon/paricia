@@ -85,7 +85,7 @@ dash-ag-grid==35.3.0
     # via Paricia (pyproject.toml)
 dash-bootstrap-components==2.0.4
     # via django-plotly-dash
-django==5.2.8
+django==6.1.2
     # via
     #   Paricia (pyproject.toml)
     #   channels
