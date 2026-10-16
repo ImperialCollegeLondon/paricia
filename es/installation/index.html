@@ -5089,7 +5089,7 @@
 <p>Hay dos configuraciones básicas que se pueden implementar para desarrollar y probar Paricia localmente:</p>
 <ul>
 <li>Entorno virtual, utilizado para el desarrollo diario del código y la documentación. Consulte la sección sobre <a href="#entorno-virtual">configuración del entorno virtual</a>.</li>
-<li>Docker, utilizado para ejecutar la herramienta localmente, accesible en el navegador así como para ejecutar pruebas. Consulte la sección sobre <a href="#docker-deployment">docker</a>.</li>
+<li>Docker, utilizado para ejecutar la herramienta localmente, accesible en el navegador así como para ejecutar pruebas. Consulte la sección sobre <a href="#implementacion-de-docker">docker</a>.</li>
 </ul>
 <h2 id="entorno-virtual">Entorno virtual<a class="headerlink" href="#entorno-virtual" title="Permanent link">¤</a></h2>
 <p>El desarrollo normal de software debe realizarse dentro de un entorno virtual, donde se instalan las herramientas y todas las dependencias que requiere Paricia. Esto permite ejecutar los linters, formateadores de código y funciones de autocompletado apropiados del editor de código específicamente para Paricia. Además, también le permite crear y desarrollar la documentación.</p>
@@ -5114,15 +5114,15 @@ python -m pip install -r requirements-doc.txt
 <div class="admonition advertencia">
 <p class="admonition-title">Ejecutando Paricia y pruebas</p>
 </div>
-<p>No podrá ejecutar Paricia ni las pruebas desde el entorno virtual porque esto requiere TimescaleDB, que no está instalado como parte del entorno virtual. Consulte la sección <a href="#docker-deployment">implementación de Docker</a> para aprender cómo hacerlo.</p>
+<p>No podrá ejecutar Paricia ni las pruebas desde el entorno virtual porque esto requiere TimescaleDB, que no está instalado como parte del entorno virtual. Consulte la sección <a href="#implementacion-de-docker">implementación de Docker</a> para aprender cómo hacerlo.</p>
 <h2 id="implementacion-de-docker">Implementación de Docker<a class="headerlink" href="#implementacion-de-docker" title="Permanent link">¤</a></h2>
 <p>La configuración del desarrollador de Paricia requiere el uso de "docker" para administrar fácilmente los diferentes servicios que lo componen, es decir, la aplicación web en sí y la base de datos, y hacer que la herramienta sea accesible desde el navegador web. También es necesario realizar las pruebas.</p>
 <p>Los pasos para configurar su sistema en este caso son:</p>
 <ul>
-<li>Instalar [Docker] (https://www.docker.com/)</li>
+<li>Instalar <a href="https://www.docker.com/">Docker</a></li>
 <li>En una terminal, ejecute <code>docker-compose up --build</code>. Esto extraerá las imágenes de la ventana acoplable de Internet, creará las locales e iniciará los servicios. Dependiendo de su conexión a Internet, es posible que tarde unos minutos en completarse.</li>
 <li>Después de descargar y crear las imágenes, Paricia ahora debería estar disponible a través de un navegador web en <code>http://localhost:8000/</code>.</li>
-<li>Cree un usuario <strong>admin</strong> siguiendo las instrucciones de la línea de comando descritas en la <a href="../admin/#paricia-administrator">sección Administrador de Paricia</a>.</li>
+<li>Cree un usuario <strong>admin</strong> siguiendo las instrucciones de la línea de comando descritas en la <a href="../admin/#administrador-de-paricia">sección Administrador de Paricia</a>.</li>
 </ul>
 <p>Si quieres cargar datos iniciales (variables, unidades, estaciones...):</p>
 <ul>
