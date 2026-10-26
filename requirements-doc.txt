@@ -400,7 +400,7 @@ uritemplate==4.2.0
     #   Paricia (pyproject.toml)
     #   drf-spectacular
     #   drf-yasg
-urllib3==2.6.0
+urllib3==2.8.0
     # via requests
 watchdog==6.0.0
     # via
