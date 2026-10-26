@@ -354,7 +354,7 @@ uritemplate==4.2.0
     #   drf-yasg
 urllib3==2.6.0
     # via requests
-virtualenv==20.28.0
+virtualenv==21.14.13
     # via pre-commit
 werkzeug==3.1.4
     # via
