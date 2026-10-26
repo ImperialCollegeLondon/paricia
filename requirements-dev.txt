@@ -265,7 +265,7 @@ pycountry==26.2.16
     # via Paricia (pyproject.toml)
 pycparser==3.0
     # via cffi
-pydantic==2.13.4
+pydantic==2.14.1
     # via
     #   morecantile
     #   rio-tiler
