@@ -50,6 +50,7 @@ dependencies = [
     "django-storages[azure]",
     "azure-identity",
     "azure-storage-blob",
+    "tzdata",
 ]
 
 [project.optional-dependencies]
