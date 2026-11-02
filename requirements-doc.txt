@@ -327,7 +327,7 @@ pyparsing==3.3.3
     # via rasterio
 pyproj==3.8.0
     # via morecantile
-pystac==1.14.3
+pystac==1.15.2
     # via rio-tiler
 python-dateutil==2.9.0.post0
     # via

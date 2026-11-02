@@ -280,7 +280,7 @@ pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
-pystac==1.14.3
+pystac==1.15.2
     # via rio-tiler
 python-dateutil==2.9.0.post0
     # via
