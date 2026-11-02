@@ -162,7 +162,7 @@ huey==2.5.2
     # via Paricia (pyproject.toml)
 identify==2.6.19
     # via pre-commit
-idna==3.10
+idna==3.20
     # via
     #   Paricia (pyproject.toml)
     #   anyio
