@@ -141,7 +141,7 @@ httpx==0.28.1
     # via rio-tiler
 huey==2.5.2
     # via Paricia (pyproject.toml)
-idna==3.10
+idna==3.20
     # via
     #   Paricia (pyproject.toml)
     #   anyio
