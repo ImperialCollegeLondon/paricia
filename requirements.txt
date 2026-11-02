@@ -52,12 +52,9 @@ charset-normalizer==3.4.4
     # via requests
 click==8.5.0
     # via
-    #   cligj
     #   flask
     #   morecantile
     #   rasterio
-cligj==0.7.2
-    # via rasterio
 color-operations==0.2.0
     # via rio-tiler
 crispy-bootstrap5==2024.10
@@ -281,6 +278,8 @@ typing-extensions==4.15.0
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
+tzdata==2026.6
+    # via Paricia (pyproject.toml)
 uritemplate==4.2.0
     # via
     #   Paricia (pyproject.toml)
