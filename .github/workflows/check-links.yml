@@ -14,3 +14,4 @@ jobs:
         name: Check links in markdown files
         with:
           reporter: github-pr-review
+          fail_level: any
