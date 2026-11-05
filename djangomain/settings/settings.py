@@ -375,10 +375,8 @@ LOGGING = {
             "style": "{",
         },
     },
-    "loggers": {
-        "root": {
-            "handlers": ["console"],
-            "level": os.environ.get("LOGGING_LEVEL", "WARNING"),
-        },
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("LOGGING_LEVEL", "WARNING"),
     },
 }
