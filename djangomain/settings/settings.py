@@ -359,3 +359,24 @@ CARTO_API_KEY = os.environ.get("CARTO_API_KEY", "")
 
 # Set for OpenStreetMap tile usage policy
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "formatters": {
+        "simple": {
+            "format": "[{asctime}] {levelname}: {message}",
+            "style": "{",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("LOGGING_LEVEL", "WARNING"),
+    },
+}
