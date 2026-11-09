@@ -216,7 +216,7 @@ pydantic==2.13.4
     # via
     #   morecantile
     #   rio-tiler
-pydantic-core==2.46.4
+pydantic-core==2.50.4
     # via pydantic
 pyjwt[crypto]==2.15.1
     # via
