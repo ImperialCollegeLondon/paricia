@@ -259,7 +259,7 @@ narwhals==2.28.0
     # via plotly
 nest-asyncio==1.6.0
     # via dash
-numexpr==2.14.1
+numexpr==2.14.2
     # via rio-tiler
 numpy==2.4.2
     # via
