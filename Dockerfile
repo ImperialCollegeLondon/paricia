@@ -12,7 +12,6 @@ RUN chmod +x /entrypoint.sh
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN mkdir log
-RUN python manage.py collectstatic --no-input
 
 EXPOSE 8000
 
