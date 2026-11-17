@@ -271,8 +271,17 @@ class MapLayerImport(PermissionsBase):
         return reverse("importing:maplayerimport_detail", kwargs={"pk": self.pk})
 
     @staticmethod
-    def _read_geotiff_metadata(file_obj: File):
-        """Read the coordinate reference system (crs) and bounds from a GeoTIFF file."""
+    def _read_geotiff_metadata(
+        file_obj: File,
+    ) -> tuple[str, tuple[float, float, float, float]]:
+        """Read the coordinate reference system (crs) and bounds from a GeoTIFF file.
+
+        Args:
+            file_obj: The GeoTIFF file object to read metadata from.
+
+        Returns:
+            The CRS and bounds of the GeoTIFF file.
+        """
         import rasterio
 
         with rasterio.MemoryFile(file_obj.read()) as memfile:
@@ -282,8 +291,17 @@ class MapLayerImport(PermissionsBase):
 
         return dataset.crs, dataset.bounds
 
-    def _read_netcdf_metadata(self, file_obj: File):
-        """Read the coordinate reference system (crs) and bounds from a NetCDF file."""
+    def _read_netcdf_metadata(
+        self, file_obj: File
+    ) -> tuple[str, tuple[float, float, float, float]]:
+        """Read the coordinate reference system (crs) and bounds from a NetCDF file.
+
+        Args:
+            file_obj: The NetCDF file object to read metadata from.
+
+        Returns:
+            The CRS and bounds of the NetCDF file.
+        """
         import rioxarray  # noqa: F401
         import xarray as xr
 
