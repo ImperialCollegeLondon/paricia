@@ -14,7 +14,7 @@ from dash import ALL, MATCH, Input, Output, Patch, State, dcc, html, no_update
 from django_plotly_dash import DjangoDash
 
 from djangomain import settings
-from djangomain.dash_apps.geotiff_layers import (
+from djangomain.dash_apps.map_layers import (
     available_map_layers_by_id,
     build_mapbox_layers,
 )
