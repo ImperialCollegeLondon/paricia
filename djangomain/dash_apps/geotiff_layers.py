@@ -6,6 +6,9 @@ from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from typing import Any
 
+import pandas as pd
+import rioxarray  # noqa: F401
+import xarray as xr
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import (
     BlobSasPermissions,
@@ -17,6 +20,8 @@ from guardian.shortcuts import get_objects_for_user
 from rasterio.warp import transform_bounds
 from rio_tiler.colormap import cmap
 from rio_tiler.io import Reader
+from rio_tiler.io.xarray import XarrayReader
+from rio_tiler.models import ImageData
 
 from importing.models import MapLayerImport
 
@@ -28,18 +33,18 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 logger = logging.getLogger(__name__)
 
 
-def get_geotiff_path(file_name: str) -> str:
-    """Get the path/URL for the GeoTIFF.
+def get_map_layer_path(file_name: str) -> str:
+    """Get the path/URL for the map layer file.
 
     If stored locally (i.e. the default storage is FileSystemStorage), the local file
     path is returned. Otherwise (if stored in Azure Blob Storage), a temporary URL to
     the file is returned.
 
     Args:
-        file_name: Name of the GeoTIFF file.
+        file_name: Name of the map layer file.
 
     Returns:
-        The local file path or URL to the GeoTIFF file.
+        The local file path or URL to the map layer file.
     """
     if isinstance(default_storage, FileSystemStorage):
         return default_storage.path(file_name)
@@ -68,8 +73,33 @@ def get_geotiff_path(file_name: str) -> str:
     )
 
 
+@lru_cache(maxsize=32)
+def _get_netcdf_timestamps(file_path: str, variable: str, _mtime: float) -> list[str]:
+    """Read and cache the time variables from a NetCDF file.
+
+    The mtime parameter is not used directly but is part of the cache key,
+    allowing the cache to invalidate when files are modified on disk.
+
+    Args:
+        file_name: Name of the NetCDF file to read.
+        _mtime: File modification time used to invalidate cache when file
+            changes.
+
+    Returns:
+        A list of strings representing the timestamps, formatted as DD-MM-YYYY.
+    """
+    timestamps = []
+
+    with xr.open_dataset(file_path, engine="netcdf4") as ds:
+        data = ds[variable]
+        for timestamp in data["t"].values:
+            timestamps.append(pd.to_datetime(timestamp).strftime("%d-%m-%Y"))
+
+    return timestamps
+
+
 def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | float]]:
-    """Return user-viewable GeoTIFF layers keyed by dash dropdown id.
+    """Return user-viewable map layers keyed by dash dropdown id.
 
     Args:
         user: Django user used to resolve object-level permissions.
@@ -93,13 +123,38 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | fl
 
     layer_index: dict[str, dict[str, str | float]] = {}
     for layer in queryset.order_by("name", "pk"):
-        layer_id = f"maplayer-{layer.pk}"
-        layer_index[layer_id] = {
-            "id": layer_id,
-            "name": str(layer.name),
-            "mtime": layer.updated_at.timestamp(),
-            "file_name": layer.file.name,
-        }
+        if layer.file_type == "netcdf":
+            try:
+                timestamps = _get_netcdf_timestamps(
+                    get_map_layer_path(layer.file.name),
+                    layer.variable,
+                    layer.updated_at.timestamp(),
+                )
+            except Exception as e:
+                logger.warning(f"Could not read timestamps for layer {layer.name}:", e)
+                continue
+
+            for i, timestamp in enumerate(timestamps):
+                layer_id = f"maplayer-{layer.pk}-{i}"
+                name = f"{layer.name} ({timestamp})"
+                layer_index[layer_id] = {
+                    "id": layer_id,
+                    "name": name,
+                    "mtime": layer.updated_at.timestamp(),
+                    "file_name": layer.file.name,
+                    "file_type": layer.file_type,
+                    "variable": layer.variable,
+                }
+
+        else:
+            layer_id = f"maplayer-{layer.pk}"
+            layer_index[layer_id] = {
+                "id": layer_id,
+                "name": str(layer.name),
+                "mtime": layer.updated_at.timestamp(),
+                "file_name": layer.file.name,
+                "file_type": layer.file_type,
+            }
 
     return layer_index
 
@@ -145,7 +200,73 @@ def _bounds_to_lonlat_coordinates(bounds: tuple, src_crs: str) -> list[list[floa
     ]
 
 
-def _build_image_payload(file_path: str) -> dict[str, Any]:
+def _render_image_payload(
+    img: ImageData,
+    coordinates: list[list],
+    src: Any,
+):
+    """Renders a raster image and builds its Mapbox image payload.
+
+    Args:
+        img: The raster image object to render.
+        coordinates: Image corner coordinates in longitude and latitude.
+        src: The raster reader used to read the image data.
+
+    Returns:
+        A dictionary containing the image data URI and map coordinates.
+    """
+    band_stats = next(iter(src.statistics().values()))
+    img.rescale(in_range=((band_stats.min, band_stats.max),))
+    # This rescales the image pixel values to the full 0-255 range based on the min and max of the data, # noqa: E501
+    # which can help improve contrast when rendering the image. Discussion bellow
+    # https://github.com/developmentseed/titiler/discussions/494
+
+    png_bytes = img.render(img_format="PNG", colormap=cmap.get("viridis"))
+
+    encoded = base64.b64encode(png_bytes).decode("ascii")
+    return {
+        "image": f"data:image/png;base64,{encoded}",
+        "coordinates": coordinates,
+    }
+
+
+def _build_netcdf_image_payload(file_path: str, variable: str) -> list[dict[str, Any]]:
+    """Build netcdf image payload.
+
+    Args:
+        file_path: Absolute path to the NetCDF file on disk.
+        variable: Name of the variable to extract from the NetCDF file.
+
+    Returns:
+        A list of payloads for each timestamp containing image data URI and map
+            coordinates.
+    """
+    payloads = []
+
+    with xr.open_dataset(file_path, engine="netcdf4", decode_coords="all") as ds:
+        data = ds[variable]
+
+        for timestamp in data["t"].values:
+            timestamp_data = data.sel({"t": timestamp})
+            timestamp_data = timestamp_data.rio.set_spatial_dims(x_dim="x", y_dim="y")
+
+            with XarrayReader(timestamp_data) as src:
+                img = src.preview(
+                    dst_crs=_TARGET_RASTER_RENDER_CRS,
+                )
+                coordinates = _bounds_to_lonlat_coordinates(
+                    src.bounds,
+                    src.crs,
+                )
+
+                payloads.append(
+                    _render_image_payload(img, coordinates, src),
+                )
+
+    return payloads
+
+
+def _build_geotiff_image_payload(file_path: str) -> dict[str, Any]:
     """Read a georeferenced single-band GeoTIFF and render it for mapbox.
 
     Pixels are warped to Web Mercator (EPSG:3857) so mapbox image placement on
@@ -156,8 +277,7 @@ def _build_image_payload(file_path: str) -> dict[str, Any]:
         file_path: Absolute path to the GeoTIFF file on disk.
 
     Returns:
-        Payload containing image data URI and map
-            coordinates.
+        Payload containing image data URI and map coordinates.
     """
     with Reader(input=file_path, options={}) as src:
         dataset = src.dataset
@@ -171,45 +291,48 @@ def _build_image_payload(file_path: str) -> dict[str, Any]:
             src.crs,
         )
 
-        band_stats = next(iter(src.statistics().values()))
-        img.rescale(in_range=((band_stats.min, band_stats.max),))
-        # This rescales the image pixel values to the full 0-255 range based on the min and max of the data, # noqa: E501
-        # which can help improve contrast when rendering the image. Discussion bellow
-        # https://github.com/developmentseed/titiler/discussions/494
-
-        png_bytes = img.render(img_format="PNG", colormap=cmap.get("viridis"))
-
-    encoded = base64.b64encode(png_bytes).decode("ascii")
-    return {
-        "image": f"data:image/png;base64,{encoded}",
-        "coordinates": coordinates,
-    }
+        return _render_image_payload(img, coordinates, src)
 
 
 @lru_cache(maxsize=32)
-def load_geotiff_payload(file_name: str, _mtime: float) -> dict[str, Any]:
-    """Load and cache GeoTIFF payload from disk.
+def load_payload(
+    file_name: str, _mtime: float, file_type: str, variable: str | None = None
+) -> list[dict[str, Any]]:
+    """Load and cache map layer payload from disk.
 
     The mtime parameter is not used directly but is part of the cache key,
     allowing the cache to invalidate when files are modified on disk.
 
     Args:
-        file_name: Name of the GeoTIFF file to load.
+        file_name: Name of the file to load.
         _mtime: File modification time used to invalidate cache when file
             changes.
+        file_type: Whether the file is a netcdf or geotiff file.
+        variable: The variable associated with the map layer if from a NetCDF file.
 
     Returns:
-        Payload containing image data URI and map
-            coordinates.
+        Payload containing image data URI and map coordinates.
+
+    Raises:
+        ValueError: If the file type is unsupported (i.e. not a GeoTIFF or NetCDF file).
     """
-    file_path = get_geotiff_path(file_name)
-    return _build_image_payload(file_path)
+    file_path = get_map_layer_path(file_name)
+
+    if file_type == "geotiff":
+        return [_build_geotiff_image_payload(file_path)]
+
+    if file_type == "netcdf":
+        if not variable:
+            raise ValueError("Variable must be specified for NetCDF files.")
+        return _build_netcdf_image_payload(file_path, variable)
+
+    raise ValueError(f"Unsupported file type: {file_type}")
 
 
 def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
     """Build mapbox layout layers for currently visible spatial layers.
 
-    GeoTIFF sources are resolved server-side from currently authorised
+    GeoTIFF/NetCDF sources are resolved server-side from currently authorised
     MapLayerImport objects and never from client store values.
 
     Args:
@@ -218,8 +341,8 @@ def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
         user: Django user used for per-object authorization.
 
     Returns:
-        Mapbox image layer dictionaries for visible
-            and authorized GeoTIFF layers.
+        Mapbox image layer dictionaries for visible and authorized GeoTIFF/NetCDF
+            layers.
     """
     map_layers = []
     available_layers = available_map_layers_by_id(user)
@@ -233,22 +356,27 @@ def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
             continue
 
         try:
-            payload = load_geotiff_payload(
-                resolved_layer["file_name"], resolved_layer["mtime"]
+            payloads = load_payload(
+                resolved_layer["file_name"],
+                resolved_layer["mtime"],
+                resolved_layer["file_type"],
+                resolved_layer.get("variable"),
             )
+
         except (OSError, ValueError) as exc:
             logger.warning("Skipping map layer %s: %s", layer["id"], exc)
             continue
 
-        map_layers.append(
-            {
-                "type": "raster",
-                "sourcetype": "image",
-                "source": payload["image"],
-                "coordinates": payload["coordinates"],
-                "opacity": 0.75,
-                "below": "traces",
-            }
-        )
+        for payload in payloads:
+            map_layers.append(
+                {
+                    "type": "raster",
+                    "sourcetype": "image",
+                    "source": payload["image"],
+                    "coordinates": payload["coordinates"],
+                    "opacity": 0.75,
+                    "below": "traces",
+                }
+            )
 
     return map_layers
