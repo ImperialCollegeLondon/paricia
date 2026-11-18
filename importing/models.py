@@ -11,6 +11,7 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
+import tempfile
 from pathlib import Path
 
 from django.contrib.auth import get_user_model
@@ -305,30 +306,37 @@ class MapLayerImport(PermissionsBase):
         import rioxarray  # noqa: F401
         import xarray as xr
 
-        ds = xr.open_dataset(file_obj, decode_coords="all")
-        if self.variable not in ds:
-            raise ValidationError(
-                {"variable": f"Variable '{self.variable}' not found in NetCDF file."}
-            )
+        with tempfile.NamedTemporaryFile(suffix=".nc") as tmp:
+            tmp.write(file_obj.read())
+            tmp.flush()
 
-        data = ds[self.variable]
-        if data.size == 0:
-            raise ValidationError(
-                {
-                    "variable": f"No data found for variable '{self.variable}' "
-                    "in NetCDF file."
-                }
-            )
+            with xr.open_dataset(tmp.name, engine="netcdf4", decode_coords="all") as ds:
+                if self.variable not in ds:
+                    raise ValidationError(
+                        {
+                            "variable": f"Variable '{self.variable}' not found in "
+                            "NetCDF file."
+                        }
+                    )
 
-        if "x" not in data.dims or "y" not in data.dims:
-            raise ValidationError(
-                {
-                    "variable": f"Variable '{self.variable}' must have 'x' and 'y' "
-                    "spatial dimensions."
-                }
-            )
-        data = data.rio.set_spatial_dims(x_dim="x", y_dim="y")
-        return data.rio.crs, data.rio.bounds()
+                data = ds[self.variable]
+                if data.size == 0:
+                    raise ValidationError(
+                        {
+                            "variable": f"No data found for variable '{self.variable}' "
+                            "in NetCDF file."
+                        }
+                    )
+
+                if "x" not in data.dims or "y" not in data.dims:
+                    raise ValidationError(
+                        {
+                            "variable": f"Variable '{self.variable}' must have 'x' and "
+                            "'y' spatial dimensions."
+                        }
+                    )
+                data = data.rio.set_spatial_dims(x_dim="x", y_dim="y")
+                return data.rio.crs, data.rio.bounds()
 
     def clean(self) -> None:
         """Validate the uploaded file and its transformed lon/lat bounds."""
