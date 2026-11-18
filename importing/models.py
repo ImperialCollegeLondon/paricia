@@ -14,6 +14,8 @@
 import tempfile
 from pathlib import Path
 
+import rioxarray  # noqa: F401
+import xarray as xr
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -303,9 +305,6 @@ class MapLayerImport(PermissionsBase):
         Returns:
             The CRS and bounds of the NetCDF file.
         """
-        import rioxarray  # noqa: F401
-        import xarray as xr
-
         with tempfile.NamedTemporaryFile(suffix=".nc") as tmp:
             tmp.write(file_obj.read())
             tmp.flush()
