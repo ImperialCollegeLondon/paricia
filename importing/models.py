@@ -328,6 +328,13 @@ class MapLayerImport(PermissionsBase):
                         }
                     )
 
+                if "t" not in data.dims:
+                    raise ValidationError(
+                        {
+                            "variable": f"Variable '{self.variable}' must have a "
+                            "temporal dimension named 't'."
+                        }
+                    )
                 if "x" not in data.dims or "y" not in data.dims:
                     raise ValidationError(
                         {
