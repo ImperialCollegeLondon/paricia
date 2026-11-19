@@ -218,7 +218,7 @@ def _render_image_payload(
     band_stats = next(iter(src.statistics().values()))
     img.rescale(in_range=((band_stats.min, band_stats.max),))
     # This rescales the image pixel values to the full 0-255 range based on the min and max of the data, # noqa: E501
-    # which can help improve contrast when rendering the image. Discussion bellow
+    # which can help improve contrast when rendering the image. Discussion below
     # https://github.com/developmentseed/titiler/discussions/494
 
     png_bytes = img.render(img_format="PNG", colormap=cmap.get("viridis"))
