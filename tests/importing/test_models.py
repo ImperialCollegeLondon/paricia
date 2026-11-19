@@ -365,7 +365,7 @@ class TestMapLayerImport(TestCase):
         self.assertIn("file", ctx.exception.message_dict)
 
     def test_valid_netcdf_extension_passes(self):
-        self._make_nc_layer("layer.nc", "ndwi").full_clean()
+        self._make_nc_layer("layer.nc", "value").full_clean()
 
     def test_missing_variable_raises(self):
         with self.assertRaises(ValidationError) as ctx:

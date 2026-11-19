@@ -418,13 +418,13 @@ class MapLayerUtilityTests(TestCase):
         layer = MapLayerImport.objects.create(
             owner=owner,
             name="Test Layer",
-            variable="ndwi",
+            variable="value",
             file=SimpleUploadedFile(
                 "layer.nc", content, content_type="application/netcdf"
             ),
         )
 
-        payloads = map_layers._build_netcdf_image_payload(layer.file.path, "ndwi")
+        payloads = map_layers._build_netcdf_image_payload(layer.file.path, "value")
 
         self.assertIsInstance(payloads, list)
         payload = payloads[0]
