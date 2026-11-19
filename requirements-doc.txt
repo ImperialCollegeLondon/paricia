@@ -311,7 +311,7 @@ pydantic==2.13.4
     # via
     #   morecantile
     #   rio-tiler
-pydantic-core==2.46.4
+pydantic-core==2.50.4
     # via pydantic
 pygments==2.20.0
     # via mkdocs-material
