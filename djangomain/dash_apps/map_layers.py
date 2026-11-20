@@ -144,6 +144,7 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | fl
                     "file_name": layer.file.name,
                     "file_type": layer.file_type,
                     "variable": layer.variable,
+                    "order": i,
                 }
 
         else:
@@ -230,40 +231,35 @@ def _render_image_payload(
     }
 
 
-def _build_netcdf_image_payload(file_path: str, variable: str) -> list[dict[str, Any]]:
-    """Build netcdf image payload.
+def _build_netcdf_image_payload(
+    file_path: str, variable: str, order: int
+) -> dict[str, Any]:
+    """Read data for one timestamp from a NetCDF and render it for mapbox.
 
     Args:
         file_path: Absolute path to the NetCDF file on disk.
         variable: Name of the variable to extract from the NetCDF file.
+        order: The order of the map layer within the NetCDF file.
 
     Returns:
-        A list of payloads for each timestamp containing image data URI and map
-            coordinates.
+        Payload containing image data URI and map coordinates.
     """
-    payloads = []
-
     with xr.open_dataset(file_path, engine="netcdf4", decode_coords="all") as ds:
         data = ds[variable]
+        timestamp_data = data.isel({"t": order})
 
-        for timestamp in data["t"].values:
-            timestamp_data = data.sel({"t": timestamp})
-            timestamp_data = timestamp_data.rio.set_spatial_dims(x_dim="x", y_dim="y")
+        timestamp_data = timestamp_data.rio.set_spatial_dims(x_dim="x", y_dim="y")
 
-            with XarrayReader(timestamp_data) as src:
-                img = src.preview(
-                    dst_crs=_TARGET_RASTER_RENDER_CRS,
-                )
-                coordinates = _bounds_to_lonlat_coordinates(
-                    src.bounds,
-                    src.crs,
-                )
+        with XarrayReader(timestamp_data) as src:
+            img = src.preview(
+                dst_crs=_TARGET_RASTER_RENDER_CRS,
+            )
+            coordinates = _bounds_to_lonlat_coordinates(
+                src.bounds,
+                src.crs,
+            )
 
-                payloads.append(
-                    _render_image_payload(img, coordinates, src),
-                )
-
-    return payloads
+            return _render_image_payload(img, coordinates, src)
 
 
 def _build_geotiff_image_payload(file_path: str) -> dict[str, Any]:
@@ -296,8 +292,12 @@ def _build_geotiff_image_payload(file_path: str) -> dict[str, Any]:
 
 @lru_cache(maxsize=32)
 def load_payload(
-    file_name: str, _mtime: float, file_type: str, variable: str | None = None
-) -> list[dict[str, Any]]:
+    file_name: str,
+    _mtime: float,
+    file_type: str,
+    variable: str | None = None,
+    order: int = 0,
+) -> dict[str, Any]:
     """Load and cache map layer payload from disk.
 
     The mtime parameter is not used directly but is part of the cache key,
@@ -308,7 +308,8 @@ def load_payload(
         _mtime: File modification time used to invalidate cache when file
             changes.
         file_type: Whether the file is a netcdf or geotiff file.
-        variable: The variable associated with the map layer if from a NetCDF file.
+        variable: The variable associated with the map layer if from a NetCDF.
+        order: The order of the map layer within the file if from a NetCDF.
 
     Returns:
         Payload containing image data URI and map coordinates.
@@ -319,12 +320,12 @@ def load_payload(
     file_path = get_map_layer_path(file_name)
 
     if file_type == "geotiff":
-        return [_build_geotiff_image_payload(file_path)]
+        return _build_geotiff_image_payload(file_path)
 
     if file_type == "netcdf":
         if not variable:
             raise ValueError("Variable must be specified for NetCDF files.")
-        return _build_netcdf_image_payload(file_path, variable)
+        return _build_netcdf_image_payload(file_path, variable, order)
 
     raise ValueError(f"Unsupported file type: {file_type}")
 
@@ -356,27 +357,27 @@ def build_mapbox_layers(layers_raw: list, user: Any) -> list[dict[str, Any]]:
             continue
 
         try:
-            payloads = load_payload(
+            payload = load_payload(
                 resolved_layer["file_name"],
                 resolved_layer["mtime"],
                 resolved_layer["file_type"],
                 resolved_layer.get("variable"),
+                resolved_layer.get("order", 0),
             )
 
         except (OSError, ValueError) as exc:
             logger.warning("Skipping map layer %s: %s", layer["id"], exc)
             continue
 
-        for payload in payloads:
-            map_layers.append(
-                {
-                    "type": "raster",
-                    "sourcetype": "image",
-                    "source": payload["image"],
-                    "coordinates": payload["coordinates"],
-                    "opacity": 0.75,
-                    "below": "traces",
-                }
-            )
+        map_layers.append(
+            {
+                "type": "raster",
+                "sourcetype": "image",
+                "source": payload["image"],
+                "coordinates": payload["coordinates"],
+                "opacity": 0.75,
+                "below": "traces",
+            }
+        )
 
     return map_layers

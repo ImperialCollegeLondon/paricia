@@ -424,19 +424,41 @@ class MapLayerUtilityTests(TestCase):
             ),
         )
 
-        payloads = map_layers._build_netcdf_image_payload(layer.file.path, "value")
+        payload = map_layers._build_netcdf_image_payload(layer.file.path, "value", 0)
 
-        self.assertIsInstance(payloads, list)
-        payload = payloads[0]
+        self.assertIsInstance(payload, dict)
         self.assertIn("image", payload)
         self.assertIn("coordinates", payload)
         self.assertTrue(payload["image"].startswith("data:image/png;base64,"))
         self.assertEqual(len(payload["coordinates"]), 4)
 
+    def test_build_netcdf_image_payload_orders_retrieve_different_timestamps(self):
+        test_netcdf_file = Path(__file__).parent.parent / "test_data/test_layer.nc"
+        content = test_netcdf_file.read_bytes()
+        owner = self._create_user("owner")
+
+        layer = MapLayerImport.objects.create(
+            owner=owner,
+            name="Test Layer",
+            variable="value",
+            file=SimpleUploadedFile(
+                "layer.nc", content, content_type="application/netcdf"
+            ),
+        )
+
+        payload_0 = map_layers._build_netcdf_image_payload(layer.file.path, "value", 0)
+        payload_1 = map_layers._build_netcdf_image_payload(layer.file.path, "value", 1)
+
+        self.assertIsInstance(payload_0, dict)
+        self.assertIsInstance(payload_1, dict)
+        self.assertIn("image", payload_0)
+        self.assertIn("image", payload_1)
+        self.assertNotEqual(payload_0["image"], payload_1["image"])
+
     def test_load_payload_raises_on_unsupported_file_type(self):
         with self.assertRaisesRegex(ValueError, "Unsupported file type"):
-            map_layers.load_payload("dummy.xyz", 0.0, "xyz")
+            map_layers.load_payload("dummy.xyz", 0.0, "xyz", "value", 0)
 
     def test_load_payload_raises_on_netcdf_without_variable(self):
         with self.assertRaisesRegex(ValueError, "Variable must be specified"):
-            map_layers.load_payload("dummy.nc", 0.0, "netcdf")
+            map_layers.load_payload("dummy.nc", 0.0, "netcdf", None, 0)
