@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
@@ -235,6 +236,7 @@ class TestImportOrigin(TestCase):
         assert ImportOrigin.objects.get(pk=result).origin == "file"
 
 
+@override_settings(MEDIA_ROOT=Path(__file__).parent.parent / "test_data")
 class TestMapLayerImport(TestCase):
     fixtures = ["management_user"]
 
@@ -281,6 +283,29 @@ class TestMapLayerImport(TestCase):
             owner=self.user,
             name="Test Layer",
             file=SimpleUploadedFile(filename, content, content_type="image/tiff"),
+        )
+
+    @staticmethod
+    def _load_test_netcdf_bytes() -> bytes:
+        test_netcdf_file = Path(__file__).parent.parent / "test_data/test_layer.nc"
+
+        return test_netcdf_file.read_bytes()
+
+    def _make_nc_layer(self, filename, variable, content=None):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        from importing.models import MapLayerImport
+
+        if content is None:
+            content = self._load_test_netcdf_bytes()
+
+        return MapLayerImport(
+            owner=self.user,
+            name="Test Layer",
+            variable=variable,
+            file=SimpleUploadedFile(
+                filename, content, content_type="application/netcdf"
+            ),
         )
 
     def test_str(self):
@@ -338,3 +363,66 @@ class TestMapLayerImport(TestCase):
         with self.assertRaises(ValidationError) as ctx:
             self._make_layer("layer.tif", buf.getvalue()).full_clean()
         self.assertIn("file", ctx.exception.message_dict)
+
+    def test_valid_netcdf_extension_passes(self):
+        self._make_nc_layer("layer.nc", "value").full_clean()
+
+    def test_missing_variable_raises(self):
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_nc_layer("layer.nc", None).full_clean()
+        self.assertIn("variable", ctx.exception.message_dict)
+        self.assertEqual(
+            "Variable is required for NetCDF files.",
+            ctx.exception.message_dict["variable"][0],
+        )
+
+    def test_incorrect_variable_raises(self):
+        with self.assertRaises(ValidationError) as ctx:
+            self._make_nc_layer("layer.nc", "incorrect_var").full_clean()
+        self.assertIn("variable", ctx.exception.message_dict)
+        self.assertEqual(
+            "Variable 'incorrect_var' not found in NetCDF file.",
+            ctx.exception.message_dict["variable"][0],
+        )
+
+    @patch("importing.models.xr.open_dataset")
+    def test_no_data_for_variable(self, mock_open_dataset):
+        mock_data = MagicMock(dims=("y", "x"), size=0)
+        mock_dataset = {"temp": mock_data}
+        mock_open_dataset.return_value.__enter__.return_value = mock_dataset
+
+        layer = self._make_nc_layer("layer.nc", "temp")
+        with self.assertRaises(ValidationError) as ctx:
+            layer.full_clean()
+        self.assertEqual(
+            "No data found for variable 'temp' in NetCDF file.",
+            ctx.exception.message_dict["variable"][0],
+        )
+
+    @patch("importing.models.xr.open_dataset")
+    def test_missing_temporal_dimension(self, mock_open_dataset):
+        mock_data = MagicMock(dims=("y", "x"), size=4)
+        mock_dataset = {"temp": mock_data}
+        mock_open_dataset.return_value.__enter__.return_value = mock_dataset
+
+        layer = self._make_nc_layer("layer.nc", "temp")
+        with self.assertRaises(ValidationError) as ctx:
+            layer.full_clean()
+        self.assertEqual(
+            "Variable 'temp' must have a temporal dimension named 't'.",
+            ctx.exception.message_dict["variable"][0],
+        )
+
+    @patch("importing.models.xr.open_dataset")
+    def test_missing_spatial_dimension(self, mock_open_dataset):
+        mock_data = MagicMock(dims=("y", "t"), size=4)
+        mock_dataset = {"temp": mock_data}
+        mock_open_dataset.return_value.__enter__.return_value = mock_dataset
+
+        layer = self._make_nc_layer("layer.nc", "temp")
+        with self.assertRaises(ValidationError) as ctx:
+            layer.full_clean()
+        self.assertEqual(
+            "Variable 'temp' must have 'x' and 'y' spatial dimensions.",
+            ctx.exception.message_dict["variable"][0],
+        )

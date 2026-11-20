@@ -51,6 +51,12 @@ dependencies = [
     "azure-identity",
     "azure-storage-blob",
     "tzdata",
+    "xarray",
+    "rioxarray",
+    "netcdf4",
+    "pystac<1.15",
+    "geopandas",
+    "adlfs",
 ]
 
 [project.optional-dependencies]

@@ -11,8 +11,14 @@
 #  creadoras, ya sea en uso total o parcial del código.
 ########################################################################################
 
+import tempfile
+from pathlib import Path
+
+import rioxarray  # noqa: F401
+import xarray as xr
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
@@ -235,7 +241,7 @@ class MapLayerImport(PermissionsBase):
         blank=False,
         help_text=f"Must be a tiff file. File size must not exceed {MAX_FILE_SIZE} MB",
         validators=[
-            FileExtensionValidator(allowed_extensions=["tif", "tiff"]),
+            FileExtensionValidator(allowed_extensions=["tif", "tiff", "nc"]),
             validate_layer_file_size,
         ],
     )
@@ -244,6 +250,22 @@ class MapLayerImport(PermissionsBase):
         auto_now=True,
         help_text="The time at which the layer was last updated.",
     )
+    variable = models.CharField(
+        "Variable",
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="Variable associated with the map layer, required to extract data "
+        "from NetCDF files.",
+    )
+
+    @property
+    def file_type(self) -> str:
+        """Infer the file type (geotiff or netcdf) from the extension."""
+        ext = Path(self.file.name).suffix.lower()
+        if ext in [".tif", ".tiff"]:
+            return "geotiff"
+        return "netcdf"
 
     def __str__(self):
         return self.name
@@ -251,60 +273,120 @@ class MapLayerImport(PermissionsBase):
     def get_absolute_url(self):
         return reverse("importing:maplayerimport_detail", kwargs={"pk": self.pk})
 
+    @staticmethod
+    def _read_geotiff_metadata(
+        file_obj: File,
+    ) -> tuple[str, tuple[float, float, float, float]]:
+        """Read the coordinate reference system (crs) and bounds from a GeoTIFF file.
+
+        Args:
+            file_obj: The GeoTIFF file object to read metadata from.
+
+        Returns:
+            The CRS and bounds of the GeoTIFF file.
+        """
+        import rasterio
+
+        with rasterio.MemoryFile(file_obj.read()) as memfile:
+            with memfile.open() as dataset:
+                if dataset.count == 0:
+                    raise ValidationError({"file": "File contains no raster bands."})
+
+        return dataset.crs, dataset.bounds
+
+    def _read_netcdf_metadata(
+        self, file_obj: File
+    ) -> tuple[str, tuple[float, float, float, float]]:
+        """Read the coordinate reference system (crs) and bounds from a NetCDF file.
+
+        Args:
+            file_obj: The NetCDF file object to read metadata from.
+
+        Returns:
+            The CRS and bounds of the NetCDF file.
+        """
+        with tempfile.NamedTemporaryFile(suffix=".nc") as tmp:
+            tmp.write(file_obj.read())
+            tmp.flush()
+
+            with xr.open_dataset(tmp.name, engine="netcdf4", decode_coords="all") as ds:
+                if self.variable not in ds:
+                    raise ValidationError(
+                        {
+                            "variable": f"Variable '{self.variable}' not found in "
+                            "NetCDF file."
+                        }
+                    )
+
+                data = ds[self.variable]
+                if data.size == 0:
+                    raise ValidationError(
+                        {
+                            "variable": f"No data found for variable '{self.variable}' "
+                            "in NetCDF file."
+                        }
+                    )
+
+                if "t" not in data.dims:
+                    raise ValidationError(
+                        {
+                            "variable": f"Variable '{self.variable}' must have a "
+                            "temporal dimension named 't'."
+                        }
+                    )
+                if "x" not in data.dims or "y" not in data.dims:
+                    raise ValidationError(
+                        {
+                            "variable": f"Variable '{self.variable}' must have 'x' and "
+                            "'y' spatial dimensions."
+                        }
+                    )
+                data = data.rio.set_spatial_dims(x_dim="x", y_dim="y")
+                return data.rio.crs, data.rio.bounds()
+
     def clean(self) -> None:
-        """Validate the uploaded GeoTIFF and its transformed lon/lat bounds."""
+        """Validate the uploaded file and its transformed lon/lat bounds."""
 
         if not self.file:
             return
 
-        import rasterio
+        if self.file_type == "netcdf" and not self.variable:
+            raise ValidationError(
+                {"variable": "Variable is required for NetCDF files."}
+            )
+
         from rasterio.warp import transform_bounds
 
         file_obj = self.file.file
+
         try:
-            with rasterio.MemoryFile(file_obj.read()) as memfile:
-                with memfile.open() as dataset:
-                    if dataset.count == 0:
-                        raise ValidationError(
-                            {"file": "File contains no raster bands."}
-                        )
-                    if dataset.crs is None:
-                        raise ValidationError(
-                            {"file": "File has no coordinate reference system (CRS)."}
-                        )
+            if self.file_type == "geotiff":
+                crs, bounds = self._read_geotiff_metadata(file_obj)
+            else:
+                crs, bounds = self._read_netcdf_metadata(file_obj)
 
-                    left, bottom, right, top = transform_bounds(
-                        dataset.crs,
-                        "EPSG:4326",
-                        dataset.bounds.left,
-                        dataset.bounds.bottom,
-                        dataset.bounds.right,
-                        dataset.bounds.top,
-                    )
+            if crs is None:
+                raise ValidationError(
+                    {"file": "File has no coordinate reference system (CRS)."}
+                )
 
-                    if not (-180 <= left <= 180 and -180 <= right <= 180):
-                        raise ValidationError(
-                            {
-                                "file": (
-                                    "GeoTIFF longitude values are out of range "
-                                    "[-180, 180]."
-                                )
-                            }
-                        )
-                    if not (-90 <= bottom <= 90 and -90 <= top <= 90):
-                        raise ValidationError(
-                            {
-                                "file": (
-                                    "GeoTIFF latitude values are out of range "
-                                    "[-90, 90]."
-                                )
-                            }
-                        )
+            left, bottom, right, top = transform_bounds(crs, "EPSG:4326", *bounds)
+
+            if not (-180 <= left <= 180 and -180 <= right <= 180):
+                raise ValidationError(
+                    {"file": ("Longitude values are out of range [-180, 180].")}
+                )
+            if not (-90 <= bottom <= 90 and -90 <= top <= 90):
+                raise ValidationError(
+                    {"file": ("Latitude values are out of range [-90, 90].")}
+                )
+
         except ValidationError:
             raise
+
         except Exception as e:
             raise ValidationError(
-                {"file": f"Could not open as a valid GeoTIFF or read coordinates: {e}"}
+                {"file": f"Could not open as a valid file or read coordinates: {e}"}
             )
         finally:
             file_obj.seek(0)

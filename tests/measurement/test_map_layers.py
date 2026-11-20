@@ -14,13 +14,13 @@ from rasterio.errors import RasterioIOError
 from rasterio.io import MemoryFile
 from rasterio.transform import from_origin
 
-from djangomain.dash_apps import geotiff_layers
+from djangomain.dash_apps import map_layers
 from importing.models import MapLayerImport
 
 
-class GeoTiffLayerUtilityTests(TestCase):
+class MapLayerUtilityTests(TestCase):
     def setUp(self):
-        geotiff_layers.load_geotiff_payload.cache_clear()
+        map_layers.load_payload.cache_clear()
 
         Group.objects.get_or_create(name="Standard")
 
@@ -87,10 +87,10 @@ class GeoTiffLayerUtilityTests(TestCase):
         return layer
 
     def test_available_map_layers_by_id_returns_empty_for_none_user(self):
-        self.assertEqual(geotiff_layers.available_map_layers_by_id(None), {})
+        self.assertEqual(map_layers.available_map_layers_by_id(None), {})
 
     def test_available_map_layers_by_id_returns_empty_for_anonymous_user(self):
-        self.assertEqual(geotiff_layers.available_map_layers_by_id(AnonymousUser()), {})
+        self.assertEqual(map_layers.available_map_layers_by_id(AnonymousUser()), {})
 
     def test_available_map_layers_by_id_filters_by_permissions_only(self):
         owner = self._create_user("owner")
@@ -102,19 +102,13 @@ class GeoTiffLayerUtilityTests(TestCase):
             filename="visible.tif",
             grant_view_to=viewer,
         )
-        visible_png_name = self._create_layer(
-            owner=owner,
-            name="Visible layer with png filename",
-            filename="visible.png",
-            grant_view_to=viewer,
-        )
         self._create_layer(
             owner=owner,
             name="Hidden GeoTIFF",
             filename="hidden.tif",
         )
 
-        result = geotiff_layers.available_map_layers_by_id(viewer)
+        result = map_layers.available_map_layers_by_id(viewer)
 
         self.assertEqual(
             result,
@@ -124,32 +118,25 @@ class GeoTiffLayerUtilityTests(TestCase):
                     "name": "Visible GeoTIFF",
                     "mtime": visible_tif.updated_at.timestamp(),
                     "file_name": visible_tif.file.name,
-                },
-                f"maplayer-{visible_png_name.pk}": {
-                    "id": f"maplayer-{visible_png_name.pk}",
-                    "name": "Visible layer with png filename",
-                    "mtime": visible_png_name.updated_at.timestamp(),
-                    "file_name": visible_png_name.file.name,
+                    "file_type": "geotiff",
                 },
             },
         )
 
-    @patch(
-        "djangomain.dash_apps.geotiff_layers.default_storage", spec=FileSystemStorage
-    )
-    def test_get_geotiff_path_file_system(self, storage_mock):
+    @patch("djangomain.dash_apps.map_layers.default_storage", spec=FileSystemStorage)
+    def test_get_map_layer_path_file_system(self, storage_mock):
         storage_mock.path.return_value = "/path/to/test.tif"
-        geotiff_path = geotiff_layers.get_geotiff_path("test.tif")
+        geotiff_path = map_layers.get_map_layer_path("test.tif")
         storage_mock.path.assert_called_once_with("test.tif")
         self.assertEqual(geotiff_path, "/path/to/test.tif")
 
-    @patch("djangomain.dash_apps.geotiff_layers.default_storage")
-    @patch("djangomain.dash_apps.geotiff_layers.BlobServiceClient")
-    @patch("djangomain.dash_apps.geotiff_layers.generate_blob_sas")
-    @patch("djangomain.dash_apps.geotiff_layers.DefaultAzureCredential")
-    @patch("djangomain.dash_apps.geotiff_layers.datetime")
-    @patch("djangomain.dash_apps.geotiff_layers.BlobSasPermissions")
-    def test_get_geotiff_path_azure(
+    @patch("djangomain.dash_apps.map_layers.default_storage")
+    @patch("djangomain.dash_apps.map_layers.BlobServiceClient")
+    @patch("djangomain.dash_apps.map_layers.generate_blob_sas")
+    @patch("djangomain.dash_apps.map_layers.DefaultAzureCredential")
+    @patch("djangomain.dash_apps.map_layers.datetime")
+    @patch("djangomain.dash_apps.map_layers.BlobSasPermissions")
+    def test_get_map_layer_path_azure(
         self,
         permissions_mock,
         datetime_mock,
@@ -169,7 +156,7 @@ class GeoTiffLayerUtilityTests(TestCase):
         client_mock.return_value.get_user_delegation_key.return_value = "delegation_key"
         sas_mock.return_value = "sas_token"
         permissions_mock.return_value = "permission"
-        geotiff_path = geotiff_layers.get_geotiff_path("test.tif")
+        geotiff_path = map_layers.get_map_layer_path("test.tif")
 
         client_mock.assert_called_once_with(
             account_url="https://account.blob.core.windows.net",
@@ -196,9 +183,9 @@ class GeoTiffLayerUtilityTests(TestCase):
         )
 
     def test_bounds_to_lonlat_coordinates_returns_expected_order(self):
-        result = geotiff_layers._bounds_to_lonlat_coordinates(
+        result = map_layers._bounds_to_lonlat_coordinates(
             bounds=(-10.5, -5.25, 10.5, 5.25),
-            src_crs=geotiff_layers._TARGET_MAPBOX_COORDS_CRS,
+            src_crs=map_layers._TARGET_MAPBOX_COORDS_CRS,
         )
 
         self.assertEqual(
@@ -207,7 +194,7 @@ class GeoTiffLayerUtilityTests(TestCase):
         )
 
     def test_bounds_to_lonlat_coordinates_transforms_non_wgs84_bounds(self):
-        result = geotiff_layers._bounds_to_lonlat_coordinates(
+        result = map_layers._bounds_to_lonlat_coordinates(
             bounds=(-1_000_000.0, -1_000_000.0, 1_000_000.0, 1_000_000.0),
             src_crs="EPSG:3857",
         )
@@ -220,12 +207,12 @@ class GeoTiffLayerUtilityTests(TestCase):
 
     def test_bounds_to_lonlat_coordinates_rejects_invalid_lon_lat(self):
         with self.assertRaisesRegex(ValueError, "valid lon/lat"):
-            geotiff_layers._bounds_to_lonlat_coordinates(
+            map_layers._bounds_to_lonlat_coordinates(
                 bounds=(-181.0, -5.0, 10.0, 5.0),
-                src_crs=geotiff_layers._TARGET_MAPBOX_COORDS_CRS,
+                src_crs=map_layers._TARGET_MAPBOX_COORDS_CRS,
             )
 
-    def test_build_image_payload_happy_path(self):
+    def test_build_geotiff_image_payload_happy_path(self):
         owner = self._create_user("payload-owner")
         layer = self._create_layer(
             owner=owner,
@@ -234,14 +221,14 @@ class GeoTiffLayerUtilityTests(TestCase):
             data=np.array([[1.0, 2.0], [3.0, 4.0]], dtype="float32"),
         )
 
-        payload = geotiff_layers._build_image_payload(layer.file.path)
+        payload = map_layers._build_geotiff_image_payload(layer.file.path)
 
         self.assertIn("image", payload)
         self.assertIn("coordinates", payload)
         self.assertTrue(payload["image"].startswith("data:image/png;base64,"))
         self.assertEqual(len(payload["coordinates"]), 4)
 
-    def test_build_image_payload_handles_flat_data(self):
+    def test_build_geotiff_image_payload_handles_flat_data(self):
         owner = self._create_user("flat-owner")
         layer = self._create_layer(
             owner=owner,
@@ -250,12 +237,12 @@ class GeoTiffLayerUtilityTests(TestCase):
             data=np.full((2, 2), 5.0, dtype="float32"),
         )
 
-        payload = geotiff_layers._build_image_payload(layer.file.path)
+        payload = map_layers._build_geotiff_image_payload(layer.file.path)
 
         self.assertTrue(payload["image"].startswith("data:image/png;base64,"))
         self.assertEqual(len(payload["coordinates"]), 4)
 
-    def test_load_geotiff_payload_uses_mtime_in_cache_key(self):
+    def test_load_payload_uses_mtime_in_cache_key(self):
         owner = self._create_user("cache-owner")
         layer = self._create_layer(
             owner=owner,
@@ -265,25 +252,27 @@ class GeoTiffLayerUtilityTests(TestCase):
 
         mtime = layer.updated_at.timestamp()
 
-        geotiff_layers.load_geotiff_payload.cache_clear()
-        geotiff_layers.load_geotiff_payload(layer.file.name, mtime)
-        first_info = geotiff_layers.load_geotiff_payload.cache_info()
+        map_layers.load_payload.cache_clear()
+        map_layers.load_payload(layer.file.name, mtime, "geotiff")
+        first_info = map_layers.load_payload.cache_info()
 
-        geotiff_layers.load_geotiff_payload(layer.file.name, mtime)
-        second_info = geotiff_layers.load_geotiff_payload.cache_info()
+        map_layers.load_payload(layer.file.name, mtime, "geotiff")
+        second_info = map_layers.load_payload.cache_info()
 
-        geotiff_layers.load_geotiff_payload(layer.file.name, mtime + 1)
-        third_info = geotiff_layers.load_geotiff_payload.cache_info()
+        map_layers.load_payload(layer.file.name, mtime + 1, "geotiff")
+        third_info = map_layers.load_payload.cache_info()
 
         self.assertEqual(second_info.hits, first_info.hits + 1)
         self.assertEqual(third_info.misses, second_info.misses + 1)
 
-    def test_load_geotiff_payload_raises_rasterio_error_for_invalid_geotiff(self):
+    def test_build_geotiff_image_payload_raises_rasterio_error_for_invalid_geotiff(
+        self,
+    ):
         broken_path = Path(self._temp_media.name) / "broken.tif"
         broken_path.write_bytes(b"this is not a geotiff")
 
         with self.assertRaises(RasterioIOError):
-            geotiff_layers.load_geotiff_payload(str(broken_path), 1.0)
+            map_layers._build_geotiff_image_payload(str(broken_path))
 
     def test_build_mapbox_layers_builds_entries_for_resolved_visible_layers(self):
         owner = self._create_user("map-owner")
@@ -296,7 +285,7 @@ class GeoTiffLayerUtilityTests(TestCase):
             grant_view_to=viewer,
         )
 
-        result = geotiff_layers.build_mapbox_layers(
+        result = map_layers.build_mapbox_layers(
             layers_raw=[
                 {
                     "id": f"maplayer-{layer.pk}",
@@ -324,7 +313,7 @@ class GeoTiffLayerUtilityTests(TestCase):
             grant_view_to=viewer,
         )
 
-        result = geotiff_layers.build_mapbox_layers(
+        result = map_layers.build_mapbox_layers(
             layers_raw=[
                 {
                     "id": f"maplayer-{broken.pk}",
@@ -339,28 +328,28 @@ class GeoTiffLayerUtilityTests(TestCase):
     def test_available_map_layers_by_id_returns_empty_when_lookup_raises(self):
         user = self._create_user("lookup-exception-user")
         with patch(
-            "djangomain.dash_apps.geotiff_layers.get_objects_for_user",
+            "djangomain.dash_apps.map_layers.get_objects_for_user",
             side_effect=Exception("db error"),
         ):
-            result = geotiff_layers.available_map_layers_by_id(user)
+            result = map_layers.available_map_layers_by_id(user)
         self.assertEqual(result, {})
 
     def test_bounds_to_lonlat_coordinates_rejects_invalid_lat(self):
         with self.assertRaisesRegex(ValueError, "valid lon/lat"):
-            geotiff_layers._bounds_to_lonlat_coordinates(
+            map_layers._bounds_to_lonlat_coordinates(
                 bounds=(-10.0, -91.0, 10.0, 5.0),
-                src_crs=geotiff_layers._TARGET_MAPBOX_COORDS_CRS,
+                src_crs=map_layers._TARGET_MAPBOX_COORDS_CRS,
             )
 
     def test_bounds_to_lonlat_coordinates_raises_on_transform_failure(self):
         with patch(
-            "djangomain.dash_apps.geotiff_layers.transform_bounds",
+            "djangomain.dash_apps.map_layers.transform_bounds",
             side_effect=Exception("bad CRS"),
         ):
             with self.assertRaisesRegex(ValueError, "could not be transformed"):
-                geotiff_layers._bounds_to_lonlat_coordinates(
+                map_layers._bounds_to_lonlat_coordinates(
                     bounds=(-10.0, -5.0, 10.0, 5.0),
-                    src_crs=geotiff_layers._TARGET_MAPBOX_COORDS_CRS,
+                    src_crs=map_layers._TARGET_MAPBOX_COORDS_CRS,
                 )
 
     def test_build_mapbox_layers_skips_invisible_layers(self):
@@ -374,7 +363,7 @@ class GeoTiffLayerUtilityTests(TestCase):
             grant_view_to=viewer,
         )
 
-        result = geotiff_layers.build_mapbox_layers(
+        result = map_layers.build_mapbox_layers(
             layers_raw=[{"id": f"maplayer-{layer.pk}", "visible": False}],
             user=viewer,
         )
@@ -391,7 +380,7 @@ class GeoTiffLayerUtilityTests(TestCase):
             filename="unauth.tif",
         )
 
-        result = geotiff_layers.build_mapbox_layers(
+        result = map_layers.build_mapbox_layers(
             layers_raw=[{"id": f"maplayer-{layer.pk}", "visible": True}],
             user=viewer,
         )
@@ -400,5 +389,76 @@ class GeoTiffLayerUtilityTests(TestCase):
 
     def test_build_mapbox_layers_returns_empty_for_empty_input(self):
         user = self._create_user("empty-input-user")
-        result = geotiff_layers.build_mapbox_layers(layers_raw=[], user=user)
+        result = map_layers.build_mapbox_layers(layers_raw=[], user=user)
         self.assertEqual(result, [])
+
+    @patch("djangomain.dash_apps.map_layers.xr.open_dataset")
+    def test_get_netcdf_timestamps(self, mock_open_dataset):
+        mock_data = MagicMock()
+        mock_data.__getitem__.return_value.values = [
+            np.datetime64("2024-11-26T00:00:00"),
+            np.datetime64("2024-11-27T09:00:00"),
+        ]
+        mock_dataset = {"variable": mock_data}
+        mock_open_dataset.return_value.__enter__.return_value = mock_dataset
+        timestamps = map_layers._get_netcdf_timestamps("dummy.nc", "variable", 1)
+        self.assertEqual(
+            timestamps,
+            [
+                "26-11-2024",
+                "27-11-2024",
+            ],
+        )
+
+    def test_build_netcdf_image_payload(self):
+        test_netcdf_file = Path(__file__).parent.parent / "test_data/test_layer.nc"
+        content = test_netcdf_file.read_bytes()
+        owner = self._create_user("owner")
+
+        layer = MapLayerImport.objects.create(
+            owner=owner,
+            name="Test Layer",
+            variable="value",
+            file=SimpleUploadedFile(
+                "layer.nc", content, content_type="application/netcdf"
+            ),
+        )
+
+        payload = map_layers._build_netcdf_image_payload(layer.file.path, "value", 0)
+
+        self.assertIsInstance(payload, dict)
+        self.assertIn("image", payload)
+        self.assertIn("coordinates", payload)
+        self.assertTrue(payload["image"].startswith("data:image/png;base64,"))
+        self.assertEqual(len(payload["coordinates"]), 4)
+
+    def test_build_netcdf_image_payload_orders_retrieve_different_timestamps(self):
+        test_netcdf_file = Path(__file__).parent.parent / "test_data/test_layer.nc"
+        content = test_netcdf_file.read_bytes()
+        owner = self._create_user("owner")
+
+        layer = MapLayerImport.objects.create(
+            owner=owner,
+            name="Test Layer",
+            variable="value",
+            file=SimpleUploadedFile(
+                "layer.nc", content, content_type="application/netcdf"
+            ),
+        )
+
+        payload_0 = map_layers._build_netcdf_image_payload(layer.file.path, "value", 0)
+        payload_1 = map_layers._build_netcdf_image_payload(layer.file.path, "value", 1)
+
+        self.assertIsInstance(payload_0, dict)
+        self.assertIsInstance(payload_1, dict)
+        self.assertIn("image", payload_0)
+        self.assertIn("image", payload_1)
+        self.assertNotEqual(payload_0["image"], payload_1["image"])
+
+    def test_load_payload_raises_on_unsupported_file_type(self):
+        with self.assertRaisesRegex(ValueError, "Unsupported file type"):
+            map_layers.load_payload("dummy.xyz", 0.0, "xyz", "value", 0)
+
+    def test_load_payload_raises_on_netcdf_without_variable(self):
+        with self.assertRaisesRegex(ValueError, "Variable must be specified"):
+            map_layers.load_payload("dummy.nc", 0.0, "netcdf", None, 0)
