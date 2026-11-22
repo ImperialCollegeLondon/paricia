@@ -36,7 +36,7 @@ _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 logger = logging.getLogger(__name__)
 
 
-def generate_sas_token(file_name: str) -> str:
+def _generate_sas_token(file_name: str) -> str:
     """Generates a SAS token for accessing a file in Azure Blob Storage."""
     blob_service_client = BlobServiceClient(
         account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
@@ -74,7 +74,7 @@ def get_map_layer_path(file_name: str) -> str:
     """
     if isinstance(default_storage, FileSystemStorage):
         return default_storage.path(file_name)
-    sas_token = generate_sas_token(file_name)
+    sas_token = _generate_sas_token(file_name)
     return (
         f"https://{default_storage.account_name}.blob.core.windows.net/"
         f"{default_storage.azure_container}/{file_name}?{sas_token}"
@@ -82,7 +82,7 @@ def get_map_layer_path(file_name: str) -> str:
 
 
 @contextmanager
-def open_netcdf(file_name: str) -> Generator[xr.Dataset]:
+def _open_netcdf(file_name: str) -> Generator[xr.Dataset]:
     """Creates a context manager to load a NetCDF dataset.
 
     If the file is stored locally, it is opened directly. If stored in Azure Blob
@@ -107,7 +107,7 @@ def open_netcdf(file_name: str) -> Generator[xr.Dataset]:
 
     fs = adlfs.AzureBlobFileSystem(
         account_name=default_storage.account_name,
-        sas_token=generate_sas_token(file_name),
+        sas_token=_generate_sas_token(file_name),
     )
     blob_path = f"{default_storage.azure_container}/{file_name}"
 
@@ -133,7 +133,7 @@ def _get_netcdf_timestamps(file_path: str, variable: str, _mtime: float) -> list
     """
     timestamps = []
 
-    with open_netcdf(file_path) as ds:
+    with _open_netcdf(file_path) as ds:
         data = ds[variable]
         for timestamp in data["t"].values:
             timestamps.append(pd.to_datetime(timestamp).strftime("%d-%m-%Y"))
@@ -287,7 +287,7 @@ def _build_netcdf_image_payload(
     Returns:
         Payload containing image data URI and map coordinates.
     """
-    with open_netcdf(file_path) as ds:
+    with _open_netcdf(file_path) as ds:
         data = ds[variable]
         timestamp_data = data.isel({"t": order})
         timestamp_data = timestamp_data.rio.set_spatial_dims(x_dim="x", y_dim="y")
