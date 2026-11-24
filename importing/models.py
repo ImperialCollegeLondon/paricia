@@ -12,6 +12,7 @@
 ########################################################################################
 
 import tempfile
+from enum import StrEnum, auto
 from pathlib import Path
 
 import rioxarray  # noqa: F401
@@ -33,6 +34,13 @@ from variable.models import SensorInstallation, Variable
 User = get_user_model()
 
 MAX_FILE_SIZE = settings.MAX_LAYER_FILE_SIZE_MB
+
+
+class FileType(StrEnum):
+    """File types supported by the MapLayerImport model."""
+
+    GEOTIFF = auto()
+    NETCDF = auto()
 
 
 class ImportOrigin(models.Model):
@@ -260,12 +268,12 @@ class MapLayerImport(PermissionsBase):
     )
 
     @property
-    def file_type(self) -> str:
-        """Infer the file type (geotiff or netcdf) from the extension."""
+    def file_type(self) -> FileType:
+        """Infer the file type from the extension."""
         ext = Path(self.file.name).suffix.lower()
         if ext in [".tif", ".tiff"]:
-            return "geotiff"
-        return "netcdf"
+            return FileType.GEOTIFF
+        return FileType.NETCDF
 
     def __str__(self):
         return self.name

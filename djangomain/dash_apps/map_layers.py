@@ -26,7 +26,7 @@ from rio_tiler.io import Reader
 from rio_tiler.io.xarray import XarrayReader
 from rio_tiler.models import ImageData
 
-from importing.models import MapLayerImport
+from importing.models import FileType, MapLayerImport
 
 _TARGET_MAPBOX_COORDS_CRS = "EPSG:4326"
 """Provides coordinates in lon/lat rather than Mercator meters."""
@@ -166,7 +166,7 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | fl
 
     layer_index: dict[str, dict[str, str | float]] = {}
     for layer in queryset.order_by("name", "pk"):
-        if layer.file_type == "netcdf":
+        if layer.file_type == FileType.NETCDF:
             try:
                 timestamps = _get_netcdf_timestamps(
                     get_map_layer_path(layer.file.name),
@@ -336,7 +336,7 @@ def _build_geotiff_image_payload(file_path: str) -> dict[str, Any]:
 def load_payload(
     file_name: str,
     _mtime: float,
-    file_type: str,
+    file_type: FileType,
     variable: str | None = None,
     order: int = 0,
 ) -> dict[str, Any]:
@@ -357,14 +357,15 @@ def load_payload(
         Payload containing image data URI and map coordinates.
 
     Raises:
-        ValueError: If the file type is unsupported (i.e. not a GeoTIFF or NetCDF file).
+        ValueError: If the file type is unsupported (i.e. not a FileType.GEOTIFF or
+            FileType.NETCDF).
     """
     file_path = get_map_layer_path(file_name)
 
-    if file_type == "geotiff":
+    if file_type == FileType.GEOTIFF:
         return _build_geotiff_image_payload(file_path)
 
-    if file_type == "netcdf":
+    if file_type == FileType.NETCDF:
         if not variable:
             raise ValueError("Variable must be specified for NetCDF files.")
         return _build_netcdf_image_payload(file_path, variable, order)
