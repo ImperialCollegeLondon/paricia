@@ -15,6 +15,7 @@ import tempfile
 from enum import StrEnum, auto
 from pathlib import Path
 
+import pandas as pd
 import rioxarray  # noqa: F401
 import xarray as xr
 from django.contrib.auth import get_user_model
@@ -266,6 +267,12 @@ class MapLayerImport(PermissionsBase):
         help_text="Variable associated with the map layer, required to extract data "
         "from NetCDF files.",
     )
+    timestamps = models.JSONField(
+        "Timestamps",
+        blank=True,
+        null=True,
+        help_text="List of dates associated with the map layer if from a NetCDF file.",
+    )
 
     @property
     def file_type(self) -> FileType:
@@ -342,6 +349,21 @@ class MapLayerImport(PermissionsBase):
                             "temporal dimension named 't'."
                         }
                     )
+                # Save timestamps as a list in the timestamps field
+                try:
+                    timestamps = [
+                        pd.to_datetime(timestamp).strftime("%d-%m-%Y")
+                        for timestamp in data["t"].values
+                    ]
+                    self.timestamps = timestamps
+                except Exception as e:
+                    raise ValidationError(
+                        {
+                            "variable": "Could not read timestamps for variable '"
+                            f"{self.variable}': {e}"
+                        }
+                    )
+
                 if "x" not in data.dims or "y" not in data.dims:
                     raise ValidationError(
                         {

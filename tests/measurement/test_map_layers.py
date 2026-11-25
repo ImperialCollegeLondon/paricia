@@ -392,24 +392,6 @@ class MapLayerUtilityTests(TestCase):
         result = map_layers.build_mapbox_layers(layers_raw=[], user=user)
         self.assertEqual(result, [])
 
-    @patch("djangomain.dash_apps.map_layers.xr.open_dataset")
-    def test_get_netcdf_timestamps(self, mock_open_dataset):
-        mock_data = MagicMock()
-        mock_data.__getitem__.return_value.values = [
-            np.datetime64("2024-11-26T00:00:00"),
-            np.datetime64("2024-11-27T09:00:00"),
-        ]
-        mock_dataset = {"variable": mock_data}
-        mock_open_dataset.return_value.__enter__.return_value = mock_dataset
-        timestamps = map_layers._get_netcdf_timestamps("dummy.nc", "variable", 1)
-        self.assertEqual(
-            timestamps,
-            [
-                "26-11-2024",
-                "27-11-2024",
-            ],
-        )
-
     def test_build_netcdf_image_payload(self):
         test_netcdf_file = Path(__file__).parent.parent / "test_data/test_layer.nc"
         content = test_netcdf_file.read_bytes()

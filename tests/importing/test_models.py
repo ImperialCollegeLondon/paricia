@@ -367,6 +367,27 @@ class TestMapLayerImport(TestCase):
     def test_valid_netcdf_extension_passes(self):
         self._make_nc_layer("layer.nc", "value").full_clean()
 
+    def test_timestamps_field_populated(self):
+        layer = self._make_nc_layer("layer.nc", "value")
+        # No timestamps read
+        self.assertIsNone(layer.timestamps)
+
+        # Timestamps field populated
+        layer.full_clean()
+        self.assertEqual(layer.timestamps, ["01-01-2026", "02-01-2026"])
+
+    @patch(
+        "importing.models.pd.to_datetime", side_effect=ValueError("Invalid timestamp")
+    )
+    def test_unreadable_timestamps_raises(self, mock_to_datetime):
+        layer = self._make_nc_layer("layer.nc", "value")
+        with self.assertRaises(ValidationError) as ctx:
+            layer.full_clean()
+        self.assertEqual(
+            "Could not read timestamps for variable 'value': Invalid timestamp",
+            ctx.exception.message_dict["variable"][0],
+        )
+
     def test_missing_variable_raises(self):
         with self.assertRaises(ValidationError) as ctx:
             self._make_nc_layer("layer.nc", None).full_clean()

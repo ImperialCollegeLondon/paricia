@@ -9,7 +9,6 @@ from functools import lru_cache
 from typing import Any
 
 import adlfs
-import pandas as pd
 import rioxarray  # noqa: F401
 import xarray as xr
 from azure.identity import DefaultAzureCredential
@@ -116,31 +115,6 @@ def _open_netcdf(file_name: str) -> Generator[xr.Dataset]:
             yield ds
 
 
-@lru_cache(maxsize=32)
-def _get_netcdf_timestamps(file_path: str, variable: str, _mtime: float) -> list[str]:
-    """Read and cache the time variables from a NetCDF file.
-
-    The mtime parameter is not used directly but is part of the cache key,
-    allowing the cache to invalidate when files are modified on disk.
-
-    Args:
-        file_name: Name of the NetCDF file to read.
-        _mtime: File modification time used to invalidate cache when file
-            changes.
-
-    Returns:
-        A list of strings representing the timestamps, formatted as DD-MM-YYYY.
-    """
-    timestamps = []
-
-    with _open_netcdf(file_path) as ds:
-        data = ds[variable]
-        for timestamp in data["t"].values:
-            timestamps.append(pd.to_datetime(timestamp).strftime("%d-%m-%Y"))
-
-    return timestamps
-
-
 def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | float]]:
     """Return user-viewable map layers keyed by dash dropdown id.
 
@@ -167,17 +141,7 @@ def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | fl
     layer_index: dict[str, dict[str, str | float]] = {}
     for layer in queryset.order_by("name", "pk"):
         if layer.file_type == FileType.NETCDF:
-            try:
-                timestamps = _get_netcdf_timestamps(
-                    get_map_layer_path(layer.file.name),
-                    layer.variable,
-                    layer.updated_at.timestamp(),
-                )
-            except Exception as e:
-                logger.warning(f"Could not read timestamps for layer {layer.name}:", e)
-                continue
-
-            for i, timestamp in enumerate(timestamps):
+            for i, timestamp in enumerate(layer.timestamps):
                 layer_id = f"maplayer-{layer.pk}-{i}"
                 name = f"{layer.name} ({timestamp})"
                 layer_index[layer_id] = {

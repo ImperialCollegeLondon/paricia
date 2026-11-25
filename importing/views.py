@@ -465,14 +465,26 @@ class MapLayerEditView(CustomEditView):
     """View to edit a map layer imports."""
 
     model = MapLayerImport
-    fields = ["name", "description", "file", "visibility", "variable"]
+    fields = ["name", "description", "file", "visibility", "variable", "timestamps"]
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["timestamps"].widget.attrs["disabled"] = True
+        form.fields["timestamps"].widget.attrs["readonly"] = True
+        return form
 
 
 class MapLayerCreateView(CustomCreateView):
     """View to create a map layer import."""
 
     model = MapLayerImport
-    fields = ["name", "description", "file", "visibility", "variable"]
+    fields = ["name", "description", "file", "visibility", "variable", "timestamps"]
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["timestamps"].widget.attrs["disabled"] = True
+        form.fields["timestamps"].widget.attrs["readonly"] = True
+        return form
 
 
 class MapLayerDeleteView(CustomDeleteView):
