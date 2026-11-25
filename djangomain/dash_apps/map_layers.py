@@ -2,22 +2,10 @@
 
 import base64
 import logging
-from collections.abc import Generator
-from contextlib import contextmanager
-from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from typing import Any
 
-import adlfs
 import rioxarray  # noqa: F401
-import xarray as xr
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import (
-    BlobSasPermissions,
-    BlobServiceClient,
-    generate_blob_sas,
-)
-from django.core.files.storage import FileSystemStorage, default_storage
 from guardian.shortcuts import get_objects_for_user
 from rasterio.warp import transform_bounds
 from rio_tiler.colormap import cmap
@@ -27,92 +15,14 @@ from rio_tiler.models import ImageData
 
 from importing.models import FileType, MapLayerImport
 
+from .map_layer_storage import get_map_layer_path, open_netcdf
+
 _TARGET_MAPBOX_COORDS_CRS = "EPSG:4326"
 """Provides coordinates in lon/lat rather than Mercator meters."""
 _TARGET_RASTER_RENDER_CRS = "EPSG:3857"
 """Provides Mercator meters for rendering raster data in Mapbox."""
 
 logger = logging.getLogger(__name__)
-
-
-def _generate_sas_token(file_name: str) -> str:
-    """Generates a SAS token for accessing a file in Azure Blob Storage."""
-    blob_service_client = BlobServiceClient(
-        account_url=f"https://{default_storage.account_name}.blob.core.windows.net",
-        credential=DefaultAzureCredential(),
-    )
-    now = datetime.now(UTC)
-    start = now - timedelta(minutes=15)
-    expiry = now + timedelta(hours=1)
-    delegation_key = blob_service_client.get_user_delegation_key(
-        key_start_time=start, key_expiry_time=expiry
-    )
-    sas_token = generate_blob_sas(
-        account_name=default_storage.account_name,
-        container_name=default_storage.azure_container,
-        blob_name=file_name,
-        user_delegation_key=delegation_key,
-        permission=BlobSasPermissions(read=True),
-        expiry=expiry,
-    )
-    return sas_token
-
-
-def get_map_layer_path(file_name: str) -> str:
-    """Get the path/URL for the map layer file.
-
-    If stored locally (i.e. the default storage is FileSystemStorage), the local file
-    path is returned. Otherwise (if stored in Azure Blob Storage), a temporary URL to
-    the file is returned.
-
-    Args:
-        file_name: Name of the map layer file.
-
-    Returns:
-        The local file path or URL to the map layer file.
-    """
-    if isinstance(default_storage, FileSystemStorage):
-        return default_storage.path(file_name)
-    sas_token = _generate_sas_token(file_name)
-    return (
-        f"https://{default_storage.account_name}.blob.core.windows.net/"
-        f"{default_storage.azure_container}/{file_name}?{sas_token}"
-    )
-
-
-@contextmanager
-def _open_netcdf(file_name: str) -> Generator[xr.Dataset]:
-    """Creates a context manager to load a NetCDF dataset.
-
-    If the file is stored locally, it is opened directly. If stored in Azure Blob
-    Storage, 'adlfs' is used to access the file using a temporary SAS token. adlfs
-    is needed as the NetCDF engine cannot read directly from the Azure URL (as it
-    interprets URLs as OpeNDAP endpoints).
-
-    Args:
-        file_name: Name of the NetCDF file to open.
-
-    Yields:
-        An xarray.Dataset object representing the NetCDF data.
-    """
-    if isinstance(default_storage, FileSystemStorage):
-        with xr.open_dataset(
-            default_storage.path(file_name),
-            engine="netcdf4",
-            decode_coords="all",
-        ) as ds:
-            yield ds
-        return
-
-    fs = adlfs.AzureBlobFileSystem(
-        account_name=default_storage.account_name,
-        sas_token=_generate_sas_token(file_name),
-    )
-    blob_path = f"{default_storage.azure_container}/{file_name}"
-
-    with fs.open(blob_path, mode="rb") as file_obj:
-        with xr.open_dataset(file_obj, engine="netcdf4", decode_coords="all") as ds:
-            yield ds
 
 
 def available_map_layers_by_id(user: Any | None) -> dict[str, dict[str, str | float]]:
@@ -251,7 +161,7 @@ def _build_netcdf_image_payload(
     Returns:
         Payload containing image data URI and map coordinates.
     """
-    with _open_netcdf(file_path) as ds:
+    with open_netcdf(file_path) as ds:
         data = ds[variable]
         timestamp_data = data.isel({"t": order})
         timestamp_data = timestamp_data.rio.set_spatial_dims(x_dim="x", y_dim="y")
