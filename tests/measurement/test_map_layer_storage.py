@@ -68,3 +68,52 @@ class MapLayerStorageTests(TestCase):
             geotiff_path,
             "https://account.blob.core.windows.net/container/test.tif?sas_token",
         )
+
+    @patch(
+        "djangomain.dash_apps.map_layer_storage.default_storage", spec=FileSystemStorage
+    )
+    @patch("djangomain.dash_apps.map_layer_storage.xr.open_dataset")
+    def test_open_netcdf(self, open_dataset_mock, storage_mock):
+        storage_mock.path.return_value = "/path/to/test.nc"
+        dataset_mock = MagicMock(name="dataset")
+        open_dataset_mock.return_value.__enter__.return_value = dataset_mock
+
+        with map_layer_storage.open_netcdf("test.nc") as result:
+            self.assertIs(result, dataset_mock)
+
+        storage_mock.path.assert_called_once_with("test.nc")
+        open_dataset_mock.assert_called_once_with(
+            "/path/to/test.nc", engine="netcdf4", decode_coords="all"
+        )
+        open_dataset_mock.return_value.__exit__.assert_called_once()
+
+    @patch("djangomain.dash_apps.map_layer_storage.default_storage")
+    @patch("djangomain.dash_apps.map_layer_storage._generate_sas_token")
+    @patch("djangomain.dash_apps.map_layer_storage.adlfs.AzureBlobFileSystem")
+    @patch("djangomain.dash_apps.map_layer_storage.xr.open_dataset")
+    def test_open_netcdf_azure(
+        self, open_dataset_mock, filesystem_mock, sas_mock, storage_mock
+    ):
+        storage_mock.account_name = "account"
+        storage_mock.azure_container = "container"
+        sas_mock.return_value = "sas_token"
+        file_obj = MagicMock(name="file")
+        dataset = MagicMock(name="dataset")
+        filesystem_mock.return_value.open.return_value.__enter__.return_value = file_obj
+        open_dataset_mock.return_value.__enter__.return_value = dataset
+
+        with map_layer_storage.open_netcdf("test.nc") as result:
+            self.assertIs(result, dataset)
+
+        sas_mock.assert_called_once_with("test.nc")
+        filesystem_mock.assert_called_once_with(
+            account_name="account", sas_token="sas_token"
+        )
+        filesystem_mock.return_value.open.assert_called_once_with(
+            "container/test.nc", mode="rb"
+        )
+        open_dataset_mock.assert_called_once_with(
+            file_obj, engine="netcdf4", decode_coords="all"
+        )
+        open_dataset_mock.return_value.__exit__.assert_called_once()
+        filesystem_mock.return_value.open.return_value.__exit__.assert_called_once()
