@@ -397,6 +397,16 @@ class TestMapLayerImport(TestCase):
             ctx.exception.message_dict["variable"][0],
         )
 
+    def test_variable_for_non_netcdf_raises(self):
+        with self.assertRaises(ValidationError) as ctx:
+            # Provide variable but use tif extension
+            self._make_nc_layer("layer.tif", variable="value").full_clean()
+        self.assertIn("variable", ctx.exception.message_dict)
+        self.assertEqual(
+            "Variable is only supported by NetCDF files.",
+            ctx.exception.message_dict["variable"][0],
+        )
+
     def test_incorrect_variable_raises(self):
         with self.assertRaises(ValidationError) as ctx:
             self._make_nc_layer("layer.nc", "incorrect_var").full_clean()

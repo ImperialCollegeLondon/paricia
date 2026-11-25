@@ -380,17 +380,24 @@ class MapLayerImport(PermissionsBase):
         if not self.file:
             return
 
-        if self.file_type == "netcdf" and not self.variable:
-            raise ValidationError(
-                {"variable": "Variable is required for NetCDF files."}
-            )
+        if self.file_type == FileType.NETCDF:
+            if not self.variable:
+                raise ValidationError(
+                    {"variable": "Variable is required for NetCDF files."}
+                )
+
+        else:
+            if self.variable:
+                raise ValidationError(
+                    {"variable": "Variable is only supported by NetCDF files."}
+                )
 
         from rasterio.warp import transform_bounds
 
         file_obj = self.file.file
 
         try:
-            if self.file_type == "geotiff":
+            if self.file_type == FileType.GEOTIFF:
                 crs, bounds = self._read_geotiff_metadata(file_obj)
             else:
                 crs, bounds = self._read_netcdf_metadata(file_obj)
