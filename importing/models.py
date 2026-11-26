@@ -248,7 +248,8 @@ class MapLayerImport(PermissionsBase):
     file = models.FileField(
         "Layer file",
         blank=False,
-        help_text=f"Must be a tiff file. File size must not exceed {MAX_FILE_SIZE} MB",
+        help_text="Must be a tiff or NetCDF file. File size must not exceed "
+        f"{MAX_FILE_SIZE} MB",
         validators=[
             FileExtensionValidator(allowed_extensions=["tif", "tiff", "nc"]),
             validate_layer_file_size,
